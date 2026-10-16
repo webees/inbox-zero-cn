@@ -39,7 +39,7 @@ describe("desktop shell helpers", () => {
 
   it("rejects non-http app URLs", () => {
     expect(() => getDesktopAppOrigin("inboxzero://")).toThrow(
-      "INBOX_ZERO_APP_URL must be an http(s) URL",
+      "INBOX_ZERO_APP_URL 必须是 http(s) URL",
     );
   });
 
@@ -137,7 +137,7 @@ describe("desktop shell helpers", () => {
       parseDesktopAuthCallback("https://example.com/auth-callback?code=x"),
     ).toEqual({
       ok: false,
-      error: "Invalid authentication callback",
+      error: "无效的认证回调",
     });
   });
 

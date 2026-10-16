@@ -17,7 +17,7 @@ export function ExpandableText({
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Only add expand/collapse if content is long enough
+  // 仅在内容足够长时才添加展开/收起
   if (text.length < maxLength) {
     return <TextWrapper className={className}>{text}</TextWrapper>;
   }
@@ -25,7 +25,7 @@ export function ExpandableText({
   return (
     <TextWrapper className={className}>
       <div className="relative overflow-hidden">
-        {/* Always render the full text but add a mask when collapsed */}
+        {/* 始终渲染完整文本，但在收起时添加遮罩 */}
         <motion.div
           initial={{ height: "4rem" }}
           animate={{ height: isExpanded ? "auto" : "4rem" }}
@@ -35,7 +35,7 @@ export function ExpandableText({
           {text}
         </motion.div>
 
-        {/* Add a gradient overlay to indicate more content when collapsed */}
+        {/* 收起时添加渐变遮罩以提示还有更多内容 */}
         {!isExpanded && (
           <div className="absolute bottom-0 left-0 h-6 w-full bg-gradient-to-t from-background to-transparent" />
         )}
@@ -54,12 +54,12 @@ export function ExpandableText({
         {isExpanded ? (
           <>
             <ChevronUpIcon className="mr-1 h-3 w-3" />
-            Less
+            收起
           </>
         ) : (
           <>
             <ChevronDownIcon className="mr-1 h-3 w-3" />
-            More
+            展开
           </>
         )}
       </motion.button>

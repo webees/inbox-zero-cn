@@ -512,14 +512,14 @@ async function getGoogleProfilePayload({
 }) {
   if (isGoogleOauthEmulationEnabled()) {
     if (!tokens.access_token) {
-      throw new SafeError("Missing access_token from Google response");
+      throw new SafeError("Google 响应中缺少 access_token");
     }
 
     return fetchGoogleOpenIdProfile(tokens.access_token);
   }
 
   if (!tokens.id_token) {
-    throw new SafeError("Missing id_token from Google response");
+    throw new SafeError("Google 响应中缺少 id_token");
   }
 
   try {
@@ -529,17 +529,15 @@ async function getGoogleProfilePayload({
     });
     const payload = ticket.getPayload();
     if (!payload) {
-      throw new SafeError(
-        "Could not get payload from verified ID token ticket.",
-      );
+      throw new SafeError("无法从已验证的 ID token 票据中获取 payload。");
     }
 
     return payload;
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    logger.error("ID token verification failed using googleAuth:", {
+    const message = error instanceof Error ? error.message : "未知错误";
+    logger.error("使用 googleAuth 验证 ID token 失败：", {
       error,
     });
-    throw new SafeError(`ID token verification failed: ${message}`);
+    throw new SafeError(`ID token 验证失败：${message}`);
   }
 }

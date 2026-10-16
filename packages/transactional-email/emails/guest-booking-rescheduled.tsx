@@ -34,26 +34,26 @@ export default function GuestBookingRescheduledEmail({
   timezoneLabel,
   meetingLink,
 }: GuestBookingRescheduledEmailProps) {
-  const meetingTitle = `${eventTitle} with ${hostName}`;
+  const meetingTitle = `${eventTitle}（与 ${hostName}）`;
   return (
     <BookingEmailLayout
-      headline={`Your meeting with ${hostName} was rescheduled`}
+      headline={`你与 ${hostName} 的会议已重新安排`}
       subline={formattedTime}
     >
       <Section className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
         <Text className="m-0 text-[13px] font-medium text-amber-800">
-          Your meeting has moved. An updated calendar invite is on its way.
+          你的会议已调整时间。更新后的日历邀请即将发送。
         </Text>
         <Text className="m-0 mt-1 text-[12px] text-amber-700">
-          Previously: {previousFormattedTime}
+          原时间：{previousFormattedTime}
         </Text>
       </Section>
 
       <Text className="mb-1 mt-0 text-[15px] text-gray-900">
-        Hi {guestName},
+        你好 {guestName}，
       </Text>
       <Text className="m-0 mb-5 text-[15px] text-gray-900">
-        Here are the new details:
+        以下是新的详细信息：
       </Text>
 
       <Section className="mb-5 overflow-hidden rounded-2xl border border-gray-200">
@@ -99,7 +99,7 @@ export default function GuestBookingRescheduledEmail({
           <Section className="px-6 py-3">
             {meetingLink ? (
               <Text className="m-0 mb-1 text-[13px] text-gray-700">
-                Join meeting:{" "}
+                加入会议：{" "}
                 <Link
                   href={meetingLink}
                   className="font-mono text-[12px] text-blue-600 underline"
@@ -110,7 +110,7 @@ export default function GuestBookingRescheduledEmail({
             ) : null}
             {location && !meetingLink ? (
               <Text className="m-0 text-[13px] text-gray-700">
-                Location: <strong>{location}</strong>
+                地点：<strong>{location}</strong>
               </Text>
             ) : null}
           </Section>
@@ -123,24 +123,26 @@ export default function GuestBookingRescheduledEmail({
             href={meetingLink}
             className="mb-2 mr-2 inline-block rounded-md bg-gray-900 px-4 py-2 text-[13px] font-medium text-white no-underline"
           >
-            Join meeting
+            加入会议
           </Link>
         ) : null}
         <Link
           href={rescheduleUrl}
           className="mb-2 mr-2 inline-block rounded-md border border-gray-200 bg-white px-4 py-2 text-[13px] font-medium text-gray-700 no-underline"
         >
-          Reschedule
+          重新安排
         </Link>
         <Link
           href={cancelUrl}
           className="mb-2 mr-2 inline-block rounded-md border border-gray-200 bg-white px-4 py-2 text-[13px] font-medium text-gray-700 no-underline"
         >
-          Cancel
+          取消
         </Link>
       </Section>
 
-      <Text className="m-0 mb-1 text-[14px] text-gray-700">See you soon,</Text>
+      <Text className="m-0 mb-1 text-[14px] text-gray-700">
+        期待很快见到你，
+      </Text>
       <Text className="m-0 text-[14px] font-medium text-gray-900">
         {hostName}
       </Text>
@@ -153,7 +155,7 @@ GuestBookingRescheduledEmail.PreviewProps = {
     "https://www.getinboxzero.com/book/cancel/example?token=test-token",
   rescheduleUrl:
     "https://www.getinboxzero.com/book/reschedule/example?token=test-token",
-  eventTitle: "15 min intro",
+  eventTitle: "15 分钟简介",
   formattedTime: "Fri, Nov 13, 2026 · 10:00 AM",
   previousFormattedTime: "Thu, Nov 12, 2026 · 10:00 AM",
   guestName: "Sarah Chen",

@@ -29,8 +29,8 @@ const IMAGE_PLACEHOLDER = "[image]";
 const GENERIC_IMAGE_ALT_TEXT_PATTERN =
   /^(?:avatar|decorative|graphic|icon|image|img|logo|photo|picture|pixel|spacer|tracking pixel)$/i;
 
-// important to do before processing html emails
-// this will cut down an email from 100,000 characters to 1,000 characters in some cases
+// 在处理 HTML 邮件之前执行很重要
+// 在某些情况下，这会将一封邮件从 100,000 个字符缩减到 1,000 个字符
 function htmlToText(
   html: string,
   {
@@ -99,15 +99,15 @@ function getMessageIdHost(messageId: string) {
 }
 
 const FORWARDED_CONTENT_PATTERNS = [
-  // Gmail style
+  // Gmail 风格
   /(?:\r?\n|\r)?(?:-{3,}|_{3,})\s*Forwarded message\s*(?:-{3,}|_{3,})/i,
-  // Simple forward markers
+  // 简单的转发标记
   /(?:\r?\n|\r)?(?:-{3,}|_{3,})\s*Forward(?:ed)?(?:\s*message)?(?:-{3,}|_{3,})/i,
-  // Forwarded email header blocks
+  // 转发的邮件头部块
   /(?:^|\r?\n)From:\s*[^\r\n]+(?:\r?\n(?:Date|Sent|To|Cc|Bcc|Subject):\s*[^\r\n]+){2,}/im,
-  // iOS/Mac style
+  // iOS/Mac 风格
   /(?:\r?\n|\r)?Begin forwarded message:/im,
-  // Outlook style
+  // Outlook 风格
   /(?:\r?\n|\r)?Original Message/i,
 ];
 
@@ -115,7 +115,7 @@ export function stripForwardedContent(text: string): string {
   for (const pattern of FORWARDED_CONTENT_PATTERNS) {
     const parts = text.split(pattern);
     if (parts.length > 1) {
-      // Take content before the forward marker and clean it
+      // 取转发标记之前的内容并清理
       return removeExcessiveWhitespace(parts[0]);
     }
   }
@@ -195,8 +195,8 @@ export function convertEmailHtmlToText({
       {
         selector: "a",
         options: includeLinks
-          ? { hideLinkHrefIfSameAsText: true } // Keep link URLs: "Text [URL]"
-          : { ignoreHref: true }, // Remove links entirely: "Text"
+          ? { hideLinkHrefIfSameAsText: true } // 保留链接 URL："Text [URL]"
+          : { ignoreHref: true }, // 完全移除链接："Text"
       },
       { selector: "img", format: "skip" },
     ],
@@ -206,13 +206,13 @@ export function convertEmailHtmlToText({
 }
 
 /**
- * Ensures email sending is enabled. Throws an error if disabled.
- * @throws {SafeError} If email sending is disabled
+ * 确保邮件发送已启用。如果已禁用则抛出错误。
+ * @throws {SafeError} 如果邮件发送已禁用
  */
 export function ensureEmailSendingEnabled(): void {
   if (!env.NEXT_PUBLIC_EMAIL_SEND_ENABLED) {
     throw new SafeError(
-      "Email sending is disabled. Set NEXT_PUBLIC_EMAIL_SEND_ENABLED=true to enable.",
+      "邮件发送已禁用。设置 NEXT_PUBLIC_EMAIL_SEND_ENABLED=true 以启用。",
     );
   }
 }

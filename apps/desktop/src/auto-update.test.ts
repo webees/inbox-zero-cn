@@ -144,8 +144,8 @@ describe("startDesktopAutoUpdate", () => {
     expect(onUpdateReady).toHaveBeenCalledWith("0.2.0");
     expect(notificationOptions).toEqual([
       {
-        body: "Restart Inbox Zero to finish updating to 0.2.0.",
-        title: "Update ready to install",
+        body: "重启 Inbox Zero 以完成更新到 0.2.0。",
+        title: "更新已准备好安装",
       },
     ]);
     expect(notificationShow).toHaveBeenCalledOnce();
@@ -201,7 +201,7 @@ describe("checkForDesktopUpdatesManually", () => {
     expect(autoUpdater.checkForUpdates).not.toHaveBeenCalled();
     expect(dialog.showMessageBox).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: "Updates are unavailable in development builds",
+        message: "开发版本中无法使用更新",
       }),
     );
   });
@@ -218,8 +218,8 @@ describe("checkForDesktopUpdatesManually", () => {
 
     expect(dialog.showMessageBox).toHaveBeenCalledWith(
       expect.objectContaining({
-        detail: "Inbox Zero 0.1.0 is the latest version.",
-        message: "You're up to date",
+        detail: "Inbox Zero 0.1.0 是最新版本。",
+        message: "已是最新版本",
       }),
     );
   });
@@ -238,8 +238,8 @@ describe("checkForDesktopUpdatesManually", () => {
     expect(dialog.showMessageBox).toHaveBeenCalledWith(
       expect.objectContaining({
         detail:
-          "You can keep using Inbox Zero. Restart to Update will appear in the app menu when it's ready.",
-        message: "Downloading Inbox Zero 0.2.0",
+          "你可以继续使用 Inbox Zero。更新准备好后，应用菜单中会出现「重启以更新」。",
+        message: "正在下载 Inbox Zero 0.2.0",
       }),
     );
     expect(autoUpdater.downloadUpdate).not.toHaveBeenCalled();
@@ -311,8 +311,8 @@ describe("checkForDesktopUpdatesManually", () => {
 
     expect(dialog.showMessageBox).toHaveBeenCalledWith(
       expect.objectContaining({
-        buttons: ["Restart to Update", "Later"],
-        message: "An update is ready to install",
+        buttons: ["重启以更新", "稍后"],
+        message: "更新已准备好安装",
       }),
     );
     expect(beforeInstall).toHaveBeenCalledOnce();
@@ -334,7 +334,7 @@ describe("checkForDesktopUpdatesManually", () => {
     expect(console.error).toHaveBeenCalledWith("feed unavailable");
     expect(dialog.showMessageBox).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: "Couldn't check for updates",
+        message: "无法检查更新",
         type: "error",
       }),
     );

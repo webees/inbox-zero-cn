@@ -10,8 +10,8 @@ import {
 } from "@/utils/email/provider-types";
 
 /**
- * Create calendar event providers for all connected calendars.
- * Fetches calendar connections once and creates providers that can be reused.
+ * 为所有已连接日历创建日历事件服务商。
+ * 只获取一次日历连接，并创建可复用的服务商。
  */
 export async function createCalendarEventProviders(
   emailAccountId: string,
@@ -32,7 +32,7 @@ export async function createCalendarEventProviders(
   });
 
   if (connections.length === 0) {
-    logger.info("No calendar connections found", { emailAccountId });
+    logger.info("未找到日历连接", { emailAccountId });
     return [];
   }
 
@@ -46,7 +46,7 @@ export async function createCalendarEventProviders(
         createCalendarEventProvider({ connection, emailAccountId, logger }),
       );
     } catch (error) {
-      logger.error("Failed to create calendar event provider", {
+      logger.error("创建日历事件提供程序失败", {
         provider: connection.provider,
         error,
       });
@@ -56,8 +56,8 @@ export async function createCalendarEventProviders(
   return providers;
 }
 
-// Same connections createCalendarEventProviders can use. A missing refresh
-// token or unknown provider builds no provider, so the chat tool would fail.
+// createCalendarEventProviders 可使用的相同连接。缺少刷新
+// 令牌或服务商未知时不会构建服务商，因此聊天工具会失败。
 export async function hasUsableCalendarConnection(emailAccountId: string) {
   const connections = await prisma.calendarConnection.findMany({
     where: {
@@ -104,7 +104,7 @@ export function createCalendarEventProvider({
     return new MicrosoftCalendarEventProvider(providerParams, logger);
   }
 
-  throw new SafeError("Unsupported calendar provider");
+  throw new SafeError("不支持的日历服务商");
 }
 
 function isUsableCalendarConnection(connection: {

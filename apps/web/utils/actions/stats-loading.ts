@@ -18,7 +18,7 @@ import {
   parseListUnsubscribeHeader,
 } from "@/utils/parse/unsubscribe";
 
-const PAGE_SIZE = 20; // avoid setting too high because it will hit the rate limit
+const PAGE_SIZE = 20; // 不要设置得过高，否则会触发速率限制
 const MAX_PAGES = 50;
 
 export async function loadEmails(
@@ -48,11 +48,11 @@ export async function loadEmails(
   });
 
   const after = newestEmailSaved?.date;
-  logger.info("Loading emails after", { after });
+  logger.info("正在加载较新邮件", { after });
 
   let nextPageToken: string | undefined;
   while (pages < maxPages) {
-    logger.info("After Page", { pages, nextPageToken });
+    logger.info("较新邮件分页", { pages, nextPageToken });
     const res = await saveBatch({
       emailAccountId,
       emailProvider,
@@ -80,7 +80,7 @@ export async function loadEmails(
     hasMoreAfter = true;
   }
 
-  logger.info("Completed emails after", { after, pages });
+  logger.info("较新邮件加载完成", { after, pages });
 
   if (!loadBefore || !newestEmailSaved) {
     return {
@@ -98,7 +98,7 @@ export async function loadEmails(
   });
 
   const before = oldestEmailSaved?.date;
-  logger.info("Loading emails before", { before });
+  logger.info("正在加载较旧邮件", { before });
 
   if (!before) {
     return {
@@ -112,7 +112,7 @@ export async function loadEmails(
 
   nextPageToken = undefined;
   while (pages < maxPages) {
-    logger.info("Before Page", { pages, nextPageToken });
+    logger.info("较旧邮件分页", { pages, nextPageToken });
     const res = await saveBatch({
       emailAccountId,
       emailProvider,
@@ -140,7 +140,7 @@ export async function loadEmails(
     hasMoreBefore = true;
   }
 
-  logger.info("Completed emails before", { before, pages });
+  logger.info("较旧邮件加载完成", { before, pages });
 
   return {
     pages,
@@ -186,7 +186,7 @@ export async function saveBatch({
 
       const date = internalDateToDate(m.internalDate);
       if (!date) {
-        logger.error("No date for email", {
+        logger.error("邮件没有日期", {
           messageId: m.id,
           date: m.internalDate,
         });

@@ -53,73 +53,71 @@ function createMockDigestData(categories: string[]): DigestEmailProps {
     newsletter: [
       {
         from: "Morning Brew",
-        subject: "🔥 Today's top business stories",
-        content:
-          "Apple unveils Vision Pro 2 with 40% lighter design and $2,499 price tag",
+        subject: "🔥 今日热门商业资讯",
+        content: "Apple 发布 Vision Pro 2，设计减重 40%，售价 2,499 美元",
       },
       {
         from: "The New York Times",
-        subject: "Breaking News: Latest developments",
-        content:
-          "Fed signals potential rate cuts as inflation shows signs of cooling to 3.2%",
+        subject: "突发新闻：最新进展",
+        content: "美联储释放可能降息的信号，通胀显现降温迹象，降至 3.2%",
       },
     ],
     receipt: [
       {
         from: "Amazon",
         subject: "Order #123-4567890-1234567",
-        content: "Your order has been delivered to your doorstep.",
+        content: "你的订单已送达门口。",
       },
       {
         from: "Uber Eats",
-        subject: "Your food is on the way!",
-        content: "Estimated delivery: 15-20 minutes",
+        subject: "你的餐点正在派送中！",
+        content: "预计送达时间：15-20 分钟",
       },
     ],
     marketing: [
       {
         from: "Spotify",
-        subject: "Limited offer: 3 months premium for $0.99",
-        content: "Upgrade your music experience with this exclusive deal",
+        subject: "限时优惠：3 个月高级版仅需 0.99 美元",
+        content: "用这项专属优惠升级你的音乐体验",
       },
       {
         from: "Nike",
-        subject: "JUST IN: New Summer Collection 🔥",
-        content: "Be the first to shop our latest styles before they sell out",
+        subject: "最新上架：全新夏季系列 🔥",
+        content: "抢先选购我们的最新款式，售完即止",
       },
     ],
     calendar: [
       {
         from: "Sarah Johnson",
-        subject: "Team Weekly Sync",
+        subject: "团队每周同步会",
         content:
-          "Title: Team Weekly Sync\nDate: Tomorrow, 10:00 AM - 11:00 AM • Meeting Room 3 / Zoom",
+          "标题：团队每周同步会\n日期：明天 10:00 AM - 11:00 AM • 3 号会议室 / Zoom",
       },
     ],
     notification: [
       {
         from: "LinkedIn",
-        subject: "New connection request from Sarah M.",
-        content: "Sarah M. wants to connect with you on LinkedIn.",
+        subject: "来自 Sarah M. 的新联系人请求",
+        content: "Sarah M. 想在 LinkedIn 上与你建立联系。",
       },
     ],
     toReply: [
       {
         from: "John Smith",
-        subject: "Re: Project proposal feedback",
-        content: "Received: Yesterday, 4:30 PM • Due: Today",
+        subject: "Re: 项目提案反馈",
+        content: "收到时间：昨天 4:30 PM • 截止：今天",
       },
     ],
     coldEmail: [
       {
         from: "David Williams",
-        subject: "Partnership opportunity for your business",
-        content: "Growth Solutions Inc.",
+        subject: "为你的业务带来合作机会",
+        content: "成长方案公司",
       },
       {
         from: "Jennifer Lee",
-        subject: "Request for a quick call this week",
-        content: "Venture Capital Partners",
+        subject: "想约本周做一次简短通话",
+        content: "风险投资伙伴公司",
       },
     ],
   };

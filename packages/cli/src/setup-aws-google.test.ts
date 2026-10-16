@@ -41,7 +41,7 @@ beforeEach(() => {
   );
   vi.mocked(p.text).mockResolvedValue("app.example.com");
   vi.mocked(p.select).mockImplementation(async (options) =>
-    options.message === "LLM Provider:" ? "bedrock" : "db.t3.micro",
+    options.message === "LLM 服务提供商：" ? "bedrock" : "db.t3.micro",
   );
   vi.mocked(p.confirm).mockImplementation(
     async (options) => !options.message.includes("Redis"),
@@ -162,7 +162,9 @@ it("identifies an invalid topic derived from the app domain before deployment", 
       region: "us-east-1",
       environment: "staging",
     }),
-  ).rejects.toThrow(/topic derived from the app domain/);
+  ).rejects.toThrow(
+    /topic derived from the app domain|从应用域名推导出的 Pub\/Sub 主题/,
+  );
   expect(
     vi
       .mocked(spawnSync)
@@ -184,7 +186,7 @@ it("rejects a topic that makes the deployment subscription name too long", async
       region: "us-east-1",
       environment: "staging",
     }),
-  ).rejects.toThrow(/subscription name.*255/);
+  ).rejects.toThrow(/订阅名称超过 255/);
   expect(
     vi
       .mocked(spawnSync)
@@ -202,8 +204,7 @@ it("allows a long valid topic when no webhook subscription is requested", async 
   );
   vi.mocked(p.confirm).mockImplementation(
     async (options) =>
-      !options.message.includes("Redis") &&
-      !options.message.includes("webhook gateway"),
+      !options.message.includes("Redis") && !/webhook/i.test(options.message),
   );
   await expect(
     runAwsSetup({

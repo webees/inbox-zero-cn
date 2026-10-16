@@ -25,19 +25,19 @@ type ReaderToolbarProps = {
   isUnread: boolean;
   labels: EmailMessageCellLabel[];
   /**
-   * Chips navigate to a label's view and nothing else: a label carries no
-   * reason, because several rules — or none at all — can put one on a thread.
-   * The "why" is rule-scoped and lives in `menu`.
+   * 标签片只跳转到某个标签的视图，不包含其他含义：标签本身不附带
+   * 原因，因为可能是若干规则——或者根本没有规则——把它加到了会话上。
+   * “为什么”是按规则区分的，位于 `menu` 中。
    */
   labelHref: (labelId: string) => string;
   onRemoveLabel?: (labelId: string) => void;
   onBackToInbox: () => void;
   onArchive: () => void;
-  /** Set when the thread is already archived; swaps out the Archive button. */
+  /** 当会话已归档时设置；用于替换“归档”按钮。 */
   onMoveToInbox?: () => void;
   onMarkRead: () => void;
   onMarkUnread: () => void;
-  /** The ⋯ dropdown, i.e. `ThreadActionsMenu`, composed by the shell. */
+  /** ⋯ 下拉菜单，即 `ThreadActionsMenu`，由外壳组合。 */
   menu?: ReactNode;
   messageExpansion?: {
     allExpanded: boolean;
@@ -47,8 +47,8 @@ type ReaderToolbarProps = {
 };
 
 /**
- * The reader's header: what the thread is, and what you can do to it.
- * Archive and read state stay visible; everything else lives in `menu`.
+ * 阅读器的头部：会话是什么，以及你能对它做什么。
+ * 归档与已读状态保持可见；其他一切都位于 `menu` 中。
  */
 export function ReaderToolbar({
   subject,
@@ -123,13 +123,13 @@ function renderActionTooltip(
     return <Tooltip shortcuts={["archive"]}>{children}</Tooltip>;
   }
   if (button.action === "move_to_inbox") {
-    return <Tooltip content="Move to inbox">{children}</Tooltip>;
+    return <Tooltip content="移至收件箱">{children}</Tooltip>;
   }
   if (button.action === "mark_unread") {
     return <Tooltip shortcuts={["markUnread"]}>{children}</Tooltip>;
   }
   if (button.action === "mark_read") {
-    return <Tooltip content="Mark as read">{children}</Tooltip>;
+    return <Tooltip content="标记为已读">{children}</Tooltip>;
   }
   return children;
 }

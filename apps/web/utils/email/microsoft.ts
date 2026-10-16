@@ -33,8 +33,10 @@ import {
   createLabel,
   getOrCreateInboxZeroLabel,
   getLabelById,
+  renameCategoryOnMessages,
   OUTLOOK_COLOR_MAP,
 } from "@/utils/outlook/label";
+import { sanitizeOutlookCategoryName } from "@/utils/outlook/label-validation";
 import type { InboxZeroLabel } from "@/utils/label";
 import type { ThreadsQuery } from "@/utils/threads/validation";
 import {
@@ -201,7 +203,7 @@ export class OutlookProvider implements EmailProvider {
       !Number.isSafeInteger(count) ||
       count < 0
     ) {
-      throw new Error("Outlook did not return an exact message count");
+      throw new Error("Outlook 未返回准确的邮件数量");
     }
     return count;
   }
@@ -250,9 +252,9 @@ export class OutlookProvider implements EmailProvider {
         errorCode: (error as any)?.code,
       };
       if (isRetryableError(extractErrorInfo(error)).isRateLimit) {
-        this.logger.warn("getThread failed", context);
+        this.logger.warn("getThread 失败", context);
       } else {
-        this.logger.error("getThread failed", context);
+        this.logger.error("getThread 失败", context);
       }
       throw error;
     }
@@ -294,7 +296,7 @@ export class OutlookProvider implements EmailProvider {
     let usedFallback = false;
 
     if (!category && labelName) {
-      this.logger.warn("Category not found by ID, trying by name", {
+      this.logger.warn("按 ID 未找到类别，尝试按名称", {
         labelId,
         labelName,
       });
@@ -366,7 +368,7 @@ export class OutlookProvider implements EmailProvider {
       const messages = response.messages || [];
       allMessages.push(...messages);
 
-      // If we got fewer messages than requested, we've reached the end
+      // 如果获取的邮件少于请求数量，说明已到达末尾
       if (messages.length < pageSize || !response.nextPageToken) {
         break;
       }
@@ -430,7 +432,7 @@ export class OutlookProvider implements EmailProvider {
     const { maxResults, after, before, pageToken } = options;
 
     const buildRequest = () => {
-      // The nextLink already encodes top/skip/filter from the original request.
+      // nextLink 已编码了原始请求中的 top/skip/filter。
       const nextLink = resolveMicrosoftGraphNextLink(pageToken);
       if (nextLink) {
         return this.client.getClient().api(nextLink);
@@ -481,10 +483,10 @@ export class OutlookProvider implements EmailProvider {
     } = options;
     const client = this.client.getClient();
 
-    // Build Microsoft Graph API filter (only exclusions here; folder is scoped via endpoint)
+    // 构建 Microsoft Graph API 过滤器（此处仅排除项；文件夹通过端点限定）
     const filters: string[] = [];
 
-    // Add exclusion filters for TO emails
+    // 为 TO 邮件添加排除过滤器
     for (const email of excludeToEmails) {
       const escapedEmail = escapeODataString(email);
       filters.push(
@@ -492,7 +494,7 @@ export class OutlookProvider implements EmailProvider {
       );
     }
 
-    // Add exclusion filters for FROM emails
+    // 为 FROM 邮件添加排除过滤器
     for (const email of excludeFromEmails) {
       const escapedEmail = escapeODataString(email);
       filters.push(`not (from/emailAddress/address eq '${escapedEmail}')`);
@@ -500,7 +502,7 @@ export class OutlookProvider implements EmailProvider {
 
     const filter = filters.length ? filters.join(" and ") : undefined;
 
-    // Get messages from Microsoft Graph API (well-known Sent Items folder)
+    // 从 Microsoft Graph API 获取邮件（已知的已发送邮件文件夹）
     let request = client
       .api("/me/mailFolders/sentitems/messages")
       .select(MESSAGE_SELECT_FIELDS)
@@ -513,20 +515,20 @@ export class OutlookProvider implements EmailProvider {
 
     const response = await request.get();
 
-    // Group messages by conversationId to create minimal threads (like original Gmail implementation)
+    // 按 conversationId 分组邮件以创建最少的会话（类似原始 Gmail 实现）
     const threadMap = new Map<string, string>();
 
     for (const message of response.value) {
       const conversationId = message.conversationId;
       if (!conversationId) continue;
 
-      // Only keep the first snippet per thread (like Gmail's minimal thread approach)
+      // 每个会话只保留第一个摘要（类似 Gmail 的最少会话方式）
       if (!threadMap.has(conversationId)) {
         threadMap.set(conversationId, message.bodyPreview || "");
       }
     }
 
-    // Convert to EmailThread format (minimal, no messages - consumer will call getThreadMessages if needed)
+    // 转换为 EmailThread 格式（最少，不含邮件——使用者如有需要会调用 getThreadMessages）
     return Array.from(threadMap.entries()).map(([id, snippet]) => ({
       id,
       snippet,
@@ -624,8 +626,8 @@ export class OutlookProvider implements EmailProvider {
         );
         return {};
       }
-      // mirror Gmail: recreate the deleted category by name and continue
-      this.logger.warn("Category was deleted, recreating by name", {
+      // 模仿 Gmail：按名称重建已删除的类别并继续
+      this.logger.warn("类别已被删除，按名称重建", {
         labelId,
         labelName,
       });
@@ -645,9 +647,9 @@ export class OutlookProvider implements EmailProvider {
     });
 
     if (applied) {
-      this.logger.info("Label applied", { labelId: category.id });
+      this.logger.info("标签已应用", { labelId: category.id });
     } else {
-      this.logger.info("Label already present, skipped", {
+      this.logger.info("标签已存在，跳过", {
         labelId: category.id,
       });
     }
@@ -715,11 +717,11 @@ export class OutlookProvider implements EmailProvider {
     replyToMessageId?: string;
     forwardedMessageId?: string;
   }): Promise<{ id: string }> {
-    this.logger.info("Creating draft", {
+    this.logger.info("正在创建草稿", {
       replyToMessageId: params.replyToMessageId,
       forwardedMessageId: params.forwardedMessageId,
     });
-    // Left out when empty so creating never clears what the source message set.
+    // 为空时省略，以便创建时绝不会清除源邮件所设置的内容。
     const recipients = {
       ...(params.to.trim()
         ? { toRecipients: toGraphRecipients(params.to, this.logger) }
@@ -732,8 +734,8 @@ export class OutlookProvider implements EmailProvider {
         : {}),
     };
 
-    // Replies thread through createReply. A forward is drafted from the
-    // forwarded message so it keeps its conversation and files.
+    // 回复通过 createReply 建立会话关联。转发则从被转发邮件
+    // 创建草稿，以便保留其会话和文件。
     let sourceAction: string | undefined;
     if (params.replyToMessageId)
       sourceAction = `/me/messages/${encodeURIComponent(params.replyToMessageId)}/createReply`;
@@ -746,7 +748,7 @@ export class OutlookProvider implements EmailProvider {
         this.logger,
       );
 
-      // Update the draft with our content
+      // 用我们的内容更新草稿
       await withMicrosoftGraphWriteRetry(
         () =>
           this.client
@@ -760,11 +762,11 @@ export class OutlookProvider implements EmailProvider {
         this.logger,
       );
 
-      this.logger.info("Created threaded draft", { draftId: draft.id });
+      this.logger.info("已创建关联会话的草稿", { draftId: draft.id });
       return { id: draft.id };
     }
 
-    // Otherwise create standalone draft
+    // 否则创建独立草稿
     const draft = await withMicrosoftGraphWriteRetry(
       () =>
         this.client
@@ -778,7 +780,7 @@ export class OutlookProvider implements EmailProvider {
       this.logger,
     );
 
-    this.logger.info("Created standalone draft", { draftId: draft.id });
+    this.logger.info("已创建独立草稿", { draftId: draft.id });
     return { id: draft.id };
   }
 
@@ -792,7 +794,7 @@ export class OutlookProvider implements EmailProvider {
       bcc?: string;
     },
   ): Promise<void> {
-    this.logger.info("Updating draft", { draftId });
+    this.logger.info("正在更新草稿", { draftId });
 
     const draft = await this.getDraftReferenceForMessage(draftId);
     if (!draft)
@@ -823,7 +825,7 @@ export class OutlookProvider implements EmailProvider {
       this.logger,
     );
 
-    this.logger.info("Draft updated", { draftId });
+    this.logger.info("草稿已更新", { draftId });
   }
 
   async getDraftAttachments(draftId: string) {
@@ -876,8 +878,8 @@ export class OutlookProvider implements EmailProvider {
     return { type: "provider-url", uploadUrl };
   }
 
-  // Graph also changes attachments on sent and received mail, so changes
-  // first confirm the message is a draft.
+  // Graph 也会更改已发送和已接收邮件上的附件，因此在更改之前
+  // 先确认该邮件是草稿。
   private async getEditableDraftAttachments(draftId: string) {
     if (!(await this.getDraftReferenceForMessage(draftId)))
       throw new DraftNotFoundError("Could not find this draft in Outlook.");
@@ -908,13 +910,13 @@ export class OutlookProvider implements EmailProvider {
       return { draftId: "" };
     }
 
-    this.logger.info("Creating Outlook draft", {
+    this.logger.info("正在创建 Outlook 草稿", {
       hasExecutedRule: Boolean(executedRule),
       contentLength: args.content?.length,
     });
 
     if (executedRule) {
-      // Run draft creation and previous draft deletion in parallel
+      // 并行运行草稿创建和先前草稿删除
       const [result] = await Promise.all([
         draftEmail(this.client, email, args, userEmail, this.logger),
         handlePreviousDraftDeletion({
@@ -924,7 +926,7 @@ export class OutlookProvider implements EmailProvider {
         }),
       ]);
 
-      this.logger.info("Outlook draft created successfully", {
+      this.logger.info("Outlook 草稿创建成功", {
         draftId: result.id,
       });
       return { draftId: result.id || "" };
@@ -937,7 +939,7 @@ export class OutlookProvider implements EmailProvider {
         this.logger,
       );
 
-      this.logger.info("Outlook draft created successfully", {
+      this.logger.info("Outlook 草稿创建成功", {
         draftId: result.id,
       });
       return { draftId: result.id || "" };
@@ -1054,16 +1056,16 @@ export class OutlookProvider implements EmailProvider {
         errorCode: err?.code,
       };
       if (isRetryableError(extractErrorInfo(error)).isRateLimit) {
-        this.logger.warn("getThreadMessages failed", context);
+        this.logger.warn("getThreadMessages 失败", context);
       } else {
-        this.logger.error("getThreadMessages failed", context);
+        this.logger.error("getThreadMessages 失败", context);
       }
       throw error;
     }
   }
 
   async getThreadMessagesInInbox(threadId: string): Promise<ParsedMessage[]> {
-    // Optimized: Direct API call filtering by inbox folder
+    // 优化：按收件箱文件夹过滤的直接 API 调用
     const client = this.client.getClient();
 
     try {
@@ -1073,7 +1075,7 @@ export class OutlookProvider implements EmailProvider {
       const inboxFolderId = folderIds.inbox;
 
       if (!inboxFolderId) {
-        throw new Error("Could not resolve inbox folder ID");
+        throw new Error("无法解析收件箱文件夹 ID");
       }
 
       const escapedThreadId = escapeODataString(threadId);
@@ -1086,12 +1088,12 @@ export class OutlookProvider implements EmailProvider {
         .select(MESSAGE_SELECT_FIELDS)
         .get();
 
-      // Convert to ParsedMessage format using existing helper
+      // 使用现有辅助函数转换为 ParsedMessage 格式
       const messages: ParsedMessage[] = [];
 
       for (const message of response.value) {
         try {
-          // Use the existing getMessage function to properly parse each message
+          // 使用现有的 getMessage 函数正确解析每封邮件
           const parsedMessage = await getMessage(
             message.id,
             this.client,
@@ -1099,7 +1101,7 @@ export class OutlookProvider implements EmailProvider {
           );
           messages.push(parsedMessage);
         } catch (error) {
-          this.logger.warn("Failed to parse message in inbox thread", {
+          this.logger.warn("解析收件箱会话中的邮件失败", {
             error,
             messageId: message.id,
             threadId,
@@ -1107,14 +1109,14 @@ export class OutlookProvider implements EmailProvider {
         }
       }
 
-      // Sort messages by receivedDateTime in ascending order (oldest first) to avoid "restriction or sort order is too complex" error
+      // 按 receivedDateTime 升序排序邮件（最旧优先）以避免 "restriction or sort order is too complex" 错误
       return messages.sort((a, b) => {
         const dateA = new Date(a.date || 0).getTime();
         const dateB = new Date(b.date || 0).getTime();
         return dateA - dateB; // asc order (oldest first)
       });
     } catch (error) {
-      this.logger.error("Error fetching inbox thread messages", {
+      this.logger.error("获取收件箱会话邮件时出错", {
         error,
         threadId,
       });
@@ -1129,8 +1131,8 @@ export class OutlookProvider implements EmailProvider {
   }
 
   async removeThreadLabel(threadId: string, labelId: string): Promise<void> {
-    // Get the label to convert ID to name (Outlook uses names)
-    // NOTE: if we have name already, we can skip this step. But because we let users use custom ids and we're not storing the custom category name, we need to first fetch the name.
+    // 获取标签以将 ID 转换为名称（Outlook 使用名称）
+    // 注意：如果我们已有名称，可以跳过此步骤。但由于我们允许用户使用自定义 id 且不存储自定义类别名称，因此需要先获取名称。
     try {
       const label = await getLabelById({ client: this.client, id: labelId });
       const categoryName = label.displayName || "";
@@ -1142,13 +1144,13 @@ export class OutlookProvider implements EmailProvider {
         logger: this.logger,
       });
     } catch (error) {
-      // If label doesn't exist (404), that's okay - nothing to remove
+      // 如果标签不存在（404），没关系——没有需要移除的内容
       if (
         (error as { statusCode?: number; code?: string }).statusCode === 404 ||
         (error as { statusCode?: number; code?: string }).code ===
           "CategoryNotFound"
       ) {
-        this.logger.info("Label not found, skipping removal", {
+        this.logger.info("未找到标签，跳过移除", {
           threadId,
           labelId,
         });
@@ -1224,19 +1226,18 @@ export class OutlookProvider implements EmailProvider {
       );
     } catch (error) {
       if (extractErrorInfo(error).status !== 404) throw error;
-      this.logger.info("Category was already deleted", { labelId });
+      this.logger.info("类别已被删除", { labelId });
     }
     this.client.invalidateCategoryMapCache();
   }
 
   async updateLabel(labelId: string, update: EmailLabelUpdate): Promise<void> {
-    if (update.name)
-      throw new Error("Microsoft category names cannot be changed");
+    if (update.name) throw new Error("Microsoft 类别名称无法更改");
     if (update.labelListVisibility || update.messageListVisibility)
-      throw new Error("Microsoft categories have no visibility settings");
-    if (!update.color) throw new Error("Microsoft category color is required");
+      throw new Error("Microsoft 类别没有可见性设置");
+    if (!update.color) throw new Error("需要 Microsoft 类别颜色");
     const color = getOutlookCategoryPreset(update.color.backgroundColor);
-    if (!color) throw new Error("Unsupported Microsoft category color");
+    if (!color) throw new Error("不支持的 Microsoft 类别颜色");
 
     await withMicrosoftGraphWriteRetry(
       () =>
@@ -1247,6 +1248,35 @@ export class OutlookProvider implements EmailProvider {
       this.logger,
     );
     this.client.invalidateCategoryMapCache();
+  }
+
+  async renameLabel(labelId: string, newName: string): Promise<void> {
+    const sanitizedName = sanitizeOutlookCategoryName(newName);
+    if (!sanitizedName) throw new Error("标签名称不能为空");
+
+    const existing = await getLabelById({ client: this.client, id: labelId });
+    const previousName = existing?.displayName;
+    if (!previousName)
+      throw new Error(`未找到要重命名的 Outlook 类别: ${labelId}`);
+    if (previousName === sanitizedName) return;
+
+    await withMicrosoftGraphWriteRetry(
+      () =>
+        this.client
+          .getClient()
+          .api(`/me/outlook/masterCategories/${encodeURIComponent(labelId)}`)
+          .patch({ displayName: sanitizedName }),
+      this.logger,
+    );
+    this.client.invalidateCategoryMapCache();
+
+    // 邮件上的类别名是旧名字，必须一并改写，否则它们会变成孤立类别。
+    await renameCategoryOnMessages({
+      client: this.client,
+      previousName,
+      nextName: sanitizedName,
+      logger: this.logger,
+    });
   }
 
   async getOrCreateInboxZeroLabel(key: InboxZeroLabel): Promise<EmailLabel> {
@@ -1298,7 +1328,7 @@ export class OutlookProvider implements EmailProvider {
 
       return mappedFilters;
     } catch (error) {
-      this.logger.error("Error in Outlook getFiltersList", { error });
+      this.logger.error("Outlook getFiltersList 出错", { error });
       throw error;
     }
   }
@@ -1342,7 +1372,7 @@ export class OutlookProvider implements EmailProvider {
     messages: ParsedMessage[];
     nextPageToken?: string;
   }> {
-    this.logger.info("getMessagesWithPagination called", {
+    this.logger.info("已调用 getMessagesWithPagination", {
       maxResults: options.maxResults,
       pageToken: options.pageToken,
       before: options.before?.toISOString(),
@@ -1352,23 +1382,23 @@ export class OutlookProvider implements EmailProvider {
       query: options.query,
     });
 
-    // IMPORTANT: This is intentionally lossy!
-    // Gmail-style prefixes like "subject:" can't be translated to Microsoft Graph because:
+    // 重要：这是有意设计的损失性转换！
+    // 像 "subject:" 这样的 Gmail 风格前缀无法转换为 Microsoft Graph，因为：
     // 1. $filter with contains(subject, ...) can't be combined with $search or date filters
     //    (causes "InefficientFilter" error)
     // 2. $search doesn't support field-specific syntax like "subject:term"
     //
-    // We strip the prefixes and use plain $search which searches subject AND body.
-    // This is broader than intended but still finds relevant messages.
-    // If subject-specific search is needed in the future, add a dedicated method
-    // that uses only $filter without $search or date filters.
+    // 我们剥离前缀并使用普通 $search，它会同时搜索主题和正文。
+    // 这比预期更宽泛，但仍能找到相关邮件。
+    // 如果将来需要按主题搜索，请添加一个专用方法
+    // 该方法仅使用 $filter，而不使用 $search 或日期过滤器。
     function stripGmailPrefixes(query: string): string {
       return query
         .replace(/\b(subject|from|to|label):(?:"[^"]*"|\S+)/gi, (match) => {
-          // Extract the value without the prefix for searching
+          // 提取去除前缀后的值用于搜索
           const colonIndex = match.indexOf(":");
           const value = match.slice(colonIndex + 1);
-          // Remove quotes if present
+          // 如果存在引号则移除
           return value.replace(/^"|"$/g, "");
         })
         .replace(/\s+/g, " ")
@@ -1385,7 +1415,7 @@ export class OutlookProvider implements EmailProvider {
       folderId = folderIds.inbox;
     }
 
-    // Build date filter for Outlook (no quotes for DateTimeOffset comparison)
+    // 为 Outlook 构建日期过滤器（DateTimeOffset 比较不加引号）
     const dateFilters: string[] = [];
     if (options.before) {
       dateFilters.push(`receivedDateTime lt ${options.before.toISOString()}`);
@@ -1394,7 +1424,7 @@ export class OutlookProvider implements EmailProvider {
       dateFilters.push(`receivedDateTime gt ${options.after.toISOString()}`);
     }
 
-    this.logger.info("Calling queryBatchMessages", {
+    this.logger.info("正在调用 queryBatchMessages", {
       dateFilters,
       maxResults: options.maxResults || 20,
       pageToken: options.pageToken,
@@ -1546,8 +1576,8 @@ export class OutlookProvider implements EmailProvider {
     const { participantEmail, maxThreads = 5 } = options;
     const maxSearchResults = Math.min(20, Math.max(10, maxThreads * 4));
 
-    // IMPORTANT:
-    // Microsoft Graph does not reliably support filtering Messages by recipient collections
+    // 重要：
+    // Microsoft Graph 并不可靠地支持按收件人集合过滤 Messages
     // (e.g. `toRecipients/any(...)`) and will error with:
     // "The query filter contains one or more invalid nodes."
     //
@@ -1566,10 +1596,10 @@ export class OutlookProvider implements EmailProvider {
     const participantLower = participantEmail.toLowerCase().trim();
     const relevant = filterMessagesForParticipant(messages, participantLower);
 
-    // Extract unique conversationIds (thread IDs) from parsed messages
+    // 从解析后的邮件中提取唯一的 conversationId（会话 ID）
     const conversationIds = getUniqueThreadIds(relevant, maxThreads);
 
-    this.logger.info("Outlook participant search completed", {
+    this.logger.info("Outlook 参与者搜索已完成", {
       rawMessageCount: messages.length,
       exactParticipantMessageCount: relevant.length,
       threadCount: conversationIds.length,
@@ -1580,7 +1610,7 @@ export class OutlookProvider implements EmailProvider {
       return [];
     }
 
-    // Fetch full thread messages for each conversation
+    // 为每个会话获取完整会话邮件
     const threads: EmailThread[] = [];
     for (const conversationId of conversationIds) {
       try {
@@ -1591,7 +1621,7 @@ export class OutlookProvider implements EmailProvider {
           snippet: messages.at(-1)?.snippet || "",
         });
       } catch (error) {
-        this.logger.warn("Failed to fetch thread messages for conversationId", {
+        this.logger.warn("为 conversationId 获取会话邮件失败", {
           conversationId,
           error,
           // biome-ignore lint/suspicious/noExplicitAny: existing loose external shape
@@ -1613,13 +1643,13 @@ export class OutlookProvider implements EmailProvider {
 
     const category = await this.getLabelById(labelId);
     if (!category) {
-      this.logger.warn("Category not found", { labelId });
+      this.logger.warn("未找到类别", { labelId });
       return [];
     }
 
     const categoryName = category.name;
     if (!categoryName) {
-      this.logger.warn("Category has no name", { labelId });
+      this.logger.warn("类别没有名称", { labelId });
       return [];
     }
 
@@ -1668,9 +1698,9 @@ export class OutlookProvider implements EmailProvider {
     threadId: string,
   ): Promise<ParsedMessage | null> {
     const escapedThreadId = escapeODataString(threadId);
-    // A whole conversation with bodies can be megabytes, and Graph sometimes
-    // ends such 200 responses mid-body. Pick the latest message from metadata,
-    // then fetch only that one in full.
+    // 带正文的整个会话可能达到数兆字节，而 Graph 有时会在
+    // 响应体中途结束这样的 200 响应。先从元数据中选取最新的邮件，
+    // 然后仅完整获取那一封。
     const messages: Message[] = [];
     let nextLink: string | undefined;
     do {
@@ -1719,7 +1749,7 @@ export class OutlookProvider implements EmailProvider {
   }
 
   async getMessagesBatch(messageIds: string[]): Promise<ParsedMessage[]> {
-    // For Outlook, we need to fetch messages individually since there's no batch endpoint
+    // 对于 Outlook，由于没有批量端点，我们需要逐封获取邮件
     const messagePromises = messageIds.map((messageId) =>
       this.getMessage(messageId),
     );
@@ -1730,8 +1760,7 @@ export class OutlookProvider implements EmailProvider {
     request: LocalMailSyncRequest,
     context: { emailAccountId: string },
   ): Promise<LocalMailSyncResponse> {
-    if (!context.emailAccountId)
-      throw new Error("Local mail account context is required");
+    if (!context.emailAccountId) throw new Error("需要本地邮件账号上下文");
     const base = {
       emailAccountId: context.emailAccountId,
       client: this.client,
@@ -1825,13 +1854,13 @@ export class OutlookProvider implements EmailProvider {
   }
 
   async searchContacts(query: string) {
-    // The Microsoft emulator has no people/contacts Graph endpoints.
+    // Microsoft 模拟器没有人员/联系人 Graph 端点。
     if (isMicrosoftEmulationEnabled()) return [];
     return searchContacts(this.client, query, this.logger);
   }
 
   async getContactPhotos() {
-    // Graph serves contact photos as per-contact binaries, not URLs.
+    // Graph 将联系人照片作为每个联系人的二进制提供，而不是 URL。
     return {};
   }
 
@@ -1855,10 +1884,10 @@ export class OutlookProvider implements EmailProvider {
         this.logger,
       );
       const sent = (response.messages?.length ?? 0) > 0;
-      this.logger.info("Checked for sent reply", { senderEmail, sent });
+      this.logger.info("已检查是否发送了回复", { senderEmail, sent });
       return sent;
     } catch (error) {
-      this.logger.warn("Error checking if reply was sent", {
+      this.logger.warn("检查是否发送了回复时出错", {
         error,
         senderEmail,
       });
@@ -1872,12 +1901,12 @@ export class OutlookProvider implements EmailProvider {
   ): Promise<number> {
     try {
       const query = `from:${senderEmail}`;
-      this.logger.info("Checking received message count", {
+      this.logger.info("正在检查已接收邮件数量", {
         senderEmail,
         threshold,
       });
 
-      // Fetch up to the threshold number of messages
+      // 最多获取阈值的邮件数量
       const response = await getMessages(
         this.client,
         {
@@ -1888,13 +1917,13 @@ export class OutlookProvider implements EmailProvider {
       );
       const count = response.messages?.length ?? 0;
 
-      this.logger.info("Received message count check result", {
+      this.logger.info("已接收邮件数量检查结果", {
         senderEmail,
         count,
       });
       return count;
     } catch (error) {
-      this.logger.warn("Error counting received messages", {
+      this.logger.warn("统计已接收邮件时出错", {
         error,
         senderEmail,
       });
@@ -1925,8 +1954,8 @@ export class OutlookProvider implements EmailProvider {
       attachmentId,
     );
 
-    // Outlook attachments return the data directly, not base64 encoded
-    // We need to convert it to base64 for consistency with Gmail
+    // Outlook 附件直接返回数据，而不是 base64 编码的
+    // 我们需要将其转换为 base64 以与 Gmail 保持一致
     const data = attachment.contentBytes
       ? Buffer.from(attachment.contentBytes, "base64").toString("base64")
       : "";
@@ -2014,11 +2043,11 @@ export class OutlookProvider implements EmailProvider {
         return await client.api(nextLink).get();
       }
 
-      // Determine endpoint and build filters based on query type
+      // 根据查询类型确定端点并构建过滤器
       let endpoint = "/me/messages";
       const filters: string[] = [];
 
-      // Graph requires the orderby field's filters before all other fields.
+      // Graph 要求 orderby 字段的过滤器排在其他所有字段之前。
       if (after) {
         filters.push(`receivedDateTime gt ${after.toISOString()}`);
       }
@@ -2027,8 +2056,8 @@ export class OutlookProvider implements EmailProvider {
         filters.push(`receivedDateTime lt ${before.toISOString()}`);
       }
 
-      // Route to appropriate endpoint based on type
-      // parentFolderId on messages is a GUID, not a well-known name — always resolve
+      // 根据类型路由到相应的端点
+      // 邮件上的 parentFolderId 是 GUID，而不是已知名称——始终解析
       if (folderId) {
         endpoint = `/me/mailFolders/${encodeURIComponent(folderId)}/messages`;
       } else if (inboxSection && !hasExplicitLabelFilters) {
@@ -2062,8 +2091,8 @@ export class OutlookProvider implements EmailProvider {
         filters.push("isRead eq false");
       }
 
-      // Outlook has no starred folder: a star is a flag on the message, so
-      // this view spans every folder rather than scoping to one.
+      // Outlook 没有星标文件夹：星标是邮件上的标志，因此
+      // 该视图跨越每个文件夹，而不是限定到某一个。
       if (type === "starred" && !hasExplicitLabelFilters) {
         filters.push("flag/flagStatus eq 'flagged'");
       }
@@ -2131,8 +2160,8 @@ export class OutlookProvider implements EmailProvider {
       collectedMessages.push(...response.value);
       nextPageToken = response["@odata.nextLink"];
 
-      // Graph search caps results and cannot preserve OData filters. Scan
-      // normal query pages instead, bounding sparse domain scans per request.
+      // Graph 搜索会限制结果数量且无法保留 OData 过滤器。改为扫描
+      // 普通查询页面，并限制每次请求的稀疏域扫描。
       if (
         (!requiresLocalLabelFiltering && !domainFilter) ||
         !nextPageToken ||
@@ -2322,16 +2351,16 @@ export class OutlookProvider implements EmailProvider {
     date: Date;
     messageId: string;
   }): Promise<boolean> {
-    // Use shared logic: for public domains search by full email, for company domains search by domain
+    // 使用共享逻辑：公共域按完整邮箱搜索，公司域按域搜索
     const searchTerm = getSearchTermForSender(options.from);
     const isFullEmail = searchTerm.includes("@");
 
     const dateString = options.date.toISOString();
 
-    // For domain matching, use $search instead of $filter since endsWith has limitations
-    // For exact email matching, use $filter with eq (case-insensitive for email addresses)
+    // 对于域匹配，使用 $search 而不是 $filter，因为 endsWith 有局限性
+    // 对于精确邮箱匹配，使用带 eq 的 $filter（电子邮件地址不区分大小写）
     if (!isFullEmail) {
-      // Domain-based search - use $search for both sent and received
+      // 基于域的搜索——发送和接收都使用 $search
       const escapedKqlDomain = searchTerm
         .replace(/\\/g, "\\\\")
         .replace(/"/g, '\\"');
@@ -2354,7 +2383,7 @@ export class OutlookProvider implements EmailProvider {
           .get(),
       ]);
 
-      // Filter by date since $search doesn't support date filtering well
+      // 按日期过滤，因为 $search 不能很好地支持日期过滤
       const validSentMessages = (sentResponse.value || []).filter(
         (msg: Message) => {
           if (!msg.sentDateTime) return false;
@@ -2373,11 +2402,11 @@ export class OutlookProvider implements EmailProvider {
       return messages.some((message) => message.id !== options.messageId);
     }
 
-    // Full email search - use $filter for received, $search for sent
+    // 完整邮箱搜索——接收使用 $filter，发送使用 $search
     const escapedSearchTerm = escapeODataString(searchTerm);
     const receivedFilter = `from/emailAddress/address eq '${escapedSearchTerm}' and receivedDateTime lt ${dateString}`;
 
-    // Use $search for sent messages as $filter on toRecipients is unreliable
+    // 对已发送邮件使用 $search，因为对 toRecipients 使用 $filter 不可靠
     const escapedKqlSearchTerm = searchTerm
       .replace(/\\/g, "\\\\")
       .replace(/"/g, '\\"');
@@ -2401,7 +2430,7 @@ export class OutlookProvider implements EmailProvider {
         .get(),
     ]);
 
-    // Filter sent messages by date since $search doesn't support date filtering well
+    // 按日期过滤已发送邮件，因为 $search 不能很好地支持日期过滤
     const validSentMessages = (sentResponse.value || []).filter(
       (msg: Message) => {
         if (!msg.sentDateTime) return false;
@@ -2447,7 +2476,7 @@ export class OutlookProvider implements EmailProvider {
 
   async unwatchEmails(subscriptionId?: string): Promise<void> {
     if (!subscriptionId) {
-      this.logger.warn("No subscription ID provided for Outlook unwatch");
+      this.logger.warn("未为 Outlook 取消监控提供订阅 ID");
       return;
     }
     await unwatchOutlook(this.client.getClient(), subscriptionId, this.logger);
@@ -2457,7 +2486,7 @@ export class OutlookProvider implements EmailProvider {
     try {
       return atob(message.conversationIndex || "").length > 22;
     } catch (error) {
-      this.logger.warn("Invalid conversationIndex base64", {
+      this.logger.warn("无效的 conversationIndex base64", {
         conversationIndex: message.conversationIndex,
         error,
       });
@@ -2465,7 +2494,7 @@ export class OutlookProvider implements EmailProvider {
     }
   }
 
-  // we map this internally beforehand so that this works as expected
+  // 我们会提前在内部进行映射，以便其按预期工作
   isSentMessage(message: ParsedMessage): boolean {
     return message.labelIds?.includes("SENT") || false;
   }
@@ -2491,11 +2520,11 @@ export class OutlookProvider implements EmailProvider {
         destinationId: "archive",
       });
 
-      this.logger.info("Message archived successfully", {
+      this.logger.info("邮件归档成功", {
         messageId,
       });
     } catch (error) {
-      this.logger.error("Failed to archive message", {
+      this.logger.error("归档邮件失败", {
         messageId,
         error,
       });
@@ -2654,7 +2683,7 @@ export class OutlookProvider implements EmailProvider {
   }
 
   async getForwardingAddresses(): Promise<string[]> {
-    // Graph has no equivalent of Gmail's verified forwarding addresses list
+    // Graph 没有与 Gmail 已验证转发地址列表对应的功能
     return [];
   }
 
@@ -2669,16 +2698,16 @@ export class OutlookProvider implements EmailProvider {
     }));
   }
 
-  // Graph can't list the aliases a mailbox may send from, and sending from one
-  // depends on a tenant setting, so Outlook mail always uses the account address.
+  // Graph 无法列出邮箱可能从中发送的别名，且从别名发送
+  // 取决于租户设置，因此 Outlook 邮件始终使用账号地址。
   async getSendAsAddresses(): Promise<SendAsAddress[]> {
     return [];
   }
 
   async getSignatures(): Promise<EmailSignature[]> {
-    // Microsoft Graph API does not currently support fetching signatures via API
+    // Microsoft Graph API 目前不支持通过 API 获取签名
     // https://learn.microsoft.com/en-my/answers/questions/1093518/user-email-signature-management-via-graph-api
-    // So we extract from recent sent emails instead
+    // 因此我们改为从近期已发送邮件中提取
 
     try {
       const sentMessages = await this.getSentMessages(5);
@@ -2688,7 +2717,7 @@ export class OutlookProvider implements EmailProvider {
 
         const signature = extractSignatureFromHtml(message.textHtml);
         if (signature) {
-          // Return the first signature we find
+          // 返回我们找到的第一个签名
           return [
             {
               email: message.headers.from,
@@ -2700,10 +2729,10 @@ export class OutlookProvider implements EmailProvider {
         }
       }
 
-      this.logger.info("No signature found in recent sent emails");
+      this.logger.info("在近期已发送邮件中未找到签名");
       return [];
     } catch (error) {
-      this.logger.error("Failed to extract signature from sent emails", {
+      this.logger.error("从已发送邮件中提取签名失败", {
         error,
       });
       return [];
@@ -2727,7 +2756,7 @@ export class OutlookProvider implements EmailProvider {
   }
 }
 
-// Maps OutlookLabel names (e.g. "INBOX") to WELL_KNOWN_FOLDERS keys used in getFolderIds()
+// 将 OutlookLabel 名称（例如 "INBOX"）映射到 getFolderIds() 中使用的 WELL_KNOWN_FOLDERS 键
 const LABEL_TO_FOLDER_KEY: Record<string, string> = {
   INBOX: "inbox",
   SENT: "sentitems",
@@ -2972,12 +3001,12 @@ async function resolveOutlookThreadQueryFilter({
     if (label.displayName) {
       return `categories/any(c:c eq '${escapeODataString(label.displayName)}')`;
     }
-    logger.warn("Outlook label lookup returned no displayName", {
+    logger.warn("Outlook 标签查询未返回 displayName", {
       labelId,
     });
     return;
   } catch (error) {
-    logger.warn("Failed to resolve Outlook category filter", {
+    logger.warn("解析 Outlook 类别过滤器失败", {
       labelId,
       error,
     });
@@ -3014,7 +3043,7 @@ function buildOutlookThreadsFromMessages({
 
   for (const message of sortedMessages) {
     if (!message.conversationId) {
-      logger.warn("Message missing conversationId", {
+      logger.warn("邮件缺少 conversationId", {
         messageId: message.id,
       });
       continue;
@@ -3090,7 +3119,7 @@ async function addOutlookThreadParticipantMessages({
       return { ...thread, participantMessages };
     });
   } catch (error) {
-    logger.warn("Failed to hydrate Outlook thread participants", {
+    logger.warn("水合 Outlook 会话参与者失败", {
       error,
       threadCount: threads.length,
     });
@@ -3143,13 +3172,13 @@ async function ensureOutlookRequiredCategoryMap({
       if (label.displayName) {
         resolvedCategoryMap.set(label.displayName, labelId);
       } else {
-        logger.warn("Outlook required category has no displayName", {
+        logger.warn("Outlook 必需的类别没有 displayName", {
           labelId,
         });
         unresolvedRequiredLabelIds.push(labelId);
       }
     } catch (error) {
-      logger.warn("Failed to resolve Outlook required category", {
+      logger.warn("解析 Outlook 必需类别失败", {
         labelId,
         error,
       });
@@ -3205,9 +3234,9 @@ function parseOutlookThreadPageToken(
   }
 }
 
-// Graph needs one entry per recipient. Callers pass the same comma-separated
-// string the Gmail RFC-822 path accepts, so split it rather than sending the
-// whole list as a single malformed address.
+// Graph 需要每个收件人一个条目。调用方传入与 Gmail RFC-822 路径
+// 相同的逗号分隔字符串，因此将其拆分，而不是把整个列表
+// 作为单个格式错误的地址发送。
 function toGraphRecipients(to: string, logger: Logger) {
   const candidates = splitRecipientList(to);
   const parsed = candidates.map((candidate) => ({
@@ -3219,15 +3248,15 @@ function toGraphRecipients(to: string, logger: Logger) {
     .map(({ email }) => ({ emailAddress: { address: email } }));
 
   if (candidates.length > 0 && recipients.length === 0) {
-    throw new Error("No valid recipient email addresses");
+    throw new Error("没有有效的收件人电子邮件地址");
   }
 
-  // A malformed attendee is dropped rather than failing the whole draft: the
-  // user reviews the draft before sending, so a missing recipient is
-  // recoverable while a missing draft is not.
+  // 格式错误的参与者会被丢弃，而不是让整个草稿失败：用户
+  // 在发送前会审阅草稿，因此缺少收件人可恢复，
+  // 而缺少草稿则不可恢复。
   const dropped = parsed.filter(({ email }) => email.length === 0);
   if (dropped.length > 0) {
-    logger.warn("Dropped recipients without a parseable email address", {
+    logger.warn("丢弃了没有可解析电子邮件地址的收件人", {
       droppedCount: dropped.length,
     });
     logger.trace("Dropped malformed recipients", {
@@ -3285,7 +3314,7 @@ async function fetchOutlookSearchPage({
   compiled: CompiledOutlookSearch;
   maxResults?: number;
 }): Promise<{ value: Message[]; "@odata.nextLink"?: string }> {
-  // Graph forbids combining $search with $filter/$orderby and caps page size at 25.
+  // Graph 禁止将 $search 与 $filter/$orderby 组合使用，并将页大小限制为 25。
   let request = client.api(apiPath).select(selectFields);
   if (compiled.search) {
     request = request.search(compiled.search);

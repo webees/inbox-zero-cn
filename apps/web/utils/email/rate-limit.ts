@@ -45,7 +45,7 @@ export async function getEmailProviderRateLimitState({
       emailAccountId,
     });
   } catch (error) {
-    customLogger?.warn("Failed to read provider rate-limit state", {
+    customLogger?.warn("读取服务商限流状态失败", {
       emailAccountId,
       error: error instanceof Error ? error.message : error,
     });
@@ -78,7 +78,7 @@ export async function recordRateLimitFromApiError({
       source,
     });
   } catch (recordError) {
-    logger.warn("Failed to record provider rate-limit state", {
+    logger.warn("记录服务商限流状态失败", {
       provider,
       error: recordError instanceof Error ? recordError.message : recordError,
     });
@@ -114,7 +114,7 @@ export async function setEmailProviderRateLimitState({
 }): Promise<EmailProviderRateLimitState> {
   if (!logger) {
     throw new Error(
-      "setEmailProviderRateLimitState requires a request-scoped logger",
+      "setEmailProviderRateLimitState 需要一个请求作用域的 logger",
     );
   }
 
@@ -132,7 +132,7 @@ export async function setEmailProviderRateLimitState({
       emailAccountId,
     });
   } catch (error) {
-    logger.warn("Failed to read existing provider rate-limit state", {
+    logger.warn("读取现有服务商限流状态失败", {
       emailAccountId,
       provider,
       error: error instanceof Error ? error.message : error,
@@ -161,7 +161,7 @@ export async function setEmailProviderRateLimitState({
     ttlSeconds,
   });
 
-  logger.warn("Set provider rate-limit mode", {
+  logger.warn("已设置服务商限流模式", {
     emailAccountId,
     provider,
     retryAt: retryAt.toISOString(),
@@ -193,7 +193,7 @@ export async function assertProviderNotRateLimited({
   });
   if (!state || state.provider !== provider) return;
 
-  logger?.warn("Skipping provider call while rate-limit mode is active", {
+  logger?.warn("限流模式生效期间跳过服务商调用", {
     emailAccountId,
     provider,
     retryAt: state.retryAt.toISOString(),
@@ -268,7 +268,7 @@ export async function withRateLimitRecording<T>(
           attemptNumber,
         });
       } catch (recordError) {
-        logger.warn("Failed to record provider rate-limit state", {
+        logger.warn("记录服务商限流状态失败", {
           provider: rateLimitProvider,
           source,
           error:
@@ -292,8 +292,8 @@ export function getProviderRateLimitDelayMs({
   provider: EmailProviderRateLimitProvider;
   attemptNumber: number;
 }) {
-  // The guard's own error is not a provider response. Recording it would
-  // push retryAt forward on every skipped call, so the mode never expires.
+  // 守卫自身的错误不是服务商响应。记录它会在每次跳过的调用中
+  // 将 retryAt 向前推，从而导致该模式永不过期。
   if (isProviderRateLimitModeError(error)) return null;
 
   if (provider === "google") {

@@ -29,7 +29,7 @@ ${CSS}
   <div class="masthead-controls">
     <label class="commit-filter" for="commit-select">
       <span>commit</span>
-      <select id="commit-select" aria-label="Filter by git commit"></select>
+      <select id="commit-select" aria-label="按 Git 提交筛选"></select>
     </label>
     <div class="masthead-meta" id="masthead-meta"></div>
   </div>
@@ -40,7 +40,7 @@ ${CSS}
 
   <section class="panel reveal">
     <div class="panel-head">
-      <h2><span class="index">01</span> Model leaderboard</h2>
+      <h2><span class="index">01</span> 模型排行榜</h2>
       <span class="panel-note" id="leaderboard-note">latest result per suite · test · model</span>
     </div>
     <div id="leaderboard"></div>
@@ -56,13 +56,13 @@ ${CSS}
 
   <section class="panel reveal">
     <div class="panel-head">
-      <h2><span class="index">03</span> Cost routing</h2>
+      <h2><span class="index">03</span> 成本路由</h2>
       <span class="panel-note" id="routing-note">suites where a cheaper model matches your quality baseline</span>
     </div>
     <div class="routing-controls">
       <label for="baseline-select">
         <span>quality baseline</span>
-        <select id="baseline-select" aria-label="Quality baseline model"></select>
+        <select id="baseline-select" aria-label="质量基线模型"></select>
       </label>
     </div>
     <div id="routing"></div>
@@ -70,12 +70,12 @@ ${CSS}
 
   <section class="panel reveal">
     <div class="panel-head">
-      <h2><span class="index">04</span> Suite inspector</h2>
+      <h2><span class="index">04</span> 套件检查器</h2>
       <span class="panel-note" id="inspector-note"></span>
     </div>
     <div class="inspector-controls">
-      <select id="suite-select" aria-label="Suite"></select>
-      <select id="model-select" aria-label="Model"></select>
+      <select id="suite-select" aria-label="套件"></select>
+      <select id="model-select" aria-label="模型"></select>
       <label class="toggle"><input type="checkbox" id="failures-only" /> failures only</label>
       <input type="search" id="search" placeholder="filter tests…" />
     </div>
@@ -449,22 +449,22 @@ const fmtMs = (v) => v == null ? "–" : v >= 10000 ? (v / 1000).toFixed(1) + "s
 const fmtAge = (iso) => {
   if (!iso) return "–";
   const mins = Math.round((new Date(DATA.generatedAt) - new Date(iso)) / 60000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return mins + "m ago";
-  if (mins < 60 * 48) return Math.round(mins / 60) + "h ago";
-  return Math.round(mins / 1440) + "d ago";
+  if (mins < 1) return "刚刚";
+  if (mins < 60) return mins + "分钟前";
+  if (mins < 60 * 48) return Math.round(mins / 60) + "小时前";
+  return Math.round(mins / 1440) + "天前";
 };
 const shortSha = (sha) => (sha ? sha.slice(0, 7) : "–");
 
-// Distinct from the pass/fail greens and reds so trend lines read as
-// model identity, not status.
+// 与通过/失败的绿色和红色区分开，使趋势线读起来体现
+// 模型身份，而非状态。
 const PALETTE = ["#6fd6c9", "#9d8cff", "#e3b34f", "#5fa8ff", "#ff8e6b", "#ff6fb3", "#b5e36b", "#d8c9a3"];
 const modelColor = (model) => {
   const models = activeView().models;
   return PALETTE[Math.max(0, models.indexOf(model)) % PALETTE.length];
 };
 
-// Lower index = cheaper model (rough eval cost order; tie-break when spend data is missing).
+// 索引越小 = 模型越便宜（大致的 eval 成本顺序；缺少花费数据时用于打破平局）。
 const MODEL_COST_RANK = {
   "DeepSeek V4 Flash Azure": 0,
   "Gemini 3.1 Flash Lite": 1,
@@ -477,7 +477,7 @@ const MODEL_COST_RANK = {
 
 const EMPTY_VIEW = {
   key: "all",
-  label: "All commits (mixed)",
+  label: "全部提交（混合）",
   gitHead: null,
   lastRunAt: "",
   runCount: 0,

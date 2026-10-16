@@ -26,18 +26,18 @@ import { JOIN_RULE_OPTIONS } from "@/app/(app)/[emailAccountId]/meetings/join-ru
 const features = [
   {
     icon: <MicIcon className="size-4 text-blue-500" />,
-    title: "Notes and transcript",
-    description: "A summary of every call",
+    title: "笔记与转录文本",
+    description: "每一通电话的摘要",
   },
   {
     icon: <ListChecksIcon className="size-4 text-blue-500" />,
-    title: "Action items with owners",
-    description: "What was decided, and who owns what",
+    title: "带负责人的行动事项",
+    description: "决定了什么，以及由谁负责",
   },
   {
     icon: <MailPlusIcon className="size-4 text-blue-500" />,
-    title: "Follow-up drafted for you",
-    description: "Waiting in your drafts, never sent",
+    title: "为你起草跟进邮件",
+    description: "存在你的草稿中，绝不会发送",
   },
 ];
 
@@ -54,8 +54,7 @@ export function MeetingRecorderOnboarding({
 }) {
   const [joinRule, setJoinRule] = useState<MeetingJoinRule | null>(null);
 
-  // Nothing is written until the second step, so leaving the flow part way
-  // through does not enable anything.
+  // 第二步之前不会写入任何内容，因此中途离开流程不会启用任何东西。
   if (joinRule !== null) {
     return (
       <ChooseJoinRule
@@ -71,18 +70,18 @@ export function MeetingRecorderOnboarding({
   return (
     <SetupCard
       imageSrc="/images/illustrations/calling-help.svg"
-      imageAlt="Meeting notetaker"
-      title="Never write meeting notes again"
-      description="Inbox Zero joins your calls, takes the notes, and drafts the follow-up email."
+      imageAlt="会议笔记助手"
+      title="再也不用写会议笔记"
+      description="Inbox Zero 会加入你的通话、记录笔记并起草跟进邮件。"
       features={features}
     >
       {hasCalendarConnected ? (
         <Button onClick={() => setJoinRule(MeetingJoinRule.ALL)}>
-          Get started
+          开始使用
         </Button>
       ) : (
         <>
-          <MessageText>Connect your calendar to get started:</MessageText>
+          <MessageText>连接你的日历即可开始：</MessageText>
           <ConnectCalendar
             analyticsPage="meetings"
             onboardingReturnPath={`/${emailAccountId}/meetings`}
@@ -115,18 +114,18 @@ function ChooseJoinRule({
   return (
     <div className="mx-4 mt-16 flex max-w-lg flex-col gap-6 md:mx-auto">
       <div className="flex flex-col gap-3">
-        <PageHeading>Which meetings should we join?</PageHeading>
+        <PageHeading>我们应该加入哪些会议？</PageHeading>
 
         <MutedText className="flex flex-wrap items-center gap-x-2">
           <CheckIcon className="size-4 shrink-0 text-green-600" />
-          {userEmail} connected
-          <TextLink href={`/${emailAccountId}/calendars`}>Change</TextLink>
+          {userEmail} 已连接
+          <TextLink href={`/${emailAccountId}/calendars`}>更改</TextLink>
         </MutedText>
       </div>
 
       <RadioCardGroup
         name="joinRule"
-        ariaLabel="Which meetings to join"
+        ariaLabel="要加入哪些会议"
         value={joinRule}
         onChange={onChange}
         options={JOIN_RULE_OPTIONS}
@@ -134,12 +133,12 @@ function ChooseJoinRule({
       />
 
       <Button className="self-start" loading={isEnabling} onClick={onConfirm}>
-        Start recording my meetings
+        开始录制我的会议
       </Button>
 
       <MutedText className="flex items-start gap-2 text-xs">
         <ShieldIcon className="mt-0.5 size-3.5 shrink-0" />
-        Joins as a visible participant called {botName}.
+        以名为 {botName} 的可见参会者身份加入。
       </MutedText>
     </div>
   );

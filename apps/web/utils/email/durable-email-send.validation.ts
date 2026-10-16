@@ -20,7 +20,7 @@ export const DURABLE_MULTIPART_EMAIL_SEND_LIMITS = {
   maxPayloadBytes: 5 * 1024 * 1024,
 } as const;
 export const DURABLE_MULTIPART_ATTACHMENT_LIMIT_MESSAGE =
-  "Attachments must total 3 MB or less. Use Gmail or Outlook for larger files.";
+  "附件合计不得超过 3 MB。更大的文件请使用 Gmail 或 Outlook。";
 
 const multipartAttachmentMetadata = z.strictObject({
   id: z.string().min(1).max(512),
@@ -73,13 +73,13 @@ export const durableMultipartEmailSendPayload = z
     (value) =>
       new TextEncoder().encode(value).byteLength <=
       DURABLE_MULTIPART_EMAIL_SEND_LIMITS.maxPayloadBytes,
-    "The multipart payload is too large.",
+    "multipart 负载过大。",
   )
   .transform((value, context): unknown => {
     try {
       return JSON.parse(value);
     } catch {
-      context.addIssue({ code: "custom", message: "Invalid payload JSON." });
+      context.addIssue({ code: "custom", message: "无效的 payload JSON。" });
       return z.NEVER;
     }
   })

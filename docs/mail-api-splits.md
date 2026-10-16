@@ -1,52 +1,52 @@
-# Split inbox REST API
+# 拆分收件箱 REST API
 
-Base path: `/api/mail/v1/accounts/{accountId}/splits`.
+基础路径：`/api/mail/v1/accounts/{accountId}/splits`。
 
-These installed-client routes use the same `withEmailProvider` middleware as
-other account-scoped mail v1 routes. Send the normal authenticated session or
-bearer credentials and the `X-Email-Account-ID` header. The header account must
-belong to the authenticated user and match `{accountId}`. The path alone does
-not authorize access.
+这些面向已安装客户端的路由使用与其他邮箱账号级 mail v1 路由相同的
+`withEmailProvider` 中间件。请发送常规的已认证会话或
+bearer 凭据以及 `X-Email-Account-ID` 请求头。请求头中的邮箱账号必须
+属于已认证用户，并与 `{accountId}` 一致。仅凭路径本身
+不足以授权访问。
 
-| Method | Path suffix | JSON request |
+| 方法 | 路径后缀 | JSON 请求 |
 | --- | --- | --- |
 | POST | (base path) | `{ "name": "Unread", "filters": [{ "kind": "UNREAD", "value": null }], "matchAll": true }` or `{ "presetId": "Receipts" }` |
 | PATCH | `/{splitId}` | `{ "name": "Receipts", "filters": [{ "kind": "LABEL", "value": "provider-label-id" }], "matchAll": true }` |
-| DELETE | `/{splitId}` | No body |
+| DELETE | `/{splitId}` | 无请求体 |
 | POST | `/reorder` | `{ "ids": ["split-2", "split-1"] }` |
-| GET | `/presets` | No body |
+| GET | `/presets` | 无请求体 |
 
-Every successful mutation returns HTTP 200 with
-`{ "protocolVersion": 1, "requestId": "...", "splits": [...] }`.
-Each split has `{ id, name, order, matchAll, filters: [{ kind, value }] }`,
-exactly the `splits` array from `/api/mail/settings`, including the synthetic
-All tab for older accounts. Use the returned array to replace local settings.
-The existing settings endpoint's response is unchanged.
+每个成功的变更操作都会返回 HTTP 200 以及
+`{ "protocolVersion": 1, "requestId": "...", "splits": [...] }`。
+每个拆分都包含 `{ id, name, order, matchAll, filters: [{ kind, value }] }`，
+与 `/api/mail/settings` 返回的 `splits` 数组完全一致，其中包含为旧版账号
+提供的合成“全部”标签页。使用返回的数组替换本地设置。
+现有设置端点的响应保持不变。
 
-Create and update use the existing web action schemas in
-`apps/web/utils/actions/mail-split.validation.ts`. PATCH replaces the name and
-entire filter list; it is not a partial field patch. Its ID comes from the path,
-not the body. `matchAll` defaults to true on both create and update. Names are
-trimmed and must contain 1–60 characters. There are at most 10 filters per split
-and 14 persisted splits per account. Filter kinds are `LABEL`, `CATEGORY`,
-`FROM`, `UNREAD`, `STARRED`, and `OLDER_THAN`; value requirements and allowed age
-values follow `split-filters.ts` and `split-query.ts`. Multiple distinct senders
-or both Outlook inbox sections require `matchAll: false`. As on web, the action
-schemas allow an empty filter list; such a split cannot later be deleted.
+创建和更新使用 `apps/web/utils/actions/mail-split.validation.ts` 中
+现有的 Web 操作 schema。PATCH 会替换名称和
+整个筛选条件列表；它不是字段级的局部补丁。其 ID 来自路径，
+而不是请求体。创建和更新时 `matchAll` 都默认为 true。名称会
+去除首尾空白，且必须包含 1–60 个字符。每个拆分最多有 10 个筛选条件，
+每个账号最多有 14 个持久化拆分。筛选条件类型为 `LABEL`、`CATEGORY`、
+`FROM`、`UNREAD`、`STARRED` 和 `OLDER_THAN`；取值要求和允许的时长
+值遵循 `split-filters.ts` 和 `split-query.ts`。多个不同的发件人
+或同时使用两个 Outlook 收件箱分区时，需要 `matchAll: false`。与 Web 端一样，操作
+schema 允许空的筛选条件列表；这样的拆分之后无法被删除。
 
-DELETE uses the web action's account-scoped deletion and lock. Filterless
-splits (including All) are rejected with `Split not found or cannot be removed`.
-Unknown IDs and IDs in another account receive that same error. Reorder accepts
-1–14 unique nonempty IDs. It reorders only the account's selected slots,
-preserving omitted splits' positions; unknown/foreign IDs are ignored just as
-in the web action. Include the persisted All ID when ordering its slot; the
-synthetic `all` ID is not persisted.
+DELETE 使用 Web 操作的邮箱账号级删除和锁定。不含筛选条件的
+拆分（包括“全部”）会被以 `Split not found or cannot be removed` 拒绝。
+未知 ID 和属于另一个账号的 ID 会收到同样的错误。重新排序接受
+1–14 个唯一且非空的 ID。它只会重排该账号选中的槽位，
+并保留被省略拆分的原有位置；未知或外部 ID 会被忽略，与
+Web 操作中的行为一致。在排列“全部”的槽位时，请包含其持久化的 ID；
+合成的 `all` ID 不会被持久化。
 
-## Presets
+## 预设
 
-GET `/presets` returns
-`{ "protocolVersion": 1, "requestId": "...", "presets": [...] }`.
-Each preset has:
+GET `/presets` 返回
+`{ "protocolVersion": 1, "requestId": "...", "presets": [...] }`。
+每个预设包含：
 
 ```json
 {

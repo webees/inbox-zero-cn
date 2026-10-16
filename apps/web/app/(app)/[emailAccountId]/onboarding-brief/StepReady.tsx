@@ -25,10 +25,10 @@ import { toastError } from "@/components/Toast";
 import { redirectToSafeUrl } from "@/utils/redirect";
 
 const PRICING_FEATURES = [
-  "Briefs for every external meeting",
-  "Google Calendar & Outlook",
-  "LinkedIn & web research",
-  "Sent 1-24 hours before (you choose)",
+  "为每场外部会议提供简报",
+  "Google Calendar 与 Outlook",
+  "LinkedIn 与网络调研",
+  "在 1-24 小时前发送（由你选择）",
 ];
 
 export function StepReady() {
@@ -48,13 +48,13 @@ export function StepReady() {
       });
 
       if (!result?.data?.url) {
-        toastError({ description: "Error creating checkout session" });
+        toastError({ description: "创建结账会话失败" });
         return;
       }
 
       redirectToSafeUrl(result.data.url, { allowExternal: true });
     } catch {
-      toastError({ description: "Error creating checkout session" });
+      toastError({ description: "创建结账会话失败" });
     } finally {
       setLoading(false);
     }
@@ -70,11 +70,10 @@ export function StepReady() {
 
       <div className="text-center">
         <PageHeading className="mt-4">
-          Ready to walk into every meeting prepared?
+          准备好从容参加每一场会议了吗？
         </PageHeading>
         <TypographyP className="mt-2 max-w-lg mx-auto">
-          You'll get a brief like this before every external meeting,
-          automatically.
+          每场外部会议前，你都会自动收到一份像这样的简报。
         </TypographyP>
       </div>
 
@@ -84,7 +83,7 @@ export function StepReady() {
           setFrequency={setFrequency}
         >
           <div className="ml-1">
-            <DiscountBadge>2 months free!</DiscountBadge>
+            <DiscountBadge>免费 2 个月！</DiscountBadge>
           </div>
         </PricingFrequencyToggle>
 
@@ -97,17 +96,17 @@ export function StepReady() {
               <p className="text-3xl font-bold text-foreground mt-1">
                 ${frequency.value === "annually" ? "7.50" : "9"}
                 <span className="text-base font-normal text-muted-foreground">
-                  /month
+                  /月
                 </span>
               </p>
               <p className="text-sm text-muted-foreground mt-1">
                 {frequency.value === "annually"
-                  ? "billed annually ($90/year)"
-                  : "billed monthly"}
+                  ? "按年计费（$90/年）"
+                  : "按月计费"}
               </p>
             </div>
             <div className="rounded-full border border-green-200 bg-green-50 px-3 py-1.5 text-sm font-semibold text-green-700">
-              7-day free trial
+              7 天免费试用
             </div>
           </div>
 
@@ -131,7 +130,7 @@ export function StepReady() {
           onClick={handleCheckout}
           loading={loading}
         >
-          Start Free Trial
+          开始免费试用
           <ChevronRightIcon className="ml-2 h-4 w-4" />
         </Button>
 
@@ -146,8 +145,8 @@ export function StepReady() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <ExternalLinkIcon className="mr-2 h-4 w-4" />
-                View test brief in Gmail
+                <ExternalLinkIcon className="mr-2 h-4 w-4" />在 Gmail
+                中查看测试简报
               </Link>
             </Button>
           )}

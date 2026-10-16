@@ -17,7 +17,7 @@ import { notifyMailboxChanged } from "@/utils/mailbox-push";
 
 export const maxDuration = 300;
 
-// Google PubSub calls this endpoint each time a user recieves an email. We subscribe for updates via `api/google/watch`
+// 每当用户收到邮件时，Google PubSub 都会调用此端点。我们通过 `api/google/watch` 订阅更新
 export const POST = withError("google/webhook", async (request) => {
   const searchParams = new URL(request.url).searchParams;
   const token = searchParams.get("token");
@@ -27,21 +27,18 @@ export const POST = withError("google/webhook", async (request) => {
   const verificationToken = env.GOOGLE_PUBSUB_VERIFICATION_TOKEN;
 
   if (verificationToken == null) {
-    logger.error("Google webhook verification token is not configured");
+    logger.error("Google webhook 验证令牌未配置");
     return NextResponse.json(
-      { message: "Google webhook is not configured" },
+      { message: "Google webhook 未配置" },
       { status: 503 },
     );
   }
 
-  // Empty string intentionally disables query-param verification when
-  // requests are authenticated upstream, such as via the OIDC gateway.
+  // 当请求已在上游完成认证（例如通过 OIDC 网关）时，
+  // 空字符串会有意禁用 query 参数校验。
   if (verificationToken !== "" && token !== verificationToken) {
-    logger.error("Invalid verification token");
-    return NextResponse.json(
-      { message: "Invalid verification token" },
-      { status: 403 },
-    );
+    logger.error("验证令牌无效");
+    return NextResponse.json({ message: "验证令牌无效" }, { status: 403 });
   }
 
   const body = await request.json();
@@ -55,7 +52,7 @@ export const POST = withError("google/webhook", async (request) => {
     sentAt: body.message?.publishTime,
   });
 
-  logger.info("Received webhook - acknowledging immediately");
+  logger.info("已收到 webhook - 立即确认");
 
   const emailAccount = await getWebhookEmailAccount(
     { email: decodedData.emailAddress.toLowerCase() },
@@ -63,7 +60,7 @@ export const POST = withError("google/webhook", async (request) => {
   );
 
   logger = logger.with({ emailAccountId: emailAccount?.id });
-  logger.info("Gmail webhook account lookup completed", {
+  logger.info("Gmail webhook 账号查找完成", {
     emailAccountFound: !!emailAccount,
     lastSyncedHistoryId: emailAccount?.lastSyncedHistoryId,
   });

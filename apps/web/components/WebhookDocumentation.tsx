@@ -22,7 +22,7 @@ export function WebhookDocumentationDialog({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Webhook Payload</DialogTitle>
+          <DialogTitle>Webhook 载荷</DialogTitle>
         </DialogHeader>
         <WebhookPayloadDocumentation />
       </DialogContent>
@@ -47,7 +47,7 @@ export function WebhookPayloadDocumentation() {
     email: {
       threadId: "thread_abc123",
       messageId: "message_xyz789",
-      subject: "Important Contract Document",
+      subject: "重要合同文档",
       from: "client@company.com",
       cc: "team@company.com",
       bcc: "archive@company.com",
@@ -56,7 +56,7 @@ export function WebhookPayloadDocumentation() {
     executedRule: {
       id: "exec_rule_123",
       ruleId: "rule_456",
-      reason: "Email matched rule: Archive contracts",
+      reason: "邮件匹配规则：归档合同",
       automated: true,
       createdAt: "2024-01-15T10:30:00.000Z",
     },
@@ -67,13 +67,13 @@ export function WebhookPayloadDocumentation() {
   return (
     <div className="space-y-4">
       <MutedText>
-        When a rule with a webhook action is triggered, we'll send a POST
-        request to your URL with the following payload:
+        当带 Webhook 操作的规则被触发时，我们会向你的 URL 发送一个 POST
+        请求，载荷如下：
       </MutedText>
 
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h4 className="font-medium">Webhook Payload Structure</h4>
+          <h4 className="font-medium">Webhook 载荷结构</h4>
           <Button
             variant="ghost"
             size="sm"
@@ -93,46 +93,46 @@ export function WebhookPayloadDocumentation() {
 
         <div className="grid gap-4 md:grid-cols-2">
           <div>
-            <h5 className="font-medium mb-2">Email Fields</h5>
+            <h5 className="font-medium mb-2">邮件字段</h5>
             <div className="space-y-1">
               <MutedText>
-                <code>threadId</code> - Gmail/Outlook thread ID
+                <code>threadId</code> - Gmail/Outlook 会话 ID
               </MutedText>
               <MutedText>
-                <code>messageId</code> - Unique message ID
+                <code>messageId</code> - 唯一的邮件 ID
               </MutedText>
               <MutedText>
-                <code>subject</code> - Email subject line
+                <code>subject</code> - 邮件主题
               </MutedText>
               <MutedText>
-                <code>from</code> - Sender's email address
+                <code>from</code> - 发件人邮箱地址
               </MutedText>
               <MutedText>
-                <code>cc/bcc</code> - Optional CC/BCC recipients
+                <code>cc/bcc</code> - 可选的抄送/密送收件人
               </MutedText>
               <MutedText>
-                <code>headerMessageId</code> - Email Message-ID header
+                <code>headerMessageId</code> - 邮件的 Message-ID 头
               </MutedText>
             </div>
           </div>
 
           <div>
-            <h5 className="font-medium mb-2">Rule Execution Fields</h5>
+            <h5 className="font-medium mb-2">规则执行字段</h5>
             <div className="space-y-1">
               <MutedText>
-                <code>id</code> - Execution ID
+                <code>id</code> - 执行 ID
               </MutedText>
               <MutedText>
-                <code>ruleId</code> - Rule that was triggered
+                <code>ruleId</code> - 被触发的规则
               </MutedText>
               <MutedText>
-                <code>reason</code> - Why the rule was triggered
+                <code>reason</code> - 规则被触发的原因
               </MutedText>
               <MutedText>
-                <code>automated</code> - Whether rule ran automatically
+                <code>automated</code> - 规则是否为自动运行
               </MutedText>
               <MutedText>
-                <code>createdAt</code> - When the rule was executed (ISO 8601)
+                <code>createdAt</code> - 规则执行时间（ISO 8601）
               </MutedText>
             </div>
           </div>
@@ -140,9 +140,8 @@ export function WebhookPayloadDocumentation() {
 
         <div className="p-3 bg-blue-50 dark:bg-blue-950/30 rounded-md">
           <div className="text-sm text-blue-600 dark:text-blue-400">
-            <strong>Authentication:</strong> Each request includes an{" "}
-            <code>X-Webhook-Secret</code> header with your webhook secret for
-            verification.
+            <strong>身份验证：</strong>每个请求都会在{" "}
+            <code>X-Webhook-Secret</code> 头中携带你的 Webhook 密钥以供 验证。
           </div>
         </div>
       </div>
@@ -158,7 +157,7 @@ export function WebhookDocumentationLink() {
         size="xs"
         className="h-auto p-0 text-xs text-blue-600 hover:text-blue-800"
       >
-        View payload structure
+        查看载荷结构
       </Button>
     </WebhookDocumentationDialog>
   );

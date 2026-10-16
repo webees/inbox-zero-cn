@@ -1,13 +1,13 @@
 /**
- * Schedule utility tests
+ * 调度工具测试
  *
- * This test file is timezone-independent by:
- * 1. Setting TZ=UTC for all tests
- * 2. Using explicit UTC dates in test data
- * 3. Using createTestDate() helper for consistent date creation
+ * 本测试文件与时区无关，具体做法：
+ * 1. 为所有测试设置 TZ=UTC
+ * 2. 测试数据使用显式 UTC 日期
+ * 3. 使用 createTestDate() 辅助函数保证日期创建一致
  *
- * This ensures tests pass consistently across different CI environments
- * and local development machines regardless of timezone.
+ * 这确保测试在不同 CI 环境和本地开发机器上
+ * 无论时区如何都能稳定通过。
  */
 import { describe, expect, it, beforeAll, afterAll } from "vitest";
 import {
@@ -62,7 +62,7 @@ describe("createCanonicalTimeOfDay", () => {
     const result = createCanonicalTimeOfDay(9, 30);
 
     expect(result.getFullYear()).toBe(1970);
-    expect(result.getMonth()).toBe(0); // January
+    expect(result.getMonth()).toBe(0); // 一月
     expect(result.getDate()).toBe(1);
     expect(result.getHours()).toBe(9);
     expect(result.getMinutes()).toBe(30);
@@ -110,13 +110,13 @@ describe("dayOfWeekToBitmask", () => {
 
   it("should throw error for invalid day values", () => {
     expect(() => dayOfWeekToBitmask(-1)).toThrow(
-      "Invalid day of week: -1. Must be integer between 0 and 6.",
+      "无效的星期几：-1。必须是 0 到 6 之间的整数。",
     );
     expect(() => dayOfWeekToBitmask(7)).toThrow(
-      "Invalid day of week: 7. Must be integer between 0 and 6.",
+      "无效的星期几：7。必须是 0 到 6 之间的整数。",
     );
     expect(() => dayOfWeekToBitmask(1.5)).toThrow(
-      "Invalid day of week: 1.5. Must be integer between 0 and 6.",
+      "无效的星期几：1.5。必须是 0 到 6 之间的整数。",
     );
   });
 });
@@ -133,13 +133,13 @@ describe("bitmaskToDayOfWeek", () => {
   });
 
   it("should return first day when multiple days are set", () => {
-    // Sunday and Wednesday
+    // 星期日和星期三
     expect(bitmaskToDayOfWeek(DAYS.SUNDAY | DAYS.WEDNESDAY)).toBe(0);
 
-    // Monday and Friday
+    // 星期一和星期五
     expect(bitmaskToDayOfWeek(DAYS.MONDAY | DAYS.FRIDAY)).toBe(1);
 
-    // Tuesday, Thursday, Saturday
+    // 星期二、星期四、星期六
     expect(
       bitmaskToDayOfWeek(DAYS.TUESDAY | DAYS.THURSDAY | DAYS.SATURDAY),
     ).toBe(2);
@@ -162,15 +162,15 @@ describe("bitmaskToDaysOfWeek", () => {
   });
 
   it("should return all days when multiple days are set", () => {
-    // Sunday and Wednesday
+    // 星期日和星期三
     expect(bitmaskToDaysOfWeek(DAYS.SUNDAY | DAYS.WEDNESDAY)).toEqual([0, 3]);
 
-    // Monday, Wednesday, Friday
+    // 星期一、星期三、星期五
     expect(
       bitmaskToDaysOfWeek(DAYS.MONDAY | DAYS.WEDNESDAY | DAYS.FRIDAY),
     ).toEqual([1, 3, 5]);
 
-    // Weekend days
+    // 周末
     expect(bitmaskToDaysOfWeek(DAYS.SATURDAY | DAYS.SUNDAY)).toEqual([0, 6]);
   });
 
@@ -179,9 +179,9 @@ describe("bitmaskToDaysOfWeek", () => {
   });
 
   it("should return days in order from Sunday to Saturday", () => {
-    // Mixed order input should return ordered output
+    // 混合顺序的输入应返回有序输出
     const mixedDays = DAYS.FRIDAY | DAYS.TUESDAY | DAYS.SUNDAY | DAYS.THURSDAY;
-    expect(bitmaskToDaysOfWeek(mixedDays)).toEqual([0, 2, 4, 5]); // Sunday, Tuesday, Thursday, Friday
+    expect(bitmaskToDaysOfWeek(mixedDays)).toEqual([0, 2, 4, 5]); // 星期日、星期二、星期四、星期五
   });
 });
 
@@ -221,12 +221,12 @@ describe("calculateNextScheduleDate", () => {
         lastOccurrenceAt: fromDate,
       });
 
-      // Should be next day at midnight
+      // 应为次日午夜
       expectScheduleDate(result, { date: 16, hours: 0, minutes: 0 });
     });
 
     it("should calculate next occurrence for weekly schedule", () => {
-      const fromDate = new Date("2024-01-15T10:00:00Z"); // Monday
+      const fromDate = new Date("2024-01-15T10:00:00Z"); // 星期一
       const result = calculateNextScheduleDate({
         intervalDays: 7,
         daysOfWeek: null,
@@ -235,7 +235,7 @@ describe("calculateNextScheduleDate", () => {
         lastOccurrenceAt: fromDate,
       });
 
-      // Should be next week's same day at midnight
+      // 应为下周同一天的午夜
       expectScheduleDate(result, { date: 22, hours: 0, minutes: 0 });
     });
 
@@ -249,7 +249,7 @@ describe("calculateNextScheduleDate", () => {
         lastOccurrenceAt: fromDate,
       });
 
-      // Should be 3.5 days from start of interval
+      // 应为间隔开始后的 3.5 天
       expectScheduleDate(result, { date: 18, hours: 0, minutes: 0 });
     });
 
@@ -281,15 +281,15 @@ describe("calculateNextScheduleDate", () => {
         lastOccurrenceAt: fromDate,
       });
 
-      // Should be next day at 9:00 AM
+      // 应为次日上午 9:00
       expectScheduleDate(result, { date: 16, hours: 9, minutes: 0 });
     });
   });
 
   describe("weekly pattern with specific days", () => {
     it("should find next occurrence on same day if time hasn't passed", () => {
-      // Using UTC dates to ensure timezone independence
-      const fromDate = createTestDate("2024-01-15T08:00:00Z"); // Monday 8 AM UTC
+      // 使用 UTC 日期以确保时区无关
+      const fromDate = createTestDate("2024-01-15T08:00:00Z"); // UTC 星期一上午 8 点
       const timeOfDay = createCanonicalTimeOfDay(10, 0);
 
       const result = calculateNextScheduleDate({
@@ -300,14 +300,14 @@ describe("calculateNextScheduleDate", () => {
         lastOccurrenceAt: fromDate,
       });
 
-      // Should be same day at 10:00 AM
+      // 应为当天上午 10:00
       expectScheduleDate(result, { date: 15, hours: 10, minutes: 0 });
     });
 
     it("should find next occurrence on next week when time has passed today", () => {
-      // Using UTC dates to ensure timezone independence
-      const fromDate = createTestDate("2024-01-15T14:00:00Z"); // Monday 2 PM UTC
-      const timeOfDay = createCanonicalTimeOfDay(10, 0); // 10 AM
+      // 使用 UTC 日期以确保时区无关
+      const fromDate = createTestDate("2024-01-15T14:00:00Z"); // UTC 星期一下午 2 点
+      const timeOfDay = createCanonicalTimeOfDay(10, 0); // 上午 10 点
 
       const result = calculateNextScheduleDate({
         intervalDays: null,
@@ -317,13 +317,13 @@ describe("calculateNextScheduleDate", () => {
         lastOccurrenceAt: fromDate,
       });
 
-      // Current time is 2 PM UTC, but 10 AM scheduled time has already passed today, so schedule for next Monday at 10:00 AM
+      // 当前时间为 UTC 下午 2 点，但今天上午 10 点的调度时间已过，因此安排到下周一的上午 10:00
       expectScheduleDate(result, { date: 22, hours: 10, minutes: 0 });
     });
 
     it("should handle multiple days of week", () => {
-      // Using UTC dates to ensure timezone independence
-      const fromDate = createTestDate("2024-01-15T12:00:00Z"); // Monday
+      // 使用 UTC 日期以确保时区无关
+      const fromDate = createTestDate("2024-01-15T12:00:00Z"); // 星期一
       const timeOfDay = createCanonicalTimeOfDay(9, 0);
 
       const result = calculateNextScheduleDate({
@@ -334,13 +334,13 @@ describe("calculateNextScheduleDate", () => {
         lastOccurrenceAt: fromDate,
       });
 
-      // Should be Wednesday at 9:00 AM
+      // 应为星期三上午 9:00
       expectScheduleDate(result, { date: 17, hours: 9, minutes: 0 });
     });
 
     it("should default to midnight when no timeOfDay is set", () => {
-      // Using UTC dates to ensure timezone independence
-      const fromDate = createTestDate("2024-01-15T10:00:00Z"); // Monday 10 AM UTC
+      // 使用 UTC 日期以确保时区无关
+      const fromDate = createTestDate("2024-01-15T10:00:00Z"); // UTC 星期一上午 10 点
 
       const result = calculateNextScheduleDate({
         intervalDays: null,
@@ -350,13 +350,13 @@ describe("calculateNextScheduleDate", () => {
         lastOccurrenceAt: fromDate,
       });
 
-      // Should be Tuesday at midnight
+      // 应为星期二午夜
       expectScheduleDate(result, { date: 16, hours: 0, minutes: 0 });
     });
 
     it("should skip to next week when current day midnight has passed", () => {
-      // Using UTC dates to ensure timezone independence
-      const fromDate = createTestDate("2024-01-15T10:00:00Z"); // Monday 10 AM UTC
+      // 使用 UTC 日期以确保时区无关
+      const fromDate = createTestDate("2024-01-15T10:00:00Z"); // UTC 星期一上午 10 点
 
       const result = calculateNextScheduleDate({
         intervalDays: null,
@@ -366,13 +366,13 @@ describe("calculateNextScheduleDate", () => {
         lastOccurrenceAt: fromDate,
       });
 
-      // Should be next Monday at midnight (since it's 10 AM, midnight has already passed today)
+      // 应为下周一午夜（因为现在是上午 10 点，今天的午夜已经过去）
       expectScheduleDate(result, { date: 22, hours: 0, minutes: 0 });
     });
 
     it("should handle weekend schedule", () => {
-      // Using UTC dates to ensure timezone independence
-      const fromDate = createTestDate("2024-01-15T10:00:00Z"); // Monday
+      // 使用 UTC 日期以确保时区无关
+      const fromDate = createTestDate("2024-01-15T10:00:00Z"); // 星期一
       const timeOfDay = createCanonicalTimeOfDay(11, 0);
 
       const result = calculateNextScheduleDate({
@@ -383,14 +383,14 @@ describe("calculateNextScheduleDate", () => {
         lastOccurrenceAt: fromDate,
       });
 
-      // Should be Saturday at 11:00 AM
+      // 应为星期六上午 11:00
       expectScheduleDate(result, { date: 20, hours: 11, minutes: 0 });
     });
   });
 
   describe("edge cases", () => {
     it("should handle leap year dates", () => {
-      const fromDate = new Date("2024-02-28T10:00:00Z"); // 2024 is a leap year
+      const fromDate = new Date("2024-02-28T10:00:00Z"); // 2024 年是闰年
 
       const result = calculateNextScheduleDate({
         intervalDays: 1,
@@ -400,7 +400,7 @@ describe("calculateNextScheduleDate", () => {
         lastOccurrenceAt: fromDate,
       });
 
-      // Should be next day (Feb 29) at midnight
+      // 应为次日（2 月 29 日）午夜
       expectScheduleDate(result, {
         month: 1,
         date: 29,
@@ -420,7 +420,7 @@ describe("calculateNextScheduleDate", () => {
         lastOccurrenceAt: fromDate,
       });
 
-      // Should be next day (Jan 1) at midnight
+      // 应为次日（1 月 1 日）午夜
       expectScheduleDate(result, {
         year: 2025,
         month: 0,
@@ -431,7 +431,7 @@ describe("calculateNextScheduleDate", () => {
     });
 
     it("should handle daylight saving time transitions", () => {
-      // Test around DST transition (varies by timezone, but logic should be consistent)
+      // 测试夏令时切换前后（随时区而异，但逻辑应保持一致）
       const fromDate = new Date("2024-03-10T10:00:00Z");
       const timeOfDay = createCanonicalTimeOfDay(14, 30);
 
@@ -448,17 +448,17 @@ describe("calculateNextScheduleDate", () => {
     });
 
     it("should prioritize intervalDays over daysOfWeek when both are set", () => {
-      const fromDate = new Date("2024-01-15T10:00:00Z"); // Monday
+      const fromDate = new Date("2024-01-15T10:00:00Z"); // 星期一
 
       const result = calculateNextScheduleDate({
         intervalDays: 3,
-        daysOfWeek: DAYS.TUESDAY, // This should be ignored
+        daysOfWeek: DAYS.TUESDAY, // 这应被忽略
         timeOfDay: null,
         occurrences: 1,
         lastOccurrenceAt: fromDate,
       });
 
-      // Should be 3 days later at midnight
+      // 应为 3 天后午夜
       expectScheduleDate(result, { date: 18, hours: 0, minutes: 0 });
     });
   });
@@ -476,12 +476,12 @@ describe("calculateNextScheduleDate", () => {
         lastOccurrenceAt: fromDate,
       });
 
-      // Should be same day at 9:00 AM
+      // 应为当天上午 9:00
       expectScheduleDate(result, { date: 15, hours: 9, minutes: 0 });
     });
 
     it("should handle weekly digest on Monday mornings", () => {
-      const fromDate = new Date("2024-01-13T15:00:00Z"); // Saturday
+      const fromDate = new Date("2024-01-13T15:00:00Z"); // 星期六
       const timeOfDay = createCanonicalTimeOfDay(8, 0);
 
       const result = calculateNextScheduleDate({
@@ -492,7 +492,7 @@ describe("calculateNextScheduleDate", () => {
         lastOccurrenceAt: fromDate,
       });
 
-      // Should be Monday at 8:00 AM
+      // 应为星期一上午 8:00
       expectScheduleDate(result, { date: 15, hours: 8, minutes: 0 });
     });
 
@@ -507,24 +507,24 @@ describe("calculateNextScheduleDate", () => {
         lastOccurrenceAt: fromDate,
       });
 
-      // Should be 7 days later at midnight
+      // 应为 7 天后午夜
       expectScheduleDate(result, { date: 22, hours: 0, minutes: 0 });
     });
 
     it("should handle monthly schedule when time has passed today", () => {
-      // Using UTC dates to ensure timezone independence
-      const fromDate = createTestDate("2024-01-10T16:00:00Z"); // January 10th 4 PM UTC
-      const timeOfDay = createCanonicalTimeOfDay(9, 0); // 9 AM
+      // 使用 UTC 日期以确保时区无关
+      const fromDate = createTestDate("2024-01-10T16:00:00Z"); // UTC 1 月 10 日下午 4 点
+      const timeOfDay = createCanonicalTimeOfDay(9, 0); // 上午 9 点
 
       const result = calculateNextScheduleDate({
-        intervalDays: 30, // Approximately monthly
+        intervalDays: 30, // 约每月一次
         daysOfWeek: null,
         timeOfDay,
         occurrences: 1,
         lastOccurrenceAt: fromDate,
       });
 
-      // Current time is 4 PM UTC, but 9 AM scheduled time has already passed today, so schedule for next interval (30 days later)
+      // 当前时间为 UTC 下午 4 点，但今天上午 9 点的调度时间已过，因此安排到下一个间隔（30 天后）
       expectScheduleDate(result, {
         month: 1,
         date: 9,
@@ -534,18 +534,18 @@ describe("calculateNextScheduleDate", () => {
     });
 
     it("should handle monthly schedule when current day is past the 15th", () => {
-      const fromDate = new Date("2024-01-20T10:00:00Z"); // January 20th
+      const fromDate = new Date("2024-01-20T10:00:00Z"); // 1 月 20 日
       const timeOfDay = createCanonicalTimeOfDay(15, 30);
 
       const result = calculateNextScheduleDate({
-        intervalDays: 30, // Approximately monthly
+        intervalDays: 30, // 约每月一次
         daysOfWeek: null,
         timeOfDay,
         occurrences: 1,
         lastOccurrenceAt: fromDate,
       });
 
-      // Current time is 10 AM UTC, but 3:30 PM scheduled time hasn't passed yet, so schedule for same day at 3:30 PM
+      // 当前时间为 UTC 上午 10 点，但下午 3:30 的调度时间尚未到，因此安排在当天下午 3:30
       expectScheduleDate(result, {
         month: 0,
         date: 20,
@@ -555,18 +555,18 @@ describe("calculateNextScheduleDate", () => {
     });
 
     it("should handle monthly schedule with time that has passed today", () => {
-      const fromDate = new Date("2024-01-15T16:00:00Z"); // January 15th 4 PM
-      const timeOfDay = createCanonicalTimeOfDay(10, 0); // 10 AM
+      const fromDate = new Date("2024-01-15T16:00:00Z"); // 1 月 15 日下午 4 点
+      const timeOfDay = createCanonicalTimeOfDay(10, 0); // 上午 10 点
 
       const result = calculateNextScheduleDate({
-        intervalDays: 30, // Approximately monthly
+        intervalDays: 30, // 约每月一次
         daysOfWeek: null,
         timeOfDay,
         occurrences: 1,
         lastOccurrenceAt: fromDate,
       });
 
-      // Should be February 14th at 10:00 AM (30 days later, since 10 AM has passed today)
+      // 应为 2 月 14 日上午 10:00（30 天后，因为今天的上午 10 点已过）
       expectScheduleDate(result, {
         month: 1,
         date: 14,
@@ -576,17 +576,17 @@ describe("calculateNextScheduleDate", () => {
     });
 
     it("should handle monthly schedule across year boundary", () => {
-      const fromDate = new Date("2024-12-15T10:00:00Z"); // December 15th
+      const fromDate = new Date("2024-12-15T10:00:00Z"); // 12 月 15 日
 
       const result = calculateNextScheduleDate({
-        intervalDays: 30, // Approximately monthly
+        intervalDays: 30, // 约每月一次
         daysOfWeek: null,
         timeOfDay: null,
         occurrences: 1,
         lastOccurrenceAt: fromDate,
       });
 
-      // Should be January 14th at midnight (30 days later, crosses year boundary)
+      // 应为 1 月 14 日午夜（30 天后，跨年）
       expectScheduleDate(result, {
         year: 2025,
         month: 0,
@@ -597,17 +597,17 @@ describe("calculateNextScheduleDate", () => {
     });
 
     it("should handle monthly schedule with leap year", () => {
-      const fromDate = new Date("2024-01-15T10:00:00Z"); // January 15th, 2024 is leap year
+      const fromDate = new Date("2024-01-15T10:00:00Z"); // 1 月 15 日，2024 年是闰年
 
       const result = calculateNextScheduleDate({
-        intervalDays: 30, // Approximately monthly
+        intervalDays: 30, // 约每月一次
         daysOfWeek: null,
         timeOfDay: null,
         occurrences: 1,
         lastOccurrenceAt: fromDate,
       });
 
-      // Should be February 14th at midnight (30 days later, accounting for leap year)
+      // 应为 2 月 14 日午夜（30 天后，考虑闰年）
       expectScheduleDate(result, {
         month: 1,
         date: 14,
@@ -617,17 +617,17 @@ describe("calculateNextScheduleDate", () => {
     });
 
     it("should handle monthly schedule with multiple occurrences", () => {
-      const fromDate = new Date("2024-01-15T10:00:00Z"); // January 15th
+      const fromDate = new Date("2024-01-15T10:00:00Z"); // 1 月 15 日
 
       const result = calculateNextScheduleDate({
-        intervalDays: 30, // Approximately monthly
+        intervalDays: 30, // 约每月一次
         daysOfWeek: null,
         timeOfDay: null,
-        occurrences: 2, // Two occurrences within 30 days,
+        occurrences: 2, // 30 天内的两次发生，
         lastOccurrenceAt: fromDate,
       });
 
-      // Should be January 30th at midnight (15 days later, first occurrence)
+      // 应为 1 月 30 日午夜（15 天后，第一次发生）
       expectScheduleDate(result, {
         month: 0,
         date: 30,
@@ -637,17 +637,17 @@ describe("calculateNextScheduleDate", () => {
     });
 
     it("should handle very long intervals efficiently", () => {
-      const fromDate = new Date("2024-01-15T10:00:00Z"); // January 15th
+      const fromDate = new Date("2024-01-15T10:00:00Z"); // 1 月 15 日
 
       const result = calculateNextScheduleDate({
-        intervalDays: 365, // Yearly
+        intervalDays: 365, // 每年
         daysOfWeek: null,
         timeOfDay: null,
         occurrences: 1,
         lastOccurrenceAt: fromDate,
       });
 
-      // Should be next year at midnight (365 days later, accounting for leap year)
+      // 应为明年午夜（365 天后，考虑闰年）
       expectScheduleDate(result, {
         year: 2025,
         month: 0,
@@ -658,17 +658,17 @@ describe("calculateNextScheduleDate", () => {
     });
 
     it("should handle very long intervals with many occurrences", () => {
-      const fromDate = new Date("2024-01-15T10:00:00Z"); // January 15th
+      const fromDate = new Date("2024-01-15T10:00:00Z"); // 1 月 15 日
 
       const result = calculateNextScheduleDate({
-        intervalDays: 365, // Yearly
+        intervalDays: 365, // 每年
         daysOfWeek: null,
         timeOfDay: null,
-        occurrences: 365, // Daily occurrences within a year,
+        occurrences: 365, // 一年内的每日发生，
         lastOccurrenceAt: fromDate,
       });
 
-      // Should be next day at midnight (first occurrence within the year)
+      // 应为次日午夜（一年内的第一次发生）
       expectScheduleDate(result, {
         month: 0,
         date: 16,
@@ -678,17 +678,17 @@ describe("calculateNextScheduleDate", () => {
     });
 
     it("should handle extreme intervals efficiently", () => {
-      const fromDate = new Date("2024-01-15T10:00:00Z"); // January 15th
+      const fromDate = new Date("2024-01-15T10:00:00Z"); // 1 月 15 日
 
       const result = calculateNextScheduleDate({
-        intervalDays: 1000, // Very long interval
+        intervalDays: 1000, // 很长的间隔
         daysOfWeek: null,
         timeOfDay: null,
-        occurrences: 1000, // Many occurrences,
+        occurrences: 1000, // 多次发生，
         lastOccurrenceAt: fromDate,
       });
 
-      // Should be next day at midnight (first occurrence within the interval)
+      // 应为次日午夜（间隔内的第一次发生）
       expectScheduleDate(result, {
         month: 0,
         date: 16,
@@ -702,21 +702,21 @@ describe("calculateNextScheduleDate", () => {
 describe("calculateNextScheduleDate - Bug Fix Tests", () => {
   describe("time drift bug fix", () => {
     it("should calculate next occurrence from lastOccurrenceAt, not current time", () => {
-      // This test verifies the fix for the 30-minute digest issue
-      // where schedules were drifting forward in time with each processing
+      // 本测试验证 30 分钟邮件摘要问题的修复
+      // 该问题中每次处理都会让调度时间向前漂移
 
       const schedule = {
-        intervalDays: 1, // Daily
+        intervalDays: 1, // 每天
         occurrences: 1,
         daysOfWeek: null,
-        timeOfDay: createCanonicalTimeOfDay(0, 0), // Midnight
-        lastOccurrenceAt: createTestDate("2024-01-15T00:00:00Z"), // Last sent at midnight
+        timeOfDay: createCanonicalTimeOfDay(0, 0), // 午夜
+        lastOccurrenceAt: createTestDate("2024-01-15T00:00:00Z"), // 上次在午夜发送
       };
 
-      // With the fix: should calculate from lastOccurrenceAt (midnight)
+      // 修复后：应从 lastOccurrenceAt（午夜）计算
       const result = calculateNextScheduleDate(schedule);
 
-      // Should be next day at midnight (2024-01-16T00:00:00Z)
+      // 应为次日午夜（2024-01-16T00:00:00Z）
       expectScheduleDate(result, {
         date: 16,
         hours: 0,
@@ -726,25 +726,25 @@ describe("calculateNextScheduleDate - Bug Fix Tests", () => {
     });
 
     it("should handle missing lastOccurrenceAt by using current time", () => {
-      // Test fallback behavior when lastOccurrenceAt is null
+      // 测试 lastOccurrenceAt 为 null 时的回退行为
       const schedule = {
         intervalDays: 1,
         occurrences: 1,
         daysOfWeek: null,
-        timeOfDay: createCanonicalTimeOfDay(9, 0), // 9 AM
-        lastOccurrenceAt: null, // No previous occurrence
+        timeOfDay: createCanonicalTimeOfDay(9, 0), // 上午 9 点
+        lastOccurrenceAt: null, // 没有上一次发生
       };
 
       const result = calculateNextScheduleDate(schedule);
 
-      // Should calculate from current time (fallback behavior)
+      // 应从当前时间计算（回退行为）
       expect(result).not.toBeNull();
-      // The exact time will depend on when the test runs, but should be in the future
+      // 确切时间取决于测试运行时刻，但应在未来
       expect(result!.getTime()).toBeGreaterThan(Date.now());
     });
 
     it("should maintain consistent daily schedule timing", () => {
-      // Test that multiple calls with the same lastOccurrenceAt produce the same result
+      // 测试使用相同 lastOccurrenceAt 的多次调用产生相同结果
       const schedule = {
         intervalDays: 1,
         occurrences: 1,
@@ -756,30 +756,30 @@ describe("calculateNextScheduleDate - Bug Fix Tests", () => {
       const result1 = calculateNextScheduleDate(schedule);
       const result2 = calculateNextScheduleDate(schedule);
 
-      // Both calls should produce the same result
+      // 两次调用应产生相同结果
       expect(result1).toEqual(result2);
       expectScheduleDate(result1, { date: 16, hours: 14, minutes: 30 });
     });
 
     it("should prevent schedule drift in digest processing scenario", () => {
-      // Simulate the exact scenario from the bug report
-      const originalScheduledTime = createTestDate("2024-01-15T00:00:00Z"); // Midnight
+      // 模拟 bug 报告中的确切场景
+      const originalScheduledTime = createTestDate("2024-01-15T00:00:00Z"); // 午夜
 
       const schedule = {
         intervalDays: 1,
         occurrences: 1,
         daysOfWeek: null,
-        timeOfDay: createCanonicalTimeOfDay(0, 0), // Midnight
-        lastOccurrenceAt: originalScheduledTime, // Use the original scheduled time
+        timeOfDay: createCanonicalTimeOfDay(0, 0), // 午夜
+        lastOccurrenceAt: originalScheduledTime, // 使用原始调度时间
       };
 
       const result = calculateNextScheduleDate(schedule);
 
-      // Should be next day at midnight, NOT at 12:36 PM
+      // 应为次日午夜，而不是下午 12:36
       expectScheduleDate(result, { date: 16, hours: 0, minutes: 0 });
 
-      // This prevents the 30-minute cron from finding the account "due" again
-      // because the next occurrence is at midnight, not at 12:36 PM
+      // 这可防止 30 分钟的 cron 再次将该账号判定为“到期”
+      // 因为下一次发生在午夜，而不是下午 12:36
     });
   });
 });

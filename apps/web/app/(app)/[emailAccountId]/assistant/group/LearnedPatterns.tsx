@@ -22,7 +22,7 @@ export function LearnedPatternsDialog({
   ruleId,
   groupId,
   disabled,
-  label = "View learned patterns",
+  label = "查看学习到的模式",
 }: {
   ruleId: string;
   groupId: string | null;
@@ -43,7 +43,7 @@ export function LearnedPatternsDialog({
           setLearnedPatternGroupId(data.data.groupId);
         } else {
           toastError({
-            description: "There was an error setting up learned patterns.",
+            description: "设置学习到的模式时出错。",
           });
         }
       },
@@ -76,11 +76,11 @@ export function LearnedPatternsDialog({
 
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Learned patterns</DialogTitle>
+          <DialogTitle>学习到的模式</DialogTitle>
           <DialogDescription>
-            Learned patterns are patterns that the AI has learned from your
-            email history. When a learned pattern is matched other rules
-            conditions are skipped and this rule is automatically selected.
+            学习到的模式是 AI
+            从你的邮件历史中学到的模式。当某个学习到的模式匹配时，
+            其他规则的条件会被跳过，并自动选中此规则。
           </DialogDescription>
         </DialogHeader>
 

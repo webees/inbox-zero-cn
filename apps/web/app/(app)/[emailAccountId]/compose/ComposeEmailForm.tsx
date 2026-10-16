@@ -64,6 +64,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { env } from "@/env";
 import { getAccountScopedKey } from "@/utils/swr";
 import { useDisplayedEmail } from "@/hooks/useDisplayedEmail";
 import { useEmailAccountFull } from "@/hooks/useEmailAccountFull";
@@ -168,10 +169,10 @@ export type ReplyingToEmail = {
   messageId?: string;
   forwardedMessageId?: string;
   /**
-   * The files that travel with a forward. They stay on the provider until the
-   * send, so the composer shows them without ever holding their bytes.
+   * 随转发一起发送的文件。它们会保留在服务商处直到发送，
+   * 因此编辑器只是展示它们，并不会保存其内容。
    */
-  /** An opened mailbox draft that already holds files. */
+  /** 一个已打开的、已持有文件的邮箱草稿。 */
   draftHasAttachments?: boolean;
   forwardedAttachments?: Pick<
     EmailAttachmentMetadata,
@@ -181,8 +182,8 @@ export type ReplyingToEmail = {
   subject: string;
   to: string;
   /**
-   * Addresses to reply from, best first. The first that is one of the user's
-   * send-as addresses is used, so mail sent to an alias is answered from it.
+   * 回复时使用的发件地址，按优先级排列。第一个属于用户 send-as 地址的会被使用，
+   * 因此发往别名的邮件会从该别名回复。
    */
   fromHint?: string;
   cc?: string;
@@ -239,15 +240,13 @@ function ComposeEmailFormWithEngine(props: ComposeEmailFormProps) {
   );
   const selectedAccountProvider =
     selectedFromAccount?.account.provider ?? provider;
-  // The already-loaded account list knows the address, so compose still opens
-  // when the lookup fails offline.
+  // 已加载的账号列表知道该地址，因此离线查找失败时编辑窗口仍能打开。
   const sendingAddress =
     emailAccount?.email ||
     selectedFromAccount?.email ||
     (selectedAccountOverride ? undefined : userEmail);
-  // A failed lookup still lets the user compose, just without a signature.
-  // Waiting only while there is no error keeps a reconnect refetch from
-  // swapping the open form back to a spinner.
+  // 查找失败时用户仍可撰写，只是没有签名。
+  // 仅在无错误时等待，可避免重连时的重新请求把已打开的窗口变回加载中状态。
   const {
     data: composeSignature,
     error: signatureError,
@@ -255,7 +254,7 @@ function ComposeEmailFormWithEngine(props: ComposeEmailFormProps) {
   } = useSWR<GetSignatureResponse>(
     getAccountScopedKey("/api/user/signature", selectedEmailAccountId),
   );
-  // A failed lookup sends from the default address, as before.
+  // 查找失败时仍像以前一样从默认地址发送。
   const {
     data: sendAs,
     error: sendAsError,
@@ -409,7 +408,7 @@ function ComposeEmailFormContent({
   const draftQueueKey = `${selectedEmailAccountId}:${requestId}`;
 
   const [initialComposer] = useState(() => {
-    // Copied because restoring marks the inline images the editor shows.
+    // 进行复制，因为恢复操作会标记编辑器所展示的内嵌图片。
     const restoredAttachments = initialAttachments.map((attachment) => ({
       ...attachment,
     }));
@@ -419,8 +418,8 @@ function ComposeEmailFormContent({
         draft.editableHtml,
         "text/html",
       );
-      // HTML still in its original form is sent exactly as loaded, so its
-      // cid: images must not be swapped for local previews.
+      // 保持原始形式的 HTML 会按加载时的样子原样发送，因此其 cid: 图片
+      // 不能替换为本地预览。
       const images =
         draft.mode === "edited"
           ? parsedDraft.querySelectorAll(
@@ -435,7 +434,7 @@ function ComposeEmailFormContent({
           (item) => item.contentId === contentId,
         );
         if (attachment && contentId) {
-          // Without a preview the image still goes out as its attachment.
+          // 没有预览时，图片仍会作为附件发送出去。
           image.setAttribute(
             "src",
             attachment.previewUrl ?? `cid:${contentId}`,
@@ -464,9 +463,8 @@ function ComposeEmailFormContent({
         getSendAsSignatureHtml(initialSendAs, accountSignatureHtml) ??
         undefined,
     });
-    // The footer travels with the signature so it lands right after it and is
-    // removed with it, without introducing another block in the composer. A
-    // reopened draft's signature may already carry a footer; it is replaced.
+    // 页脚随签名一起移动，紧跟其后并在删除时一同删除，不会在编辑器中引入
+    // 另一个区块。重新打开的草稿的签名可能已带有页脚；它会被替换。
     const draft = {
       ...preparedDraft,
       editableHtml: sentWithFooterHtml
@@ -492,14 +490,13 @@ function ComposeEmailFormContent({
     useState(false);
   const [isReconnectingContacts, setIsReconnectingContacts] = useState(false);
   const [editReply, setEditReply] = useState(false);
-  const [ccBccRequested, setCcBccRequested] = useState(false);
-  // Forwards start without a recipient, so focus To. Replies already have one.
+  // 转发一开始没有收件人，因此聚焦到收件人。回复则已有收件人。
   const focusRecipientField = draftMode === "forward" || !replyingToEmail;
   const [attachments, setAttachments] = useState<ComposeAttachment[]>(
     initialComposer.attachments,
   );
-  // Set once a reply or forward has put files on a mailbox draft. A forward's
-  // draft then holds the forwarded files and lists them with the others.
+  // 当回复或转发把文件放到邮箱草稿后设置。此时转发的草稿会保存被转发的
+  // 文件，并将其与其他文件一起列出。
   const [savedToMailbox, setSavedToMailbox] = useState(
     Boolean(providerDraftId.current),
   );
@@ -529,8 +526,8 @@ function ComposeEmailFormContent({
   } = useForm<ComposeFormValues>({
     defaultValues: storedDraft?.content?.values
       ? {
-          // Drafts saved before send-as support carry no sender; leaving it
-          // unset would show the default while the mailbox draft keeps its own.
+          // 在支持 send-as 之前保存的草稿不带发件人；若留空会显示默认值，
+          // 而邮箱草稿仍保留自己的发件人。
           ...storedDraft.content.values,
           from: storedDraft.content.values.from ?? initialFrom,
         }
@@ -640,8 +637,8 @@ function ComposeEmailFormContent({
       },
     });
 
-  // Every compose with files needs a mailbox draft to hold them. New messages
-  // also get one from autosave; replies and forwards get one on first attach.
+  // 每个带文件的编写都需要一个邮箱草稿来保存它们。新邮件也会通过自动保存
+  // 获得一个；回复和转发在首次附加文件时获得。
   const ensureProviderDraft = async () => {
     if (providerDraftId.current) return providerDraftId.current;
     if (providerDraftMessageId) {
@@ -650,14 +647,11 @@ function ComposeEmailFormContent({
         messageId: providerDraftMessageId,
       });
       if (!draftId)
-        throw new Error(
-          "Could not find this draft in your mailbox. Reopen it and try again.",
-        );
+        throw new Error("无法在你的邮箱中找到此草稿。请重新打开后重试。");
       providerDraftId.current = draftId;
       return draftId;
     }
-    if (!localDraftIdentity)
-      throw new Error("Local draft storage is required to save attachments.");
+    if (!localDraftIdentity) throw new Error("保存附件需要本地草稿存储。");
     const deletedDraftId = storedDraft?.content?.providerDraftId;
     if (initialDraftMissing && deletedDraftId)
       await forgetReplyDraftProvider(localDraftIdentity, deletedDraftId);
@@ -670,7 +664,7 @@ function ComposeEmailFormContent({
     let createdMessageId: string | null = null;
     if (!draftId) {
       const content = getProviderDraftContent();
-      if (!content) throw new Error("This draft is not ready to save yet.");
+      if (!content) throw new Error("此草稿尚未准备好保存。");
       const created = await saveComposeDraftAction(selectedEmailAccountId, {
         content: {
           ...content,
@@ -679,19 +673,19 @@ function ComposeEmailFormContent({
       });
       if (!created?.data)
         throw new Error(
-          "Mailbox draft creation could not be confirmed. Check Drafts in Gmail or Outlook; your message is still saved on this device.",
+          "无法确认邮箱草稿已创建。请查看 Gmail 或 Outlook 的草稿箱；你的邮件仍保存在本设备上。",
         );
       draftId = created.data.draftId;
       createdMessageId = created.data.messageId;
     }
-    // Keep the reference durable if the composer closes during mailbox sync.
+    // 如果编辑器在邮箱同步期间关闭，也保持此引用持久化。
     providerDraftId.current = draftId;
     await updateReplyDraftProviderState(localDraftIdentity, requestId, draftId);
     if (createdMessageId) await followDraftMessage(createdMessageId);
     return draftId;
   };
 
-  // Replies and forwards sync their text even before any files are attached.
+  // 回复和转发即使在附加任何文件之前也会同步其文本。
   const providerAutosave = useProviderDraftAutosave({
     enabled: Boolean(providerDraftMessageId) || Boolean(localDraftIdentity),
     sessionKey: providerDraftMessageId ? undefined : draftQueueKey,
@@ -720,7 +714,7 @@ function ComposeEmailFormContent({
         if (!result?.data) throw new Error(getDraftSyncErrorMessage(result));
         if (result.data.status === "missing")
           throw new DraftAutosaveHaltedError(
-            "This draft was sent, deleted, or changed elsewhere, so edits here are no longer saved to your mailbox.",
+            "此草稿已在别处发送、删除或更改，因此此处的编辑不再保存到你的邮箱。",
           );
         providerDraftId.current = result.data.draftId;
         captureLocalDraft();
@@ -754,9 +748,8 @@ function ComposeEmailFormContent({
     [captureDraft],
   );
 
-  // After each change the mailbox's list is the truth for files on the draft.
-  // This keeps running after the composer closes, so the local draft still
-  // records uploads that finish later.
+  // 每次变更后，邮箱中的列表才是草稿上文件的准确来源。
+  // 编辑器关闭后此过程仍会继续，因此本地草稿仍能记录稍后完成的上传。
   const reconcileDraftAttachments = (
     listed: DraftAttachment[],
     current = attachmentsRef.current,
@@ -776,7 +769,7 @@ function ComposeEmailFormContent({
       });
       await followDraftMessage(result.messageId);
       if (isAttached()) return result;
-      // Removed while uploading: take it back off the draft.
+      // 上传期间被移除：把它从草稿中一并移除。
       const removed = await removeDraftAttachment({
         emailAccountId: selectedEmailAccountId,
         draftId,
@@ -804,7 +797,7 @@ function ComposeEmailFormContent({
         const description =
           error instanceof Error
             ? error.message
-            : `Could not attach ${attachment.filename}.`;
+            : `无法附加 ${attachment.filename}。`;
         toastError({ description });
         updateAttachments(
           attachmentsRef.current.map((item) =>
@@ -826,7 +819,7 @@ function ComposeEmailFormContent({
     forgetAttachedFiles(selectedEmailAccountId, [attachment.id]);
     const draftId = providerDraftId.current;
     const { draftAttachmentId } = attachment;
-    // Uploads still running take the file back off the draft when they end.
+    // 仍在进行的上传在结束时会把文件从草稿中移除。
     if (attachment.status !== "uploaded" || !draftAttachmentId || !draftId)
       return;
     enqueueDraftOperation(draftQueueKey, () =>
@@ -845,7 +838,7 @@ function ComposeEmailFormContent({
           description:
             error instanceof Error
               ? error.message
-              : `Could not remove ${attachment.filename}.`,
+              : `无法移除 ${attachment.filename}。`,
         });
         updateAttachments([
           ...attachmentsRef.current,
@@ -903,7 +896,7 @@ function ComposeEmailFormContent({
       for (const { file } of created) {
         if (!(await isInlineImageContent(file))) {
           toastError({
-            description: "Inline image content does not match its file type.",
+            description: "内嵌图片的内容与文件类型不匹配。",
           });
           return;
         }
@@ -926,7 +919,7 @@ function ComposeEmailFormContent({
     });
     if (accepted.length !== created.length) {
       toastError({
-        description: "One of the inline images could not be inserted.",
+        description: "有一张内嵌图片无法插入。",
       });
     }
     if (!accepted.length) return;
@@ -942,7 +935,7 @@ function ComposeEmailFormContent({
   };
 
   const removeAttachment = (attachment: ComposeAttachment) => {
-    // Detached first, so the editor change this causes finds nothing to remove.
+    // 先分离，这样由此引发的编辑器变更就找不到要移除的内容。
     detachAttachment(attachment);
     if (attachment.contentId && attachment.managed) {
       editorRef.current?.removeInlineImage(attachment.contentId);
@@ -971,8 +964,8 @@ function ComposeEmailFormContent({
     [selectedEmailAccountId],
   );
 
-  // An inline reply is already on screen, the side panel only reads the
-  // current account's mail, and a send without a stored copy has nothing to show.
+  // 内嵌回复已显示在屏幕上，侧边栏只读取当前账号的邮件，
+  // 而未保存副本的发送没有可展示的内容。
   const getViewSentEmail = useCallback(
     (messageId: string, threadId: string) =>
       isInlineReply || selectedEmailAccountId !== emailAccountId || !messageId
@@ -995,19 +988,19 @@ function ComposeEmailFormContent({
         pendingRecipients: pendingRecipientsRef.current,
       });
       if (!recipients.to) {
-        toastError({ description: "Enter a valid recipient email address." });
+        toastError({ description: "请输入有效的收件人邮箱地址。" });
         return;
       }
 
-      // Files go to the mailbox draft as they are attached, so a send waits
-      // for them and never carries their bytes itself.
+      // 文件在附加时会进入邮箱草稿，因此发送会等待它们，
+      // 而不会自行携带其内容。
       await waitForDraftOperations(draftQueueKey);
       const failedAttachment = attachmentsRef.current.find(
         (attachment) => attachment.status !== "uploaded",
       );
       if (failedAttachment) {
         toastError({
-          description: `${failedAttachment.filename} isn't attached. Remove it or attach it again before sending.`,
+          description: `${failedAttachment.filename} 未附加。请在发送前移除它或重新附加。`,
         });
         return;
       }
@@ -1053,23 +1046,23 @@ function ComposeEmailFormContent({
       await stopProviderAutosave();
       let deliveryAccepted = false;
       try {
-        // Autosave can replace a draft's message ID; its provider draft ID survives.
+        // 自动保存可能替换草稿的 message ID；其服务商草稿 ID 会保留。
         enrichedData.providerDraftId = await resolveSendDraftId(
           providerDraftId.current,
           localDraftIdentity,
         );
-        // The mailbox draft is what carries the files to the recipient.
+        // 邮箱草稿负责把文件送达收件人。
         if (attachmentsRef.current.length && !enrichedData.providerDraftId) {
           toastError({
             description:
-              "Could not find this draft in your mailbox to send its attachments. Reopen it and try again.",
+              "无法在你的邮箱中找到此草稿以发送其附件。请重新打开后重试。",
           });
           return;
         }
         if (isInlineReply) {
           if (deliveryPath.current === "outbox" && (sendAt || remindAt)) {
             setSubmissionError(
-              "This reply was already submitted to the outbox. Check its delivery status before scheduling a new reply.",
+              "此回复已提交到发件箱。请先查看其发送状态，再安排新的回复。",
             );
             return;
           }
@@ -1104,8 +1097,8 @@ function ComposeEmailFormContent({
             setSubmissionError(
               getActionErrorMessage(result ?? {}, {
                 prefix: scheduledThreadId
-                  ? "Could not schedule this reply"
-                  : "Could not schedule this email",
+                  ? "无法安排发送此回复"
+                  : "无法安排发送此邮件",
               }),
             );
             return;
@@ -1116,22 +1109,20 @@ function ComposeEmailFormContent({
             await clearLocalDraft();
           } catch {
             toastError({
-              description:
-                "Reply scheduled, but its local draft copy could not be cleared.",
+              description: "回复已安排发送，但无法清除其本地草稿副本。",
             });
           }
           if (markDoneAfterSend) onMarkDone?.();
-          // The Scheduled view stops polling once nothing is pending, so it
-          // needs the new send pushed to it rather than waiting for a refresh.
-          // The email is already scheduled by now, so a refresh that fails must
-          // not reach the catch below and report the send itself as failed.
+          // 没有待处理项时，已安排视图会停止轮询，因此需要主动推送这次新的
+          // 发送，而不是等待刷新。此时邮件已经安排完成，所以刷新失败
+          // 不能进入下面的 catch 并把发送本身报告为失败。
           await refreshScheduledEmails(
             mutate,
             selectedEmailAccountId,
             scheduledThreadId,
           );
           if (!scheduledThreadId) {
-            toastSuccess({ description: "Email scheduled." });
+            toastSuccess({ description: "邮件已安排发送。" });
           }
           onClose?.();
           refetch?.();
@@ -1147,12 +1138,9 @@ function ComposeEmailFormContent({
           requestId;
         const online = navigator.onLine;
         if (!client) {
-          setSubmissionError(
-            "Mail is still starting. Try sending again in a moment.",
-          );
+          setSubmissionError("邮件功能仍在启动中。请稍后再试发送。");
           toastError({
-            description:
-              "Mail is still starting. Try sending again in a moment.",
+            description: "邮件功能仍在启动中。请稍后再试发送。",
           });
           return;
         }
@@ -1191,7 +1179,7 @@ function ComposeEmailFormContent({
           const description =
             error instanceof Error
               ? error.message
-              : "Could not confirm this reply was queued. Check the thread delivery status before retrying.";
+              : "无法确认此回复已进入队列。请先查看会话的发送状态再重试。";
           showDraftAgain();
           setSubmissionError(description);
           toastError({ description });
@@ -1204,8 +1192,8 @@ function ComposeEmailFormContent({
           } catch {
             toastError({
               description: isInlineReply
-                ? "Reply queued, but its local draft copy could not be cleared."
-                : "Email queued, but its local draft copy could not be cleared.",
+                ? "回复已进入队列，但无法清除其本地草稿副本。"
+                : "邮件已进入队列，但无法清除其本地草稿副本。",
             });
           }
         };
@@ -1255,8 +1243,7 @@ function ComposeEmailFormContent({
                 settled.ownsNotification
               ) {
                 toastError({
-                  description:
-                    "This reply may have been sent. Check Sent before retrying.",
+                  description: "此回复可能已发送。请先查看已发送文件夹再重试。",
                 });
               }
             })
@@ -1275,9 +1262,9 @@ function ComposeEmailFormContent({
               outcome.threadId,
             );
             toastSuccess({
-              description: "Email sent!",
+              description: "邮件已发送！",
               action: viewSentEmail
-                ? { label: "View", onClick: viewSentEmail }
+                ? { label: "查看", onClick: viewSentEmail }
                 : undefined,
             });
           }
@@ -1294,8 +1281,7 @@ function ComposeEmailFormContent({
         } else if (outcome.status === "uncertain") {
           if (outcome.ownsNotification) {
             toastError({
-              description:
-                "This reply may have been sent. Check Sent before retrying.",
+              description: "此回复可能已发送。请先查看已发送文件夹再重试。",
             });
           }
           onClose?.();
@@ -1304,10 +1290,8 @@ function ComposeEmailFormContent({
         }
       } catch (error) {
         console.error(error);
-        setSubmissionError(
-          "Could not confirm delivery. Check the thread status before trying again.",
-        );
-        toastError({ description: "There was an error sending the email :(" });
+        setSubmissionError("无法确认是否发送成功。请在重试前查看会话状态。");
+        toastError({ description: "发送邮件时出错 :(" });
       } finally {
         if (!deliveryAccepted) resumeProviderAutosave();
       }
@@ -1359,11 +1343,9 @@ function ComposeEmailFormContent({
       redirectToSafeUrl(url, { allowExternal: true });
     } catch (error) {
       toastError({
-        title: "Error initiating reconnection",
+        title: "重新连接时出错",
         description:
-          error instanceof Error
-            ? error.message
-            : "Please try again or contact support.",
+          error instanceof Error ? error.message : "请重试或联系支持。",
       });
       setIsReconnectingContacts(false);
     }
@@ -1390,11 +1372,7 @@ function ComposeEmailFormContent({
     onSelectedRecipientsChange: (
       field: ComposeRecipientField,
       recipients: string,
-    ) => {
-      // Removing the last Cc or Bcc should not collapse the row being edited.
-      if (field !== "to") setCcBccRequested(true);
-      setValue(field, recipients);
-    },
+    ) => setValue(field, recipients),
     reconnectRequired: contactsReconnectRequired,
   };
 
@@ -1405,13 +1383,13 @@ function ComposeEmailFormContent({
       event.target.value = "";
       if (files.length) {
         addFiles(files, disposition).catch(() =>
-          toastError({ description: "One of the files could not be read." }),
+          toastError({ description: "有一个文件无法读取。" }),
         );
       }
     };
   const selectedSendAs = findSelectableSendAs(watch("from"), sendAsAddresses);
   const showAccountPicker = Boolean(fromAccounts?.length) && !replyingToEmail;
-  // Gmail swaps in each address's own signature, keeping what was written.
+  // Gmail 会替换为各地址自己的签名，并保留已写入的内容。
   const changeSendAs = (email: string) => {
     const address = sendAsAddresses.find((item) => item.email === email);
     if (!address) return;
@@ -1439,27 +1417,6 @@ function ComposeEmailFormContent({
     setEditReply(false);
     requestAnimationFrame(() => inlineReplySummaryButtonRef.current?.focus());
   };
-  // Inline replies open straight onto every recipient row; elsewhere Cc and
-  // Bcc stay tucked away until asked for or filled.
-  const canToggleCcBcc =
-    !canCollapseInlineReplyFields && !watch("cc") && !watch("bcc");
-  const showCcBcc = !canToggleCcBcc || ccBccRequested;
-  const toggleCcBcc = () => {
-    // Hiding would unmount the rows and drop text that is not an address yet.
-    const unfinishedField = (["cc", "bcc"] as const).find((field) =>
-      pendingRecipientsRef.current[field].trim(),
-    );
-    const focusField = showCcBcc ? unfinishedField : "cc";
-    if (!focusField) setCcBccRequested(false);
-    else {
-      setCcBccRequested(true);
-      requestAnimationFrame(() =>
-        formRef.current
-          ?.querySelector<HTMLInputElement>(`#${focusField}`)
-          ?.focus(),
-      );
-    }
-  };
   const handleSendAtChange = (value: string) => {
     const nextRemindAt = getReminderAfterSendTimeChange(value, remindAt);
     setSubmissionError("");
@@ -1477,8 +1434,8 @@ function ComposeEmailFormContent({
     try {
       await stopProviderAutosave();
       await waitForDraftOperations(draftQueueKey);
-      // A draft opened from the mailbox is discarded by its owner; any other
-      // compose discards the mailbox draft it saved.
+      // 从邮箱打开的草稿由其所有者丢弃；其他任何编写都会丢弃它所保存的
+      // 邮箱草稿。
       if (!providerDraftMessageId) {
         const local = localDraftIdentity
           ? await getReplyDraft(localDraftIdentity)
@@ -1502,7 +1459,7 @@ function ComposeEmailFormContent({
         )
           toastError({
             description:
-              "The local draft will be discarded. A mailbox draft may still exist; check Drafts in Gmail or Outlook.",
+              "本地草稿将被丢弃。邮箱中可能仍存在草稿；请查看 Gmail 或 Outlook 的草稿箱。",
           });
       }
       if ((await onDiscard(providerDraftId.current)) === false) {
@@ -1515,9 +1472,7 @@ function ComposeEmailFormContent({
       resumeProviderAutosave();
       toastError({
         description:
-          error instanceof Error
-            ? error.message
-            : "Could not discard this draft.",
+          error instanceof Error ? error.message : "无法丢弃此草稿。",
       });
     }
   }, [
@@ -1534,8 +1489,8 @@ function ComposeEmailFormContent({
     resumeProviderAutosave,
   ]);
 
-  // The popped-out composer reopens from the local draft, so keep writing
-  // here if the latest edits could not be saved.
+  // 弹出的编辑器会从本地草稿重新打开，因此如果最新编辑无法保存，
+  // 就继续在此处写入。
   const handlePopOut = async () => {
     if (!onPopOut || isSubmitting) return;
     if (await flushDraft()) onPopOut();
@@ -1543,7 +1498,7 @@ function ComposeEmailFormContent({
   const popOutButton = onPopOut && (
     <Tooltip shortcuts={["popOutDraft"]}>
       <Button
-        aria-label="Pop out draft"
+        aria-label="弹出草稿"
         className="ml-auto size-7 shrink-0 hover:bg-transparent"
         disabled={isSubmitting}
         onClick={handlePopOut}
@@ -1639,7 +1594,7 @@ function ComposeEmailFormContent({
       <div className={cn(isComposeWindow ? "shrink-0 px-4 pt-3" : "contents")}>
         {showAccountPicker && (
           <div className="flex min-h-7 items-center gap-2">
-            <ComposeFieldLabel htmlFor="from-account" label="From" />
+            <ComposeFieldLabel htmlFor="from-account" label="发件人" />
             <Select
               value={
                 selectedSendAs
@@ -1653,7 +1608,7 @@ function ComposeEmailFormContent({
               }}
             >
               <SelectTrigger
-                aria-label="From"
+                aria-label="发件人"
                 className="h-7 min-w-0 flex-1 rounded-none border-0 bg-transparent px-0 text-sm shadow-none focus:ring-0 focus:ring-offset-0"
                 id="from-account"
               >
@@ -1694,10 +1649,10 @@ function ComposeEmailFormContent({
               className="flex min-w-0 items-center gap-1.5 rounded-sm text-left text-sm font-medium leading-5 text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <span className="text-emerald-600 dark:text-emerald-400">
-                Draft
+                草稿
               </span>
               <span className="min-w-0 truncate">
-                to{" "}
+                发给{" "}
                 {formatRecipientNames(
                   [
                     ...splitRecipientList(
@@ -1708,11 +1663,11 @@ function ComposeEmailFormContent({
                     ),
                   ],
                   userEmail,
-                ) || "recipients"}
+                ) || "收件人"}
               </span>
               {selectedSendAs && !selectedSendAs.isDefault && (
                 <span className="min-w-0 truncate font-normal text-muted-foreground">
-                  from {selectedSendAs.email}
+                  来自 {selectedSendAs.email}
                 </span>
               )}
               <ChevronDownIcon className="size-3 shrink-0 text-muted-foreground" />
@@ -1723,13 +1678,13 @@ function ComposeEmailFormContent({
           <div className="space-y-1 [&_input]:bg-transparent">
             {selectedSendAs && !showAccountPicker && (
               <div className="flex min-h-7 items-center gap-2">
-                <ComposeFieldLabel htmlFor="from-address" label="From" />
+                <ComposeFieldLabel htmlFor="from-address" label="发件人" />
                 <Select
                   value={selectedSendAs.email}
                   onValueChange={changeSendAs}
                 >
                   <SelectTrigger
-                    aria-label="From"
+                    aria-label="发件人"
                     className="h-7 min-w-0 flex-1 rounded-none border-0 bg-transparent px-0 text-sm shadow-none focus:ring-0 focus:ring-offset-0"
                     id="from-address"
                   >
@@ -1745,49 +1700,45 @@ function ComposeEmailFormContent({
                 </Select>
               </div>
             )}
-            {(showCcBcc
-              ? (["to", "cc", "bcc"] as const)
-              : (["to"] as const)
-            ).map((field) => (
+            {(["to", "cc", "bcc"] as const).map((field) => (
               <div key={field} className="flex min-h-7 items-center gap-2">
                 <ComposeFieldLabel
                   htmlFor={field}
                   label={RECIPIENT_LABELS[field]}
                 />
                 <div className="min-w-0 flex-1">
-                  <ComposeContactRecipientField
-                    {...recipientFieldProps}
-                    active={activeRecipientField === field}
-                    autoFocus={field === "to" && focusRecipientField}
-                    className="min-h-8"
-                    name={field}
-                    selectedRecipients={watch(field) ?? ""}
-                  />
+                  {env.NEXT_PUBLIC_CONTACTS_ENABLED ||
+                  client?.queryContactSuggestions ? (
+                    <ComposeContactRecipientField
+                      {...recipientFieldProps}
+                      active={activeRecipientField === field}
+                      autoFocus={field === "to" && focusRecipientField}
+                      className="min-h-8"
+                      name={field}
+                      selectedRecipients={watch(field) ?? ""}
+                    />
+                  ) : (
+                    <Input
+                      type="text"
+                      name={field}
+                      registerProps={{
+                        ...register(field, { required: field === "to" }),
+                        autoFocus: field === "to" && focusRecipientField,
+                      }}
+                      error={errors[field]}
+                      className="h-7 rounded-none border-0 bg-transparent p-0 text-sm leading-5 shadow-none focus:border-transparent focus:ring-0 sm:text-sm"
+                    />
+                  )}
                 </div>
                 {field === "to" && canCollapseInlineReplyFields && (
                   <button
                     type="button"
-                    aria-label="Hide recipients"
+                    aria-label="隐藏收件人"
                     ref={collapseInlineReplyFieldsButtonRef}
                     onClick={closeInlineReplyFields}
                     className="rounded-sm text-muted-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     <ChevronDownIcon className="size-3 rotate-180" />
-                  </button>
-                )}
-                {field === "to" && canToggleCcBcc && (
-                  <button
-                    type="button"
-                    aria-expanded={showCcBcc}
-                    aria-label={
-                      showCcBcc ? "Hide Cc and Bcc" : "Show Cc and Bcc"
-                    }
-                    onClick={toggleCcBcc}
-                    className="rounded-sm text-muted-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  >
-                    <ChevronDownIcon
-                      className={cn("size-3", showCcBcc && "rotate-180")}
-                    />
                   </button>
                 )}
                 {field === "to" && popOutButton}
@@ -1799,7 +1750,7 @@ function ComposeEmailFormContent({
                 name="subject"
                 registerProps={register("subject", { required: true })}
                 error={errors.subject}
-                placeholder="Subject"
+                placeholder="主题"
                 className="h-8 rounded-none border-0 bg-transparent p-0 text-sm font-medium text-foreground shadow-none focus:border-transparent focus:ring-0 sm:text-sm"
               />
             </div>
@@ -1819,7 +1770,7 @@ function ComposeEmailFormContent({
         onStateChange={handleEditorStateChange}
         onImageFiles={(files) => {
           addFiles(files, "inline").catch(() =>
-            toastError({ description: "The image could not be read." }),
+            toastError({ description: "无法读取该图片。" }),
           );
         }}
         preservedBlocks={preservedBlocks}
@@ -1839,7 +1790,7 @@ function ComposeEmailFormContent({
       )}
       {!!(attachments.length || forwardedAttachments.length) && (
         <ul
-          aria-label="Attachments"
+          aria-label="附件"
           className={cn(
             "flex flex-wrap gap-2",
             isComposeWindow && "shrink-0 px-4 py-2",
@@ -1849,7 +1800,7 @@ function ComposeEmailFormContent({
             <li
               className="flex max-w-full items-center gap-2 rounded-md border bg-muted/40 px-2 py-1 text-xs"
               key={attachment.id}
-              title="Included from the message you are forwarding"
+              title="来自你转发的邮件"
             >
               <PaperclipIcon aria-hidden className="size-3.5 shrink-0" />
               <span className="max-w-52 truncate">{attachment.filename}</span>
@@ -1876,7 +1827,7 @@ function ComposeEmailFormContent({
                   formatFileSize(attachment.size)}
               </span>
               <button
-                aria-label={`Remove ${attachment.filename}`}
+                aria-label={`移除 ${attachment.filename}`}
                 className="rounded-sm p-0.5 hover:bg-muted"
                 onClick={() => removeAttachment(attachment)}
                 type="button"
@@ -1900,7 +1851,7 @@ function ComposeEmailFormContent({
           >
             <Button disabled={isSubmitting} type="submit" variant="gradient">
               {isSubmitting && <ButtonLoader />}
-              Send
+              发送
             </Button>
           </Tooltip>
           <button
@@ -1947,7 +1898,7 @@ function ComposeEmailFormContent({
           />
           <Tooltip shortcuts={["attachFiles"]}>
             <Button
-              aria-label="Attach files"
+              aria-label="附加文件"
               className="hover:bg-transparent"
               disabled={isSubmitting}
               onClick={() => attachmentInputRef.current?.click()}
@@ -1968,7 +1919,7 @@ function ComposeEmailFormContent({
             type="file"
           />
           <Button
-            aria-label="Insert inline images"
+            aria-label="插入内嵌图片"
             className="hover:bg-transparent"
             disabled={isSubmitting}
             onClick={() => inlineImageInputRef.current?.click()}
@@ -1981,7 +1932,7 @@ function ComposeEmailFormContent({
           {onDiscard && (
             <Tooltip shortcuts={["discardDraft"]}>
               <Button
-                aria-label="Discard draft"
+                aria-label="丢弃草稿"
                 className="hover:bg-transparent"
                 disabled={isSubmitting}
                 onClick={handleDiscard}
@@ -2009,23 +1960,23 @@ function ComposeEmailFormContent({
   );
 }
 
-// Gmail rebuilds the whole message on each save, files included.
+// Gmail 每次保存都会重建整封邮件，包括文件。
 const GMAIL_ATTACHMENT_DRAFT_SAVE_INTERVAL_MS = 15_000;
 
 const ATTACHMENT_STATUS_LABELS: Partial<
   Record<ComposeAttachment["status"], string>
 > = {
-  uploading: "Uploading…",
-  failed: "Not attached",
+  uploading: "上传中…",
+  failed: "未附加",
 };
 
 const DRAFT_SYNC_FAILED_MESSAGE =
-  "Couldn't sync this draft to your mailbox. It's saved on this device and we'll keep trying.";
+  "无法将此草稿同步到你的邮箱。它已保存在本设备上，我们会继续重试。";
 
 const RECIPIENT_LABELS: Record<ComposeRecipientField, string> = {
-  to: "To",
-  cc: "Cc",
-  bcc: "Bcc",
+  to: "收件人",
+  cc: "抄送",
+  bcc: "密送",
 };
 
 function createComposeAttachmentMetadata(
@@ -2097,12 +2048,12 @@ function getQueuedEmailDescription(
   reason: "offline" | "pending" | "blocked_auth",
 ) {
   if (reason === "offline") {
-    return "Email queued. It will send when you're back online.";
+    return "邮件已进入队列。你重新联网后它会发送。";
   }
   if (reason === "blocked_auth") {
-    return "Email queued. Reconnect this account to send it.";
+    return "邮件已进入队列。重新连接此账号后即可发送。";
   }
-  return "Email queued and will keep sending in the background.";
+  return "邮件已进入队列，将在后台持续发送。";
 }
 
 function isShortcutForForm(
@@ -2122,9 +2073,9 @@ function isShortcutForForm(
 }
 
 /**
- * SWR's `mutate` rejects when the revalidation request fails. These refreshes
- * run after the send is already scheduled, so a failure is stale data, not a
- * failed send, and must never surface as one.
+ * SWR 的 `mutate` 在重新验证请求失败时会 reject。这些刷新在
+ * 发送已安排完成后运行，因此失败只意味着数据过期，而不是发送失败，
+ * 绝不能将其呈现为发送失败。
  */
 async function refreshScheduledEmails(
   mutate: ScopedMutator,
@@ -2138,9 +2089,8 @@ async function refreshScheduledEmails(
   await Promise.all(keys.map((key) => mutate(key).catch(() => {})));
 }
 
-// Unexpected server failures are usually transient and the autosave retries
-// them, so they get reassuring copy. Specific rejections (a draft that was
-// sent or deleted elsewhere, an expired session) are shown as-is.
+// 意外的服务器失败通常是暂时的，自动保存会重试，因此使用安抚性的文案。
+// 具体的拒绝原因（草稿已在别处发送或删除、会话过期）则按原样展示。
 function getDraftSyncErrorMessage(
   result: { serverError?: string } | undefined,
 ) {
@@ -2153,20 +2103,19 @@ function getDraftSyncErrorMessage(
     : message;
 }
 
-// The footer inside the composer's signature belongs to it; only branding
-// elsewhere in the body is removed.
+// 编辑器签名内的页脚属于签名本身；只移除正文其他位置的品牌信息。
 function stripBrandingOutsideSignature(body: HTMLElement) {
   const signature = body.querySelector(":scope > [data-smartmail]");
   if (!signature) return stripBrandingSignatures(body.innerHTML);
   const placeholder = document.createComment("signature");
   signature.replaceWith(placeholder);
   const html = stripBrandingSignatures(body.innerHTML);
-  // A function replacer keeps "$" sequences in the signature literal.
+  // 使用函数替换器可保留签名中的 "$" 序列原样。
   return html.replace("<!--signature-->", () => signature.outerHTML);
 }
 
-// Only an account with aliases picks an address; the rest keep sending
-// without one so the provider applies its default.
+// 只有带别名的账号才会选择地址；其余账号继续不指定地址发送，
+// 由服务商应用其默认值。
 function findSelectableSendAs(
   candidates: string | undefined,
   addresses: SendAsAddress[],
@@ -2175,8 +2124,8 @@ function findSelectableSendAs(
   return findReplySendAsAddress(candidates, addresses);
 }
 
-// The default address keeps the signature set in Inbox Zero; an alias uses
-// its own when the provider has one.
+// 默认地址保留在 Inbox Zero 中设置的签名；别名在服务商提供自己的签名时
+// 使用其签名。
 function getSendAsSignatureHtml(
   address: SendAsAddress | undefined,
   accountSignatureHtml: string,

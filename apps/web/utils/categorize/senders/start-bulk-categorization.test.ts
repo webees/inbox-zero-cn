@@ -80,7 +80,7 @@ describe("startBulkCategorization", () => {
           totalItems: 0,
           completedItems: 0,
           remainingItems: 0,
-          message: "Sender categorization has not started.",
+          message: "发件人分类尚未开始。",
         };
       }
 
@@ -231,7 +231,7 @@ describe("startBulkCategorization", () => {
         totalItems: 0,
         completedItems: 0,
         remainingItems: 0,
-        message: "No uncategorized senders to categorize.",
+        message: "没有需要分类的未分类发件人。",
       },
     });
   });

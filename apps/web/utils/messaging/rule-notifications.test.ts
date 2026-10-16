@@ -173,25 +173,25 @@ describe("handleRuleNotificationAction", () => {
     const [, , card] = editMessage.mock.calls[0];
     const cardText = JSON.stringify(card);
 
-    expect(cardText).toContain("I drafted a reply for you");
+    expect(cardText).toContain("我已为你拟好回复草稿");
     expect(cardText).not.toContain("📩 You got an email");
     expect(cardText).toContain("*sender@example.com*");
-    expect(cardText).toContain("*Subject:* Test subject");
-    expect(cardText).toContain("They wrote:");
+    expect(cardText).toContain("*主题：* Test subject");
+    expect(cardText).toContain("对方写道：");
     expect(cardText).toContain("Original message body");
-    expect(cardText).toContain("I drafted a reply for you:");
+    expect(cardText).toContain("我已为你拟好回复草稿：");
     expect(cardText).toContain('Try opening the \\"Test\\" tab.');
     expect(cardText).toContain(
       "Drafted by <https://getinboxzero.com/?ref=ABC|Inbox Zero>.",
     );
-    expect(cardText).toContain("Status: Reply sent. ✅");
+    expect(cardText).toContain("状态：回复已发送。✅");
     if (accountProvider === "microsoft") {
-      expect(cardText).toContain("Open in Outlook");
+      expect(cardText).toContain("在 Outlook 中打开");
       expect(cardText).toContain(
         "https://outlook.office.com/owa/?ItemID=received-1&ispopout=0",
       );
     } else {
-      expect(cardText).toContain("Open in Gmail");
+      expect(cardText).toContain("在 Gmail 中打开");
       expect(cardText).toContain(
         "https://mail.google.com/mail/u/?authuser=user%40example.com#all/message-1",
       );
@@ -426,7 +426,7 @@ describe("handleRuleNotificationAction", () => {
     expect(mockTelegramEditMessage).toHaveBeenCalledWith(
       "telegram-thread-1",
       "telegram-message-1",
-      "Draft already sent. No action needed.",
+      "草稿已发送。无需操作。",
     );
   });
 
@@ -512,12 +512,12 @@ describe("handleRuleNotificationAction", () => {
     expect(mockSlackUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         ts: "slack-ts-1",
-        text: expect.stringContaining("Reply sent. ✅"),
+        text: expect.stringContaining("回复已发送。✅"),
         blocks: expect.any(Array),
       }),
     );
     const blocks = JSON.stringify(mockSlackUpdate.mock.calls[0][0].blocks);
-    expect(blocks).toContain("Open in Outlook");
+    expect(blocks).toContain("在 Outlook 中打开");
     expect(blocks).not.toContain("rule_draft_send");
     expect(blocks).not.toContain("rule_draft_edit");
     expect(blocks).not.toContain("rule_draft_dismiss");
@@ -615,12 +615,12 @@ describe("handleRuleNotificationAction", () => {
       expect.objectContaining({
         channel: "C123",
         ts: "slack-ts-1",
-        text: expect.stringContaining("Reply sent. ✅"),
+        text: expect.stringContaining("回复已发送。✅"),
       }),
     );
     expect(
       JSON.stringify(mockSlackUpdate.mock.calls[0]?.[0]?.blocks),
-    ).not.toContain("Send reply");
+    ).not.toContain("发送回复");
   });
 
   it("sends Telegram draft replies from the notification Send button", async () => {
@@ -715,23 +715,21 @@ describe("handleRuleNotificationAction", () => {
     const [, , card] = editMessage.mock.calls[0];
     const cardText = JSON.stringify(card);
 
-    expect(cardText).toContain("Status: Reply sent. ✅");
-    expect(cardText).toContain("Open in Gmail");
+    expect(cardText).toContain("状态：回复已发送。✅");
+    expect(cardText).toContain("在 Gmail 中打开");
 
     const editedMessage = await renderTelegramEditedMessageForTest(card);
-    expect(editedMessage.text).toContain("Reply sent\\. ✅");
+    expect(editedMessage.text).toContain("回复已发送。✅");
     expect(editedMessage.text).toContain("Sender\\_Name");
     expect(editedMessage.text).toContain("\\[billing\\]\\_status");
     expect(editedMessage.text).toContain("account\\_name");
     expect(editedMessage.text).not.toContain("*✍️");
-    expect(editedMessage.text).not.toContain("_They wrote:_");
+    expect(editedMessage.text).not.toContain("_对方写道：_");
     expect(JSON.stringify(editedMessage.replyMarkup)).toContain(
-      "Open in Gmail",
+      "在 Gmail 中打开",
     );
-    expect(JSON.stringify(editedMessage.replyMarkup)).not.toContain(
-      "Send reply",
-    );
-    expect(JSON.stringify(editedMessage.replyMarkup)).not.toContain("Dismiss");
+    expect(JSON.stringify(editedMessage.replyMarkup)).not.toContain("发送回复");
+    expect(JSON.stringify(editedMessage.replyMarkup)).not.toContain("忽略");
   });
 
   it("authorizes Telegram send actions against the notification route target", async () => {
@@ -871,9 +869,7 @@ describe("handleRuleNotificationAction", () => {
     });
     expect(mockCreateEmailProvider).not.toHaveBeenCalled();
     expect(editMessage).toHaveBeenCalledTimes(1);
-    expect(JSON.stringify(editMessage.mock.calls[0][2])).toContain(
-      "Dismissed.",
-    );
+    expect(JSON.stringify(editMessage.mock.calls[0][2])).toContain("已忽略。");
   });
 
   it("moves Slack notification messages to trash from the More menu", async () => {
@@ -911,7 +907,7 @@ describe("handleRuleNotificationAction", () => {
     );
     expect(editMessage).toHaveBeenCalledTimes(1);
     expect(JSON.stringify(editMessage.mock.calls[0][2])).toContain(
-      "Moved to trash.",
+      "已移至回收站。",
     );
   });
 
@@ -946,7 +942,7 @@ describe("handleRuleNotificationAction", () => {
     expect(provider.markSpam).toHaveBeenCalledWith("thread-1");
     expect(editMessage).toHaveBeenCalledTimes(1);
     expect(JSON.stringify(editMessage.mock.calls[0][2])).toContain(
-      "Marked as spam.",
+      "已标记为垃圾邮件。",
     );
   });
 
@@ -981,12 +977,8 @@ describe("handleRuleNotificationAction", () => {
     });
     expect(mockCreateEmailProvider).not.toHaveBeenCalled();
     expect(editMessage).toHaveBeenCalledTimes(1);
-    expect(JSON.stringify(editMessage.mock.calls[0][2])).toContain(
-      "Email notification",
-    );
-    expect(JSON.stringify(editMessage.mock.calls[0][2])).toContain(
-      "Dismissed.",
-    );
+    expect(JSON.stringify(editMessage.mock.calls[0][2])).toContain("邮件通知");
+    expect(JSON.stringify(editMessage.mock.calls[0][2])).toContain("已忽略。");
   });
 
   it("rejects unsupported Slack More menu selections before loading context", async () => {
@@ -1010,7 +1002,7 @@ describe("handleRuleNotificationAction", () => {
     expect(mockCreateEmailProvider).not.toHaveBeenCalled();
     expect(postEphemeral).toHaveBeenCalledWith(
       event.user,
-      "That notification is invalid or expired.",
+      "该通知已失效或已过期。",
       { fallbackToDM: false },
     );
   });
@@ -1050,7 +1042,7 @@ describe("handleRuleNotificationAction", () => {
     );
     expect(editMessage).toHaveBeenCalledTimes(1);
     expect(JSON.stringify(editMessage.mock.calls[0][2])).toContain(
-      "Moved to trash.",
+      "已移至回收站。",
     );
   });
 });
@@ -1164,7 +1156,7 @@ describe("sendMessagingRuleNotification", () => {
     const [args] = mockSlackPostMessage.mock.calls[0];
     const serializedBlocks = JSON.stringify(args.blocks);
 
-    expect(serializedBlocks).toContain("Open in Gmail");
+    expect(serializedBlocks).toContain("在 Gmail 中打开");
     expect(serializedBlocks).toContain(
       "https://mail.google.com/mail/u/?authuser=user%40example.com#all/message-1",
     );
@@ -1283,7 +1275,7 @@ describe("sendMessagingRuleNotification", () => {
     const [args] = mockSlackPostMessage.mock.calls[0];
     const serializedBlocks = JSON.stringify(args.blocks);
 
-    expect(serializedBlocks).toContain("Attachments:");
+    expect(serializedBlocks).toContain("附件：");
     expect(serializedBlocks).toContain("certificate.pdf");
   });
 
@@ -1326,7 +1318,7 @@ describe("sendMessagingRuleNotification", () => {
     const [args] = mockSlackPostMessage.mock.calls[0];
     const serializedBlocks = JSON.stringify(args.blocks);
 
-    expect(serializedBlocks).toContain("Attachments:");
+    expect(serializedBlocks).toContain("附件：");
     expect(serializedBlocks).toContain("quote.pdf");
   });
 
@@ -1416,7 +1408,7 @@ describe("sendMessagingRuleNotification", () => {
         ? mockSlackPostMessage.mock.calls[0][0].blocks
         : mockTelegramPostMessage.mock.calls[0][1];
     const serialized = JSON.stringify(payload);
-    expect(serialized).toContain("Open in Outlook");
+    expect(serialized).toContain("在 Outlook 中打开");
     expect(serialized).toContain(
       "https://outlook.office.com/owa/?ItemID=received-1&exvsurl=1&ispopout=0",
     );
@@ -1446,7 +1438,7 @@ describe("sendMessagingRuleNotification", () => {
     ).toBe(true);
     expect(
       JSON.stringify(mockSlackPostMessage.mock.calls[0][0].blocks),
-    ).not.toContain("Open in Outlook");
+    ).not.toContain("在 Outlook 中打开");
   });
 
   it("does not add a mailbox link for unsupported account providers", async () => {
@@ -1480,8 +1472,8 @@ describe("sendMessagingRuleNotification", () => {
     const [args] = mockSlackPostMessage.mock.calls[0];
     const serializedBlocks = JSON.stringify(args.blocks);
 
-    expect(serializedBlocks).not.toContain("Open in Gmail");
-    expect(serializedBlocks).not.toContain("Open in Outlook");
+    expect(serializedBlocks).not.toContain("在 Gmail 中打开");
+    expect(serializedBlocks).not.toContain("在 Outlook 中打开");
   });
 
   it("shows consistent standalone Slack notification actions", async () => {
@@ -1521,24 +1513,24 @@ describe("sendMessagingRuleNotification", () => {
       .map((element: { text: { text: string } }) => element.text.text);
 
     expect(buttonLabels).toEqual([
-      "Archive",
-      "Mark read",
-      "Open in Gmail",
-      "Dismiss",
+      "归档",
+      "标记已读",
+      "在 Gmail 中打开",
+      "忽略",
     ]);
     expect(elements).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           type: "static_select",
           action_id: "rule_notify_more",
-          placeholder: { type: "plain_text", text: "More" },
+          placeholder: { type: "plain_text", text: "更多" },
           options: [
             expect.objectContaining({
-              text: { type: "plain_text", text: "Delete" },
+              text: { type: "plain_text", text: "删除" },
               value: "rule_notify_trash:action-1",
             }),
             expect.objectContaining({
-              text: { type: "plain_text", text: "Spam" },
+              text: { type: "plain_text", text: "垃圾邮件" },
               value: "rule_notify_mark_spam:action-1",
             }),
           ],
@@ -1801,9 +1793,7 @@ describe("sendMessagingRuleNotification", () => {
         targetId: "29:teams-user",
         targetType: MessagingRouteTargetType.DIRECT_MESSAGE,
       },
-      text: expect.stringContaining(
-        "Quick actions like archive and mark read are Slack-only right now",
-      ),
+      text: expect.stringContaining("归档、标记已读等快捷操作目前仅支持 Slack"),
       logger: expect.anything(),
     });
     expect(prisma.executedAction.update).toHaveBeenCalledWith({
@@ -1862,7 +1852,7 @@ describe("sendMessagingRuleNotification", () => {
         providerUserId: "telegram-user-1",
       }),
       route: null,
-      text: expect.stringContaining("From: sender@example.com"),
+      text: expect.stringContaining("发件人： sender@example.com"),
       logger: expect.anything(),
     });
     expect(prisma.executedAction.update).toHaveBeenCalledWith({
@@ -1919,14 +1909,14 @@ describe("sendMessagingRuleNotification", () => {
         targetId: "29:teams-user",
         targetType: MessagingRouteTargetType.DIRECT_MESSAGE,
       },
-      text: expect.stringContaining("💬 They wrote:\nFirst line\nSecond line"),
+      text: expect.stringContaining("💬 对方写道：\nFirst line\nSecond line"),
       logger: expect.anything(),
     });
 
     const [{ text }] = mockSendAutomationMessage.mock.calls[0];
     expect(text).not.toContain("\n> First line");
     expect(text).toContain(
-      "One-click draft editing and sending aren't available in Teams yet.",
+      "Teams 暂不支持一键编辑和发送草稿。请使用 Inbox Zero 审核或发送该草稿。",
     );
   });
 
@@ -2022,10 +2012,10 @@ describe("sendMessagingRuleNotification", () => {
     const [, card] = mockTelegramPostMessage.mock.calls[0];
     const serializedCard = JSON.stringify(card);
 
-    expect(serializedCard).toContain("Send reply");
-    expect(serializedCard).toContain("Open in Gmail");
-    expect(serializedCard).toContain("Dismiss");
-    expect(serializedCard).not.toContain("Edit draft");
+    expect(serializedCard).toContain("发送回复");
+    expect(serializedCard).toContain("在 Gmail 中打开");
+    expect(serializedCard).toContain("忽略");
+    expect(serializedCard).not.toContain("编辑草稿");
     expect(prisma.executedAction.update).toHaveBeenCalledWith({
       where: { id: "action-1" },
       data: {
@@ -2091,7 +2081,7 @@ describe("sendMessagingRuleNotification", () => {
     const [, card] = mockTelegramPostMessage.mock.calls[0];
     const serializedCard = JSON.stringify(card);
 
-    expect(serializedCard).toContain("Attachments:");
+    expect(serializedCard).toContain("附件：");
     expect(serializedCard).toContain("certificate.pdf");
   });
 
@@ -2417,7 +2407,7 @@ describe("buildMessagingRuleNotificationText", () => {
     expect(text).toContain("You got an email from Sender.");
     expect(text).toContain("Subject: Test");
     expect(text).toContain("details: https://example.com");
-    expect(text).toContain("Draft editing isn't available in Telegram yet.");
+    expect(text).toContain("Telegram 暂不支持编辑草稿。");
   });
 
   it("unescapes Slack entities for Teams fallback", async () => {
@@ -2499,15 +2489,13 @@ describe("replaceMessagingDraftNotificationsWithHandledOnWebState", () => {
       expect.objectContaining({
         channel: "C123",
         ts: "slack-ts-1",
-        text: expect.stringContaining("Already replied on the web."),
+        text: expect.stringContaining("已在网页端回复。"),
       }),
     );
 
     const [args] = mockSlackUpdate.mock.calls[0];
-    expect(JSON.stringify(args.blocks)).toContain(
-      "Already replied on the web.",
-    );
-    expect(JSON.stringify(args.blocks)).not.toContain("Send reply");
+    expect(JSON.stringify(args.blocks)).toContain("已在网页端回复。");
+    expect(JSON.stringify(args.blocks)).not.toContain("发送回复");
   });
 
   it("collapses a Teams draft notification after a web reply", async () => {
@@ -2544,7 +2532,7 @@ describe("replaceMessagingDraftNotificationsWithHandledOnWebState", () => {
     expect(mockTeamsEditMessage).toHaveBeenCalledWith(
       "teams-thread-1",
       "teams-message-1",
-      "Already replied on the web.",
+      "已在网页端回复。",
     );
   });
 
@@ -2589,7 +2577,7 @@ describe("replaceMessagingDraftNotificationsWithHandledOnWebState", () => {
     expect(mockTelegramEditMessage).toHaveBeenCalledWith(
       "telegram-thread-1",
       "telegram-message-1",
-      "Already replied on the web.",
+      "已在网页端回复。",
     );
   });
 
@@ -2725,7 +2713,7 @@ describe("replaceMessagingDraftNotificationsWithHandledOnWebState", () => {
     expect(mockTeamsEditMessage).toHaveBeenCalledWith(
       "teams-thread-1",
       "teams-message-1",
-      "Already replied on the web.",
+      "已在网页端回复。",
     );
   });
 
@@ -2776,7 +2764,7 @@ describe("replaceMessagingDraftNotificationsWithHandledOnWebState", () => {
     expect(mockTeamsEditMessage).toHaveBeenCalledWith(
       "teams-thread-1",
       "teams-message-1",
-      "Already replied on the web.",
+      "已在网页端回复。",
     );
   });
 });

@@ -242,7 +242,7 @@ describe("mobile auth start route", () => {
     );
 
     await expect(response.json()).resolves.toEqual({
-      error: "Failed to start authentication",
+      error: "无法启动认证",
       isKnownError: true,
     });
     expect(response.status).toBe(500);
@@ -314,7 +314,7 @@ describe("mobile auth start route", () => {
     );
 
     await expect(response.json()).resolves.toEqual({
-      error: "Failed to start authentication",
+      error: "无法启动认证",
       isKnownError: true,
     });
     expect(response.status).toBe(500);

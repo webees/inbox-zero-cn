@@ -31,8 +31,8 @@ import type { Logger } from "@/utils/logger";
 import type { gmail_v1 } from "@googleapis/gmail";
 
 const MAX_GMAIL_HISTORY_ID_GAP = 3000;
-// History skipped while Gmail rate limited the account is mail the user is
-// still waiting on, so it gets a wider window than a long-disconnected account.
+// Gmail 对该账号限流期间跳过的历史记录，是用户仍
+// 在等待的邮件，因此它获得比长期断开连接的账号更宽的窗口。
 const MAX_GMAIL_CATCH_UP_HISTORY_ID_GAP = 30_000;
 const GMAIL_HISTORY_PAGE_SIZE = 500;
 
@@ -49,9 +49,9 @@ export async function processHistoryForUser(
 ) {
   const { emailAddress } = decodedData;
   const historyId = normalizeHistoryId(decodedData.historyId);
-  // All emails in the database are stored in lowercase
-  // But it's possible that the email address in the webhook is not
-  // So we need to convert it to lowercase
+  // 数据库中的所有邮箱都存储为小写
+  // 但 webhook 中的邮箱地址可能不是小写
+  // 因此我们需要将其转换为小写
   const email = emailAddress.toLowerCase();
 
   const emailAccount =
@@ -87,7 +87,7 @@ export async function processHistoryForUser(
     !validatedEmailAccount.account?.access_token ||
     !validatedEmailAccount.account?.refresh_token
   ) {
-    logger.error("Missing tokens after validation");
+    logger.error("校验后缺少令牌");
     return NextResponse.json({ error: true });
   }
 
@@ -112,13 +112,10 @@ export async function processHistoryForUser(
 
     if (activeRateLimit?.provider === "google") {
       await markGmailHistoryCatchUp(validatedEmailAccount.id, logger);
-      logger.warn(
-        "Skipping webhook processing due to active Gmail rate limit",
-        {
-          retryAt: activeRateLimit.retryAt.toISOString(),
-          rateLimitSource: activeRateLimit.source,
-        },
-      );
+      logger.warn("由于 Gmail 处于限流状态，跳过 webhook 处理", {
+        retryAt: activeRateLimit.retryAt.toISOString(),
+        rateLimitSource: activeRateLimit.source,
+      });
       return NextResponse.json({ ok: true });
     }
 
@@ -210,9 +207,9 @@ export async function processHistoryForUser(
             logger,
           );
         } else {
-          // When we truncate a large gap, Gmail can return an empty recent window.
-          // We still need to advance to the webhook historyId so we don't stay
-          // permanently behind and keep skipping.
+          // 当我们截断较大的空缺时，Gmail 可能返回一个空的近期窗口。
+          // 我们仍需要推进到 webhook 的 historyId，以免一直
+          // 落后并持续跳过。
           logger.info("No history", {
             startHistoryId: historyResult.startHistoryId,
             historyIdGap: historyResult.historyIdGap,
@@ -221,7 +218,7 @@ export async function processHistoryForUser(
             pageCount: historyResult.pageCount,
           });
 
-          // important to save this or we can get into a loop with never receiving history
+          // 保存这一点很重要，否则我们可能陷入永远收不到历史记录的循环
           await updateLastSyncedHistoryId({
             emailAccountId: validatedEmailAccount.id,
             lastSyncedHistoryId: historyId,
@@ -245,11 +242,11 @@ export async function processHistoryForUser(
       await cleanupInvalidTokens({
         emailAccountId: validatedEmailAccount.id,
         reason: "invalid_grant",
-        // Client creation can rotate the access token while retaining this grant.
+        // 创建客户端时可能在保留此授权的同时轮换访问令牌。
         failedRefreshToken: accountRefreshToken,
         logger,
       }).catch((cleanupError) =>
-        logger.error("Failed to clean up webhook authentication failure", {
+        logger.error("清理 webhook 认证失败状态时出错", {
           cleanupError,
         }),
       );
@@ -257,7 +254,7 @@ export async function processHistoryForUser(
     }
 
     captureException(error, { userEmail: email, extra: { decodedData } });
-    logger.error("Error processing webhook", {
+    logger.error("处理 webhook 时出错", {
       error:
         error instanceof Error
           ? {
@@ -267,7 +264,7 @@ export async function processHistoryForUser(
             }
           : error,
     });
-    // returning 200 here, as otherwise PubSub will call the webhook over and over
+    // 这里返回 200，否则 PubSub 会反复调用该 webhook
     return NextResponse.json({ error: true });
   }
 }
@@ -292,7 +289,7 @@ async function processHistory(options: ProcessHistoryOptions, logger: Logger) {
         .filter((m) => {
           const isRelevant = isInboxOrSentMessage(m);
           if (!isRelevant) {
-            logger.info("Skipping message not in inbox or sent", {
+            logger.info("跳过不在收件箱或已发送中的邮件", {
               messageId: m.message?.id,
               labelIds: m.message?.labelIds,
             });
@@ -324,8 +321,8 @@ async function processHistory(options: ProcessHistoryOptions, logger: Logger) {
       try {
         await processHistoryItem(event, options, log);
       } catch (error) {
-        // Stop before the cursor passes mail Gmail refused to serve, so the
-        // catch-up after the rate limit picks it up again.
+        // 在游标越过 Gmail 拒绝提供的邮件之前停下，以便
+        // 限流后的追赶再次拾取它。
         if (isEmailProviderRateLimitError({ error, provider: "google" })) {
           throw error;
         }
@@ -333,11 +330,11 @@ async function processHistory(options: ProcessHistoryOptions, logger: Logger) {
           userEmail,
           extra: { messageId: event.item.message?.id },
         });
-        logger.error("Error processing history item", { error });
+        logger.error("处理历史记录项时出错", { error });
       }
     }
 
-    // A catch-up can outlast the function timeout, so keep the progress made.
+    // 追赶可能超过函数超时时间，因此保留已取得的进度。
     await updateLastSyncedHistoryId({
       emailAccountId,
       lastSyncedHistoryId: h.id,
@@ -353,9 +350,9 @@ async function processHistory(options: ProcessHistoryOptions, logger: Logger) {
 }
 
 /**
- * Updates lastSyncedHistoryId using a monotonic/conditional update to prevent
- * race conditions where concurrent webhook processors might regress the pointer.
- * Only updates if the new value is greater than the current value.
+ * 使用单调/条件更新来更新 lastSyncedHistoryId，以防止
+ * 并发的 webhook 处理器回退该指针的竞态条件。
+ * 仅当新值大于当前值时才更新。
  */
 async function updateLastSyncedHistoryId({
   emailAccountId,
@@ -366,9 +363,9 @@ async function updateLastSyncedHistoryId({
 }) {
   if (!lastSyncedHistoryId) return;
 
-  // Use conditional update: only set if new value > current value (or current is null)
-  // This prevents race conditions where slower webhook processors with older
-  // history IDs could overwrite progress from faster processors with newer IDs
+  // 使用条件更新：仅当新值 > 当前值（或当前值为 null）时才设置
+  // 这可以防止较慢、history ID 较旧的 webhook 处理器
+  // 覆盖较快的、ID 较新的处理器所取得进度的竞态条件
   await prisma.$executeRaw`
     UPDATE "EmailAccount"
     SET "lastSyncedHistoryId" = ${lastSyncedHistoryId}, "updatedAt" = NOW()
@@ -408,9 +405,9 @@ function isHistoryIdExpiredError(error: unknown): boolean {
 }
 
 /**
- * Fetches history from Gmail with resilience:
- * 1. Limits how far back we go to avoid processing massive gaps (e.g. if a user is disconnected for months).
- * 2. Handles expired history IDs (404s) by resetting the sync point.
+ * 以更强的韧性从 Gmail 拉取历史记录：
+ * 1. 限制向前追溯的范围，以避免处理巨大的空缺（例如用户断开连接数月）。
+ * 2. 通过重置同步点来处理已过期的 history ID（404）。
  */
 async function fetchGmailHistoryResilient({
   gmail,
@@ -449,8 +446,8 @@ async function fetchGmailHistoryResilient({
     maxBigInt(BigInt(0), webhookHistoryIdBig - lastSyncedHistoryIdBig),
   );
 
-  // History IDs are not item counts, so keep this window large enough for normal
-  // active-account bursts while still bounding old/disconnected-account catch-up.
+  // history ID 不是条目计数，因此让此窗口足够大以容纳正常的
+  // 活跃账号突发流量，同时仍能限制旧/断开连接账号的追赶。
   const startHistoryIdBig = maxBigInt(
     lastSyncedHistoryIdBig,
     webhookHistoryIdBig - maxGap,
@@ -464,9 +461,9 @@ async function fetchGmailHistoryResilient({
         maxBigInt(BigInt(0), startHistoryIdBig - lastSyncedHistoryIdBig),
       );
 
-  // Log if we are intentionally skipping Gmail history IDs to keep the system stable.
+  // 如果我们有意跳过 Gmail history ID 以保持系统稳定，则记录日志。
   if (skippedHistoryIds > 0) {
-    logger.warn("Skipping Gmail history IDs due to large gap", {
+    logger.warn("由于空缺过大，跳过 Gmail history ID", {
       lastSyncedHistoryId,
       webhookHistoryId,
       historyIdGap,
@@ -508,7 +505,7 @@ async function fetchGmailHistoryResilient({
       pageCount += 1;
       pageToken = data.nextPageToken || undefined;
 
-      logger.info("Fetched Gmail history page", {
+      logger.info("已拉取 Gmail 历史记录页", {
         startHistoryId,
         pageCount,
         pageHistoryItemCount: pageHistory.length,
@@ -527,8 +524,8 @@ async function fetchGmailHistoryResilient({
       historyItemCount: historyEntries.length,
     };
   } catch (error) {
-    // Gmail history IDs are typically valid for ~1 week. If older, Gmail returns a 404.
-    // In this case, we reset the sync point to the current history ID.
+    // Gmail history ID 通常有效约 1 周。如果更早，Gmail 会返回 404。
+    // 在这种情况下，我们将同步点重置为当前 history ID。
     if (isHistoryIdExpiredError(error)) {
       logger.warn("HistoryId expired, resetting to current", {
         expiredHistoryId: startHistoryId,

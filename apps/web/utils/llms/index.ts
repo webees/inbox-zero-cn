@@ -93,10 +93,10 @@ const logger = createScopedLogger("llms");
 
 const MAX_LOG_LENGTH = 200;
 
-// The Claude Code CLI provider drops AI SDK tools at the LanguageModelV4
-// boundary. Route tool-bearing calls through the package's MCP bridge so the
+// Claude Code CLI 服务商会在 LanguageModelV4 边界丢弃 AI SDK 工具。
+// 将带工具的调用路由到该包的 MCP 桥接，以便
 // CLI can execute them locally; clear `tools` so the AI SDK does not also try
-// to drive them. No-op for every other provider and for tool-less calls.
+// 来驱动它们。对其他所有服务商以及无工具调用均为无操作。
 async function bridgeClaudeCodeToolsIfNeeded<T extends Record<string, Tool>>({
   provider,
   modelName,
@@ -221,8 +221,8 @@ const commonOptions: {
   providerOptions?: LLMProviderOptions;
 } = {
   telemetry: { isEnabled: true },
-  // Chat, cache breakpoints, and prompt hardening still put system
-  // instructions in the messages array. AI SDK 7 rejects that unless opted in.
+  // 聊天、缓存断点和提示加固仍会把系统
+  // 指令放入 messages 数组。除非显式选择，AI SDK 7 会拒绝这种做法。
   allowSystemInMessages: true,
 };
 
@@ -312,7 +312,7 @@ export function createGenerateText({
         emailAccountId: emailAccount.id,
       });
 
-      logger.trace("Generating text", {
+      logger.trace("正在生成文本", {
         label,
         promptHardening,
         instructions: redactSensitiveContentForLogging(
@@ -413,7 +413,7 @@ export function createGenerateText({
         if (error instanceof SafeError) throw error;
 
         if (nextCandidate && shouldFallbackToNextModel(error)) {
-          logger.warn("LLM call failed, trying fallback model", {
+          logger.warn("LLM 调用失败，尝试备用模型", {
             label,
             provider: candidate.provider,
             model: candidate.modelName,
@@ -437,7 +437,7 @@ export function createGenerateText({
       }
     }
 
-    throw new Error("No models available for generation");
+    throw new Error("没有可用于生成的模型");
   };
 }
 
@@ -453,7 +453,7 @@ export function createGenerateObject({
   label: string;
   modelOptions: ReturnType<typeof getModel>;
   promptHardening: PromptHardening;
-  // Only set when the system prompt is stable across requests for an account.
+  // 仅当某账号的系统提示词在多次请求间保持稳定时才设置。
   cacheSystemPrompt?: boolean;
   onModelUsed?: (candidate: {
     provider: string;
@@ -505,7 +505,7 @@ export function createGenerateObject({
         OLLAMA_STRUCTURED_OUTPUT_GUIDANCE,
       );
 
-      logger.trace("Generating object", {
+      logger.trace("正在生成对象", {
         label,
         promptHardening,
         instructions: redactSensitiveContentForLogging(
@@ -520,9 +520,9 @@ export function createGenerateObject({
         )?.slice(0, MAX_LOG_LENGTH),
       });
 
-      // Only warn for prompt-shaped calls. Messages-shaped callers (no
+      // 仅对提示词形态的调用发出警告。消息形态的调用方（没有
       // `prompt` string) are out of scope; scanning every message for
-      // the literal "JSON" would be brittle and noisy.
+      // 字面量 "JSON" 会既脆弱又嘈杂。
       const systemIncludesJson =
         typeof protectedOptions.instructions === "string" &&
         protectedOptions.instructions.includes("JSON");
@@ -531,7 +531,7 @@ export function createGenerateObject({
         typeof protectedOptions.prompt === "string" &&
         !protectedOptions.prompt.includes("JSON")
       ) {
-        logger.warn("Missing JSON in prompt", { label });
+        logger.warn("提示词中缺少 JSON", { label });
       }
 
       const providerOptions = buildProviderOptions({
@@ -547,7 +547,7 @@ export function createGenerateObject({
         emailAccountId: emailAccount.id,
       });
 
-      // Built after hardening and DLP so the cached bytes match what the provider sees.
+      // 在加固和 DLP 之后构建，使缓存的字节与服务商看到的一致。
       const cacheOverrides = cacheSystemPrompt
         ? buildSystemPromptCacheOverrides({
             protectedOptions,
@@ -559,7 +559,7 @@ export function createGenerateObject({
 
       const request = {
         repairText: async ({ text }: { text: string }) => {
-          logger.info("Repairing text", { label });
+          logger.info("正在修复文本", { label });
           const repairResult = repairObjectText(text, label);
           latestRepairAttempt = repairResult.attempt;
           return repairResult.text;
@@ -603,7 +603,7 @@ export function createGenerateObject({
               hasUserApiKey: effectiveModelOptions.hasUserApiKey,
             });
           } catch (usageError) {
-            logger.error("Failed to save usage for failed object generation", {
+            logger.error("为失败的对象生成保存用量记录失败", {
               error: usageError,
               label,
               provider: candidate.provider,
@@ -629,7 +629,7 @@ export function createGenerateObject({
             hasUserApiKey: effectiveModelOptions.hasUserApiKey,
           });
         } catch (usageError) {
-          logger.error("Failed to save usage for object generation", {
+          logger.error("保存对象生成用量记录失败", {
             error: usageError,
             label,
             provider: candidate.provider,
@@ -643,7 +643,7 @@ export function createGenerateObject({
         modelName: candidate.modelName,
       });
 
-      logger.trace("Generated object", {
+      logger.trace("已生成对象", {
         label,
         result: result.object,
       });
@@ -669,7 +669,7 @@ export function createGenerateObject({
           { label },
         );
 
-        logger.info("LLM object generation completed", {
+        logger.info("LLM 对象生成完成", {
           label,
           candidateCount: modelCandidates.length,
           fallbackUsed: index > 0,
@@ -705,7 +705,7 @@ export function createGenerateObject({
             model: candidate.modelName,
             category: getLlmFallbackFailureCategory(error),
           });
-          logger.warn("LLM object generation failed, trying fallback model", {
+          logger.warn("LLM 对象生成失败，尝试备用模型", {
             label,
             provider: candidate.provider,
             model: candidate.modelName,
@@ -729,7 +729,7 @@ export function createGenerateObject({
       }
     }
 
-    throw new Error("No models available for generation");
+    throw new Error("没有可用于生成的模型");
   };
 }
 
@@ -832,7 +832,7 @@ export async function chatCompletionStream(
           try {
             await Promise.all([usagePromise, finishPromise]);
           } catch (error) {
-            logger.error("Error in onEnd callback", {
+            logger.error("onEnd 回调出错", {
               label,
               userEmail,
               error,
@@ -845,7 +845,7 @@ export async function chatCompletionStream(
           }
         },
         onError: (error) => {
-          logger.error("Error in chat completion stream", {
+          logger.error("聊天补全流出错", {
             label,
             userEmail,
             error,
@@ -858,7 +858,7 @@ export async function chatCompletionStream(
       });
     } catch (error) {
       if (nextCandidate && shouldFallbackToNextModel(error)) {
-        logger.warn("Chat completion failed, trying fallback model", {
+        logger.warn("聊天补全失败，尝试备用模型", {
           label,
           provider: candidate.provider,
           model: candidate.modelName,
@@ -869,7 +869,7 @@ export async function chatCompletionStream(
         continue;
       }
 
-      logger.error("Error in chat completion stream", {
+      logger.error("聊天补全流出错", {
         label,
         userEmail,
         error,
@@ -882,7 +882,7 @@ export async function chatCompletionStream(
     }
   }
 
-  throw new Error("No models available for chat completion stream");
+  throw new Error("没有可用于聊天补全流的模型");
 }
 
 export async function toolCallAgentStream(options: ToolCallAgentStreamOptions) {
@@ -1000,7 +1000,7 @@ export async function toolCallAgentStream(options: ToolCallAgentStreamOptions) {
         try {
           await Promise.all([usagePromise, finishPromise]);
         } catch (error) {
-          logger.error("Error in onEnd callback", {
+          logger.error("onEnd 回调出错", {
             label,
             userEmail,
             error,
@@ -1023,7 +1023,7 @@ export async function toolCallAgentStream(options: ToolCallAgentStreamOptions) {
       });
     } catch (error) {
       if (nextCandidate && shouldFallbackToNextModel(error)) {
-        logger.warn("Tool-call stream failed, trying fallback model", {
+        logger.warn("工具调用流失败，尝试备用模型", {
           label,
           provider: candidate.provider,
           model: candidate.modelName,
@@ -1034,7 +1034,7 @@ export async function toolCallAgentStream(options: ToolCallAgentStreamOptions) {
         continue;
       }
 
-      logger.error("Error in chat completion stream", {
+      logger.error("聊天补全流出错", {
         label,
         userEmail,
         error,
@@ -1047,7 +1047,7 @@ export async function toolCallAgentStream(options: ToolCallAgentStreamOptions) {
     }
   }
 
-  throw new Error("No models available for tool-call stream");
+  throw new Error("没有可用于工具调用流的模型");
 }
 
 function getModelOptionsForRoute({
@@ -1058,7 +1058,7 @@ function getModelOptionsForRoute({
   userAi: UserAIFields;
 } & ModelRouteSelection): SelectModel {
   if (modelType && useCase) {
-    throw new Error("Provide either useCase or modelType, not both");
+    throw new Error("请提供 useCase 或 modelType 之一，不要同时提供两者");
   }
 
   return useCase
@@ -1066,8 +1066,8 @@ function getModelOptionsForRoute({
     : getModel(userAi, modelType);
 }
 
-// An abort ends the stream but still runs tool calls the model had already
-// emitted, so check before each call to keep a stopped run from acting.
+// 中止会结束流，但仍会运行模型已经发出的工具调用，
+// 因此要在每次调用前检查，避免已停止的运行继续执行。
 function skipToolsAfterAbort<TTools extends ToolSet | undefined>(
   tools: TTools,
   abortSignal: AbortSignal | undefined,
@@ -1199,14 +1199,14 @@ async function handleError(
     hasUserApiKey && !!apiError && isInsufficientCreditsError(apiError);
 
   if (isUserKeyInsufficientCredits) {
-    logger.warn("User API key has insufficient credits", {
+    logger.warn("用户 API 密钥额度不足", {
       userId,
       emailAccountId,
       label,
       modelName,
     });
   } else {
-    logger.error("Error in LLM call", {
+    logger.error("LLM 调用出错", {
       error,
       userId,
       userEmail,
@@ -1235,29 +1235,29 @@ async function handleError(
     if (isIncorrectAPIKeyError(error)) {
       return await notifyUser(
         ErrorType.INCORRECT_API_KEY,
-        "Your AI API key is invalid. Please update it in your settings.",
+        "你的 AI API 密钥无效。请在设置中更新它。",
       );
     }
 
     if (isInvalidAIModelError(error)) {
       await notifyUser(
         ErrorType.INVALID_AI_MODEL,
-        "The AI model you specified does not exist or is unavailable. Please check your settings.",
+        "你指定的 AI 模型不存在或不可用。请检查你的设置。",
       );
       throw new SafeError(
-        "The AI model you specified does not exist or is unavailable. Please update your AI settings.",
+        "你指定的 AI 模型不存在或不可用。请更新你的 AI 设置。",
       );
     }
 
     if (isAPIKeyDeactivatedError(error)) {
       return await notifyUser(
         ErrorType.API_KEY_DEACTIVATED,
-        "Your AI API key has been deactivated. Please update it in your settings.",
+        "你的 AI API 密钥已被停用。请在设置中更新它。",
       );
     }
   }
 
-  // Exhausted balances can arrive as retryable 429s, so look beneath retries.
+  // 余额耗尽可能以可重试的 429 形式出现，因此要透过重试查看底层错误。
   if (
     apiError &&
     (isAnthropicInsufficientBalanceError(apiError) ||
@@ -1265,7 +1265,7 @@ async function handleError(
   ) {
     return await notifyUser(
       ErrorType.INSUFFICIENT_CREDITS,
-      "Your AI provider account has insufficient credits. Please add credits or update your API key in settings.",
+      "你的 AI 服务商账号额度不足。请充值或更新设置中的 API 密钥。",
     );
   }
 
@@ -1276,7 +1276,7 @@ async function handleError(
       emailAccountId,
       errorType: ErrorType.AI_QUOTA_ERROR,
       errorMessage:
-        "Your AI provider has rejected requests due to rate limits or quota. Please check your provider account if this persists.",
+        "你的 AI 服务商因限流或配额拒绝了请求。如果问题持续，请检查你的服务商账号。",
       logger,
     });
   }
@@ -1320,20 +1320,17 @@ async function getCostControlledModelOptions({
       nanoModelOptions.modelName === configuredNanoModel.modelName;
 
     if (!isResolvedConfiguredNanoModel) {
-      logger.warn(
-        "Nano usage guard triggered but nano model is not available",
-        {
-          label,
-          userId,
-          emailAccountId,
-          weeklySpendUsd: guard.weeklySpendUsd,
-          weeklyLimitUsd: guard.weeklyLimitUsd,
-          configuredProvider: configuredNanoModel?.provider,
-          configuredModel: configuredNanoModel?.modelName,
-          resolvedProvider: nanoModelOptions.provider,
-          resolvedModel: nanoModelOptions.modelName,
-        },
-      );
+      logger.warn("nano 用量守卫已触发，但 nano 模型不可用", {
+        label,
+        userId,
+        emailAccountId,
+        weeklySpendUsd: guard.weeklySpendUsd,
+        weeklyLimitUsd: guard.weeklyLimitUsd,
+        configuredProvider: configuredNanoModel?.provider,
+        configuredModel: configuredNanoModel?.modelName,
+        resolvedProvider: nanoModelOptions.provider,
+        resolvedModel: nanoModelOptions.modelName,
+      });
       return modelOptions;
     }
 
@@ -1344,7 +1341,7 @@ async function getCostControlledModelOptions({
       return modelOptions;
     }
 
-    logger.info("Switching to nano model due to weekly AI spend", {
+    logger.info("由于每周 AI 支出，切换到 nano 模型", {
       label,
       userId,
       emailAccountId,
@@ -1358,7 +1355,7 @@ async function getCostControlledModelOptions({
 
     return nanoModelOptions;
   } catch (error) {
-    logger.error("Failed to resolve nano model during usage guard", {
+    logger.error("用量守卫期间解析 nano 模型失败", {
       label,
       userId,
       emailAccountId,
@@ -1639,7 +1636,7 @@ function repairObjectText(text: string, label: string) {
     }
   }
 
-  logger.warn("Failed to repair invalid JSON response", {
+  logger.warn("修复无效的 JSON 响应失败", {
     label,
     length: text.length,
     startsWithQuote: /^[\s]*['"`]/.test(text),
@@ -1921,8 +1918,8 @@ function getOpenRouterProviderCost(result: unknown): {
   providerUpstreamInferenceCost?: number;
   providerCostSource?: ProviderCostSource;
 } {
-  // The SDK's top-level providerMetadata only describes the final step, so
-  // per-step usage is the source of truth for multi-step calls.
+  // SDK 顶层的 providerMetadata 只描述最后一步，因此
+  // 对多步调用而言，逐步用量才是权威来源。
   const stepUsages = (getObjectArrayProperty(result, "steps") ?? [])
     .map(getOpenRouterUsage)
     .filter((usage) => usage !== null);
@@ -2069,7 +2066,7 @@ function buildLlmTelemetry({
             ...(userId ? { userId } : {}),
           },
           onError: (error) => {
-            logger.error("Failed to capture PostHog AI generation", {
+            logger.error("捕获 PostHog AI 生成记录失败", {
               error,
               label,
             });

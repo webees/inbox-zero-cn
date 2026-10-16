@@ -54,9 +54,9 @@ class StatLoader {
 
     if (showToast) {
       if (isError(res)) {
-        toastError({ description: "Error loading stats." });
+        toastError({ description: "加载统计数据出错。" });
       } else {
-        toastSuccess({ description: "Stats loaded!" });
+        toastSuccess({ description: "统计数据已加载！" });
       }
     }
 

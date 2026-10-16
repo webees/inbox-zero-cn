@@ -26,7 +26,7 @@ type Testimonial = {
 };
 
 const featuredTestimonial = {
-  body: "Loving it so far! Cleaned up my top cluttering newsletter and promotional email subscriptions in just a few minutes.",
+  body: "到目前为止非常喜欢！几分钟就清理掉了我最杂乱的一批简报和促销邮件订阅。",
   author: {
     name: "Jonni Lundy",
     handle: "Resend",
@@ -36,7 +36,7 @@ const featuredTestimonial = {
 };
 
 const stevenTestimonial: Testimonial = {
-  body: "Love this new open-source app by @elie2222: getinboxzero.com",
+  body: "喜欢 @elie2222 的这款新开源应用：getinboxzero.com",
   author: {
     name: "Steven Tey",
     handle: "Dub",
@@ -45,7 +45,7 @@ const stevenTestimonial: Testimonial = {
 };
 
 const vinayTestimonial: Testimonial = {
-  body: "this is something I've been searching for a long time – thanks for building it.",
+  body: "这是我找了很久的东西 —— 感谢你把它做出来。",
   author: {
     name: "Vinay Katiyar",
     handle: "@ktyr",
@@ -55,7 +55,7 @@ const vinayTestimonial: Testimonial = {
 };
 
 const yoniTestimonial: Testimonial = {
-  body: "Wow. Onboarded and started unsubscribing from the worst spammers in just 3 minutes... Thank you 🙏🏼",
+  body: "哇。完成引导流程后，只用 3 分钟就开始退订最糟糕的垃圾邮件发送者了……谢谢你 🙏🏼",
   author: {
     name: "Yoni Belson",
     handle: "LeadTrap",
@@ -64,7 +64,7 @@ const yoniTestimonial: Testimonial = {
 };
 
 const slimTestimonial: Testimonial = {
-  body: "I came across Inbox Zero while actively looking to hire a VA to manage my emails but after trying the tool, it turned out to be a complete game changer.",
+  body: "我是在正打算雇一位虚拟助理来管理邮件时遇到 Inbox Zero 的，但试用之后，它彻底改变了我的工作方式。",
   author: {
     name: "Slim Labassi",
     handle: "Boomgen",
@@ -73,7 +73,7 @@ const slimTestimonial: Testimonial = {
 };
 
 const willTestimonial: Testimonial = {
-  body: "I love the flexibility and customization options, and it's the first thing in forever that's gotten my inbox under control. Thank you!",
+  body: "我喜欢它的灵活性和自定义选项，它是我很久以来第一个让收件箱重新受控的工具。谢谢！",
   author: {
     name: "Will Brierly",
     handle: "DreamKey",
@@ -82,7 +82,7 @@ const willTestimonial: Testimonial = {
 };
 
 const valentineTestimonial: Testimonial = {
-  body: "I'm an executive who was drowning in hundreds of daily emails and heavily dependent on my EA for email management. What I love most about Inbox Zero is how it seamlessly replaced that entire function—the smart automation, prioritization, and organization features work like having a dedicated email assistant built right into my workflow.",
+  body: "我是一名高管，曾被每天数百封邮件淹没，非常依赖我的行政助理来管理邮件。我最喜欢 Inbox Zero 的地方是它无缝替代了那整个职能 —— 智能自动化、优先级排序和整理功能，就像在我的工作流中内置了一位专属邮件助手。",
   author: {
     name: "Valentine Nwachukwu",
     handle: "Zaden Technologies",
@@ -91,7 +91,7 @@ const valentineTestimonial: Testimonial = {
 };
 
 const joelTestimonial: Testimonial = {
-  body: "It's the first tool I've tried of many that have actually captured my voice in the responses that it drafts.",
+  body: "我试过很多工具，这是第一个在起草的回复中真正捕捉到我口吻的。",
   author: {
     name: "Joel Neuenhaus",
     handle: "Outbound Legal",
@@ -100,7 +100,7 @@ const joelTestimonial: Testimonial = {
 };
 
 const alexTestimonial: Testimonial = {
-  body: "SUPER excited for this one! Well done, going to get use out of it for sure—have been waiting for a tool like this, it just makes so much sense to have as a layer atop email.",
+  body: "为这个工具超级兴奋！做得好，肯定用得上 —— 我一直在等这样的工具，把它作为邮件之上的一层实在太合理了。",
   author: {
     name: "Alex Bass",
     handle: "Efficient App",
@@ -110,7 +110,7 @@ const alexTestimonial: Testimonial = {
 };
 
 const jamesTestimonial: Testimonial = {
-  body: "hey bro, your tool is legit what I been looking for for ages haha. its a god send",
+  body: "兄弟，你的工具正是我找了很久的东西哈哈。简直是天赐之物",
   author: {
     name: "James",
     handle: "@james",
@@ -119,7 +119,7 @@ const jamesTestimonial: Testimonial = {
 };
 
 const steveTestimonial: Testimonial = {
-  body: "I was mostly hoping to turn my email inbox into less of the mess that it is. I've been losing tasks that I should do as the emails get buried. So far it's really helped.",
+  body: "我主要是希望让我的收件箱别那么乱。随着邮件被淹没，我一直在丢失本该完成的任务。到目前为止它真的帮了大忙。",
   author: {
     name: "Steve Radabaugh",
     handle: "@stevenpaulr",
@@ -128,7 +128,7 @@ const steveTestimonial: Testimonial = {
 };
 
 const wilcoTestimonial: Testimonial = {
-  body: `Finally an "unsubscribe app" that let's you *actually* unsubscribe and filter using Gmail filters (instead of always relying on the 3rd party app to filter those emails). Big plus for me, so I have all filters in one place (inside the Gmail filters, that is). Awesome work! Already a fan :)`,
+  body: `终于有一款"退订应用"，能让你*真正*退订，并使用 Gmail 过滤器进行过滤（而不是总依赖第三方应用来过滤那些邮件）。对我来说这是个大优点，这样我所有的过滤器都在一处（也就是 Gmail 过滤器里）。干得漂亮！我已经是粉丝了 :)`,
   author: {
     name: "Wilco de Kreij",
     handle: "@emarky",
@@ -162,10 +162,10 @@ export function Testimonials() {
   return (
     <Section>
       <SectionHeading wrap>
-        Join {userCount} others who spend less time on emails
+        已有 {userCount} 位用户花更少时间在邮件上
       </SectionHeading>
       <SectionSubtitle>
-        {`Our customers love saving time with ${BRAND_NAME}.`}
+        {`我们的客户很喜欢用 ${BRAND_NAME} 节省时间。`}
       </SectionSubtitle>
       <SectionContent>
         {/* Mobile */}

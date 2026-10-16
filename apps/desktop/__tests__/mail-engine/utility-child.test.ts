@@ -109,7 +109,7 @@ describe("desktop mail utility child", () => {
       type: "reply",
       id: "early",
       status: "error",
-      message: "mail engine is not started",
+      message: "邮件引擎未启动",
     });
   });
 });

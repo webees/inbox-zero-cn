@@ -53,13 +53,11 @@ export const updateAiSettingsAction = actionClientUser
       parsedInput: { aiProvider, aiModel, aiApiKey },
     }) => {
       if (env.NEXT_PUBLIC_AI_MODEL_SETTINGS_DISABLED) {
-        throw new SafeError("AI model settings are managed by the deployment.");
+        throw new SafeError("AI 模型设置由部署方管理。");
       }
 
       if (aiProvider === Provider.AZURE && !env.AZURE_RESOURCE_NAME) {
-        throw new Error(
-          "Azure provider requires AZURE_RESOURCE_NAME to be configured on the server",
-        );
+        throw new Error("Azure 服务商需要在服务器上配置 AZURE_RESOURCE_NAME");
       }
 
       const providedAiApiKey = aiApiKey?.trim() || null;
@@ -72,13 +70,13 @@ export const updateAiSettingsAction = actionClientUser
           select: { aiProvider: true, aiApiKey: true },
         });
 
-        if (!existingUser) throw new SafeError("User not found");
+        if (!existingUser) throw new SafeError("未找到用户");
 
         nextAiApiKey =
           existingUser.aiProvider === aiProvider ? existingUser.aiApiKey : null;
 
         if (!nextAiApiKey) {
-          throw new SafeError("You must provide an API key for this provider");
+          throw new SafeError("你必须为此服务商提供 API 密钥");
         }
       }
 
@@ -91,11 +89,11 @@ export const updateAiSettingsAction = actionClientUser
       });
 
       if (result.count === 0) {
-        throw new SafeError("User not found");
+        throw new SafeError("未找到用户");
       }
 
-      // Clear AI-related error messages when user updates their settings
-      // This allows them to be notified again if the new settings are also invalid
+      // 用户更新设置时清除与 AI 相关的错误消息
+      // 这样如果新设置同样无效，他们可以再次收到通知
       await clearSpecificErrorMessages({
         userId,
         errorTypes: [
@@ -104,7 +102,7 @@ export const updateAiSettingsAction = actionClientUser
           ErrorType.API_KEY_DEACTIVATED,
           ErrorType.AI_QUOTA_ERROR,
           ErrorType.INSUFFICIENT_CREDITS,
-          // Legacy keys for old stored errors
+          // 旧存储错误的遗留键
           ErrorType.INCORRECT_OPENAI_API_KEY,
           ErrorType.OPENAI_API_KEY_DEACTIVATED,
           ErrorType.ANTHROPIC_INSUFFICIENT_BALANCE,
@@ -120,7 +118,7 @@ export const updateDecisionModelSettingsAction = actionClientUser
   .action(
     async ({ ctx: { userId }, parsedInput: { decisionModelEnabled } }) => {
       if (env.NEXT_PUBLIC_AI_MODEL_SETTINGS_DISABLED) {
-        throw new SafeError("AI model settings are managed by the deployment.");
+        throw new SafeError("AI 模型设置由部署方管理。");
       }
 
       await prisma.user.update({
@@ -139,9 +137,7 @@ export const updateSensitiveDataPolicyAction = actionClient
       parsedInput: { sensitiveDataPolicy },
     }) => {
       if (isSensitiveDataPolicyLocked()) {
-        throw new SafeError(
-          "Sensitive data protection is managed by the deployment.",
-        );
+        throw new SafeError("敏感数据保护由部署方管理。");
       }
 
       await prisma.emailAccount.update({
@@ -200,7 +196,7 @@ export const updateDigestItemsAction = actionClient
 
       const promises = Object.entries(ruleDigestPreferences).map(
         async ([ruleId, enabled]) => {
-          // Verify the rule belongs to this email account
+          // 校验该规则属于此邮箱账号
           const rule = await prisma.rule.findUnique({
             where: {
               id: ruleId,
@@ -210,7 +206,7 @@ export const updateDigestItemsAction = actionClient
           });
 
           if (!rule) {
-            logger.error("Rule not found", { ruleId });
+            logger.error("未找到规则", { ruleId });
             return;
           }
 
@@ -221,7 +217,7 @@ export const updateDigestItemsAction = actionClient
           );
 
           if (enabled && !hasDigestAction) {
-            // Add DIGEST action
+            // 添加 DIGEST 操作
             await prisma.action.create({
               data: addActionOwnershipToInput(
                 {
@@ -232,7 +228,7 @@ export const updateDigestItemsAction = actionClient
               ),
             });
           } else if (!enabled && hasDigestAction) {
-            // Remove DIGEST action
+            // 移除 DIGEST 操作
             await prisma.action.deleteMany({
               where: {
                 ruleId: rule.id,

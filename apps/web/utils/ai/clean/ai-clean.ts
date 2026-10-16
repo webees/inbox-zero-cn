@@ -97,7 +97,7 @@ The current date is ${currentDate}.
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Clean",
+    label: "清理",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "compact" },
   });

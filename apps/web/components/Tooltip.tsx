@@ -30,7 +30,7 @@ export const Tooltip = ({
   hide,
   side,
 }: TooltipProps) => {
-  // Make tooltip work on mobile with a click
+  // 让 tooltip 在移动端可通过点击触发
   const [isOpen, setIsOpen] = useState(false);
 
   if (hide) return children;

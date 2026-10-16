@@ -262,7 +262,7 @@ describe("Logger", () => {
     const loggedMessage = consoleErrorSpy.mock.calls[0][0];
     expect(loggedMessage).not.toContain("[object Object]");
     expect(loggedMessage).toContain("Custom error");
-    // Error instances show only message in console logs (custom properties not shown)
+    // Error 实例在控制台日志中只显示消息（不显示自定义属性）
   });
 
   it("should serialize nested error objects", () => {
@@ -367,7 +367,7 @@ describe("Logger", () => {
   it("should handle complex nested error objects without [object Object]", () => {
     const logger = createScopedLogger("test");
 
-    // Complex error like Gmail API error
+    // 类似 Gmail API 错误的复杂错误
     const complexError = {
       error: {
         response: {
@@ -390,10 +390,10 @@ describe("Logger", () => {
 
     const loggedMessage = consoleErrorSpy.mock.calls[0][0];
 
-    // Should not have [object Object]
+    // 不应包含 [object Object]
     expect(loggedMessage).not.toContain("[object Object]");
 
-    // Should contain important details
+    // 应包含重要细节
     expect(loggedMessage).toContain("404");
     expect(loggedMessage).toContain("Requested entity was not found");
     expect(loggedMessage).toContain("attemptNumber");

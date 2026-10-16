@@ -167,12 +167,12 @@ export function GroupedTable({
               if (result?.serverError) {
                 toastError({ description: result.serverError });
               } else {
-                toastSuccess({ description: "Category changed" });
+                toastSuccess({ description: "分类已更改" });
               }
             }}
           >
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select category" />
+              <SelectValue placeholder="选择分类" />
             </SelectTrigger>
             <SelectContent>
               {categories.map((category) => (
@@ -218,7 +218,7 @@ export function GroupedTable({
 
             const onRemoveAllFromCategory = async () => {
               const yes = confirm(
-                "This will remove all emails from this category. You can re-categorize them later. Do you want to continue?",
+                "这将从此分类中移除所有邮件。你可以稍后重新分类。是否继续？",
               );
               if (!yes) return;
               const result = await removeAllFromCategoryAction(emailAccountId, {
@@ -229,7 +229,7 @@ export function GroupedTable({
                 toastError({ description: result.serverError });
               } else {
                 toastSuccess({
-                  description: "All emails removed from category",
+                  description: "已从分类中移除所有邮件",
                 });
               }
             };
@@ -403,24 +403,24 @@ function GroupRow({
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="xs">
               <MoreVerticalIcon className="size-4" />
-              <span className="sr-only">More</span>
+              <span className="sr-only">更多</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={onEditCategory}>
               <PencilIcon className="mr-2 size-4" />
-              Edit
+              编辑
             </DropdownMenuItem>
             <DropdownMenuItem onClick={onRemoveAllFromCategory}>
               <BookmarkXIcon className="mr-2 size-4" />
-              Remove All From Category
+              从分类中全部移除
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
         <Button variant="outline" size="xs" onClick={onArchiveAll}>
           <ArchiveIcon className="mr-2 size-4" />
-          Archive all
+          全部归档
         </Button>
       </TableCell>
     </TableRow>
@@ -440,7 +440,7 @@ function SenderRows({
     return (
       <TableRow>
         <TableCell colSpan={COLUMNS}>
-          <MessageText>This category is empty</MessageText>
+          <MessageText>此分类为空</MessageText>
         </TableCell>
       </TableRow>
     );
@@ -504,7 +504,7 @@ function ExpandedRows({
   if (error) {
     return (
       <TableRow>
-        <TableCell colSpan={COLUMNS}>Error loading emails</TableCell>
+        <TableCell colSpan={COLUMNS}>加载邮件出错</TableCell>
       </TableRow>
     );
   }
@@ -512,7 +512,7 @@ function ExpandedRows({
   if (!data?.threads.length) {
     return (
       <TableRow>
-        <TableCell colSpan={COLUMNS}>No emails found</TableCell>
+        <TableCell colSpan={COLUMNS}>未找到邮件</TableCell>
       </TableRow>
     );
   }

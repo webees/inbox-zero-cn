@@ -268,9 +268,9 @@ export function filterIncompleteDraftActions<T extends Action>(
 }
 
 /**
- * Extracts actions that require AI-generated arguments
+ * 提取需要 AI 生成参数的操作
  *
- * Example usage:
+ * 用法示例：
  * const actions = [
  *   {
  *     id: "1",
@@ -281,11 +281,11 @@ export function filterIncompleteDraftActions<T extends Action>(
  *   {
  *     id: "2",
  *     type: "archive",
- *     label: "Archive"
+ *     label: "归档"
  *   }
  * ]
  *
- * Returns:
+ * 返回：
  * [
  *   {
  *     actionId: "1",
@@ -299,14 +299,14 @@ export function filterIncompleteDraftActions<T extends Action>(
  *   }
  * ]
  *
- * Note: Only returns actions that have fields containing {{template variables}}
+ * 注意：只返回包含 {{template variables}} 字段的操作
  */
 export function extractActionsNeedingAiGeneration(actions: Action[]) {
   return actions
     .map((action) => {
       const fields = getParameterFieldsForAction(action);
 
-      // Skip if no AI-generated fields are needed
+      // 如果不需要 AI 生成的字段则跳过
       if (Object.keys(fields).length === 0) return;
 
       return {

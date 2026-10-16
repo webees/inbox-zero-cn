@@ -45,7 +45,7 @@ export function UpcomingMeetingsToggleList({
       onError: ({ error }) => {
         toastError({
           description: getActionErrorMessage(error, {
-            prefix: "Failed to update this meeting",
+            prefix: "更新此会议失败",
           }),
         });
       },
@@ -69,7 +69,7 @@ export function UpcomingMeetingsToggleList({
 
   return (
     <div>
-      <TypographyH3>Up next</TypographyH3>
+      <TypographyH3>即将开始</TypographyH3>
 
       <LoadingContent
         loading={isLoading}
@@ -78,10 +78,10 @@ export function UpcomingMeetingsToggleList({
       >
         {isLocked && (
           <Alert className="mt-4">
-            <AlertTitle>Meeting recording requires the Plus plan</AlertTitle>
+            <AlertTitle>录制会议需要 Plus 套餐</AlertTitle>
             <AlertDescription className="flex flex-wrap items-center justify-between gap-2">
-              Upgrade to have meetings recorded and summarized automatically.
-              <UpgradeToPlusButton tooltip="Upgrade to the Plus plan to record and summarize your meetings." />
+              升级即可自动录制并总结会议。
+              <UpgradeToPlusButton tooltip="升级到 Plus 套餐以录制并总结你的会议。" />
             </AlertDescription>
           </Alert>
         )}
@@ -92,7 +92,7 @@ export function UpcomingMeetingsToggleList({
               <EmptyMedia variant="icon">
                 <CalendarIcon />
               </EmptyMedia>
-              <EmptyTitle>No upcoming calls with a video link</EmptyTitle>
+              <EmptyTitle>没有即将开始且带视频链接的通话</EmptyTitle>
             </EmptyHeader>
           </Empty>
         ) : (
@@ -123,10 +123,9 @@ export function UpcomingMeetingsToggleList({
                   {!detailMeetingId && (
                     <Toggle
                       name={`join-${event.id}`}
-                      ariaLabel={`Record ${event.title}`}
+                      ariaLabel={`录制 ${event.title}`}
                       enabled={joining}
-                      // A downgraded user must still be able to cancel a booked
-                      // meeting; only creating a new booking is gated.
+                      // 降级的用户仍应能取消已预约的会议；只有创建新预约才受限制。
                       disabled={
                         pendingEventId === event.id || (isLocked && !joining)
                       }

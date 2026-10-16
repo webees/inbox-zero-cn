@@ -98,7 +98,7 @@ describe("/api/user/drafts/[draftId]", () => {
     const response = await read("draft-1");
     expect(response.status).toBe(404);
     await expect(response.json()).resolves.toEqual({
-      error: "Email account not found",
+      error: "未找到邮箱账号",
       isKnownError: true,
     });
     expect(provider.getDraft).not.toHaveBeenCalled();
@@ -174,7 +174,7 @@ describe("/api/user/drafts/[draftId]", () => {
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toMatchObject({
-      error: expect.stringContaining("changed"),
+      error: expect.stringContaining("邮箱草稿已变更。"),
       isKnownError: true,
     });
   });

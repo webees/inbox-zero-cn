@@ -27,7 +27,7 @@ export const createKnowledgeAction = actionClient
         where: { emailAccountId },
       });
 
-      // premium check
+      // 高级版检查
       if (
         knowledgeCount >= KNOWLEDGE_BASIC_MAX_ITEMS ||
         content.length > KNOWLEDGE_BASIC_MAX_CHARS
@@ -39,7 +39,7 @@ export const createKnowledgeAction = actionClient
 
         if (!hasAccess) {
           throw new SafeError(
-            `You can save up to ${KNOWLEDGE_BASIC_MAX_CHARS} characters and ${KNOWLEDGE_BASIC_MAX_ITEMS} item to your knowledge base. Upgrade to a higher tier to save unlimited content.`,
+            `你最多可以向知识库保存 ${KNOWLEDGE_BASIC_MAX_CHARS} 个字符和 ${KNOWLEDGE_BASIC_MAX_ITEMS} 个条目。升级到更高档位即可保存无限内容。`,
           );
         }
       }
@@ -70,7 +70,7 @@ export const updateKnowledgeAction = actionClient
 
         if (!hasAccess) {
           throw new SafeError(
-            `You can save up to ${KNOWLEDGE_BASIC_MAX_CHARS} characters to your knowledge base. Upgrade to a higher tier to save unlimited content.`,
+            `你最多可以向知识库保存 ${KNOWLEDGE_BASIC_MAX_CHARS} 个字符。升级到更高档位即可保存无限内容。`,
           );
         }
       }

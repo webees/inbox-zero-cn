@@ -8,7 +8,7 @@ import type {
 // https://stackoverflow.com/a/53276873/2602771
 export type PartialRecord<K extends PropertyKey, T> = Partial<Record<K, T>>;
 
-// type guard for filters that removed undefined and null values
+// 用于已移除 undefined 和 null 值的过滤器的类型守卫
 export function isDefined<T>(value: T | undefined | null): value is T {
   return value !== undefined && value !== null;
 }
@@ -51,9 +51,9 @@ export type ThreadWithPayloadMessages = gmail_v1.Schema$Thread & {
 
 export interface ParsedMessage {
   attachments?: Attachment[];
-  bodyContentType?: "text" | "html"; // For Outlook: indicates which format the body was originally in
+  bodyContentType?: "text" | "html"; // 对于 Outlook：表示正文原本采用的格式
   calendarContent?: string;
-  // For Outlook: the event the mailbox created on the user's calendar for this invitation
+  // 对于 Outlook：邮箱为该邀请在用户日历上创建的事件
   calendarEventId?: string;
   conversationIndex?: string | null;
   date: string;
@@ -68,7 +68,7 @@ export interface ParsedMessage {
   isMeetingInvitation?: boolean;
   labelIds?: string[];
   parentFolderId?: string;
-  // For Outlook: store raw recipient data to avoid double conversion
+  // 对于 Outlook：存储原始收件人数据以避免重复转换
   rawRecipients?: {
     from?: NullableOption<Recipient>;
     toRecipients?: NullableOption<Recipient[]>;
@@ -100,7 +100,7 @@ interface Headers {
 export interface ParsedMessageHeaders {
   bcc?: string;
   cc?: string;
-  date: string; // the date supplied by the email. internally we rely on message.internalDate provided by the gmail api
+  date: string; // 邮件提供的日期。内部我们依赖 gmail api 提供的 message.internalDate
   from: string;
   "in-reply-to"?: string;
   "list-unsubscribe"?: string;
@@ -112,7 +112,7 @@ export interface ParsedMessageHeaders {
   to: string;
 }
 
-// Note: use `getEmailForLLM(message)` to convert a `ParsedMessage` to an `EmailForLLM`
+// 注意：使用 `getEmailForLLM(message)` 将 `ParsedMessage` 转换为 `EmailForLLM`
 export type EmailForLLM = {
   id: string;
   from: string;

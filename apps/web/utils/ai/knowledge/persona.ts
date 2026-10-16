@@ -96,7 +96,7 @@ ${getEmailListPrompt({ messages: emails, messageMaxLength: 1000 })}
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Persona Analysis",
+    label: "用户画像分析",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "none" },
   });

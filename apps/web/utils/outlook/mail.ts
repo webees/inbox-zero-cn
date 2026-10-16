@@ -44,8 +44,8 @@ export async function sendEmailWithHtml(
   if (!toRecipients?.length)
     throw new SafeError("Recipient address is required");
 
-  // For replies with a message ID, use createReply for proper threading
-  // Microsoft Graph's sendMail doesn't support In-Reply-To/References headers
+  // 对于带 message ID 的回复，使用 createReply 以正确建立会话关联
+  // Microsoft Graph 的 sendMail 不支持 In-Reply-To/References 头
   if (body.replyToEmail?.messageId) {
     return sendReplyUsingCreateReply(client, body, logger, options);
   }
@@ -89,9 +89,9 @@ export async function replyToEmail(
     message,
   });
 
-  // Use createReply to create a properly threaded draft
-  // Microsoft Graph's sendMail doesn't support setting In-Reply-To/References headers
-  // Only createReply/createReplyAll endpoints ensure proper threading
+  // 使用 createReply 创建正确建立会话关联的草稿
+  // Microsoft Graph 的 sendMail 不支持设置 In-Reply-To/References 头
+  // 只有 createReply/createReplyAll 端点能确保正确的会话关联
   const replyDraft: Message = await withMicrosoftGraphWriteRetry(
     () =>
       client.getClient().api(`/me/messages/${message.id}/createReply`).post({}),
@@ -103,7 +103,7 @@ export async function replyToEmail(
     replyDraft.from?.emailAddress?.address,
   );
 
-  // Update the draft with our content
+  // 用我们的内容更新草稿
   await withMicrosoftGraphWriteRetry(
     () =>
       client
@@ -133,7 +133,7 @@ export async function replyToEmail(
     });
   }
 
-  // Send the draft
+  // 发送草稿
   await withMicrosoftGraphWriteRetry(
     () => client.getClient().api(`/me/messages/${replyDraft.id}/send`).post({}),
     logger,
@@ -159,14 +159,14 @@ export async function forwardEmail(
 ) {
   ensureEmailSendingEnabled();
 
-  if (!options.to.trim()) throw new Error("Recipient address is required");
+  if (!options.to.trim()) throw new Error("需要收件人地址");
 
   const toRecipients = buildGraphRecipients(options.to);
-  if (!toRecipients?.length) throw new Error("Recipient address is required");
+  if (!toRecipients?.length) throw new Error("需要收件人地址");
   const ccRecipients = buildGraphRecipients(options.cc);
   const bccRecipients = buildGraphRecipients(options.bcc);
 
-  // Get the original message
+  // 获取原始邮件
   const originalMessage: Message = await withMicrosoftGraphRetry(
     () => client.getClient().api(`/me/messages/${options.messageId}`).get(),
     logger,
@@ -286,10 +286,10 @@ export async function draftEmail(
     originalEmail.rawRecipients?.from ??
     fallbackToRecipient;
 
-  // Build CC list from reply-all and args
+  // 从回复全部参数和实参构建 CC 列表
   const ccAddresses = mergeAndDedupeRecipients(recipients.cc, args.cc);
 
-  // Convert CC addresses to Outlook format
+  // 将 CC 地址转换为 Outlook 格式
   const ccRecipients = ccAddresses.map((addr) => ({
     emailAddress: {
       address: extractEmailAddress(addr),
@@ -297,7 +297,7 @@ export async function draftEmail(
     },
   }));
 
-  // Handle BCC if provided
+  // 如果提供了 BCC 则处理
   const bccAddresses = mergeAndDedupeRecipients([], args.bcc);
   const bccRecipients = bccAddresses.map((addr) => ({
     emailAddress: {
@@ -306,8 +306,8 @@ export async function draftEmail(
     },
   }));
 
-  // Get the original message's isRead status before creating the draft
-  // Microsoft Graph's createReplyAll automatically marks the original as read
+  // 创建草稿前获取原始邮件的 isRead 状态
+  // Microsoft Graph 的 createReplyAll 会自动将原始邮件标记为已读
   const originalMessage: Message = await withMicrosoftGraphRetry(
     () =>
       client
@@ -319,8 +319,8 @@ export async function draftEmail(
   );
   const wasUnread = originalMessage.isRead === false;
 
-  // Use createReplyAll endpoint to create a proper reply draft
-  // This ensures the draft is linked to the original message as a reply all
+  // 使用 createReplyAll 端点创建正确的回复草稿
+  // 这确保草稿作为回复全部链接到原始邮件
   const replyDraft: Message = await withMicrosoftGraphWriteRetry(
     () =>
       client
@@ -330,10 +330,10 @@ export async function draftEmail(
     logger,
   );
 
-  // Update the draft with our content
+  // 用我们的内容更新草稿
   const updateRequest = client.getClient().api(`/me/messages/${replyDraft.id}`);
 
-  // To handle change key error
+  // 用于处理 change key 错误
   const etag = (replyDraft as { "@odata.etag"?: string })?.["@odata.etag"];
   if (etag) {
     updateRequest.header("If-Match", etag);
@@ -363,8 +363,8 @@ export async function draftEmail(
     });
   }
 
-  // Restore the original message's unread status if it was unread before
-  // createReplyAll automatically marks the original message as read
+  // 如果原始邮件之前未读，则恢复其未读状态
+  // createReplyAll 会自动将原始邮件标记为已读
   if (wasUnread) {
     await withMicrosoftGraphWriteRetry(
       () =>
@@ -376,8 +376,8 @@ export async function draftEmail(
     );
   }
 
-  // Use the original replyDraft.id since that's the stable ID
-  // The PATCH response might not always include the full object?
+  // 使用原始 replyDraft.id，因为那是稳定的 ID
+  // PATCH 响应可能并不总是包含完整对象？
   return { ...updatedDraft, id: replyDraft.id };
 }
 
@@ -395,9 +395,9 @@ async function sendReplyUsingCreateReply(
 ): Promise<SentEmailResult> {
   const originalMessageId = body.replyToEmail!.messageId!;
 
-  // Use createReply to create a properly threaded draft
-  // Microsoft Graph's createReply automatically sets In-Reply-To and References headers
-  // based on the original message, ensuring proper threading across email providers
+  // 使用 createReply 创建正确建立会话关联的草稿
+  // Microsoft Graph 的 createReply 会自动设置 In-Reply-To 和 References 头
+  // 基于原始邮件，确保跨邮件服务商的正确会话关联
   const replyDraft: Message = await withMicrosoftGraphWriteRetry(
     () =>
       client
@@ -411,17 +411,17 @@ async function sendReplyUsingCreateReply(
   const ccRecipients = buildGraphRecipients(body.cc);
   const bccRecipients = buildGraphRecipients(body.bcc);
 
-  // Update the draft with our content and recipients
-  // Note: We cannot set In-Reply-To/References headers via internetMessageHeaders
-  // as Microsoft Graph only allows custom headers (starting with x-) there.
-  // The createReply endpoint handles standard threading headers automatically.
+  // 用我们的内容和收件人更新草稿
+  // 注意：我们无法通过 internetMessageHeaders 设置 In-Reply-To/References 头
+  // 因为 Microsoft Graph 在那里只允许自定义头（以 x- 开头）。
+  // createReply 端点会自动处理标准会话头。
   await withMicrosoftGraphWriteRetry(
     () =>
       client
         .getClient()
         .api(`/me/messages/${replyDraft.id}`)
         .patch({
-          // Exchange starts a new conversation when the reply subject changes.
+          // 当回复主题改变时 Exchange 会开始新会话。
           ...(options?.preserveThreadSubject ? {} : { subject: body.subject }),
           body: {
             contentType: "html",
@@ -443,7 +443,7 @@ async function sendReplyUsingCreateReply(
     });
   }
 
-  // Send the draft
+  // 发送草稿
   await withMicrosoftGraphWriteRetry(
     () => client.getClient().api(`/me/messages/${replyDraft.id}/send`).post({}),
     logger,
@@ -456,10 +456,10 @@ async function sendReplyUsingCreateReply(
 }
 
 /**
- * Graph treats `conversationId` as read-only, so a draft posted to
- * `/me/messages` always opens a new conversation. Drafting from the forwarded
- * message is the only way to keep a forward in the thread it came from, and it
- * carries the original attachments across as well.
+ * Graph 将 `conversationId` 视为只读，因此发布到
+ * `/me/messages` 的草稿总是开启新会话。基于被转发
+ * 邮件创建草稿是将转发保留在其原会话中的唯一方式，且它
+ * 还会将原始附件一并带上。
  */
 async function sendForwardUsingCreateForward(
   client: OutlookClient,
@@ -538,8 +538,8 @@ async function createForwardDraft(
 }
 
 /**
- * Creating the draft before sending returns the conversation id, which
- * `sendMail` withholds behind its empty 202.
+ * 在发送前创建草稿会返回会话 id，
+ * 而 `sendMail` 将其隐藏在空的 202 响应之后。
  */
 async function sendNewDraft(
   client: OutlookClient,
@@ -774,7 +774,7 @@ async function uploadAttachmentViaSession({
 
   const uploadUrl = (uploadSession as UploadSession).uploadUrl;
   if (!uploadUrl) {
-    throw new Error("Failed to create Outlook attachment upload session");
+    throw new Error("创建 Outlook 附件上传会话失败");
   }
 
   await uploadResumableChunks({

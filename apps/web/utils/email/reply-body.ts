@@ -5,8 +5,8 @@ import { getOrCreateReferralCode } from "@/utils/referral/referral-code";
 import { generateReferralLink } from "@/utils/referral/referral-link";
 import { renderReferralSignatureHtml } from "@/utils/referral/signature";
 
-// Reply bodies passed to the email providers are HTML-safe: untrusted text is
-// escaped here, and only trusted signature HTML is appended after it.
+// 传给邮件服务商的回复正文是 HTML 安全的：不受信任的文本
+// 在此处转义，之后仅追加受信任的签名 HTML。
 export async function buildDraftReplyBody({
   text,
   emailAccountId,

@@ -47,9 +47,9 @@ describe("ConfigureBookingLinkDialog", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: "General" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Advanced" })).toBeTruthy();
-    expect(screen.queryByRole("button", { name: "Availability" })).toBeNull();
+    expect(screen.getByRole("button", { name: "常规" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "高级" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "空闲时间" })).toBeNull();
   });
 });
 

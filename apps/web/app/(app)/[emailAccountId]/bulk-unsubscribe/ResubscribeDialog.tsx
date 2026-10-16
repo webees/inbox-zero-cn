@@ -35,7 +35,7 @@ export function ResubscribeDialog({
   const [unblockLoading, setUnblockLoading] = useState(false);
   const [doneLoading, setDoneLoading] = useState(false);
 
-  // Unblock without calling mutate - we'll refresh when dialog closes
+  // 解除屏蔽时不调用 mutate——对话框关闭后再刷新
   const handleUnblock = async () => {
     setUnblockLoading(true);
     try {
@@ -73,14 +73,14 @@ export function ResubscribeDialog({
     <Dialog open={open} onOpenChange={handleDialogClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Resubscribe to "{senderName}"</DialogTitle>
+          <DialogTitle>重新订阅「{senderName}」</DialogTitle>
           <DialogDescription className="pt-2">
-            Follow the steps below to receive emails from this sender again.
+            按照以下步骤，即可重新收到此发件人的邮件。
           </DialogDescription>
         </DialogHeader>
 
         <div className="rounded-lg border">
-          {/* Step 1 */}
+          {/* 步骤 1 */}
           <div className="flex gap-4 p-4">
             <div className="flex size-7 shrink-0 items-center justify-center rounded-full border bg-muted text-sm font-medium">
               {unblockComplete ? (
@@ -91,15 +91,14 @@ export function ResubscribeDialog({
             </div>
             <div className="flex flex-1 items-center justify-between gap-4">
               <div>
-                <div className="font-medium">Unblock Sender</div>
+                <div className="font-medium">解除屏蔽发件人</div>
                 <p className="text-sm text-muted-foreground">
-                  We're currently auto-archiving this sender. Click "Unblock" to
-                  allow emails from them.
+                  我们目前会自动归档此发件人的邮件。点击「解除屏蔽」以允许接收其邮件。
                 </p>
               </div>
               {unblockComplete ? (
                 <p className="shrink-0 text-sm font-medium text-green-600">
-                  Unblocked
+                  已解除屏蔽
                 </p>
               ) : (
                 <Button
@@ -110,16 +109,16 @@ export function ResubscribeDialog({
                   disabled={unblockLoading}
                 >
                   {unblockLoading && <ButtonLoader />}
-                  Unblock
+                  解除屏蔽
                 </Button>
               )}
             </div>
           </div>
 
-          {/* Separator */}
+          {/* 分隔线 */}
           <div className="border-t" />
 
-          {/* Step 2 */}
+          {/* 步骤 2 */}
           <div className="flex gap-4 p-4">
             <div className="flex size-7 shrink-0 items-center justify-center rounded-full border bg-muted text-sm font-medium">
               {doneLoading ? (
@@ -129,9 +128,9 @@ export function ResubscribeDialog({
               )}
             </div>
             <div>
-              <div className="font-medium">Manually Resubscribe</div>
+              <div className="font-medium">手动重新订阅</div>
               <p className="text-sm text-muted-foreground">
-                Visit the sender's website and manually resubscribe.
+                访问发件人的网站并手动重新订阅。
               </p>
             </div>
           </div>
@@ -143,14 +142,14 @@ export function ResubscribeDialog({
             onClick={() => handleDialogClose(false)}
             disabled={doneLoading}
           >
-            Cancel
+            取消
           </Button>
           <Button
             onClick={handleDone}
             disabled={!unblockComplete || doneLoading}
           >
             {doneLoading && <ButtonLoader />}
-            Done
+            完成
           </Button>
         </DialogFooter>
       </DialogContent>

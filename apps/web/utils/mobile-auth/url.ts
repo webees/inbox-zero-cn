@@ -55,7 +55,7 @@ function getCustomSchemeCallbackUrl(
 ): string {
   const origin = env[envName];
   if (!origin) {
-    throw new Error(`${envName} is required for this auth callback scheme`);
+    throw new Error(`${envName} 是此认证回调方案所必需的`);
   }
 
   const normalized = origin.endsWith("://")

@@ -30,7 +30,7 @@ export async function listMcpTools(
     await client.connect(transport);
     const result = await client.listTools();
 
-    logger.info("Listed MCP tools", {
+    logger.info("已列出 MCP 工具", {
       integration: integration.name,
       toolCount: result.tools.length,
     });
@@ -42,12 +42,12 @@ export async function listMcpTools(
       readOnlyHint: tool.annotations?.readOnlyHint,
     }));
   } catch (error) {
-    logger.error("Failed to list MCP tools", {
+    logger.error("列出 MCP 工具失败", {
       error,
       integration: integration.name,
     });
     throw new Error(
-      `Failed to list tools: ${error instanceof Error ? error.message : "Unknown error"}`,
+      `列出工具失败：${error instanceof Error ? error.message : "未知错误"}`,
     );
   } finally {
     await client.close();

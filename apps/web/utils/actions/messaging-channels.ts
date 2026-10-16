@@ -70,11 +70,11 @@ export const updateSlackRouteAction = actionClient
       });
 
       if (!channel) {
-        throw new SafeError("Messaging channel not found");
+        throw new SafeError("未找到消息渠道");
       }
 
       if (channel.provider !== MessagingProvider.SLACK) {
-        throw new SafeError("Messaging channel is not Slack");
+        throw new SafeError("消息渠道不是 Slack");
       }
 
       if (!isOperationalSlackChannel(channel)) {
@@ -130,7 +130,7 @@ export const updateMessagingFeatureRouteAction = actionClient
       });
 
       if (!channel) {
-        throw new SafeError("Messaging channel not found");
+        throw new SafeError("未找到消息渠道");
       }
 
       if (!isMessagingChannelOperational(channel)) {
@@ -194,8 +194,7 @@ export const disconnectChannelAction = actionClient
         },
       });
     } catch (error) {
-      if (isNotFoundError(error))
-        throw new SafeError("Messaging channel not found");
+      if (isNotFoundError(error)) throw new SafeError("未找到消息渠道");
       throw error;
     }
   });
@@ -218,7 +217,7 @@ export const linkSlackWorkspaceAction = actionClient
         },
       });
       if (existing?.isConnected) {
-        throw new SafeError("Workspace already connected");
+        throw new SafeError("工作区已连接");
       }
 
       const orgMateChannel = await prisma.messagingChannel.findFirst({
@@ -246,9 +245,7 @@ export const linkSlackWorkspaceAction = actionClient
       });
 
       if (!orgMateChannel?.accessToken) {
-        throw new SafeError(
-          "No connected workspace found in your organization",
-        );
+        throw new SafeError("在你的组织中未找到已连接的工作区");
       }
 
       const client = createSlackClient(orgMateChannel.accessToken);
@@ -259,7 +256,7 @@ export const linkSlackWorkspaceAction = actionClient
 
       if (!slackUser) {
         throw new SafeError(
-          "Could not find your Slack account. Your Inbox Zero email may not match your Slack profile email.",
+          "找不到你的 Slack 账号。你的 Inbox Zero 邮箱可能与 Slack 个人资料邮箱不一致。",
         );
       }
 
@@ -298,7 +295,7 @@ export const linkSlackWorkspaceAction = actionClient
         logger,
       });
 
-      logger.info("Slack workspace linked via org-mate token", { teamId });
+      logger.info("已通过组织同事令牌关联 Slack 工作区", { teamId });
     },
   );
 
@@ -308,10 +305,10 @@ export const createMessagingLinkCodeAction = actionClient
   .action(async ({ ctx: { emailAccountId }, parsedInput: { provider } }) => {
     if (provider === "TEAMS") {
       if (!isTeamsBotConfigured()) {
-        throw new SafeError("Teams integration is not configured");
+        throw new SafeError("未配置 Teams 集成");
       }
     } else if (!env.TELEGRAM_BOT_TOKEN) {
-      throw new SafeError("Telegram integration is not configured");
+      throw new SafeError("未配置 Telegram 集成");
     }
 
     const code = generateMessagingLinkCode({
@@ -383,13 +380,13 @@ export const toggleRuleChannelAction = actionClient
       ]);
 
       if (!rule) {
-        throw new SafeError("Rule not found");
+        throw new SafeError("未找到规则");
       }
       if (rule.organizationRuleId) {
         throw new SafeError(RULE_MANAGED_BY_ORGANIZATION_ERROR);
       }
       if (!channel) {
-        throw new SafeError("Messaging channel not found");
+        throw new SafeError("未找到消息渠道");
       }
 
       let actionType: ActionType =
@@ -414,9 +411,7 @@ export const toggleRuleChannelAction = actionClient
             MessagingRoutePurpose.RULE_NOTIFICATIONS,
           )
         ) {
-          throw new SafeError(
-            "Please select a target channel before enabling notifications",
-          );
+          throw new SafeError("启用通知前请先选择目标渠道");
         }
 
         await prisma.action.deleteMany({
@@ -515,9 +510,7 @@ async function syncMessagingFeatureRoute({
   );
 
   if (!rulesRoute) {
-    throw new SafeError(
-      "Please select a target channel before enabling features",
-    );
+    throw new SafeError("启用功能前请先选择目标渠道");
   }
 
   await prisma.messagingRoute.create({

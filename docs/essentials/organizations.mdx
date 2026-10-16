@@ -1,79 +1,78 @@
 ---
-title: 'Organizations'
-description: 'Invite teammates, manage roles, share assistant rules, and view consented team analytics.'
+title: '组织'
+description: '邀请队友、管理角色、共享助手规则，并查看经同意的团队分析。'
 icon: 'users'
 ---
 
-Organizations let a team manage membership, distribute shared assistant rules, and review aggregate usage. Each email account can belong to only one organization at a time.
+组织让团队可以管理成员、分发共享的助手规则并审阅汇总用量。每个邮箱账号同一时间只能属于一个组织。
 
-## Create an organization
+## 创建组织
 
-1. Open the account menu.
-2. Select **Create organization**.
-3. Enter the organization name and a unique URL slug.
-4. Select **Create Organization**.
+1. 打开账号菜单。
+2. 选择**创建组织**。
+3. 输入组织名称和一个唯一的 URL slug。
+4. 选择**创建组织**。
 
-The creator becomes the organization **Owner**.
+创建者会成为该组织的**所有者**。
 
-## Roles and permissions
+## 角色与权限
 
-| Role | Access |
+| 角色 | 访问权限 |
 | --- | --- |
-| **Owner** | All admin abilities, plus transferring ownership. |
-| **Admin** | Invite and remove members, change non-owner roles, manage organization rules, and view analytics that members have shared. |
-| **Member** | View the member list and use organization-managed rules in their own account. |
+| **所有者** | 所有管理能力，外加转移所有权。 |
+| **管理员** | 邀请和移除成员、更改非所有者角色、管理组织规则，并查看成员已共享的分析。 |
+| **成员** | 查看成员列表，并在自己的账号中使用由组织管理的规则。 |
 
-After a transfer, the previous owner becomes an admin.
+转移后，原所有者会成为管理员。
 
-## Invite and manage members
+## 邀请和管理成员
 
-1. Open **My Organization** from the account menu.
-2. On **Members**, select **Invite members**.
-3. Enter up to 10 email addresses at a time and assign a role.
-4. Send the invitations.
+1. 从账号菜单打开**我的组织**。
+2. 在**成员**上选择**邀请成员**。
+3. 一次输入最多 10 个邮箱地址并分配一个角色。
+4. 发送邀请。
 
-Invitations are delivered by email and expire after 14 days. The recipient must accept while signed in with the exact invited email address. An admin can cancel a pending invitation from the Members page.
+邀请通过邮件发送，并在 14 天后过期。收件人必须使用确切的受邀邮箱地址登录后方可接受。管理员可以从成员页面取消待处理的邀请。
 
-Use the menu beside a member to change their role or remove them. The owner also sees **Transfer ownership**. If the organization provides premium seats, accepting an invitation can claim an available seat; removing a member releases their organization seat.
+使用成员旁的菜单更改其角色或将其移除。所有者还会看到**转移所有权**。如果组织提供高级版席位，接受邀请可以占用一个可用席位；移除成员会释放其组织席位。
 
-## Create organization rules
+## 创建组织规则
 
-Owners and admins can open **Rules** and create assistant rules that are copied to every member account.
+所有者和管理员可以打开**规则**并创建会复制到每个成员账号的助手规则。
 
-- New members receive the current organization rules when they join.
-- Editing an organization rule updates its member copies.
-- Members see a **Managed by organization** rule and cannot edit its definition.
-- A member may turn a managed rule on or off for their own account.
-- The rule only runs for a member when both the organization-level rule and that member's copy are enabled.
-- Deleting an organization rule removes it for all members.
+- 新成员在加入时会收到当前的组织规则。
+- 编辑组织规则会更新其在各成员处的副本。
+- 成员会看到一条**由组织管理**的规则，且无法编辑其定义。
+- 成员可以为自己账号打开或关闭某条受管理的规则。
+- 只有当组织级规则和该成员的副本都启用时，规则才会为该成员运行。
+- 删除组织规则会为所有成员移除它。
 
-Messaging-channel actions are not supported in organization rules; configure those actions in each member's own rules instead.
+组织规则不支持消息渠道操作；请在每位成员自己的规则中配置这些操作。
 
-Because organization rules act on every member's inbox, test a rule's conditions before rolling it out organization-wide.
+由于组织规则会作用于每位成员的收件箱，在向整个组织推广前请先测试规则的条件。
 
-## Analytics and privacy
+## 分析与隐私
 
-The **Analytics** tab is available to owners and admins. It shows emails received, rules executed, and active members over a selected date range.
+**分析**标签页对所有者和管理员可用。它显示所选日期范围内的已接收邮件、已执行规则和活跃成员。
 
-Member analytics are private by default. Each member sees a prompt to allow organization-admin analytics. Admins can open a member's Analytics and Usage pages only after that member grants access. A hidden-activity badge means the member has not shared analytics.
+成员分析默认是私密的。每位成员会看到一个提示，询问是否允许组织管理员查看分析。只有在成员授予访问权限后，管理员才能打开该成员的分析和用量页面。隐藏活动徽章表示该成员尚未共享分析。
 
-Granting analytics access does not give an admin the ability to read the member's email content through the organization page.
+授予分析访问权限并不会让管理员能够通过组织页面读取该成员的邮件内容。
 
-## Troubleshooting
+## 故障排查
 
-### An invitation cannot be accepted
+### 无法接受邀请
 
-Confirm that it has not expired and that the signed-in account exactly matches the invited email. The recipient must leave any other organization before joining.
+确认邀请尚未过期，且登录的账号与受邀邮箱完全一致。收件人必须先退出其他组织才能加入。
 
-### Rules or Analytics tabs are missing
+### 缺少「规则」或「分析」标签页
 
-Those tabs are limited to owners and admins. Ask an owner or admin to update your role if appropriate.
+这些标签页仅限所有者和管理员。如合适，请让所有者或管理员更新你的角色。
 
-### A member cannot edit a rule
+### 成员无法编辑规则
 
-Rules labeled **Managed by organization** can only be edited by an owner or admin from the organization's Rules tab. The member can still enable or disable their own copy.
+标为**由组织管理**的规则只能由所有者或管理员从组织的「规则」标签页编辑。成员仍然可以启用或停用自己的副本。
 
-### A member's analytics are unavailable
+### 成员的不可用分析
 
-The member must select **Allow Access** on the organization page. Analytics can also remain empty until Inbox Zero has processed enough account activity for the selected date range.
-
+成员必须在组织页面上选择**允许访问**。在 Inbox Zero 处理了所选日期范围内足够的账号活动之前，分析也可能一直为空。

@@ -151,7 +151,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     onError: (error) => {
       if (resumingRef.current) {
         interruptedRef.current = true;
-        logger.warn("Assistant chat resume failed", {
+        logger.warn("AI 助手对话恢复失败", {
           chatId: chatId ?? chat.id,
           errorName: error.name,
         });
@@ -167,7 +167,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         pendingInlineActionsRef.current = null;
         pendingRequestRef.current = null;
         pendingRequestContextRef.current = null;
-        logger.warn("Assistant chat stream interrupted", {
+        logger.warn("AI 助手对话流已中断", {
           chatId: chatId ?? chat.id,
           errorName: error.name,
         });
@@ -314,7 +314,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       ).length;
 
       if (textLength > ASSISTANT_CHAT_MAX_TEXT_LENGTH) {
-        logger.warn("Assistant chat input rejected", {
+        logger.warn("AI 助手对话输入被拒绝", {
           attachmentCount,
           chatId: chatId ?? chat.id,
           emailAccountId,
@@ -380,8 +380,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // The reply's message id is its stream id; sending it keeps a late stop
-    // from cancelling a newer reply.
+    // 回复的消息 id 就是它的 stream id；发送它可以避免迟到的停止请求
+    // 取消更新的回复。
     const lastMessage = chat.messages.at(-1);
     const activeStreamId =
       lastMessage?.role === "assistant" &&
@@ -401,11 +401,11 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const response = await stopRequest;
-      if (!response.ok) throw new Error(`Status ${response.status}`);
+      if (!response.ok) throw new Error(`状态 ${response.status}`);
     } catch (error) {
-      logger.warn("Failed to stop assistant chat run", {
+      logger.warn("停止 AI 助手对话运行失败", {
         chatId,
-        errorName: error instanceof Error ? error.name : "UnknownError",
+        errorName: error instanceof Error ? error.name : "未知错误",
       });
     }
     await mutate(`/api/chats/${chatId}`);
@@ -493,7 +493,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 export function useChat(): ChatContextType {
   const context = useContext(ChatContext);
   if (context === undefined) {
-    throw new Error("useChat must be used within a ChatProvider");
+    throw new Error("useChat 必须在 ChatProvider 内使用");
   }
   return context;
 }
@@ -543,18 +543,18 @@ function reportChatRequestError({
   fallbackChatId: string;
   request: PendingChatRequest | null;
 }) {
-  logger.error("Assistant chat request failed", {
+  logger.error("AI 助手对话请求失败", {
     attachmentCount: request?.attachmentCount ?? 0,
     chatId: request?.chatId ?? fallbackChatId,
     emailAccountId,
-    errorName: error instanceof Error ? error.name : "UnknownError",
+    errorName: error instanceof Error ? error.name : "未知错误",
     failureCategory: "request_error",
     statusCode: getErrorStatusCode(error),
     textLength: request?.textLength ?? 0,
   });
   logger.flush().catch(() => undefined);
   toastError({
-    description: "We couldn't send your message. Please try again.",
+    description: "无法发送你的消息，请重试。",
   });
   console.error(error);
   captureException(error);

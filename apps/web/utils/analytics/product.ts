@@ -5,59 +5,58 @@ export const PRODUCT_ANALYTICS_EVENTS = {
 } as const;
 
 /**
- * `$pageview` and `app_page_viewed` fire when the path or query changes, but
- * not for thread selection or search text; see `getPageViewSearch`. Every
- * event's URLs drop those params too; see `stripUntrackedUrlParams`.
+ * 当路径或查询发生变化时会触发 `$pageview` 和 `app_page_viewed`，
+ * 但会话选择或搜索文本不会触发；参见 `getPageViewSearch`。
+ * 每个事件的 URL 也会剔除这些参数；参见 `stripUntrackedUrlParams`。
  *
- * Mail app usage and speed. Properties are only ids, counts, enums and
- * durations: never subjects, senders, search text or content.
+ * 邮件应用的使用情况与速度。属性只包含 id、计数、枚举和
+ * 时长：绝不包含主题、发件人、搜索文本或正文内容。
  *
- * Super properties on every event (registered at PostHog init):
- * - `client`: "desktop" (Electron shell) | "web".
- * - `desktop_version`: desktop app version, desktop only, parsed from the
- *   Electron user agent.
- * - `mail_engine_transport`: "desktop-ipc" | "browser" | "unavailable".
+ * 每个事件上的超级属性（在 PostHog 初始化时注册）：
+ * - `desktop_version`：桌面应用版本，仅桌面端，从
+ *   Electron user agent 解析得出。
+ * - `mail_engine_transport`："desktop-ipc" | "browser" | "unavailable"。
  *
- * `mail_action`: a mail command run from the keyboard or the command palette.
- * Clicks are covered by autocapture.
- * - `action`: shortcut id from `lib/shortcuts/registry.ts` (e.g. "archive",
- *   "reply", "snooze") or command palette command id (e.g. "mail-archive",
- *   "nav-inbox", "rule-<ruleId>").
- * - `source`: "shortcut" | "palette".
- * - `shortcut`: the registry key combo that fired, e.g. "e", "mod+k", "g>a".
- *   Shortcuts only.
+ * `mail_action`：通过键盘或命令面板执行的邮件命令。
+ * 点击由自动捕获覆盖。
+ * - `action`：来自 `lib/shortcuts/registry.ts` 的快捷键 id（例如 "archive"、
+ *   "reply"、"snooze"）或命令面板命令 id（例如 "mail-archive"、
+ *   "nav-inbox"、"rule-<ruleId>"）。
+ * - `source`："shortcut" | "palette"。
+ * - `shortcut`：所触发的注册表按键组合，例如 "e"、"mod+k"、"g>a"。
+ *   仅限快捷键。
  *
- * `mail_navigation_summary`: list navigation shortcuts (J/K, arrows, extend
- * selection) are counted rather than sent per press. Flushed every 5 minutes
- * and when the page is hidden, only when a count is non-zero.
- * - `<shortcutId>_count` per shortcut pressed: `next_count`, `previous_count`,
- *   `extendSelectionDown_count`, `extendSelectionUp_count`.
- * - `total_count`: sum of the counts.
+ * `mail_navigation_summary`：列表导航快捷键（J/K、方向键、扩展
+ * 选择）会被累计计数，而不是每次按下都发送。每 5 分钟
+ * 以及页面被隐藏时刷写，且仅在计数非零时进行。
+ * - 每个按下的快捷键对应 `<shortcutId>_count`：`next_count`、`previous_count`、
+ *   `extendSelectionDown_count`、`extendSelectionUp_count`。
+ * - `total_count`：各计数之和。
  *
- * `mail_performance_summary`: real-user speed, sent by a random 5% of page
- * loads (`sample_rate`) from the first mail visit onwards. Flushed every 5
- * minutes and when the page is hidden, only when there is data. Each metric
- * has `<metric>_count`, `_p50_ms`, `_p75_ms`, `_p95_ms` and `_max_ms`:
- * - `input_event`: keydown/pointerdown/click event duration (input to next
- *   paint), for events of at least 40ms.
- * - `long_task`: main-thread tasks over 50ms, plus
- *   `long_task_total_blocking_ms` (sum of the time past 50ms).
- * - `thread_switch`: from the open thread changing (J/K, arrows, Enter,
- *   click) to the reader showing it.
+ * `mail_performance_summary`：真实用户速度，由随机 5% 的页面
+ * 加载（`sample_rate`）从首次访问邮件起发送。每 5 分钟
+ * 以及页面被隐藏时刷写，且仅在存在数据时进行。每个指标
+ * 都有 `<metric>_count`、`_p50_ms`、`_p75_ms`、`_p95_ms` 和 `_max_ms`：
+ * - `input_event`：keydown/pointerdown/click 事件时长（输入到下一次
+ *   绘制），针对至少 40ms 的事件。
+ * - `long_task`：超过 50ms 的主线程任务，外加
+ *   `long_task_total_blocking_ms`（超过 50ms 的时长之和）。
+ * - `thread_switch`：从打开的会话发生切换（J/K、方向键、Enter、
+ *   点击）到阅读器呈现它的时长。
  *
- * `desktop_health_summary`: desktop app health, sent by each desktop window
- * about 2 minutes after load and then hourly. Covers the time since the
- * previous summary from any window (`interval_ms`), so windows never count
- * the same stretch twice. Duration metrics have `<metric>_count`, `_p50_ms`,
- * `_p95_ms` and `_max_ms`, and are left out when there were no samples:
- * - `main_loop_delay`: Electron main-process event-loop delay. High values
- *   mean window input and IPC were blocked.
- * - `engine_loop_delay`: the same for the local mail engine process.
- * - `sqlite_read` / `sqlite_write`: mail database transactions, timed from
- *   the call so reads include time queued behind writes.
- * - `engine_running`, `engine_restarts` (engine crashes recovered from since
- *   the app started), `mailbox_bytes` (local database size) and
- *   `desktop_version`.
+ * `desktop_health_summary`：桌面应用健康状态，由每个桌面窗口在
+ * 加载约 2 分钟后发送，之后每小时发送一次。覆盖自任一窗口上一次
+ * 摘要以来的时间（`interval_ms`），因此各窗口不会重复计算
+ * 同一段区间。时长指标有 `<metric>_count`、`_p50_ms`、
+ * `_p95_ms` 和 `_max_ms`，在没有样本时省略：
+ * - `main_loop_delay`：Electron 主进程事件循环延迟。数值偏高
+ *   意味着窗口输入和 IPC 被阻塞。
+ * - `engine_loop_delay`：本地邮件引擎进程的同类指标。
+ * - `sqlite_read` / `sqlite_write`：邮件数据库事务，从
+ *   调用时开始计时，因此读取时间包含排在写入之后的排队时间。
+ * - `engine_running`、`engine_restarts`（自应用启动以来恢复的引擎崩溃次数）、
+ *   `mailbox_bytes`（本地数据库大小）以及
+ *   `desktop_version`。
  */
 export const MAIL_ANALYTICS_EVENTS = {
   action: "mail_action",
@@ -176,21 +175,21 @@ export const PRODUCT_ANALYTICS_ACTIONS = {
 } as const;
 
 export const APP_PAGES = {
-  mail: { label: "Mail", area: "mail" },
-  shared_conversations: { label: "Shared with me", area: "mail" },
-  shared_activity: { label: "Activity", area: "mail" },
-  assistant_chat: { label: "Chat", area: "manage" },
-  automation: { label: "Assistant", area: "manage" },
-  channels: { label: "Channels", area: "manage" },
-  meetings: { label: "Meetings", area: "manage" },
-  bulk_unsubscribe: { label: "Bulk Unsubscribe", area: "cleanup" },
-  bulk_archive: { label: "Bulk Archive", area: "cleanup" },
-  analytics: { label: "Analytics", area: "cleanup" },
-  deep_clean: { label: "Deep Clean", area: "cleanup" },
-  meeting_briefs: { label: "Meeting Briefs", area: "more" },
-  attachments: { label: "Attachments", area: "more" },
-  calendars: { label: "Calendars", area: "more" },
-  integrations: { label: "Integrations", area: "more" },
+  mail: { label: "邮件", area: "mail" },
+  shared_conversations: { label: "与我共享", area: "mail" },
+  shared_activity: { label: "动态", area: "mail" },
+  assistant_chat: { label: "聊天", area: "manage" },
+  automation: { label: "助手", area: "manage" },
+  channels: { label: "渠道", area: "manage" },
+  meetings: { label: "会议", area: "manage" },
+  bulk_unsubscribe: { label: "批量退订", area: "cleanup" },
+  bulk_archive: { label: "批量归档", area: "cleanup" },
+  analytics: { label: "分析", area: "cleanup" },
+  deep_clean: { label: "深度清理", area: "cleanup" },
+  meeting_briefs: { label: "会议简报", area: "more" },
+  attachments: { label: "附件", area: "more" },
+  calendars: { label: "日历", area: "more" },
+  integrations: { label: "集成", area: "more" },
 } as const;
 
 export type AppPage = keyof typeof APP_PAGES;
@@ -311,9 +310,9 @@ export function getAppPageViewProperties({
 }
 
 /**
- * The query string a page view is keyed on. Opening a thread or moving with
- * J/K rewrites the thread params, which is not a new page, and ids and search
- * text don't belong in analytics URLs.
+ * 页面浏览记录所依据的查询字符串。打开会话或使用
+ * J/K 移动会重写会话参数，这并不算作新页面，而且 id 和搜索
+ * 文本也不应出现在分析 URL 中。
  */
 const URL_PROPERTY_KEYS = [
   "$current_url",
@@ -323,8 +322,8 @@ const URL_PROPERTY_KEYS = [
 ];
 
 /**
- * PostHog attaches the page URL to every event, including autocapture, so
- * thread ids and search text in the query would otherwise reach it.
+ * PostHog 会把页面 URL 附加到每个事件上（包括自动捕获），
+ * 否则查询中的会话 id 和搜索文本就会传到那里。
  */
 export function stripUntrackedUrlParams<
   T extends {

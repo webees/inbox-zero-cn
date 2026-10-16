@@ -11,20 +11,18 @@ const DRAFT_REPLY_CONFIDENCE_RANK: Record<DraftReplyConfidence, number> = {
 export const DRAFT_REPLY_CONFIDENCE_OPTIONS = [
   {
     value: DraftReplyConfidence.ALL_EMAILS,
-    label: "All emails",
-    description: "Draft a reply for every email, even when uncertain.",
+    label: "所有邮件",
+    description: "为每封邮件起草回复，即使不确定也照常起草",
   },
   {
     value: DraftReplyConfidence.STANDARD,
-    label: "Standard",
-    description:
-      "Skip drafting when the AI is clearly unsure. Most emails still get a draft.",
+    label: "标准",
+    description: "当 AI 明显不确定时跳过起草。大多数邮件仍会生成草稿",
   },
   {
     value: DraftReplyConfidence.HIGH_CONFIDENCE,
-    label: "High confidence",
-    description:
-      "Only draft when the AI is very sure of the right reply. Many emails will get no draft.",
+    label: "高置信度",
+    description: "仅当 AI 非常确定合适的回复时才起草。许多邮件将不会生成草稿",
   },
 ] as const;
 

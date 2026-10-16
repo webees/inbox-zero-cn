@@ -114,7 +114,7 @@ describe("getUserErrorMessages", () => {
     expect(result?.[ErrorType.ACCOUNT_DISCONNECTED]).toEqual(
       expect.objectContaining({
         actionUrl: "/email-account-1/permissions/consent",
-        actionLabel: "Reconnect account",
+        actionLabel: "重新连接账号",
       }),
     );
     expect(prisma.user.updateMany).toHaveBeenCalledWith({
@@ -134,7 +134,7 @@ describe("getUserErrorMessages", () => {
         errorMessages: {
           [ErrorType.ACCOUNT_DISCONNECTED]: expect.objectContaining({
             actionUrl: "/email-account-1/permissions/consent",
-            actionLabel: "Reconnect account",
+            actionLabel: "重新连接账号",
           }),
         },
       },
@@ -160,7 +160,7 @@ describe("getUserErrorMessages", () => {
     expect(result?.[ErrorType.ACCOUNT_DISCONNECTED]).toEqual(
       expect.objectContaining({
         actionUrl: "/accounts",
-        actionLabel: "Manage accounts",
+        actionLabel: "管理账号",
       }),
     );
     expect(prisma.user.updateMany).toHaveBeenCalledWith({
@@ -179,7 +179,7 @@ describe("getUserErrorMessages", () => {
         errorMessages: {
           [ErrorType.ACCOUNT_DISCONNECTED]: expect.objectContaining({
             actionUrl: "/accounts",
-            actionLabel: "Manage accounts",
+            actionLabel: "管理账号",
           }),
         },
       },
@@ -360,7 +360,7 @@ describe("addUserErrorMessageWithNotification", () => {
             message: "Automation stopped",
             emailSentAt: expect.any(String),
             actionUrl: "/email-account-1/permissions/consent",
-            actionLabel: "Reconnect account",
+            actionLabel: "重新连接账号",
           }),
         },
       },
@@ -375,7 +375,7 @@ describe("addUserErrorMessageWithNotification", () => {
           timestamp: "2026-07-01T04:00:40.506Z",
           emailSentAt: "2026-07-01T04:00:40.506Z",
           actionUrl: "/email-account-1/permissions/consent",
-          actionLabel: "Reconnect account",
+          actionLabel: "重新连接账号",
         },
       },
     } as any);
@@ -483,7 +483,7 @@ describe("addUserErrorMessageWithNotification", () => {
       expect.objectContaining({
         emailProps: expect.objectContaining({
           actionUrl: "/email-account-1/permissions/consent",
-          actionLabel: "Reconnect account",
+          actionLabel: "重新连接账号",
         }),
       }),
     );
@@ -493,7 +493,7 @@ describe("addUserErrorMessageWithNotification", () => {
         errorMessages: {
           [ErrorType.ACCOUNT_DISCONNECTED]: expect.objectContaining({
             actionUrl: "/email-account-1/permissions/consent",
-            actionLabel: "Reconnect account",
+            actionLabel: "重新连接账号",
           }),
         },
       },

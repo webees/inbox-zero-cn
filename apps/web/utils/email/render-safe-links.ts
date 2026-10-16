@@ -137,8 +137,8 @@ function formatLinkLabel(label: string, url: string) {
 
   if (!normalizedLabel) return getLinkDestinationLabel(url);
 
-  // Only disclose the destination when the visible label explicitly names a
-  // URL, domain, or email that does not match the actual target.
+  // 仅当可见标签明确写出与实际目标不符的
+  // URL、域名或电子邮件时才披露目标地址。
   const explicitTargets = extractExplicitLinkTargets(normalizedLabel);
   if (!explicitTargets.length) return normalizedLabel;
   if (explicitTargets.every((target) => doesTargetMatchUrl(target, url))) {

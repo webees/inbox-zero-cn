@@ -1,0 +1,233 @@
+name: 打包镜像到 GHCR
+
+# 并行构建 linux/amd64 与 linux/arm64 生产镜像，推送到 GitHub Container Registry，
+# 合成多架构清单后用 actions/delete-package-versions 清理旧版本，只保留最近若干个。
+#
+# 触发方式：
+#   1. 每轮区域汉化流程结束都由 localize-zh 工作流自动触发；
+#   2. 手动 workflow_dispatch；
+#   3. 定时巡检（每 6 小时一次，偏移 17 分避开汉化任务）。
+# 任何触发都会先按默认分支最新提交算一份"镜像内容指纹"（apps/packages/docker 等），
+# 与 latest 镜像上的 i18n.content-hash 比对：一致就跳过构建，避免重复烧 CI。
+# 进行中的构建不会被取消（cancel-in-progress: false），排队中的重复触发会被最新一次替换。
+#
+# 两个架构跑在各自的原生 runner 上并行构建（arm64 用 ubuntu-24.04-arm），分别按 digest 推送，
+# 再由 merge 任务合成 multi-arch manifest，因此不需要 QEMU 模拟。
+#
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */6 * * *"
+
+concurrency:
+  group: publish-ghcr-${{ github.ref }}
+  # 不取消进行中的构建：汉化每轮都会触发一次打包，取消会让镜像一直打不完。
+  # 排队中的重复触发会被新的触发替换，轮到它时 check 发现内容未变会直接跳过。
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository }}
+
+jobs:
+  check:
+    name: 检查是否需要构建
+    runs-on: ubuntu-latest
+    outputs:
+      needed: ${{ steps.compare.outputs.needed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # 始终按默认分支最新提交构建/比对：排队后启动的运行也不会打包旧提交
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 1
+
+      - name: 计算镜像内容指纹
+        id: hash
+        # 只对真正会进镜像的内容取指纹：翻译记账文件（.github/**、docs/**）变化不应触发重新打包。
+        run: |
+          set -euo pipefail
+          hash="$(git ls-tree -r HEAD -- apps packages docker scripts patches package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json .npmrc tsconfig.json 2>/dev/null | sha256sum | cut -d' ' -f1)"
+          echo "content_hash=${hash}" >> "$GITHUB_OUTPUT"
+          echo "revision=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "内容指纹：${hash}（revision=$(git rev-parse HEAD)）"
+
+      - name: 比对 latest 镜像的内容指纹
+        id: compare
+        env:
+          CONTENT_HASH: ${{ steps.hash.outputs.content_hash }}
+        run: |
+          set -euo pipefail
+          repo_lc="$(echo "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')"
+          token="$(curl -s "https://ghcr.io/token?scope=repository:${repo_lc}:pull" | jq -r .token)"
+          index="$(curl -s -H "Authorization: Bearer ${token}" \
+            -H "Accept: application/vnd.oci.image.index.v1+json,application/vnd.docker.distribution.manifest.list.v2+json" \
+            "https://ghcr.io/v2/${repo_lc}/manifests/latest" || true)"
+          amd="$(jq -r '[.manifests[]? | select(.platform.architecture=="amd64")][0].digest // empty' <<<"$index")"
+          if [ -z "$amd" ]; then
+            echo "没有可用的 latest 镜像，需要构建。"
+            echo "needed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          config="$(curl -s -H "Authorization: Bearer ${token}" \
+            -H "Accept: application/vnd.oci.image.manifest.v1+json" \
+            "https://ghcr.io/v2/${repo_lc}/manifests/${amd}" | jq -r '.config.digest // empty')"
+          revision="$(curl -s -L -H "Authorization: Bearer ${token}" \
+            "https://ghcr.io/v2/${repo_lc}/blobs/${config}" \
+            | jq -r '.config.Labels["org.opencontainers.image.revision"] // empty')"
+          image_hash="$(curl -s -L -H "Authorization: Bearer ${token}" \
+            "https://ghcr.io/v2/${repo_lc}/blobs/${config}" \
+            | jq -r '.config.Labels["i18n.content-hash"] // empty')"
+          echo "latest 镜像 revision=${revision:-（未知）} content-hash=${image_hash:-（未知）}"
+          echo "当前分支最新提交=$(git rev-parse HEAD) content-hash=${CONTENT_HASH}"
+          if [ -n "$image_hash" ] && [ "$image_hash" = "$CONTENT_HASH" ]; then
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "needed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    name: 构建 ${{ matrix.platform }}
+    needs: check
+    if: needs.check.outputs.needed == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 90
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # 与 check 一致：按默认分支最新提交打包
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 1
+
+      - name: 计算镜像内容指纹
+        id: hash
+        run: |
+          set -euo pipefail
+          hash="$(git ls-tree -r HEAD -- apps packages docker scripts patches package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json .npmrc tsconfig.json 2>/dev/null | sha256sum | cut -d' ' -f1)"
+          echo "content_hash=${hash}" >> "$GITHUB_OUTPUT"
+          echo "revision=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "内容指纹：${hash}（revision=$(git rev-parse HEAD)）"
+
+      - name: 设置 Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 登录 GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 生成镜像标签
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+
+      - name: 构建并推送单架构
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile.prod
+          platforms: ${{ matrix.platform }}
+          labels: |
+            ${{ steps.meta.outputs.labels }}
+            i18n.revision=${{ steps.hash.outputs.revision }}
+            i18n.content-hash=${{ steps.hash.outputs.content_hash }}
+          # 单架构按 digest 推送，不打标签；标签由 merge 任务统一生成
+          outputs: type=image,name=${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
+          cache-from: type=gha,scope=${{ matrix.platform }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.platform }}
+
+      - name: 导出 digest
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/digests
+          touch "/tmp/digests/${DIGEST#sha256:}"
+          echo "digest: ${DIGEST}"
+
+      - name: 上传 digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ strategy.job-index }}
+          path: /tmp/digests/*
+          retention-days: 1
+
+  merge:
+    name: 合成多架构清单
+    needs: build
+    if: needs.build.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: 下载各架构 digest
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/digests
+          pattern: digests-*
+          merge-multiple: true
+
+      - name: 设置 Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 登录 GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 生成多架构标签
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,prefix=sha-,format=short
+            type=raw,value={{date 'YYYYMMDD-HHmmss'}}
+
+      - name: 创建并推送多架构清单
+        working-directory: /tmp/digests
+        run: |
+          set -euo pipefail
+          docker buildx imagetools create \
+            $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            $(printf '${{ env.IMAGE_NAME }}@sha256:%s ' *)
+
+      - name: 校验清单
+        run: docker buildx imagetools inspect "${{ env.IMAGE_NAME }}:latest"
+
+  cleanup:
+    name: 清理旧镜像
+    needs: merge
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      packages: write
+    steps:
+      - name: 清理旧镜像版本
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: ${{ github.event.repository.name }}
+          package-type: container
+          # multi-arch 每次构建会产生「1 个带标签的清单 + 2 个无标签的子清单」共约 3 个版本，
+          # 默认保留 15 个版本（约 5 次构建），避免删掉仍被产物引用的子清单
+          min-versions-to-keep: ${{ vars.KEEP_VERSIONS || '15' }}
+          token: ${{ secrets.GITHUB_TOKEN }}

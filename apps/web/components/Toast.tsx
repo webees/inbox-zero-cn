@@ -3,8 +3,8 @@ import { Toaster as SonnerToaster, toast } from "sonner";
 import { Kbd } from "@/components/Kbd";
 import { cn } from "@/utils";
 
-// The app's primary token is near-black in light mode and near-white in dark,
-// so links and rails use the mail palette's blue explicitly.
+// 应用的主色在浅色模式下接近黑色、深色模式下接近白色，
+// 因此链接和侧边栏显式使用邮件调色板的蓝色。
 const ACCENT_TEXT = "text-blue-600 dark:text-blue-400";
 
 export function toastSuccess(options: {
@@ -14,7 +14,7 @@ export function toastSuccess(options: {
   duration?: number;
   action?: { label: string; onClick: () => void };
 }) {
-  // Reusing an undo toast's id replaces it, so its undo no longer applies.
+  // 复用某个撤销 toast 的 id 会替换它，因此其撤销不再适用。
   if (options.id && latestToastUndo?.id === options.id) latestToastUndo = null;
   return toast.success(options.title || options.description, {
     description: options.title ? options.description : undefined,
@@ -71,7 +71,7 @@ export function toastUndo(options: {
     action: {
       label: (
         <>
-          Undo
+          撤销
           {options.shortcut && (
             <Kbd className={cn("ml-1.5", ACCENT_TEXT)}>{options.shortcut}</Kbd>
           )}

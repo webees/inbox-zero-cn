@@ -164,7 +164,7 @@ describe("moveMessagesForSenders", () => {
         continueOnError: false,
         logger: createTestLogger(),
       }),
-    ).rejects.toThrow("Graph batch returned one or more error responses.");
+    ).rejects.toThrow("Graph 批处理返回了一个或多个错误响应。");
 
     expect(mockUpdateEmailMessagesForSender).toHaveBeenCalledWith({
       sender: "sender@example.com",

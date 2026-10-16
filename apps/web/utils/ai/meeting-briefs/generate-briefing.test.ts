@@ -2,8 +2,9 @@ import { getMockMessage } from "@/__tests__/helpers";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { MeetingBriefingData } from "@/utils/meeting-briefs/gather-context";
 
-const { mockGetModel } = vi.hoisted(() => ({
+const { mockGetModel, mockOpenRouterWebSearch } = vi.hoisted(() => ({
   mockGetModel: vi.fn(),
+  mockOpenRouterWebSearch: vi.fn(() => ({ type: "provider" })),
 }));
 
 vi.mock("@/env", () => ({
@@ -18,6 +19,9 @@ vi.mock("@/utils/llms/model", () => ({
   getModel: mockGetModel,
 }));
 vi.mock("@/utils/llms", () => ({ createGenerateObject: vi.fn() }));
+vi.mock("@openrouter/ai-sdk-provider", () => ({
+  openrouter: { tools: { webSearch: mockOpenRouterWebSearch } },
+}));
 vi.mock("@/utils/ai/helpers", () => ({
   getUserInfoPrompt: vi.fn(
     ({ emailAccount }) =>
@@ -203,14 +207,18 @@ describe("buildPrompt timezone handling", () => {
     expect(context).toContain("Partner &amp; Team");
   });
 
-  it("always runs one OpenRouter web search without a client tool call", () => {
+  it("requires one OpenRouter server web search", () => {
     const config = getWebSearchConfigForProvider("openrouter");
+    const tools = config?.tools;
 
-    // AI SDK 7 rejects a required tool choice that only a server-side tool
-    // satisfies, so forcing the search has to happen through the plugin.
-    expect(config?.tools).toBeUndefined();
-    expect(config?.providerOptions).toEqual({
-      openrouter: { plugins: [{ id: "web", max_results: 5 }] },
+    expect(mockOpenRouterWebSearch).toHaveBeenCalledWith({
+      engine: "auto",
+      maxResults: 5,
     });
+    expect(tools).toHaveProperty("web_search");
+    expect(config?.providerOptions).toEqual({
+      openrouter: { max_tool_calls: 1 },
+    });
+    expect(config?.toolChoice).toBe("required");
   });
 });

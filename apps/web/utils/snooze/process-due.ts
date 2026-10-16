@@ -51,7 +51,7 @@ export async function processDueSnoozedThreads(logger: Logger) {
       try {
         return await processSnoozedThread(snoozedThread, logger);
       } catch (error) {
-        logger.error("Failed to process snoozed thread", {
+        logger.error("处理已暂缓会话失败", {
           error,
           snoozedThreadId: snoozedThread.id,
         });
@@ -98,7 +98,7 @@ export async function processSnoozedThread(
       : { status: "failed", reason: "restore" };
   } catch (error) {
     await releaseSnoozedThreadForRetry(snoozedThread.id, leaseStartedAt);
-    itemLogger.error("Failed to process snoozed thread", { error });
+    itemLogger.error("处理已暂缓会话失败", { error });
     return { status: "failed", reason: "restore" };
   }
 }

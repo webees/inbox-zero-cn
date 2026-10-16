@@ -70,7 +70,7 @@ describe("trashThread", () => {
       "@odata.nextLink": nextLink,
     });
 
-    await expect(trashThread(options)).rejects.toThrow("pagination");
+    await expect(trashThread(options)).rejects.toThrow("分页");
     expect(post).not.toHaveBeenCalled();
   });
 

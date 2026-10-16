@@ -226,7 +226,7 @@ describe("cleanupInvalidTokens", () => {
         userEmail: "test@example.com",
         emailAccountId: "ea_1",
         errorType: "Account disconnected",
-        errorMessage: expect.stringContaining("missing required permissions"),
+        errorMessage: expect.stringContaining("缺少必需的权限"),
         logger,
       }),
     );
@@ -251,7 +251,7 @@ describe("cleanupInvalidTokens", () => {
         userEmail: "test@example.com",
         emailAccountId: "ea_1",
         errorType: "Account disconnected",
-        errorMessage: expect.stringContaining("security policy"),
+        errorMessage: expect.stringContaining("安全策略"),
         logger,
       }),
     );

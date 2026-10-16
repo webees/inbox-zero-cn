@@ -192,9 +192,7 @@ describe("OutlookProvider.countMessages", () => {
       },
     });
     const provider = new OutlookProvider(client, createTestLogger());
-    await expect(provider.countMessages({})).rejects.toThrow(
-      "exact message count",
-    );
+    await expect(provider.countMessages({})).rejects.toThrow("准确的邮件数量");
   });
 });
 
@@ -413,7 +411,7 @@ describe("OutlookProvider.searchMessages", () => {
         emailProvider: provider,
         folderName: "Missing",
       }),
-    ).rejects.toThrow("not found");
+    ).rejects.toThrow("未找到");
     expect(query).not.toHaveBeenCalled();
     query.mockRestore();
   });
@@ -577,7 +575,7 @@ describe("OutlookProvider.sendEmail", () => {
         subject: "Subject",
         messageText: "Message",
       }),
-    ).rejects.toThrow("Provider did not return a sent message ID");
+    ).rejects.toThrow("服务商未返回已发送邮件的 ID");
   });
 });
 
@@ -2249,7 +2247,7 @@ describe("OutlookProvider.createDraft", () => {
         subject: "Notes from our call",
         messageHtml: "<p>Thanks all</p>",
       }),
-    ).rejects.toThrow("No valid recipient email addresses");
+    ).rejects.toThrow("没有有效的收件人电子邮件地址");
 
     expect(post).not.toHaveBeenCalled();
   });

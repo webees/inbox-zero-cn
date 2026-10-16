@@ -45,8 +45,7 @@ export const getCalendarEventsTool = ({
 
         if (providers.length === 0) {
           return {
-            error:
-              "No calendar connected. The user needs to connect their calendar in Inbox Zero settings.",
+            error: "未连接日历。用户需要在 Inbox Zero 设置中连接日历。",
           };
         }
 

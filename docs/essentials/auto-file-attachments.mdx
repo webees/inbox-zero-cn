@@ -1,63 +1,63 @@
 ---
-title: 'Auto-File Attachments'
-description: 'Automatically organize email attachments in Google Drive or OneDrive.'
+title: '自动归档附件'
+description: '自动整理 Google Drive 或 OneDrive 中的邮件附件。'
 icon: 'folder-open'
 ---
 
-Auto-File Attachments keeps your drive organized without you lifting a finger. Incoming email attachments are analyzed and saved to the right folders in Google Drive or Microsoft OneDrive automatically.
+自动归档附件让你无需动手就能让云盘保持井然有序。收到的邮件附件会被分析并自动保存到 Google Drive 或 Microsoft OneDrive 中正确的文件夹。
 
 <iframe
   src="https://player.mux.com/QwgQawZKf5eQLrZ00UiRCYS3MXrIE8TsEL7opwHmerMw?metadata-video-title=Auto-File%20Attachments%20walkthrough&accent-color=%233b82f6"
-  title="Auto-File Attachments walkthrough"
+  title="自动归档附件演示"
   style={{ width: "100%", border: "none", aspectRatio: "16/9" }}
   loading="lazy"
   allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
   allowFullScreen
 ></iframe>
 
-## Set Up Auto-Filing
+## 设置自动归档
 
-### Connect a Drive
+### 连接云盘
 
-Open **Attachments** under Tools in the left sidebar and choose **Add Google Drive** or **Add OneDrive**.
+打开左侧边栏工具下的**附件**，选择**添加 Google Drive**或**添加 OneDrive**。
 
-For Google Drive, choose an access level:
+对于 Google Drive，选择一个访问级别：
 
-- **Standard**: You'll need to create new folders for filing.
-- **Full access**: Use your existing folders.
+- **标准**：你需要为归档创建新文件夹。
+- **完全访问权限**：使用你现有的文件夹。
 
-### Pick Your Folders
+### 选择文件夹
 
-Under **1. Pick your folders**, tick the folders in the folder tree that the assistant may file to. It only files to folders you select.
+在 **1. 选择你的文件夹**下，在文件夹树中勾选助手可以归档到的文件夹。它只会归档到你选择的文件夹。
 
-### Describe How You Organize
+### 描述你的整理方式
 
-Under **2. Describe how you organize**, write one plain-English prompt that covers all your filing rules, including anything to skip. For example:
+在 **2. 描述你的整理方式**下，用一段大白话提示词覆盖你所有的归档规则，包括任何需要跳过的内容。例如：
 
 ```text
 Contracts go to Transactions by property address.
 Receipts go to Receipts by month.
 ```
 
-If your prompt calls for it, such as filing receipts by month or invoices by vendor, the assistant can create a new subfolder for a document when no existing folder fits.
+如果你的提示词要求这样做，例如按月归档收据或按供应商归档发票，那么当没有合适的现有文件夹时，助手可以为文档创建新的子文件夹。
 
-### Review the Preview
+### 查看预览
 
-Choose **Preview with my recent emails**. Under **3. See it in action**, the assistant files up to three recent attachments for real, without sending notifications, and shows where each one went. If a destination is wrong, select the ✕ under **Correct?** to move the file to the right folder. When you're happy, choose **Looks good, start auto-filing**.
+选择**用我的近期邮件预览**。在 **3. 实际效果**下，助手会真实归档最多三个近期附件（不发送通知），并显示每个附件去了哪里。如果目标位置不对，请在**是否正确？**下选择 ✕ 把文件移动到正确的文件夹。满意后，选择**看起来没问题，开始自动归档**。
 
-## How Filing Works
+## 归档如何工作
 
-When a new attachment arrives, the assistant files it in the matching folder. Documents that don't match your prompt are skipped. If it isn't sure where a file belongs, it emails you to ask for a destination instead of filing automatically.
+当有新附件到达时，助手会把它归档到匹配的文件夹。与你的提示词不匹配的文档会被跳过。如果它不确定文件该归到哪里，它会给你发邮件询问目标位置，而不是自动归档。
 
-## Corrections and Activity
+## 纠正与活动
 
-Open **Attachments** to review **Recent Activity** and move a file to a different folder. You can also change your selected folders under **Allowed folders** and edit your prompt under **Filing rules**. Notification emails arrive in the source email thread, so you can also reply to approve a filing, move the file, or undo it. The assistant learns from these corrections.
+打开**附件**以查看**近期活动**并把文件移动到其他文件夹。你也可以在**允许的文件夹**下更改所选的文件夹，并在**归档规则**下编辑提示词。通知邮件会出现在来源邮件会话中，因此你也可以回复以批准归档、移动文件或撤销它。助手会从这些纠正中学习。
 
-## Delivery Settings
+## 投递设置
 
-Use the **Delivery** button on the Attachments page to configure updates:
+使用附件页面上的**投递**按钮配置更新：
 
-- **Email confirmations**: Receive an email when a file is sorted.
-- **Connected apps**: Enable document-filing alerts for connected Slack, Microsoft Teams, or Telegram accounts. Configure or connect them on **Channels**.
+- **邮件确认**：文件归档完成后收到一封邮件。
+- **已连接的应用**：为已连接的 Slack、Microsoft Teams 或 Telegram 账号启用文档归档提醒。在**渠道**上配置或连接它们。
 
-For Slack, select a direct message or an allowed private channel. The selected Slack bot must already be invited to a private channel before it can post there.
+对于 Slack，选择一条私信或一个允许的私有频道。所选 Slack 机器人必须已被邀请到某个私有频道，才能在那里发帖。

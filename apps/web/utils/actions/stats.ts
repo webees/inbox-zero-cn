@@ -15,7 +15,7 @@ export const loadEmailStatsAction = actionClient
       parsedInput: { loadBefore },
       ctx: { emailAccountId, logger },
     }) => {
-      // Get email account with provider information
+      // 获取带服务商信息的邮箱账号
       const emailAccount = await prisma.emailAccount.findUnique({
         where: { id: emailAccountId },
         select: {
@@ -26,7 +26,7 @@ export const loadEmailStatsAction = actionClient
       });
 
       if (!emailAccount?.account?.provider) {
-        throw new SafeError("Email account or provider not found");
+        throw new SafeError("未找到邮箱账号或服务商");
       }
 
       const emailProvider = await createEmailProvider({

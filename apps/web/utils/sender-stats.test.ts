@@ -146,7 +146,7 @@ describe("getSenderEmailStats", () => {
       }),
     ).rejects.toMatchObject({
       statusCode: 400,
-      safeMessage: "Invalid cursor",
+      safeMessage: "无效的 cursor",
     });
   });
 

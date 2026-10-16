@@ -103,23 +103,23 @@ const CHANNEL_FEATURES: Array<{
 }> = [
   {
     purpose: MessagingRoutePurpose.MEETING_BRIEFS,
-    name: "Meeting briefs",
-    description: "Get a summary before your meetings.",
+    name: "会议简报",
+    description: "在会议前获取摘要。",
   },
   {
     purpose: MessagingRoutePurpose.FOLLOW_UPS,
-    name: "Follow-up reminders",
-    description: "Get nudged about emails that need a follow-up.",
+    name: "跟进提醒",
+    description: "当有邮件需要跟随时收到提醒。",
   },
   {
     purpose: MessagingRoutePurpose.DIGESTS,
-    name: "Digests",
-    description: "Receive your scheduled digest in chat.",
+    name: "邮件摘要",
+    description: "在聊天中接收定时邮件摘要。",
   },
   {
     purpose: MessagingRoutePurpose.DOCUMENT_FILINGS,
-    name: "Document filing alerts",
-    description: "Notifications when documents are auto-filed.",
+    name: "文档归档提醒",
+    description: "文档自动归档时收到通知。",
   },
 ];
 
@@ -188,12 +188,12 @@ export function Channels() {
   return (
     <div className="mx-auto max-w-2xl space-y-10">
       <PageHeader
-        title="Channels"
-        description="Manage what gets delivered to your chat apps."
+        title="频道"
+        description="管理推送到聊天应用的内容。"
         video={{
-          title: "Getting started with Slack and Telegram",
+          title: "开始使用 Slack 和 Telegram",
           description:
-            "Learn how to get important emails in Slack or Telegram and send drafted replies from there.",
+            "了解如何在 Slack 或 Telegram 中接收重要邮件，并从中发送草稿回复。",
           muxPlaybackId: "QbtTl00g2Gjx3JhM016Xkei0202zW4qpsF302rp01sRQHaf028",
         }}
       />
@@ -242,7 +242,7 @@ export function Channels() {
           {connectedChannels.length === 0 &&
             unconnectedProviders.length === 0 && (
               <ItemCard className="py-8 text-center">
-                <MutedText>No channels available.</MutedText>
+                <MutedText>暂无可用频道。</MutedText>
               </ItemCard>
             )}
         </div>
@@ -255,10 +255,10 @@ const INTRO_FEATURES: Array<{
   icon: React.ElementType;
   label: string;
 }> = [
-  { icon: MailIcon, label: "Important emails" },
-  { icon: MessageCircleReplyIcon, label: "Drafted replies" },
-  { icon: CalendarClockIcon, label: "Meeting briefs" },
-  { icon: SunIcon, label: "Daily summary" },
+  { icon: MailIcon, label: "重要邮件" },
+  { icon: MessageCircleReplyIcon, label: "草稿回复" },
+  { icon: CalendarClockIcon, label: "会议简报" },
+  { icon: SunIcon, label: "每日摘要" },
 ];
 
 function ChannelsIntro({
@@ -272,12 +272,11 @@ function ChannelsIntro({
     <section className="rounded-xl border border-blue-100 bg-blue-50/40 p-6 dark:border-blue-950 dark:bg-blue-950/20">
       <h2 className="flex items-start gap-2 text-lg font-semibold tracking-tight">
         <BellIcon className="mt-1 size-5 shrink-0 text-blue-600 dark:text-blue-400" />
-        <span>Inbox Zero where you work.</span>
+        <span>在你工作的地方使用 Inbox Zero。</span>
       </h2>
       <MutedText className="mt-2 text-sm">
-        Important emails, pre-drafted replies, meeting briefs, and a daily inbox
-        summary
-        {providerList ? `, delivered to ${providerList}` : ""}.
+        重要邮件、预先起草的回复、会议简报，以及每日收件箱摘要
+        {providerList ? `，推送到 ${providerList}` : ""}。
       </MutedText>
       <div className="mt-5 flex flex-wrap gap-2">
         {INTRO_FEATURES.map(({ icon: Icon, label }) => (
@@ -297,7 +296,7 @@ function ChannelsIntro({
 function formatProviderList(providers: MessagingProvider[]) {
   if (providers.length === 0) return null;
   const names = sortProviders(providers).map((p) => PROVIDER_CONFIG[p].name);
-  return new Intl.ListFormat("en", { type: "disjunction" }).format(names);
+  return new Intl.ListFormat("zh", { type: "disjunction" }).format(names);
 }
 
 function SectionGroup({
@@ -347,13 +346,12 @@ function ConnectedChannelSection({
         analytics.captureAction("channel_disconnected", {
           provider: channel.provider,
         });
-        toastSuccess({ description: `${config.name} disconnected` });
+        toastSuccess({ description: `${config.name} 已断开连接` });
         onUpdate();
       },
       onError: (error) => {
         toastError({
-          description:
-            getActionErrorMessage(error.error) ?? "Failed to disconnect",
+          description: getActionErrorMessage(error.error) ?? "断开连接失败",
         });
       },
     },
@@ -388,7 +386,7 @@ function ConnectedChannelSection({
       title={config.name}
       badge={
         <div className="flex items-center gap-1">
-          <Badge color="green">Connected</Badge>
+          <Badge color="green">已连接</Badge>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -405,7 +403,7 @@ function ConnectedChannelSection({
                 className="text-destructive focus:text-destructive"
               >
                 <LogOutIcon className="mr-2 h-4 w-4" />
-                Disconnect {config.name}
+                断开连接 {config.name}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -415,9 +413,9 @@ function ConnectedChannelSection({
       <ItemCard>
         <Item size="sm">
           <ItemContent>
-            <ItemTitle>Rule notifications</ItemTitle>
+            <ItemTitle>规则通知</ItemTitle>
             <ItemDescription>
-              Choose which rules send notifications and where they go.
+              选择哪些规则发送通知，以及通知发送到哪里。
             </ItemDescription>
           </ItemContent>
           {isSlack && (
@@ -451,7 +449,7 @@ function ConnectedChannelSection({
           ) : (
             <Item size="sm">
               <ItemContent>
-                <MutedText className="text-sm">No rules</MutedText>
+                <MutedText className="text-sm">暂无规则</MutedText>
               </ItemContent>
             </Item>
           )}
@@ -498,7 +496,7 @@ function ConnectedChannelSection({
                 disabled={disabled}
                 upgradeTooltip={
                   digestLocked
-                    ? "Upgrade to the Plus plan to deliver digests to chat."
+                    ? "升级到 Plus 套餐即可将邮件摘要推送到聊天。"
                     : undefined
                 }
               />
@@ -546,8 +544,7 @@ function UnconnectedProviderSection({
       },
       onError: (error) => {
         toastError({
-          description:
-            getActionErrorMessage(error.error) ?? "Failed to generate code",
+          description: getActionErrorMessage(error.error) ?? "生成代码失败",
         });
       },
     },
@@ -582,10 +579,8 @@ function UnconnectedProviderSection({
         <ItemCard>
           <Item size="sm">
             <ItemContent>
-              <ItemTitle>Connect {config.name}</ItemTitle>
-              <ItemDescription>
-                Receive notifications via {config.name}.
-              </ItemDescription>
+              <ItemTitle>连接 {config.name}</ItemTitle>
+              <ItemDescription>通过 {config.name} 接收通知。</ItemDescription>
             </ItemContent>
             <ItemActions>
               <Button
@@ -594,7 +589,7 @@ function UnconnectedProviderSection({
                 disabled={isLoading}
                 onClick={handleConnect}
               >
-                Connect
+                连接
               </Button>
             </ItemActions>
           </Item>
@@ -624,20 +619,20 @@ function LinkCodeDialog({
   const providerName = dialog.provider === "TEAMS" ? "Teams" : "Telegram";
   const command = `/connect ${dialog.code}`;
   const openBotLabel =
-    dialog.provider === "TEAMS" ? "Open Teams app" : "Open Telegram bot";
+    dialog.provider === "TEAMS" ? "打开 Teams 应用" : "打开 Telegram 机器人";
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Connect {providerName}</DialogTitle>
+          <DialogTitle>连接 {providerName}</DialogTitle>
           <DialogDescription>
-            Send this command in a direct message with the Inbox Zero bot on{" "}
-            {providerName}. The code is one-time use and expires in 10 minutes.
+            在 {providerName} 上向 Inbox Zero 机器人发送私信，输入以下命令。
+            该代码仅可使用一次，并在 10 分钟后过期。
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-2">
-          <div className="text-xs text-muted-foreground">Command</div>
+          <div className="text-xs text-muted-foreground">命令</div>
           <CopyInput value={command} />
         </div>
         {dialog.botUrl && (
@@ -671,7 +666,7 @@ function RuleToggle({
   const enabled = currentActionType !== null;
   const isDraft = currentActionType === "DRAFT_MESSAGING_CHANNEL";
 
-  // Smart default: if the rule already has a DRAFT_EMAIL action, default to draft mode
+  // 智能默认：如果规则已有 DRAFT_EMAIL 操作，则默认使用草稿模式
   const hasDraftEmailAction = rule.actions.some(
     (a) => a.type === "DRAFT_EMAIL",
   );
@@ -683,12 +678,12 @@ function RuleToggle({
     toggleRuleChannelAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: "Settings saved" });
+        toastSuccess({ description: "设置已保存" });
         onUpdate();
       },
       onError: (error) => {
         toastError({
-          description: getActionErrorMessage(error.error) ?? "Failed to update",
+          description: getActionErrorMessage(error.error) ?? "更新失败",
         });
       },
     },
@@ -715,7 +710,7 @@ function RuleToggle({
       <ItemContent>
         <div className="flex items-center gap-2">
           <ItemTitle>{rule.name}</ItemTitle>
-          {isDraft && <Badge color="green">Draft reply</Badge>}
+          {isDraft && <Badge color="green">草稿回复</Badge>}
         </div>
       </ItemContent>
       <ItemActions>
@@ -734,7 +729,7 @@ function RuleToggle({
                   <CheckIcon
                     className={`mr-2 h-4 w-4 ${isDraft ? "invisible" : ""}`}
                   />
-                  Notify only
+                  仅通知
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => switchMode("DRAFT_MESSAGING_CHANNEL")}
@@ -742,7 +737,7 @@ function RuleToggle({
                   <CheckIcon
                     className={`mr-2 h-4 w-4 ${!isDraft ? "invisible" : ""}`}
                   />
-                  Draft reply in chat
+                  在聊天中起草回复
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -800,12 +795,12 @@ function FeatureRouteToggle({
     updateMessagingFeatureRouteAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: "Settings saved" });
+        toastSuccess({ description: "设置已保存" });
         onUpdate();
       },
       onError: (error) => {
         toastError({
-          description: getActionErrorMessage(error.error) ?? "Failed to update",
+          description: getActionErrorMessage(error.error) ?? "更新失败",
         });
       },
     },
@@ -879,7 +874,7 @@ function FeatureRouteAction({
         : prefixPath(emailAccountId, "/drive");
 
     return (
-      <Tooltip content="Open settings">
+      <Tooltip content="打开设置">
         <Button asChild variant="ghost" size="iconSm">
           <Link href={href}>
             <ChevronRightIcon className="h-4 w-4" />
@@ -891,7 +886,7 @@ function FeatureRouteAction({
 
   return (
     <>
-      <Tooltip content="Configure">
+      <Tooltip content="配置">
         <Button variant="ghost" size="iconSm" onClick={() => setOpen(true)}>
           <Settings2Icon className="h-4 w-4" />
         </Button>

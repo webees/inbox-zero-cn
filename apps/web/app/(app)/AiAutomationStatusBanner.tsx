@@ -11,7 +11,7 @@ export function AiAutomationStatusBanner() {
 
   return (
     <AppAlertBanner
-      title="Action Required"
+      title="需要操作"
       description={status.message}
       action={<EndTrialButton variant="red" size="sm" />}
     />

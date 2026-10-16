@@ -327,12 +327,12 @@ export async function processHistoryItem(
       );
     }
   } catch (error: unknown) {
-    // Handle provider-specific "not found" errors
+    // 处理服务商特有的“未找到”错误
     if (error instanceof Error) {
       const isGoogleNotFound =
         error.message === "Requested entity was not found.";
 
-      // Outlook can return ErrorItemNotFound code or "not found in the store" message
+      // Outlook 可能返回 ErrorItemNotFound 代码或“not found in the store”消息
       const err = error as { code?: string };
       const isOutlookNotFound =
         err?.code === "ErrorItemNotFound" ||
@@ -342,19 +342,19 @@ export async function processHistoryItem(
         error.message.includes("ResourceNotFound");
 
       if (isGoogleNotFound || isOutlookNotFound) {
-        logger.info("Message not found");
+        logger.info("未找到邮件");
         return;
       }
     }
 
     if (error instanceof SafeError) {
-      logger.info("Skipping. Known processing error.");
+      logger.info("跳过。已知的处理错误。");
       return;
     }
 
     await logErrorWithDedupe({
       logger,
-      message: "Error processing message",
+      message: "处理邮件时出错",
       error,
       dedupeKeyParts: {
         scope: "webhook/process-history-item",

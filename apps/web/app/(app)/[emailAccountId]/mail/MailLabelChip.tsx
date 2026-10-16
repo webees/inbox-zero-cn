@@ -8,20 +8,20 @@ import { cn } from "@/utils";
 
 export type MailLabelChipProps = {
   name: string;
-  /** The color assigned by Gmail or Outlook. */
+  /** Gmail 或 Outlook 分配的颜色。 */
   color?: EmailLabel["color"];
-  /** Interactive: the chip navigates to that label's view. */
+  /** 可交互：点击标签会跳转到该标签的视图。 */
   href?: string;
-  /** Interactive: reveals a `×` on hover that removes the label. */
+  /** 可交互：悬停时显示一个 `×`，用于移除该标签。 */
   onRemove?: () => void;
   className?: string;
 };
 
 /**
- * A label pill. Provider colors take precedence; otherwise its color comes from
- * the name, so a label reads the same everywhere. Without `href` or `onRemove`
- * the chip is inert; each adds its own affordance — a link on the name, and a
- * `×` revealed on hover.
+ * 标签胶囊。服务商提供的颜色优先；否则颜色由名称决定，
+ * 这样同一个标签在任何地方看起来都一致。没有 `href` 或 `onRemove`
+ * 时标签是不可交互的；两者各自带来一种交互——名称上的链接，
+ * 以及悬停时显示的 `×`。
  */
 export function MailLabelChip({
   name,
@@ -55,7 +55,7 @@ export function MailLabelChip({
       )}
       {onRemove ? (
         <button
-          aria-label={`Remove ${name} label`}
+          aria-label={`移除 ${name} 标签`}
           className="pointer-events-none -mr-0.5 shrink-0 rounded-sm opacity-0 transition-opacity focus-visible:pointer-events-auto focus-visible:opacity-100 group-hover/chip:pointer-events-auto group-hover/chip:opacity-100"
           onClick={(event) => {
             event.preventDefault();
@@ -72,11 +72,11 @@ export function MailLabelChip({
 }
 
 /**
- * The chip palette, and the only place it is spelled out: `ChipColor` and
- * `CHIP_COLORS` both derive from these keys, so a new colour is picked up by the
- * hash the moment it is added here.
+ * 标签调色板，也是唯一写明它的地方：`ChipColor` 与
+ * `CHIP_COLORS` 都由这些键推导而来，因此在这里新增颜色时，
+ * 哈希会立刻采用它。
  *
- * bg / border / text, light-scoped: the Mail palette has no dark variant.
+ * bg / border / text，仅浅色：Mail 调色板没有深色变体。
  */
 const CHIP_CLASSES = {
   blue: "text-primary before:border-new-blue-150 before:bg-new-blue-50",
@@ -95,10 +95,10 @@ const CHIP_CLASSES = {
 
 type ChipColor = keyof typeof CHIP_CLASSES;
 
-/** The colours the hash can land on. Exported so tests assert against the palette itself. */
+/** 哈希可能落到的颜色。导出以便测试直接针对调色板本身进行断言。 */
 export const CHIP_COLORS = Object.keys(CHIP_CLASSES) as ChipColor[];
 
-/** Lowercased, so a label keeps its colour however the provider cases it. */
+/** 转为小写，这样无论服务商如何变换大小写，标签都保持同一颜色。 */
 const NAMED_CHIP_COLORS: Record<string, ChipColor> = {
   "to reply": "blue",
   notification: "green",
@@ -112,13 +112,12 @@ const NAMED_CHIP_COLORS: Record<string, ChipColor> = {
 };
 
 /**
- * The colour a label wears. Product labels have a fixed colour; everything else
- * hashes into the palette so a user's own label keeps one colour forever rather
- * than flickering between renders.
+ * 标签所呈现的颜色。产品标签有固定颜色；其他一切都通过哈希映射到调色板，
+ * 这样用户自己的标签会永远保持同一颜色，而不会在多次渲染之间闪烁。
  */
 export function chipColorForLabel(name: string): ChipColor {
-  // Hash the same normalized key the named lookup uses, so a label doesn't
-  // change colour when the provider varies its casing or padding.
+  // 使用与命名查找相同的规范化键进行哈希，这样当服务商改变大小写或
+  // 空白时，标签颜色不会变化。
   const key = name.trim().toLowerCase();
   const named = NAMED_CHIP_COLORS[key];
   if (named) return named;

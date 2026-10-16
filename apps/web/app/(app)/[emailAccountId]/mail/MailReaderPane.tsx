@@ -21,8 +21,8 @@ type ReaderEmailAccount = ComponentProps<
 >["emailAccount"];
 
 /**
- * The open conversation. Memoized so list snapshots, selection, and other
- * screen state only re-render it when something it shows has changed.
+ * 已打开的会话。已记忆化，这样列表快照、选择以及其他
+ * 屏幕状态只有在它显示的内容发生变化时才会重新渲染它。
  */
 export const MailReaderPane = memo(function MailReaderPane({
   readerEmailAccount,
@@ -45,11 +45,11 @@ export const MailReaderPane = memo(function MailReaderPane({
   onMenuOpenChange,
   ...readerProps
 }: Omit<ThreadReaderProps, "onBackToInbox" | "menu" | "renderMessageMenu"> & {
-  /** Undefined while the account owning the open thread is still loading. */
+  /** 在拥有已打开会话的账号仍在加载时未定义。 */
   readerEmailAccount: ReaderEmailAccount;
-  /** The open thread, or null for the empty reader. */
+  /** 已打开的会话，空阅读器时为 null。 */
   readerKey: string | null;
-  /** The settled selection whose matched rules the message menus show. */
+  /** 已确定的选项，邮件菜单会显示其匹配到的规则。 */
   planSelection: ThreadSelection | null;
   dataReady: boolean;
   onReady: (threadKey: string) => void;
@@ -86,11 +86,11 @@ export const MailReaderPane = memo(function MailReaderPane({
   if (readerKey && !readerEmailAccount) {
     return (
       <div
-        aria-label="Loading"
+        aria-label="正在加载"
         className="flex min-h-0 min-w-0 flex-1 items-center justify-center text-muted-foreground text-sm"
         role="status"
       >
-        Loading…
+        正在加载…
       </div>
     );
   }
@@ -98,7 +98,7 @@ export const MailReaderPane = memo(function MailReaderPane({
   return (
     <MailPanelErrorBoundary
       resetKey={readerKey ?? "empty"}
-      title="Unable to show this conversation"
+      title="无法显示此会话"
       onBack={onClose}
     >
       <EmailAccountScopeProvider emailAccount={readerEmailAccount}>

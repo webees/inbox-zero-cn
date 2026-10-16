@@ -62,12 +62,10 @@ export function DeleteSection() {
         if (result?.serverError) throw new Error(result.serverError);
       },
       {
-        loading: "Deleting account...",
-        success: "Account deleted!",
+        loading: "正在删除账号…",
+        success: "账号已删除！",
         error: (err: unknown) =>
-          `Error deleting account: ${
-            err instanceof Error ? err.message : "Unknown error"
-          }`,
+          `删除账号时出错：${err instanceof Error ? err.message : "未知错误"}`,
       },
     );
   };
@@ -77,70 +75,57 @@ export function DeleteSection() {
   return (
     <Item size="sm">
       <ItemContent>
-        <ItemTitle>Delete account</ItemTitle>
-        <ItemDescription>
-          Permanently delete your account and all data.
-        </ItemDescription>
+        <ItemTitle>删除账号</ItemTitle>
+        <ItemDescription>永久删除你的账号和所有数据。</ItemDescription>
       </ItemContent>
       <ItemActions>
         <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <AlertDialogTrigger asChild>
             <Button variant="destructiveSoft" size="sm">
-              Delete
+              删除
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
-                {shouldBlockDeletion
-                  ? "Cancel subscription first"
-                  : "Are you absolutely sure?"}
+                {shouldBlockDeletion ? "请先取消订阅" : "你确定吗？"}
               </AlertDialogTitle>
               <AlertDialogDescription asChild>
                 <div>
                   {shouldBlockDeletion ? (
                     <>
-                      <p className="mb-3">
-                        Please cancel your subscription before deleting your
-                        account.
-                      </p>
+                      <p className="mb-3">请在删除账号前取消你的订阅。</p>
                       <p className="mb-3">
                         {hasAppleSubscription ? (
                           <>
-                            You can manage your subscription from your iPhone or
-                            iPad subscription settings.
+                            你可以在你的 iPhone 或 iPad 订阅设置中管理你的订阅。
                           </>
                         ) : (
                           <>
-                            You can manage your subscription by clicking "Manage
-                            Subscription" above or going to the{" "}
+                            你可以点击上方的“管理订阅”，或前往{" "}
                             <Link
                               href="/premium"
                               className="text-blue-600 underline hover:text-blue-800"
                               onClick={() => setIsDialogOpen(false)}
                             >
-                              premium page
+                              高级版页面
                             </Link>{" "}
-                            and clicking "Manage subscription".
+                            并点击“管理订阅”来管理你的订阅。
                           </>
                         )}
                       </p>
                       <p className="text-sm text-gray-600">
-                        Already cancelled your subscription? Click the button
-                        below to proceed.
+                        已经取消了订阅？点击下方按钮继续。
                       </p>
                     </>
                   ) : (
-                    <p>
-                      This action cannot be undone. This will permanently delete
-                      your user and all associated accounts.
-                    </p>
+                    <p>此操作无法撤销。这将永久删除你的用户及所有关联账号。</p>
                   )}
                 </div>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>取消</AlertDialogCancel>
               {shouldBlockDeletion ? (
                 <AlertDialogAction
                   onClick={(event) => {
@@ -153,7 +138,7 @@ export function DeleteSection() {
                 </AlertDialogAction>
               ) : (
                 <AlertDialogAction onClick={handleDeleteAccount}>
-                  Delete account
+                  删除账号
                 </AlertDialogAction>
               )}
             </AlertDialogFooter>

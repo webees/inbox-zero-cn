@@ -124,10 +124,10 @@ describe("getActionFields", () => {
     const result = getActionFields(action);
 
     expect(result).toEqual({
-      Task: "Review the contract",
-      Description: "From the legal team",
-      "Due date": "Tomorrow",
-      Project: "Work",
+      任务: "Review the contract",
+      描述: "From the legal team",
+      截止日期: "明天",
+      项目: "Work",
     });
   });
 
@@ -148,10 +148,10 @@ describe("getActionFields", () => {
     const result = getActionFields(action);
 
     expect(result).toEqual({
-      Task: "AI-generated",
-      Description: "AI-generated",
-      "Due date": "AI-generated",
-      Project: "Inbox",
+      任务: "AI 生成",
+      描述: "AI 生成",
+      截止日期: "AI 生成",
+      项目: "Inbox",
     });
   });
 
@@ -168,7 +168,7 @@ describe("getActionFields", () => {
       },
     } as any;
 
-    expect(getActionFields(action)["Due date"]).toBe("next Friday");
+    expect(getActionFields(action).截止日期).toBe("next Friday");
   });
 
   it("excludes falsy values except for defined nulls", () => {

@@ -77,8 +77,8 @@ const EMAIL_ALREADY_LINKED_ERROR = "email_already_linked";
 const useGoogleOauthEmulator = isGoogleOauthEmulationEnabled();
 const useMicrosoftOauthEmulator = isMicrosoftEmulationEnabled();
 
-// Register only configured OAuth providers so clients can't start disabled
-// providers by posting directly to `/api/auth/sign-in/social`.
+// 仅注册已配置的 OAuth 服务商，避免客户端通过直接
+// POST 到 `/api/auth/sign-in/social` 来启动已禁用的服务商。
 const enabledLoginProviders = getEnabledLoginProviders();
 const googleLoginEnabled = enabledLoginProviders.has("google");
 const microsoftLoginEnabled = enabledLoginProviders.has("microsoft");
@@ -109,7 +109,7 @@ const googleSocialProvider =
         accessType: "offline" as const,
         prompt: "select_account consent" as const,
         disableIdTokenSignIn: true,
-        // For preview deployments, redirect through staging (which proxies back to preview URL)
+        // 对于预览部署，通过 staging 重定向（它会代理回预览 URL）
         ...(env.OAUTH_PROXY_URL && {
           redirectURI: `${env.OAUTH_PROXY_URL}/api/auth/callback/google`,
         }),
@@ -123,10 +123,10 @@ const microsoftSocialProvider =
         scope: [...OUTLOOK_SCOPES],
         tenantId: env.MICROSOFT_TENANT_ID,
         disableIdTokenSignIn: true,
-        // Inlined as a data URI on the user row; handleLinkAccount already has it.
+        // 以内联 data URI 形式存放在用户行上；handleLinkAccount 已经持有它。
         disableProfilePhoto: true,
-        // The only hook that sees the decoded id_token before better-auth looks
-        // the account up, so the only place both account keys are known.
+        // 这是 better-auth 查找账号之前唯一能看到解码后 id_token 的钩子，
+        // 因此也是唯一同时知晓两个账号键的地方。
         mapProfileToUser: async (profile: MicrosoftProfile) => {
           await reconcileMicrosoftAccountSubject({
             oid: typeof profile.oid === "string" ? profile.oid : null,
@@ -144,7 +144,7 @@ const appleSocialProvider = appleLoginEnabled
       clientId: env.APPLE_CLIENT_ID!,
       get clientSecret() {
         const clientSecret = getAppleClientSecret();
-        if (!clientSecret) throw new Error("Apple OAuth is not configured");
+        if (!clientSecret) throw new Error("Apple OAuth 未配置");
         return clientSecret;
       },
       appBundleIdentifier: env.APPLE_APP_BUNDLE_IDENTIFIER,
@@ -270,7 +270,7 @@ export const betterAuthConfig = betterAuth({
     ...(env.SCIM_CREDENTIAL_HASH_SECRET ? [scim(getScimOptions())] : []),
     ...(genericOauthPlugin ? [genericOauthPlugin] : []),
     ...(mobileAuthOrigins.length > 0 ? [safeExpo()] : []),
-    // OAuth proxy for preview deployments (Google doesn't allow wildcard redirect URIs)
+    // 用于预览部署的 OAuth 代理（Google 不允许通配符重定向 URI）
     ...(env.OAUTH_PROXY_URL || env.IS_OAUTH_PROXY_SERVER
       ? [
           oAuthProxy({
@@ -279,7 +279,7 @@ export const betterAuthConfig = betterAuth({
         ]
       : []),
     ...mcpOAuthPlugins(),
-    nextCookies(), // Must be last
+    nextCookies(), // 必须放在最后
   ],
   session: {
     additionalFields: {
@@ -294,7 +294,7 @@ export const betterAuthConfig = betterAuth({
     cookieCache: {
       enabled: true,
       maxAge: 60 * 5, // 5 minutes — normal sign-out clears the cache cookie immediately;
-      // this TTL only limits exposure for stolen-token scenarios
+      // 该 TTL 仅用于限制令牌被盗场景下的暴露时长
     },
     expiresIn: 60 * 60 * 24 * 30, // 30 days
     updateAge: 60 * 60 * 24 * 3, // 1 day (every 1 day the session expiration is updated)
@@ -310,11 +310,11 @@ export const betterAuthConfig = betterAuth({
       accessTokenExpiresAt: "expires_at",
       idToken: "id_token",
     },
-    storeStateStrategy: "cookie", // Required for oAuthProxy to encrypt state
+    storeStateStrategy: "cookie", // oAuthProxy 加密 state 所必需
     accountLinking: {
       enabled: true,
-      // Microsoft Entra email claims can be mutable/unverified, so Microsoft
-      // must not implicitly link users by email during social sign-in.
+      // Microsoft Entra 的邮箱声明可能可变/未验证，因此在社交登录期间
+      // Microsoft 不得按邮箱隐式关联用户。
       trustedProviders: ["google", "apple"],
     },
   },
@@ -348,7 +348,7 @@ export const betterAuthConfig = betterAuth({
       create: {
         before: async (user) => {
           if (!isAllowedAuthSignupEmail(user.email)) {
-            logger.warn("Blocked auth sign-up outside configured allowlist", {
+            logger.warn("已阻止不在配置允许列表内的注册", {
               emailDomain: user.email.split("@")[1]?.toLowerCase(),
             });
             assertAllowedAuthSignupEmail(user.email);
@@ -364,7 +364,7 @@ export const betterAuthConfig = betterAuth({
             name: user.name,
             image: user.image,
           }).catch((error) => {
-            logger.error("Error posting sign up", { error, user });
+            logger.error("提交注册失败", { error, user });
             captureException(error, { extra: { user } });
           });
         },
@@ -422,14 +422,14 @@ export const betterAuthConfig = betterAuth({
           trackAuthenticationCompleted({ email, provider, isNewUser }),
         );
       } catch (error) {
-        logger.error("Failed to schedule authentication analytics", { error });
+        logger.error("安排认证分析失败", { error });
       }
     }),
   },
   onAPIError: {
     throw: true,
     onError: (error: unknown) => {
-      logger.error("Auth API encountered an error", { error });
+      logger.error("认证 API 发生错误", { error });
     },
     errorURL: "/login/error",
   },
@@ -453,7 +453,7 @@ async function postSignUp({
         select: { provider: true },
       })
       .catch((error) => {
-        logger.error("Error finding account", {
+        logger.error("查找账号失败", {
           userId,
           error,
         });
@@ -468,7 +468,7 @@ async function postSignUp({
       const alreadyExists =
         error instanceof Error && error.message.includes("409");
       if (!alreadyExists) {
-        logger.error("Error creating Loops contact", {
+        logger.error("创建 Loops 联系人失败", {
           email,
           error,
         });
@@ -478,7 +478,7 @@ async function postSignUp({
   };
 
   const resend = createResendContact({ email }).catch((error) => {
-    logger.error("Error creating Resend contact", {
+    logger.error("创建 Resend 联系人失败", {
       email,
       error,
     });
@@ -487,7 +487,7 @@ async function postSignUp({
 
   const dub = trackDubSignUp({ id: userId, email, name, image }, logger).catch(
     (error) => {
-      logger.error("Error tracking Dub sign up", {
+      logger.error("跟踪 Dub 注册失败", {
         email,
         error,
       });
@@ -499,10 +499,10 @@ async function postSignUp({
     loops(),
     resend,
     dub,
-    // Sequential so the admin grant lands on whichever premium the invite assigns.
+    // 按顺序执行，确保管理员授予落在邀请所分配的套餐上。
     handlePendingPremiumInvite({ email }).then(() =>
       applyPendingPremiumGrant({ userId, email }).catch((error) => {
-        logger.error("Error applying pending premium grant", { email, error });
+        logger.error("应用待处理的高级版授予失败", { email, error });
         captureException(error, { userEmail: email });
       }),
     ),
@@ -512,9 +512,9 @@ async function postSignUp({
 
 async function handlePendingPremiumInvite({ email }: { email: string }) {
   try {
-    logger.info("Handling pending premium invite", { email });
+    logger.info("正在处理待处理的高级版邀请", { email });
 
-    // Check for pending invite
+    // 检查待处理的邀请
     const premium = await prisma.premium.findFirst({
       where: { pendingInvites: { has: email } },
       select: {
@@ -539,11 +539,11 @@ async function handlePendingPremiumInvite({ email }: { email: string }) {
           premiumId: premium.id,
           email,
         });
-        logger.info("Added user to premium from invite", { email });
+        logger.info("已通过邀请将用户加入高级版", { email });
       }
     }
   } catch (error) {
-    logger.error("Error handling pending premium invite", { error, email });
+    logger.error("处理待处理的高级版邀请失败", { error, email });
     captureException(error, {
       extra: { email, location: "handlePendingPremiumInvite" },
     });
@@ -562,7 +562,7 @@ export async function handleReferralOnSignUp({
     const referralCookie = cookieStore.get("referral_code");
 
     if (!referralCookie?.value) {
-      logger.info("No referral code found in cookies", { email });
+      logger.info("cookie 中未找到推荐码", { email });
       return;
     }
 
@@ -570,34 +570,34 @@ export async function handleReferralOnSignUp({
     try {
       referralCode = decodeURIComponent(referralCode);
     } catch {
-      // Use original value if decoding fails
+      // 如果解码失败，则使用原始值
     }
-    logger.info("Processing referral for new user", {
+    logger.info("正在为新用户处理推荐", {
       email,
       referralCode,
     });
 
-    // Import the createReferral function
+    // 导入 createReferral 函数
     const { createReferral } = await import("@/utils/referral/referral-code");
     await createReferral(userId, referralCode);
-    logger.info("Successfully created referral", {
+    logger.info("成功创建推荐", {
       email,
       referralCode,
     });
   } catch (error) {
-    logger.error("Error processing referral on sign up", {
+    logger.error("注册时处理推荐失败", {
       error,
       userId,
       email,
     });
-    // Don't throw error - referral failure shouldn't prevent sign up
+    // 不要抛出错误 - 推荐失败不应阻止注册
     captureException(error, {
       extra: { userId, email, location: "handleReferralOnSignUp" },
     });
   }
 }
 
-// TODO: move into email provider instead of checking the provider type
+// TODO: 移入邮件服务商，而不是检查服务商类型
 async function getProfileData(providerId: string, accessToken: string) {
   if (isGoogleProvider(providerId)) {
     const profile = await fetchGoogleOpenIdProfile(accessToken);
@@ -616,7 +616,7 @@ async function getProfileData(providerId: string, accessToken: string) {
     try {
       const profileResponse = await client.getUserProfile();
 
-      // Get photo separately as it requires a different endpoint
+      // 单独获取照片，因为它需要不同的端点
       let photoUrl = null;
       try {
         const photo = await client.getUserPhoto();
@@ -624,7 +624,7 @@ async function getProfileData(providerId: string, accessToken: string) {
           photoUrl = photo;
         }
       } catch (error) {
-        logger.info("User has no profile photo", { error });
+        logger.info("用户没有头像照片", { error });
       }
 
       return {
@@ -635,7 +635,7 @@ async function getProfileData(providerId: string, accessToken: string) {
         image: photoUrl,
       };
     } catch (error) {
-      logger.error("Error fetching Microsoft profile data", { error });
+      logger.error("获取 Microsoft 个人资料数据失败", { error });
       throw error;
     }
   }
@@ -655,7 +655,7 @@ export async function handleLinkAccount(
 
   try {
     if (!shouldLinkEmailAccount(account.providerId)) {
-      logger.info("[linkAccount] Skipping email account linking", {
+      logger.info("[linkAccount] 跳过邮箱账号关联", {
         userId: account.userId,
         accountId: account.id,
       });
@@ -664,9 +664,9 @@ export async function handleLinkAccount(
 
     if (!account.accessToken) {
       logger.error(
-        "[linkAccount] No access_token found in data, cannot fetch profile.",
+        "[linkAccount] 数据中未找到 access_token，无法获取个人资料。",
       );
-      throw new Error("Missing access token during account linking.");
+      throw new Error("账号关联期间缺少访问令牌。");
     }
     const profileData = await getProfileData(
       account.providerId,
@@ -674,7 +674,7 @@ export async function handleLinkAccount(
     );
 
     if (!profileData?.email) {
-      logger.error("[handleLinkAccount] No email found in profile data");
+      logger.error("[handleLinkAccount] 个人资料数据中未找到邮箱");
     }
 
     primaryEmail = profileData?.email;
@@ -682,15 +682,13 @@ export async function handleLinkAccount(
     primaryPhotoUrl = profileData?.image;
 
     if (!primaryEmail) {
-      logger.error(
-        "[linkAccount] Primary email could not be determined from profile.",
-      );
-      throw new Error("Primary email not found for linked account.");
+      logger.error("[linkAccount] 无法从个人资料确定主邮箱。");
+      throw new Error("未找到关联账号的主邮箱。");
     }
 
     const normalizedEmail = primaryEmail.trim().toLowerCase();
 
-    // Profile emails can change while the provider account remains the same.
+    // 个人资料中的邮箱可能变化，而服务商账号保持不变。
     const linkedEmailAccount = await prisma.emailAccount.findUnique({
       where: { accountId: account.id },
       select: {
@@ -717,7 +715,7 @@ export async function handleLinkAccount(
       existingEmailAccount &&
       existingEmailAccount.userId !== account.userId
     ) {
-      logger.error("[linkAccount] Email already linked to a different user", {
+      logger.error("[linkAccount] 邮箱已关联到其他用户", {
         email: primaryEmail,
         existingUserId: existingEmailAccount.userId,
         newUserId: account.userId,
@@ -735,15 +733,12 @@ export async function handleLinkAccount(
       existingEmailAccount.account.provider !== account.providerId;
 
     if (crossProviderRelink) {
-      logger.warn(
-        "[linkAccount] Skipping cross-provider EmailAccount reassignment",
-        {
-          userId: account.userId,
-          accountId: account.id,
-          currentProvider: existingEmailAccount.account.provider,
-          attemptedProvider: account.providerId,
-        },
-      );
+      logger.warn("[linkAccount] 跳过跨服务商重新分配 EmailAccount", {
+        userId: account.userId,
+        accountId: account.id,
+        currentProvider: existingEmailAccount.account.provider,
+        attemptedProvider: account.providerId,
+      });
 
       await prisma.$transaction([
         prisma.emailAccount.update({
@@ -773,7 +768,7 @@ export async function handleLinkAccount(
     });
 
     if (!user?.email) {
-      logger.error("[linkAccount] No user email found", {
+      logger.error("[linkAccount] 未找到用户邮箱", {
         userId: account.userId,
       });
       return;
@@ -848,16 +843,16 @@ export async function handleLinkAccount(
 
     if (env.AUTO_JOIN_ORGANIZATION_ENABLED) {
       await autoJoinOrganization(upsertedEmailAccount.id).catch((error) => {
-        logger.error("[linkAccount] Error auto-joining organization", {
+        logger.error("[linkAccount] 自动加入组织失败", {
           error,
         });
         captureException(error, { extra: { userId: account.userId } });
       });
     }
 
-    // Handle premium account seats
+    // 处理高级版账号席位
     await updateAccountSeats({ userId: account.userId }).catch((error) => {
-      logger.error("[linkAccount] Error updating premium account seats:", {
+      logger.error("[linkAccount] 更新高级版账号席位失败：", {
         userId: account.userId,
         error,
       });
@@ -866,14 +861,14 @@ export async function handleLinkAccount(
 
     scheduleEmailWatchesAfterLink(account.userId);
 
-    logger.info("[linkAccount] Successfully linked account", {
+    logger.info("[linkAccount] 成功关联账号", {
       email: user.email,
       userId: account.userId,
       accountId: account.id,
     });
     return renamedMailbox?.renamedUser;
   } catch (error) {
-    logger.error("[linkAccount] Error during linking process:", {
+    logger.error("[linkAccount] 关联过程中出错：", {
       userId: account.userId,
       error,
     });
@@ -905,11 +900,9 @@ async function autoJoinOrganization(emailAccountId: string) {
 
   if (orgs.length !== 1) {
     if (orgs.length === 0) {
-      logger.warn("[autoJoinOrganization] No organization found to auto-join");
+      logger.warn("[autoJoinOrganization] 未找到可自动加入的组织");
     } else {
-      logger.warn(
-        "[autoJoinOrganization] Multiple organizations found, skipping auto-join",
-      );
+      logger.warn("[autoJoinOrganization] 找到多个组织，跳过自动加入");
     }
     return;
   }
@@ -928,7 +921,7 @@ async function autoJoinOrganization(emailAccountId: string) {
     select: { id: true, createdAt: true },
   });
 
-  logger.info("[autoJoinOrganization] Auto-joined user to organization", {
+  logger.info("[autoJoinOrganization] 已自动将用户加入组织", {
     emailAccountId,
     organizationId,
     memberId: member.id,
@@ -941,7 +934,7 @@ function scheduleEmailWatchesAfterLink(userId: string) {
       userIds: [userId],
       logger,
     }).catch((error) => {
-      logger.error("[linkAccount] Error re-registering email watches", {
+      logger.error("[linkAccount] 重新注册邮件监听失败", {
         userId,
         error,
       });
@@ -952,8 +945,8 @@ function scheduleEmailWatchesAfterLink(userId: string) {
   );
 }
 
-// Better Auth replays the user row inside the session cookie, so an inline photo
-// pushes request headers past the edge limit and locks the account out.
+// Better Auth 会在会话 cookie 内重放用户行，因此内联照片
+// 会使请求头超出边缘限制并导致账号被锁定。
 function dropInlineImage(user: { image?: string | null }) {
   if (typeof user.image !== "string" || !/^data:/i.test(user.image)) return;
   return { data: { image: null } };

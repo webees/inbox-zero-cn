@@ -45,8 +45,8 @@ const FOLDER_KEY_BY_IN_VALUE: Record<string, OutlookWellKnownFolder> = {
 const KQL_TEXT_FIELDS = new Set(["from", "to", "subject"]);
 
 /**
- * Compiles an Outlook search-box query into Graph `$search` KQL plus the
- * folder/flag/category scopes Graph cannot mix into `$search`.
+ * 将 Outlook 搜索框查询编译为 Graph `$search` KQL，以及
+ * Graph 无法混入 `$search` 的文件夹/标志/类别范围。
  */
 export function compileOutlookThreadSearch(
   query: string,
@@ -83,7 +83,7 @@ export function compileOutlookThreadSearch(
   if (!included.length && !excluded.length) {
     return { search: "", folderKey, folderName, flagged, category };
   }
-  // KQL rejects purely negative queries, so anchor them to every message.
+  // KQL 拒绝纯否定查询，因此将它们锚定到每封邮件。
   if (!included.length) included.push("size>=0");
 
   return {
@@ -196,8 +196,8 @@ function toKqlTerm(parsed: OutlookSearchToken): string | null {
     return `received${comparator}${date}`;
   }
 
-  // Unknown Outlook/KQL restrictions are passed through so typed queries like
-  // importance:high still reach Graph.
+  // 未知的 Outlook/KQL 限制会原样透传，使诸如
+  // importance:high 的类型化查询仍能到达 Graph。
   if (comparator === ":") {
     const kqlValue = toKqlValue(value);
     return kqlValue ? `${field}:${kqlValue}` : null;
@@ -213,7 +213,7 @@ function toKqlValue(value: string): string | null {
     .trim();
   if (!cleaned) return null;
   const escaped = escapeSearchValue(cleaned);
-  // An unquoted colon would turn literal text into a property restriction.
+  // 未加引号的冒号会将字面文本变成属性限制。
   return /[\s:]/.test(cleaned) ? `\\"${escaped}\\"` : escaped;
 }
 

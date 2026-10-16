@@ -162,7 +162,7 @@ describe("MailAccountSwitcher", () => {
   it("opens the settings dialog from the account menu", async () => {
     renderSwitcher({ onSelectAccount: vi.fn() });
 
-    selectMenuItem(await screen.findByRole("menuitem", { name: "Settings" }));
+    selectMenuItem(await screen.findByRole("menuitem", { name: "设置" }));
 
     expect(mockOpenSettings).toHaveBeenCalledOnce();
   });

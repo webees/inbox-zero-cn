@@ -20,14 +20,14 @@ export async function callMcpTool({
 }) {
   const integrationConfig = getIntegration(integration);
 
-  // Write tools come from the registry; the read tools the app calls itself are
-  // derived from the specs that declare them, so the two cannot drift apart.
+  // 写入工具来自注册表；应用自身调用的读取工具
+  // 派生自声明它们的 spec，因此两者不会偏离。
   const callableTools = [
     ...(integrationConfig.ruleActionWriteTools ?? []),
     ...getIntegrationRemoteSelectTools(integration),
   ];
   if (!callableTools.includes(toolName)) {
-    throw new Error(`Tool ${toolName} is not callable for ${integration}`);
+    throw new Error(`工具 ${toolName} 不可用于 ${integration}`);
   }
 
   const transport = createMcpTransport(
@@ -47,20 +47,20 @@ export async function callMcpTool({
     const result = await client.callTool({ name: toolName, arguments: args });
 
     if (result.isError) {
-      throw new Error("MCP tool returned an error");
+      throw new Error("MCP 工具返回错误");
     }
 
-    logger.info("Called MCP tool", { integration, toolName });
+    logger.info("已调用 MCP 工具", { integration, toolName });
 
     return result.content;
   } catch (error) {
-    logger.error("Failed to call MCP tool", {
+    logger.error("调用 MCP 工具失败", {
       integration,
       toolName,
       errorType: error instanceof Error ? error.name : typeof error,
     });
-    logger.trace("MCP tool call failure details", () => ({ error }));
-    throw new Error(`Failed to call ${integration} tool ${toolName}`);
+    logger.trace("MCP 工具调用失败详情", () => ({ error }));
+    throw new Error(`调用 ${integration} 工具 ${toolName} 失败`);
   } finally {
     await client.close();
     await transport.close();

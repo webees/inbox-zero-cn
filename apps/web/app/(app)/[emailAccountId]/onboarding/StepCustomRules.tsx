@@ -22,15 +22,15 @@ export function StepCustomRules({
           </IconCircle>
 
           <div className="text-center mt-4 max-w-lg mx-auto">
-            <PageHeading>Custom rules</PageHeading>
+            <PageHeading>自定义规则</PageHeading>
             <TypographyP className="mt-2 text-left">
-              We've set up the basics, but that's just the beginning. Your AI
-              assistant can handle any email workflow you'd give to a human.
+              我们已经设置好了基础内容，但这只是开始。你的 AI
+              助手可以处理任何你会交给真人的邮件工作流程。
             </TypographyP>
-            <TypographyP className="mt-2 text-left">For example:</TypographyP>
+            <TypographyP className="mt-2 text-left">例如：</TypographyP>
             <ul className="list-disc list-inside space-y-1 text-left leading-7 text-muted-foreground ">
-              <li>Forward receipts to your accountant</li>
-              <li>Label newsletters and archive them after a week</li>
+              <li>把收据转发给你的会计</li>
+              <li>给新闻邮件打标签，并在一周后归档</li>
             </ul>
           </div>
 
@@ -48,7 +48,7 @@ export function StepCustomRules({
         <div className="rounded-2xl p-4 bg-slate-50 dark:bg-background border border-border">
           <Image
             src="/images/onboarding/custom-rules.png"
-            alt="Custom rules"
+            alt="自定义规则"
             width={1200}
             height={800}
             className="rounded-xl border border-border"

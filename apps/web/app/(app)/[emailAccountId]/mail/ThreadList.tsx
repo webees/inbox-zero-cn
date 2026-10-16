@@ -31,7 +31,7 @@ export type ThreadListProps = {
   userLabels: EmailLabels;
   labelsByAccount?: Record<string, EmailLabels>;
   selectionEnabled?: boolean;
-  /** The row `J`/`K` sits on. */
+  /** `J`/`K` 所在的行。 */
   focusedIndex: number;
   isSelected: (threadId: string) => boolean;
   selectedCount: number;
@@ -41,14 +41,14 @@ export type ThreadListProps = {
   showLoadMore: boolean;
   isLoadingMore: boolean;
   onLoadMore: () => void;
-  /** Identity of the current view so prefetch state does not leak across splits. */
+  /** 当前视图的标识，这样预取状态不会在分栏之间泄漏。 */
   listKey: string;
   showSentOpenStatus?: boolean;
 };
 
 export const ThreadList = memo(function ThreadList({
   threads,
-  emptyMessage = "No emails in this view",
+  emptyMessage = "此视图中没有邮件",
   layout,
   expandedPreview,
   userEmail,
@@ -109,13 +109,13 @@ export const ThreadList = memo(function ThreadList({
       listKey={listKey}
       loadMoreButton={
         <Button onClick={onLoadMore} size="sm" variant="outline">
-          Load more
+          加载更多
         </Button>
       }
       loadingMoreIndicator={
         <div className="flex items-center gap-2 text-muted-foreground text-xs">
           <LoadingMiniSpinner />
-          Loading more
+          正在加载更多
         </div>
       }
       onLoadMore={onLoadMore}
@@ -158,10 +158,10 @@ export const ThreadList = memo(function ThreadList({
   );
 });
 
-/** Refreshes idle lists at midnight and when a suspended tab becomes active. */
+/** 在午夜以及被挂起的标签页恢复活动时刷新空闲列表。 */
 function useDayStart() {
   const [, setDayStart] = useState(() => startOfDay(new Date()).getTime());
-  // Read the clock on every render, even if a background timer has not fired yet.
+  // 每次渲染都读取时钟，即使后台计时器尚未触发。
   const dayStart = startOfDay(new Date()).getTime();
 
   useEffect(() => {

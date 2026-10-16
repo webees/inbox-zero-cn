@@ -30,17 +30,17 @@ import { GmailLabel } from "@/utils/gmail/label";
 
 export type ThreadRowProps = {
   thread: ListThread;
-  /** Position in the rendered list — selection and focus are index-addressed. */
+  /** 在已渲染列表中的位置——选择与焦点按索引寻址。 */
   index: number;
   layout: MailLayoutMode;
   userEmail: string;
   userLabels: EmailLabels;
   isFocused: boolean;
   isSelected: boolean;
-  /** Keeps every checkbox visible once the list has a selection. */
+  /** 一旦列表中有选择，就保持每个复选框可见。 */
   hasAnySelection: boolean;
   compact?: boolean;
-  /** Wraps the snippet onto its own line so more of it is readable. */
+  /** 将摘要折到单独一行，以便能读到更多内容。 */
   expandedPreview?: boolean;
   selectionEnabled?: boolean;
   onOpen: (index: number) => void;
@@ -114,7 +114,7 @@ export const ThreadRow = memo(function ThreadRow({
                 aria-hidden
                 className="size-3.5 shrink-0 text-muted-foreground"
               />
-              <span className="sr-only">Has attachment</span>
+              <span className="sr-only">有附件</span>
             </>
           ) : null}
           {sentMessageOpen ? (
@@ -144,7 +144,7 @@ export const ThreadRow = memo(function ThreadRow({
       onToggleSelect={onToggleSelect}
       participantSummary={participantSummary}
       renderSelectionControl={({ ariaLabel, checked, onClick, visible }) => (
-        // Opening above would cover the select-all checkbox for the first row.
+        // 向上展开会遮住第一行的全选复选框。
         <Tooltip shortcuts={["select"]} side="right">
           <Checkbox
             aria-label={ariaLabel}
@@ -178,7 +178,7 @@ function AccountAvatar({
 
   return (
     <Avatar
-      aria-label={`Inbox: ${label}`}
+      aria-label={`收件箱：${label}`}
       className="size-5"
       title={account.email}
     >

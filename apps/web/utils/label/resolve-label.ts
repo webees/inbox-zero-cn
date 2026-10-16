@@ -5,11 +5,11 @@ import { hasVariables } from "@/utils/template";
 const logger = createScopedLogger("resolve-label");
 
 /**
- * Resolves label name and ID pairing for a label action.
- * - If only label name is provided, looks up the labelId (creates if not found)
- * - If only labelId is provided, looks up the label name
- * - If both are provided, returns both
- * - Returns null for both if lookup fails
+ * 为标签操作解析标签名称与 ID 的对应关系。
+ * - 若只提供标签名称，则查找 labelId（未找到则创建）
+ * - 若只提供 labelId，则查找标签名称
+ * - 若两者都提供，则返回两者
+ * - 若查找失败，则两者都返回 null
  * - Skips resolution for AI templates (strings containing {{...}})
  */
 export async function resolveLabelNameAndId({
@@ -21,18 +21,18 @@ export async function resolveLabelNameAndId({
   label?: string | null;
   labelId?: string | null;
 }): Promise<{ label: string | null; labelId: string | null }> {
-  // If we have both, return them
+  // 若两者都有，直接返回
   if (label && labelId) {
     return { label, labelId };
   }
 
-  // If we have label name with AI template, don't resolve it
-  // Templates will be processed at runtime by the AI
+  // 若标签名称带有 AI 模板，则不解析它
+  // 模板会在运行时由 AI 处理
   if (label && hasVariables(label)) {
     return { label, labelId: null };
   }
 
-  // If we have label name, look up the ID (or create if not found)
+  // 若有标签名称，则查找 ID（未找到则创建）
   if (label) {
     try {
       const foundLabel = await emailProvider.getLabelByName(label);
@@ -44,18 +44,18 @@ export async function resolveLabelNameAndId({
         };
       }
 
-      logger.info("Label not found during rule creation, creating it", {
+      logger.info("创建规则时未找到标签，正在创建", {
         labelName: label,
       });
       const createdLabel = await emailProvider.createLabel(label);
       return { label, labelId: createdLabel.id };
     } catch (error) {
-      logger.error("Error resolving label", { labelName: label, error });
+      logger.error("解析标签出错", { labelName: label, error });
       return { label, labelId: null };
     }
   }
 
-  // If we have labelId, look up the name
+  // 若有 labelId，则查找名称
   if (labelId) {
     try {
       const foundLabel = await emailProvider.getLabelById(labelId);
@@ -68,6 +68,6 @@ export async function resolveLabelNameAndId({
     }
   }
 
-  // Neither provided
+  // 两者都未提供
   return { label: null, labelId: null };
 }

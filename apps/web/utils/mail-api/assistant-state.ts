@@ -79,7 +79,7 @@ function decodeAssistantCursor(cursor: string | null): AssistantCursor | null {
       }
     }
   } catch {
-    // Plain rule IDs were used before the assistant cursor carried update time.
+    // 在助手游标携带更新时间之前，使用的是纯规则 ID。
   }
   return { kind: "legacy", id: cursor };
 }

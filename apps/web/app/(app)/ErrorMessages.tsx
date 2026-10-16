@@ -31,7 +31,7 @@ export function ErrorMessages() {
 
   return (
     <AppAlertBanner
-      title="Action Required"
+      title="需要操作"
       description={
         <ul className="list-none space-y-1">
           {errors.map((error) => (
@@ -39,7 +39,7 @@ export function ErrorMessages() {
               {error.message}
               {hasMultipleErrors && error.actionUrl ? (
                 <Link className="ml-2 underline" href={error.actionUrl}>
-                  {error.actionLabel || "Fix this"}
+                  {error.actionLabel || "修复"}
                 </Link>
               ) : null}
             </li>
@@ -51,7 +51,7 @@ export function ErrorMessages() {
           {singleError?.actionUrl ? (
             <Button asChild variant="red" size="sm">
               <Link href={singleError.actionUrl}>
-                {singleError.actionLabel || "Fix this"}
+                {singleError.actionLabel || "修复"}
               </Link>
             </Button>
           ) : null}
@@ -61,7 +61,7 @@ export function ErrorMessages() {
             loading={isExecuting}
             onClick={() => clearErrorMessages()}
           >
-            I've fixed them
+            我已修复
           </Button>
         </div>
       }

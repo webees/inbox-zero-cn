@@ -231,7 +231,7 @@ export function BulkArchiveCards({
       bulkAction === "delete" &&
       selectedToProcess.length > 0 &&
       !window.confirm(
-        `Delete emails from ${selectedToProcess.length} sender${selectedToProcess.length === 1 ? "" : "s"}? This action cannot be undone.`,
+        `确定要删除来自 ${selectedToProcess.length} 个发件人的邮件吗？此操作无法撤销。`,
       )
     ) {
       return;
@@ -274,7 +274,7 @@ export function BulkArchiveCards({
       }
     } catch {
       toastError({
-        description: `Failed to ${getBulkActionVerb(bulkAction)} some senders. Please try again.`,
+        description: `无法${getBulkActionVerb(bulkAction)}部分发件人，请重试。`,
       });
     } finally {
       setLoadingCategories((prev) => ({ ...prev, [categoryName]: false }));
@@ -347,7 +347,7 @@ export function BulkArchiveCards({
                       {categoryName}
                     </h2>
                     <p className="text-sm text-muted-foreground">
-                      {senders.length} senders
+                      {senders.length} 个发件人
                       {isArchived &&
                         ` ${actionLabels.completedLabel.toLowerCase()}`}
                     </p>
@@ -396,14 +396,14 @@ export function BulkArchiveCards({
                 <div className="divide-y">
                   {senders.length === 0 ? (
                     <div className="p-4 text-center text-sm text-muted-foreground">
-                      No senders in this category
+                      该分类暂无发件人
                     </div>
                   ) : (
                     <>
                       {/* Select all row */}
                       <div className="flex items-center gap-3 bg-muted/30 px-4 py-3">
                         <ButtonCheckbox
-                          label={`Select all senders in ${categoryName}`}
+                          label={`选中「${categoryName}」中的所有发件人`}
                           checked={areAllSelectedInCategory(categoryName)}
                           indeterminate={areSomeSelectedInCategory(
                             categoryName,
@@ -492,7 +492,7 @@ function SenderRow({
         tabIndex={0}
       >
         <ButtonCheckbox
-          label={`Select ${sender.name || sender.address}`}
+          label={`选择 ${sender.name || sender.address}`}
           checked={isSelected}
           onChange={() => onToggleSelection()}
         />
@@ -521,7 +521,7 @@ function SenderRow({
           }}
         >
           <PencilIcon className="size-4" />
-          <span className="sr-only">Edit category</span>
+          <span className="sr-only">编辑分类</span>
         </Button>
         <ChevronDownIcon
           className={cn(
@@ -531,12 +531,12 @@ function SenderRow({
         />
       </div>
 
-      {/* Expanded email list */}
+      {/* 展开的邮件列表 */}
       {isExpanded && (
         <ExpandedEmails sender={sender.address} userEmail={userEmail} />
       )}
 
-      {/* Edit category dialog */}
+      {/* 编辑分类对话框 */}
       <EditCategoryDialog
         open={editDialogOpen}
         onOpenChange={setEditDialogOpen}
@@ -582,7 +582,7 @@ function EditCategoryDialog({
       toastError({ description: result.serverError });
       setIsLoading(false);
     } else {
-      toastSuccess({ description: "Category updated" });
+      toastSuccess({ description: "分类已更新" });
       await onCategoryChange?.();
       setIsLoading(false);
       onOpenChange(false);
@@ -598,9 +598,9 @@ function EditCategoryDialog({
         <div className="space-y-4">
           <div className="flex items-center justify-between gap-8">
             <div className="space-y-1">
-              <p className="font-medium">Category</p>
+              <p className="font-medium">分类</p>
               <p className="text-sm text-muted-foreground">
-                Choose which category this sender belongs to
+                选择该发件人所属的分类
               </p>
             </div>
             <Select
@@ -608,7 +608,7 @@ function EditCategoryDialog({
               onValueChange={setSelectedCategoryId}
             >
               <SelectTrigger className="w-[180px] shrink-0">
-                <SelectValue placeholder="Select category" />
+                <SelectValue placeholder="选择分类" />
               </SelectTrigger>
               <SelectContent>
                 {categories.map((category) => (
@@ -625,10 +625,10 @@ function EditCategoryDialog({
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
             >
-              Cancel
+              取消
             </Button>
             <Button onClick={handleSave} disabled={isLoading}>
-              {isLoading ? "Saving..." : "Save"}
+              {isLoading ? "保存中..." : "保存"}
             </Button>
           </div>
         </div>
@@ -716,8 +716,8 @@ function MarkReadSenderStatus({
       return (
         <span className="text-sm text-green-600">
           {status.threadsTotal
-            ? `Marked ${status.threadsTotal} read!`
-            : "Marked read"}
+            ? `已将 ${status.threadsTotal} 封标为已读`
+            : "已标为已读"}
         </span>
       );
     case "processing":
@@ -765,9 +765,9 @@ function DeleteSenderStatus({
 }
 
 function getBulkActionVerb(action: BulkActionType) {
-  if (action === "markRead") return "mark as read";
-  if (action === "delete") return "delete";
-  return "archive";
+  if (action === "markRead") return "标记为已读";
+  if (action === "delete") return "删除";
+  return "归档";
 }
 
 function ExpandedEmails({
@@ -796,7 +796,7 @@ function ExpandedEmails({
   if (error) {
     return (
       <div className="border-t bg-muted/30 p-4 text-sm text-muted-foreground">
-        Error loading emails
+        加载邮件出错
       </div>
     );
   }
@@ -804,7 +804,7 @@ function ExpandedEmails({
   if (!data?.threads.length) {
     return (
       <div className="border-t bg-muted/30 p-4 text-sm text-muted-foreground">
-        No emails found
+        未找到邮件
       </div>
     );
   }

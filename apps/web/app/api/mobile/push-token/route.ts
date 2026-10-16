@@ -29,7 +29,7 @@ const pushTokenSchema = z
     if (!tokenType) {
       ctx.addIssue({
         code: "custom",
-        message: "tokenType is required for a raw device token",
+        message: "原始设备令牌必须提供 tokenType",
         path: ["tokenType"],
       });
       return;
@@ -37,7 +37,7 @@ const pushTokenSchema = z
     if (tokenType === "expo" && !EXPO_PUSH_TOKEN.test(value.token)) {
       ctx.addIssue({
         code: "custom",
-        message: "Expected an Expo push token",
+        message: "应为 Expo 推送令牌",
         path: ["token"],
       });
     }
@@ -45,14 +45,14 @@ const pushTokenSchema = z
       if (value.platform !== "ios") {
         ctx.addIssue({
           code: "custom",
-          message: "APNs tokens are iOS only",
+          message: "APNs 令牌仅适用于 iOS",
           path: ["platform"],
         });
       }
       if (!APNS_DEVICE_TOKEN.test(value.token)) {
         ctx.addIssue({
           code: "custom",
-          message: "Expected a hex APNs device token",
+          message: "应为十六进制的 APNs 设备令牌",
           path: ["token"],
         });
       }

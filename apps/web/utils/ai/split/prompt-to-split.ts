@@ -125,7 +125,7 @@ ${prompt}
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Prompt to split",
+    label: "提示词转拆分",
     modelOptions,
     promptHardening: { trust: "trusted" },
   });
@@ -150,8 +150,8 @@ ${prompt}
 }
 
 /**
- * Resolves the model's rows against the options the client actually sent, so a
- * hallucinated label id drops the condition rather than creating a broken split.
+ * 将模型返回的行与客户端实际发送的选项进行匹配，
+ * 这样臆造的标签 id 会丢弃该条件，而不是产生一个损坏的拆分。
  */
 function toFilters(
   conditions: z.infer<typeof promptToSplitSchema>["conditions"],

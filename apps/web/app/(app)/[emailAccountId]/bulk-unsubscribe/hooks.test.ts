@@ -294,7 +294,7 @@ describe("bulk unsubscribe hooks", () => {
       expect(toastErrorMock).toHaveBeenCalledWith(
         EMAIL_PROVIDER_RATE_LIMIT_MESSAGE,
         expect.objectContaining({
-          description: "1 of 3 completed; stopped to avoid more requests",
+          description: "已完成 1 / 3；为避免过多请求已停止",
         }),
       );
     });
@@ -346,7 +346,7 @@ describe("bulk unsubscribe hooks", () => {
       expect(toastErrorMock).toHaveBeenCalledWith(
         EMAIL_PROVIDER_RATE_LIMIT_MESSAGE,
         expect.objectContaining({
-          description: "1 of 3 completed; stopped to avoid more requests",
+          description: "已完成 1 / 3；为避免过多请求已停止",
         }),
       );
     });
@@ -496,9 +496,9 @@ describe("bulk unsubscribe hooks", () => {
 
       expect(toastErrorMock).toHaveBeenCalledWith(
         EMAIL_PROVIDER_RATE_LIMIT_MESSAGE,
-        // The sender was not unsubscribed, so their own page is still offered.
+        // 发件人未被退订，因此仍然提供其自己的页面。
         expect.objectContaining({
-          action: expect.objectContaining({ label: "Open page" }),
+          action: expect.objectContaining({ label: "打开页面" }),
         }),
       );
       expect(captureExceptionMock).not.toHaveBeenCalled();

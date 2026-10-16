@@ -11,9 +11,9 @@ import {
 } from "@/utils/email/contact";
 
 const CONTACTS_PAGE_SIZE = 50;
-// Graph contacts don't support substring filtering server-side, so we page
-// through saved contacts client-side; the cap bounds round-trips for queries
-// with few or no matches.
+// Graph 联系人服务端不支持子串过滤，因此我们在客户端
+// 分页遍历已保存的联系人；该上限限制了查询匹配很少或
+// 无匹配时的往返次数。
 const MAX_CONTACT_PAGES = 20;
 
 type OutlookContactsPage = {
@@ -28,11 +28,11 @@ export async function searchContacts(
 ) {
   const trimmedQuery = query.trim();
 
-  // Neither source alone covers a mailbox: /me/contacts reads only the default
-  // saved-contacts folder, while /me/people adds the directory and recent
-  // correspondents. Their scopes are optional and were requested at different
-  // times, so an account may hold only one of them — a denial on one source
-  // must not suppress the other.
+  // 任何单一来源都无法覆盖整个邮箱：/me/contacts 只读取默认的
+  // 已保存联系人文件夹，而 /me/people 还会加入目录和近期
+  // 通信人。它们的范围是可选的，且是在不同时间请求的，
+  // 因此一个账号可能只持有其中之一 —— 对某一来源的拒绝
+  // 不能抑制另一来源。
   const [saved, people] = await Promise.all([
     loadContactSource(
       () => listSavedContacts(client, trimmedQuery, logger),
@@ -48,8 +48,8 @@ export async function searchContacts(
 
   if (saved.deniedError && people.deniedError) throw saved.deniedError;
 
-  // Saved contacts lead because they are the address book the user curated;
-  // relevance-ranked people then fill the remaining slots.
+  // 已保存联系人排在前，因为它们是用户精心维护的通讯录；
+  // 随后由按相关性排序的人员填充剩余位置。
   return normalizeContactCandidates([
     ...(saved.contacts ?? []),
     ...(people.contacts ?? []),
@@ -66,14 +66,14 @@ async function loadContactSource(
   } catch (error) {
     if (!isContactSourceDenied(error)) throw error;
 
-    logger.info("Outlook contact source not permitted", { source });
+    logger.info("不允许使用该 Outlook 联系人来源", { source });
     return { contacts: undefined, deniedError: error };
   }
 }
 
-// Graph reports a missing delegated scope as a 403 whose code varies by
-// resource (ErrorAccessDenied for Outlook, Authorization_RequestDenied for
-// People), so fall back to the status when the code is unfamiliar.
+// Graph 将缺失的委派范围报告为 403，其代码因资源而异
+// （Outlook 为 ErrorAccessDenied，People 为
+// Authorization_RequestDenied），因此当代码不熟悉时回退到状态码。
 function isContactSourceDenied(error: unknown) {
   return (
     isOutlookAccessDeniedError(error) ||
@@ -130,7 +130,7 @@ async function listSavedContacts(
     request = graphClient.api(nextLink);
   }
 
-  logger.warn("Stopped Outlook contact search after max pages", {
+  logger.warn("达到最大页数后停止 Outlook 联系人搜索", {
     maxPages: MAX_CONTACT_PAGES,
   });
   return contacts;

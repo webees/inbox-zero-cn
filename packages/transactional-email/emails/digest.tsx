@@ -135,7 +135,7 @@ export default function DigestEmail(props: DigestEmailProps) {
         </div>
       );
     } else {
-      // Single line content
+      // 单行内容
       return (
         <Text className="text-[14px] text-gray-800 mt-[4px] mb-0 leading-[1.5]">
           {contentText}
@@ -164,7 +164,7 @@ export default function DigestEmail(props: DigestEmailProps) {
                   <span className={`${colors.text} font-semibold`}>
                     {ruleNames?.[categoryKey] || categoryKey}
                   </span>
-                  {" from "}
+                  {" 来自 "}
                   {categoryData.senders.map((sender, index) => {
                     if (index === 0) {
                       return sender;
@@ -172,7 +172,7 @@ export default function DigestEmail(props: DigestEmailProps) {
                       return `, ${sender}`;
                     }
                   })}
-                  {categoryData.count > 5 && " and more"}
+                  {categoryData.count > 5 && " 以及更多"}
                 </Text>
               </div>
             </div>
@@ -183,24 +183,24 @@ export default function DigestEmail(props: DigestEmailProps) {
               {categoryData.items.map((item, index) => (
                 <div key={index}>
                   <div className="p-[20px]">
-                    {/* Email Header */}
+                    {/* 邮件标头 */}
                     <div className="mb-[12px]">
                       <Text className="text-[16px] font-bold text-gray-900 mt-0 mb-0">
                         {item.subject}
                       </Text>
                       <Text className="text-[14px] text-gray-700 mt-[2px] mb-0">
-                        From:{" "}
+                        发件人：{" "}
                         <span className="font-medium text-gray-800">
                           {item.from}
                         </span>
                       </Text>
                     </div>
 
-                    {/* Email Content */}
+                    {/* 邮件内容 */}
                     {renderEmailContent(item)}
                   </div>
 
-                  {/* Separator line - don't show after the last item */}
+                  {/* 分隔线 - 最后一项之后不显示 */}
                   {index < categoryData.items.length - 1 && (
                     <Hr className="border-solid border-gray-200 my-0 mx-[20px]" />
                   )}
@@ -211,7 +211,7 @@ export default function DigestEmail(props: DigestEmailProps) {
         </Section>
       );
     } else {
-      // Categories with no highlights - much more compact
+      // 没有高亮内容的分类 - 更紧凑
       return (
         <div className="mb-[4px]" id={categoryKey}>
           <div className="px-4 py-2">
@@ -220,7 +220,7 @@ export default function DigestEmail(props: DigestEmailProps) {
               <span className={`${colors.text} font-semibold`}>
                 {ruleNames?.[categoryKey] || categoryKey}
               </span>
-              {" from "}
+              {" 来自 "}
               {categoryData.senders.map((sender, index) => {
                 if (index === 0) {
                   return sender;
@@ -228,7 +228,7 @@ export default function DigestEmail(props: DigestEmailProps) {
                   return `, ${sender}`;
                 }
               })}
-              {categoryData.count > 5 && " and more"}
+              {categoryData.count > 5 && " 以及更多"}
             </Text>
           </div>
         </div>
@@ -260,10 +260,10 @@ export default function DigestEmail(props: DigestEmailProps) {
               </Text>
 
               <Heading className="my-4 text-4xl font-medium leading-tight">
-                Your Digest
+                你的邮件摘要
               </Heading>
               <Text className="mb-8 text-lg leading-8">
-                Here's a summary of what's happened in your inbox.
+                以下是你的收件箱中发生的事情摘要。
               </Text>
             </Section>
 
@@ -286,10 +286,10 @@ export default function DigestEmail(props: DigestEmailProps) {
             ) : (
               <Section className="mb-8 text-center">
                 <Text className="text-gray-500 text-lg">
-                  No emails to summarize in this digest.
+                  此邮件摘要中没有可汇总的邮件。
                 </Text>
                 <Text className="text-gray-400 text-sm mt-2">
-                  We'll send you a summary when there are emails to report.
+                  有需要汇报的邮件时，我们会给你发送摘要。
                 </Text>
               </Section>
             )}
@@ -330,13 +330,13 @@ DigestEmail.PreviewProps = {
         "Apple unveils Vision Pro 2 with 40% lighter design and $2,499 price tag",
     },
     {
-      from: "The New York Times",
+      from: "纽约时报",
       subject: "Breaking News: Latest developments",
       content:
         "Fed signals potential rate cuts as inflation shows signs of cooling to 3.2%",
     },
     {
-      from: "Product Hunt Daily",
+      from: "Product Hunt 日报",
       subject: "🚀 Today's hottest tech products",
       content:
         "Claude Projects: Anthropic's new workspace for organizing AI conversations (847 upvotes)",
@@ -444,66 +444,64 @@ DigestEmail.PreviewProps = {
   calendar: [
     {
       from: "Sarah Johnson",
-      subject: "Team Weekly Sync",
+      subject: "团队每周例会",
       content:
-        "Title: Team Weekly Sync\nDate: Tomorrow, 10:00 AM - 11:00 AM • Meeting Room 3 / Zoom",
+        "标题：团队每周同步\n日期：明天 10:00 - 11:00 • 3 号会议室 / Zoom",
     },
     {
       from: "Michael Chen",
-      subject: "Quarterly Review",
+      subject: "季度评审",
       content:
-        "Title: Quarterly Review\nDate: Friday, May 26, 2:00 PM - 4:00 PM • Conference Room A",
+        "标题：季度评审\n日期：5 月 26 日星期五 14:00 - 16:00 • A 会议室",
     },
     {
-      from: "Personal Calendar",
-      subject: "Dentist Appointment",
-      content:
-        "Title: Dentist Appointment\nDate: Monday, May 29, 9:30 AM • Downtown Dental Clinic",
+      from: "个人日历",
+      subject: "牙医预约",
+      content: "标题：牙医预约\n日期：5 月 29 日星期一 9:30 • 市中心牙科诊所",
     },
   ],
   coldEmail: [
     {
       from: "David Williams",
-      subject: "Partnership opportunity for your business",
-      content: "Growth Solutions Inc.",
+      subject: "为你的业务提供的合作机会",
+      content: "增长解决方案公司",
     },
     {
       from: "Jennifer Lee",
-      subject: "Request for a quick call this week",
-      content: "Venture Capital Partners",
+      subject: "希望本周快速通话",
+      content: "风险投资伙伴公司",
     },
     {
       from: "Robert Taylor",
-      subject: "Introducing our new B2B solution",
-      content: "Enterprise Tech Solutions",
+      subject: "介绍我们的新 B2B 解决方案",
+      content: "企业科技解决方案公司",
     },
   ],
   notification: [
     {
       from: "LinkedIn",
-      subject: "New connection request from Sarah M.",
-      content: "Sarah M. wants to connect with you on LinkedIn.",
+      subject: "来自 Sarah M. 的新连接请求",
+      content: "Sarah M. 想在 LinkedIn 上与你建立联系。",
     },
     {
       from: "Slack",
-      subject: "New message in #general",
-      content: "Alex: Can someone help me with the deployment?",
+      subject: "#general 中的新消息",
+      content: "Alex：有人能帮我处理部署吗？",
     },
     {
       from: "GitHub",
-      subject: "Pull request #1234 needs your review",
-      content:
-        "Repository: myapp\nBranch: feature/new-feature\nFiles changed: 15",
+      subject: "拉取请求 #1234 需要你审阅",
+      content: "仓库：myapp\n分支：feature/new-feature\n更改的文件：15",
     },
     {
       from: "Twitter",
-      subject: "New follower: @techguru",
-      content: "You have a new follower on Twitter.",
+      subject: "新粉丝：@techguru",
+      content: "你在 Twitter 上有一个新粉丝。",
     },
     {
       from: "Discord",
-      subject: "New message in #development",
-      content: "Mike: The new API endpoint is working great!",
+      subject: "#development 中的新消息",
+      content: "Mike：新的 API 端点运行得很好！",
     },
   ],
   toReply: [
@@ -539,7 +537,7 @@ DigestEmail.PreviewProps = {
   funnyStuff: [
     {
       from: "The Onion",
-      subject: "Area Man Unsure If He's Living In Simulation Or Just Milwaukee",
+      subject: "男子不确定自己活在模拟世界还是密尔沃基",
       content:
         "Local man questions reality after seeing three people in cheese hats.",
     },
@@ -564,9 +562,9 @@ DigestEmail.PreviewProps = {
     },
     {
       from: "Amazon",
-      subject: "Order #114-1234567-8901234",
+      subject: "订单 #114-1234567-8901234",
       content:
-        "Order Number: 114-1234567-8901234\nItems: 3 items\nTotal: $156.78\nDelivery: Tomorrow by 8 PM",
+        "订单号：114-1234567-8901234\n商品：3 件\n总计：$156.78\n配送：明天 20:00 前",
     },
   ],
 };
@@ -583,21 +581,20 @@ function Footer({
   return (
     <Section className="mt-8 text-center text-sm text-gray-500">
       <Text className="m-0">
-        You're receiving this email because you enabled digest emails in your
-        Inbox Zero settings.
+        你收到此邮件是因为你在 Inbox Zero 设置中启用了邮件摘要。
       </Text>
       <div className="mt-[8px]">
         <Link
           href={`${baseUrl}/api/unsubscribe?token=${unsubscribeToken}`}
           className="text-gray-500 underline mr-[16px]"
         >
-          Unsubscribe
+          取消订阅
         </Link>
         <Link
           href={`${baseUrl}/${emailAccountId}/automation?tab=settings`}
           className="text-gray-500 underline"
         >
-          Customize what you receive
+          自定义你接收的内容
         </Link>
       </div>
     </Section>
@@ -625,21 +622,21 @@ export const generateDigestSubject = (props: DigestEmailProps): string => {
     .slice(0, 3);
 
   if (topCategories.length === 0) {
-    return "Your email digest";
+    return "你的邮件摘要";
   }
 
   if (topCategories.length === 1) {
     const { name, count } = topCategories[0];
-    return `Summary of ${count} ${name} email${count === 1 ? "" : "s"}`;
+    return `${count} 封${name}邮件摘要`;
   }
 
   if (topCategories.length === 2) {
     const [first, second] = topCategories;
-    return `Summary of ${first.count} ${first.name} and ${second.count} ${second.name} emails`;
+    return `${first.count} 封${first.name}邮件和 ${second.count} 封${second.name}邮件摘要`;
   }
 
   const [first, second, third] = topCategories;
-  return `Summary of ${first.count} ${first.name}, ${second.count} ${second.name} and ${third.count} ${third.name} emails`;
+  return `${first.count} 封${first.name}邮件、${second.count} 封${second.name}邮件和 ${third.count} 封${third.name}邮件摘要`;
 };
 
 const normalizeCategoryData = (

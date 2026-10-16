@@ -44,7 +44,7 @@ const CrispChat = () => {
   return null;
 };
 
-// This is used to show the Crisp chat when the user is logged out, and auto opens to help the user
+// 用于在用户登出时显示 Crisp 聊天，并自动打开以帮助用户
 export const CrispChatLoggedOutVisible = () => {
   useEffect(() => {
     if (!env.NEXT_PUBLIC_CRISP_WEBSITE_ID) return;

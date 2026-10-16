@@ -63,7 +63,7 @@ describe("POST /api/user/scheduled-emails", () => {
 
     expect(response.status).toBe(403);
     await expect(response.json()).resolves.toEqual({
-      error: "Invalid account ID",
+      error: "无效的账号 ID",
       isKnownError: true,
     });
     expect(getEmailAccountMock).toHaveBeenCalledWith({
@@ -96,7 +96,7 @@ describe("POST /api/user/scheduled-emails", () => {
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toMatchObject({
-      error: expect.stringContaining("future"),
+      error: expect.stringContaining("请选择未来的发送时间。"),
       isKnownError: true,
     });
     expect(prisma.scheduledEmail.create).not.toHaveBeenCalled();
@@ -149,7 +149,7 @@ describe("POST /api/user/scheduled-emails", () => {
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toMatchObject({
-      error: expect.stringContaining("different email"),
+      error: expect.stringContaining("此发送请求已用于另一封邮件。"),
       isKnownError: true,
     });
     expect(prisma.scheduledEmail.create).toHaveBeenCalledOnce();

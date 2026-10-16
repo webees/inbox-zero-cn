@@ -27,9 +27,7 @@ export async function signInWithSocialRedirect(
 
   const payload = await parseOauth2Response(response);
   if (!response.ok) {
-    throw new Error(
-      payload.error || `Request failed with status ${response.status}`,
-    );
+    throw new Error(payload.error || `请求失败，状态码 ${response.status}`);
   }
 
   return payload;
@@ -49,7 +47,7 @@ async function parseOauth2Response(response: Response) {
     };
   } catch {
     return {
-      error: `Request failed with status ${response.status}`,
+      error: `请求失败，状态码 ${response.status}`,
     };
   }
 }

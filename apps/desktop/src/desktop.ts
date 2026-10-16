@@ -17,7 +17,7 @@ export function getDesktopAppOrigin(
 ): string {
   const parsed = new URL(appUrl);
   if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
-    throw new Error("INBOX_ZERO_APP_URL must be an http(s) URL");
+    throw new Error("INBOX_ZERO_APP_URL 必须是 http(s) URL");
   }
   return parsed.origin;
 }
@@ -63,18 +63,18 @@ export function parseDesktopAuthCallback(url: string): DesktopAuthCallback {
   try {
     parsed = new URL(url);
   } catch {
-    return { ok: false, error: "Invalid authentication callback" };
+    return { ok: false, error: "无效的认证回调" };
   }
 
   if (parsed.protocol !== `${DESKTOP_PROTOCOL}:`) {
-    return { ok: false, error: "Invalid authentication callback" };
+    return { ok: false, error: "无效的认证回调" };
   }
 
   const path = `${parsed.hostname}${parsed.pathname}`
     .replace(/^\/+/u, "")
     .replace(/\/+$/u, "");
   if (path !== "auth-callback") {
-    return { ok: false, error: "Invalid authentication callback" };
+    return { ok: false, error: "无效的认证回调" };
   }
 
   const error = parsed.searchParams.get("error");
@@ -88,7 +88,7 @@ export function parseDesktopAuthCallback(url: string): DesktopAuthCallback {
   const code = parsed.searchParams.get("code")?.trim() ?? "";
   const state = parsed.searchParams.get("state")?.trim() ?? "";
   if (!code || !state) {
-    return { ok: false, error: "Authentication did not finish" };
+    return { ok: false, error: "认证未完成" };
   }
 
   return { ok: true, code, state };
@@ -221,7 +221,7 @@ export function findDesktopProtocolUrl(argv: readonly string[]): string | null {
   return argv.find(isDesktopProtocolUrl) ?? null;
 }
 
-// Auth pages are the fallback start URL anyway, and API routes are not pages.
+// 认证页面本来就是回退的起始 URL，而 API 路由不是页面。
 const NON_RESTORABLE_PATH_PREFIXES = ["/login", "/api/"];
 
 export function shouldPersistDesktopUrl(
@@ -251,8 +251,8 @@ export function getDesktopSessionRestoreUrl(
   if (typeof persistedUrl !== "string") return null;
   if (!shouldPersistDesktopUrl(persistedUrl, appOrigin)) return null;
   const parsed = new URL(persistedUrl);
-  // Mail is the desktop's primary mode. Preserve its selected view across a
-  // full restart, but send utility pages back through the desktop home gate.
+  // 邮件是桌面端的主要模式。在完整重启后保留其选定的视图，
+  // 但把工具类页面送回桌面端主页网关。
   if (!isDesktopMailPath(parsed.pathname)) return null;
   return parsed.toString();
 }
@@ -279,11 +279,11 @@ export function getDesktopMailAccountId(
 
 const DESKTOP_WINDOW_BACKGROUND = "#ffffff";
 
-/** Vertically centers the lights in the 52px left drag region. */
+/** 在 52px 宽的左侧拖拽区域中让信号灯垂直居中。 */
 export const DESKTOP_MAC_TRAFFIC_LIGHT_POSITION = { x: 16, y: 18 } as const;
 export const DESKTOP_MAC_TITLEBAR_HEIGHT = 52;
 export const DESKTOP_MAC_TRAFFIC_LIGHTS_WIDTH = 78;
-/** Web chrome marked with this is hidden by the Mac desktop stylesheet. */
+/** 标记此类的 Web chrome 会被 Mac 桌面样式表隐藏。 */
 export const DESKTOP_MAC_HIDE_ATTRIBUTE = "data-hide-on-desktop-mac";
 export const DESKTOP_MAC_TITLEBAR_SPACER_ATTRIBUTE =
   "data-desktop-mac-titlebar-spacer";
@@ -362,7 +362,7 @@ html::after {
 export function getDesktopWindowDragCss(
   platform = process.platform,
 ): string | null {
-  // Windows already has a native overlay drag region; Linux keeps a native title bar.
+  // Windows 已经有原生覆盖式拖拽区域；Linux 保留原生标题栏。
   if (platform !== "darwin") return null;
   return DESKTOP_WINDOW_DRAG_CSS;
 }

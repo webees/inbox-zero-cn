@@ -5,7 +5,7 @@ export const createApiKeyBody = z.object({
   name: z.string().trim().max(100).nullish(),
   scopes: z
     .array(apiKeyScopeSchema)
-    .min(1, "Select at least one permission")
+    .min(1, "请至少选择一项权限")
     .transform((scopes) => [...new Set(scopes)]),
   expiresIn: apiKeyExpirySchema,
 });

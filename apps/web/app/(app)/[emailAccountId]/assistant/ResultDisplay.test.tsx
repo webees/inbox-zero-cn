@@ -70,14 +70,12 @@ describe("ResultDisplayContent", () => {
       />,
     );
 
-    expect(screen.getByText("No match found")).toBeTruthy();
+    expect(screen.getByText("未找到匹配项")).toBeTruthy();
     expect(
-      screen.getByText(
-        "Some rules were skipped because this email is part of a thread.",
-      ),
+      screen.getByText("由于此邮件属于同一会话，部分规则被跳过。"),
     ).toBeTruthy();
     expect(
-      screen.getByRole("button", { name: "View skipped rules" }),
+      screen.getByRole("button", { name: "查看已跳过的规则" }),
     ).toBeTruthy();
   });
 
@@ -102,12 +100,10 @@ describe("ResultDisplayContent", () => {
     );
 
     expect(
-      screen.queryByText(
-        "Some rules were skipped because this email is part of a thread.",
-      ),
+      screen.queryByText("由于此邮件属于同一会话，部分规则被跳过。"),
     ).toBeNull();
     expect(
-      screen.queryByRole("button", { name: "View skipped rules" }),
+      screen.queryByRole("button", { name: "查看已跳过的规则" }),
     ).toBeNull();
   });
 
@@ -140,12 +136,8 @@ describe("ResultDisplayContent", () => {
       />,
     );
 
-    expect(
-      screen.getByText("Some rules were excluded by learned patterns."),
-    ).toBeTruthy();
-    expect(
-      screen.getByRole("button", { name: "View exclusions" }),
-    ).toBeTruthy();
+    expect(screen.getByText("部分规则已被学习模式排除。")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "查看排除项" })).toBeTruthy();
   });
 
   it("shows learned-pattern exclusions for applied results", () => {
@@ -188,12 +180,8 @@ describe("ResultDisplayContent", () => {
       />,
     );
 
-    expect(
-      screen.getByText("Some rules were excluded by learned patterns."),
-    ).toBeTruthy();
-    expect(
-      screen.getByRole("button", { name: "View exclusions" }),
-    ).toBeTruthy();
+    expect(screen.getByText("部分规则已被学习模式排除。")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "查看排除项" })).toBeTruthy();
   });
 });
 
@@ -205,9 +193,7 @@ describe("getRuleResultReasonDisplay", () => {
       ),
     ).toEqual({
       reason: 'The sender asked about the user\'s maps and said "thanks".',
-      actionFailureMessages: [
-        "The draft reply could not be sent to the messaging channel.",
-      ],
+      actionFailureMessages: ["无法将草稿回复发送到消息渠道。"],
     });
   });
 
@@ -260,7 +246,7 @@ describe("getRuleResultReasonDisplay", () => {
       ),
     ).toEqual({
       reason: "Rule matched.",
-      actionFailureMessages: ["The sender notification could not be sent."],
+      actionFailureMessages: ["无法发送发件人通知。"],
     });
   });
 
@@ -268,11 +254,11 @@ describe("getRuleResultReasonDisplay", () => {
     expect(
       getRuleResultReasonDisplay("Action failures: constructor:toString")
         .actionFailureMessages,
-    ).toEqual(["An action could not be completed."]);
+    ).toEqual(["无法完成某项操作。"]);
     expect(
       getRuleResultReasonDisplay("Action failures: NOTIFY_SENDER:toString")
         .actionFailureMessages,
-    ).toEqual(["The sender notification could not be completed."]);
+    ).toEqual(["无法完成发件人通知。"]);
   });
 
   it("does not expose unknown internal action failure codes", () => {
@@ -281,9 +267,7 @@ describe("getRuleResultReasonDisplay", () => {
     );
 
     expect(display.reason).toBe("Rule matched");
-    expect(display.actionFailureMessages).toEqual([
-      "The draft reply action could not be completed.",
-    ]);
+    expect(display.actionFailureMessages).toEqual(["无法完成起草回复操作。"]);
     expect(display.actionFailureMessages.join(" ")).not.toContain(
       "SOME_INTERNAL_CODE",
     );

@@ -356,7 +356,7 @@ function ActionCard({
                 <span>{selectedTypeOption.label}</span>
               </div>
             ) : (
-              <SelectValue placeholder="Select action" />
+              <SelectValue placeholder="选择操作" />
             )}
           </SelectTrigger>
         </FormControl>
@@ -431,12 +431,12 @@ function ActionCard({
                         `actions.${index}.${field.name}.name`,
                       )}
                       className="pr-8"
-                      placeholder='e.g. {{choose "urgent", "normal", or "low"}}'
+                      placeholder='例如：{{从 "urgent"、"normal" 或 "low" 中选择}}'
                     />
                     <div className="absolute right-2 top-1/2 -translate-y-1/2">
                       <TooltipExplanation
                         side="right"
-                        text="When enabled our AI will generate a value when processing the email. Put the prompt inside braces like so: {{your prompt here}}."
+                        text="启用后，我们的 AI 会在处理邮件时生成一个值。将提示词放在花括号内，如下所示：{{your prompt here}}。"
                         className="text-gray-400"
                       />
                     </div>
@@ -554,7 +554,7 @@ function ActionCard({
                 <ErrorMessage
                   message={
                     errors.actions?.[index]?.delayInMinutes?.message ||
-                    "Invalid delay value"
+                    "无效的延迟值"
                   }
                 />
               </div>
@@ -586,7 +586,7 @@ function ActionCard({
           <ErrorMessage
             message={
               errors.actions?.[index]?.[field.name]?.message?.toString() ||
-              "Invalid value"
+              "无效的值"
             }
           />
         )}
@@ -613,12 +613,12 @@ function ActionCard({
                   {expandedFields ? (
                     <>
                       <ChevronDownIcon className="h-3.5 w-3.5" />
-                      Hide extra fields
+                      隐藏额外字段
                     </>
                   ) : (
                     <>
                       <ChevronRightIcon className="h-3.5 w-3.5" />
-                      Show all fields
+                      显示所有字段
                     </>
                   )}
                 </Button>
@@ -633,7 +633,7 @@ function ActionCard({
     actionCanBeDelayed && actionType !== ActionType.LABEL && delayEnabled ? (
       <div className="space-y-2">
         <div className="flex items-center space-x-2">
-          <span className="text-muted-foreground">after</span>
+          <span className="text-muted-foreground">之后</span>
           <DelayInputControls
             name={`delay-${index}`}
             value={delayValue}
@@ -650,7 +650,7 @@ function ActionCard({
             <ErrorMessage
               message={
                 errors.actions?.[index]?.delayInMinutes?.message ||
-                "Invalid delay value"
+                "无效的延迟值"
               }
             />
           </div>
@@ -699,14 +699,14 @@ function ActionCard({
     <MessagingChannelField
       control={control}
       index={index}
-      label="Send to"
+      label="发送至"
       messagingChannels={connectedMessagingChannels}
     />
   ) : null;
 
   const deliverySummary = isDraftReplyActionType(rawActionType) ? (
     <MutedText className="px-1">
-      Deliver to{" "}
+      投递至{" "}
       <span className="font-medium text-foreground">
         {formatDraftReplyDeliverySummary({
           delivery: draftReplyDelivery,
@@ -718,13 +718,13 @@ function ActionCard({
     <MutedText className="px-1">
       {selectedMessagingChannel ? (
         <>
-          Send to{" "}
+          发送至{" "}
           <span className="font-medium text-foreground">
             {formatMessagingDestinationLabel(selectedMessagingChannel)}
           </span>
         </>
       ) : (
-        "Choose a delivery destination from More options."
+        "请从“更多选项”中选择投递目标。"
       )}
     </MutedText>
   ) : null;
@@ -732,7 +732,7 @@ function ActionCard({
   const attachmentsSummary =
     supportsAttachments && staticAttachments?.length ? (
       <MutedText className="px-1">
-        Attachments:{" "}
+        附件：{" "}
         <span className="font-medium text-foreground">
           {staticAttachments.length}
         </span>
@@ -792,7 +792,7 @@ function ActionCard({
     <>
       {isNotifySender ? (
         <MutedText className="px-1 h-full flex items-center">
-          {`Sends an automated notification from ${BRAND_NAME} informing the sender their email was filtered as cold outreach.`}
+          {`${BRAND_NAME} 会向发件人发送自动通知，告知其邮件被判定为冷邮件推广。`}
         </MutedText>
       ) : isDraftReplyActionType(rawActionType) ? (
         <Card className="p-4 space-y-4">
@@ -885,13 +885,13 @@ function ActionCard({
     <>
       {showDeliveryActions ? (
         <DropdownMenuItem onClick={() => setDeliveryDialogOpen(true)}>
-          {deliverySummary ? "Delivery options" : "Configure delivery"}
+          {deliverySummary ? "投递选项" : "配置投递"}
         </DropdownMenuItem>
       ) : null}
       {showAttachmentsAction ? (
         <DropdownMenuItem onClick={() => setAttachmentsDialogOpen(true)}>
           <PaperclipIcon className="mr-2 size-4" />
-          Configure attachments
+          配置附件
         </DropdownMenuItem>
       ) : null}
     </>
@@ -905,7 +905,7 @@ function ActionCard({
             draftReplyGroupIndexes.length > 1 ? draftReplyGroupIndexes : index,
           )
         }
-        removeAriaLabel="Remove action"
+        removeAriaLabel="移除操作"
         leftContent={leftContent}
         rightContent={rightContent}
         onAddDelay={actionCanBeDelayed ? handleAddDelay : undefined}
@@ -924,7 +924,7 @@ function ActionCard({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
-              {isDraftReplyAction ? "Delivery options" : "Delivery destination"}
+              {isDraftReplyAction ? "投递选项" : "投递目标"}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
@@ -933,7 +933,7 @@ function ActionCard({
             canConnectMessagingApp ? (
               <div className="rounded-md border bg-muted/40 p-3 space-y-3">
                 <MutedText>
-                  Connect Slack, Telegram, or Teams to deliver outside email.
+                  连接 Slack、Telegram 或 Teams，以便在邮件之外投递。
                 </MutedText>
                 <div className="flex flex-wrap gap-2">
                   <Button asChild size="sm" variant="outline">
@@ -954,7 +954,7 @@ function ActionCard({
       >
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Attachments</DialogTitle>
+            <DialogTitle>附件</DialogTitle>
           </DialogHeader>
           {attachmentsField}
         </DialogContent>
@@ -994,7 +994,7 @@ function DraftReplyReviewChannelsSection({
     <div className="space-y-4">
       <div className="space-y-3">
         <div className="flex items-center gap-2 text-sm">
-          <span className="font-medium text-foreground">Draft to</span>
+          <span className="font-medium text-foreground">草稿发送至</span>
         </div>
 
         <div
@@ -1012,13 +1012,13 @@ function DraftReplyReviewChannelsSection({
                 selectedMessagingChannelIds,
               })
             }
-            aria-label="Toggle email draft delivery"
+            aria-label="切换邮件草稿投递"
           />
           <div className="min-w-0">
-            <span className="font-medium text-foreground">Email</span>
+            <span className="font-medium text-foreground">邮件</span>
             <span className="text-muted-foreground">
               {" "}
-              — Draft appears in your inbox
+              — 草稿会出现在你的收件箱中
             </span>
           </div>
         </div>
@@ -1059,7 +1059,7 @@ function DraftReplyReviewChannelsSection({
                       nextSelectedMessagingChannelIds,
                   });
                 }}
-                aria-label={`Toggle ${channelLabel} draft delivery`}
+                aria-label={`切换 ${channelLabel} 草稿投递`}
               />
               <span className="font-medium text-foreground">
                 {channelLabel}
@@ -1138,11 +1138,11 @@ function IntegrationArgFields({
       {!isConnected ? (
         <div className="space-y-3">
           <MutedText className="px-1">
-            {`${displayName} isn't connected. Connect it to use this action.`}
+            {`${displayName} 尚未连接，请先连接以使用此操作。`}
           </MutedText>
           <Button asChild size="sm" variant="outline">
             <Link href={prefixPath(emailAccountId, "/integrations")}>
-              {`Connect ${displayName}`}
+              {`连接 ${displayName}`}
             </Link>
           </Button>
         </div>
@@ -1359,15 +1359,15 @@ function MessagingChannelField({
                   <SelectValue
                     placeholder={
                       messagingChannels.length > 0
-                        ? "Choose a destination"
-                        : "No connected destinations"
+                        ? "选择目标"
+                        : "没有已连接的目标"
                     }
                   />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
                 {includeEmailOption ? (
-                  <SelectItem value="email">Email</SelectItem>
+                  <SelectItem value="email">邮件</SelectItem>
                 ) : null}
                 {messagingChannels.map((channel) => (
                   <SelectItem key={channel.id} value={channel.id}>
@@ -1403,11 +1403,11 @@ export function formatMessagingDestinationLabel(
   }
   if (channel.teamName) return `${provider} (${channel.teamName})`;
 
-  return provider === "Slack" ? "Slack workspace" : provider;
+  return provider === "Slack" ? "Slack 工作区" : provider;
 }
 
 function formatDraftReplyReviewChannelLabel(channel?: MessagingChannelOption) {
-  if (!channel) return "Chat app";
+  if (!channel) return "聊天应用";
 
   const destination = formatMessagingDestinationLabel(channel);
   const provider = getMessagingProviderName(channel.provider);
@@ -1416,7 +1416,7 @@ function formatDraftReplyReviewChannelLabel(channel?: MessagingChannelOption) {
     destination.startsWith(provider)
       ? destination
       : `${provider} · ${destination}`;
-  return channel.isConnected ? label : `${label} (Disconnected)`;
+  return channel.isConnected ? label : `${label}（已断开）`;
 }
 
 function updateActionType({
@@ -1563,20 +1563,20 @@ function formatDraftReplyDeliverySummary({
   delivery: DraftReplyDelivery;
   selectedChannels: MessagingChannelOption[];
 }) {
-  if (delivery === "EMAIL") return "Email";
+  if (delivery === "EMAIL") return "邮件";
 
   const destinations = selectedChannels.map((channel) =>
     formatDraftReplyReviewChannelLabel(channel),
   );
 
   if (destinations.length === 0) {
-    return delivery === "MESSAGING" ? "Chat app" : "Email + chat app";
+    return delivery === "MESSAGING" ? "聊天应用" : "邮件 + 聊天应用";
   }
 
   const destinationSummary = destinations.join(", ");
   return delivery === "MESSAGING"
     ? destinationSummary
-    : `Email + ${destinationSummary}`;
+    : `邮件 + ${destinationSummary}`;
 }
 
 function VariableExamplesDialog() {
@@ -1584,36 +1584,36 @@ function VariableExamplesDialog() {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline" size="xs" className="ml-auto">
-          See examples
+          查看示例
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Variable Examples</DialogTitle>
+          <DialogTitle>变量示例</DialogTitle>
         </DialogHeader>
         <div className="space-y-6 py-4">
           <div>
-            <h4 className="font-medium">Example: Subject</h4>
+            <h4 className="font-medium">示例：主题</h4>
             <div className="mt-2 rounded-md bg-muted p-3">
-              <code className="text-sm">Hi {"{{name}}"}</code>
+              <code className="text-sm">你好 {"{{name}}"}</code>
             </div>
           </div>
 
           <div>
-            <h4 className="font-medium">Example: Email Content</h4>
+            <h4 className="font-medium">示例：邮件内容</h4>
             <div className="mt-2 whitespace-pre-wrap rounded-md bg-muted p-3 font-mono text-sm">
-              {`Hi {{name}},
+              {`你好 {{name}}，
 
-{{answer the question in the email}}
+{{回答邮件中的问题}}
 
-If you'd like to get on a call here's my cal link:
+如果你想约个通话，这是我的日历链接：
 cal.com/example`}
             </div>
           </div>
           <div>
-            <h4 className="font-medium">Example: Label</h4>
+            <h4 className="font-medium">示例：标签</h4>
             <div className="mt-2 whitespace-pre-wrap rounded-md bg-muted p-3 font-mono text-sm">
-              {`{{choose between "p1", "p2", "p3" depending on urgency. "p1" is highest urgency.}}`}
+              {`{{根据紧急程度在 "p1"、"p2"、"p3" 之间选择。"p1" 最紧急。}}`}
             </div>
           </div>
         </div>
@@ -1627,7 +1627,7 @@ function VariableProTip() {
     <div className="mt-4 rounded-md bg-blue-50 p-3 dark:bg-blue-950/30">
       <div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
         <span>
-          ✨ Use {"{{"}variables{"}}"} for personalized content
+          ✨ 使用 {"{{"}变量{"}}"} 生成个性化内容
         </span>
         <VariableExamplesDialog />
       </div>

@@ -17,10 +17,10 @@ describe("buildSnoozeCommandPalette", () => {
     expect(
       commands.map((command) => [command.label, command.description]),
     ).toEqual([
-      ["Tomorrow", "Wed, Aug 19 at 9:00 AM"],
-      ["End of week", "Fri, Aug 21 at 9:00 AM"],
-      ["This weekend", "Sat, Aug 22 at 9:00 AM"],
-      ["Next week", "Mon, Aug 24 at 9:00 AM"],
+      ["明天", "Wed, Aug 19 at 9:00 AM"],
+      ["本周结束", "Fri, Aug 21 at 9:00 AM"],
+      ["本周末", "Sat, Aug 22 at 9:00 AM"],
+      ["下周", "Mon, Aug 24 at 9:00 AM"],
     ]);
   });
 

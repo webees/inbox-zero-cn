@@ -47,7 +47,7 @@ describe("archiveCategory", () => {
       },
       sendersCount: 2,
       senders: ["first@example.com", "second@example.com"],
-      message: 'Archived mail from 2 senders in "Newsletters".',
+      message: "已归档“Newsletters”分类中 2 个发件人的邮件。",
     });
   });
 
@@ -115,7 +115,7 @@ describe("archiveCategory", () => {
       },
       sendersCount: 0,
       senders: [],
-      message: 'No senders are currently assigned to "Uncategorized".',
+      message: "当前没有发件人分配到“Uncategorized”。",
     });
   });
 

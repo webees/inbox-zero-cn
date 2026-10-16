@@ -233,10 +233,10 @@ describe("sendMobilePushNotification", () => {
     await sendNotification();
 
     expect(prisma.mobilePushDelivery.deleteMany).not.toHaveBeenCalled();
-    expect(warnSpy).toHaveBeenCalledWith(
-      "Mobile push response outcome is unknown",
-      { expectedTicketCount: 2, receivedTicketCount: 1 },
-    );
+    expect(warnSpy).toHaveBeenCalledWith("移动推送响应结果未知", {
+      expectedTicketCount: 2,
+      receivedTicketCount: 1,
+    });
   });
 });
 

@@ -22,7 +22,7 @@ export async function trashThread(options: {
     messageIds,
     threadId,
     logger,
-    failureMessage: "Failed to move message to trash",
+    failureMessage: "未能将邮件移动到垃圾箱",
     messageHandler: (messageId) =>
       withMicrosoftGraphWriteRetry(
         () =>
@@ -41,7 +41,7 @@ export async function trashThread(options: {
       timestamp: Date.now(),
     });
   } catch (error) {
-    logger.error("Failed to publish delete action", {
+    logger.error("发布删除操作失败", {
       email: ownerEmail,
       threadId,
       error,
@@ -73,7 +73,7 @@ async function getThreadMessageIds({
       logger,
     );
 
-  // Finish enumeration before moving messages changes the paginated result set.
+  // 在移动邮件改变分页结果集之前完成枚举。
   const messageIds = new Set<string>();
   const visitedPages = new Set<string>();
   while (true) {
@@ -82,7 +82,7 @@ async function getThreadMessageIds({
 
     const nextLink = resolveMicrosoftGraphNextLink(page["@odata.nextLink"]);
     if (!nextLink || visitedPages.has(nextLink)) {
-      throw new Error("Unable to complete Outlook thread pagination");
+      throw new Error("无法完成 Outlook 会话分页");
     }
     visitedPages.add(nextLink);
     page = await withMicrosoftGraphRetry(

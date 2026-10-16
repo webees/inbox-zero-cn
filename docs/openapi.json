@@ -3,12 +3,12 @@
   "info": {
     "title": "Inbox Zero API",
     "version": "1.0.0",
-    "description": "Programmatic access to Inbox Zero inbox stats, automation rules, and sender unsubscribe. Docs: https://docs.getinboxzero.com/api-reference/introduction Machine-readable schema: /openapi.json Authenticate with an account-scoped API key via the API-Key header. Errors return JSON with error.code, error.message, and error.hint."
+    "description": "以编程方式访问 Inbox Zero 收件箱统计、自动化规则和发件人退订。 文档：https://docs.getinboxzero.com/api-reference/introduction 机器可读 schema：/openapi.json 使用账号级 API 密钥通过 API-Key 请求头进行认证。 错误会返回包含 error.code、error.message 和 error.hint 的 JSON。"
   },
   "servers": [
     {
       "url": "https://www.getinboxzero.com/api/v1",
-      "description": "Primary server"
+      "description": "主服务器"
     }
   ],
   "security": [
@@ -22,12 +22,12 @@
         "type": "apiKey",
         "in": "header",
         "name": "API-Key",
-        "description": "Account-scoped API key created in Settings.\nOperations declare the scopes they require.\nAvailable scopes:\n- RULES_READ: List and inspect automation rules for this inbox.\n- RULES_WRITE: Create, update, and delete automation rules for this inbox.\n- STATS_READ: Read aggregated inbox statistics for this inbox.\n- SENDERS_UNSUBSCRIBE: Unsubscribe from senders for this inbox.",
+        "description": "在设置中创建的账号级 API 密钥。\n各操作会声明其所需的权限范围。\n可用范围：\n- RULES_READ: 列出并查看此收件箱的自动化规则。\n- RULES_WRITE: 为此收件箱创建、更新和删除自动化规则。\n- STATS_READ: 读取此收件箱的汇总统计信息。\n- SENDERS_UNSUBSCRIBE: 为此收件箱退订发件人。",
         "x-scopes": {
-          "RULES_READ": "List and inspect automation rules for this inbox.",
-          "RULES_WRITE": "Create, update, and delete automation rules for this inbox.",
-          "STATS_READ": "Read aggregated inbox statistics for this inbox.",
-          "SENDERS_UNSUBSCRIBE": "Unsubscribe from senders for this inbox."
+          "RULES_READ": "列出并查看此收件箱的自动化规则。",
+          "RULES_WRITE": "为此收件箱创建、更新和删除自动化规则。",
+          "STATS_READ": "读取此收件箱的汇总统计信息。",
+          "SENDERS_UNSUBSCRIBE": "为此收件箱退订发件人。"
         }
       }
     },
@@ -75,7 +75,7 @@
     "/stats/by-period": {
       "get": {
         "operationId": "getStatsByPeriod",
-        "description": "Get email statistics grouped by time period. Returns counts of emails by status (all, sent, read, unread, archived, unarchived) for each period.",
+        "description": "获取按时间段分组的邮件统计。返回每个时间段内按状态（全部、已发送、已读、未读、已归档、未归档）统计的邮件数量。",
         "security": [
           {
             "ApiKeyAuth": [
@@ -127,7 +127,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response",
+            "description": "成功响应",
             "content": {
               "application/json": {
                 "schema": {
@@ -261,7 +261,7 @@
     "/stats/response-time": {
       "get": {
         "operationId": "getStatsResponseTime",
-        "description": "Get email response time statistics. Returns summary stats, distribution, and trend data showing how quickly you respond to emails.",
+        "description": "获取邮件回复时间统计。返回摘要统计、分布和趋势数据，展示你回复邮件的速度。",
         "security": [
           {
             "ApiKeyAuth": [
@@ -298,7 +298,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response",
+            "description": "成功响应",
             "content": {
               "application/json": {
                 "schema": {
@@ -487,7 +487,7 @@
     "/rules": {
       "get": {
         "operationId": "listRules",
-        "description": "List automation rules for the scoped inbox account.",
+        "description": "列出指定收件箱账号的自动化规则。",
         "security": [
           {
             "ApiKeyAuth": [
@@ -500,7 +500,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response",
+            "description": "成功响应",
             "content": {
               "application/json": {
                 "schema": {
@@ -794,7 +794,7 @@
       },
       "post": {
         "operationId": "createRule",
-        "description": "Create an automation rule for the scoped inbox account.",
+        "description": "为指定收件箱账号创建一条自动化规则。",
         "security": [
           {
             "ApiKeyAuth": [
@@ -983,7 +983,7 @@
         },
         "responses": {
           "201": {
-            "description": "Successful response",
+            "description": "成功响应",
             "content": {
               "application/json": {
                 "schema": {
@@ -1286,7 +1286,7 @@
     "/rules/{id}": {
       "get": {
         "operationId": "getRule",
-        "description": "Get a single automation rule for the scoped inbox account.",
+        "description": "获取指定收件箱账号的某条自动化规则。",
         "security": [
           {
             "ApiKeyAuth": [
@@ -1309,7 +1309,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response",
+            "description": "成功响应",
             "content": {
               "application/json": {
                 "schema": {
@@ -1620,7 +1620,7 @@
       },
       "put": {
         "operationId": "replaceRule",
-        "description": "Replace an automation rule for the scoped inbox account.",
+        "description": "替换指定收件箱账号的一条自动化规则。",
         "security": [
           {
             "ApiKeyAuth": [
@@ -1819,7 +1819,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful response",
+            "description": "成功响应",
             "content": {
               "application/json": {
                 "schema": {
@@ -2130,7 +2130,7 @@
       },
       "delete": {
         "operationId": "deleteRule",
-        "description": "Delete an automation rule for the scoped inbox account.",
+        "description": "删除指定收件箱账号的一条自动化规则。",
         "security": [
           {
             "ApiKeyAuth": [
@@ -2153,7 +2153,7 @@
         ],
         "responses": {
           "204": {
-            "description": "Rule deleted"
+            "description": "规则已删除"
           },
           "400": {
             "description": "Invalid query, path, or request body",
@@ -2231,7 +2231,7 @@
     "/senders/unsubscribe": {
       "post": {
         "operationId": "unsubscribeSender",
-        "description": "Unsubscribe from a sender for the scoped inbox. Looks up List-Unsubscribe from that sender's mail when a link is not provided. Check unsubscribe.success: when it is false the sender was left unchanged.",
+        "description": "为指定收件箱的某个发件人退订。未提供链接时，会从该发件人的邮件中查找 List-Unsubscribe。请检查 unsubscribe.success：当其为 false 时，该发件人未被更改。",
         "security": [
           {
             "ApiKeyAuth": [
@@ -2271,7 +2271,7 @@
         },
         "responses": {
           "200": {
-            "description": "Unsubscribe attempt completed",
+            "description": "退订尝试已完成",
             "content": {
               "application/json": {
                 "schema": {

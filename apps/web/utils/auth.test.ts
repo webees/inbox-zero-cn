@@ -213,7 +213,7 @@ describe("handleReferralOnSignUp", () => {
 
     mockCreateReferral.mockRejectedValue(error);
 
-    // Should not throw
+    // 不应抛出异常
     await expect(
       handleReferralOnSignUp({ userId, email }),
     ).resolves.toBeUndefined();
@@ -473,7 +473,7 @@ describe("handleLinkAccount", () => {
         providerId: "google",
         accessToken: null,
       } as any),
-    ).rejects.toThrow("Missing access token during account linking.");
+    ).rejects.toThrow("账号关联期间缺少访问令牌。");
 
     expect(prisma.emailAccount.findUnique).not.toHaveBeenCalled();
   });
@@ -595,13 +595,13 @@ describe("handleLinkAccount", () => {
     expect(upsert?.create.mailSplits).toEqual({
       create: [
         {
-          name: "All",
+          name: "全部",
           matchAll: true,
           filters: { create: [] },
           order: 0,
         },
         {
-          name: "Unread",
+          name: "未读",
           matchAll: true,
           filters: {
             create: [

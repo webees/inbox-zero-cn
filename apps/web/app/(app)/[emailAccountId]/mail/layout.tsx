@@ -28,8 +28,8 @@ export default async function MailLayout({
     MAIL_LIST_WIDTH_BOUNDS,
   );
 
-  // CommandK's provider only wraps its own palette, so the mail screen needs its
-  // own for react-hotkeys-hook to have any active scope to bind against.
+  // CommandK 的 provider 只包裹它自己的面板，因此邮件屏幕需要
+  // 自己的 provider，让 react-hotkeys-hook 有可绑定的活动作用域。
   return (
     <ShortcutsProvider scopes={MAIL_SHORTCUT_SCOPES}>
       <MailThemeScope />

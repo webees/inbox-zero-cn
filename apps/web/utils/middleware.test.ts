@@ -320,7 +320,7 @@ describe("Middleware", () => {
         extra: { url: "/api/slack/callback" },
       });
       expect(response.status).toBe(500);
-      expect(responseBody).toEqual({ error: "An unexpected error occurred" });
+      expect(responseBody).toEqual({ error: "发生了意外错误" });
     });
   });
 
@@ -400,7 +400,7 @@ describe("Middleware", () => {
       });
       expect(response.status).toBe(500);
       expect(responseBody).toEqual({
-        error: "An unexpected error occurred",
+        error: "发生了意外错误",
       });
     });
   });
@@ -575,7 +575,7 @@ describe("Middleware", () => {
       expect(handler).not.toHaveBeenCalled();
       expect(response.status).toBe(403);
       expect(responseBody).toEqual({
-        error: "Invalid account ID",
+        error: "无效的账号 ID",
         isKnownError: true,
       });
     });

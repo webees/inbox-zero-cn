@@ -1131,7 +1131,7 @@ describe("processAccountFollowUps - dedup logic", () => {
         counterpartyName: "Demo Contact",
         counterpartyEmail: "contact@example.com",
         trackerType: ThreadTrackerType.AWAITING,
-        threadLinkLabel: "Open in Outlook",
+        threadLinkLabel: "在 Outlook 中打开",
         threadLink: expectedLink,
       }),
     );
@@ -1340,7 +1340,7 @@ describe("processAccountFollowUps - dedup logic", () => {
     expect(sendFollowUpNotification).toHaveBeenCalledWith(
       expect.objectContaining({
         subject: "Missing recipient header",
-        counterpartyName: "someone",
+        counterpartyName: "某人",
         counterpartyEmail: "",
         trackerType: ThreadTrackerType.AWAITING,
       }),

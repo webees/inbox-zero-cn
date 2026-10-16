@@ -36,7 +36,7 @@ export const createOutlookReplyContent = ({
   return { text, html };
 };
 
-// Keeps HTML signature structure intact: only top-level text gets line breaks.
+// 保持 HTML 签名结构完整：仅顶层文本换行。
 function renderMixedContentAsHtml(content: string): string {
   const $ = load(content, null, false);
 

@@ -146,7 +146,7 @@ export function MailThreadRow({
       role="option"
       tabIndex={isFocused ? 0 : -1}
     >
-      {isStarred && <span className="sr-only">Starred conversation</span>}
+      {isStarred && <span className="sr-only">已加星标的会话</span>}
       <span
         className={cx(
           "flex h-3.5 shrink-0 items-center gap-1.5",

@@ -19,20 +19,20 @@ import { isOutlookThrottlingError } from "@/utils/error";
 import { isMicrosoftEmulationEnabled } from "@/utils/outlook/oauth";
 import { resolveMicrosoftGraphNextLink } from "@/utils/outlook/page-token";
 
-// Standard fields to select when fetching messages from Microsoft Graph API
-// internetMessageId is the RFC 5322 Message-ID header, needed for cross-provider email threading
+// 从 Microsoft Graph API 获取邮件时要选择的标准字段
+// internetMessageId 是 RFC 5322 Message-ID 头，用于跨服务商的邮件会话关联
 export const MESSAGE_LIST_SELECT_FIELDS =
   "id,conversationId,conversationIndex,internetMessageId,subject,bodyPreview,from,sender,toRecipients,ccRecipients,receivedDateTime,createdDateTime,isDraft,isRead,flag,categories,parentFolderId,hasAttachments,webLink,inferenceClassification";
 export const MESSAGE_SELECT_FIELDS = `${MESSAGE_LIST_SELECT_FIELDS},bccRecipients,body,internetMessageHeaders`;
 
-// contentId belongs to fileAttachment, so selecting it without this type cast
-// makes Graph reject the entire attachment collection query.
+// contentId 属于 fileAttachment，因此不加上这层类型转换就选择它
+// 会导致 Graph 拒绝整个附件集合查询。
 export const MESSAGE_EXPAND_ATTACHMENTS =
   "attachments($select=id,name,contentType,size,isInline,microsoft.graph.fileAttachment/contentId)";
 
-// Outlook keeps its own copy of the invitation on the user's calendar and links
-// the email to it. The calendar lookup needs that id to sync the RSVP. The type
-// cast scopes the expand to invitations, so plain messages are unaffected.
+// Outlook 会在用户日历上保留邀请的自己的副本，并将邮件链接到它。
+// 日历查询需要该 id 来同步 RSVP。类型转换将 expand 限定为
+// 邀请，因此普通邮件不受影响。
 const MESSAGE_EXPAND_LINKED_EVENT =
   "microsoft.graph.eventMessage/event($select=id)";
 
@@ -129,7 +129,7 @@ export async function getCategoryMap(
     return categoryMap;
   } catch (error) {
     signal?.throwIfAborted();
-    logger.warn("Failed to fetch category map", { error });
+    logger.warn("获取类别映射失败", { error });
     return new Map();
   }
 }
@@ -141,13 +141,13 @@ function getOutlookLabels(
 ): string[] {
   const labels: string[] = [];
 
-  // Check if message is a draft
+  // 检查邮件是否为草稿
   if (message.isDraft) {
     labels.push(OutlookLabel.DRAFT);
   }
 
-  // Handle read/unread status - Outlook uses isRead property, not a label
-  // isRead can be true, false, or undefined/null
+  // 处理已读/未读状态 - Outlook 使用 isRead 属性，而不是标签
+  // isRead 可以为 true、false 或 undefined/null
   if (message.isRead === false) {
     labels.push(OutlookLabel.UNREAD);
   }
@@ -156,7 +156,7 @@ function getOutlookLabels(
     labels.push(OutlookLabel.STARRED);
   }
 
-  // Map folder ID to label
+  // 将文件夹 ID 映射到标签
   if (message.parentFolderId) {
     const folderKey = Object.entries(folderIds).find(
       ([_, id]) => id === message.parentFolderId,
@@ -180,7 +180,7 @@ function getOutlookLabels(
     }
   }
 
-  // Add category labels - map names to IDs when category map is available
+  // 添加类别标签 - 当类别映射可用时将名称映射为 ID
   if (message.categories) {
     for (const categoryName of message.categories) {
       const categoryId = categoryMap?.get(categoryName);
@@ -188,14 +188,14 @@ function getOutlookLabels(
     }
   }
 
-  // Remove duplicates
+  // 去除重复项
   return [...new Set(labels)];
 }
 
 const OUTLOOK_SEARCH_DISALLOWED_CHARS = /[?]/g;
 
-// Pattern to detect KQL field syntax: fieldname:value (e.g., participants:email@example.com)
-// Excludes URL schemes (http, https, ftp, mailto, file) which should be treated as text
+// 用于检测 KQL 字段语法的模式：fieldname:value（例如 participants:email@example.com）
+// 排除应被视为文本的 URL 方案（http、https、ftp、mailto、file）
 const KQL_FIELD_PATTERN = /^(\w+):.+$/;
 const KQL_FIELD_TOKEN_PATTERN = /\b(\w+):(?:"([^"]*)"|(\S+))/g;
 const URL_SCHEME_PATTERN = /^(https?|ftp|mailto|file):/i;
@@ -203,14 +203,14 @@ const KQL_BOOLEAN_OPERATOR_PATTERN = /\b(?:AND|OR|NOT)\b/i;
 const KQL_BOOLEAN_PATTERN = /\b(?:AND|OR|NOT)\b/gi;
 const KQL_GROUPING_DETECTION_PATTERN = /[()]/;
 const KQL_GROUPING_PATTERN = /[()]/g;
-// Stripped only when degrading a failed KQL query to free-text fallback, since
-// comparison filters and read-state terms hurt keyword recall there.
+// 仅在将失败的 KQL 查询降级为自由文本回退时剥离，因为
+// 比较过滤器和已读状态词会损害那里的关键词召回。
 const OUTLOOK_COMPARISON_FILTER_PATTERN =
   /\b(?:received(?:DateTime)?|sent(?:DateTime)?)\s*(?:>=|<=|>|<)\s*\S+/gi;
 
 /**
- * Sanitizes a value for use in KQL queries.
- * Removes disallowed characters and escapes special characters.
+ * 清理用于 KQL 查询的值。
+ * 移除不允许的字符并转义特殊字符。
  */
 export function sanitizeKqlValue(value: string): string {
   const normalized = value.trim();
@@ -225,8 +225,8 @@ export function sanitizeKqlValue(value: string): string {
 }
 
 /**
- * Sanitizes a KQL field query (e.g., participants:email@example.com).
- * Does NOT wrap the entire query in outer quotes - only quotes the value if it contains spaces.
+ * 清理 KQL 字段查询（例如 participants:email@example.com）。
+ * 不会将整个查询包裹在外部引号中 - 仅当值包含空格时才加引号。
  */
 export function sanitizeKqlFieldQuery(query: string): string {
   const colonIndex = query.indexOf(":");
@@ -256,8 +256,8 @@ export function sanitizeKqlFieldQuery(query: string): string {
 }
 
 /**
- * Sanitizes a regular text query for KQL.
- * Removes internal double quotes and wraps the entire query in outer quotes.
+ * 清理用于 KQL 的常规文本查询。
+ * 移除内部双引号并将整个查询包裹在外部引号中。
  */
 export function sanitizeKqlTextQuery(query: string): string {
   let sanitized = query
@@ -322,8 +322,8 @@ export function sanitizeOutlookSearchQuery(query: string): {
     return { sanitized: "", wasSanitized: false };
   }
 
-  // Check if this is a KQL field syntax query (e.g., participants:email@example.com)
-  // but exclude URL schemes which should be treated as text
+  // 检查这是否为 KQL 字段语法查询（例如 participants:email@example.com）
+  // 但排除应被视为文本的 URL 方案
   if (
     KQL_FIELD_PATTERN.test(normalized) &&
     !URL_SCHEME_PATTERN.test(normalized)
@@ -548,7 +548,7 @@ export async function queryBatchMessages(
 
   const maxResults = Math.min(options.maxResults || MAX_RESULTS, MAX_RESULTS);
 
-  // Is this true for Microsoft Graph API or was it copy pasted from Gmail?
+  // 这对 Microsoft Graph API 成立，还是从 Gmail 复制粘贴过来的？
   if (options.maxResults && options.maxResults > MAX_RESULTS) {
     logger.warn(
       "Max results is greater than 20, which will cause rate limiting",
@@ -567,7 +567,7 @@ export async function queryBatchMessages(
   ]);
   const parseMessages = (messages: Message[]) =>
     convertMessages(messages, folderIds, categoryMap, options.includeDrafts);
-  // Messages carry the folder's opaque id, so a well-known name like "inbox" must be resolved before comparing.
+  // 邮件携带文件夹的不透明 id，因此像 "inbox" 这样的已知名称必须在比较前解析。
   const expectedParentFolderId = resolveFolderId(folderId, folderIds);
 
   let readState = options.readState;
@@ -627,7 +627,7 @@ export async function queryBatchMessages(
     : sanitizeOutlookSearchQuery(rawSearchQuery);
   const effectiveSearchQuery = cleanedSearchQuery || undefined;
 
-  logger.info("Building Outlook request", {
+  logger.info("正在构建 Outlook 请求", {
     maxResults,
     hasSearchQuery: !!effectiveSearchQuery,
     hasDateFilters: !!(dateFilters && dateFilters.length > 0),
@@ -637,24 +637,24 @@ export async function queryBatchMessages(
     queryWasSanitized: wasSanitized,
   });
 
-  // Build the base request
+  // 构建基础请求
   let request = createMessagesRequest(client, folderId).top(maxResults);
 
   let nextPageToken: string | undefined;
 
-  // Determine if we have a search query vs pure filters
+  // 判断我们是有搜索查询还是纯过滤器
   const hasSearchQuery = !!effectiveSearchQuery;
   const hasDateFilters = !!(dateFilters && dateFilters.length > 0);
 
-  // Only apply folder filtering if a specific folderId is requested
-  // API already excludes Junk/Deleted by default, and drafts are filtered in convertMessages
+  // 仅在请求了特定 folderId 时应用文件夹过滤
+  // API 默认已排除垃圾邮件/已删除邮件，草稿在 convertMessages 中过滤
   const folderFilter = folderId
     ? `parentFolderId eq '${escapeODataString(folderId)}'`
     : undefined;
 
   if (hasSearchQuery) {
-    // Search path - use $search parameter
-    logger.info("Using search path", {
+    // 搜索路径 - 使用 $search 参数
+    logger.info("使用搜索路径", {
       rawSearchQuery,
       effectiveSearchQuery,
       queryWasSanitized: wasSanitized,
@@ -691,7 +691,7 @@ export async function queryBatchMessages(
 
     nextPageToken = response["@odata.nextLink"];
 
-    logger.info("Search results", {
+    logger.info("搜索结果", {
       totalFound: response.value.length,
       filteredByFolder: folderId ? filteredMessages.length : undefined,
       messageCount: messages.length,
@@ -700,7 +700,7 @@ export async function queryBatchMessages(
 
     return { messages, nextPageToken };
   } else {
-    // Filter path - use $filter parameter for date filters or folder-only queries
+    // 过滤路径 - 对日期过滤器或仅文件夹查询使用 $filter 参数
     const filters: string[] = [];
 
     if (metadataSearch.odataFilters.length) {
@@ -713,7 +713,7 @@ export async function queryBatchMessages(
       );
     }
 
-    // Add date filters if provided
+    // 如果提供了日期过滤器则添加
     if (hasDateFilters) {
       filters.push(...dateFilters!);
     }
@@ -721,20 +721,20 @@ export async function queryBatchMessages(
     const combinedFilter =
       filters.length > 0 ? filters.join(" and ") : undefined;
 
-    logger.info("Using filter path", {
+    logger.info("使用过滤路径", {
       folderFilter,
       metadataFilters: metadataSearch.odataFilters,
       dateFilters: dateFilters || [],
       hasSenderFilter: !!normalizedFromEmail,
     });
 
-    // Only apply filter if we have something to filter
+    // 仅当有内容需要过滤时才应用过滤器
     if (combinedFilter) {
       request = request.filter(combinedFilter);
     }
 
-    // Graph rejects $orderby combined with $filter on sender or metadata
-    // properties (InefficientFilter), so only sort when those are absent
+    // Graph 拒绝在发件人或元数据属性上同时使用 $orderby 与 $filter
+    // （InefficientFilter），因此仅在这些不存在时才排序
     if (!metadataSearch.odataFilters.length && !options.fromEmail) {
       request = request.orderby("receivedDateTime DESC");
     }
@@ -745,7 +745,7 @@ export async function queryBatchMessages(
 
     nextPageToken = response["@odata.nextLink"];
 
-    logger.info("Filter results", {
+    logger.info("过滤结果", {
       messageCount: messages.length,
       hasNextPageToken: !!nextPageToken,
       hasSenderFilter: !!normalizedFromEmail,
@@ -803,10 +803,10 @@ export async function queryMessagesWithFilters(
   const inboxFolderId = folderIds.inbox;
   const archiveFolderId = folderIds.archive;
 
-  // Build base request
+  // 构建基础请求
   let request = createMessagesRequest(client).top(maxResults);
 
-  // Build folder filter safely (avoid empty IDs)
+  // 安全地构建文件夹过滤器（避免空 ID）
   let folderFilter: string | undefined;
   if (folderId) {
     folderFilter = `parentFolderId eq '${escapeODataString(folderId)}'`;
@@ -889,7 +889,7 @@ export async function queryMessagesWithAttachments(
         logger,
       );
 
-    // Sort in memory for consistent ordering across all pages
+    // 在内存中排序，以便所有页面的顺序一致
     const sortedMessages = response.value.sort((a, b) => {
       const dateA = new Date(a.receivedDateTime || 0).getTime();
       const dateB = new Date(b.receivedDateTime || 0).getTime();
@@ -900,9 +900,9 @@ export async function queryMessagesWithAttachments(
     return { messages, nextPageToken: response["@odata.nextLink"] };
   }
 
-  // Build request with hasAttachments filter
-  // Note: createMessagesRequest already includes .expand(MESSAGE_EXPAND_ATTACHMENTS)
-  // Avoid adding .orderby() to prevent "restriction or sort order is too complex" error
+  // 构建带 hasAttachments 过滤器的请求
+  // 注意：createMessagesRequest 已包含 .expand(MESSAGE_EXPAND_ATTACHMENTS)
+  // 避免添加 .orderby() 以防止 "restriction or sort order is too complex" 错误
   const request = createMessagesRequest(client)
     .top(maxResults)
     .filter("hasAttachments eq true");
@@ -910,7 +910,7 @@ export async function queryMessagesWithAttachments(
   const response: { value: Message[]; "@odata.nextLink"?: string } =
     await withMicrosoftGraphRetry(() => request.get(), logger);
 
-  // Sort in memory to avoid "restriction or sort order is too complex" error
+  // 在内存中排序以避免 "restriction or sort order is too complex" 错误
   const sortedMessages = response.value.sort((a, b) => {
     const dateA = new Date(a.receivedDateTime || 0).getTime();
     const dateB = new Date(b.receivedDateTime || 0).getTime();
@@ -919,7 +919,7 @@ export async function queryMessagesWithAttachments(
 
   const messages = await convertMessages(sortedMessages, {}, categoryMap);
 
-  logger.info("Messages with attachments fetched", {
+  logger.info("已获取带附件的邮件", {
     messageCount: messages.length,
     hasNextPageToken: !!response["@odata.nextLink"],
   });
@@ -989,7 +989,7 @@ export async function getMessage(
         }
       }
     } catch (error) {
-      logger.warn("Failed to read calendar MIME content; using attachments", {
+      logger.warn("读取日历 MIME 内容失败；改用附件", {
         error,
       });
     }
@@ -1036,8 +1036,8 @@ export async function getMessages(
 }
 
 /**
- * Helper to create a request for fetching multiple messages with standard fields selected.
- * Returns a typed request builder that can be chained with .filter(), .top(), etc.
+ * 用于创建选取标准字段的多封邮件获取请求的辅助函数。
+ * 返回一个类型化的请求构建器，可链式调用 .filter()、.top() 等。
  */
 export function createMessagesRequest(
   client: OutlookClient,
@@ -1055,7 +1055,7 @@ export function createMessagesRequest(
 }
 
 /**
- * Helper to create a request for fetching a single message with standard fields selected.
+ * 用于创建选取标准字段的单封邮件获取请求的辅助函数。
  */
 export function createMessageRequest(
   client: OutlookClient,
@@ -1074,8 +1074,8 @@ export function createMessageRequest(
 }
 
 /**
- * Converts Outlook message recipients array to comma-separated string
- * Format: "Name1 <email1@example.com>, Name2 <email2@example.com>"
+ * 将 Outlook 邮件收件人数组转换为逗号分隔的字符串
+ * 格式："Name1 <email1@example.com>, Name2 <email2@example.com>"
  */
 function formatRecipientsList(
   recipients:
@@ -1151,7 +1151,7 @@ export function convertMessage(
       bcc: formatRecipientsList(message.bccRecipients),
       subject: message.subject || "",
       date,
-      // RFC 5322 Message-ID header, needed for cross-provider email threading (e.g., Outlook -> Gmail)
+      // RFC 5322 Message-ID 头，用于跨服务商的邮件会话关联（例如 Outlook -> Gmail）
       "message-id": message.internetMessageId || "",
       "in-reply-to": getInternetHeader(message, "in-reply-to") ?? undefined,
       "list-unsubscribe":
@@ -1290,10 +1290,10 @@ async function normalizeOutlookSearchIds(
   ];
   if (!inputIds.length) return messages;
 
-  // The emulator already uses stable IDs and does not implement Exchange ID translation.
+  // 模拟器已使用稳定的 ID，且不实现 Exchange ID 转换。
   if (isMicrosoftEmulationEnabled()) return messages;
 
-  // Graph's $search can return folder-dependent REST IDs despite the ImmutableId preference.
+  // 尽管有 ImmutableId 首选项，Graph 的 $search 仍可能返回依赖文件夹的 REST ID。
   const response: { value: { sourceId: string; targetId?: string }[] } =
     await withMicrosoftGraphRetry(
       () =>
@@ -1309,7 +1309,7 @@ async function normalizeOutlookSearchIds(
   );
   const unresolvedIds = inputIds.filter((id) => !ids.get(id));
   if (unresolvedIds.length) {
-    logger.warn("Some Outlook search messages could not be resolved", {
+    logger.warn("部分 Outlook 搜索邮件无法解析", {
       unresolvedCount: unresolvedIds.length,
       messageCount: messages.length,
     });

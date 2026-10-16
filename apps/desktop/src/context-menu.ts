@@ -90,9 +90,9 @@ export function buildDesktopContextMenuTemplate(
     sections.push([
       ...(suggestions.length > 0
         ? suggestions
-        : [{ label: "No Guesses Found", enabled: false }]),
+        : [{ label: "未找到建议", enabled: false }]),
       {
-        label: "Add to Dictionary",
+        label: "添加到词典",
         click: () => actions.addToDictionary(params.misspelledWord),
       },
     ]);
@@ -104,13 +104,13 @@ export function buildDesktopContextMenuTemplate(
       ...(isMac
         ? [
             {
-              label: `Look Up ${quoted}`,
+              label: `查询 ${quoted}`,
               click: actions.lookUpSelection,
             },
           ]
         : []),
       {
-        label: `Search with Google for ${quoted}`,
+        label: `使用 Google 搜索 ${quoted}`,
         click: () =>
           actions.openExternal(
             `https://www.google.com/search?q=${encodeURIComponent(selection)}`,
@@ -144,7 +144,7 @@ export function buildDesktopContextMenuTemplate(
     if (isMac || platform === "win32") {
       sections.push([
         {
-          label: isMac ? "Emoji & Symbols" : "Emoji",
+          label: isMac ? "表情符号与符号" : "表情符号",
           click: actions.showEmojiPanel,
         },
       ]);
@@ -157,7 +157,7 @@ export function buildDesktopContextMenuTemplate(
     sections.push([
       { role: "shareMenu", sharingItem: { texts: [selection] } },
       {
-        label: "Speech",
+        label: "语音",
         submenu: [{ role: "startSpeaking" }, { role: "stopSpeaking" }],
       },
     ]);
@@ -166,7 +166,7 @@ export function buildDesktopContextMenuTemplate(
   if (isDevelopment) {
     sections.push([
       {
-        label: "Inspect Element",
+        label: "检查元素",
         click: () => actions.inspectElementAt(params.x, params.y),
       },
     ]);
@@ -189,7 +189,7 @@ function buildLinkSection(
     return address
       ? [
           {
-            label: "Copy Email Address",
+            label: "复制邮箱地址",
             click: () => actions.copyText(address),
           },
         ]
@@ -199,17 +199,17 @@ function buildLinkSection(
   if (url.protocol === "tel:") {
     const phone = safeDecode(url.pathname);
     return phone
-      ? [{ label: "Copy Phone Number", click: () => actions.copyText(phone) }]
+      ? [{ label: "复制电话号码", click: () => actions.copyText(phone) }]
       : [];
   }
 
   if (url.protocol !== "http:" && url.protocol !== "https:") return [];
   return [
     {
-      label: "Open Link in Browser",
+      label: "在浏览器中打开链接",
       click: () => actions.openExternal(linkURL),
     },
-    { label: "Copy Link", click: () => actions.copyText(linkURL) },
+    { label: "复制链接", click: () => actions.copyText(linkURL) },
   ];
 }
 
@@ -223,19 +223,19 @@ function buildImageSection(
     ...(isSaveable
       ? [
           {
-            label: "Save Image As…",
+            label: "图像另存为…",
             click: () => actions.saveUrl(params.srcURL),
           },
         ]
       : []),
     {
-      label: "Copy Image",
+      label: "复制图像",
       click: () => actions.copyImageAt(params.x, params.y),
     },
     ...(hasRemoteSource
       ? [
           {
-            label: "Copy Image Address",
+            label: "复制图像地址",
             click: () => actions.copyText(params.srcURL),
           },
         ]

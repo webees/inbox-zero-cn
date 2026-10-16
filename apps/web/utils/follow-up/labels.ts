@@ -50,7 +50,7 @@ export async function applyFollowUpLabel({
   labelId?: string;
   logger: Logger;
 }): Promise<void> {
-  logger.info("Applying follow-up label", { threadId, messageId });
+  logger.info("正在应用跟进标签", { threadId, messageId });
 
   const finalLabelId = labelId ?? (await getOrCreateFollowUpLabel(provider)).id;
 
@@ -60,7 +60,7 @@ export async function applyFollowUpLabel({
     labelName: FOLLOW_UP_LABEL,
   });
 
-  logger.info("Follow-up label applied", { threadId, labelId: finalLabelId });
+  logger.info("已应用跟进标签", { threadId, labelId: finalLabelId });
 }
 
 export async function removeFollowUpLabel({
@@ -74,13 +74,13 @@ export async function removeFollowUpLabel({
   labelId?: string;
   logger: Logger;
 }): Promise<void> {
-  logger.info("Removing follow-up label", { threadId });
+  logger.info("正在移除跟进标签", { threadId });
 
   let finalLabelId = labelId;
   if (!finalLabelId) {
     const label = await provider.getLabelByName(FOLLOW_UP_LABEL);
     if (!label) {
-      logger.info("Follow-up label does not exist, nothing to remove", {
+      logger.info("跟进标签不存在，无需移除", {
         threadId,
       });
       return;
@@ -90,9 +90,9 @@ export async function removeFollowUpLabel({
 
   try {
     await provider.removeThreadLabel(threadId, finalLabelId);
-    logger.info("Follow-up label removed", { threadId, labelId: finalLabelId });
+    logger.info("已移除跟进标签", { threadId, labelId: finalLabelId });
   } catch (error) {
-    logger.warn("Failed to remove follow-up label (may not exist on thread)", {
+    logger.warn("移除跟进标签失败（会话上可能不存在该标签）", {
       threadId,
       error,
     });
@@ -118,7 +118,7 @@ export async function hasFollowUpLabel({
 
     return messages.some((message) => message.labelIds?.includes(label.id));
   } catch (error) {
-    logger.warn("Failed to check for follow-up label", { threadId, error });
+    logger.warn("检查跟进标签失败", { threadId, error });
     return false;
   }
 }
@@ -139,8 +139,8 @@ export async function clearFollowUpLabel({
   if (!threadId) return;
 
   try {
-    // No resolved filter: trackers may already be resolved by handleOutboundReply
-    // before this function runs, but we still need to delete their drafts.
+    // 不加已解决过滤条件：追踪项可能已被 handleOutboundReply 标记为解决
+    // 尽管该函数在其之前运行，我们仍需要删除它们的草稿。
     const activeTrackers = await prisma.threadTracker.findMany({
       where: {
         emailAccountId,
@@ -162,7 +162,7 @@ export async function clearFollowUpLabel({
     });
 
     if (activeTrackers.length === 0) {
-      logger.info("No active follow-up state to clear", { threadId });
+      logger.info("没有需要清除的有效跟进状态", { threadId });
       return;
     }
 
@@ -174,7 +174,7 @@ export async function clearFollowUpLabel({
         ),
     );
 
-    logger.info("Loaded follow-up cleanup state", {
+    logger.info("已加载跟进清理状态", {
       threadId,
       triggerMessageId,
       trackerCount: activeTrackers.length,
@@ -191,7 +191,7 @@ export async function clearFollowUpLabel({
     });
 
     if (triggerMatchesFollowUpTracker) {
-      logger.info("Skipping follow-up cleanup for tracked message webhook", {
+      logger.info("跳过被追踪消息 webhook 的跟进清理", {
         threadId,
         messageId: triggerMessageId,
       });
@@ -209,12 +209,12 @@ export async function clearFollowUpLabel({
         try {
           await provider.deleteDraft(tracker.followUpDraftId);
           deletedDraftTrackerIds.push(tracker.id);
-          logger.info("Deleted follow-up draft", {
+          logger.info("已删除跟进草稿", {
             trackerId: tracker.id,
           });
         } catch (error) {
-          // Keep followUpDraftId so the fallback cleanup can retry
-          logger.error("Failed to delete follow-up draft", {
+          // 保留 followUpDraftId，以便回退清理可以重试
+          logger.error("删除跟进草稿失败", {
             trackerId: tracker.id,
             error,
           });
@@ -242,7 +242,7 @@ export async function clearFollowUpLabel({
       .map((tracker) => tracker.id);
 
     if (activeFollowUpTrackerIds.length > 0) {
-      logger.info("Resolving follow-up trackers while preserving ledger", {
+      logger.info("在保留台账的同时解析跟进追踪项", {
         threadId,
         trackerCount: activeFollowUpTrackerIds.length,
       });
@@ -261,7 +261,7 @@ export async function clearFollowUpLabel({
       );
     }
 
-    // Always remove the label regardless of tracker state
+    // 无论追踪项状态如何，始终移除标签
     await removeFollowUpLabel({ provider, threadId, logger });
     await replaceFollowUpNotificationsWithReplyReceivedState({
       emailAccountId,
@@ -269,13 +269,13 @@ export async function clearFollowUpLabel({
       logger,
     });
 
-    logger.info("Cleared follow-up label and cleaned up trackers", {
+    logger.info("已清除跟进标签并清理追踪项", {
       threadId,
       draftsDeleted: deletedDraftTrackerIds.length,
       resolvedFollowUpTrackers: activeFollowUpTrackerIds.length,
     });
   } catch (error) {
-    logger.error("Failed to clear follow-up label", { threadId, error });
+    logger.error("清除跟进标签失败", { threadId, error });
     captureException(error, { emailAccountId });
   }
 }
@@ -345,7 +345,7 @@ async function replaceFollowUpNotificationsWithReplyReceivedState({
     }
 
     if (claimedTrackers.length === 0) {
-      logger.info("Follow-up notification cleanup already claimed", {
+      logger.info("跟进通知清理已被认领", {
         threadId,
       });
       return;
@@ -402,7 +402,7 @@ async function replaceFollowUpNotificationsWithReplyReceivedState({
       },
     });
   } catch (error) {
-    logger.warn("Failed to update follow-up notifications after reply", {
+    logger.warn("回复后更新跟进通知失败", {
       threadId,
       error,
     });
@@ -463,7 +463,7 @@ async function replaceFollowUpNotification({
     }
     return true;
   } catch (error) {
-    logger.warn("Failed to update follow-up notification after reply", {
+    logger.warn("回复后更新跟进通知失败", {
       provider: notification.provider,
       error,
     });
@@ -471,15 +471,15 @@ async function replaceFollowUpNotification({
   }
 }
 
-const REPLY_RECEIVED_TEXT = "Reply received. Follow-up no longer needed.";
+const REPLY_RECEIVED_TEXT = "已收到回复。不再需要跟进。";
 const FOLLOW_UP_NOTIFICATION_CLEANUP_CLAIM_TYPE =
   "reply-received-cleanup-claim";
 const FOLLOW_UP_NOTIFICATION_CLEANUP_CLAIM_TTL_MS = 5 * 60 * 1000;
 
 function buildReplyReceivedFollowUpCard() {
   return Card({
-    title: "Reply received",
-    children: [CardText("Follow-up no longer needed.")],
+    title: "已收到回复",
+    children: [CardText("不再需要跟进。")],
   });
 }
 

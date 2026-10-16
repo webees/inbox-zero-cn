@@ -26,7 +26,7 @@ export function MeetingsList({
 
   return (
     <div>
-      <TypographyH3>Recorded</TypographyH3>
+      <TypographyH3>已录制</TypographyH3>
 
       <LoadingContent
         loading={isLoading}
@@ -39,7 +39,7 @@ export function MeetingsList({
               <EmptyMedia variant="icon">
                 <MicIcon />
               </EmptyMedia>
-              <EmptyTitle>No meetings recorded yet</EmptyTitle>
+              <EmptyTitle>还没有录制任何会议</EmptyTitle>
             </EmptyHeader>
           </Empty>
         ) : (
@@ -55,7 +55,7 @@ export function MeetingsList({
                 onClick={() => onOpenMeeting(meeting.id)}
               >
                 {meeting.followUpDraftId && (
-                  <Badge variant="secondary">Draft ready</Badge>
+                  <Badge variant="secondary">草稿已就绪</Badge>
                 )}
               </MeetingListItem>
             ))}

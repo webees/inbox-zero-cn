@@ -22,8 +22,8 @@ import type { ParsedMessage } from "@/utils/types";
 import { mapWithConcurrency } from "@/utils/async";
 import { convertEmailHtmlToText } from "@/utils/mail";
 
-// Outlook allows four concurrent Graph requests per mailbox, shared with
-// webhook processing, so batched folder reads stay below that.
+// Outlook 每个邮箱允许四个并发的 Graph 请求，并与
+// webhook 处理共享，因此批量文件夹读取会低于该上限。
 const CHANGES_BATCH_CONCURRENCY = 3;
 
 const SUPPORTED_CHANGES = [

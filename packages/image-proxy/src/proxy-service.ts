@@ -206,7 +206,7 @@ async function fetchUpstreamAsset(
     headers: {
       Accept:
         "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
-      "User-Agent": "Inbox Zero Image Proxy",
+      "User-Agent": "Inbox Zero 图片代理",
     },
     redirect: "manual",
   });
@@ -214,50 +214,50 @@ async function fetchUpstreamAsset(
   if (isRedirectResponse(upstreamResponse.status)) {
     if (redirectsRemaining <= 0) {
       upstreamResponse.body?.cancel();
-      logger?.warn("Image proxy redirect limit exceeded", {
+      logger?.warn("图片代理重定向次数超限", {
         initialUrl: sanitizeUrlForLogs(initialAssetUrl),
         method,
         redirectChain,
       });
-      return new Response("Too many redirects", { status: 508 });
+      return new Response("重定向次数过多", { status: 508 });
     }
 
     const location = upstreamResponse.headers.get("location");
     upstreamResponse.body?.cancel();
 
     if (!location) {
-      return new Response("Redirect missing location", { status: 502 });
+      return new Response("重定向缺少 location", { status: 502 });
     }
 
     let redirectedUrl: URL;
     try {
       redirectedUrl = new URL(location, assetUrl);
     } catch {
-      logger?.warn("Image proxy redirect target is invalid", {
+      logger?.warn("图片代理重定向目标无效", {
         initialUrl: sanitizeUrlForLogs(initialAssetUrl),
         method,
         redirectChain,
         location: sanitizeLocationForLogs(location),
       });
-      return new Response("Redirect target is invalid", { status: 502 });
+      return new Response("重定向目标无效", { status: 502 });
     }
 
     if (!isProxyableRemoteUrl(redirectedUrl.toString())) {
-      logger?.warn("Image proxy redirect target has unsupported scheme", {
+      logger?.warn("图片代理重定向目标使用了不支持的协议", {
         initialUrl: sanitizeUrlForLogs(initialAssetUrl),
         method,
         redirectChain: [...redirectChain, sanitizeUrlForLogs(redirectedUrl)],
       });
-      return new Response("Unsupported redirect target", { status: 400 });
+      return new Response("不支持的重定向目标", { status: 400 });
     }
 
     if (isBlockedHostname(redirectedUrl.hostname)) {
-      logger?.warn("Image proxy redirect target is blocked", {
+      logger?.warn("图片代理重定向目标已被阻止", {
         initialUrl: sanitizeUrlForLogs(initialAssetUrl),
         method,
         redirectChain: [...redirectChain, sanitizeUrlForLogs(redirectedUrl)],
       });
-      return new Response("Blocked redirect target", { status: 403 });
+      return new Response("重定向目标已被阻止", { status: 403 });
     }
 
     return fetchUpstreamAsset(

@@ -57,9 +57,8 @@ const NO_FOLDERS: OutlookFolder[] = [];
 const NO_CATEGORIES: MailCategory[] = [];
 
 /**
- * The mail screen's left column. It owns the label counts and mailbox editing
- * so their updates stay here, and is memoized so thread navigation and list
- * snapshots don't re-render it.
+ * 邮件屏幕的左栏。它负责标签计数与邮箱编辑，使它们的更新留在
+ * 此处，并已记忆化，这样会话导航与列表快照不会重新渲染它。
  */
 export const MailShellSidebar = memo(function MailShellSidebar({
   activeType,
@@ -79,7 +78,7 @@ export const MailShellSidebar = memo(function MailShellSidebar({
   isDesktopApp: boolean;
   onSelectAccount: (accountId: string) => void;
   onSelectAllAccounts: () => void;
-  /** Leaves a view or split that the deleted label or folder defined. */
+  /** 离开被删除的标签或文件夹所定义的视图或分栏。 */
   onMailboxItemDeleted: (item: MailboxItem) => Promise<unknown>;
   onNavigate: () => void;
 }) {
@@ -98,8 +97,8 @@ export const MailShellSidebar = memo(function MailShellSidebar({
   const { state: openSidebars } = useSidebar();
   const isMailSidebarOpen = openSidebars.includes("left-sidebar");
 
-  // Dragging writes straight to the CSS variable: re-rendering on every
-  // pointer move would make the sidebar edge lag behind the cursor.
+  // 拖拽会直接写入 CSS 变量：每次指针移动都重新渲染会让
+  // 侧边栏边缘滞后于光标。
   const sidebarScopeRef = useRef<HTMLDivElement>(null);
   const setSidebarWidth = useCallback((width: number) => {
     sidebarScopeRef.current?.style.setProperty("--sidebar-width", `${width}px`);
@@ -122,12 +121,10 @@ export const MailShellSidebar = memo(function MailShellSidebar({
         toast.error(getActionErrorMessage(result));
         return;
       }
-      // Without this the label the user just typed doesn't appear until an
-      // unrelated revalidation happens to run.
+      // 没有这一步，用户刚输入的标签要等到某次无关的
+      // 重新验证碰巧运行时才会出现。
       await mutateLabels();
-      toast.success(
-        `${terminology.label.singularCapitalized} "${name}" created`,
-      );
+      toast.success(`已创建${terminology.label.singularCapitalized}“${name}”`);
     },
     [emailAccountId, mutateLabels, terminology.label.singularCapitalized],
   );
@@ -146,7 +143,7 @@ export const MailShellSidebar = memo(function MailShellSidebar({
         mutateCounts(),
       ]);
       toast.success(
-        `${edit.kind === "folder" ? "Folder" : terminology.label.singularCapitalized} updated`,
+        `${edit.kind === "folder" ? "文件夹" : terminology.label.singularCapitalized}已更新`,
       );
       return true;
     },
@@ -176,7 +173,7 @@ export const MailShellSidebar = memo(function MailShellSidebar({
         mutateCounts(),
       ]);
       toast.success(
-        `${item.kind === "folder" ? "Folder" : terminology.label.singularCapitalized} deleted`,
+        `${item.kind === "folder" ? "文件夹" : terminology.label.singularCapitalized}已删除`,
       );
       return true;
     },
@@ -218,7 +215,7 @@ export const MailShellSidebar = memo(function MailShellSidebar({
               ? NO_CATEGORIES
               : getMailCategories({ isGoogle, isOutlook })
           }
-          categoryHeading={isOutlook ? "Inbox" : "Categories"}
+          categoryHeading={isOutlook ? "收件箱" : "分类"}
           collapsibleCategories={!isOutlook}
           labelsHeading={terminology.label.pluralCapitalized}
           labelSingular={terminology.label.singular}
@@ -246,7 +243,7 @@ export const MailShellSidebar = memo(function MailShellSidebar({
         />
         {isMailSidebarOpen ? (
           <PanelResizeHandle
-            label="Resize sidebar"
+            label="调整侧边栏大小"
             edge="right"
             bounds={MAIL_SIDEBAR_WIDTH_BOUNDS}
             onResize={setSidebarWidth}

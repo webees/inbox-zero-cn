@@ -268,12 +268,7 @@ describe("getActionErrorMessage", () => {
       undefined,
       "Third entry error",
     ],
-    [
-      "fallback when no errors are present",
-      {},
-      undefined,
-      "An unknown error occurred",
-    ],
+    ["fallback when no errors are present", {}, undefined, "发生未知错误"],
     [
       "custom fallback when provided",
       {},
@@ -649,8 +644,7 @@ describe("checkCommonErrors", () => {
 
     expect(checkCommonErrors(error, "/api/messages", logger)).toEqual({
       type: "Gmail Rate Limit Exceeded",
-      message:
-        "Gmail is temporarily limiting requests. Please try again shortly.",
+      message: "Gmail 暂时限制了请求。请稍后重试。",
       code: 429,
     });
   });
@@ -661,8 +655,7 @@ describe("checkCommonErrors", () => {
       createProviderRateLimitError("google"),
       {
         type: "Gmail Rate Limit Exceeded",
-        message:
-          "Gmail is temporarily limiting requests. Please try again shortly.",
+        message: "Gmail 暂时限制了请求。请稍后重试。",
         code: 429,
       },
     ],
@@ -671,8 +664,7 @@ describe("checkCommonErrors", () => {
       createProviderRateLimitError("microsoft"),
       {
         type: "Outlook Rate Limit",
-        message:
-          "Microsoft is temporarily limiting requests. Please try again shortly.",
+        message: "Microsoft 暂时限制了请求。请稍后重试。",
         code: 429,
       },
     ],

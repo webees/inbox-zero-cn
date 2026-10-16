@@ -205,7 +205,7 @@ describe("runRulesAction", () => {
       isTest: true,
     });
 
-    expect(result?.serverError).toBe("An unknown error occurred.");
+    expect(result?.serverError).toBe("发生未知错误。");
     expect(flushLoggerSafelyMock).toHaveBeenCalledWith(
       expect.anything(),
       expect.objectContaining({
@@ -350,7 +350,7 @@ describe("testAiCustomContentAction", () => {
       content: "x",
     });
 
-    expect(result?.serverError).toBe("An unknown error occurred.");
+    expect(result?.serverError).toBe("发生未知错误。");
     expect(flushLoggerSafelyMock).toHaveBeenCalledWith(
       expect.anything(),
       expect.objectContaining({

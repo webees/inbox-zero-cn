@@ -60,22 +60,22 @@ export function getSnoozePresets(now: Date) {
   const candidates = [
     {
       id: "tomorrow",
-      label: "Tomorrow",
+      label: "明天",
       until: atHour(now, 1, MORNING_HOUR),
     },
     {
       id: "end-of-week",
-      label: "End of week",
+      label: "本周结束",
       until: laterThisWeek(now, FRIDAY),
     },
     {
       id: "this-weekend",
-      label: "This weekend",
+      label: "本周末",
       until: now.getDay() === SUNDAY ? null : laterThisWeek(now, SATURDAY),
     },
     {
       id: "next-week",
-      label: "Next week",
+      label: "下周",
       until: atHour(now, daysUntilNextMonday(now), MORNING_HOUR),
     },
   ];

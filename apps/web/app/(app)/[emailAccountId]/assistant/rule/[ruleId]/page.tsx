@@ -14,13 +14,8 @@ export default async function RulePage(props: {
     <div>
       {searchParams.new === "true" && (
         <TopSection
-          title="Here are your rule settings!"
-          descriptionComponent={
-            <p>
-              These rules were AI generated, feel free to adjust them to your
-              needs.
-            </p>
-          }
+          title="这是你的规则设置！"
+          descriptionComponent={<p>这些规则由 AI 生成，请根据需要随时调整。</p>}
         />
       )}
       <div className="content-container mx-auto w-full max-w-3xl">

@@ -118,7 +118,7 @@ export async function sendEmailWithHtml(
   try {
     messageText = convertEmailHtmlToText({ htmlText: body.messageHtml });
   } catch (error) {
-    sendLogger.error("Error converting email html to text", { error });
+    sendLogger.error("将邮件 HTML 转换为文本时出错", { error });
     messageText = stripHtmlTagsForPlainText(body.messageHtml).trim();
   }
 
@@ -134,7 +134,7 @@ export async function sendEmailWithHtml(
       : body.attachments,
     messageText,
   });
-  sendLogger.info("Prepared Gmail send", getGmailSendMetadata(raw, body));
+  sendLogger.info("已准备发送 Gmail 邮件", getGmailSendMetadata(raw, body));
   const { replyToEmail } = body;
   if (replyToEmail?.messageId) {
     const message = await getMessage(
@@ -143,11 +143,11 @@ export async function sendEmailWithHtml(
       "metadata",
     ).catch((error: unknown) => {
       if (extractErrorInfo(error).status === 404) {
-        sendLogger.warn("Reply source disappeared before sending", {
+        sendLogger.warn("发送前回复来源已消失", {
           messageId: replyToEmail.messageId,
         });
         throw new SafeError(
-          "The email or draft you were replying to is no longer available in Gmail. Check Sent before trying again.",
+          "你正在回复的邮件或草稿在 Gmail 中已不可用。请先检查“已发送”文件夹，然后重试。",
         );
       }
       throw error;
@@ -155,17 +155,17 @@ export async function sendEmailWithHtml(
     if (message.labelIds?.includes(GmailLabel.DRAFT)) {
       if (message.labelIds.includes(GmailLabel.SENT)) {
         throw new SafeError(
-          "This draft is already marked as sent in Gmail. Check Sent before sending another copy.",
+          "此草稿在 Gmail 中已标记为已发送。发送另一份副本前请检查“已发送”文件夹。",
         );
       }
       const draftId = await getDraftIdForMessage(gmail, replyToEmail.messageId);
       if (!draftId) {
         throw new SafeError(
-          "This draft is no longer available in Gmail. Check Sent before trying again.",
+          "此草稿在 Gmail 中已不可用。请先检查“已发送”文件夹，然后重试。",
         );
       }
 
-      // Sending the existing draft consumes it and applies edits in one request.
+      // 发送现有草稿会在一次请求中消费它并应用编辑。
       return trackGmailSend("drafts.send", sendLogger, () =>
         gmail.users.drafts.send({
           userId: "me",
@@ -221,7 +221,7 @@ export async function replyToEmail(
     message,
   });
 
-  // Only replying to the original sender
+  // 仅回复原始发件人
   const raw = await createRawMailMessage({
     to: message.headers["reply-to"] || message.headers.from,
     from,
@@ -264,9 +264,7 @@ export async function forwardEmail(
   ensureEmailSendingEnabled();
 
   if (!options.to?.trim()) {
-    throw new Error(
-      `Recipient address is required for forwarding email. Received: "${options.to}"`,
-    );
+    throw new Error(`转发邮件需要收件人地址。收到："${options.to}"`);
   }
 
   const attachments = await Promise.all(
@@ -327,7 +325,7 @@ export async function forwardEmail(
   return result;
 }
 
-// Handles both replies and regular drafts. May want to split that out into two functions
+// 处理回复和常规草稿。可能希望将其拆分为两个函数
 export async function draftEmail(
   gmail: gmail_v1.Gmail,
   originalEmail: EmailForAction,
@@ -357,10 +355,10 @@ export async function draftEmail(
     userEmails,
   );
 
-  // Merge CC from reply-all with CC from args
+  // 将回复全部的 CC 与实参中的 CC 合并
   const ccList = mergeAndDedupeRecipients(recipients.cc, args.cc);
 
-  // Sanitize BCC
+  // 清理 BCC
   const bccList = mergeAndDedupeRecipients([], args.bcc);
 
   const raw = await createRawMailMessage({
@@ -389,7 +387,7 @@ async function createDraft(
   threadId: string,
   raw: string,
 ) {
-  logger.info("Calling Gmail API to create draft");
+  logger.info("正在调用 Gmail API 创建草稿");
 
   const result = await withGmailRetry(async () =>
     gmail.users.drafts.create({
@@ -403,7 +401,7 @@ async function createDraft(
     }),
   );
 
-  logger.info("Gmail API draft.create response received", {
+  logger.info("已收到 Gmail API draft.create 响应", {
     draftId: result.data.id,
     messageId: result.data.message?.id,
   });
@@ -507,17 +505,17 @@ async function trackGmailSend<T>(
   send: () => Promise<T>,
 ): Promise<T> {
   const startedAt = Date.now();
-  logger.info("Gmail send request started", { gmailOperation });
+  logger.info("Gmail 发送请求已开始", { gmailOperation });
   try {
     const result = await withGmailNonIdempotentWriteRetry(send, 5, { logger });
-    logger.info("Gmail send request accepted", {
+    logger.info("Gmail 发送请求已接受", {
       gmailOperation,
       durationMs: Date.now() - startedAt,
     });
     return result;
   } catch (error) {
     const { status, googleErrorStatus } = extractErrorInfo(error);
-    logger.warn("Gmail send request failed", {
+    logger.warn("Gmail 发送请求失败", {
       gmailOperation,
       durationMs: Date.now() - startedAt,
       status,
@@ -528,9 +526,9 @@ async function trackGmailSend<T>(
 }
 
 /**
- * Graph carries a forward's files across on its own, but a Gmail send or
- * draft composes its own MIME, so the parts of the message being forwarded
- * have to be fetched and re-attached.
+ * Graph 会自行携带转发的文件，但 Gmail 的发送或
+ * 草稿会自行组合 MIME，因此被转发邮件的各部分
+ * 必须获取并重新附加。
  */
 export async function getForwardedMessage(
   gmail: gmail_v1.Gmail,
@@ -539,14 +537,12 @@ export async function getForwardedMessage(
   const message = await getMessage(forwardedMessageId, gmail).catch(
     (error: unknown) => {
       if (extractErrorInfo(error).status !== 404) throw error;
-      throw new SafeError(
-        "Reload the original message before forwarding. Its attachments could not be verified.",
-      );
+      throw new SafeError("转发前请重新加载原始邮件。无法验证其附件。");
     },
   );
 
-  // A part that fails to download fails the send: silently dropping one file
-  // from a forward is worse than asking the user to try again.
+  // 下载失败的部分会导致发送失败：静默丢弃转发中的
+  // 一个文件比让用户重试更糟。
   return {
     threadId: message.threadId ?? undefined,
     attachments: await getGmailMessageAttachments(

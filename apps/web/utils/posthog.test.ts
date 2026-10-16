@@ -255,7 +255,7 @@ describe("trackProductFeedback", () => {
         $survey_questions: [
           {
             id: "question-1",
-            question: "What's your feedback?",
+            question: "你的反馈是什么？",
           },
         ],
         $survey_completed: true,

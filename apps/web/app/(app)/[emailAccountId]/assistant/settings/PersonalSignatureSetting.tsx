@@ -38,8 +38,8 @@ export function PersonalSignatureSetting() {
 
   return (
     <SettingCard
-      title="Email signature"
-      description="Set your email signature to include in drafted messages."
+      title="邮件签名"
+      description="设置你的邮件签名，以包含在起草的邮件中。"
       right={
         <LoadingContent
           loading={isLoading}
@@ -48,7 +48,7 @@ export function PersonalSignatureSetting() {
         >
           <SignatureDialog currentSignature={data?.signature || ""}>
             <Button variant="outline" size="sm">
-              Edit
+              编辑
             </Button>
           </SignatureDialog>
         </LoadingContent>
@@ -78,12 +78,12 @@ function SignatureDialog({
     {
       onSuccess: () => {
         toastSuccess({
-          description: "Signature saved!",
+          description: "签名已保存！",
         });
         setOpen(false);
       },
       onError: createSettingActionErrorHandler({
-        prefix: "Failed to save signature",
+        prefix: "保存签名失败",
       }),
       onSettled: () => {
         mutate();
@@ -99,7 +99,7 @@ function SignatureDialog({
 
     if (result?.serverError) {
       toastError({
-        title: `Error loading signature from ${isGmail ? "Gmail" : "Outlook"}`,
+        title: `从 ${isGmail ? "Gmail" : "Outlook"} 加载签名时出错`,
         description: result.serverError,
       });
       return;
@@ -109,17 +109,17 @@ function SignatureDialog({
 
     if (fetchedSignatures.length === 0) {
       toastInfo({
-        title: "No signatures found",
+        title: "未找到签名",
         description: isGmail
-          ? "No signatures found in your Gmail account"
-          : "No signature found in recent sent emails",
+          ? "在你的 Gmail 账号中未找到签名"
+          : "在最近发送的邮件中未找到签名",
       });
       return;
     }
 
     setSignatures(fetchedSignatures);
 
-    // Auto-select the default/first signature and populate the textarea
+    // 自动选择默认/第一个签名并填充文本框
     const defaultSig =
       fetchedSignatures.find((sig) => sig.isDefault) || fetchedSignatures[0];
     if (defaultSig) {
@@ -128,8 +128,8 @@ function SignatureDialog({
     }
 
     toastSuccess({
-      title: "Signatures loaded",
-      description: `Found ${fetchedSignatures.length} signature${fetchedSignatures.length !== 1 ? "s" : ""}`,
+      title: "签名已加载",
+      description: `找到 ${fetchedSignatures.length} 个签名`,
     });
   }, [executeFetchSignatures, isGmail]);
 
@@ -158,13 +158,12 @@ function SignatureDialog({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="max-w-4xl">
         <DialogHeader>
-          <DialogTitle>Email signature</DialogTitle>
+          <DialogTitle>邮件签名</DialogTitle>
           <DialogDescription>
-            Set your email signature to include in all drafted messages.
-            {isGmail &&
-              " You can load signatures from Gmail or enter manually."}
+            设置你的邮件签名，以包含在所有起草的邮件中。
+            {isGmail && " 你可以从 Gmail 加载签名，或手动输入。"}
             {!isGmail &&
-              " For Outlook, we can extract from recent sent emails or you can enter manually."}
+              " 对于 Outlook，我们可以从最近发送的邮件中提取，你也可以手动输入。"}
           </DialogDescription>
         </DialogHeader>
 
@@ -176,8 +175,8 @@ function SignatureDialog({
               disabled={isFetching}
             >
               {isFetching
-                ? "Loading..."
-                : `Load from ${isGmail ? "Gmail" : "Outlook"}`}
+                ? "加载中…"
+                : `从 ${isGmail ? "Gmail" : "Outlook"} 加载`}
             </Button>
             {signatures.length > 1 && (
               <Select
@@ -185,13 +184,13 @@ function SignatureDialog({
                 onValueChange={handleSelectSignature}
               >
                 <SelectTrigger className="w-full sm:w-[250px]">
-                  <SelectValue placeholder="Select signature" />
+                  <SelectValue placeholder="选择签名" />
                 </SelectTrigger>
                 <SelectContent>
                   {signatures.map((sig) => (
                     <SelectItem key={sig.email} value={sig.email}>
                       {sig.displayName || sig.email}
-                      {sig.isDefault && " (default)"}
+                      {sig.isDefault && "（默认）"}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -201,29 +200,29 @@ function SignatureDialog({
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="signature">Signature (HTML supported)</Label>
+              <Label htmlFor="signature">签名（支持 HTML）</Label>
               <Textarea
                 id="signature"
                 value={manualSignature}
                 onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
                   setManualSignature(e.target.value)
                 }
-                placeholder="Enter your email signature..."
+                placeholder="输入你的邮件签名…"
                 className="min-h-[200px] font-mono text-sm"
               />
             </div>
             <div className="space-y-2">
-              <Label>Preview</Label>
+              <Label>预览</Label>
               <SignaturePreview signature={manualSignature} />
             </div>
           </div>
 
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={handleClear}>
-              Clear
+              清除
             </Button>
             <Button onClick={handleSave} disabled={isSaving}>
-              {isSaving ? "Saving..." : "Save Signature"}
+              {isSaving ? "保存中…" : "保存签名"}
             </Button>
           </div>
         </div>
@@ -248,14 +247,14 @@ function SignaturePreview({ signature }: { signature: string }) {
         </style>
       </head>
       <body>
-        ${signature || '<em style="color: #888;">Your signature preview will appear here...</em>'}
+        ${signature || '<em style="color: #888;">在此处显示你的签名预览…</em>'}
       </body>
     </html>
   `;
 
   return (
     <iframe
-      title="Signature Preview"
+      title="签名预览"
       sandbox="allow-same-origin"
       srcDoc={previewHtml}
       className="min-h-[200px] w-full rounded-md border border-input bg-muted/50"

@@ -21,8 +21,8 @@ export function parseMessage(
   message: MessageWithPayload,
   options?: { includeCalendarContent?: boolean },
 ): ParsedMessage & { subject: string; date: string } {
-  // gmail-api-parse-message decodes every text part and keeps only the last.
-  // Hide the text first so that decode does not run twice.
+  // gmail-api-parse-message 会解码每个文本部分且只保留最后一个。
+  // 先隐藏文本，以免解码运行两次。
   const textBodies = collectTextBodies(message.payload);
   const hiddenText: { body: gmail_v1.Schema$MessagePartBody; data: string }[] =
     [];
@@ -76,7 +76,7 @@ export function parseMessage(
     subject: parsed.headers?.subject || "",
     date: parsed.headers?.date || "",
     inline: inlineAttachments,
-    // gmail-api-parse-message converts internalDate to a number, but our type expects string
+    // gmail-api-parse-message 会将 internalDate 转换为数字，但我们的类型期望字符串
     internalDate:
       parsed.internalDate != null ? String(parsed.internalDate) : null,
   };
@@ -136,8 +136,8 @@ export async function getMessageByRfc822Id(
   gmail: gmail_v1.Gmail,
   logger: Logger,
 ) {
-  // Search for message using RFC822 Message-ID header
-  // Remove any < > brackets if present
+  // 使用 RFC822 Message-ID 头搜索邮件
+  // 如果存在 < > 括号则移除
   const cleanMessageId = rfc822MessageId.replace(/[<>]/g, "");
 
   const response = await withGmailRetry(() =>
@@ -150,7 +150,7 @@ export async function getMessageByRfc822Id(
 
   const message = response.data.messages?.[0];
   if (!message?.id) {
-    logger.error("No message found for RFC822 Message-ID", {
+    logger.error("未找到 RFC822 Message-ID 对应的邮件", {
       rfc822MessageId,
     });
     return null;
@@ -170,7 +170,7 @@ export async function getMessagesBatch({
   retryCount?: number;
   logger: Logger;
 }): Promise<ParsedMessage[]> {
-  if (messageIds.length > 100) throw new Error("Too many messages. Max 100");
+  if (messageIds.length > 100) throw new Error("邮件太多。最多 100 封");
 
   return getBatchWithRetry<MessageWithPayload, ParsedMessage>({
     ids: messageIds,
@@ -208,7 +208,7 @@ async function hasPreviousCommunicationWithSender(
     sender: options.from,
     dateInSeconds: +new Date(options.date) / 1000,
   });
-  // Ignore the current email
+  // 忽略当前邮件
   const hasPreviousEmail = !!previousEmails?.find(
     (p) => p.id !== options.messageId,
   );
@@ -228,9 +228,9 @@ export async function hasPreviousCommunicationsWithSenderOrDomain(
   });
 }
 
-// List of messages.
-// Note that each message resource contains only an id and a threadId.
-// Additional message details can be fetched using the messages.get method.
+// 邮件列表。
+// 注意每个邮件资源仅包含 id 和 threadId。
+// 可使用 messages.get 方法获取更多邮件详情。
 // https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/list
 export async function getMessages(
   gmail: gmail_v1.Gmail,
@@ -301,12 +301,9 @@ export async function queryBatchMessages(
   const maxResults = Math.min(options.maxResults || MAX_RESULTS, MAX_RESULTS);
 
   if (options.maxResults && options.maxResults > MAX_RESULTS) {
-    logger.warn(
-      "Max results is greater than 20, which will cause rate limiting",
-      {
-        maxResults,
-      },
-    );
+    logger.warn("maxResults 大于 20，会导致限流", {
+      maxResults,
+    });
   }
 
   const accessToken = getAccessTokenFromClient(gmail);

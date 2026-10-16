@@ -121,7 +121,7 @@ describe("sortActionsByPriority", () => {
       ];
       const sorted = sortActionsByPriority(actions);
       expect(sorted[0].type).toBe(ActionType.LABEL);
-      // Both archives should come after label
+      // 两个归档都应在标签之后
       expect(sorted[1].type).toBe(ActionType.ARCHIVE);
       expect(sorted[2].type).toBe(ActionType.ARCHIVE);
     });

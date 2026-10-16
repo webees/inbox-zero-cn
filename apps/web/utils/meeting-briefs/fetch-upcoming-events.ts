@@ -6,11 +6,11 @@ import { partitionAttendeesForBriefing } from "./attendees";
 
 const MAX_EVENTS_PER_PROVIDER = 20;
 
-// Must match the /api/meeting-briefs cron schedule in vercel.json.
-// The lookahead window extends by one cron interval so an event whose lead
-// window opens and closes between two cron ticks is still picked up at the
-// last tick before it starts. Duplicate sends are prevented by the
-// meetingBriefing unique-constraint claim in process.ts.
+// 必须与 vercel.json 中 /api/meeting-briefs 的 cron 计划一致。
+// 预看窗口会延长一个 cron 间隔，这样即使某个事件的提前
+// 窗口在两次 cron 触发之间开合，也能在它开始前的
+// 最后一次触发时被拾取。重复发送由 process.ts 中的
+// meetingBriefing 唯一约束占用机制防止。
 const CRON_INTERVAL_MINUTES = 15;
 
 export async function fetchUpcomingEvents({
@@ -24,8 +24,8 @@ export async function fetchUpcomingEvents({
 }): Promise<CalendarEvent[]> {
   const timeMin = new Date();
 
-  // Briefings only ever act on the events they can see, so a partial fetch is
-  // harmless here.
+  // 简报只会作用于它能看见的事件，因此部分拉取
+  // 在这里无害。
   const { events } = await fetchCalendarEventsInWindow({
     emailAccountId,
     timeMin,

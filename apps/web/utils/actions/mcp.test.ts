@@ -77,7 +77,7 @@ describe("custom MCP server actions", () => {
       authType: "oauth",
     });
 
-    expect(result?.serverError).toBe("That server URL is not a public address");
+    expect(result?.serverError).toBe("该服务器 URL 不是公网地址");
     expect(prisma.mcpIntegration.create).not.toHaveBeenCalled();
   });
 
@@ -92,7 +92,7 @@ describe("custom MCP server actions", () => {
     });
 
     expect(result?.serverError).toBe(
-      "Could not connect to the server. Check the URL and API key.",
+      "无法连接到服务器。请检查 URL 和 API 密钥。",
     );
     expect(prisma.mcpIntegration.delete).toHaveBeenCalledWith({
       where: { id: "integration-1" },

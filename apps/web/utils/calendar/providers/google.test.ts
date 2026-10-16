@@ -88,7 +88,7 @@ describe("google calendar oauth", () => {
     const provider = createGoogleCalendarProvider(logger);
 
     await expect(provider.exchangeCodeForTokens("code")).rejects.toThrow(
-      "Could not get email from Google profile",
+      "无法从 Google 资料获取邮箱",
     );
     expect(verifyIdToken).not.toHaveBeenCalled();
   });

@@ -51,7 +51,7 @@ export function isStaleApnsToken(delivery: {
   status: number;
   reason: string | null;
 }) {
-  // 410 Unregistered and 400 BadDeviceToken never become valid again.
+  // 410 Unregistered 与 400 BadDeviceToken 不会再恢复有效。
   return (
     delivery.status === 410 ||
     delivery.reason === "Unregistered" ||
@@ -96,7 +96,7 @@ export async function deliverApnsNotifications({
 
   const authorization = apnsAuthorization();
   if (!authorization) {
-    logger.warn("APNs credentials are not configured");
+    logger.warn("APNs 凭据未配置");
     return { unregisteredTokens: [], retryTokens: tokens };
   }
 
@@ -112,7 +112,7 @@ export async function deliverApnsNotifications({
           topic,
         });
       } catch (error) {
-        logger.warn("APNs request failed", { error });
+        logger.warn("APNs 请求失败", { error });
         return { token, status: 500, reason: null } satisfies ApnsDelivery;
       }
     }),
@@ -129,7 +129,7 @@ export async function deliverApnsNotifications({
     if (delivery.status === 429 || delivery.status >= 500) {
       retryTokens.push(delivery.token);
     }
-    logger.warn("APNs rejected a notification", {
+    logger.warn("APNs 拒绝了一条推送通知", {
       reason: delivery.reason,
       status: delivery.status,
     });
@@ -226,7 +226,7 @@ function postApns({
     request.setTimeout(10_000, () => {
       request.close();
       client.close();
-      reject(new Error("APNs request timed out"));
+      reject(new Error("APNs 请求超时"));
     });
     request.on("response", (headers) => {
       const status = Number(headers[":status"] ?? 0);

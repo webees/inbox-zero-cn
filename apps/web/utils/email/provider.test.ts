@@ -115,7 +115,7 @@ describe("createEmailProvider", () => {
     ).rejects.toThrow("token refresh failed");
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "Failed to create email provider",
+      "创建邮件服务商失败",
       expect.objectContaining({
         provider: "google",
         source: "create-email-provider",
@@ -157,7 +157,7 @@ describe("createEmailProvider", () => {
     ).rejects.toThrow("token refresh failed");
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "Failed to flush provider creation failure log",
+      "刷新服务商创建失败日志失败",
       expect.objectContaining({
         provider: "google",
         source: "create-email-provider",
@@ -191,7 +191,7 @@ describe("createEmailProvider", () => {
     ).rejects.toThrow("provider request failed");
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "Email provider operation failed",
+      "邮件服务商操作失败",
       expect.objectContaining({
         emailAccountId: "email-account-1",
         provider: "google",
@@ -238,7 +238,7 @@ describe("createEmailProvider", () => {
     ).rejects.toThrow("provider request failed");
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "Failed to log provider operation failure",
+      "记录服务商操作失败时出错",
       expect.objectContaining({
         emailAccountId: "email-account-1",
         provider: "google",
@@ -268,7 +268,7 @@ describe("createEmailProvider", () => {
     ).rejects.toThrow("provider request failed");
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "Failed to record provider issue",
+      "记录服务商问题失败",
       expect.objectContaining({
         emailAccountId: "email-account-1",
         provider: "google",

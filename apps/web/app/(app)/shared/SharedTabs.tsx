@@ -35,7 +35,7 @@ export function SharedTabs() {
   return (
     <div>
       <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
-        <PageHeading>Shared with me</PageHeading>
+        <PageHeading>与我共享的</PageHeading>
         {options.length > 1 && memberId && (
           <Select value={memberId} onValueChange={setMemberId}>
             <SelectTrigger className="w-auto min-w-64">
@@ -57,12 +57,12 @@ export function SharedTabs() {
           options={[
             {
               id: "conversations",
-              label: "Conversations",
+              label: "会话",
               href: `/shared${query}`,
             },
             {
               id: "activity",
-              label: "Activity",
+              label: "动态",
               href: `/shared/activity${query}`,
             },
           ]}
@@ -78,7 +78,7 @@ export function SharedTabs() {
 export function NoOrganization() {
   return (
     <p className="text-muted-foreground text-sm">
-      Join an organization to see conversations your teammates share with you.
+      加入组织即可查看队友与你共享的会话。
     </p>
   );
 }

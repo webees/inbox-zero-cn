@@ -39,15 +39,13 @@ export async function aiGenerateAutomationCheckInMessage({
   const trimmedPrompt = prompt.trim();
 
   if (!trimmedPrompt) {
-    aiLogger.warn("Prompt is empty for automation check-in message generation");
-    throw new Error("Automation check-in prompt is required");
+    aiLogger.warn("自动签到消息生成的提示词为空");
+    throw new Error("必须提供自动化签到提示词");
   }
 
   if (!emailAccount.id || !emailAccount.userId || !emailAccount.email) {
-    aiLogger.warn(
-      "Email account is missing required fields for automation check-in message generation",
-    );
-    throw new Error("Email account is missing required fields");
+    aiLogger.warn("邮箱账号缺少生成自动化签到消息所需的必填字段");
+    throw new Error("邮箱账号缺少必填字段");
   }
 
   const [stats, inboxMessages] = await Promise.all([
@@ -96,7 +94,7 @@ Return plain text only and keep the message short.`,
     },
   );
 
-  aiLogger.info("Generated automation check-in message");
+  aiLogger.info("已生成自动化签到消息");
   return aiResponse.object.message;
 }
 

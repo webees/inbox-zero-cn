@@ -1,78 +1,78 @@
 ---
-title: 'Channels'
-description: 'Connect Slack, Microsoft Teams, or Telegram and control what Inbox Zero delivers to chat.'
+title: '渠道'
+description: '连接 Slack、Microsoft Teams 或 Telegram，并控制 Inbox Zero 向聊天投递哪些内容。'
 icon: 'messages'
 ---
 
-The **Channels** page is the central place to connect chat apps and route Inbox Zero updates. You can receive rule notifications, draft replies, meeting briefs, follow-up reminders, digests, document-filing alerts, and scheduled check-ins.
+**渠道**页面是连接聊天应用并路由 Inbox Zero 更新的中心位置。你可以接收规则通知、草稿回复、会议简报、跟进提醒、摘要、文档归档提醒和定时的定期检查。
 
 <iframe
   src="https://player.mux.com/QbtTl00g2Gjx3JhM016Xkei0202zW4qpsF302rp01sRQHaf028?metadata-video-title=Slack%20and%20Telegram%20walkthrough&accent-color=%233b82f6"
-  title="Slack and Telegram walkthrough"
+  title="Slack 和 Telegram 演示"
   style={{ width: "100%", border: "none", aspectRatio: "16/9" }}
   loading="lazy"
   allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
   allowFullScreen
 ></iframe>
 
-## Connect a channel
+## 连接渠道
 
-1. Open **Channels** in the left sidebar.
-2. Find **Slack**, **Microsoft Teams**, or **Telegram** and select **Connect**.
-3. Complete the provider-specific flow:
-   - **Slack:** approve the Slack OAuth request and return to Inbox Zero.
-   - **Teams or Telegram:** copy the generated `/connect` command and send it in a direct message to the Inbox Zero bot.
-4. Confirm that the provider displays a **Connected** badge.
+1. 打开左侧边栏中的**渠道**。
+2. 找到 **Slack**、**Microsoft Teams** 或 **Telegram**，选择**连接**。
+3. 完成服务商特定的流程：
+   - **Slack：** 批准 Slack OAuth 请求并返回 Inbox Zero。
+   - **Teams 或 Telegram：** 复制生成的 `/connect` 命令，并在私信中把它发送给 Inbox Zero 机器人。
+4. 确认服务商显示**已连接**徽章。
 
-## Route rule notifications
+## 路由规则通知
 
-Under a connected provider, **Rule notifications** lists your enabled assistant rules. Turn on the rules that should post to that provider.
+在已连接的服务商下，**规则通知**会列出你已启用的助手规则。打开应推送到该服务商的规则。
 
-For Slack, choose a destination in the **Rule notifications** header before turning on any rules. Otherwise, Inbox Zero shows "Please select a target channel before enabling notifications."
+对于 Slack，请在开启任何规则之前，先在**规则通知**页眉中选择目的地。否则，Inbox Zero 会显示「请先选择一个目标频道，然后再启用通知。」
 
-For each enabled rule, choose one of two modes from its menu:
+对于每条已启用的规则，从其菜单中选择两种模式之一：
 
-- **Notify only** posts a notification when the rule matches.
-- **Draft reply in chat** includes a generated draft for review.
+- **仅通知**：规则匹配时推送一条通知。
+- **在聊天中起草回复**：附带一封生成的草稿以供审阅。
 
-Slack lets you choose a direct message or a private Slack channel as the destination. Teams and Telegram deliver to your direct message with the bot.
+Slack 允许你选择一条私信或一个私有 Slack 频道作为目的地。Teams 和 Telegram 会投递到你和机器人的私信中。
 
-### Provider differences
+### 服务商差异
 
-- **Slack** supports the richest interactive cards, including draft review and quick actions such as send, edit, archive, or mark as read.
-- **Teams**: Draft editing and sending are not available yet. Review or send the draft in Inbox Zero. Other quick actions are view-only.
-- **Telegram** can send a prepared draft from Telegram, but draft editing is not available there. Other quick actions such as archive and mark read are currently Slack-only.
+- **Slack** 支持最丰富的交互卡片，包括草稿审阅，以及发送、编辑、归档或标记为已读等快捷操作。
+- **Teams**：尚不支持起草编辑和发送。请在 Inbox Zero 中审阅或发送草稿。其他快捷操作仅可查看。
+- **Telegram** 可以从 Telegram 发送已准备好的草稿，但那里不支持草稿编辑。归档、标记已读等其他快捷操作目前仅限 Slack。
 
-## Route feature updates
+## 路由功能更新
 
-Each connected provider can also show toggles for:
+每个已连接的服务商还可以显示以下开关：
 
-- **Meeting briefs**: a summary before meetings.
-- **Follow-up reminders**: nudges for messages awaiting a reply.
-- **Digests**: your scheduled newsletter digest. Digests require the **Plus plan or higher**.
-- **Document filing alerts**: updates when attachments are filed.
-- **Scheduled check-ins**: proactive assistant updates.
+- **会议简报**：会议前的摘要。
+- **跟进提醒**：为等待回复的邮件推送提醒。
+- **摘要**：你的定时简报摘要。摘要需要 **Plus 套餐或更高版本**。
+- **文档归档提醒**：附件被归档时的更新。
+- **定期的定期检查**：助手的主动更新。
 
-Configure the underlying feature using the settings button or linked feature page. For Slack, choose the target destination before enabling delivery.
+使用设置按钮或链接的功能页面配置底层功能。对于 Slack，请在启用投递前选择目标目的地。
 
-## Chat with the assistant
+## 与助手聊天
 
-You can direct-message the Inbox Zero bot in a connected provider. Slack also supports @mentions in channels where the bot is present. The assistant can use your connected email and calendar context.
+你可以在已连接的服务商中向 Inbox Zero 机器人发送私信。Slack 还支持在机器人所在的频道中 @提及。助手可以使用你已连接的邮件和日历上下文。
 
-## Disconnect a provider
+## 断开服务商
 
-Open the provider menu on **Channels** and select **Disconnect**. This stops delivery and removes that channel connection. It does not delete the underlying assistant rules, meeting-brief settings, digest schedule, or follow-up configuration.
+打开**渠道**上的服务商菜单，选择**断开连接**。这会停止投递并移除该渠道连接。它不会删除底层的助手规则、会议简报设置、摘要计划或跟进配置。
 
-## Troubleshooting
+## 故障排查
 
-### Teams or Telegram will not link
+### Teams 或 Telegram 无法关联
 
-Generate a new command from **Channels** and send it to the bot in a direct message within 10 minutes.
+从**渠道**生成一个新命令，并在 10 分钟内通过私信把它发送给机器人。
 
-### A Slack destination is unavailable
+### Slack 目的地不可用
 
-Reconnect Slack if requested. Confirm that you still have access to the destination and that the Inbox Zero app is present in a private channel before selecting it.
+如有要求，请重新连接 Slack。在选择之前，确认你仍可访问该目的地，并且 Inbox Zero 应用已在某个私有频道中。
 
-### Notifications are missing
+### 缺少通知
 
-Check all three layers: the provider is connected, the individual rule or feature is enabled for that provider, and the feature itself is enabled. Also confirm the selected Slack destination or linked direct message still exists.
+检查全部三个层面：服务商已连接、单条规则或功能已为该服务商启用，以及功能本身已启用。同时确认所选的 Slack 目的地或已链接的私信仍然存在。

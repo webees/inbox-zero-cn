@@ -72,7 +72,7 @@ describe("handleWebhookError", () => {
 
       expect(trackError).toHaveBeenCalledWith(
         expect.objectContaining({
-          errorType: "Gmail Quota Exceeded",
+          errorType: "Gmail 配额已超出",
         }),
       );
     });
@@ -86,7 +86,7 @@ describe("handleWebhookError", () => {
 
       expect(trackError).toHaveBeenCalledWith(
         expect.objectContaining({
-          errorType: "Gmail Insufficient Permissions",
+          errorType: "Gmail 权限不足",
         }),
       );
     });

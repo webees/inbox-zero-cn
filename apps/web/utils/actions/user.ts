@@ -89,7 +89,7 @@ export const deleteAccountAction = actionClientUser
     await assertUserAccountCanBeDeleted(userId);
 
     await clearLastEmailAccountCookie().catch((error) => {
-      logger.error("Failed to clear last email account cookie", { error });
+      logger.error("清除上次邮箱账号 cookie 失败", { error });
     });
 
     await betterAuthConfig.api
@@ -97,7 +97,7 @@ export const deleteAccountAction = actionClientUser
         headers: await headers(),
       })
       .catch((error) => {
-        logger.error("Failed to sign out", { error });
+        logger.error("退出登录失败", { error });
       });
     await deleteUser({ userId, logger });
   });
@@ -145,8 +145,8 @@ export const deleteEmailAccountAction = actionClientUser
         },
       });
 
-      if (!emailAccount) throw new SafeError("Email account not found");
-      if (!emailAccount.accountId) throw new SafeError("Account id not found");
+      if (!emailAccount) throw new SafeError("未找到邮箱账号");
+      if (!emailAccount.accountId) throw new SafeError("未找到账号 id");
       const organizationIdsToDelete =
         await assertEmailAccountCanBeDeleted(emailAccountId);
       const notifyConversations = await prepareMemberRemovalNotifications(
@@ -167,7 +167,7 @@ export const deleteEmailAccountAction = actionClientUser
       });
 
       if (isPrimaryAccount) {
-        // Check if there are other email accounts
+        // 检查是否还有其他邮箱账号
         const otherEmailAccounts = await prisma.emailAccount.findMany({
           where: { userId, id: { not: emailAccountId } },
           orderBy: { createdAt: "asc" },
@@ -182,11 +182,11 @@ export const deleteEmailAccountAction = actionClientUser
 
         if (otherEmailAccounts.length === 0) {
           throw new SafeError(
-            "Cannot delete your only email account. Go to the Settings page to delete your entire account.",
+            "无法删除你唯一的邮箱账号。请前往设置页面删除整个账号。",
           );
         }
 
-        // Promote the next email account to primary
+        // 将下一个邮箱账号提升为主账号
         const newPrimaryAccount = otherEmailAccounts[0];
         const oldEmail = emailAccount.user.email;
 
@@ -228,7 +228,7 @@ export const deleteEmailAccountAction = actionClientUser
           { emailAccountId, logger, userEmail },
         );
 
-        // Alias the old PostHog identity to the new one
+        // 将旧的 PostHog 身份关联到新身份
         after(async () => {
           await aliasPosthogUser({
             oldEmail,
@@ -266,7 +266,7 @@ export const deleteEmailAccountAction = actionClientUser
 
       after(() =>
         deleteTinybirdEmailData([emailAccount.email]).catch((error) => {
-          logger.error("Error deleting Tinybird data", { error });
+          logger.error("删除 Tinybird 数据时出错", { error });
           captureException(error);
         }),
       );
@@ -307,7 +307,7 @@ async function runDeleteEmailAccountTransaction(
       ]),
     );
   } catch (error) {
-    context.logger.error("Delete email account transaction failed", {
+    context.logger.error("删除邮箱账号事务失败", {
       error,
       emailAccountId: context.emailAccountId,
       prismaCode: getPrismaErrorCode(error),
@@ -315,12 +315,12 @@ async function runDeleteEmailAccountTransaction(
     });
 
     if (isNotFoundError(error)) {
-      throw new SafeError("Email account already changed");
+      throw new SafeError("邮箱账号已更改");
     }
 
     if (isDuplicateError(error, "email")) {
       throw new SafeError(
-        "We couldn't make the remaining email account primary because that email is already in use.",
+        "由于该邮箱已被使用，我们无法将剩余的邮箱账号设为主账号。",
       );
     }
 
@@ -336,7 +336,7 @@ async function runDeleteEmailAccountTransaction(
       error.code === "P2003"
     ) {
       throw new SafeError(
-        "We couldn't delete this email account because linked data still exists. Please contact support.",
+        "由于仍存在关联数据，我们无法删除此邮箱账号。请联系支持。",
       );
     }
 
@@ -348,7 +348,7 @@ async function runDeleteEmailAccountTransaction(
     });
 
     throw new SafeError(
-      "We couldn't delete this email account. Please contact support if this keeps happening.",
+      "我们无法删除此邮箱账号。如果问题持续出现，请联系支持。",
     );
   }
 }
@@ -394,7 +394,7 @@ async function clearLastEmailAccountCookieIfMatching({
     if (lastEmailAccountId !== emailAccountId) return;
     await clearLastEmailAccountCookie();
   } catch (error) {
-    logger.error("Failed to clear last email account cookie", { error });
+    logger.error("清除上次邮箱账号 cookie 失败", { error });
   }
 }
 

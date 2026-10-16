@@ -168,7 +168,7 @@ export const isAdminForPremium = (
   premiumAdmins: { id: string }[],
   userId: string,
 ) => {
-  // if no admins are set, then we skip the check
+  // 如果未设置管理员，则跳过该检查
   if (!premiumAdmins.length) return true;
   return premiumAdmins.some((admin) => admin.id === userId);
 };
@@ -196,8 +196,8 @@ function getTiersAtOrAbove(minimumTier: PremiumTier): PremiumTier[] {
     .map(([tier]) => tier as PremiumTier);
 }
 
-// Legacy rows hold a bare 1-12 month, which never matches a period, so they
-// get one reset on next use.
+// 旧记录只保存 1-12 的月份，永远不会匹配某个周期，因此它们
+// 会在下次使用时重置一次。
 export const getUnsubscribePeriod = (now = new Date()): number =>
   now.getFullYear() * 100 + now.getMonth() + 1;
 

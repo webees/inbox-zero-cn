@@ -224,7 +224,7 @@ export function Chat({
       <PromptInputTextarea
         data-testid="chat-input"
         value={input}
-        placeholder="Ask me anything"
+        placeholder="随便问我"
         onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
           setInput(e.currentTarget.value)
         }
@@ -260,12 +260,12 @@ export function Chat({
             submitTextMessage(text).catch(() => undefined);
           }}
         />
-        <Tooltip content="Attach images">
+        <Tooltip content="添加图片">
           <Button
             type="button"
             variant="ghostMuted"
             size="icon"
-            aria-label="Attach images"
+            aria-label="添加图片"
             className="size-9 rounded-full"
             onClick={() => {
               analytics.captureAction("chat_attach_button_clicked", {
@@ -385,11 +385,11 @@ function ChatMessagesView({
             {context ? (
               <div className="mb-2 flex items-center gap-2">
                 <span className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
-                  Fix: {context.message.headers.subject.slice(0, 60)}
+                  修复：{context.message.headers.subject.slice(0, 60)}
                   {context.message.headers.subject.length > 60 ? "..." : ""}
                   <button
                     type="button"
-                    aria-label="Remove context"
+                    aria-label="移除上下文"
                     className="ml-1 rounded p-0.5 hover:bg-muted-foreground/10"
                     onClick={() => setContext(null)}
                   >
@@ -408,9 +408,9 @@ function ChatMessagesView({
 }
 
 const CHAT_EXAMPLES = [
-  "Help me handle my inbox today",
-  "Clean up my inbox",
-  "Suggest rules I should add",
+  "帮我处理今天的收件箱",
+  "清理我的收件箱",
+  "推荐我应该添加的规则",
 ];
 
 function NewChatView({
@@ -469,10 +469,10 @@ function NewChatButton() {
   const { setNewChat } = useChat();
 
   return (
-    <Tooltip content="Start a new conversation">
+    <Tooltip content="开始新对话">
       <Button variant="ghost" size="icon" onClick={setNewChat}>
         <PlusIcon className="size-5" />
-        <span className="sr-only">New Chat</span>
+        <span className="sr-only">新对话</span>
       </Button>
     </Tooltip>
   );
@@ -480,13 +480,13 @@ function NewChatButton() {
 
 function CloseChatButton({ onClose }: { onClose: () => void }) {
   return (
-    <Tooltip content="Close assistant">
+    <Tooltip content="关闭助手">
       <Button
         type="button"
         variant="ghost"
         size="icon"
         onClick={onClose}
-        aria-label="Close assistant"
+        aria-label="关闭助手"
       >
         <XIcon className="size-5" aria-hidden="true" />
       </Button>
@@ -515,7 +515,7 @@ function ChatHistoryDropdown() {
           if (value) setShouldLoadChats(true);
         }}
       >
-        <Tooltip content="View previous conversations">
+        <Tooltip content="查看历史对话">
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
@@ -527,7 +527,7 @@ function ChatHistoryDropdown() {
               }}
             >
               <HistoryIcon className="size-5" />
-              <span className="sr-only">Chat History</span>
+              <span className="sr-only">聊天记录</span>
             </Button>
           </DropdownMenuTrigger>
         </Tooltip>
@@ -541,11 +541,11 @@ function ChatHistoryDropdown() {
                 className="flex items-center justify-center"
               >
                 <Loader2 className="mr-2 size-4 animate-spin" />
-                Loading chats...
+                正在加载聊天...
               </DropdownMenuItem>
             }
             errorComponent={
-              <DropdownMenuItem disabled>Error loading chats</DropdownMenuItem>
+              <DropdownMenuItem disabled>加载聊天失败</DropdownMenuItem>
             }
           >
             {data && data.chats.length > 0 ? (
@@ -568,9 +568,7 @@ function ChatHistoryDropdown() {
                 />
               ))
             ) : (
-              <DropdownMenuItem disabled>
-                No previous chats found
-              </DropdownMenuItem>
+              <DropdownMenuItem disabled>未找到历史对话</DropdownMenuItem>
             )}
           </LoadingContent>
         </DropdownMenuContent>
@@ -605,10 +603,10 @@ function ChatHistoryDropdown() {
 function getGreeting(firstName: string | undefined): string {
   const hour = new Date().getHours();
   const name = firstName ? `, ${firstName}` : "";
-  if (hour < 5) return `Hey there${name}`;
-  if (hour < 12) return `Good morning${name}`;
-  if (hour < 18) return `Good afternoon${name}`;
-  return `Good evening${name}`;
+  if (hour < 5) return `你好${name}`;
+  if (hour < 12) return `早上好${name}`;
+  if (hour < 18) return `下午好${name}`;
+  return `晚上好${name}`;
 }
 
 const DRAFT_INPUT_STORAGE_KEY = "input";
@@ -627,6 +625,6 @@ function saveDraftInput(value: string) {
   try {
     window.localStorage.setItem(DRAFT_INPUT_STORAGE_KEY, JSON.stringify(value));
   } catch {
-    // Storage can be full or blocked; the draft just won't survive a reload.
+    // 存储可能已满或被禁用；草稿只是无法在重新加载后保留。
   }
 }

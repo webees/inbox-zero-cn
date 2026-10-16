@@ -15,7 +15,7 @@ export function PermissionsCheck() {
   const { isAccountOwner } = useOrgAccess();
 
   useEffect(() => {
-    // Skip permissions check when viewing another user's account (non-owner)
+    // 查看其他用户的账号（非所有者）时跳过权限检查
     if (!isAccountOwner) return;
 
     if (permissionsChecked[emailAccountId]) return;

@@ -1,7 +1,7 @@
 import { cn } from "@/utils";
 
-// A plain embed is enough for the marketing pages that still host videos on
-// YouTube. In-app walkthroughs use MuxVideo, which reports playback progress.
+// 对于仍将视频托管在 YouTube 上的营销页面，普通嵌入即可。
+// 应用内演示使用 MuxVideo，因为它会上报播放进度。
 export function YouTubeVideo({
   videoId,
   title,

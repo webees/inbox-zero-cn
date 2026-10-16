@@ -116,7 +116,7 @@ describe("provider health", () => {
 
     expect(cleanupInvalidTokens).not.toHaveBeenCalled();
     expect(logger.info).toHaveBeenCalledWith(
-      "Skipping duplicate provider issue cleanup",
+      "跳过重复的服务商问题清理",
       expect.objectContaining({
         emailAccountId: "email-account-1",
         provider: "google",
@@ -146,7 +146,7 @@ describe("provider health", () => {
       logger,
     });
     expect(logger.warn).toHaveBeenCalledWith(
-      "Failed to claim provider issue cleanup",
+      "声明服务商问题清理失败",
       expect.objectContaining({
         emailAccountId: "email-account-1",
         provider: "google",
@@ -230,7 +230,7 @@ describe("provider health", () => {
     ).resolves.toBeUndefined();
 
     expect(logger.warn).toHaveBeenCalledWith(
-      "Failed to clean up provider account issue",
+      "清理服务商账号问题失败",
       expect.objectContaining({
         emailAccountId: "email-account-1",
         provider: "google",

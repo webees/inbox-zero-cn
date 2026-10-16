@@ -193,10 +193,10 @@ export class GoogleDriveProvider implements DriveProvider {
       return this.convertToFile(file);
     } catch (error) {
       if (this.isNotFoundError(error)) {
-        this.logger.trace("File not found", { fileId });
+        this.logger.trace("未找到文件", { fileId });
         return null;
       }
-      this.logger.error("Error getting file", { error, fileId });
+      this.logger.error("获取文件时出错", { error, fileId });
       throw error;
     }
   }
@@ -205,7 +205,7 @@ export class GoogleDriveProvider implements DriveProvider {
     parentId?: string,
     options?: { mimeTypes?: string[] },
   ): Promise<DriveFile[]> {
-    this.logger.trace("Listing files", {
+    this.logger.trace("正在列出文件", {
       parentId,
       mimeTypes: options?.mimeTypes,
     });

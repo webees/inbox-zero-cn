@@ -1,20 +1,17 @@
 # @inboxzero/mail-core
 
-Portable mailbox schemas, query semantics, command state, and the shared
-engine API. This package has no React, DOM, SQL driver, or app-framework
-dependencies.
+可移植的邮箱 schema、查询语义、命令状态与共享引擎 API。该包不依赖
+React、DOM、SQL 驱动或应用框架。
 
-Web and desktop construct the engine with a `MailStore`, a `MailboxSource`,
-an `OperationExecutor`, and a `HostRuntime` (`nowMs`, `randomId`, `sha256`,
-`storagePressure`). Attachments live on the provider's mailbox draft, so the
-engine never holds their bytes.
+Web 与桌面端用 `MailStore`、`MailboxSource`、`OperationExecutor` 和
+`HostRuntime`（`nowMs`、`randomId`、`sha256`、`storagePressure`）构建该引擎。
+附件存放在服务商的邮箱草稿上，因此引擎从不持有其字节。
 
-Screens read `observeMailbox`, `observeMailboxWindow`, `observeConversation`,
-and `observeOperation`. They save and read one draft with `saveDraft` /
-`readDraft`, and queue a send with `submitSend`. A queued send is watched with `observeOperation`.
+界面通过 `observeMailbox`、`observeMailboxWindow`、`observeConversation`
+和 `observeOperation` 读取数据。它们用 `saveDraft` / `readDraft` 保存并读取
+单个草稿，用 `submitSend` 排队发送。排队的发送通过 `observeOperation` 观察。
 
-Account lists, Outlook folders, and Gmail labels stay on their existing server
-APIs.
+账号列表、Outlook 文件夹和 Gmail 标签仍保留在各自现有的服务端 API 上。
 
-Forbidden imports: React, DOM globals, IndexedDB, Electron, Expo, Next, Prisma,
-Redis, and Node-only modules.
+禁止的导入：React、DOM 全局对象、IndexedDB、Electron、Expo、Next、Prisma、
+Redis 以及仅限 Node 的模块。

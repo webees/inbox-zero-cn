@@ -8,12 +8,10 @@ export function getFollowUpCopy(trackerType: ThreadTrackerType) {
   return {
     isAwaiting,
     directionLine: isAwaiting
-      ? "Waiting for their reply to your sent email"
-      : "You haven't replied to this email yet",
-    counterpartyPrefix: isAwaiting
-      ? "You sent this email to"
-      : "You received this email from",
-    snippetLabel: isAwaiting ? "Your sent email" : "Email awaiting your reply",
+      ? "正在等待对方回复你发送的邮件"
+      : "你还没有回复这封邮件",
+    counterpartyPrefix: isAwaiting ? "你把此邮件发送给了" : "此邮件来自",
+    snippetLabel: isAwaiting ? "你发送的邮件" : "等待你回复的邮件",
     emoji: isAwaiting ? "⏳" : "✍️",
   };
 }

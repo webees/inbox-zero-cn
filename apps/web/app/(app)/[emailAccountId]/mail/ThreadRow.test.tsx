@@ -14,13 +14,13 @@ describe("ThreadRow", () => {
   it("shows an attachment indicator when any message in the thread has one", () => {
     render(row(thread([false, true])));
 
-    expect(screen.getByText("Has attachment")).toBeTruthy();
+    expect(screen.getByText("有附件")).toBeTruthy();
   });
 
   it("omits the attachment indicator for threads without attachments", () => {
     render(row(thread([false, undefined])));
 
-    expect(screen.queryByText("Has attachment")).toBeNull();
+    expect(screen.queryByText("有附件")).toBeNull();
   });
 });
 

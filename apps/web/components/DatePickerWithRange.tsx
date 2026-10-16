@@ -18,12 +18,12 @@ import { useMemo } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 function getRelativeDateLabel(days: number) {
-  if (days === 1) return "Last day";
-  if (days === 7) return "Last week";
-  if (days === 30) return "Last month";
-  if (days === 90) return "Last 3 months";
-  if (days === 365) return "Last year";
-  return "All";
+  if (days === 1) return "最近一天";
+  if (days === 7) return "最近一周";
+  if (days === 30) return "最近一个月";
+  if (days === 90) return "最近三个月";
+  if (days === 365) return "最近一年";
+  return "全部";
 }
 
 interface DatePickerWithRangeProps
@@ -76,7 +76,7 @@ export function DatePickerWithRange({
                   format(dateRange.from, "LLL dd, y")
                 )
               ) : (
-                <span>Pick a date</span>
+                <span>选择日期</span>
               ))}
           </div>
           <ChevronDown className="ml-2 h-4 w-4 text-gray-400" />
@@ -100,7 +100,7 @@ export function DatePickerWithRange({
               className="min-w-32"
               onSelect={({ label, value }) => {
                 onSetDateDropdown({ label, value });
-                // When "All" is selected (value "0"), pass undefined to skip date filtering
+                // 当选择“全部”（值 "0"）时，传入 undefined 以跳过日期筛选
                 if (value === "0") {
                   onSetDateRange(undefined);
                 } else {

@@ -60,8 +60,7 @@ describe("GET /api/threads/[id]", () => {
 
     expect(response.status).toBe(429);
     expect(await response.json()).toEqual({
-      error:
-        "Gmail is temporarily limiting requests. Please try again shortly.",
+      error: "Gmail 暂时限制了请求。请稍后重试。",
       isKnownError: true,
     });
   });

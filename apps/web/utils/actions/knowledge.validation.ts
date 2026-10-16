@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const createKnowledgeBody = z.object({
-  title: z.string().min(1, "Title is required"),
+  title: z.string().min(1, "标题为必填项"),
   content: z.string(),
 });
 
@@ -9,7 +9,7 @@ export type CreateKnowledgeBody = z.infer<typeof createKnowledgeBody>;
 
 export const updateKnowledgeBody = z.object({
   id: z.string(),
-  title: z.string().min(1, "Title is required"),
+  title: z.string().min(1, "标题为必填项"),
   content: z.string(),
 });
 

@@ -33,28 +33,28 @@ export function EmailsToIncludeFilter(props: {
 
   return (
     <DetailedStatsFilter
-      label="Emails to include"
+      label="包含的邮件"
       icon={<FilterIcon className="mr-2 h-4 w-4" />}
       keepOpenOnSelect
       columns={[
         {
-          label: "Read",
+          label: "已读",
           checked: types.read,
           setChecked: () => setTypes({ ...types, read: !types.read }),
         },
         {
-          label: "Unread",
+          label: "未读",
           checked: types.unread,
           setChecked: () => setTypes({ ...types, unread: !types.unread }),
         },
         {
-          label: "Unarchived",
+          label: "未归档",
           checked: types.unarchived,
           setChecked: () =>
             setTypes({ ...types, unarchived: !types.unarchived }),
         },
         {
-          label: "Archived",
+          label: "已归档",
           checked: types.archived,
           setChecked: () => setTypes({ ...types, archived: !types.archived }),
         },

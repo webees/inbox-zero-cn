@@ -37,7 +37,7 @@ export function isValidMobileAuthState(state: string): boolean {
   return MOBILE_AUTH_STATE_REGEX.test(state);
 }
 
-// Correlates every step of one sign-in across logs without logging the state.
+// 在日志中关联一次登录的每个步骤，同时不记录 state。
 export function getMobileAuthFlowId(state: string): string {
   return hashToken("state", state).slice(0, 12);
 }
@@ -54,14 +54,14 @@ export async function storeMobileAuthState(
     completionHash: hashToken("completion", input.completionToken),
   });
   await storeToken("state", input.state, data);
-  logger.info("Mobile auth state stored", {
+  logger.info("已存储移动端认证 state", {
     flowId: getMobileAuthFlowId(input.state),
     provider: input.provider,
     returnUrlMode: input.returnUrlMode,
   });
 }
 
-// Called only from the successful provider callback hook, never from a browser session lookup.
+// 仅从成功的服务商回调钩子中调用，绝不从浏览器会话查找中调用。
 export async function completeMobileAuthState(input: {
   state: string;
   provider: string;
@@ -101,16 +101,16 @@ export async function completeMobileAuthState(input: {
     },
   });
   if (updated.count !== 1) reject("concurrent_update");
-  logger.info("Mobile auth state completed", {
+  logger.info("移动端认证 state 已完成", {
     flowId: getMobileAuthFlowId(input.state),
     provider: input.provider,
   });
 }
 
-// Not single-use: browsers and security software can replay the callback
-// request concurrently, and the response the browser shows must still reach
-// the app. Only the session the provider completed can redeem it, and each
-// code still needs the app's PKCE verifier.
+// 并非一次性：浏览器和安全软件可能并发重放回调
+// 请求，而浏览器所显示的响应仍须送达
+// 应用。只有服务商完成的那次会话能兑换它，且每个
+// code 仍需应用的 PKCE verifier。
 export async function redeemMobileAuthState(input: {
   state: string;
   sessionToken: string;
@@ -177,8 +177,8 @@ export async function consumeMobileAuthCode(input: {
   const data = parseRecord(record?.identifier, "code", codeSchema);
   const flowId = getMobileAuthFlowId(input.state);
   const reject: (reason: string) => never = (reason) => {
-    logger.warn("Mobile auth code rejected", { flowId, reason });
-    throw new SafeError("Invalid or expired authentication code", 401);
+    logger.warn("移动端认证 code 被拒绝", { flowId, reason });
+    throw new SafeError("认证 code 无效或已过期", 401);
   };
   if (!record || !data) reject("missing_or_invalid");
   if (record.expires <= new Date()) reject("expired");
@@ -206,15 +206,12 @@ function rejectState(
   reason: string,
   state?: string,
 ): never {
-  logger.warn("Mobile auth state rejected", {
+  logger.warn("移动端认证 state 被拒绝", {
     stage,
     reason,
     flowId: state ? getMobileAuthFlowId(state) : undefined,
   });
-  throw new SafeError(
-    "Invalid authentication state",
-    stage === "validate" ? 400 : 401,
-  );
+  throw new SafeError("无效的认证 state", stage === "validate" ? 400 : 401);
 }
 
 function identifier(scope: "state" | "code", data: unknown) {
@@ -271,7 +268,7 @@ async function deleteExpiredTokens() {
       },
     });
   } catch (error) {
-    logger.error("Failed to sweep expired mobile auth tokens", { error });
+    logger.error("清理过期的移动端认证令牌失败", { error });
   }
 }
 
@@ -280,7 +277,7 @@ function hashToken(
   value: string,
 ): string {
   const secret = env.AUTH_SECRET || env.NEXTAUTH_SECRET;
-  if (!secret) throw new Error("Auth secret is required");
+  if (!secret) throw new Error("需要认证密钥");
   return createHmac("sha256", secret)
     .update(`${scope}:${value}`)
     .digest("base64url");

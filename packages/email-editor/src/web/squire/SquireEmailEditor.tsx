@@ -59,8 +59,8 @@ type SquireEmailEditorProps = {
   ) => Promise<Record<string, string | null>>;
 };
 
-// Undo and redo replace the whole document, so the signature's collapsed or
-// removed state has to be reconciled with the restored snapshot afterwards.
+// 撤销和重做会替换整个文档，因此之后必须把签名的折叠或移除状态
+// 与恢复的快照对齐。
 class EmailSquire extends Squire {
   isChangingHistory = false;
   onHistoryChange?: (direction: "undo" | "redo") => void;
@@ -73,17 +73,15 @@ class EmailSquire extends Squire {
     return this.changeHistory("redo", () => super.redo());
   }
 
-  // Changes made through modifyDocument leave Squire in its "just undone"
-  // state, where saving an undo step is skipped. Edits made outside typing
-  // must still be undoable.
+  // 通过 modifyDocument 所做的更改会让 Squire 停留在“刚撤销”状态，
+  // 此时会跳过保存撤销步骤。输入之外的编辑仍然必须可撤销。
   saveEditUndoState() {
     this._isInUndoState = false;
     this.saveUndoState();
   }
 
   private changeHistory(direction: "undo" | "redo", change: () => Squire) {
-    // Undo saves the current state before stepping back, and a collapsed
-    // signature can make two snapshots render alike, so check both.
+    // 撤销会先保存当前状态再回退，而折叠的签名可能让两个快照渲染结果相同，因此两者都要检查。
     const before = this.getRoot().innerHTML;
     const undoIndex = this._undoIndex;
     this.isChangingHistory = true;
@@ -129,10 +127,9 @@ export const SquireEmailEditor = forwardRef<
   const editorRef = useRef<EmailSquire | null>(null);
   const [editor, setEditor] = useState<EmailSquire | null>(null);
 
-  // The signature element is detached from the editable root while collapsed,
-  // so select-all, deletes and typing can never change it unseen.
+  // 折叠时签名元素会从可编辑根节点上分离，因此全选、删除和输入永远无法在不可见的情况下改动它。
   const signatureRef = useRef<HTMLElement | null>(null);
-  // Content typed below the shown signature stays below it while collapsed.
+  // 在显示的签名下方输入的内容在折叠时会保留在其下方。
   const signatureTailRef = useRef<Node[]>([]);
   const [signaturePresent, setSignaturePresentState] = useState(false);
   const signaturePresentRef = useRef(false);
@@ -140,11 +137,10 @@ export const SquireEmailEditor = forwardRef<
   const expandedRef = useRef(false);
   const [removeButtonTop, setRemoveButtonTop] = useState<number | null>(null);
 
-  // An untouched draft is sent exactly as loaded; "dirty" means the content
-  // differs from what was loaded, not merely that the DOM was touched.
+  // 未改动的草稿按加载时的原样发送；“dirty”是指内容与加载时不同，而不是仅仅 DOM 被触碰过。
   const dirtyRef = useRef(false);
   const baselineRef = useRef("");
-  // Undo can bring back a deleted signature; redo has to delete it again.
+  // 撤销可能恢复已删除的签名；重做必须再次删除它。
   const restoredSignaturesRef = useRef(0);
   const focusedRef = useRef(false);
   const [formatState, setFormatState] =
@@ -176,8 +172,7 @@ export const SquireEmailEditor = forwardRef<
     setSignaturePresentState(present);
   }, []);
 
-  // Cheap enough to run on every keystroke; the full HTML is only serialized
-  // when the value is read.
+  // 每次按键都运行也足够廉价；只有在读取值时才序列化完整 HTML。
   const readState = useCallback((): EmailEditorState => {
     const root = rootRef.current;
     const signature = signatureRef.current;
@@ -204,7 +199,7 @@ export const SquireEmailEditor = forwardRef<
     return {
       inlineContentIds,
       mode: "edited",
-      // An edited signature is part of the editable HTML from here on.
+      // 从此修改过的签名就是可编辑 HTML 的一部分。
       preservedBlockIds: quoteBlock ? [quoteBlock.id] : [],
     };
   }, [initialMode, preservedBlockIds, quoteBlock]);
@@ -262,7 +257,7 @@ export const SquireEmailEditor = forwardRef<
       !first?.textContent?.trim() &&
       !first?.querySelector("img") &&
       (!second || second === signatureRef.current);
-    // Squire observes its root, so state for styling lives on the wrapper.
+    // Squire 会观察它的根节点，因此用于样式判断的状态放在包装元素上。
     root.parentElement?.toggleAttribute("data-email-editor-empty", empty);
   }, []);
 
@@ -323,7 +318,7 @@ export const SquireEmailEditor = forwardRef<
             cache.set(source, proxied);
           }
         }
-        // A StrictMode remount replaces the editor while this is in flight.
+        // 此操作进行中时，StrictMode 的重新挂载会替换编辑器。
         if (editorRef.current) resolveImagesRef.current();
       })
       .catch(() => {
@@ -396,7 +391,7 @@ export const SquireEmailEditor = forwardRef<
     if (link) range.selectNodeContents(link);
     setToolbarPosition(null);
     setLinkPanel({
-      // A collapsed range has no box of its own; use the caret's.
+      // 折叠的 range 没有自己的盒子；改用光标的。
       anchor: range.collapsed
         ? currentEditor.getCursorPosition()
         : range.getBoundingClientRect(),
@@ -406,8 +401,7 @@ export const SquireEmailEditor = forwardRef<
     });
   }, []);
 
-  // Open the link panel next to the text it edits, inside whatever part of
-  // the composer is visible.
+  // 在它编辑的文本旁打开链接面板，位于撰写窗口中可见的部分之内。
   useLayoutEffect(() => {
     const surface = surfaceRef.current;
     const panel = linkPanelRef.current;
@@ -455,9 +449,8 @@ export const SquireEmailEditor = forwardRef<
       openLinkPanel();
     });
 
-    // Loading body and signature together lets Squire normalise both into
-    // valid blocks before the signature is detached. A restored draft already
-    // carries its signature container.
+    // 同时加载正文和签名，让 Squire 在签名被分离之前把两者规范化为
+    // 有效的块。恢复的草稿已经带有自己的签名容器。
     squire.setHTML(initialHtml);
     if (signatureHtml && !findSignature(root)) {
       squire.setHTML(`${initialHtml}${signatureHtml}`);
@@ -486,7 +479,7 @@ export const SquireEmailEditor = forwardRef<
         setSignaturePresent(false);
         return;
       }
-      // The snapshot was taken while the signature was collapsed.
+      // 该快照是在签名折叠时拍摄的。
       const restored = signatureRef.current;
       if (expandedRef.current && restored) {
         attachSignature(squire, root, restored, signatureTailRef.current);
@@ -513,7 +506,7 @@ export const SquireEmailEditor = forwardRef<
     };
     squire.onHistoryChange = (direction) => {
       reconcileSignature(direction);
-      // Undoing every edit returns to the untouched draft.
+      // 撤销所有编辑后会回到未改动的草稿。
       dirtyRef.current = serializeContent() !== baselineRef.current;
       onInput();
     };
@@ -565,10 +558,10 @@ export const SquireEmailEditor = forwardRef<
     root.addEventListener("drop", interceptImageFiles, true);
     root.addEventListener("click", onClick);
 
-    // Window capture runs before Radix's document listener, so Escape closes
-    // the snippet picker without closing the compose window.
-    // Keys that confirm IME composition belong to the input method. Safari
-    // reports the confirming Enter just after compositionend.
+    // 窗口捕获先于 Radix 的 document 监听器运行，因此 Escape 会关闭
+    // 片段选择器而不会关闭撰写窗口。
+    // 确认 IME 组合输入的按键属于输入法。Safari 会在 compositionend
+    // 之后才报告确认的 Enter。
     let compositionEndedAt = 0;
     const onCompositionEnd = () => {
       compositionEndedAt = performance.now();
@@ -624,7 +617,7 @@ export const SquireEmailEditor = forwardRef<
     };
   }, []);
 
-  // Show or hide the signature to match the toggle.
+  // 根据开关显示或隐藏签名。
   useEffect(() => {
     const root = rootRef.current;
     const signature = signatureRef.current;
@@ -746,8 +739,7 @@ export const SquireEmailEditor = forwardRef<
           ? signatureRef.current
           : null;
         if (!current && !next) return false;
-        // A collapsed signature is held outside the document; swapping the
-        // reference is enough until it is shown.
+        // 折叠的签名被保存在文档之外；在它显示之前，交换引用即可。
         const inRoot = Boolean(current && root.contains(current));
         if (inRoot || (next && expandedRef.current)) {
           currentEditor.saveEditUndoState();
@@ -818,7 +810,7 @@ export const SquireEmailEditor = forwardRef<
       >
         <div className={styles.squireBody}>
           <div
-            aria-label="Email message"
+            aria-label="邮件内容"
             aria-multiline="true"
             className={styles.squireContent}
             data-email-editor-content=""
@@ -834,8 +826,9 @@ export const SquireEmailEditor = forwardRef<
           />
           {removeButtonTop !== null && (
             <button
-              aria-label="Remove signature"
+              aria-label="移除签名"
               className={styles.squireRemoveSignature}
+              data-testid="remove-signature"
               onClick={removeSignature}
               onMouseDown={(event) => event.preventDefault()}
               style={{ top: removeButtonTop }}
@@ -928,8 +921,8 @@ export const SquireEmailEditor = forwardRef<
   );
 });
 
-// Only a top-level container is the composer's own signature; markers nested
-// in quoted or forwarded content belong to someone else.
+// 只有顶层容器才是撰写窗口自己的签名；嵌套在引用或转发内容里的标记
+// 属于其他人。
 function findSignature(root: HTMLElement) {
   const containers = root.querySelectorAll<HTMLElement>(
     `:scope > [${SIGNATURE_CONTAINER_ATTRIBUTE}]`,
@@ -937,8 +930,8 @@ function findSignature(root: HTMLElement) {
   return containers.item(containers.length - 1) ?? null;
 }
 
-// Takes the signature out of the editable root, together with anything typed
-// below it. Blank lines after it (Squire adds one to type into) are dropped.
+// 把签名连同其下方输入的内容一起移出可编辑根节点。签名之后的空行
+// （Squire 会添加一个用于输入）会被丢弃。
 function detachSignature(
   editor: Squire,
   root: HTMLElement,
@@ -973,8 +966,8 @@ function isBlank(node: Node) {
   return !node.textContent?.trim() && !node.querySelector("img, hr, table");
 }
 
-// Only the composer creates signature containers; pasted or inserted ones
-// would otherwise hide under the collapsed signature toggle.
+// 只有撰写窗口会创建签名容器；否则粘贴或插入的容器会隐藏在折叠的
+// 签名开关之下。
 function removeSignatureMarkers(parent: ParentNode) {
   for (const element of parent.querySelectorAll(
     `[${SIGNATURE_CONTAINER_ATTRIBUTE}]`,
@@ -990,7 +983,7 @@ function withoutSignatureMarkers(html: string) {
   return template.innerHTML;
 }
 
-// Squire needs at least one block to place the caret in.
+// Squire 至少需要一个块来放置光标。
 function ensureBlock(editor: Squire, root: HTMLElement) {
   if (!root.firstElementChild) root.append(editor.createDefaultBlock());
 }

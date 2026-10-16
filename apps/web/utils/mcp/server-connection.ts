@@ -23,7 +23,7 @@ export async function getMcpServerConnection(
     });
   }
 
-  // registeredServerUrl is the OAuth discovery base URL, not the MCP endpoint
+  // registeredServerUrl 是 OAuth 发现的基础 URL，而不是 MCP 端点
   const url = getMcpServerUrl(integration);
   if (!url) {
     throw new Error(`No server URL for integration: ${integration.name}`);

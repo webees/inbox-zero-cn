@@ -22,7 +22,7 @@ export function MultiRuleSetting() {
       },
       onError: createSettingActionErrorHandler({
         mutate,
-        prefix: "There was an error",
+        prefix: "发生错误",
       }),
     },
   );
@@ -48,14 +48,14 @@ export function MultiRuleSetting() {
     <SettingCard
       title={
         <div className="flex items-center gap-1.5">
-          <span>Multi-rule selection</span>
+          <span>多规则选择</span>
           <TooltipExplanation
             side="top"
-            text="Turning this off stops the AI from intentionally choosing multiple custom rules for one email. Inbox Zero can still apply more than one rule in a few special cases."
+            text="关闭此项会阻止 AI 有意为一封邮件选择多条自定义规则。在少数特殊情况下，Inbox Zero 仍可能应用多条规则。"
           />
         </div>
       }
-      description="Allow the AI to select multiple rules for a single email when appropriate."
+      description="允许 AI 在合适时为单封邮件选择多条规则。"
       right={
         <LoadingContent
           loading={isLoading}

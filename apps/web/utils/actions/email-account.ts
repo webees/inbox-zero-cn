@@ -51,7 +51,7 @@ export const updateEmailAccountRoleAction = actionClient
           email: userEmail,
           role,
         }).catch((error) => {
-          logger.error("Loops: Error updating role", { error });
+          logger.error("Loops：更新角色时出错", { error });
         });
       });
     },
@@ -74,7 +74,7 @@ export const analyzePersonaAction = actionClient
     });
 
     if (!emailAccount) {
-      throw new SafeError("Email account not found");
+      throw new SafeError("未找到邮箱账号");
     }
 
     const emailProvider = await createEmailProvider({
@@ -88,7 +88,7 @@ export const analyzePersonaAction = actionClient
     });
 
     if (!messagesResponse.messages || messagesResponse.messages.length === 0) {
-      throw new SafeError("No emails found for persona analysis");
+      throw new SafeError("没有找到可用于用户画像分析的邮件");
     }
 
     const messages = messagesResponse.messages;
@@ -100,7 +100,7 @@ export const analyzePersonaAction = actionClient
     const personaAnalysis = await aiAnalyzePersona({ emails, emailAccount });
 
     if (!personaAnalysis) {
-      throw new SafeError("Failed to analyze persona");
+      throw new SafeError("分析用户画像失败");
     }
 
     await prisma.emailAccount.update({
@@ -116,7 +116,7 @@ export const updateReferralSignatureAction = actionClient
   .inputSchema(updateReferralSignatureBody)
   .action(
     async ({ ctx: { emailAccountId, logger }, parsedInput: { enabled } }) => {
-      logger.info("Updating referral signature", { enabled });
+      logger.info("正在更新推荐签名", { enabled });
 
       await prisma.emailAccount.update({
         where: { id: emailAccountId },
@@ -130,7 +130,7 @@ export const updateSentWithSignatureAction = actionClient
   .inputSchema(updateSentWithSignatureBody)
   .action(
     async ({ ctx: { emailAccountId, logger }, parsedInput: { enabled } }) => {
-      logger.info("Updating sent with signature", { enabled });
+      logger.info("正在更新已发送邮件的签名", { enabled });
 
       await prisma.emailAccount.update({
         where: { id: emailAccountId },
@@ -144,7 +144,7 @@ export const updateHiddenAiDraftLinksAction = actionClient
   .inputSchema(updateHiddenAiDraftLinksBody)
   .action(
     async ({ ctx: { emailAccountId, logger }, parsedInput: { enabled } }) => {
-      logger.info("Updating hidden AI draft links", { enabled });
+      logger.info("正在更新隐藏的 AI 草稿链接", { enabled });
 
       await prisma.emailAccount.update({
         where: { id: emailAccountId },
@@ -158,7 +158,7 @@ export const updateSentMessageOpenTrackingAction = actionClient
   .inputSchema(updateSentMessageOpenTrackingBody)
   .action(
     async ({ ctx: { emailAccountId, logger }, parsedInput: { enabled } }) => {
-      logger.info("Updating sent message open tracking", { enabled });
+      logger.info("正在更新已发送邮件的打开追踪", { enabled });
 
       await prisma.emailAccount.update({
         where: { id: emailAccountId },

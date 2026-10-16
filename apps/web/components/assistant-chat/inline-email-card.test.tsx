@@ -197,7 +197,7 @@ describe("InlineEmailCard", () => {
 
     expect(
       screen
-        .getByRole("menuitem", { name: "Open in email" })
+        .getByRole("menuitem", { name: "在邮件中打开" })
         .getAttribute("href"),
     ).toBe(
       getEmailUrlForMessage(
@@ -208,7 +208,7 @@ describe("InlineEmailCard", () => {
       ),
     );
 
-    fireEvent.click(screen.getByRole("menuitem", { name: "Archive" }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "归档" }));
 
     await waitFor(() => {
       expect(mockArchiveThreadAction).toHaveBeenCalledWith("account-1", {
@@ -238,7 +238,7 @@ describe("InlineEmailCard", () => {
 
     expect(
       screen
-        .getByRole("menuitem", { name: "Open in email" })
+        .getByRole("menuitem", { name: "在邮件中打开" })
         .getAttribute("href"),
     ).toBe(
       "https://outlook.office.com/mail/deeplink/read/outlook-message-1?ispopout=0",
@@ -260,9 +260,7 @@ describe("InlineEmailCard", () => {
 
     openMoreActions();
 
-    expect(
-      screen.queryByRole("menuitem", { name: "Open in email" }),
-    ).toBeNull();
+    expect(screen.queryByRole("menuitem", { name: "在邮件中打开" })).toBeNull();
   });
 
   it("renders the app email preview details from the menu", async () => {
@@ -301,7 +299,7 @@ describe("InlineEmailCard", () => {
     );
 
     openMoreActions();
-    fireEvent.click(await screen.findByText("Show details"));
+    fireEvent.click(await screen.findByText("显示详情"));
 
     expect(screen.getByText("From:")).toBeTruthy();
     expect(
@@ -319,7 +317,7 @@ describe("InlineEmailCard", () => {
 
     openMoreActions();
 
-    expect(screen.getByRole("menuitem", { name: "Archive" })).toBeTruthy();
+    expect(screen.getByRole("menuitem", { name: "归档" })).toBeTruthy();
   });
 
   it("renders the preview when message headers are missing", () => {
@@ -467,8 +465,8 @@ describe("InlineEmailList", () => {
         await vi.advanceTimersByTimeAsync(800);
       });
 
-      expect(screen.getByText("Completed emails")).toBeTruthy();
-      expect(screen.getByText("2 archived")).toBeTruthy();
+      expect(screen.getByText("已完成的邮件")).toBeTruthy();
+      expect(screen.getByText("2 封已归档")).toBeTruthy();
       expect(screen.queryByText("First")).toBeNull();
       expect(screen.queryByText("Second")).toBeNull();
     } finally {
@@ -503,8 +501,8 @@ describe("InlineEmailList", () => {
         await vi.advanceTimersByTimeAsync(800);
       });
 
-      expect(screen.getByText("Completed emails")).toBeTruthy();
-      expect(screen.getByText("2 marked read")).toBeTruthy();
+      expect(screen.getByText("已完成的邮件")).toBeTruthy();
+      expect(screen.getByText("2 封已标为已读")).toBeTruthy();
     } finally {
       vi.useRealTimers();
     }
@@ -512,7 +510,7 @@ describe("InlineEmailList", () => {
 });
 
 function openMoreActions() {
-  fireEvent.pointerDown(screen.getByRole("button", { name: "More actions" }), {
+  fireEvent.pointerDown(screen.getByRole("button", { name: "更多操作" }), {
     button: 0,
     ctrlKey: false,
   });

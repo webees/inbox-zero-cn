@@ -38,7 +38,7 @@ export async function recordEmailAccountProviderIssue({
   const issue = classifyEmailAccountProviderIssue({ error, provider });
   if (!issue) return;
 
-  logger.warn("Recording email account provider issue", {
+  logger.warn("正在记录邮箱账号服务商问题", {
     emailAccountId,
     provider,
     operation,
@@ -69,7 +69,7 @@ export async function recordEmailAccountProviderIssue({
       });
     }
   } catch (error) {
-    logger.warn("Failed to clean up provider account issue", {
+    logger.warn("清理服务商账号问题失败", {
       error,
       emailAccountId,
       provider,
@@ -140,7 +140,7 @@ async function claimProviderIssueCleanup({
     });
     if (claimed) return true;
 
-    logger.info("Skipping duplicate provider issue cleanup", {
+    logger.info("跳过重复的服务商问题清理", {
       emailAccountId,
       provider,
       operation,
@@ -148,7 +148,7 @@ async function claimProviderIssueCleanup({
     });
     return false;
   } catch (error) {
-    logger.warn("Failed to claim provider issue cleanup", {
+    logger.warn("声明服务商问题清理失败", {
       error,
       emailAccountId,
       provider,
@@ -171,7 +171,7 @@ async function releaseProviderIssueCleanupClaim({
   try {
     await releaseProviderIssueCleanupClaimInRedis({ emailAccountId, reason });
   } catch (error) {
-    logger.warn("Failed to release provider issue cleanup claim", {
+    logger.warn("释放服务商问题清理声明失败", {
       error,
       emailAccountId,
       reason,

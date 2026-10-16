@@ -28,8 +28,8 @@ export default function NewLanding() {
     return (
       <BasicLayout>
         <Hero
-          title={`${BRAND_NAME} for self-hosted teams`}
-          subtitle={`Deploy ${BRAND_NAME} on your own infrastructure and automate your inbox with full data control.`}
+          title={`${BRAND_NAME} 面向自托管团队`}
+          subtitle={`在你自己的基础设施上部署 ${BRAND_NAME}，在完全掌控数据的前提下自动化你的收件箱。`}
         />
       </BasicLayout>
     );
@@ -47,40 +47,39 @@ export default function NewLanding() {
           <WordReveal
             spaceBetween="w-2 md:w-3"
             words={[
-              "Meet",
-              "your",
+              "认识",
+              "你的",
+              "真正",
+              <em key="actually">管用的</em>,
               "AI",
-              "email",
-              "assistant",
-              "that",
-              <em key="actually">actually</em>,
-              "works",
+              "邮件",
+              "助手",
             ]}
           />
         }
-        subtitle={`${BRAND_NAME} organizes your inbox and calendar, drafts replies in your voice, and helps you reach inbox zero fast. Never miss an important email again.`}
+        subtitle={`${BRAND_NAME} 整理你的收件箱和日历、以你的口吻起草回复，并帮助你快速做到收件箱清零。再也不会错过重要邮件。`}
       >
         <HeroContent />
       </Hero>
       <OrganizedInbox
         title={
           <>
-            Automatically organized.
+            自动整理。
             <br />
-            Never miss an important email again.
+            再也不会错过重要邮件。
           </>
         }
-        subtitle="Drowning in emails? Don't waste energy trying to prioritize your emails. Our AI assistant will label everything automatically."
+        subtitle="被邮件淹没？别再费力给邮件排优先级了。我们的 AI 助手会自动给一切打标签。"
       />
       <PreWrittenDrafts
-        title="Pre-written drafts waiting in your inbox"
-        subtitle="When you check your inbox, every email needing a response will have a pre-drafted reply in your tone, ready for you to send."
+        title="预先写好的草稿就在你的收件箱里等着"
+        subtitle="当你查看收件箱时，每封需要回复的邮件都已有一封以你口吻预先起草好的回复，随时可以发送。"
       />
       <ManageFromAnywhere />
       <EmailClient />
       <StartedInMinutes
-        title="Get started in minutes"
-        subtitle="One-click setup. Start organizing and drafting replies in minutes."
+        title="几分钟即可上手"
+        subtitle="一键设置。几分钟内就开始整理邮件并起草回复。"
       />
       <BulkUnsubscribe />
       <EverythingElseSection />

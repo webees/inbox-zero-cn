@@ -20,7 +20,7 @@ export const translateThreadAction = actionClient
       parsedInput: { messageIds, targetLanguage },
     }) => {
       const emailAccount = await getEmailAccountWithAi({ emailAccountId });
-      if (!emailAccount) throw new SafeError("Email account not found");
+      if (!emailAccount) throw new SafeError("未找到邮箱账号");
 
       await assertHasAiAccess({
         userId: emailAccount.userId,
@@ -33,7 +33,7 @@ export const translateThreadAction = actionClient
         logger,
       });
       const messages = await emailProvider.getMessagesBatch(messageIds);
-      if (!messages.length) throw new SafeError("Email not found");
+      if (!messages.length) throw new SafeError("未找到邮件");
 
       const subject =
         getLatestNonDraftMessage({
@@ -44,8 +44,8 @@ export const translateThreadAction = actionClient
         await aiTranslateEmails({
           texts: [
             subject,
-            // Quoted history repeats earlier messages, which get their own
-            // translation, so only each message's new text is sent.
+            // 引用历史会重复较早的消息，而这些消息有自己的翻译，
+            // 因此只发送每条消息的新增文本。
             ...messages.map((message) =>
               emailToContent(message, { maxLength: 0, extractReply: true }),
             ),
@@ -63,8 +63,8 @@ export const translateThreadAction = actionClient
 
       return {
         subject: subjectTranslation.text,
-        // Messages the provider didn't return come back untranslated, so the
-        // client records them as handled instead of re-requesting them forever.
+        // 服务商未返回的消息会以未翻译状态返回，
+        // 因此客户端将它们记录为已处理，而不是永远重复请求。
         messages: messageIds.map((id) => ({
           id,
           ...(translationsById.get(id) ?? { text: "", sourceLanguage: null }),

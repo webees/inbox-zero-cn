@@ -18,21 +18,20 @@ export function AboutSetting() {
 
   return (
     <SettingCard
-      title="Personal instructions"
-      description="Tell the AI about yourself and how you'd like it to handle your emails."
+      title="个人说明"
+      description="向 AI 介绍你自己，以及你希望它如何处理你的邮件。"
       right={
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" size="sm">
-              Edit
+              编辑
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Personal instructions</DialogTitle>
+              <DialogTitle>个人说明</DialogTitle>
               <DialogDescription>
-                Tell the AI about yourself and how you'd like it to handle your
-                emails.
+                向 AI 介绍你自己，以及你希望它如何处理你的邮件。
               </DialogDescription>
             </DialogHeader>
 

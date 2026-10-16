@@ -30,7 +30,7 @@ class CalendarAuthProvider implements AuthenticationProvider {
 
 export function getCalendarOAuth2Url(state: string): string {
   if (!env.MICROSOFT_CLIENT_ID) {
-    throw new Error("Microsoft login not enabled - missing client ID");
+    throw new Error("Microsoft 登录未启用 - 缺少客户端 ID");
   }
 
   const params = new URLSearchParams({
@@ -59,7 +59,7 @@ export const getCalendarClientWithRefresh = async ({
 }): Promise<Client> => {
   if (!refreshToken) throw new SafeError("No refresh token");
 
-  // Check if token is still valid
+  // 检查令牌是否仍然有效
   if (
     expiresAt &&
     expiresAt > Date.now() + TOKEN_REFRESH_BUFFER_MS &&
@@ -72,10 +72,10 @@ export const getCalendarClientWithRefresh = async ({
     });
   }
 
-  // Token is expired or missing, need to refresh
+  // 令牌已过期或缺失，需要刷新
   try {
     if (!env.MICROSOFT_CLIENT_ID || !env.MICROSOFT_CLIENT_SECRET) {
-      throw new Error("Microsoft login not enabled - missing credentials");
+      throw new Error("Microsoft 登录未启用 - 缺少凭据");
     }
 
     const response = await requestMicrosoftToken({
@@ -91,15 +91,15 @@ export const getCalendarClientWithRefresh = async ({
     if (!response.ok) {
       throw new Error(
         [tokens.error, tokens.error_description].filter(Boolean).join(": ") ||
-          "Failed to refresh token",
+          "刷新令牌失败",
       );
     }
 
     if (!tokens.expires_in) {
-      throw new Error("Token response missing expires_in field");
+      throw new Error("令牌响应缺少 expires_in 字段");
     }
 
-    // Find the calendar connection to update
+    // 找到要更新的日历连接
     const calendarConnection = await prisma.calendarConnection.findFirst({
       where: {
         emailAccountId,
@@ -120,7 +120,7 @@ export const getCalendarClientWithRefresh = async ({
         logger,
       });
     } else {
-      logger.warn("No calendar connection found to update tokens", {
+      logger.warn("未找到要更新令牌的日历连接", {
         emailAccountId,
       });
     }
@@ -132,10 +132,10 @@ export const getCalendarClientWithRefresh = async ({
     });
   } catch (error) {
     if (isInvalidGrantError(error)) {
-      logger.warn("Microsoft calendar authorization expired");
+      logger.warn("Microsoft 日历授权已过期");
       try {
-        // Tokens are encrypted at rest, so compare the decrypted values before
-        // guarding the write against a concurrent refresh or reconnect.
+        // 令牌静态加密，因此在防范并发的刷新或重新连接
+        // 之前先比较解密后的值。
         const connections = await prisma.calendarConnection.findMany({
           where: { emailAccountId, provider: "microsoft", isConnected: true },
           select: {
@@ -162,12 +162,12 @@ export const getCalendarClientWithRefresh = async ({
           });
         }
       } catch (disconnectError) {
-        logger.error("Failed to mark Microsoft calendar disconnected", {
+        logger.error("将 Microsoft 日历标记为已断开连接失败", {
           error: disconnectError,
         });
       }
       throw new SafeError(
-        "Your Microsoft calendar authorization has expired. Please reconnect your calendar.",
+        "你的 Microsoft 日历授权已过期。请重新连接你的日历。",
       );
     }
 
@@ -194,7 +194,7 @@ export async function fetchMicrosoftCalendars(
 
     return response.value || [];
   } catch (error) {
-    logger.error("Error fetching Microsoft calendars", { error });
-    throw new SafeError("Failed to fetch calendars");
+    logger.error("获取 Microsoft 日历时出错", { error });
+    throw new SafeError("获取日历失败");
   }
 }

@@ -1,5 +1,7 @@
 import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { SystemType } from "@/generated/prisma/enums";
+import { getRuleLabel } from "@/utils/rule/consts";
 
 const {
   mockFindMany,
@@ -165,7 +167,11 @@ describe("GET /api/threads", () => {
 
   it("lists a newsletter split instead of rejecting the category", async () => {
     mockGetLabels.mockResolvedValue([
-      { id: "Label_Newsletter", name: "Newsletter", type: "user" },
+      {
+        id: "Label_Newsletter",
+        name: getRuleLabel(SystemType.NEWSLETTER),
+        type: "user",
+      },
     ]);
 
     const response = await GET(

@@ -46,7 +46,7 @@ describe("Playwright gallery artifact limits", () => {
     }
     const result = generateGallery();
     expect(result.status).not.toBe(0);
-    expect(result.stderr).toContain("maximum is 500");
+    expect(result.stderr).toContain("最大为 500");
   });
 
   it("rejects excessive total bytes before reading or decoding screenshots", () => {
@@ -57,7 +57,7 @@ describe("Playwright gallery artifact limits", () => {
     }
     const result = generateGallery();
     expect(result.status).not.toBe(0);
-    expect(result.stderr).toContain("maximum total screenshot size");
+    expect(result.stderr).toContain("超过截图总大小上限");
   });
 });
 

@@ -23,13 +23,13 @@ export function DraftKnowledgeSetting() {
 
   return (
     <SettingCard
-      title="Draft knowledge base"
-      description="Information the assistant uses when writing replies."
+      title="起草知识库"
+      description="助手在撰写回复时使用的信息。"
       right={
         isEnabled ? (
           kb
         ) : (
-          <Tooltip content="Enable draft replies to edit the knowledge base">
+          <Tooltip content="启用起草回复以编辑知识库">
             <span>{kb}</span>
           </Tooltip>
         )
@@ -43,15 +43,13 @@ function KnowledgeDialog({ enabled }: { enabled: boolean }) {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" disabled={!enabled}>
-          Manage
+          管理
         </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[80vh] max-w-4xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Draft knowledge base</DialogTitle>
-          <DialogDescription>
-            This is used to help the assistant draft replies.
-          </DialogDescription>
+          <DialogTitle>起草知识库</DialogTitle>
+          <DialogDescription>此内容用于帮助助手起草回复。</DialogDescription>
         </DialogHeader>
         <KnowledgeBase />
       </DialogContent>

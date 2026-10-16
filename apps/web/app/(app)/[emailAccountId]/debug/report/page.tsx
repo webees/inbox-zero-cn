@@ -25,8 +25,7 @@ export default function EmailReportPage() {
   const params = useParams();
   const emailAccountId = params.emailAccountId;
 
-  if (typeof emailAccountId !== "string")
-    throw new Error("Email account ID is required");
+  if (typeof emailAccountId !== "string") throw new Error("缺少邮箱账号 ID");
 
   const [report, setReport] = useState<EmailReportData | null>(null);
 
@@ -36,15 +35,15 @@ export default function EmailReportPage() {
       onSuccess: () => {
         if (result?.data) {
           setReport(result.data);
-          toastSuccess({ description: "Report generated successfully" });
+          toastSuccess({ description: "报告生成成功" });
         } else {
-          toastError({ description: "Failed to generate report" });
+          toastError({ description: "生成报告失败" });
         }
       },
       onError: (result) => {
         toastError({
-          title: "Failed to generate report",
-          description: result.error.serverError || "Unknown error",
+          title: "生成报告失败",
+          description: result.error.serverError || "未知错误",
         });
       },
     },
@@ -56,12 +55,12 @@ export default function EmailReportPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Mail className="h-5 w-5" />
-            Email Report
+            邮件报告
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <Button onClick={() => executeAsync({})} loading={isExecuting}>
-            Generate Report
+            生成报告
           </Button>
 
           <LoadingContent
@@ -71,8 +70,7 @@ export default function EmailReportPage() {
             }
           >
             <p className="text-gray-600">
-              Comprehensive analysis of your email patterns and personalized
-              recommendations.
+              全面分析你的邮件模式，并提供个性化建议。
             </p>
 
             {/* Report Display */}
@@ -83,7 +81,7 @@ export default function EmailReportPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Target className="h-5 w-5" />
-                      Executive Summary
+                      执行摘要
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">

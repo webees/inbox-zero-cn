@@ -138,7 +138,7 @@ export async function processHistoryForUser({
           messageId: resourceData.id,
         });
         if (!isFree) {
-          logger.info("Skipping. Message already being processed.");
+          logger.info("跳过。该邮件已在处理中。");
           return NextResponse.json({ ok: true });
         }
 
@@ -167,7 +167,7 @@ export async function processHistoryForUser({
                 } catch (error) {
                   await logErrorWithDedupe({
                     logger,
-                    message: "Error learning from Outlook label removal",
+                    message: "从 Outlook 标签移除中学习时出错",
                     error,
                     context: {
                       messageId: message.id,
@@ -184,10 +184,10 @@ export async function processHistoryForUser({
               extra: { operation: "learn-outlook-label-removal" },
             }),
           );
-          logger.info("Skipping rules. Rule already exists.");
+          logger.info("跳过规则。规则已存在。");
         }
 
-        // Pass pre-fetched message to avoid refetching
+        // 传入预取的邮件以避免重复获取
         await processHistoryItem(
           { messageId: resourceData.id, message },
           {
@@ -209,7 +209,7 @@ export async function processHistoryForUser({
     );
   } catch (error) {
     if (isInvalidGrantError(error)) {
-      logger.warn("Invalid grant");
+      logger.warn("无效的授权");
       return NextResponse.json({ ok: true });
     }
 
@@ -225,7 +225,7 @@ export async function processHistoryForUser({
     });
     await logErrorWithDedupe({
       logger,
-      message: "Error processing webhook",
+      message: "处理 webhook 时出错",
       error,
       context: {
         resourceData,
@@ -236,7 +236,7 @@ export async function processHistoryForUser({
         operation: "process-history-for-user",
       },
     });
-    // returning 200 here, as otherwise Microsoft will keep retrying
+    // 此处返回 200，否则 Microsoft 会不断重试
     return NextResponse.json({ error: true });
   }
 }

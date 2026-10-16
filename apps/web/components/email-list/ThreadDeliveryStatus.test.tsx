@@ -68,14 +68,12 @@ describe("offline scheduled delivery status", () => {
       ],
     });
     renderStatus(fetcher);
-    await screen.findByText(/Scheduled for/);
+    await screen.findByText(/计划在/);
     act(() => setOnline(false));
-    expect(screen.getByText(/Scheduled for/)).toBeTruthy();
+    expect(screen.getByText(/计划在/)).toBeTruthy();
+    expect(screen.getByText("离线。显示最近一次已知状态。")).toBeTruthy();
     expect(
-      screen.getByText("Offline. Showing the last known status."),
-    ).toBeTruthy();
-    expect(
-      (screen.getByRole("button", { name: "Cancel send" }) as HTMLButtonElement)
+      (screen.getByRole("button", { name: "取消发送" }) as HTMLButtonElement)
         .disabled,
     ).toBe(true);
     expect(screen.queryByRole("alert")).toBeNull();
@@ -104,27 +102,23 @@ describe("offline scheduled delivery status", () => {
     };
     const fetcher = vi.fn().mockResolvedValueOnce(scheduled);
     renderStatus(fetcher);
-    await screen.findByText(/Scheduled for/);
+    await screen.findByText(/计划在/);
     // Let SWR forget the initial request so reconnecting revalidates.
     await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
     fetcher.mockRejectedValue(new TypeError("Fetch failed"));
     act(() => setOnline(false));
     act(() => setOnline(true));
     expect(
-      await screen.findByText(
-        "Could not refresh. Showing the last known status.",
-      ),
+      await screen.findByText("无法刷新。显示最近一次已知状态。"),
     ).toBeTruthy();
-    expect(screen.getByText(/Scheduled for/)).toBeTruthy();
+    expect(screen.getByText(/计划在/)).toBeTruthy();
     expect(screen.queryByRole("alert")).toBeNull();
     fetcher.mockResolvedValue(scheduled);
-    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+    fireEvent.click(screen.getByRole("button", { name: "重试" }));
     await waitFor(() =>
-      expect(
-        screen.queryByText("Could not refresh. Showing the last known status."),
-      ).toBeNull(),
+      expect(screen.queryByText("无法刷新。显示最近一次已知状态。")).toBeNull(),
     );
-    expect(screen.getByText(/Scheduled for/)).toBeTruthy();
+    expect(screen.getByText(/计划在/)).toBeTruthy();
   });
 
   it("keeps failed delivery actions visible as errors", async () => {
@@ -143,7 +137,7 @@ describe("offline scheduled delivery status", () => {
         ],
       }),
     );
-    fireEvent.click(await screen.findByRole("button", { name: "Cancel send" }));
+    fireEvent.click(await screen.findByRole("button", { name: "取消发送" }));
     expect(await screen.findByRole("alert")).toHaveProperty(
       "textContent",
       "Could not cancel send.",
@@ -200,7 +194,7 @@ describe("queued engine reply restore", () => {
       </SWRConfig>,
     );
 
-    fireEvent.click(await screen.findByRole("button", { name: "Edit reply" }));
+    fireEvent.click(await screen.findByRole("button", { name: "编辑回复" }));
 
     await waitFor(() =>
       expect(restoreDraft).toHaveBeenCalledWith({
@@ -254,7 +248,7 @@ describe("queued engine reply restore", () => {
       </SWRConfig>,
     );
 
-    fireEvent.click(await screen.findByRole("button", { name: "Edit reply" }));
+    fireEvent.click(await screen.findByRole("button", { name: "编辑回复" }));
 
     await waitFor(() =>
       expect(onEditReply).toHaveBeenCalledWith("msg_playwright_reply", "reply"),
@@ -263,7 +257,7 @@ describe("queued engine reply restore", () => {
       expect.objectContaining({ operationId: "send-1" }),
     );
     expect(client.cancelOperation).not.toHaveBeenCalled();
-    expect(screen.queryByText("Reply could not be sent")).toBeNull();
+    expect(screen.queryByText("回复无法发送")).toBeNull();
   });
 });
 

@@ -64,12 +64,12 @@ const senderStatsCursorSchema = z.object({
 type SenderStatsCursor = z.infer<typeof senderStatsCursorSchema>;
 
 /**
- * Aggregates per-sender email stats from the EmailMessage table.
- * Powers the bulk unsubscribe page and the inbox health email.
+ * 从 EmailMessage 表聚合每个发件人的邮件统计。
+ * 为批量退订页面和收件箱健康度邮件提供数据。
  *
- * Omit `limit` to return every sender. Pass `limit` (and `cursor` from
- * `nextCursor`) to page. The extra tie-break on sender address keeps pages
- * stable when sort keys match.
+ * 省略 `limit` 可返回每个发件人。传入 `limit`（以及来自 `nextCursor`
+ * 的 `cursor`）可进行分页。对发件人地址的额外排序键可在排序键相同时
+ * 保持分页稳定。
  */
 export async function getSenderEmailStats(
   options: SenderEmailStatsOptions,
@@ -117,7 +117,7 @@ export async function getSenderEmailStats(
     Prisma.sql`"emailAccountId" = ${options.emailAccountId}`,
     Prisma.sql`sent = false`,
     Prisma.sql`draft = false`,
-    // Sent mail can lose the SENT label (e.g. moved out of Outlook's Sent Items)
+    // 已发送邮件可能会丢失 SENT 标签（例如从 Outlook 的已发送邮件移出）
     Prisma.sql`LOWER("from") <> (SELECT LOWER(email) FROM "EmailAccount" WHERE id = ${options.emailAccountId})`,
   );
 
@@ -135,7 +135,7 @@ export async function getSenderEmailStats(
 
   const orderByClause = getOrderByClause(orderBy, orderDirection);
   const cursorClause = cursor ? senderStatsCursorClause(cursor) : Prisma.empty;
-  // Fetch one extra row to decide whether another page exists.
+  // 多获取一行以判断是否还存在下一页。
   const fetchLimit = pageSize ? pageSize + 1 : null;
   const limitClause =
     fetchLimit === null ? Prisma.empty : Prisma.raw(`LIMIT ${fetchLimit}`);
@@ -192,7 +192,7 @@ function toSenderEmailStats(result: SenderEmailStatsRow): SenderEmailStats {
 function positiveInteger(limit?: number | null) {
   if (limit == null) return null;
   if (!Number.isInteger(limit) || limit < 1) {
-    throw new SafeError("Limit must be a positive integer", 400);
+    throw new SafeError("limit 必须是正整数", 400);
   }
 
   return limit;
@@ -266,15 +266,15 @@ function decodeSenderStatsCursor({
       JSON.parse(Buffer.from(cursor, "base64url").toString("utf8")),
     );
   } catch {
-    throw new SafeError("Invalid cursor", 400);
+    throw new SafeError("无效的 cursor", 400);
   }
 
   if (parsed.orderBy !== orderBy || parsed.orderDirection !== orderDirection) {
-    throw new SafeError("Cursor does not match the requested sort", 400);
+    throw new SafeError("cursor 与请求的排序不匹配", 400);
   }
 
   if (!cursorHasSortKey(parsed)) {
-    throw new SafeError("Invalid cursor", 400);
+    throw new SafeError("无效的 cursor", 400);
   }
 
   return parsed;

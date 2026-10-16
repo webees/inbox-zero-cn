@@ -35,7 +35,7 @@ export async function snoozeThreads({
         });
         return true;
       } catch (error) {
-        logger.error("Failed to snooze thread", { error, threadId });
+        logger.error("暂缓会话失败", { error, threadId });
         return false;
       }
     },

@@ -39,30 +39,30 @@ export default function InboxHealthEmail(props: InboxHealthEmailProps) {
     <StatsEmailLayout
       baseUrl={baseUrl}
       unsubscribeToken={unsubscribeToken}
-      preview={`We found ${senderCountText} you rarely read. Clean them up in one click.`}
-      eyebrow="Inbox Health"
-      title={`We found ${senderCountText} you rarely read`}
+      preview={`我们发现 ${senderCountText} 是你很少阅读的。一键清理它们。`}
+      eyebrow="收件箱健康度"
+      title={`我们发现 ${senderCountText} 是你很少阅读的`}
       subtitle={
         <>
-          Unsubscribing from them could save you around{" "}
+          退订它们每年大约可以为你节省{" "}
           <span className="font-semibold text-[#242424]">
-            {yearlyEmailsAvoided.toLocaleString("en-US")} emails
-          </span>{" "}
-          a year.
+            {yearlyEmailsAvoided.toLocaleString("en-US")} 封邮件
+          </span>
+          。
         </>
       }
     >
       <StatsEmailCard
-        title="Rarely read senders"
-        description="Based on the last 3 months of your inbox."
+        title="很少阅读的发件人"
+        description="基于你收件箱最近 3 个月的数据。"
         footnote={
           hiddenCount > 0
-            ? `And ${hiddenCount} more ${hiddenCount === 1 ? "sender" : "senders"}.`
+            ? `还有 ${hiddenCount} 位${hiddenCount === 1 ? "发件人" : "发件人"}。`
             : undefined
         }
         cta={{
           href: selectSuggestedUrl,
-          label: "Unsubscribe in one click",
+          label: "一键退订",
           primary: true,
         }}
       >
@@ -89,31 +89,31 @@ InboxHealthEmail.PreviewProps = {
   yearlyEmailsAvoided: 1248,
   senders: [
     {
-      name: "Daily Deals",
+      name: "每日优惠",
       email: "deals@shopping.example.com",
       count: 92,
       readPercentage: 2,
     },
     {
-      name: "Tech Newsletter",
+      name: "科技通讯",
       email: "newsletter@technews.example.com",
       count: 64,
       readPercentage: 8,
     },
     {
-      name: "Promo Updates",
+      name: "促销动态",
       email: "promo@retailer.example.com",
       count: 48,
       readPercentage: 0,
     },
     {
-      name: "Webinar Invites",
+      name: "网络研讨会邀请",
       email: "events@saas.example.com",
       count: 35,
       readPercentage: 11,
     },
     {
-      name: "Job Alerts",
+      name: "职位提醒",
       email: "alerts@jobs.example.com",
       count: 26,
       readPercentage: 15,
@@ -121,7 +121,7 @@ InboxHealthEmail.PreviewProps = {
   ],
 } satisfies InboxHealthEmailProps;
 
-// The whole row is a link so mail clients don't auto-link the bare address.
+// 整行都是一个链接，这样邮件客户端不会自动链接裸露的地址。
 function SenderRow({
   sender,
   href,
@@ -155,10 +155,10 @@ function SenderRow({
         className="w-[110px] whitespace-nowrap py-3 align-top"
       >
         <Text className="m-0 text-[14px] font-medium leading-5 text-[#242424]">
-          {sender.count.toLocaleString("en-US")} emails
+          {sender.count.toLocaleString("en-US")} 封邮件
         </Text>
         <Text className="m-0 pt-0.5 text-[13px] leading-5 text-[#848484]">
-          {sender.readPercentage}% read
+          {sender.readPercentage}% 已读
         </Text>
       </Column>
     </Row>
@@ -166,5 +166,5 @@ function SenderRow({
 }
 
 export function getSenderCountText(count: number) {
-  return `${count} ${count === 1 ? "sender" : "senders"}`;
+  return `${count} 位发件人`;
 }

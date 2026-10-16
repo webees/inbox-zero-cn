@@ -148,9 +148,7 @@ describe("deleteRuleAction", () => {
       } as never,
     );
 
-    expect(result?.serverError).toBe(
-      "Default rules cannot be deleted. Disable them instead.",
-    );
+    expect(result?.serverError).toBe("默认规则无法删除。请改为禁用它们。");
     expect(prisma.rule.delete).not.toHaveBeenCalled();
     expect(prisma.group.deleteMany).not.toHaveBeenCalled();
   });

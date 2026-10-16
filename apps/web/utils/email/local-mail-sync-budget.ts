@@ -6,8 +6,8 @@ import {
   isEmailProviderRateLimitRedisConfigured,
 } from "@/utils/redis/email-provider-rate-limit";
 
-// Conservative local-mail envelopes reserve most provider capacity for existing
-// automation and interactive operations. They are not total application quotas.
+// 保守的本地邮件配额为现有自动化和交互式操作保留大部分
+// 服务商容量。它们不是应用程序的总配额。
 // https://developers.google.com/workspace/gmail/api/reference/quota
 // https://learn.microsoft.com/en-us/graph/throttling-limits#outlook-service-limits
 const policies = {
@@ -37,8 +37,8 @@ export class LocalMailSyncPausedError extends Error {
   }
 }
 
-// Redis time makes admission independent of application-server clock skew.
-// All buckets are checked before any debit, so a rejected request costs nothing.
+// Redis 时间使准入与应用服务器时钟偏差无关。
+// 所有桶在任何扣减之前都会被检查，因此被拒绝的请求不产生任何代价。
 const admitScript = `
 local time = redis.call('TIME')
 local now = tonumber(time[1]) * 1000 + math.floor(tonumber(time[2]) / 1000)
@@ -109,7 +109,7 @@ return 1
 `;
 
 /** Each callback must honor its AbortSignal and perform only the reserved work.
- * No automatic retries: callers persist progress and schedule the next attempt.
+ * 不自动重试：调用方持久化进度并安排下一次尝试。
  */
 export async function withLocalMailSyncBudget<T>(
   input: Input,
@@ -122,7 +122,7 @@ export async function withLocalMailSyncBudget<T>(
     input.cost < 1 ||
     input.cost > policy.maximumCost
   )
-    throw new Error("Invalid local mail sync reservation");
+    throw new Error("无效的本地邮件同步预留");
   const prefix = `local-mail-budget:${input.provider}`;
   const account = `${prefix}:${input.emailAccountId}`;
   const keys = [
@@ -222,7 +222,7 @@ export async function withLocalMailSyncBudget<T>(
   } finally {
     clearTimeout(timeout);
     clearInterval(renewal);
-    // Failed release leaves a short-lived lease; it cannot admit excess work.
+    // 释放失败会留下一段短期租约；它不会放行超额工作。
     await redis.eval(releaseScript, activeKeys, [owner]).catch(() => undefined);
   }
 }

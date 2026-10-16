@@ -9,7 +9,9 @@ import {
   ActionType,
   DraftEmailStatus,
   GroupItemType,
+  SystemType,
 } from "@/generated/prisma/enums";
+import { getRuleLabel } from "@/utils/rule/consts";
 
 const {
   envState,
@@ -2103,7 +2105,7 @@ describe("aiProcessAssistantChat", () => {
     } as any);
 
     expect(result).toEqual({
-      error: `Invalid sendEmail input: unsupported field "${field}"`,
+      error: `sendEmail 输入无效：不支持的字段 "${field}"`,
     });
     expect(mockCreateEmailProvider).toHaveBeenCalledTimes(providerCallsBefore);
   });
@@ -2122,7 +2124,7 @@ describe("aiProcessAssistantChat", () => {
     });
 
     expect(result).toEqual({
-      error: "Invalid sendEmail input: to must include valid email address(es)",
+      error: "sendEmail 输入无效：to must include valid email address(es)",
     });
     expect(mockCreateEmailProvider).toHaveBeenCalledTimes(providerCallsBefore);
   });
@@ -2226,7 +2228,7 @@ describe("aiProcessAssistantChat", () => {
     } as any);
 
     expect(result).toEqual({
-      error: 'Invalid forwardEmail input: unsupported field "from"',
+      error: 'forwardEmail 输入无效：不支持的字段 "from"',
     });
     expect(mockCreateEmailProvider).toHaveBeenCalledTimes(providerCallsBefore);
     expect(getMessage).not.toHaveBeenCalled();
@@ -2750,7 +2752,7 @@ describe("aiProcessAssistantChat", () => {
         {
           id: "message-2",
           threadId: "thread-2",
-          labelIds: ["inbox", "to reply", "unread"],
+          labelIds: ["inbox", getRuleLabel(SystemType.TO_REPLY), "unread"],
           snippet: "Needs reply",
           historyId: "hist-2",
           inline: [],

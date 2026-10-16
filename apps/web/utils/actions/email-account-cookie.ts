@@ -11,8 +11,8 @@ import { clearLastEmailAccountCookie } from "@/utils/cookies.server";
 import { actionClientUser } from "@/utils/actions/safe-action";
 
 /**
- * Sets a cookie with the last selected email account ID.
- * This is used when emailAccountId is not provided in the URL.
+ * 设置一个记录最近所选邮箱账号 ID 的 cookie。
+ * 当 URL 中未提供 emailAccountId 时使用。
  */
 export const setLastEmailAccountAction = actionClientUser
   .metadata({ name: "setLastEmailAccount" })
@@ -34,7 +34,7 @@ export const setLastEmailAccountAction = actionClientUser
 
     cookieStore.set(LAST_EMAIL_ACCOUNT_COOKIE, value, {
       path: "/",
-      maxAge: 60 * 60 * 24 * 365, // 1 year
+      maxAge: 60 * 60 * 24 * 365, // 1 年
       sameSite: "lax",
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -42,8 +42,8 @@ export const setLastEmailAccountAction = actionClientUser
   });
 
 /**
- * Clears the last email account cookie.
- * Called on logout to prevent stale account IDs when switching users.
+ * 清除最近邮箱账号 cookie。
+ * 在退出登录时调用，避免切换用户时残留旧账号 ID。
  */
 export const clearLastEmailAccountAction = actionClientUser
   .metadata({ name: "clearLastEmailAccount" })

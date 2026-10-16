@@ -361,7 +361,7 @@ function validatePolicy(policy: BookingPolicy) {
   ];
   for (const field of positiveFields) {
     if (!Number.isInteger(policy[field]) || policy[field] <= 0) {
-      throw new Error(`${field} must be a positive integer`);
+      throw new Error(`${field} 必须为正整数`);
     }
   }
 
@@ -372,14 +372,14 @@ function validatePolicy(policy: BookingPolicy) {
   ];
   for (const field of nonNegativeFields) {
     if (!Number.isInteger(policy[field]) || policy[field] < 0) {
-      throw new Error(`${field} must be a non-negative integer`);
+      throw new Error(`${field} 必须为非负整数`);
     }
   }
 }
 
 function validateRule(rule: AvailabilityRule) {
   if (!Number.isInteger(rule.weekday) || rule.weekday < 0 || rule.weekday > 6) {
-    throw new Error("weekday must be an integer from 0 to 6");
+    throw new Error("weekday 必须是 0 到 6 之间的整数");
   }
   if (
     !Number.isInteger(rule.startMinutes) ||
@@ -388,13 +388,13 @@ function validateRule(rule: AvailabilityRule) {
     rule.endMinutes > 24 * 60 ||
     rule.endMinutes <= rule.startMinutes
   ) {
-    throw new Error("availability rules must have valid start and end minutes");
+    throw new Error("可用性规则的开始和结束分钟必须有效");
   }
 }
 
 function assertValidTimeZone(timezone: string) {
   if (!isValidTimeZone(timezone)) {
-    throw new Error(`Invalid timezone: ${timezone}`);
+    throw new Error(`无效的时区：${timezone}`);
   }
 }
 
@@ -416,7 +416,7 @@ function parseDate(value: DateInput, fieldName: string): Date {
   const date =
     value instanceof Date ? new Date(value.getTime()) : new Date(value);
   if (Number.isNaN(date.getTime())) {
-    throw new Error(`${fieldName} must be a valid date`);
+    throw new Error(`${fieldName} 必须是有效日期`);
   }
   return date;
 }

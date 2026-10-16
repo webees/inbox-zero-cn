@@ -10,7 +10,7 @@ import {
   updateEmailMessagesForSender,
 } from "@/utils/email/bulk-action-tracking";
 
-const GRAPH_JSON_BATCH_LIMIT = 20; // Microsoft Graph JSON batching limit
+const GRAPH_JSON_BATCH_LIMIT = 20; // Microsoft Graph JSON 批处理上限
 const GRAPH_MOVE_BATCH_LIMIT = 4;
 const THREAD_PARTICIPANT_SELECT_FIELDS =
   "id,conversationId,from,toRecipients,receivedDateTime";
@@ -92,7 +92,7 @@ async function batch<TRequestBody = unknown, TResponseBody = unknown>({
       });
       if (shouldStop?.(responses)) break;
     } catch (error) {
-      logger.error("Graph batch request failed", {
+      logger.error("Graph 批量请求失败", {
         ...context,
         chunkSize: chunk.length,
         error,
@@ -119,7 +119,7 @@ export async function getThreadParticipantMessagesInBatches({
     requestIdToThreadId.set(requestId, threadId);
 
     const searchParams = new URLSearchParams({
-      // Unsent drafts would otherwise appear as senders in thread names.
+      // 否则未发送的草稿会作为发件人出现在会话名称中。
       $filter: `conversationId eq '${escapeODataString(threadId)}' and isDraft eq false`,
       $select: THREAD_PARTICIPANT_SELECT_FIELDS,
       $top: "100",
@@ -145,7 +145,7 @@ export async function getThreadParticipantMessagesInBatches({
       logger,
       context: { threadCount: threadIds.length },
       onFailure: ({ request, response }) => {
-        logger.warn("Failed to fetch Outlook thread participants", {
+        logger.warn("获取 Outlook 会话参与者失败", {
           threadId: request ? requestIdToThreadId.get(request.id) : undefined,
           status: response.status,
         });
@@ -248,9 +248,9 @@ async function moveMessagesInBatches({
         error: errorMessage,
       };
       if (response.status === 429) {
-        logger.warn("Failed to move message via batch", context);
+        logger.warn("通过批量操作移动邮件失败", context);
       } else {
-        logger.error("Failed to move message via batch", context);
+        logger.error("通过批量操作移动邮件失败", context);
       }
     },
     shouldStop: (responses) =>
@@ -266,7 +266,7 @@ async function moveMessagesInBatches({
   const hasErrors = responses.some((response) => response.status >= 400);
 
   if (hasErrors && stopOnError) {
-    logger.error("Graph batch responses contain errors", {
+    logger.error("Graph 批量响应包含错误", {
       action,
       destinationId,
       errorCount: responses.filter((response) => response.status >= 400).length,
@@ -353,8 +353,8 @@ export async function moveMessagesForSenders({
 }): Promise<number> {
   if (senders.length === 0) return 0;
 
-  // Resolve the actual inbox folder ID for archive filtering
-  // parentFolderId on messages is the real folder ID (a GUID), not the well-known name
+  // 解析用于归档过滤的实际收件箱文件夹 ID
+  // 邮件上的 parentFolderId 是真实文件夹 ID（GUID），而不是已知名称
   let inboxFolderId: string | undefined;
   if (action === "archive") {
     const folderIds = await getFolderIds(client, logger, {
@@ -363,10 +363,10 @@ export async function moveMessagesForSenders({
     inboxFolderId = folderIds.inbox;
     if (!inboxFolderId) {
       logger.error(
-        "Could not resolve inbox folder ID — aborting bulk archive to avoid archiving from all folders",
+        "无法解析收件箱文件夹 ID——中止批量归档，以免从所有文件夹归档",
       );
       if (!continueOnError) {
-        throw new Error("Could not resolve inbox folder ID for bulk archive");
+        throw new Error("无法为批量归档解析收件箱文件夹 ID");
       }
       return 0;
     }
@@ -384,18 +384,18 @@ export async function moveMessagesForSenders({
       ? `${fromFilter} and parentFolderId eq '${escapeODataString(inboxFolderId)}'`
       : fromFilter;
 
-    // Use @odata.nextLink directly for pagination instead of extracting $skiptoken
-    // This is more reliable as Microsoft Graph may use different token formats
+    // 分页时直接使用 @odata.nextLink，而不是提取 $skiptoken
+    // 这更可靠，因为 Microsoft Graph 可能使用不同的令牌格式
     // See: https://learn.microsoft.com/en-us/graph/paging
     let nextLink: string | undefined;
 
-    // Helper to fetch a page of messages
+    // 获取一页邮件的辅助函数
     const fetchPage = async (url?: string) => {
       if (url) {
-        // Use the full @odata.nextLink URL for subsequent pages
+        // 对后续页面使用完整的 @odata.nextLink URL
         return client.getClient().api(url).get();
       }
-      // First page: use fluent API
+      // 第一页：使用流式 API
       return client
         .getClient()
         .api("/me/messages")
@@ -405,7 +405,7 @@ export async function moveMessagesForSenders({
         .get();
     };
 
-    // Process all pages
+    // 处理所有页面
     do {
       try {
         const response: {
@@ -475,12 +475,10 @@ export async function moveMessagesForSenders({
             );
 
             if (hasErrors && !continueOnError) {
-              throw new Error(
-                "Graph batch returned one or more error responses.",
-              );
+              throw new Error("Graph 批处理返回了一个或多个错误响应。");
             }
           } catch (error) {
-            logger.error("Failed to move or track messages", {
+            logger.error("移动或跟踪邮件失败", {
               action,
               sender,
               ownerEmail,
@@ -495,12 +493,12 @@ export async function moveMessagesForSenders({
         }
 
         nextLink = response["@odata.nextLink"];
-        logger.info("Pagination status", {
+        logger.info("分页状态", {
           processedCount: processedMessageIds.size,
           hasNextLink: !!nextLink,
         });
       } catch (error) {
-        logger.error("Failed to fetch messages from sender", {
+        logger.error("获取来自发件人的邮件失败", {
           sender,
           action,
           error,
@@ -517,7 +515,7 @@ export async function moveMessagesForSenders({
 function toGraphBatchUrl(nextLink: string): string {
   const resolvedNextLink = resolveMicrosoftGraphNextLink(nextLink);
   if (!resolvedNextLink) {
-    throw new Error("Invalid Outlook participant page token");
+    throw new Error("无效的 Outlook 参与者页面令牌");
   }
 
   const url = new URL(resolvedNextLink);

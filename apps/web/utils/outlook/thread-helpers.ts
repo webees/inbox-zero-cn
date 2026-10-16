@@ -60,8 +60,8 @@ export async function runThreadMessageMutation({
 }
 
 /**
- * Fetches messages by conversationId and applies an operation to each.
- * Used as a fallback when the OData $filter approach fails.
+ * 按 conversationId 获取邮件并对每封应用操作。
+ * 在 OData $filter 方式失败时用作回退。
  */
 export async function processThreadMessagesFallback({
   client,
@@ -95,7 +95,7 @@ export async function processThreadMessagesFallback({
       threadId,
       logger,
       messageHandler,
-      failureMessage: "Failed to process message in thread fallback",
+      failureMessage: "会话回退中处理邮件失败",
       continueOnError: true,
       throwIfAllFail,
     });

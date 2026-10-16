@@ -22,14 +22,14 @@ export const POST = withEmailProvider(async (request) => {
 
     return NextResponse.json({
       status: "success",
-      message: "Successfully unwatched emails for this account.",
+      message: "已成功取消监听此账号的邮件。",
     });
   } catch (error) {
-    logger.error("Exception while unwatching emails for account", { error });
+    logger.error("取消监听邮箱时发生异常", { error });
     return NextResponse.json(
       {
         status: "error",
-        message: "An unexpected error occurred while unwatching this account.",
+        message: "取消监听此账号时发生意外错误。",
         errorDetails: error instanceof Error ? error.message : String(error),
       },
       { status: 500 },

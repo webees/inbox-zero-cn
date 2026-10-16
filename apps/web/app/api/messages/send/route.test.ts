@@ -313,7 +313,7 @@ describe("POST /api/messages/send", () => {
       postMultipart(input, [
         new File(["hello"], "notes.txt", { type: "image/png" }),
       ]),
-    ).rejects.toThrow("Inline images require a valid Content-ID.");
+    ).rejects.toThrow("内联图片需要有效的 Content-ID。");
     expect(executeDurableEmailSend).not.toHaveBeenCalled();
   });
 
@@ -330,7 +330,7 @@ describe("POST /api/messages/send", () => {
       postMultipart(input, [
         new File(["hello"], "notes.txt", { type: "image/png" }),
       ]),
-    ).rejects.toThrow("Inline image content does not match its file type.");
+    ).rejects.toThrow("内联图片内容与其文件类型不匹配。");
     expect(executeDurableEmailSend).not.toHaveBeenCalled();
   });
 
@@ -364,7 +364,7 @@ describe("POST /api/messages/send", () => {
     ]);
 
     await expect(postMultipart(input, [])).rejects.toThrow(
-      "Attachments must total 15 MB or less.",
+      "附件总大小必须不超过 15 MB。",
     );
     expect(executeDurableEmailSend).not.toHaveBeenCalled();
   });
@@ -410,7 +410,7 @@ describe("POST /api/messages/send", () => {
       postMultipart(input, [
         new File([new Uint8Array(size)], "notes.txt", { type: "text/plain" }),
       ]),
-    ).rejects.toThrow("Attachments must be 10 MB or smaller.");
+    ).rejects.toThrow("附件必须不超过 10 MB。");
     expect(executeDurableEmailSend).not.toHaveBeenCalled();
   });
 

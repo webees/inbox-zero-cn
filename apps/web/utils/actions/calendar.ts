@@ -23,7 +23,7 @@ export const disconnectCalendarAction = actionClient
       });
 
       if (!connection) {
-        throw new SafeError("Calendar connection not found");
+        throw new SafeError("未找到日历连接");
       }
 
       await prisma.calendarConnection.delete({
@@ -53,7 +53,7 @@ export const toggleCalendarAction = actionClient
       });
 
       if (updatedCalendar.count === 0) {
-        throw new SafeError("Calendar not found");
+        throw new SafeError("未找到日历");
       }
 
       return { success: true };

@@ -33,7 +33,7 @@ export function shouldShowEngineDeliveryStatus({
   online: boolean;
   status: string;
 }) {
-  // A verifying send is with the server, which delivers it without this device.
+  // 正在核验的发送已交由服务器，由服务器投递，无需此设备。
   if (!online) return status !== "verifying";
   return NEEDS_DELIVERY_ATTENTION.has(status);
 }
@@ -41,19 +41,19 @@ export function shouldShowEngineDeliveryStatus({
 export function engineDeliveryLabel(status: string, online: boolean) {
   switch (status) {
     case "succeeded":
-      return "Reply sent";
+      return "回复已发送";
     case "executing":
     case "verifying":
       return "Sending…";
     case "uncertain":
-      return "Couldn't confirm delivery";
+      return "无法确认投递";
     case "failed":
     case "needs_attention":
-      return "Reply could not be sent";
+      return "回复无法发送";
     case "blocked_auth":
-      return "Reconnect your account to send this reply";
+      return "重新连接账号以发送此回复";
     default:
-      return online ? "Sending…" : "Waiting for connection";
+      return online ? "正在发送…" : "等待连接";
   }
 }
 
@@ -75,7 +75,7 @@ export function engineSendReplyMessageId(
   threadMessageIds: string[],
   threadId: string,
 ) {
-  // The last thread row is often a later SENT from an earlier test on the
-  // shared emulator mailbox. Fall back to the original message instead.
+  // 会话的最后一行往往是共享模拟器邮箱上早先测试发出的
+  // 较晚的 SENT。因此改为回退到原始消息。
   return command.messageIds[0] ?? threadMessageIds[0] ?? threadId;
 }

@@ -15,9 +15,9 @@ const ACTIVITY_LABELS: Record<
   TeamActivityResponse["items"][number]["kind"],
   string
 > = {
-  INVITED: "Conversation shared",
-  MENTION: "You were mentioned",
-  COMMENT: "New comment",
+  INVITED: "会话已共享",
+  MENTION: "有人提到了你",
+  COMMENT: "新评论",
 };
 
 export function ConversationActivity() {
@@ -48,7 +48,7 @@ export function ConversationActivity() {
         >
           <div className="space-y-2">
             {!items.length && (
-              <p className="text-muted-foreground text-sm">No activity yet.</p>
+              <p className="text-muted-foreground text-sm">暂无动态。</p>
             )}
             {items.map((item) => (
               <Link
@@ -59,7 +59,7 @@ export function ConversationActivity() {
                 <div className="flex items-center justify-between gap-3">
                   <span className="flex items-center gap-2 font-medium text-sm">
                     {ACTIVITY_LABELS[item.kind]}
-                    {item.unread && <Badge>Unread</Badge>}
+                    {item.unread && <Badge>未读</Badge>}
                   </span>
                   <time className="shrink-0 text-muted-foreground text-xs">
                     {new Date(item.createdAt).toLocaleString()}
@@ -74,15 +74,13 @@ export function ConversationActivity() {
             ))}
             {activity.error ? (
               <div className="flex items-center gap-2" role="alert">
-                <p className="text-destructive text-sm">
-                  Could not load activity.
-                </p>
+                <p className="text-destructive text-sm">无法加载动态。</p>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => activity.mutate()}
                 >
-                  Retry
+                  重试
                 </Button>
               </div>
             ) : (
@@ -91,7 +89,7 @@ export function ConversationActivity() {
                   variant="outline"
                   onClick={() => activity.setSize(activity.size + 1)}
                 >
-                  Load older activity
+                  加载更早的动态
                 </Button>
               )
             )}

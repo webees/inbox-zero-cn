@@ -56,7 +56,7 @@ export async function captureGmailMailHistoryCursor({
   );
   const historyId = response.data.historyId;
   if (!historyId || !/^\d+$/.test(historyId))
-    throw new Error("Gmail did not return a valid mailbox history ID");
+    throw new Error("Gmail 未返回有效的邮箱历史 ID");
   return encodeCursor({
     version: 1,
     provider: "google",
@@ -84,7 +84,7 @@ export async function getGmailMailBackfillPage(
         after,
         before,
       );
-  // Gmail date queries have second precision; exact filtering owns the boundary.
+  // Gmail 日期查询具有秒级精度；精确过滤负责处理边界。
   const response = await withLocalMailSyncBudget(
     {
       emailAccountId,
@@ -105,13 +105,12 @@ export async function getGmailMailBackfillPage(
       ),
   );
   const messageIds = (response.data.messages ?? []).map((message) => {
-    if (!message.id)
-      throw new Error("Gmail returned a sync message without an ID");
+    if (!message.id) throw new Error("Gmail 返回了没有 ID 的同步邮件");
     return message.id;
   });
   const nextPageToken = response.data.nextPageToken;
   if (nextPageToken && nextPageToken === checkpoint.pageToken)
-    throw new Error("Gmail backfill continuation did not advance");
+    throw new Error("Gmail 回填续传没有推进");
   return {
     messageIds: [...new Set(messageIds)],
     nextCursor: nextPageToken
@@ -175,7 +174,7 @@ export async function getGmailMailChangesPage(
     return { resetRequired: true as const };
   }
   if (response.nextPageToken && response.nextPageToken === checkpoint.pageToken)
-    throw new Error("Gmail history continuation did not advance");
+    throw new Error("Gmail 历史续传没有推进");
   const { upsertIds, deletedIds } = getGmailMailboxChangeIds(
     response.history ?? [],
   );
@@ -183,7 +182,7 @@ export async function getGmailMailChangesPage(
     ? checkpoint.historyId
     : response.historyId;
   if (!historyId || !/^\d+$/.test(historyId))
-    throw new Error("Gmail did not return a valid mailbox history ID");
+    throw new Error("Gmail 未返回有效的邮箱历史 ID");
   return {
     resetRequired: false as const,
     messageIds: upsertIds,
@@ -203,7 +202,7 @@ export async function hydrateGmailMailMessages(
   validateBounds(input.after, input.before);
   const ids = [...new Set(input.messageIds)];
   if (ids.length > 25 || ids.some((id) => !id))
-    throw new Error("Gmail hydration requires at most 25 valid message IDs");
+    throw new Error("Gmail 水合最多需要 25 个有效的邮件 ID");
   const messages: ParsedMessage[] = [];
   const removedMessageIds: string[] = [];
   const confirmedDeletedMessageIds: string[] = [];
@@ -217,7 +216,7 @@ export async function hydrateGmailMailMessages(
       cost: ids.length * gmailMailSyncCosts.message,
     },
     async (signal) => {
-      // Sequential requests reserve provider concurrency for interactive work.
+      // 顺序请求为交互式工作保留服务商并发额度。
       for (const id of ids) {
         let raw: gmail_v1.Schema$Message;
         try {
@@ -233,7 +232,7 @@ export async function hydrateGmailMailMessages(
           continue;
         }
         if (raw.id !== id || !raw.payload)
-          throw new Error("Gmail returned an incomplete sync message");
+          throw new Error("Gmail 返回了不完整的同步邮件");
         const message = parseMessage(raw as MessageWithPayload);
         if (isInScope(message, input.after, input.before))
           messages.push(toLocalMailMessage(message));
@@ -247,7 +246,7 @@ export async function hydrateGmailMailMessages(
 function isInScope(message: ParsedMessage, after: Date, before?: Date) {
   const timestamp = Number(message.internalDate);
   if (!message.internalDate || !Number.isSafeInteger(timestamp))
-    throw new Error("Gmail returned an invalid sync message date");
+    throw new Error("Gmail 返回了无效的同步邮件日期");
   return (
     timestamp >= after.getTime() &&
     (before === undefined || timestamp < before.getTime()) &&
@@ -263,11 +262,11 @@ function validateBounds(after: Date, before?: Date) {
       (!Number.isFinite(before.getTime()) ||
         before.getTime() <= after.getTime()))
   )
-    throw new Error("Invalid local mail sync bounds");
+    throw new Error("无效的本地邮件同步边界");
 }
 function validateLimit(limit: number) {
   if (!Number.isInteger(limit) || limit < 1 || limit > 100)
-    throw new Error("Local mail sync limit must be between 1 and 100");
+    throw new Error("本地邮件同步限制必须在 1 到 100 之间");
 }
 function encodeCursor(cursor: Cursor) {
   return Buffer.from(JSON.stringify(cursor)).toString("base64url");
@@ -289,9 +288,9 @@ function decodeCursor(
       cursor.after !== after.getTime() ||
       cursor.before !== before?.getTime()
     )
-      throw new Error("scope mismatch");
+      throw new Error("范围不匹配");
     return cursor;
   } catch {
-    throw new Error("Invalid local mail sync cursor");
+    throw new Error("无效的本地邮件同步游标");
   }
 }

@@ -136,21 +136,6 @@ export function ComposeContactRecipientField({
     onSearchQueryChange(name, query);
   };
 
-  // Valid typed addresses become tokens as soon as the user moves on, so what
-  // is shown matches what will be sent.
-  const commitSearchQuery = () => {
-    if (!isValidComposeRecipientList(searchQuery.trim())) return false;
-    onSelectedRecipientsChange(
-      name,
-      resolveComposeRecipients({
-        selectedRecipients,
-        pendingRecipient: searchQuery,
-      }),
-    );
-    updateSearchQuery("");
-    return true;
-  };
-
   const removeSelectedEmail = (emailAddress: string) => {
     onSelectedRecipientsChange(
       name,
@@ -205,27 +190,21 @@ export function ComposeContactRecipientField({
             aria-label={label}
             autoFocus={autoFocus}
             className="w-full border-none bg-background p-0 text-sm focus:border-none focus:ring-0"
-            // Closing the list would otherwise blank the input while the
-            // typed text is still kept and sent.
-            displayValue={() => searchQuery}
             id={name}
-            onBlur={(event) => {
-              if (
-                event.currentTarget.parentElement?.contains(event.relatedTarget)
-              )
-                return;
-              commitSearchQuery();
-            }}
             onChange={(event) => updateSearchQuery(event.target.value)}
             onFocus={() => onActivate(name)}
-            onKeyDown={(event) => {
-              if (event.key !== "," && event.key !== ";") return;
-              if (commitSearchQuery()) event.preventDefault();
-            }}
             onKeyUp={(event) => {
               if (event.key !== "Enter") return;
               event.preventDefault();
-              commitSearchQuery();
+              if (!isValidComposeRecipientList(searchQuery.trim())) return;
+              onSelectedRecipientsChange(
+                name,
+                resolveComposeRecipients({
+                  selectedRecipients,
+                  pendingRecipient: searchQuery,
+                }),
+              );
+              updateSearchQuery("");
             }}
             value={searchQuery}
           />
@@ -235,9 +214,7 @@ export function ComposeContactRecipientField({
               className="absolute z-10 mt-1 flex w-80 items-center gap-3 rounded-md border bg-popover p-3 text-sm text-popover-foreground shadow-lg"
               role="status"
             >
-              <span className="flex-1">
-                Reconnect this account to enable contact suggestions.
-              </span>
+              <span className="flex-1">重新连接此账号以启用联系人建议。</span>
               <Button
                 className="h-auto p-0"
                 disabled={isReconnectingContacts}
@@ -246,7 +223,7 @@ export function ComposeContactRecipientField({
                 type="button"
                 variant="link"
               >
-                Reconnect
+                重新连接
               </Button>
             </div>
           )}

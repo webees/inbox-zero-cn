@@ -63,9 +63,7 @@ export async function sendAutomationMessage({
       });
     }
     default: {
-      throw new AutomationJobConfigurationError(
-        "Unsupported messaging provider for automation job",
-      );
+      throw new AutomationJobConfigurationError("自动化任务不支持该消息服务商");
     }
   }
 }
@@ -80,9 +78,7 @@ async function sendAutomationMessageToTeams({
   logger: Logger;
 }) {
   if (!providerUserId) {
-    throw new AutomationJobConfigurationError(
-      "Teams channel is missing provider user ID",
-    );
+    throw new AutomationJobConfigurationError("Teams 频道缺少服务商用户 ID");
   }
 
   let teamsAdapter: ReturnType<
@@ -91,15 +87,11 @@ async function sendAutomationMessageToTeams({
   try {
     teamsAdapter = getMessagingAdapterRegistry().typedAdapters.teams;
   } catch {
-    throw new AutomationJobConfigurationError(
-      "Teams adapter is not configured",
-    );
+    throw new AutomationJobConfigurationError("Teams 适配器未配置");
   }
 
   if (!teamsAdapter) {
-    throw new AutomationJobConfigurationError(
-      "Teams adapter is not configured",
-    );
+    throw new AutomationJobConfigurationError("Teams 适配器未配置");
   }
 
   const teamsLogger = logger.with({
@@ -107,12 +99,12 @@ async function sendAutomationMessageToTeams({
     destination: providerUserId,
   });
 
-  teamsLogger.info("Sending Teams automation message");
+  teamsLogger.info("正在发送 Teams 自动化消息");
 
   const threadId = await teamsAdapter.openDM(providerUserId);
   const response = await teamsAdapter.postMessage(threadId, text);
 
-  teamsLogger.info("Teams automation message sent");
+  teamsLogger.info("Teams 自动化消息已发送");
 
   return {
     channelId: threadId,
@@ -134,9 +126,7 @@ async function sendAutomationMessageToTelegram({
   const destination = teamId || providerUserId;
 
   if (!destination) {
-    throw new AutomationJobConfigurationError(
-      "Telegram channel is missing a direct-message target",
-    );
+    throw new AutomationJobConfigurationError("Telegram 频道缺少私信目标");
   }
 
   let telegramAdapter: ReturnType<
@@ -145,15 +135,11 @@ async function sendAutomationMessageToTelegram({
   try {
     telegramAdapter = getMessagingAdapterRegistry().typedAdapters.telegram;
   } catch {
-    throw new AutomationJobConfigurationError(
-      "Telegram adapter is not configured",
-    );
+    throw new AutomationJobConfigurationError("Telegram 适配器未配置");
   }
 
   if (!telegramAdapter) {
-    throw new AutomationJobConfigurationError(
-      "Telegram adapter is not configured",
-    );
+    throw new AutomationJobConfigurationError("Telegram 适配器未配置");
   }
 
   const telegramLogger = logger.with({
@@ -161,12 +147,12 @@ async function sendAutomationMessageToTelegram({
     destination,
   });
 
-  telegramLogger.info("Sending Telegram automation message");
+  telegramLogger.info("正在发送 Telegram 自动化消息");
 
   const threadId = await telegramAdapter.openDM(destination);
   const response = await telegramAdapter.postMessage(threadId, text);
 
-  telegramLogger.info("Telegram automation message sent");
+  telegramLogger.info("Telegram 自动化消息已发送");
 
   return {
     channelId: threadId,

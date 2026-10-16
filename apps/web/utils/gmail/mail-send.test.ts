@@ -68,7 +68,7 @@ describe("sending a Gmail draft from the reader", () => {
     const warn = vi.spyOn(logger, "warn");
     await expect(sendEmailWithHtml(gmail, email, logger)).rejects.toBe(failure);
     expect(info).toHaveBeenCalledWith(
-      "Prepared Gmail send",
+      "已准备发送 Gmail 邮件",
       expect.objectContaining({
         hasExplicitFrom: false,
         hasMimeFrom: false,
@@ -78,7 +78,7 @@ describe("sending a Gmail draft from the reader", () => {
       }),
     );
     expect(warn).toHaveBeenCalledWith(
-      "Gmail send request failed",
+      "Gmail 发送请求失败",
       expect.objectContaining({
         gmailOperation: "messages.send",
         status: 502,
@@ -133,7 +133,7 @@ describe("sending a Gmail draft from the reader", () => {
     const { gmail, drafts, messages } = createGmail();
     drafts.list.mockResolvedValue({ data: { drafts: [] } });
 
-    await expect(sendEmailWithHtml(gmail, email)).rejects.toThrow(/draft/i);
+    await expect(sendEmailWithHtml(gmail, email)).rejects.toThrow(/草稿/);
 
     expect(drafts.send).not.toHaveBeenCalled();
     expect(messages.send).not.toHaveBeenCalled();
@@ -144,7 +144,7 @@ describe("sending a Gmail draft from the reader", () => {
     messages.get.mockResolvedValue({ data: { labelIds: ["DRAFT", "SENT"] } });
 
     await expect(sendEmailWithHtml(gmail, email)).rejects.toThrow(
-      /already.*sent/i,
+      /已标记为已发送/,
     );
 
     expect(drafts.send).not.toHaveBeenCalled();
@@ -281,7 +281,7 @@ describe("sending a Gmail draft from the reader", () => {
           forwardedMessageId: "forwarded-message",
         },
       }),
-    ).rejects.toThrow("Reload the original message before forwarding");
+    ).rejects.toThrow("转发前请重新加载原始邮件");
 
     expect(messages.send).not.toHaveBeenCalled();
   });

@@ -65,7 +65,7 @@ describe("MailSidebar", () => {
     const onNavigate = vi.fn();
     renderSidebar({ activeType: "inbox", onNavigate });
 
-    fireEvent.click(screen.getByText("Inbox"));
+    fireEvent.click(screen.getByText("收件箱"));
 
     expect(onNavigate).toHaveBeenCalledOnce();
   });
@@ -73,22 +73,22 @@ describe("MailSidebar", () => {
   it("leaves the inbox out in the open and everything else behind Mail", () => {
     renderSidebar();
 
-    expect(screen.getByText("Inbox").closest("a")?.getAttribute("href")).toBe(
+    expect(screen.getByText("收件箱").closest("a")?.getAttribute("href")).toBe(
       "/mail?type=inbox",
     );
-    expect(screen.queryByText("Sent")).toBeNull();
+    expect(screen.queryByText("已发送")).toBeNull();
 
-    fireEvent.click(screen.getByText("Mail"));
+    fireEvent.click(screen.getByText("邮件"));
 
     expect(
       [
-        "Drafts",
-        "Sent",
-        "Archived",
-        "Starred",
-        "Scheduled",
-        "Spam",
-        "Trash",
+        "草稿",
+        "已发送",
+        "已归档",
+        "已加星标",
+        "已定时",
+        "垃圾邮件",
+        "回收站",
       ].map((name) =>
         screen.getByText(name).closest("a")?.getAttribute("href"),
       ),
@@ -107,24 +107,24 @@ describe("MailSidebar", () => {
     renderSidebar({ activeType: "trash" });
 
     expect(
-      screen.getByText("Trash").closest("a")?.getAttribute("aria-current"),
+      screen.getByText("回收站").closest("a")?.getAttribute("aria-current"),
     ).toBe("page");
   });
 
   it("keeps the active view reachable in the icon rail", () => {
     renderSidebar({ activeType: "trash", collapsed: true });
 
-    expect(screen.getByText("Trash").closest("a")?.getAttribute("href")).toBe(
+    expect(screen.getByText("回收站").closest("a")?.getAttribute("href")).toBe(
       "/mail?type=trash",
     );
   });
 
   it("leaves the Mail group out of the icon rail for other views", () => {
-    // Nothing in the rail can toggle the group, so a row only earns its space
-    // there while its own view is open.
+    // 图标栏中没有任何东西能切换分组，因此一行只有在自己的
+    // 视图打开时才在栏中占据位置。
     renderSidebar({ activeType: "inbox", collapsed: true });
 
-    expect(screen.queryByText("Trash")).toBeNull();
+    expect(screen.queryByText("回收站")).toBeNull();
   });
 
   it("closes the Mail group in the rail once its view is left behind", () => {
@@ -133,12 +133,12 @@ describe("MailSidebar", () => {
       collapsed: true,
     });
 
-    expect(screen.getByText("Trash")).toBeDefined();
+    expect(screen.getByText("回收站")).toBeDefined();
 
-    // The rail offers no way back out, so the group cannot outlive its view.
+    // 图标栏没有回到外面的方式，因此分组不能比它的视图存活更久。
     rerender(sidebar({ activeType: "inbox", collapsed: true }));
 
-    expect(screen.queryByText("Trash")).toBeNull();
+    expect(screen.queryByText("回收站")).toBeNull();
   });
 
   it("keeps a chosen Mail group open across navigation when expanded", () => {
@@ -146,7 +146,7 @@ describe("MailSidebar", () => {
 
     rerender(sidebar({ activeType: "inbox" }));
 
-    expect(screen.getByText("Trash")).toBeDefined();
+    expect(screen.getByText("回收站")).toBeDefined();
   });
 
   it("closes the Categories group in the rail once its view is left behind", () => {
@@ -177,7 +177,7 @@ describe("MailSidebar", () => {
   it("leaves the extra views out of the combined inbox", () => {
     renderSidebar({ unified: true });
 
-    expect(screen.queryByText("Mail")).toBeNull();
-    expect(screen.getByText("All inboxes")).toBeDefined();
+    expect(screen.queryByText("邮件")).toBeNull();
+    expect(screen.getByText("全部收件箱")).toBeDefined();
   });
 });

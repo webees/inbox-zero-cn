@@ -69,7 +69,7 @@ export function SetUpCategories({
         return {
           ...c,
           id: undefined,
-          // only enable on first set up
+          // 仅在首次设置时启用
           enabled: c.enabled && !existingCategories.length,
         };
       }),
@@ -84,20 +84,20 @@ export function SetUpCategories({
     ),
   );
 
-  // Update categories when existingCategories changes
-  // This is a bit messy that we need to do this
+  // 当 existingCategories 变化时更新分类
+  // 需要这样做确实有点繁琐
   useEffect(() => {
     setCategories((prevCategories) => {
       const newCategories = new Map(prevCategories);
 
-      // Enable any new categories from existingCategories that aren't in the current map
+      // 启用 existingCategories 中尚不在当前映射里的新分类
       for (const category of existingCategories) {
         if (!prevCategories.has(category.name)) {
           newCategories.set(category.name, true);
         }
       }
 
-      // Disable any categories that aren't in existingCategories
+      // 停用不在 existingCategories 中的任何分类
       if (existingCategories.length) {
         for (const category of prevCategories.keys()) {
           if (!existingCategories.some((c) => c.name === category)) {
@@ -114,15 +114,14 @@ export function SetUpCategories({
     <>
       <Card className="m-4">
         <CardHeader>
-          <CardTitle>Set up sender categories</CardTitle>
+          <CardTitle>设置发件人分类</CardTitle>
           <CardDescription className="max-w-sm">
-            Automatically categorize senders for bulk archiving and AI
-            assistant.
+            自动对发件人分类，用于批量归档和 AI 助手。
           </CardDescription>
         </CardHeader>
 
         <CardContent>
-          <TypographyH4>Choose categories</TypographyH4>
+          <TypographyH4>选择分类</TypographyH4>
 
           <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6">
             {combinedCategories.map((category) => (
@@ -157,7 +156,7 @@ export function SetUpCategories({
                 children: (
                   <>
                     <PenIcon className="mr-2 size-4" />
-                    Add your own
+                    添加自定义
                   </>
                 ),
               }}
@@ -182,7 +181,7 @@ export function SetUpCategories({
               }}
             >
               <TagsIcon className="mr-2 h-4 w-4" />
-              {existingCategories.length > 0 ? "Save" : "Create categories"}
+              {existingCategories.length > 0 ? "保存" : "创建分类"}
             </Button>
           </div>
         </CardContent>
@@ -233,17 +232,17 @@ function CategoryCard({
         <div className="flex gap-1">
           <Button size="iconSm" variant="ghost" onClick={onEdit}>
             <PenIcon className="size-4" />
-            <span className="sr-only">Edit</span>
+            <span className="sr-only">编辑</span>
           </Button>
           <Button size="iconSm" variant="ghost" onClick={onRemove}>
             <TrashIcon className="size-4" />
-            <span className="sr-only">Remove</span>
+            <span className="sr-only">移除</span>
           </Button>
         </div>
       ) : (
         <Button size="iconSm" variant="outline" onClick={onAdd}>
           <PlusIcon className="size-4" />
-          <span className="sr-only">Add</span>
+          <span className="sr-only">添加</span>
         </Button>
       )}
     </Card>

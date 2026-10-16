@@ -62,8 +62,8 @@ describe("desktop mail process owner", () => {
     const inFlight = owner.handleIpc(INSPECT);
     await vi.waitFor(() => expect(first.sentOfType("ipc")).toHaveLength(2));
     first.exit(1);
-    await expect(inFlight).rejects.toThrow("mail engine process exited");
-    await expect(owner.handleIpc(INSPECT)).rejects.toThrow("restarting");
+    await expect(inFlight).rejects.toThrow("邮件引擎进程已退出");
+    await expect(owner.handleIpc(INSPECT)).rejects.toThrow("邮件引擎正在重启");
 
     await vi.advanceTimersByTimeAsync(1000);
     expect(errors).toEqual([
@@ -246,7 +246,7 @@ describe("desktop mail process owner", () => {
     await vi.advanceTimersByTimeAsync(60_000);
     expect(children).toHaveLength(1);
     expect(errors).toEqual([]);
-    await expect(owner.handleIpc(INSPECT)).rejects.toThrow("closed");
+    await expect(owner.handleIpc(INSPECT)).rejects.toThrow("邮件引擎已关闭");
   });
 
   it("kills a child that does not answer close so the mailbox can be wiped", async () => {

@@ -7,10 +7,9 @@ import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { cn } from "@/utils";
 
 /**
- * The window controls that sit beside the mac traffic lights: the sidebar
- * toggle once the sidebar is collapsed, then back/forward. The desktop app has
- * no browser chrome, so it needs its own history buttons; a browser tab
- * already has them.
+ * 位于 Mac 窗口控制按钮旁的窗口控件：侧边栏折叠后的
+ * 侧边栏开关，然后是后退/前进。桌面应用没有浏览器外框，
+ * 因此需要自己的历史按钮；浏览器标签页则已经有这些按钮。
  */
 export function MailTitlebarNav({
   showHistory,
@@ -38,7 +37,7 @@ export function MailTitlebarNav({
     <div
       className={cn(
         "flex shrink-0 items-center gap-0.5",
-        // The sidebar, and so its toggle, only exists from `lg` up.
+        // 侧边栏及其开关只在 `lg` 及以上存在。
         !showHistory && "hidden lg:flex",
         className,
       )}
@@ -51,10 +50,10 @@ export function MailTitlebarNav({
       )}
       {showHistory ? (
         <>
-          <Tooltip content="Back">
+          <Tooltip content="后退">
             <button
               type="button"
-              aria-label="Go back"
+              aria-label="后退"
               disabled={!canGoBack}
               onClick={() => window.history.back()}
               className={historyButton}
@@ -62,10 +61,10 @@ export function MailTitlebarNav({
               <ChevronLeftIcon className="size-4" />
             </button>
           </Tooltip>
-          <Tooltip content="Forward">
+          <Tooltip content="前进">
             <button
               type="button"
-              aria-label="Go forward"
+              aria-label="前进"
               disabled={!canGoForward}
               onClick={() => window.history.forward()}
               className={historyButton}

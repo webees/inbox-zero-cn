@@ -147,7 +147,7 @@ describe("EmailMessage draft recovery", () => {
 
     expect(screen.getByTestId("composer")).toBeTruthy();
     expect(mocks.toastError).toHaveBeenCalledWith({
-      description: "Failed to discard draft",
+      description: "丢弃草稿失败",
     });
     expect(refetch).toHaveBeenCalledTimes(1);
   });
@@ -191,7 +191,7 @@ describe("EmailMessage draft recovery", () => {
       screen.getAllByTestId("composer").map((composer) => composer.textContent),
     ).toEqual(["replyDiscard draft"]);
     expect(mocks.toastError).toHaveBeenCalledWith({
-      description: "Failed to discard draft",
+      description: "丢弃草稿失败",
     });
     expect(refetch).toHaveBeenCalledTimes(1);
   });
@@ -336,9 +336,7 @@ describe("EmailMessage forward", () => {
     if (entry === "button")
       fireEvent.click(screen.getByRole("button", { name: "Forward" }));
     expect(screen.queryByTestId("composer")).toBeNull();
-    fireEvent.click(
-      screen.getByRole("button", { name: "Load message to forward" }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: "加载要转发的邮件" }));
     expect(refetch).toHaveBeenCalledOnce();
     rerender(<EmailMessage {...props} bodyAvailable />);
     expect(screen.getByTestId("composer").dataset.forwardedMessageId).toBe(

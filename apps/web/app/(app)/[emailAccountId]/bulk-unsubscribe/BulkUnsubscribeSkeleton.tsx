@@ -56,13 +56,13 @@ export function BulkUnsubscribeDesktopSkeleton() {
             <SkeletonCheckbox />
           </TableHead>
           <TableHead>
-            <span className="text-sm font-medium">From</span>
+            <span className="text-sm font-medium">发件人</span>
           </TableHead>
           <TableHead>
-            <span className="text-sm font-medium">Emails</span>
+            <span className="text-sm font-medium">邮件</span>
           </TableHead>
           <TableHead>
-            <span className="text-sm font-medium">Read</span>
+            <span className="text-sm font-medium">已读</span>
           </TableHead>
           <TableHead />
         </TableRow>

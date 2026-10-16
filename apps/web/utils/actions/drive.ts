@@ -37,7 +37,7 @@ export const disconnectDriveAction = actionClient
       });
 
       if (!connection) {
-        throw new SafeError("Drive connection not found");
+        throw new SafeError("未找到 Drive 连接");
       }
 
       await prisma.driveConnection.delete({
@@ -98,7 +98,7 @@ export const addFilingFolderAction = actionClient
       });
 
       if (!connection) {
-        throw new SafeError("Drive connection not found");
+        throw new SafeError("未找到 Drive 连接");
       }
 
       const data = {
@@ -147,7 +147,7 @@ export const cleanupStaleFilingFoldersAction = actionClient
         where: { emailAccountId, id: { in: filingFolderIds } },
       });
 
-      logger.info("Cleaned up stale filing folders", {
+      logger.info("已清理过期的归档文件夹", {
         count: result.count,
       });
 
@@ -187,11 +187,11 @@ export const moveFilingAction = actionClient
       });
 
       if (!filing) {
-        throw new SafeError("Filing not found");
+        throw new SafeError("未找到归档记录");
       }
 
       if (!filing.fileId) {
-        throw new SafeError("Filing has no associated file");
+        throw new SafeError("归档记录没有关联文件");
       }
 
       const driveProvider = await createDriveProviderWithRefresh(
@@ -231,8 +231,8 @@ export const createDriveFolderAction = actionClient
       });
 
       if (!connection) {
-        logger.error("Drive connection not found", { driveConnectionId });
-        throw new SafeError("Drive connection not found");
+        logger.error("未找到 Drive 连接", { driveConnectionId });
+        throw new SafeError("未找到 Drive 连接");
       }
 
       const driveProvider = await createDriveProviderWithRefresh(
@@ -302,11 +302,11 @@ export const fileAttachmentAction = actionClient
       });
 
       if (!emailAccount) {
-        throw new SafeError("Email account not found");
+        throw new SafeError("未找到邮箱账号");
       }
 
       if (!emailAccount.filingPrompt) {
-        throw new SafeError("Filing prompt not configured");
+        throw new SafeError("未配置归档提示词");
       }
 
       const emailProvider = await createEmailProvider({
@@ -315,11 +315,11 @@ export const fileAttachmentAction = actionClient
         logger,
       });
 
-      logger.info("Fetching message for filing", { messageId });
+      logger.info("正在获取用于归档的邮件", { messageId });
       const message = await emailProvider.getMessage(messageId);
 
       if (!message) {
-        throw new SafeError("Message not found");
+        throw new SafeError("未找到邮件");
       }
 
       const filableAttachments = getFilableAttachments(message);
@@ -328,10 +328,10 @@ export const fileAttachmentAction = actionClient
       );
 
       if (!attachment) {
-        throw new SafeError("Attachment not found");
+        throw new SafeError("未找到附件");
       }
 
-      logger.info("Processing attachment", { filename: attachment.filename });
+      logger.info("正在处理附件", { filename: attachment.filename });
       const result = await processAttachment({
         emailAccount: {
           ...emailAccount,
@@ -347,18 +347,17 @@ export const fileAttachmentAction = actionClient
 
       if (result.skipped) {
         if (!result.filingId) {
-          throw new SafeError("Skipped filing missing ID");
+          throw new SafeError("跳过归档：缺少 ID");
         }
         return {
           skipped: true,
-          skipReason:
-            result.skipReason || "Document doesn't match filing preferences",
+          skipReason: result.skipReason || "文档不符合归档偏好",
           filingId: result.filingId,
         };
       }
 
       if (!result.success || !result.filing) {
-        throw new SafeError(result.error || "Failed to file attachment");
+        throw new SafeError(result.error || "归档附件失败");
       }
 
       return {

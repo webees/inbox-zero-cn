@@ -38,9 +38,9 @@ import type {
 import type { EmailLabels } from "@/providers/email-label-types";
 
 /**
- * The split tab bar and the dialog that creates, edits, and reorders splits.
- * Split editing state lives here, and the bar is memoized so thread
- * navigation doesn't re-render it.
+ * 分栏标签栏，以及用于创建、编辑和排序分栏的对话框。
+ * 分栏编辑状态保存在这里，标签栏已记忆化，这样会话
+ * 导航不会重新渲染它。
  */
 export const MailSplitTabs = memo(function MailSplitTabs({
   splits,
@@ -57,9 +57,9 @@ export const MailSplitTabs = memo(function MailSplitTabs({
   activeSplitId: string | null;
   onSelectSplit: (splitId: string | null) => void;
   isAllAccounts: boolean;
-  /** Senders the user corresponds with, read when a split is described. */
+  /** 用户有往来的发件人，在描述分栏时读取。 */
   getSenders: () => string[];
-  /** Accounts whose conversations each split's count covers. */
+  /** 各分栏计数所涵盖的账号。 */
   countAccountIds: string[];
   portableLabelSplits?: PortableLabelSplit[];
   labelsByAccount?: Record<string, EmailLabels>;
@@ -84,7 +84,7 @@ export const MailSplitTabs = memo(function MailSplitTabs({
     () =>
       [
         ...allLabels,
-        ...(isGoogle ? [{ id: GmailLabel.IMPORTANT, name: "Important" }] : []),
+        ...(isGoogle ? [{ id: GmailLabel.IMPORTANT, name: "重要" }] : []),
       ].map((label) => ({
         id: `label:${label.id}`,
         name: label.name,

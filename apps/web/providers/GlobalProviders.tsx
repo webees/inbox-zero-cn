@@ -95,12 +95,12 @@ function ManageServiceWorker() {
 
       lastPromptedAt = now;
       writeDesktopWebUpdateLastPromptedAt(now);
-      toast.info("Update available", {
+      toast.info("有可用更新", {
         action: {
-          label: "Reload",
+          label: "重新加载",
           onClick: activateWaitingWorker,
         },
-        description: "Reload Inbox Zero to use the latest version.",
+        description: "重新加载 Inbox Zero 以使用最新版本",
         duration: Number.POSITIVE_INFINITY,
         id: DESKTOP_WEB_UPDATE_TOAST_ID,
       });

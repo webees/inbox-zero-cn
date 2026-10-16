@@ -251,7 +251,7 @@ export const sendInboxHealthEmail = async ({
   sendEmail({
     from,
     to,
-    subject: `We found ${getSenderCountText(emailProps.suggestionCount)} you rarely read`,
+    subject: `我们发现了你很少阅读的 ${getSenderCountText(emailProps.suggestionCount)}`,
     react: <InboxHealthEmail {...emailProps} />,
     test,
     unsubscribeToken: emailProps.unsubscribeToken,
@@ -278,7 +278,7 @@ export const sendInvitationEmail = async ({
   sendEmail({
     from,
     to,
-    subject: `You're invited to join ${emailProps.organizationName} on Inbox Zero`,
+    subject: `邀请你加入 Inbox Zero 上的 ${emailProps.organizationName}`,
     react: <InvitationEmail {...emailProps} />,
     test,
     unsubscribeToken: emailProps.unsubscribeToken,
@@ -305,7 +305,7 @@ export const sendReconnectionEmail = async ({
   sendEmail({
     from,
     to,
-    subject: `Reconnect your email account: ${emailProps.email}`,
+    subject: `重新连接你的邮箱账号：${emailProps.email}`,
     react: <ReconnectionEmail {...emailProps} />,
     test,
     unsubscribeToken: emailProps.unsubscribeToken,
@@ -546,7 +546,7 @@ export const sendHostBookingRescheduledEmail = async ({
   sendTransactionalEmail({
     from,
     to,
-    subject: `Booking rescheduled: ${emailProps.eventTitle}`,
+    subject: `预约已改期：${emailProps.eventTitle}`,
     react: <HostBookingRescheduledEmail {...emailProps} />,
     test,
     tags: [{ name: "category", value: "booking-rescheduled" }],
@@ -570,7 +570,7 @@ export const sendInvoiceEmail = async ({
   sendTransactionalEmail({
     from,
     to,
-    subject: "Your Inbox Zero invoice",
+    subject: "你的 Inbox Zero 发票",
     react: <InvoiceEmail {...emailProps} />,
     test,
     attachments: attachmentUrl

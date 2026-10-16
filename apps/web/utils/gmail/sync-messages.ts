@@ -32,17 +32,16 @@ export async function getGmailSyncMessages({
     const fetched = new Map<string, ParsedMessage>();
     for (const message of page) {
       if (!requestedIds.has(message.id) || fetched.has(message.id)) {
-        throw new Error("Gmail returned an unexpected sync message ID");
+        throw new Error("Gmail 返回了意外的同步邮件 ID");
       }
       fetched.set(message.id, message);
     }
-    // Shared batch reads can omit failures; only a confirmed 404 is a deletion.
+    // 共享批量读取可能省略失败项；只有确认的 404 才是删除。
     for (const id of ids) {
       if (fetched.has(id)) continue;
       try {
         const message = await getMessage(id, gmail, "full");
-        if (message.id !== id)
-          throw new Error("Gmail returned an unexpected message ID");
+        if (message.id !== id) throw new Error("Gmail 返回了意外的邮件 ID");
         fetched.set(id, parseMessage(message));
       } catch (error) {
         if (extractErrorInfo(error).status !== 404) throw error;

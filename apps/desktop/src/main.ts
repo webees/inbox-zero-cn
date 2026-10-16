@@ -222,7 +222,7 @@ function startDesktopApp() {
     "desktop-auth:start",
     async (event, provider: unknown, options: unknown) => {
       if (!isTrustedDesktopEvent(event) || !isDesktopAuthProvider(provider)) {
-        throw new Error("Unsupported sign-in provider");
+        throw new Error("不支持的登录方式");
       }
       const callbackPath = getStartAuthCallbackPath(options);
       persistPendingCallbackPath(callbackPath);
@@ -248,7 +248,7 @@ function startDesktopApp() {
 
   app.on("before-quit", () => {
     isQuitting = true;
-    // Skip if windows already closed; last-window `close` already wrote the snapshot.
+    // 如果窗口已关闭则跳过；最后一个窗口的 `close` 已经写入了快照。
     if (windows.length > 0) persistWindowsNow();
     closeDesktopMailOwner().catch(() => undefined);
   });
@@ -288,7 +288,7 @@ function startDesktopApp() {
     refreshDesktopMenu = applyDesktopMenu;
     applyDesktopMenu();
     if (!shouldSmokeLocalMail()) {
-      // Overlap TLS/socket setup with window creation and page load.
+      // 让 TLS/套接字建立与窗口创建、页面加载重叠进行。
       session
         .fromPartition(PARTITION)
         .preconnect({ url: appOrigin, numSockets: 2 });
@@ -301,8 +301,7 @@ function startDesktopApp() {
           .get(details.webContentsId)
           ?.recordRequestError(details);
       });
-    // A page fetched just before sleep, or while the network was coming back,
-    // is the usual cause of a window that never boots.
+    // 在休眠前或网络恢复期间抓取的页面，通常会导致窗口永远无法启动。
     powerMonitor.on("resume", () => {
       lastResumedAt = Date.now();
       for (const recovery of loadRecoveryByContents.values()) {
@@ -399,8 +398,7 @@ function createAppWindow(options?: {
     },
   });
 
-  // `closed` fires after the window is destroyed, when its webContents can no
-  // longer be read.
+  // `closed` 在窗口被销毁后触发，此时其 webContents 已无法再读取。
   const contentsId = window.webContents.id;
   windows.push(window);
   lastFocused = window;
@@ -423,14 +421,14 @@ function createAppWindow(options?: {
   window.on("resized", schedulePersistWindows);
   window.on("maximize", schedulePersistWindows);
   window.on("unmaximize", schedulePersistWindows);
-  // Keep the last window alive on macOS so reopening from the dock is instant
-  // instead of a cold page load. Extra windows close for real.
+  // 在 macOS 上保留最后一个窗口，这样从程序坞重新打开时是即时的，
+  // 而不是一次冷启动页面加载。多余的窗口会真正关闭。
   window.on("close", (event) => {
     if (process.platform === "darwin" && !isQuitting && windows.length <= 1) {
       event.preventDefault();
       window.hide();
     } else if (!isQuitting && windows.length === 1) {
-      // Persist before the last window is removed so quit/close cannot write [].
+      // 在移除最后一个窗口之前持久化，这样退出/关闭时不会写入 []。
       persistWindowsNow();
     }
   });
@@ -472,7 +470,7 @@ function createAppWindow(options?: {
 
 function reportBootFailure(failure: DesktopBootFailure) {
   captureDesktopError(
-    new Error("Desktop web app did not boot"),
+    new Error("桌面 Web 应用未能启动"),
     { area: "load-recovery", reason: failure.reason },
     {
       extra: {
@@ -558,7 +556,7 @@ function persistWindowsNow() {
     );
     fs.rmSync(userDataFile(LAST_APP_URL_FILE), { force: true });
   } catch {
-    // Restoring windows is best-effort; never break navigation over it.
+    // 恢复窗口是尽力而为；绝不能因此中断导航。
   }
 }
 
@@ -675,22 +673,21 @@ async function handleAuthCallbackUrl(url: string) {
   const window = focusAppWindow();
   const callback = parseDesktopAuthCallback(url);
   if (!callback.ok) {
-    // The callback text comes from the URL, so keep it out of telemetry.
-    captureDesktopError(new Error("Authentication callback failed"), {
+    // 回调文本来自 URL，因此不要写入遥测。
+    captureDesktopError(new Error("认证回调失败"), {
       area: "sign-in",
     });
     showSignInError(new Error(callback.error));
     return;
   }
-  // The server can issue more than one code per sign-in when the browser
-  // repeats the callback request.
+  // 当浏览器重复回调请求时，服务器在一次登录中可能签发多个 code。
   if (handledAuthStates.has(callback.state)) return;
   handledAuthStates.add(callback.state);
 
   try {
     const proof = pendingAuthProof;
     if (!proof || proof.expiresAt <= Date.now()) {
-      throw new Error("Start signing in again from the desktop app");
+      throw new Error("请从桌面应用重新开始登录");
     }
     await exchangeAuthCode(
       window.webContents.session,
@@ -724,7 +721,7 @@ async function exchangeAuthCode(
   );
 
   if (!response.ok) {
-    throw new Error("Could not finish signing in");
+    throw new Error("无法完成登录");
   }
 }
 
@@ -781,8 +778,8 @@ function reportSignInError(error: unknown) {
 
 function showSignInError(error: unknown) {
   dialog.showErrorBox(
-    "Sign in failed",
-    error instanceof Error ? error.message : "Could not finish signing in",
+    "登录失败",
+    error instanceof Error ? error.message : "无法完成登录",
   );
 }
 
@@ -806,7 +803,7 @@ function createDesktopMailProcess() {
       utilityProcess.fork(
         path.join(import.meta.dirname, "mail-engine-child.js"),
         [],
-        { serviceName: "Inbox Zero Mail Engine" },
+        { serviceName: "Inbox Zero 邮件引擎" },
       ),
     cookieHeader: async (url) => {
       const cookies = await ses.cookies.get({ url });
@@ -842,7 +839,7 @@ function readMailboxBytes() {
     try {
       bytes += fs.statSync(file).size;
     } catch {
-      // The WAL file only exists while the database is open.
+      // WAL 文件只在数据库打开期间存在。
     }
   }
   return bytes;

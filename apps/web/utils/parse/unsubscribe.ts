@@ -11,10 +11,10 @@ export function containsUnsubscribeKeyword(text: string) {
   return unsubscribeKeywords.some((keyword) => lowerText.includes(keyword));
 }
 
-// Patterns to detect unsubscribe URLs - checking for "unsub" catches:
-// - "unsubscribe", "unsub", "unsub-email", "unsubscribed", etc.
-// This helps with non-English emails where link text may not be in English
-// but the URL often contains these patterns
+// 用于检测退订 URL 的模式——检查 "unsub" 可捕获：
+// - "unsubscribe"、"unsub"、"unsub-email"、"unsubscribed" 等
+// 这有助于处理链接文本可能不是英文的非英文邮件，
+// 但这些 URL 通常包含这些模式
 const unsubscribeUrlPatterns = ["unsub", "opt-out", "optout", "list-manage"];
 
 export function containsUnsubscribeUrlPattern(url: string) {
@@ -69,9 +69,9 @@ function getMatchingUnsubscribeLink(
 
   const allLinks = [...headerLinks, ...fallbackLinks];
 
-  // Protocol order is a preference, not only a filter. Senders often list a
-  // mailto first, and handing the reader a draft email to send is worse than
-  // opening a page, so exhaust every web link before falling back to one.
+  // 协议顺序是一种偏好，而不仅仅是一种过滤。发件人常常先列出
+  // mailto，而给读者一封待发送的草稿邮件不如
+  // 打开一个页面，因此在回退到 mailto 之前先尝试所有网页链接。
   for (const protocol of allowedProtocols) {
     for (const link of allLinks) {
       const normalizedLink = normalizeAllowedUnsubscribeLink(link, [protocol]);

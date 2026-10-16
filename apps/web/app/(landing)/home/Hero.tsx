@@ -60,7 +60,7 @@ export function Hero({
           <HeroReveal delay={0.125 * 8}>
             <div className="mb-12 flex items-center justify-center gap-2">
               <Paragraph color="light" size="sm">
-                Works with
+                支持
               </Paragraph>
               <Outlook />
               <Gmail />
@@ -94,7 +94,7 @@ export function HeroVideoPlayer({
               ? `https://image.mux.com/${video.muxPlaybackId}/thumbnail.jpg?time=${video.thumbnailTime}&width=2560`
               : "/images/new-landing/video-thumbnail.webp"
           }
-          alt={video?.title ?? "an organized inbox"}
+          alt={video?.title ?? "整理有序的收件箱"}
           width={2560}
           height={muxThumbnail ? 1440 : 1404}
           sizes="(min-width: 1280px) 1152px, (min-width: 1024px) calc(100vw - 64px), calc(100vw - 48px)"

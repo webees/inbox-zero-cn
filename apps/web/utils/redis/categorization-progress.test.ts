@@ -195,7 +195,7 @@ describe("categorization progress", () => {
       totalItems: 0,
       completedItems: 0,
       remainingItems: 0,
-      message: "Sender categorization has not started.",
+      message: "发件人分类尚未开始。",
     });
   });
 });

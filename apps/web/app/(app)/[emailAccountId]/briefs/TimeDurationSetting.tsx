@@ -74,7 +74,7 @@ export function TimeDurationSetting({
       }
 
       toastSuccess({
-        description: "Settings saved!",
+        description: "设置已保存！",
         id: "time-duration-saved",
       });
       onSaved();

@@ -383,7 +383,7 @@ describe("getProgressMessage", () => {
 
     const result = getProgressMessage(state, 3);
 
-    expect(result).toBe("Progress: 2/5 emails completed");
+    expect(result).toBe("进度：2/5 封邮件已完成");
   });
 
   it("shows stoppedCount after stop", () => {
@@ -396,7 +396,7 @@ describe("getProgressMessage", () => {
 
     const result = getProgressMessage(state, 0);
 
-    expect(result).toBe("Processed 3 emails");
+    expect(result).toBe("已处理 3 封邮件");
   });
 
   it("shows total on completion", () => {
@@ -408,7 +408,7 @@ describe("getProgressMessage", () => {
 
     const result = getProgressMessage(state, 0);
 
-    expect(result).toBe("Processed 5 emails");
+    expect(result).toBe("已处理 5 封邮件");
   });
 
   it("shows progress when paused", () => {
@@ -420,6 +420,6 @@ describe("getProgressMessage", () => {
 
     const result = getProgressMessage(state, 2);
 
-    expect(result).toBe("Progress: 2/4 emails completed");
+    expect(result).toBe("进度：2/4 封邮件已完成");
   });
 });

@@ -18,11 +18,11 @@ export function RulesSelect() {
     parseAsString.withDefault("all"),
   );
   const getCurrentLabel = () => {
-    if (ruleId === "all") return "All rules";
-    if (ruleId === "skipped") return "No match";
+    if (ruleId === "all") return "所有规则";
+    if (ruleId === "skipped") return "无匹配";
     const rule = data?.find((rule) => rule.id === ruleId);
-    if (!rule) return "All rules";
-    return rule.enabled ? rule.name : `${rule.name} (disabled)`;
+    if (!rule) return "所有规则";
+    return rule.enabled ? rule.name : `${rule.name}（已停用）`;
   };
 
   return (
@@ -45,16 +45,16 @@ export function RulesSelect() {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => setRuleId("all")}>
-            All rules
+            所有规则
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setRuleId("skipped")}>
-            No match
+            无匹配
           </DropdownMenuItem>
           {data?.map((rule) => (
             <DropdownMenuItem key={rule.id} onClick={() => setRuleId(rule.id)}>
               {rule.name}
               {!rule.enabled && (
-                <span className="ml-1 text-muted-foreground">(disabled)</span>
+                <span className="ml-1 text-muted-foreground">（已停用）</span>
               )}
             </DropdownMenuItem>
           ))}

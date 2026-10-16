@@ -21,32 +21,32 @@ const API_KEY_SCOPE_METADATA: Record<
   }
 > = {
   STATS_READ: {
-    label: "Read stats",
-    description: "Read aggregated inbox statistics for this inbox.",
+    label: "读取统计",
+    description: "读取此收件箱的汇总统计信息。",
   },
   RULES_READ: {
-    label: "Read rules",
-    description: "List and inspect automation rules for this inbox.",
+    label: "读取规则",
+    description: "列出并查看此收件箱的自动化规则。",
   },
   RULES_WRITE: {
-    label: "Write rules",
-    description: "Create, update, and delete automation rules for this inbox.",
+    label: "写入规则",
+    description: "为此收件箱创建、更新和删除自动化规则。",
   },
   SETTINGS_READ: {
-    label: "Read settings",
-    description: "Read inbox settings for this inbox.",
+    label: "读取设置",
+    description: "读取此收件箱的设置。",
   },
   SETTINGS_WRITE: {
-    label: "Write settings",
-    description: "Update inbox settings for this inbox.",
+    label: "写入设置",
+    description: "更新此收件箱的设置。",
   },
   ASSISTANT_CHAT: {
-    label: "Assistant chat",
-    description: "Start assistant chat sessions for this inbox.",
+    label: "助手对话",
+    description: "为此收件箱启动助手对话会话。",
   },
   SENDERS_UNSUBSCRIBE: {
-    label: "Unsubscribe senders",
-    description: "Unsubscribe from senders for this inbox.",
+    label: "退订发件人",
+    description: "为此收件箱退订发件人。",
   },
 };
 
@@ -73,8 +73,8 @@ export const API_KEY_SCOPE_OPTIONS: Array<{
   },
 ];
 
-// SENDERS_UNSUBSCRIBE is selectable but not preselected: unsubscribing sends
-// requests to third parties on the user's behalf and cannot be undone.
+// SENDERS_UNSUBSCRIBE 可选择但不会默认勾选：退订会代表用户向第三方发起请求，
+// 且无法撤销。
 export const DEFAULT_API_KEY_SCOPES: ApiKeyScopeValue[] = [
   "RULES_READ",
   "RULES_WRITE",
@@ -82,10 +82,10 @@ export const DEFAULT_API_KEY_SCOPES: ApiKeyScopeValue[] = [
 ];
 
 export const API_KEY_EXPIRY_OPTIONS = [
-  { value: "30", label: "30 days" },
-  { value: "90", label: "90 days" },
-  { value: "365", label: "1 year" },
-  { value: "never", label: "No expiry" },
+  { value: "30", label: "30 天" },
+  { value: "90", label: "90 天" },
+  { value: "365", label: "1 年" },
+  { value: "never", label: "永不过期" },
 ] as const;
 
 export const apiKeyExpirySchema = z.enum(

@@ -58,8 +58,7 @@ export async function uploadDraftAttachment({
   });
   if (!started.ok)
     throw new Error(
-      (await readErrorMessage(started)) ??
-        `Could not attach ${attachment.filename}.`,
+      (await readErrorMessage(started)) ?? `无法添加 ${attachment.filename}。`,
     );
   const upload: StartDraftAttachmentUploadResponse = await started.json();
   if (upload.type === "provider-url") {
@@ -70,12 +69,12 @@ export async function uploadDraftAttachment({
       file,
     });
     const after = await fetchDraftAttachments({ emailAccountId, draftId });
-    // Draft changes run one at a time, so the new id is the only new one.
+    // 草稿变更一次只执行一个，因此新 id 就是唯一新增的那个。
     const added = after?.attachments.filter(
       (item) => !before?.attachments.some((known) => known.id === item.id),
     );
     if (!after || added?.length !== 1)
-      throw new Error(`Could not confirm ${attachment.filename} was attached.`);
+      throw new Error(`无法确认 ${attachment.filename} 已添加。`);
     return { ...after, attachmentId: added[0]!.id };
   }
 
@@ -85,7 +84,7 @@ export async function uploadDraftAttachment({
     file,
   });
   if (message.size !== upload.totalBytes)
-    throw new Error(`Could not attach ${attachment.filename}. Try again.`);
+    throw new Error(`无法添加 ${attachment.filename}，请重试。`);
   return uploadDraftMessage({
     emailAccountId,
     draftId,

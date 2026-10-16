@@ -217,7 +217,7 @@ describe("filing-notifications", () => {
       ).toBeLessThan(sendEmailWithHtml.mock.invocationCallOrder[0]);
       expect(sendEmailWithHtml).toHaveBeenCalledWith(
         expect.objectContaining({
-          subject: "✓ Filed 2 documents",
+          subject: "✓ 已归档 2 个文档",
           messageHtml: expect.stringMatching(/first\.pdf[\s\S]*second\.pdf/),
         }),
         { preserveThreadSubject: true },

@@ -13,7 +13,7 @@ export type MailSplitFilter = {
 export type MailSplit = {
   id: string;
   name: string;
-  /** False means "show mail matching any of these conditions". */
+  /** false 表示「显示匹配任一条件的邮件」。 */
   matchAll: boolean;
   filters: MailSplitFilter[];
 };
@@ -36,7 +36,7 @@ export function otherMailSplitQuery(splits: MailSplit[]): ThreadsQuery {
 
 export type PortableLabelSplit = MailSplit & { labelNames: string[] };
 
-/** Tokens the "Older than" condition offers, and how far back each one reaches. */
+/**「早于」条件提供的选项，以及每个选项向前追溯的时间范围。 */
 const OLDER_THAN_DAYS: Record<string, number> = {
   "3d": 3,
   "1w": 7,
@@ -50,16 +50,16 @@ export const OLDER_THAN_OPTIONS = [
 ];
 
 /**
- * Every split is its own server query. Filtering a paginated list client-side would
- * only ever search the pages already loaded, which silently under-reports.
+ * 每个分类都是独立的服务器查询。在客户端过滤分页列表
+ * 只会搜索已加载的页面，从而静默地少报结果。
  *
- * `now` is injected so the "older than" window is testable.
+ * 注入 `now` 以便「早于」时间窗口可被测试。
  */
 export function mailSplitToThreadsQuery(
   split: QuerySplit,
   now: Date = new Date(),
 ): ThreadsQuery {
-  // A split with no conditions is the plain inbox — that's what "All" is.
+  // 没有条件的分类就是普通收件箱——这就是「全部」。
   if (!split.filters.length) return { type: "inbox" };
 
   return split.matchAll ? matchAllQuery(split, now) : matchAnyQuery(split, now);
@@ -72,7 +72,7 @@ export function mailTypeToThreadsQuery(type: string): ThreadsQuery {
   return { type };
 }
 
-/** True when archive should drop the row, not just rewrite labels. Search is whole-mailbox. */
+/** 当归档应删除该行而不仅仅重写标签时为 true。搜索范围是整个邮箱。 */
 export function threadListQueryRequiresInbox(query: ThreadsQuery): boolean {
   if (query.q) return false;
   if (query.type === "inbox" || query.type === "unread") return true;
@@ -98,15 +98,15 @@ export function getPortableLabelSplits(
     const labelNames = labelFilters.map(
       (filter) => labelsById[filter.value ?? ""]?.name.trim() ?? "",
     );
-    // A split that leans on a label the account no longer has can't be
-    // reproduced elsewhere, so it's dropped rather than silently widened.
+    // 依赖账号已不存在的标签的分类无法
+    // 在其他地方重现，因此会被丢弃而不是被静默放宽。
     if (labelNames.some((name) => !name)) return [];
 
     return [{ ...split, labelNames }];
   });
 }
 
-/** Everything ANDs into a single provider query. */
+/** 所有条件以 AND 合并为单个服务商查询。 */
 function matchAllQuery(split: QuerySplit, now: Date): ThreadsQuery {
   const labelIds = ["INBOX"];
   const query: ThreadsQuery = {};
@@ -143,16 +143,16 @@ function matchAllQuery(split: QuerySplit, now: Date): ThreadsQuery {
     }
   }
 
-  // `inboxSection` only narrows Outlook's inbox when nothing else pins the
-  // folder, so it carries the inbox scope itself rather than a label id.
+  // `inboxSection` 仅在没有任何其他条件固定
+  // 文件夹时收窄 Outlook 的收件箱，因此它自身携带收件箱范围而非标签 id。
   if (query.inboxSection && labelIds.length === 1)
     return { ...query, type: "inbox" };
   return { ...query, labelIds };
 }
 
 /**
- * "Match any" is a disjunction, which a single flat query can't express, so each
- * condition becomes its own leaf and the provider ORs them inside the inbox.
+ * 「匹配任一」是析取，单个扁平查询无法表达，因此每个
+ * 条件成为独立的叶子，服务商在收件箱内对其做 OR。
  */
 function matchAnyQuery(split: QuerySplit, now: Date): ThreadsQuery {
   const anyOf = split.filters.map<ThreadsQueryLeaf>((filter) => {

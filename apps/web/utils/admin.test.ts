@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 
-// Define constants at the top level
+// 在顶层定义常量
 const adminEmail = "admin@example.com";
 const nonAdminEmail = "user@example.com";
 const anotherAdmin = "another@admin.com";
 const defaultAdmins = `${adminEmail},${anotherAdmin}`;
 
-// Mock the structure. The actual value will be set per test using vi.doMock.
-// The initial value here might be used if a test doesn't use vi.doMock,
-// but it's safer to use vi.doMock in each test for clarity.
+// 模拟该结构。实际值会在每个测试中通过 vi.doMock 设置。
+// 如果某个测试没有使用 vi.doMock，可能会用到这里的初始值，
+// 但为了清晰，在每个测试中都使用 vi.doMock 更稳妥。
 vi.mock("@/env", () => ({
   env: {
     ADMINS: defaultAdmins,
@@ -17,15 +17,15 @@ vi.mock("@/env", () => ({
 
 describe("isAdmin", () => {
   afterEach(() => {
-    // Reset modules ensures that dynamic imports get a fresh version
-    // linked to the mocks set by vi.doMock in the next test.
+    // 重置模块可确保动态导入获得与下一个测试中
+    // vi.doMock 设置的 mock 关联的新版本。
     vi.resetModules();
   });
 
   it("should return true if the email is in ADMINS", async () => {
-    // Establish mock state for this test
+    // 为本测试建立 mock 状态
     await vi.doMock("@/env", () => ({ env: { ADMINS: defaultAdmins } }));
-    // Dynamically import the module *after* mocking
+    // 在 mock *之后*动态导入该模块
     const { isAdmin } = await import("./admin");
     expect(isAdmin({ email: adminEmail })).toBe(true);
   });
@@ -51,7 +51,7 @@ describe("isAdmin", () => {
   it("should be case-sensitive and return false if casing differs", async () => {
     await vi.doMock("@/env", () => ({ env: { ADMINS: defaultAdmins } }));
     const { isAdmin } = await import("./admin");
-    // String.includes is case-sensitive. "Admin@example.com" is not in "admin@example.com,..."
+    // String.includes 区分大小写。"Admin@example.com" 不在 "admin@example.com,..." 中
     expect(isAdmin({ email: "Admin@example.com" })).toBe(false);
   });
 
@@ -76,7 +76,7 @@ describe("isAdmin", () => {
   });
 
   it("should handle spaces around emails in ADMINS env var", async () => {
-    // Testing current behavior: String.includes finds substrings
+    // 测试当前行为：String.includes 会查找子串
     await vi.doMock("@/env", () => ({
       env: { ADMINS: ` ${adminEmail} , ${anotherAdmin} ` },
     }));

@@ -9,9 +9,9 @@ import {
 } from "@/components/ui/dialog";
 import { LazyMuxVideo } from "@/components/LazyMuxVideo";
 
-// Width tracks the viewport, minus the heading, so the 16:9 player stays
-// inside the centered dialog. A fixed player width wider than the dialog
-// leaves the video clipped and off-center.
+// 宽度跟随视口并减去标题高度，以使 16:9 播放器保持在
+// 居中的对话框内。固定播放器宽度若超过对话框
+// 会导致视频被裁剪且偏离中心。
 const dialogWidth = "min(94vw, calc((90vh - 9rem) * 16 / 9), 1200px)";
 
 export function VideoPlayerDialog({

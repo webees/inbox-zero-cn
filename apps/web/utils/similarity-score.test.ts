@@ -103,7 +103,7 @@ Bob`;
 
     const score = calculateSimilarity(original, modified);
 
-    // Should be very similar but not identical
+    // 应非常相似但不完全相同
     expect(score).toBeGreaterThan(0.9);
     expect(score).toBeLessThan(1.0);
   });
@@ -113,22 +113,22 @@ Bob`;
       "I will review this tomorrow",
       "I will review this today",
     );
-    // Should be similar but not identical
+    // 应相似但不完全相同
     expect(score).toBeGreaterThan(0.7);
     expect(score).toBeLessThan(1.0);
   });
 });
 
 /**
- * Integration tests that use the real implementation with ParsedMessage objects.
- * These test the actual Outlook HTML handling fix.
+ * 使用真实实现与 ParsedMessage 对象的集成测试。
+ * 这些测试实际的 Outlook HTML 处理修复。
  */
 describe("calculateSimilarity - integration tests with ParsedMessage", () => {
-  // Import real implementation without mocks
+  // 导入真实实现，不使用 mock
   let realCalculateSimilarity: typeof calculateSimilarity;
 
   beforeAll(async () => {
-    // Clear the module cache and re-import without mocks
+    // 清空模块缓存并在不使用 mock 的情况下重新导入
     vi.resetModules();
     vi.doUnmock("@/utils/mail");
     const module = await import("./similarity-score");

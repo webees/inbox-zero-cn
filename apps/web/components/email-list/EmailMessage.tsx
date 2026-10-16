@@ -731,14 +731,14 @@ function ReplyPanel({
         ) {
           toastError({
             description: getActionErrorMessage(result, {
-              prefix: "Failed to discard draft",
+              prefix: "丢弃草稿失败",
             }),
           });
           onRestoreCompose(composeSession);
           return false;
         }
       } catch {
-        toastError({ description: "Failed to discard draft" });
+        toastError({ description: "丢弃草稿失败" });
         onRestoreCompose(composeSession);
         return false;
       } finally {
@@ -771,10 +771,10 @@ function ReplyPanel({
     return (
       <div className="mt-5 flex gap-2">
         <Button onClick={refetch} size="sm" variant="outline">
-          Load message to forward
+          加载要转发的邮件
         </Button>
         <Button onClick={onCloseCompose} size="sm" variant="ghost">
-          Cancel
+          取消
         </Button>
       </div>
     );

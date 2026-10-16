@@ -80,7 +80,7 @@ export const changeSenderCategoryAction = actionClient
       const category = await prisma.category.findUnique({
         where: { id: categoryId, emailAccountId },
       });
-      if (!category) throw new SafeError("Category not found");
+      if (!category) throw new SafeError("未找到分类");
 
       await updateCategoryForSender({
         emailAccountId,
@@ -189,8 +189,7 @@ async function upsertCategory({
       return { id: category.id };
     }
   } catch (error) {
-    if (isDuplicateError(error, "name"))
-      throw new SafeError("Category with this name already exists");
+    if (isDuplicateError(error, "name")) throw new SafeError("已存在同名分类");
 
     throw error;
   }

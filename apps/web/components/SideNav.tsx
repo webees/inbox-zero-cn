@@ -93,29 +93,29 @@ export const useNavigation = () => {
   const manageItems: NavItem[] = useMemo(
     () => [
       {
-        name: "Inbox",
+        name: "收件箱",
         href: prefixPath(currentEmailAccountId, "/mail"),
         icon: InboxIcon,
       },
       {
-        name: "Chat",
+        name: "聊天",
         href: prefixPath(currentEmailAccountId, "/assistant"),
         icon: MessageSquareIcon,
       },
       {
-        name: "Assistant",
+        name: "助手",
         href: prefixPath(currentEmailAccountId, "/automation"),
         icon: SparklesIcon,
       },
       {
-        name: "Channels",
+        name: "渠道",
         href: prefixPath(currentEmailAccountId, "/channels"),
         icon: MessagesSquareIcon,
       },
       ...(showMeetingRecorder
         ? [
             {
-              name: "Meetings",
+              name: "会议",
               href: prefixPath(currentEmailAccountId, "/meetings"),
               icon: MicIcon,
             },
@@ -128,24 +128,24 @@ export const useNavigation = () => {
   const cleanupItems: NavItem[] = useMemo(
     () => [
       {
-        name: "Bulk Unsubscribe",
+        name: "批量退订",
         href: prefixPath(currentEmailAccountId, "/bulk-unsubscribe"),
         icon: MailsIcon,
       },
       {
-        name: "Bulk Archive",
+        name: "批量归档",
         href: prefixPath(currentEmailAccountId, "/bulk-archive"),
         icon: ArchiveIcon,
       },
       {
-        name: "Analytics",
+        name: "分析",
         href: prefixPath(currentEmailAccountId, "/stats"),
         icon: BarChartBigIcon,
       },
       ...(isGoogleProvider(provider) && showCleaner
         ? [
             {
-              name: "Deep Clean",
+              name: "深度清理",
               href: prefixPath(currentEmailAccountId, "/clean"),
               icon: BrushIcon,
               beta: true,
@@ -159,14 +159,14 @@ export const useNavigation = () => {
   const moreItems: NavItem[] = useMemo(
     () => [
       {
-        name: "Calendars",
+        name: "日历",
         href: prefixPath(currentEmailAccountId, "/calendars"),
         icon: CalendarIcon,
       },
       ...(showMeetingBriefs
         ? [
             {
-              name: "Meeting Briefs",
+              name: "会议简报",
               href: prefixPath(currentEmailAccountId, "/briefs"),
               icon: FileTextIcon,
             },
@@ -176,7 +176,7 @@ export const useNavigation = () => {
         ? []
         : [
             {
-              name: "Attachments",
+              name: "附件",
               href: prefixPath(currentEmailAccountId, "/drive"),
               icon: HardDriveIcon,
               new: false,
@@ -185,7 +185,7 @@ export const useNavigation = () => {
       ...(showIntegrations
         ? [
             {
-              name: "Integrations",
+              name: "集成",
               href: prefixPath(currentEmailAccountId, "/integrations"),
               icon: ZapIcon,
             },
@@ -205,7 +205,7 @@ export const useNavigation = () => {
 
 const getTheAppLinks: NavItem[] = [
   {
-    name: "Get the app",
+    name: "获取应用",
     icon: SmartphoneIcon,
     href: "/download",
     target: "_blank",
@@ -214,22 +214,22 @@ const getTheAppLinks: NavItem[] = [
 
 const topMailLinks: NavItem[] = [
   {
-    name: "Inbox",
+    name: "收件箱",
     icon: InboxIcon,
     href: "?type=inbox",
   },
   {
-    name: "Drafts",
+    name: "草稿",
     icon: FileIcon,
     href: "?type=draft",
   },
   {
-    name: "Sent",
+    name: "已发送",
     icon: SendIcon,
     href: "?type=sent",
   },
   {
-    name: "Archived",
+    name: "已归档",
     icon: ArchiveIcon,
     href: "?type=archive",
   },
@@ -237,27 +237,27 @@ const topMailLinks: NavItem[] = [
 
 const bottomMailLinks: NavItem[] = [
   {
-    name: "Personal",
+    name: "个人",
     icon: PersonStandingIcon,
     href: "?type=CATEGORY_PERSONAL",
   },
   {
-    name: "Social",
+    name: "社交",
     icon: Users2Icon,
     href: "?type=CATEGORY_SOCIAL",
   },
   {
-    name: "Updates",
+    name: "更新",
     icon: AlertCircleIcon,
     href: "?type=CATEGORY_UPDATES",
   },
   {
-    name: "Forums",
+    name: "论坛",
     icon: MessagesSquareIcon,
     href: "?type=CATEGORY_FORUMS",
   },
   {
-    name: "Promotions",
+    name: "促销",
     icon: RatioIcon,
     href: "?type=CATEGORY_PROMOTIONS",
   },
@@ -284,7 +284,7 @@ export function SideNav({
       showMailNav
         ? [
             {
-              name: "Back",
+              name: "返回",
               href: "/automation",
               icon: ArrowLeftIcon,
             },
@@ -322,11 +322,11 @@ export function SideNav({
           ) : (
             <>
               <SidebarGroup>
-                <SidebarGroupLabel>Manage</SidebarGroupLabel>
+                <SidebarGroupLabel>管理</SidebarGroupLabel>
                 <SideNavMenu items={navigation.manageItems} activeHref={path} />
               </SidebarGroup>
               <SidebarGroup>
-                <SidebarGroupLabel>Cleanup</SidebarGroupLabel>
+                <SidebarGroupLabel>清理</SidebarGroupLabel>
                 <SideNavMenu
                   items={navigation.cleanupItems}
                   activeHref={path}
@@ -345,7 +345,7 @@ export function SideNav({
                     ) : (
                       <ChevronRightIcon className="size-3.5" />
                     )}
-                    <span>Tools</span>
+                    <span>工具</span>
                   </button>
                 </SidebarGroupLabel>
                 {showMoreItems && (
@@ -387,7 +387,7 @@ function MailNav({ path }: { path: string }) {
 
   const [currentType] = useQueryState("type");
   const [currentLabelId] = useQueryState("labelId");
-  // The mail page defaults to the inbox when no type is selected
+  // 未选择类型时，邮件页面默认为收件箱
   const activeType = currentLabelId ? null : (currentType ?? "inbox");
 
   const labelNavItems = useMemo(
@@ -411,7 +411,7 @@ function MailNav({ path }: { path: string }) {
               sidebarName="left-sidebar"
             >
               <PenIcon className="size-4" />
-              <span className="truncate font-semibold">Compose</span>
+              <span className="truncate font-semibold">撰写</span>
               <CommandShortcut>C</CommandShortcut>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -426,7 +426,7 @@ function MailNav({ path }: { path: string }) {
       </SidebarGroup>
       {isGoogleProvider(provider) && (
         <SidebarGroup>
-          <SidebarGroupLabel>Categories</SidebarGroupLabel>
+          <SidebarGroupLabel>分类</SidebarGroupLabel>
           <SideNavMenu
             items={markActiveType(bottomMailLinks, activeType)}
             activeHref={path}
@@ -443,11 +443,11 @@ function MailNav({ path }: { path: string }) {
             <SideNavMenu items={labelNavItems} activeHref={path} />
           ) : (
             <div className="px-3 py-2 text-xs text-muted-foreground">
-              No {terminology.label.plural}
+              暂无{terminology.label.plural}
             </div>
           )}
 
-          {/* Hidden labels toggle */}
+          {/* 隐藏标签开关 */}
           {hiddenLabels.length > 0 && (
             <>
               <button
@@ -460,7 +460,7 @@ function MailNav({ path }: { path: string }) {
                 ) : (
                   <ChevronRightIcon className="mr-1 size-4" />
                 )}
-                <span>More</span>
+                <span>更多</span>
               </button>
 
               {showHiddenLabels && (
@@ -490,7 +490,7 @@ function labelToNavItem(
     icon: () => (
       <span
         className="size-2.5 shrink-0 rounded-full"
-        // Match Gmail/Outlook: labels without an assigned color are gray
+        // 与 Gmail/Outlook 一致：未分配颜色的标签显示为灰色
         style={{
           backgroundColor: label.color?.backgroundColor || "#9CA3AF",
         }}

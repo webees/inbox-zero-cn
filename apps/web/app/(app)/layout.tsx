@@ -52,7 +52,7 @@ export const metadata: Metadata = {
 
 export const viewport = {
   themeColor: "#FFF",
-  // safe area for iOS PWA
+  // 为 iOS PWA 预留的安全区域
   userScalable: false,
   initialScale: 1,
   maximumScale: 1,
@@ -91,7 +91,7 @@ export default async function AppLayout({
         data: { lastLogin: new Date() },
       });
     } catch (error) {
-      logger.error("Failed to update last login", { email, error });
+      logger.error("更新最后登录时间失败", { email, error });
       captureException(error, { userEmail: email });
     }
   });

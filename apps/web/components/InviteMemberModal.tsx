@@ -68,17 +68,17 @@ export function InviteMemberModal({
       {trigger !== null &&
         (trigger ?? (
           <DialogTrigger asChild>
-            <Button size="sm">Invite Members</Button>
+            <Button size="sm">邀请成员</Button>
           </DialogTrigger>
         ))}
 
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Invite teammates</DialogTitle>
+          <DialogTitle>邀请团队成员</DialogTitle>
           <DialogDescription>
             {organizationId
-              ? "We'll send each teammate an email with a link to join your organization. The link expires in two weeks."
-              : "Enter email addresses to invite team members."}
+              ? "我们会向每位团队成员发送一封包含加入组织链接的邮件。该链接将在两周后过期。"
+              : "输入要邀请的团队成员的邮箱地址。"}
           </DialogDescription>
         </DialogHeader>
 
@@ -136,7 +136,7 @@ function InviteForm({
       .filter((i) => i.email.length > 0);
 
     if (filled.length === 0) {
-      toastError({ description: "Please enter at least one email address" });
+      toastError({ description: "请至少输入一个邮箱地址" });
       return;
     }
 
@@ -147,7 +147,7 @@ function InviteForm({
 
     if (result?.serverError) {
       toastError({
-        title: "Error sending invitations",
+        title: "发送邀请出错",
         description: result.serverError,
       });
       return;
@@ -160,7 +160,7 @@ function InviteForm({
 
     if (successCount > 0) {
       toastSuccess({
-        description: `${successCount} invitation${successCount > 1 ? "s" : ""} sent successfully!`,
+        description: `成功发送 ${successCount} 封邀请！`,
       });
       onSuccess?.();
       reset();
@@ -169,9 +169,9 @@ function InviteForm({
 
     if (failures.length > 0) {
       toastError({
-        title: `Failed to send ${failures.length} invitation${failures.length > 1 ? "s" : ""}`,
+        title: `发送 ${failures.length} 封邀请失败`,
         description: failures
-          .map((f) => `${f.email}: ${f.error ?? "Failed"}`)
+          .map((f) => `${f.email}：${f.error ?? "失败"}`)
           .join("\n"),
       });
     }
@@ -191,7 +191,7 @@ function InviteForm({
                   validate: (v) =>
                     !v.trim() ||
                     isValidEmail(v.trim()) ||
-                    "Please enter a valid email address",
+                    "请输入有效的邮箱地址",
                 })}
                 error={errors.invitations?.[index]?.email}
               />
@@ -209,8 +209,8 @@ function InviteForm({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="member">Member</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="member">成员</SelectItem>
+                  <SelectItem value="admin">管理员</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -220,7 +220,7 @@ function InviteForm({
               size="icon"
               onClick={() => remove(index)}
               disabled={fields.length === 1}
-              aria-label="Remove invitation"
+              aria-label="移除邀请"
             >
               <XIcon className="size-4" />
             </Button>
@@ -236,15 +236,15 @@ function InviteForm({
         className="px-2 -ml-2"
       >
         <PlusIcon className="size-4 mr-2" />
-        Add another email
+        添加另一个邮箱
       </Button>
 
       <DialogFooter>
         <DialogClose asChild>
-          <Button variant="outline">Cancel</Button>
+          <Button variant="outline">取消</Button>
         </DialogClose>
         <Button type="submit" loading={isSubmitting}>
-          Send invites
+          发送邀请
         </Button>
       </DialogFooter>
     </form>
@@ -268,7 +268,7 @@ function CreateOrgAndInviteForm({
 
   const handleSubmit = useCallback(async () => {
     if (emails.length === 0) {
-      toastError({ description: "Please enter at least one email address" });
+      toastError({ description: "请至少输入一个邮箱地址" });
       return;
     }
 
@@ -282,7 +282,7 @@ function CreateOrgAndInviteForm({
 
     if (result?.serverError) {
       toastError({
-        description: "Failed to create organization and send invitations",
+        description: "创建组织并发送邀请失败",
       });
     } else if (result?.data) {
       const successCount = result.data.results.filter((r) => r.success).length;
@@ -290,12 +290,12 @@ function CreateOrgAndInviteForm({
 
       if (successCount > 0) {
         toastSuccess({
-          description: `${successCount} invitation${successCount > 1 ? "s" : ""} sent successfully!`,
+          description: `成功发送 ${successCount} 封邀请！`,
         });
       }
       if (errorCount > 0) {
         toastError({
-          description: `Failed to send ${errorCount} invitation${errorCount > 1 ? "s" : ""}`,
+          description: `发送 ${errorCount} 封邀请失败`,
         });
       }
 
@@ -311,16 +311,16 @@ function CreateOrgAndInviteForm({
         value={emails}
         onChange={handleEmailsChange}
         validate={(email) =>
-          isValidEmail(email) ? null : "Please enter a valid email address"
+          isValidEmail(email) ? null : "请输入有效的邮箱地址"
         }
-        label="Email addresses"
+        label="邮箱地址"
         id="email-input"
-        placeholder="Enter email addresses separated by commas"
+        placeholder="输入邮箱地址，用逗号分隔"
       />
 
       <DialogFooter>
         <DialogClose asChild>
-          <Button variant="outline">Cancel</Button>
+          <Button variant="outline">取消</Button>
         </DialogClose>
         <Button
           type="button"
@@ -328,7 +328,7 @@ function CreateOrgAndInviteForm({
           loading={isSubmitting}
           disabled={emails.length === 0}
         >
-          Send Invitation{emails.length > 1 ? "s" : ""}
+          发送邀请
         </Button>
       </DialogFooter>
     </div>

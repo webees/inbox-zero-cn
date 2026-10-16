@@ -132,7 +132,7 @@ describe("getDesktopDownloadCtas", () => {
       arch: "unknown",
     });
 
-    expect(primary?.shortLabel).toBe("Mac (Apple Silicon)");
+    expect(primary?.shortLabel).toBe("Mac（Apple 芯片）");
     expect(primary?.href).toBe(DOWNLOADS.macArm64Dmg);
     expect(alternatives.map((item) => item.shortLabel)).toEqual([
       "Mac Intel",
@@ -170,7 +170,7 @@ describe("getDesktopDownloadCtas", () => {
 
     expect(primary).toBeNull();
     expect(alternatives.map((item) => item.shortLabel)).toEqual([
-      "Mac (Apple Silicon)",
+      "Mac（Apple 芯片）",
       "Mac Intel",
       "Windows",
       "Windows ARM",

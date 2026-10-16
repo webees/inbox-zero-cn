@@ -134,7 +134,7 @@ export const GET = withError("mcp/callback", async (request, { params }) => {
   });
 
   if (!emailAccount) {
-    logger.warn("Unauthorized MCP callback - invalid email account", {
+    logger.warn("未授权的 MCP 回调 - 邮箱账号无效", {
       integration,
       emailAccountId,
       userId,
@@ -143,25 +143,25 @@ export const GET = withError("mcp/callback", async (request, { params }) => {
     return buildRedirectResponse(redirectUrl);
   }
 
-  // Custom servers are scoped to their email account, so resolve only once the
-  // state proves which account this callback belongs to
+  // 自定义服务器以其邮箱账号为作用域，因此只有在 state 证明此回调
+  // 属于哪个账号后再解析
   const integrationConfig = await resolveMcpIntegration({
     name: integration,
     emailAccountId,
   });
 
   if (!integrationConfig) {
-    throw new SafeError(`Integration ${integration} not found`);
+    throw new SafeError(`未找到集成 ${integration}`);
   }
 
   if (integrationConfig.authType !== "oauth") {
-    throw new SafeError(`Integration ${integration} does not support OAuth`);
+    throw new SafeError(`集成 ${integration} 不支持 OAuth`);
   }
 
   if (isOAuthCodeStoreConfigured()) {
     const claim = await claimOAuthCodeAndWait(code);
     if (claim.status === "error" && claim.stage === "claim") {
-      logger.warn("MCP OAuth callback deduplication unavailable", {
+      logger.warn("MCP OAuth 回调去重不可用", {
         error: claim.error,
         integration,
       });
@@ -170,8 +170,8 @@ export const GET = withError("mcp/callback", async (request, { params }) => {
     if (claim.status === "success") {
       logger.info(
         claim.waited
-          ? "Reusing in-flight MCP OAuth callback result"
-          : "Reusing completed MCP OAuth callback",
+          ? "复用进行中的 MCP OAuth 回调结果"
+          : "复用已完成的 MCP OAuth 回调",
         { integration },
       );
       applyCallbackResult(redirectUrl, claim.result);
@@ -182,7 +182,7 @@ export const GET = withError("mcp/callback", async (request, { params }) => {
       claim.status === "timeout" ||
       (claim.status === "error" && claim.stage === "wait")
     ) {
-      logger.warn("MCP OAuth callback result is still pending", {
+      logger.warn("MCP OAuth 回调结果仍在等待中", {
         error: claim.status === "error" ? claim.error : undefined,
         integration,
       });

@@ -84,11 +84,11 @@ describe("ActionAttachmentsField", () => {
     });
 
     expect(
-      within(
-        screen.getByRole("button", { name: /^AI-selected sources/ }),
-      ).getByText("1 folder"),
+      within(screen.getByRole("button", { name: /^AI 选择的来源/ })).getByText(
+        "1 个文件夹",
+      ),
     ).toBeTruthy();
-    expect(screen.getAllByText("1 folder")).toHaveLength(2);
+    expect(screen.getAllByText("1 个文件夹")).toHaveLength(2);
   });
 
   it("labels mixed AI sources with folders first", () => {
@@ -101,11 +101,11 @@ describe("ActionAttachmentsField", () => {
     });
 
     expect(
-      within(
-        screen.getByRole("button", { name: /^AI-selected sources/ }),
-      ).getByText("2 folders, 1 file"),
+      within(screen.getByRole("button", { name: /^AI 选择的来源/ })).getByText(
+        "2 个文件夹，1 个文件",
+      ),
     ).toBeTruthy();
-    expect(screen.getAllByText("2 folders, 1 file")).toHaveLength(2);
+    expect(screen.getAllByText("2 个文件夹，1 个文件")).toHaveLength(2);
   });
 
   it("counts files in both sections in the header without deduplicating", () => {
@@ -119,16 +119,16 @@ describe("ActionAttachmentsField", () => {
     });
 
     expect(
-      within(screen.getByRole("button", { name: /^Always attach/ })).getByText(
-        "2 files",
+      within(screen.getByRole("button", { name: /^始终附加/ })).getByText(
+        "2 个文件",
       ),
     ).toBeTruthy();
     expect(
-      within(
-        screen.getByRole("button", { name: /^AI-selected sources/ }),
-      ).getByText("1 folder, 1 file"),
+      within(screen.getByRole("button", { name: /^AI 选择的来源/ })).getByText(
+        "1 个文件夹，1 个文件",
+      ),
     ).toBeTruthy();
-    expect(screen.getByText("1 folder, 3 files")).toBeTruthy();
+    expect(screen.getByText("1 个文件夹，3 个文件")).toBeTruthy();
   });
 
   it("excludes disabled AI sources from the header", () => {
@@ -138,32 +138,28 @@ describe("ActionAttachmentsField", () => {
       allowAiSelectedSources: false,
     });
 
-    expect(screen.getAllByText("1 file")).toHaveLength(2);
-    expect(screen.queryByText("1 folder")).toBeNull();
+    expect(screen.getAllByText("1 个文件")).toHaveLength(2);
+    expect(screen.queryByText("1 个文件夹")).toBeNull();
   });
 
   it("keeps badges hidden for empty selections", () => {
     renderField();
 
-    expect(screen.getByText("Attachments").parentElement?.textContent).toBe(
-      "Attachments",
-    );
-    expect(screen.getByRole("button", { name: "Always attach" })).toBeTruthy();
-    expect(
-      screen.getByRole("button", { name: "AI-selected sources" }),
-    ).toBeTruthy();
+    expect(screen.getByText("附件").parentElement?.textContent).toBe("附件");
+    expect(screen.getByRole("button", { name: "始终附加" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "AI 选择的来源" })).toBeTruthy();
   });
 
   it("applies always-attach selections only after saving the picker", () => {
     const onChange = vi.fn();
     renderField({ onChange });
 
-    fireEvent.click(screen.getByRole("button", { name: "Select files" }));
+    fireEvent.click(screen.getByRole("button", { name: "选择文件" }));
     fireEvent.click(screen.getByRole("checkbox"));
 
     expect(onChange).not.toHaveBeenCalled();
 
-    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    fireEvent.click(screen.getByRole("button", { name: "保存" }));
 
     expect(onChange).toHaveBeenCalledWith([
       {
@@ -180,14 +176,14 @@ describe("ActionAttachmentsField", () => {
     const onChange = vi.fn();
     renderField({ onChange });
 
-    fireEvent.click(screen.getByRole("button", { name: "Select files" }));
+    fireEvent.click(screen.getByRole("button", { name: "选择文件" }));
     fireEvent.click(screen.getByRole("checkbox"));
-    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    fireEvent.click(screen.getByRole("button", { name: "取消" }));
 
     expect(onChange).not.toHaveBeenCalled();
     expect(
       screen.queryByRole("heading", {
-        name: "Select files to always attach",
+        name: "选择要始终附加的文件",
       }),
     ).toBeNull();
   });
@@ -196,16 +192,14 @@ describe("ActionAttachmentsField", () => {
     const onAttachmentSourcesChange = vi.fn();
     renderField({ onAttachmentSourcesChange });
 
-    fireEvent.click(
-      screen.getByRole("button", { name: "Select sources for AI" }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: "为 AI 选择来源" }));
     fireEvent.click(screen.getByRole("checkbox"));
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
 
     expect(onAttachmentSourcesChange).not.toHaveBeenCalled();
     expect(
       screen.queryByRole("heading", {
-        name: "Select sources for AI to search",
+        name: "选择供 AI 搜索的来源",
       }),
     ).toBeNull();
   });

@@ -21,7 +21,7 @@ import {
 // ============================================================================
 
 /**
- * Creates an OAuth2 client for Google Drive authentication
+ * 为 Google Drive 认证创建 OAuth2 客户端
  */
 export function getGoogleDriveOAuth2Client() {
   return new auth.OAuth2(
@@ -32,7 +32,7 @@ export function getGoogleDriveOAuth2Client() {
 }
 
 /**
- * Generates the OAuth2 URL for Google Drive
+ * 为 Google Drive 生成 OAuth2 URL
  */
 export type GoogleDriveAccessLevel = "limited" | "full";
 
@@ -52,14 +52,14 @@ export function getGoogleDriveOAuth2Url(
 }
 
 /**
- * Exchange Google OAuth code for tokens
+ * 用 Google OAuth code 换取令牌
  */
 export async function exchangeGoogleDriveCode(code: string) {
   const oauth2Client = getGoogleDriveOAuth2Client();
   const { tokens } = await oauth2Client.getToken(code);
 
   if (!tokens.access_token || !tokens.refresh_token) {
-    throw new Error("No access or refresh token returned from Google");
+    throw new Error("Google 未返回 access 或 refresh token");
   }
 
   const profile = isGoogleOauthEmulationEnabled()
@@ -68,7 +68,7 @@ export async function exchangeGoogleDriveCode(code: string) {
   const email = profile.email;
 
   if (!email) {
-    throw new Error("Could not get email from Google profile");
+    throw new Error("无法从 Google 资料获取邮箱");
   }
 
   return {
@@ -84,7 +84,7 @@ async function verifyGoogleIdTokenPayload(
   idToken: string | null | undefined,
 ) {
   if (!idToken) {
-    throw new Error("No ID token returned from Google");
+    throw new Error("Google 未返回 ID token");
   }
 
   const ticket = await oauth2Client.verifyIdToken({
@@ -94,7 +94,7 @@ async function verifyGoogleIdTokenPayload(
   const payload = ticket.getPayload();
 
   if (!payload?.email) {
-    throw new Error("Could not get email from Google ID token");
+    throw new Error("无法从 Google ID token 获取邮箱");
   }
 
   return payload;
@@ -105,11 +105,11 @@ async function verifyGoogleIdTokenPayload(
 // ============================================================================
 
 /**
- * Generates the OAuth2 URL for Microsoft OneDrive/SharePoint
+ * 为 Microsoft OneDrive/SharePoint 生成 OAuth2 URL
  */
 export function getMicrosoftDriveOAuth2Url(state: string): string {
   if (!env.MICROSOFT_CLIENT_ID) {
-    throw new Error("Microsoft login not enabled - missing client ID");
+    throw new Error("Microsoft 登录未启用——缺少 client ID");
   }
 
   const params = new URLSearchParams({
@@ -117,7 +117,7 @@ export function getMicrosoftDriveOAuth2Url(state: string): string {
     response_type: "code",
     redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/api/outlook/drive/callback`,
     scope: MICROSOFT_DRIVE_SCOPES.join(" "),
-    prompt: "consent", // Ensures refresh token is returned on re-auth
+    prompt: "consent", // 确保在重新认证时返回 refresh token
     state,
   });
 
@@ -125,11 +125,11 @@ export function getMicrosoftDriveOAuth2Url(state: string): string {
 }
 
 /**
- * Exchange Microsoft OAuth code for tokens
+ * 用 Microsoft OAuth code 换取令牌
  */
 export async function exchangeMicrosoftDriveCode(code: string) {
   if (!env.MICROSOFT_CLIENT_ID || !env.MICROSOFT_CLIENT_SECRET) {
-    throw new Error("Microsoft login not enabled - missing credentials");
+    throw new Error("Microsoft 登录未启用——缺少凭证");
   }
 
   const response = await requestMicrosoftToken({
@@ -143,13 +143,13 @@ export async function exchangeMicrosoftDriveCode(code: string) {
 
   if (!response.ok) {
     const errorBody = await response.json().catch(() => ({}));
-    throw new Error(errorBody.error_description || "Failed to exchange code");
+    throw new Error(errorBody.error_description || "用 code 换取令牌失败");
   }
 
   const tokens = await response.json();
 
   if (!tokens.access_token || !tokens.refresh_token) {
-    throw new Error("No access or refresh token returned from Microsoft");
+    throw new Error("Microsoft 未返回 access 或 refresh token");
   }
 
   const { email } = await fetchMicrosoftUserProfile(tokens.access_token);

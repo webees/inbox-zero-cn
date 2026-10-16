@@ -14,28 +14,28 @@ const getCategorizeSendersQueueName = ({
 }) => `${CATEGORIZE_SENDERS_PREFIX}-${emailAccountId}`;
 
 /**
- * Publishes sender categorization tasks to QStash queue in batches
- * Splits large arrays of senders into chunks of BATCH_SIZE to prevent overwhelming the system
+ * 分批将发件人分类任务发布到 QStash 队列
+ * 将大量发件人数组拆分为 BATCH_SIZE 大小的分块，以避免系统过载
  */
 export async function publishToAiCategorizeSendersQueue(
   body: AiCategorizeSenders,
 ) {
-  // Split senders into smaller chunks to process in batches
+  // 将发件人拆分为更小的分块以便分批处理
   const BATCH_SIZE = 50;
   const chunks = chunk(body.senders, BATCH_SIZE);
 
-  // Create new queue for each user so we can run multiple users in parallel
+  // 为每个用户创建新队列，以便并行处理多个用户
   const queueName = getCategorizeSendersQueueName({
     emailAccountId: body.emailAccountId,
   });
 
-  logger.info("Publishing to AI categorize senders queue in chunks", {
+  logger.info("正在分批发布到 AI 发件人分类队列", {
     queueName,
     totalSenders: body.senders.length,
     numberOfChunks: chunks.length,
   });
 
-  // Process all chunks in parallel, each as a separate queue item
+  // 并行处理所有分块，每个分块作为单独的队列项
   await Promise.all(
     chunks.map((senderChunk) =>
       publishToQstashQueue({
@@ -84,7 +84,7 @@ async function deleteEmptyQueues({
       try {
         await deleteQueue(queue.name);
       } catch (error) {
-        logger.error("Error deleting queue", { queueName: queue.name, error });
+        logger.error("删除队列失败", { queueName: queue.name, error });
       }
     }
   }

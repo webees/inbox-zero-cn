@@ -55,9 +55,9 @@ export function registerMailClient(
   server.registerTool(
     "open_mail",
     {
-      title: "Open Inbox Zero",
+      title: "打开 Inbox Zero",
       description:
-        "Open the mail client to browse, read, compose, and organize linked mailboxes. Link an Inbox Zero account first. Does not change mail.",
+        "打开邮件客户端以浏览、阅读、撰写和整理已关联的邮箱。请先关联一个 Inbox Zero 账号。不会更改邮件。",
       inputSchema: {
         emailAccountId: z
           .string()
@@ -73,7 +73,7 @@ export function registerMailClient(
           ),
       },
       annotations: {
-        title: "Open Inbox Zero",
+        title: "打开 Inbox Zero",
         readOnlyHint: true,
         destructiveHint: false,
         openWorldHint: false,
@@ -96,7 +96,7 @@ export function registerMailClient(
 
   register({
     name: "browse_mail",
-    title: "Browse mailbox",
+    title: "浏览邮箱",
     description:
       "List paginated mailbox threads and sidebar navigation. Browse a system view or a provider label/folder ID returned in navigation. Search uses the mailbox provider's syntax. Account ID comes from list_email_accounts.",
     schema: browseMailSchema,
@@ -108,9 +108,9 @@ export function registerMailClient(
   });
   register({
     name: "read_mail",
-    title: "Read mail in client",
+    title: "在客户端中阅读邮件",
     description:
-      "Read a complete thread for the mail interface, including mailbox draft references. Use browse_mail to obtain its thread ID.",
+      "为邮件界面读取完整会话，包括邮箱草稿引用。使用 browse_mail 获取其会话 ID。",
     schema: readMailSchema,
     scope: "mcp:read",
     handler: readMailForMcp,
@@ -120,7 +120,7 @@ export function registerMailClient(
   });
   register({
     name: "save_mail_draft",
-    title: "Save mail draft",
+    title: "保存邮件草稿",
     description:
       "Create or update a mailbox draft for review; never sends. Body is plain text. Use replyToMessageId from read_thread to thread a reply. Use its returned draftId for subsequent edits. Requires account write permission.",
     schema: editorSchema,
@@ -132,7 +132,7 @@ export function registerMailClient(
   });
   register({
     name: "send_mail",
-    title: "Send mail",
+    title: "发送邮件",
     description:
       "Send email using the connected application’s mcp:send capability. The mail client UI asks the user to confirm recipients and content before invoking this tool; callers must obtain that confirmation. Body is plain text. Reuse mutationId, queuedAt, and the exact payload on retries to avoid duplicate sends. An uncertain result must be reconciled in Sent before another send. Requires mcp:send permission.",
     schema: sendMailSchema,
@@ -144,9 +144,9 @@ export function registerMailClient(
   });
   register({
     name: "change_mail",
-    title: "Organize mail",
+    title: "整理邮件",
     description:
-      "Archive, undo archive, or set read state on a thread in the selected mailbox. Requires account write permission. Archive is recoverable using unarchive.",
+      "对所选邮箱中的会话执行归档、撤销归档或设置已读状态。需要账号写权限。归档可通过 unarchive 恢复。",
     schema: changeMailSchema,
     scope: "mcp:write",
     handler: changeMailForMcp,
@@ -207,7 +207,7 @@ export function registerMailClient(
             session.scopes,
           );
         } catch (error) {
-          logger.warn("MCP tool failed", {
+          logger.warn("MCP 工具执行失败", {
             tool: name,
             error: error instanceof Error ? error.message : error,
           });

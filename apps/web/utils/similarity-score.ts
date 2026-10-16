@@ -36,8 +36,8 @@ const HTML_TAG_PATTERN = new RegExp(
 );
 
 /**
- * Normalizes content for Outlook (HTML) comparison.
- * Converts \n to <br> and then to plain text, strips quoted content.
+ * 规范化内容以便进行 Outlook（HTML）比较。
+ * 将 \n 转换为 <br> 再转换为纯文本，并剥离引用内容。
  */
 function normalizeForOutlook(content: string, stripSignature = false): string {
   const signatureStripped = stripSignature
@@ -57,8 +57,8 @@ function normalizeForOutlook(content: string, stripSignature = false): string {
 }
 
 /**
- * Decodes HTML entities (e.g., &#x1F44B; -> 👋) without modifying other content.
- * Invalid code points (> 0x10FFFF) are left unchanged to avoid RangeError.
+ * 解码 HTML 实体（例如 &#x1F44B; -> 👋），且不修改其他内容。
+ * 无效的码点（> 0x10FFFF）保持不变，以避免 RangeError。
  */
 function decodeHtmlEntities(text: string): string {
   return text
@@ -80,8 +80,8 @@ function decodeHtmlEntities(text: string): string {
 }
 
 /**
- * Normalizes content for Gmail (plain text) comparison.
- * Uses parseReply to extract the reply, decodes HTML entities, and strips quoted content.
+ * 规范化内容以便进行 Gmail（纯文本）比较。
+ * 使用 parseReply 提取回复、解码 HTML 实体，并剥离引用内容。
  */
 function normalizePlainText(content: string, stripSignature = false): string {
   const signatureStripped = stripSignature
@@ -106,8 +106,8 @@ function normalizePlainText(content: string, stripSignature = false): string {
 }
 
 /**
- * Calculates the similarity between stored draft content and a provider message.
- * Handles Outlook HTML content and properly strips quoted content.
+ * 计算已存储的草稿内容与服务商邮件之间的相似度。
+ * 处理 Outlook HTML 内容并正确剥离引用内容。
  *
  * @param storedContent The original stored draft content (from executedAction.content)
  * @param providerMessage The message from the email provider (ParsedMessage or plain text)
@@ -183,7 +183,7 @@ function normalizePair({
   let normalizeContent: (content: string, stripSignature: boolean) => string;
 
   if (typeof providerMessage === "string") {
-    // Legacy: plain string from before ParsedMessage was threaded through callers
+    // 旧版：在 ParsedMessage 贯穿调用方之前使用的纯字符串
     normalizeContent = normalizePlainText;
     normalizedStoredContent = normalizeContent(storedContent, stripSignature);
     normalizedProviderMessage = normalizeContent(
@@ -199,9 +199,8 @@ function normalizePair({
     normalizedProviderMessage = normalizeContent(text, stripSignature);
   }
 
-  // Normalize excluded signatures with stripSignature=false so the signature
-  // strippers don't reduce the user's saved signature to empty before we use
-  // it to remove that signature from the body.
+  // 以 stripSignature=false 规范化被排除的签名，这样在我们使用
+  // 用户保存的签名将其从正文中移除之前，签名剥离器不会把它清空。
   const normalizedExcludedSignatures = excludedSignatures
     ?.map((signature) => normalizeContent(signature, false))
     .filter(Boolean);

@@ -26,7 +26,7 @@ describe("DeploymentUpdateNotice", () => {
     await waitFor(() => expect(toastInfo).toHaveBeenCalledOnce());
     expect(toastInfo).toHaveBeenCalledWith(
       expect.objectContaining({
-        action: expect.objectContaining({ label: "Reload" }),
+        action: expect.objectContaining({ label: "重新加载" }),
       }),
     );
 

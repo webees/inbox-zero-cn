@@ -247,11 +247,11 @@ export function renderPlaywrightDashboard(history: PlaywrightRun[]): string {
       <div>
         <p class="eyebrow">Inbox Zero · browser checks</p>
         <h1>Playwright</h1>
-        <p class="subtitle">Persistent visual evidence and results from the emulated end-to-end suite.</p>
+        <p class="subtitle">来自模拟端到端测试套件的持久化视觉证据与结果。</p>
       </div>
       <div class="actions">
-        <a class="button" href="#" id="latest-screenshots">Latest screenshots</a>
-        <a class="button" href="#" id="latest-report">Latest report</a>
+        <a class="button" href="#" id="latest-screenshots">最新截图</a>
+        <a class="button" href="#" id="latest-report">最新报告</a>
         <a class="button" href="https://github.com/elie222/inbox-zero/actions/workflows/playwright.yml">GitHub Actions</a>
       </div>
     </header>
@@ -445,7 +445,7 @@ export function renderScreenshotGallery(input: {
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="dark" />
-  <title>Run screenshots · Inbox Zero</title>
+  <title>运行截图 · Inbox Zero</title>
   <style>
     ${SHARED_PAGE_STYLES}
     body { margin: 0; min-height: 100vh; background: radial-gradient(circle at top, #172554 0, #09090b 36rem); }
@@ -498,13 +498,13 @@ export function renderScreenshotGallery(input: {
       <div>
         <p class="eyebrow">Inbox Zero · visual review</p>
         <h1>${input.pullRequestNumber ? `PR #${input.pullRequestNumber} screenshots` : "Run screenshots"}</h1>
-        <p class="subtitle">Review intentional checkpoints separately from automatic failure captures.</p>
+        <p class="subtitle">将有意设置的检查点与自动失败截图分开查看。</p>
       </div>
       <div class="actions">
-        ${input.reportUrl ? `<a class="button" href="${escapeHtml(input.reportUrl)}">Full report</a>` : ""}
+        ${input.reportUrl ? `<a class="button" href="${escapeHtml(input.reportUrl)}">完整报告</a>` : ""}
         ${input.pullRequestUrl ? `<a class="button" href="${escapeHtml(input.pullRequestUrl)}">PR #${input.pullRequestNumber}</a>` : ""}
         <a class="button" href="${escapeHtml(input.runUrl)}">GitHub Actions</a>
-        <a class="button" href="${escapeHtml(input.dashboardUrl)}">All runs</a>
+        <a class="button" href="${escapeHtml(input.dashboardUrl)}">全部运行</a>
       </div>
     </header>
     <div class="toolbar">
@@ -517,17 +517,17 @@ export function renderScreenshotGallery(input: {
       </section>
       ${
         screenshots
-          ? `<div class="view-options" role="group" aria-label="Gallery columns">
-        <button class="view-option" type="button" data-columns="1" aria-label="One column" aria-pressed="true" title="One column">
+          ? `<div class="view-options" role="group" aria-label="画廊列数">
+        <button class="view-option" type="button" data-columns="1" aria-label="一列" aria-pressed="true" title="一列">
           <svg aria-hidden="true" viewBox="0 0 18 18"><rect x="3" y="2" width="12" height="14" rx="1.5" fill="currentColor" /></svg>
         </button>
-        <button class="view-option" type="button" data-columns="2" aria-label="Two columns" aria-pressed="false" title="Two columns">
+        <button class="view-option" type="button" data-columns="2" aria-label="两列" aria-pressed="false" title="两列">
           <svg aria-hidden="true" viewBox="0 0 18 18"><rect x="1" y="2" width="7" height="14" rx="1.5" fill="currentColor" /><rect x="10" y="2" width="7" height="14" rx="1.5" fill="currentColor" /></svg>
         </button>
-        <button class="view-option" type="button" data-columns="3" aria-label="Three columns" aria-pressed="false" title="Three columns">
+        <button class="view-option" type="button" data-columns="3" aria-label="三列" aria-pressed="false" title="三列">
           <svg aria-hidden="true" viewBox="0 0 18 18"><rect x="1" y="2" width="4" height="14" rx="1" fill="currentColor" /><rect x="7" y="2" width="4" height="14" rx="1" fill="currentColor" /><rect x="13" y="2" width="4" height="14" rx="1" fill="currentColor" /></svg>
         </button>
-        <button class="view-option" type="button" data-columns="4" aria-label="Four columns" aria-pressed="false" title="Four columns">
+        <button class="view-option" type="button" data-columns="4" aria-label="四列" aria-pressed="false" title="四列">
           <svg aria-hidden="true" viewBox="0 0 18 18"><rect x="1" y="2" width="3" height="14" rx="1" fill="currentColor" /><rect x="5.3" y="2" width="3" height="14" rx="1" fill="currentColor" /><rect x="9.7" y="2" width="3" height="14" rx="1" fill="currentColor" /><rect x="14" y="2" width="3" height="14" rx="1" fill="currentColor" /></svg>
         </button>
       </div>`

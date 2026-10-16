@@ -3,10 +3,10 @@ import { z } from "zod";
 
 const emailSchema = z.string().email();
 
-// Converts "John Doe <john.doe@gmail>" to "John Doe"
-// Converts '"Doe, John" <john.doe@gmail>' to "Doe, John"
-// Converts "<john.doe@gmail>" to "john.doe@gmail"
-// Converts "john.doe@gmail" to "john.doe@gmail"
+// 将 "John Doe <john.doe@gmail>" 转换为 "John Doe"
+// 将 '"Doe, John" <john.doe@gmail>' 转换为 "Doe, John"
+// 将 "<john.doe@gmail>" 转换为 "john.doe@gmail"
+// 将 "john.doe@gmail" 转换为 "john.doe@gmail"
 export function extractNameFromEmail(email: string) {
   if (!email) return "";
   const firstPart = email.split("<")[0]?.trim();
@@ -16,8 +16,8 @@ export function extractNameFromEmail(email: string) {
   return email;
 }
 
-// Extracts all email addresses from a comma-separated header string
-// e.g., "John <john@example.com>, Jane <jane@example.com>" -> ["john@example.com", "jane@example.com"]
+// 从逗号分隔的头部字符串中提取所有邮箱地址
+// 例如 "John <john@example.com>, Jane <jane@example.com>" -> ["john@example.com", "jane@example.com"]
 export function extractEmailAddresses(header: string): string[] {
   return splitRecipientList(header)
     .map((part) => extractEmailAddress(part))
@@ -27,8 +27,8 @@ export function extractEmailAddresses(header: string): string[] {
 export function splitRecipientList(recipientList: string): string[] {
   if (!recipientList) return [];
 
-  // One pass rather than a quote-counting regex: headers come from senders,
-  // and this runs on every synced message.
+  // 一次遍历，而不是统计引号的正则：头部来自发件人，
+  // 而这段代码会在每封同步的邮件上运行。
   const recipients: string[] = [];
   let start = 0;
   let inQuotes = false;
@@ -46,14 +46,14 @@ export function splitRecipientList(recipientList: string): string[] {
   return recipients.map((recipient) => recipient.trim()).filter(Boolean);
 }
 
-// Converts "John Doe <john.doe@gmail>" to "john.doe@gmail"
+// 将 "John Doe <john.doe@gmail>" 转换为 "john.doe@gmail"
 export function extractEmailAddress(email: string): string {
   if (!email) return "";
 
-  // Trim the input once at the start to handle leading/trailing spaces
+  // 在开头统一去除首尾空格
   const trimmedEmail = email.trim();
 
-  // Try to extract from angle brackets first
+  // 首先尝试从尖括号中提取
   const bracketMatch = trimmedEmail.match(/<([^<>]+)>$/);
   if (bracketMatch) {
     const candidate = bracketMatch[1].trim();
@@ -62,16 +62,16 @@ export function extractEmailAddress(email: string): string {
     }
   }
 
-  // If no brackets or invalid email in brackets, try the whole string
+  // 如果没有尖括号或括号内不是有效邮箱，则尝试整个字符串
   if (isValidEmail(trimmedEmail)) {
     return trimmedEmail;
   }
 
-  // As a last resort, look for any email-like pattern in the string
+  // 最后，在字符串中查找任何类似邮箱的模式
   const emailPattern = /\b[^\s<>]+@[^\s<>]+\.[^\s<>]+\b/g;
   const matches = trimmedEmail.match(emailPattern);
   if (matches) {
-    // Try each match to find a valid email
+    // 逐个尝试每个匹配项，找出有效的邮箱
     for (const match of matches) {
       if (isValidEmail(match)) {
         return match;
@@ -138,16 +138,16 @@ export function isValidEmail(email: string): boolean {
   return emailSchema.safeParse(email).success;
 }
 
-// Normalizes email addresses by:
-// - Converting to lowercase
-// - Removing all dots from local part
-// - Removing all whitespace from local part
-// - Preserving domain part unchanged
-// Example: "John.Doe.Smith@gmail.com" -> "johndoesmith@gmail.com"
+// 规范化邮箱地址：
+// - 转换为小写
+// - 移除本地部分中的所有点
+// - 移除本地部分中的所有空白
+// - 保持域名部分不变
+// 例如："John.Doe.Smith@gmail.com" -> "johndoesmith@gmail.com"
 export function normalizeEmailAddress(email: string) {
   const [localPart, domain] = email.toLowerCase().split("@");
   if (!domain) return email.toLowerCase();
-  // Remove all dots and whitespace from local part
+  // 移除本地部分中的所有点和空白
   const normalizedLocal = localPart.trim().replace(/[\s.]+/g, "");
   return `${normalizedLocal}@${domain}`;
 }
@@ -168,30 +168,30 @@ export function extractUniqueEmailAddresses(
   ];
 }
 
-// Converts "Name <hey@domain.com>" to "domain.com"
+// 将 "Name <hey@domain.com>" 转换为 "domain.com"
 export function extractDomainFromEmail(email: string): string {
   if (!email) return "";
 
-  // Extract clean email address from formatted strings like "Name <email@domain.com>"
+  // 从 "Name <email@domain.com>" 这类格式化字符串中提取干净的邮箱地址
   const emailAddress = email.includes("<") ? extractEmailAddress(email) : email;
 
-  // Validate email has exactly one @ symbol
+  // 校验邮箱中恰好有一个 @ 符号
   if ((emailAddress.match(/@/g) || []).length !== 1) return "";
 
-  // Extract domain using regex that supports:
-  // - International characters (via \p{L})
-  // - Multiple subdomains (e.g. sub1.sub2.domain.com)
-  // - Common domain characters (letters, numbers, dots, hyphens)
-  // - TLDs of 2 or more characters
+  // 使用支持以下情况的正则提取域名：
+  // - 国际字符（通过 \p{L}）
+  // - 多个子域名（例如 sub1.sub2.domain.com）
+  // - 常见的域名字符（字母、数字、点、连字符）
+  // - 2 个或更多字符的顶级域名
   const domain = emailAddress.match(
     /@([\p{L}a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/u,
   )?.[1];
   return domain || "";
 }
 
-// returns the other side of the conversation
-// if we're the sender, then return the recipient
-// if we're the recipient, then return the sender
+// 返回会话的另一方
+// 如果我们是发件人，则返回收件人
+// 如果我们是收件人，则返回发件人
 export function participant(
   message: { headers: Pick<ParsedMessage["headers"], "from" | "to"> },
   userEmail: string,
@@ -201,8 +201,8 @@ export function participant(
   return message.headers.from;
 }
 
-// Converts name and email to "Name <email@example.com>" or just "email@example.com" if no name
-// This is the inverse of extractNameFromEmail/extractEmailAddress
+// 将姓名和邮箱转换为 "Name <email@example.com>"，如果没有姓名则仅为 "email@example.com"
+// 这是 extractNameFromEmail/extractEmailAddress 的逆操作
 export function formatEmailWithName(
   name: string | null | undefined,
   address: string | null | undefined,
@@ -232,9 +232,9 @@ export function getNewsletterSenderDisplayName({
   return fromName?.trim() || "";
 }
 
-/** Two letters at most: initials from a display name, or the address's first letters. */
+/** 最多两个字母：取自显示名称的首字母，或地址的前几个字母。 */
 export function getInitials(name: string) {
-  // Spread by code point so an emoji or astral letter isn't split in half.
+  // 按码点展开，避免 emoji 或星平面字母被拆成两半。
   const words = name
     .trim()
     .split(/\s+/)
@@ -245,8 +245,8 @@ export function getInitials(name: string) {
   return `${words[0][0]}${words[words.length - 1][0]}`.toUpperCase();
 }
 
-// Public email providers where we should search by full email address
-// For company domains, we search by domain to catch emails from different people at same company
+// 公共邮箱服务商，对此我们按完整邮箱地址搜索
+// 对于公司域名，我们按域名搜索，以捕获同一公司不同人的邮件
 export const PUBLIC_EMAIL_DOMAINS = new Set([
   "gmail.com",
   "googlemail.com",
@@ -314,9 +314,9 @@ export function isPublicEmailDomain(domain: string): boolean {
   return PUBLIC_EMAIL_DOMAINS.has(domain.trim().toLowerCase());
 }
 
-// Returns the search term to use when checking for previous communications
-// For public email providers (gmail, yahoo, etc), returns the full email address
-// For company domains, returns just the domain to catch emails from different people at same company
+// 返回检查以往通信时应使用的搜索词
+// 对于公共邮箱服务商（gmail、yahoo 等），返回完整邮箱地址
+// 对于公司域名，仅返回域名，以捕获同一公司不同人的邮件
 export function getSearchTermForSender(email: string): string {
   const domain = extractDomainFromEmail(email);
   if (!domain) return email;
@@ -326,7 +326,7 @@ export function getSearchTermForSender(email: string): string {
     : domain;
 }
 
-// Sharing a public provider says nothing about affiliation, so those compare by address.
+// 共用公共邮箱服务商并不能说明存在隶属关系，因此这类情况按地址比较。
 export function isSameOrganization(left: string, right: string): boolean {
   if (!left || !right) return false;
   if (isSameEmailAddress(left, right)) return true;
@@ -337,8 +337,8 @@ export function isSameOrganization(left: string, right: string): boolean {
   return leftDomain === extractDomainFromEmail(right).toLowerCase();
 }
 
-// Display names with commas arrive quoted ('"Doe, John"'), which is header
-// syntax rather than part of the name.
+// 含逗号的显示名称会带引号（'"Doe, John"'），这是头部
+// 语法，而不是名称的一部分。
 function unquoteDisplayName(name: string) {
   const quoted = name.match(/^"(.*)"$/);
   if (!quoted) return name;
@@ -349,7 +349,7 @@ function recipientFirstName(recipient: string) {
   const email = extractEmailAddress(recipient);
   const name = extractNameFromEmail(recipient);
   if (!name || name.includes("@")) return email || name;
-  // Directory-style "Last, First" names put the given name after the comma.
+  // 通讯录风格的 "Last, First" 名称把名字放在逗号之后。
   const givenName = name.includes(",")
     ? name.slice(name.indexOf(",") + 1).trim()
     : name;

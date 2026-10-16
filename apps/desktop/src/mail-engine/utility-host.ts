@@ -9,13 +9,13 @@ import type {
 
 const RESTART_BASE_DELAY_MS = 1000;
 const RESTART_MAX_DELAY_MS = 60_000;
-// A child that stayed up this long is treated as healthy again, so a later
-// crash restarts quickly instead of inheriting the old backoff.
+// 保持运行这么久的子进程会被重新视为健康，因此之后的崩溃会快速重启，
+// 而不会继承旧的退避时间。
 const STABLE_UPTIME_MS = 60_000;
 const CLOSE_TIMEOUT_MS = 5000;
 const HEALTH_TIMEOUT_MS = 2000;
 
-/** The Electron `UtilityProcess` surface the proxy uses. */
+/** 代理使用的 Electron `UtilityProcess` 接口面。 */
 export type MailChildProcess = {
   postMessage(message: MainToChildMessage): void;
   on(
@@ -77,9 +77,8 @@ export function createDesktopMailProcessOwner(input: {
         child.postMessage({ type: "subscribe", subscriptionId, payload });
       }
     });
-    // A child that cannot open the mailbox is restarted with backoff. An exit
-    // or close before start replies clears `current` or sets `closed` first,
-    // and the exit handler already reports a crash.
+    // 无法打开邮箱的子进程会以退避方式重启。在 start 回复之前退出或关闭
+    // 会先清除 `current` 或设置 `closed`，而退出处理程序已经上报了崩溃。
     ready.catch((error: unknown) => {
       if (closed || running !== current) return;
       input.onEngineError(asError(error));
@@ -105,9 +104,9 @@ export function createDesktopMailProcessOwner(input: {
   }
 
   function requireChild() {
-    if (closed) throw new Error("mail engine is closed");
+    if (closed) throw new Error("邮件引擎已关闭");
     if (current) return current;
-    if (restartTimer) throw new Error("mail engine is restarting");
+    if (restartTimer) throw new Error("邮件引擎正在重启");
     return spawn();
   }
 
@@ -153,7 +152,7 @@ export function createDesktopMailProcessOwner(input: {
     }
   }
 
-  // The child asks for cookies by URL, so only the app origin ever gets them.
+  // 子进程按 URL 请求 cookie，因此只有应用源会拿到它们。
   async function readCookieHeader(url: string) {
     if (URL.parse(url)?.origin !== new URL(input.origin).origin) return "";
     try {
@@ -165,7 +164,7 @@ export function createDesktopMailProcessOwner(input: {
 
   function handleExit(running: RunningChild, code: number) {
     for (const waiter of running.pending.values()) {
-      waiter.reject(new Error("mail engine process exited"));
+      waiter.reject(new Error("邮件引擎进程已退出"));
     }
     running.pending.clear();
     if (running !== current) return;
@@ -179,9 +178,9 @@ export function createDesktopMailProcessOwner(input: {
       RESTART_MAX_DELAY_MS,
       RESTART_BASE_DELAY_MS * 2 ** (consecutiveCrashes - 1),
     );
-    // Quitting or installing an update can kill the child before the app's
-    // quit handlers run. Reporting only when the restart is still due, after
-    // close() had its chance to cancel it, keeps those exits out of crash reports.
+    // 退出或安装更新可能在应用的退出处理程序运行前就杀掉子进程。
+    // 只在重启仍待执行、且 close() 已有机会取消它时才上报，
+    // 可以将这些退出排除在崩溃报告之外。
     restartTimer = setTimeout(() => {
       restartTimer = undefined;
       if (!running.exitReported) {
@@ -211,7 +210,7 @@ export function createDesktopMailProcessOwner(input: {
       if (!parsed.success || !isObservationRequest(parsed.data)) return null;
       const subscriptionId = randomUUID();
       subscriptions.set(subscriptionId, { payload, onSnapshot });
-      // Before the child is ready, its start sends every subscription.
+      // 在子进程就绪之前，它的 start 会发送每一个订阅。
       if (current?.isReady) {
         current.child.postMessage({
           type: "subscribe",
@@ -243,7 +242,7 @@ export function createDesktopMailProcessOwner(input: {
       subscriptions.clear();
       const running = current;
       if (!running) return;
-      // Wipe deletes the database files next, so the child must be gone.
+      // 擦除接下来会删除数据库文件，因此子进程必须已经退出。
       await withTimeout(
         running.ready.then(() =>
           call(running, (id) => ({ type: "close", id })),
@@ -267,7 +266,7 @@ type ChildChannel = {
 type RunningChild = ChildChannel & {
   startedAt: number;
   isReady: boolean;
-  /** Set when the reason for the exit was already reported. */
+  /** 当退出原因已上报时设置。 */
   exitReported: boolean;
   ready: Promise<void>;
   exited: Promise<void>;
@@ -289,7 +288,7 @@ function withTimeout<T>(promise: Promise<T>, ms: number) {
   return Promise.race([
     promise,
     new Promise<never>((_, reject) => {
-      timer = setTimeout(() => reject(new Error("timed out")), ms);
+      timer = setTimeout(() => reject(new Error("超时")), ms);
     }),
   ]).finally(() => clearTimeout(timer));
 }

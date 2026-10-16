@@ -20,7 +20,7 @@ import { BookingLinkLocationType } from "@/generated/prisma/enums";
 import type { Logger } from "@/utils/logger";
 import { sleep } from "@/utils/sleep";
 
-// PidLidAppointmentSequence tracks the organizer's meeting revision.
+// PidLidAppointmentSequence 跟踪组织者的会议修订版本。
 const APPOINTMENT_SEQUENCE_PROPERTY =
   "Integer {00062002-0000-0000-C000-000000000046} Id 0x8201";
 const APPOINTMENT_SEQUENCE_EXPAND = `singleValueExtendedProperties($filter=id eq '${APPOINTMENT_SEQUENCE_PROPERTY}')`;
@@ -100,7 +100,7 @@ export class MicrosoftCalendarEventProvider implements CalendarEventProvider {
   }): Promise<CalendarEvent[]> {
     const client = await this.getClient();
 
-    // Use calendarView endpoint which correctly returns events overlapping the time range
+    // 使用 calendarView 端点，它能正确返回与时间范围重叠的事件
     const response = await client
       .api("/me/calendar/calendarView")
       .query({
@@ -113,7 +113,7 @@ export class MicrosoftCalendarEventProvider implements CalendarEventProvider {
 
     const events: MicrosoftEvent[] = response.value || [];
 
-    // Filter to events that have this attendee
+    // 过滤出拥有该参与者的事件
     return events
       .filter((event) =>
         event.attendees?.some(
@@ -135,16 +135,16 @@ export class MicrosoftCalendarEventProvider implements CalendarEventProvider {
     timeMax?: Date;
     maxResults?: number;
   }): Promise<CalendarEvent[]> {
-    this.logger.info("Starting Microsoft calendar client setup");
+    this.logger.info("开始设置 Microsoft 日历客户端");
     const client = await this.getClient();
-    this.logger.info("Completed Microsoft calendar client setup");
+    this.logger.info("完成 Microsoft 日历客户端设置");
 
-    // calendarView requires both start and end times, default to 30 days from timeMin
+    // calendarView 需要开始和结束时间，默认从 timeMin 起 30 天
     const effectiveTimeMax =
       timeMax ?? new Date(timeMin.getTime() + 30 * 24 * 60 * 60 * 1000);
 
-    // Use calendarView endpoint which correctly returns events overlapping the time range
-    this.logger.info("Starting Microsoft calendar events request");
+    // 使用 calendarView 端点，它能正确返回与时间范围重叠的事件
+    this.logger.info("开始请求 Microsoft 日历事件");
     const response = await client
       .api("/me/calendar/calendarView")
       .query({
@@ -156,7 +156,7 @@ export class MicrosoftCalendarEventProvider implements CalendarEventProvider {
       .get();
 
     const events: MicrosoftEvent[] = response.value || [];
-    this.logger.info("Completed Microsoft calendar events request", {
+    this.logger.info("完成 Microsoft 日历事件请求", {
       eventCount: events.length,
     });
 
@@ -173,8 +173,7 @@ export class MicrosoftCalendarEventProvider implements CalendarEventProvider {
       ? await this.getMailboxEvent(client, mailboxEventId)
       : await this.findEventByUid(client, invitation.uid);
     if (!event) return null;
-    if (event.isCancelled)
-      throw new SafeError("This event has been cancelled.");
+    if (event.isCancelled) throw new SafeError("该事件已被取消。");
     if (
       !event.id ||
       event.isOrganizer ||
@@ -196,9 +195,7 @@ export class MicrosoftCalendarEventProvider implements CalendarEventProvider {
     )?.value;
     if (!revision || !/^\d+$/.test(revision)) return null;
     if (Number(revision) !== invitation.sequence)
-      throw new SafeError(
-        "This invitation has changed. Please respond to the latest invitation in your calendar.",
-      );
+      throw new SafeError("此邀请已变更。请在你日历中的最新邀请上进行回应。");
     const response = event.responseStatus?.response;
     return {
       id: event.id,
@@ -207,9 +204,9 @@ export class MicrosoftCalendarEventProvider implements CalendarEventProvider {
     };
   }
 
-  // Exchange rewrites the iCalUId of invitations that other calendar providers
-  // sent, so a UID lookup misses them. The mailbox links the invitation email to
-  // the event it created instead, which is the id the caller passes here.
+  // Exchange 会重写其他日历服务商发送的邀请的 iCalUId，
+  // 因此按 UID 查找会找不到它们。邮箱会将邀请邮件链接到
+  // 它所创建的事件，这就是调用方在此传入的 id。
   private async getMailboxEvent(client: Client, eventId: string) {
     try {
       return (await client
@@ -217,7 +214,7 @@ export class MicrosoftCalendarEventProvider implements CalendarEventProvider {
         .query({ $expand: APPOINTMENT_SEQUENCE_EXPAND })
         .get()) as MicrosoftEvent;
     } catch (error) {
-      this.logger.warn("Failed to read the event linked to the invitation", {
+      this.logger.warn("无法读取与邀请关联的事件", {
         error,
       });
       return null;
@@ -300,9 +297,9 @@ export class MicrosoftCalendarEventProvider implements CalendarEventProvider {
 
     let videoConferenceLink = getJoinUrl(response);
 
-    // Graph initializes the online meeting after the event is created, so the
-    // POST response sometimes returns before `onlineMeeting` is populated.
-    // Refetch the event to retrieve the join URL when one was requested.
+    // Graph 会在事件创建后初始化在线会议，因此
+    // POST 响应有时在 `onlineMeeting` 填充之前就返回。
+    // 当请求了加入 URL 时，重新获取事件以检索它。
     if (requestedOnlineMeeting && !videoConferenceLink && response.id) {
       videoConferenceLink = await pollForOnlineMeetingJoinUrl({
         client,
@@ -318,7 +315,7 @@ export class MicrosoftCalendarEventProvider implements CalendarEventProvider {
           .patch(onlineMeetingFields);
         videoConferenceLink = getJoinUrl(patched);
       } catch (error) {
-        this.logger.warn("Failed to enable online meeting on Microsoft event", {
+        this.logger.warn("无法在 Microsoft 事件上启用在线会议", {
           eventId: response.id,
           error,
         });
@@ -334,14 +331,11 @@ export class MicrosoftCalendarEventProvider implements CalendarEventProvider {
     }
 
     if (requestedOnlineMeeting && !videoConferenceLink) {
-      this.logger.warn(
-        "Microsoft online meeting link missing after event creation",
-        {
-          eventId: response.id,
-          isOnlineMeeting: response.isOnlineMeeting,
-          onlineMeetingProvider: response.onlineMeetingProvider,
-        },
-      );
+      this.logger.warn("创建事件后缺少 Microsoft 在线会议链接", {
+        eventId: response.id,
+        isOnlineMeeting: response.isOnlineMeeting,
+        onlineMeetingProvider: response.onlineMeetingProvider,
+      });
     }
 
     return {
@@ -403,7 +397,7 @@ export class MicrosoftCalendarEventProvider implements CalendarEventProvider {
 }
 
 function formatMicrosoftUtcDateTime(date: Date) {
-  // Graph DateTimeTimeZone expects a local datetime for the supplied timezone.
+  // Graph DateTimeTimeZone 期望为所提供的时区传入本地日期时间。
   return date.toISOString().replace(/Z$/, "0000");
 }
 
@@ -434,13 +428,13 @@ async function getOnlineMeetingFields({
     onlineMeetingProvider = MICROSOFT_TEAMS_PROVIDER;
   }
 
-  // Personal Outlook calendars advertise Skype but ignore meeting fields.
+  // 个人 Outlook 日历宣传 Skype 但忽略会议字段。
   if (
     !onlineMeetingProvider ||
     onlineMeetingProvider === "skypeForConsumer" ||
     onlineMeetingProvider === "unknown"
   ) {
-    logger.warn("Calendar cannot generate an online meeting link", {
+    logger.warn("日历无法生成在线会议链接", {
       calendarId,
       onlineMeetingProvider,
       allowedOnlineMeetingProviders: settings?.allowedOnlineMeetingProviders,
@@ -470,7 +464,7 @@ async function getCalendarOnlineMeetingSettings({
       .select("id,allowedOnlineMeetingProviders,defaultOnlineMeetingProvider")
       .get();
   } catch (error) {
-    logger.warn("Failed to fetch Microsoft calendar meeting providers", {
+    logger.warn("无法获取 Microsoft 日历的会议提供商", {
       calendarId,
       error,
     });
@@ -508,7 +502,7 @@ async function pollForOnlineMeetingJoinUrl({
         return;
       }
     } catch (error) {
-      logger.warn("Failed to refetch Microsoft event for online meeting URL", {
+      logger.warn("无法为在线会议 URL 重新获取 Microsoft 事件", {
         eventId,
         error,
       });

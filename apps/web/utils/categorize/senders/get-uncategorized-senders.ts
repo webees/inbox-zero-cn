@@ -27,11 +27,11 @@ export async function getUncategorizedSenders({
     const senderMap = new Map<string, string | null>();
     for (const sender of result) {
       const extractedEmail = extractEmailAddress(sender.from);
-      // Unparseable from headers extract to "" and can never be categorized
+      // 从邮件头无法解析的会提取为 ""，因而永远无法被分类
       if (!extractedEmail) continue;
-      // Normalize so case variants of the same address dedupe to one entry
+      // 规范化，使同一地址的大小写变体去重为一条记录
       const email = extractedEmail.toLowerCase();
-      // Only set the name if we don't already have one (keep first non-null)
+      // 仅当我们尚未有名称时才设置（保留第一个非空值）
       if (!senderMap.has(email) || (!senderMap.get(email) && sender.fromName)) {
         senderMap.set(email, sender.fromName);
       }
@@ -39,9 +39,9 @@ export async function getUncategorizedSenders({
 
     const allSenderEmails = Array.from(senderMap.keys());
 
-    // Sender records store canonicalized (lowercased) emails, while message
+    // 发件人记录存储规范化（小写）后的邮箱，而邮件正文
     // from headers keep their original casing — compare case-insensitively so
-    // already-categorized senders aren't requeued forever.
+    // 已分类的发件人不会被永久重复入队。
     const existingSenders = await prisma.newsletter.findMany({
       where: {
         email: { in: allSenderEmails, mode: "insensitive" },
@@ -59,8 +59,8 @@ export async function getUncategorizedSenders({
       .filter((email) => !existingSenderEmails.has(email))
       .map((email) => ({ email, name: senderMap.get(email) ?? null }));
 
-    // Use result.length (raw query count) not allSenderEmails.length (de-duplicated count)
-    // to correctly detect when there are more pages
+    // 使用 result.length（原始查询计数），而非 allSenderEmails.length（去重后计数）
+    // 以正确判断是否还有更多分页
     if (result.length < limit) {
       return { uncategorizedSenders };
     }
@@ -68,7 +68,7 @@ export async function getUncategorizedSenders({
     currentOffset += limit;
   }
 
-  // Only return nextOffset if we found senders (to avoid infinite loop when MAX_ITERATIONS is hit)
+  // 仅在找到发件人时才返回 nextOffset（避免达到 MAX_ITERATIONS 时陷入死循环）
   if (uncategorizedSenders.length > 0) {
     return { uncategorizedSenders, nextOffset: currentOffset };
   }

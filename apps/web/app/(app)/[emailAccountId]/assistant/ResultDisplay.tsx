@@ -45,7 +45,7 @@ export function ResultsDisplay({
       {sortedBatches.map(([date, batchResults], batchIndex) => (
         <div key={date}>
           {batchIndex === 1 && sortedBatches.length > 1 && (
-            <div className="my-1 text-xs text-muted-foreground">Previous:</div>
+            <div className="my-1 text-xs text-muted-foreground">之前：</div>
           )}
           <div
             className={
@@ -97,7 +97,7 @@ function ResultDisplay({
         {rule
           ? rule.name
           : status === ExecutedRuleStatus.SKIPPED
-            ? "No match found"
+            ? "未找到匹配项"
             : capitalCase(status)}
         <EyeIcon className="ml-1.5 size-3.5 shrink-0 opacity-70" />
       </Badge>
@@ -125,7 +125,7 @@ export function ResultDisplayContent({ result }: { result: RunRulesResult }) {
             <Badge color="blue">{conditionTypesToString(rule)}</Badge>
           </>
         ) : (
-          status === ExecutedRuleStatus.SKIPPED && "No match found"
+          status === ExecutedRuleStatus.SKIPPED && "未找到匹配项"
         )}
       </div>
       <div className="mt-2">
@@ -139,7 +139,7 @@ export function ResultDisplayContent({ result }: { result: RunRulesResult }) {
               ruleDialog.onOpen({ ruleId: rule.id });
             }}
           >
-            View matching rule
+            查看匹配的规则
           </Button>
         )}
       </div>
@@ -147,7 +147,7 @@ export function ResultDisplayContent({ result }: { result: RunRulesResult }) {
       <div className="mt-2">
         {result.actionItems?.length ? (
           <>
-            <div className="font-medium text-sm mb-1">Actions:</div>
+            <div className="font-medium text-sm mb-1">操作：</div>
             <RuleActions
               actions={
                 result.actionItems?.map((action) => ({
@@ -168,7 +168,7 @@ export function ResultDisplayContent({ result }: { result: RunRulesResult }) {
             />
           </>
         ) : (
-          <div className="text-muted-foreground text-sm">No actions taken</div>
+          <div className="text-muted-foreground text-sm">未执行任何操作</div>
         )}
       </div>
 
@@ -189,9 +189,7 @@ export function ResultDisplayContent({ result }: { result: RunRulesResult }) {
       {(!!reasonDisplay.reason ||
         reasonDisplay.actionFailureMessages.length > 0) && (
         <div className="mt-4 space-y-2 bg-muted p-2 rounded-md">
-          <div className="font-medium text-sm">
-            Reason for choosing this rule:
-          </div>
+          <div className="font-medium text-sm">选择此规则的原因：</div>
           {!!reasonDisplay.reason && (
             <MessageText className="whitespace-pre-wrap break-words">
               {reasonDisplay.reason}
@@ -199,7 +197,7 @@ export function ResultDisplayContent({ result }: { result: RunRulesResult }) {
           )}
           {reasonDisplay.actionFailureMessages.length > 0 && (
             <div className="space-y-1">
-              <div className="font-medium text-sm">Action issues:</div>
+              <div className="font-medium text-sm">操作问题：</div>
               <ul className="list-disc space-y-1 pl-4 text-sm text-slate-700 dark:text-foreground">
                 {reasonDisplay.actionFailureMessages.map((message) => (
                   <li key={message} className="break-words">
@@ -227,12 +225,12 @@ function PrettyConditions({
 }) {
   const conditions: { text: string; isInstructions?: boolean }[] = [];
 
-  // Static conditions - grouped with commas
+  // 静态条件——用逗号分组
   const staticConditions: string[] = [];
-  if (rule.from) staticConditions.push(`From: ${rule.from}`);
-  if (rule.subject) staticConditions.push(`Subject: "${rule.subject}"`);
-  if (rule.to) staticConditions.push(`To: ${rule.to}`);
-  if (rule.body) staticConditions.push(`Body: "${rule.body}"`);
+  if (rule.from) staticConditions.push(`发件人：${rule.from}`);
+  if (rule.subject) staticConditions.push(`主题："${rule.subject}"`);
+  if (rule.to) staticConditions.push(`收件人：${rule.to}`);
+  if (rule.body) staticConditions.push(`正文："${rule.body}"`);
   if (staticConditions.length)
     conditions.push({ text: staticConditions.join(", ") });
 
@@ -240,7 +238,7 @@ function PrettyConditions({
     conditions.push({ text: rule.instructions, isInstructions: true });
 
   const operator =
-    rule.conditionalOperator === LogicalOperator.AND ? "AND" : "OR";
+    rule.conditionalOperator === LogicalOperator.AND ? "且" : "或";
 
   return (
     <div className="flex flex-wrap items-center gap-1.5">
@@ -377,44 +375,35 @@ const ACTION_FAILURE_MESSAGES: Partial<
   Record<ActionType, { fallback: string; codes: Record<string, string> }>
 > = {
   [ActionType.DRAFT_MESSAGING_CHANNEL]: {
-    fallback: "The draft reply action could not be completed.",
+    fallback: "无法完成起草回复操作。",
     codes: {
-      MESSAGING_DELIVERY_FAILED:
-        "The draft reply could not be sent to the messaging channel.",
-      MISSING_MESSAGING_CHANNEL:
-        "The draft reply action needs a messaging channel.",
+      MESSAGING_DELIVERY_FAILED: "无法将草稿回复发送到消息渠道。",
+      MISSING_MESSAGING_CHANNEL: "起草回复操作需要一个消息渠道。",
     },
   },
   [ActionType.NOTIFY_MESSAGING_CHANNEL]: {
-    fallback: "The messaging channel notification could not be completed.",
+    fallback: "无法完成消息渠道通知。",
     codes: {
-      MESSAGING_DELIVERY_FAILED:
-        "The messaging channel notification could not be sent.",
-      MISSING_MESSAGING_CHANNEL:
-        "The messaging channel notification needs a channel.",
+      MESSAGING_DELIVERY_FAILED: "无法发送消息渠道通知。",
+      MISSING_MESSAGING_CHANNEL: "消息渠道通知需要一个渠道。",
     },
   },
   [ActionType.NOTIFY_SENDER]: {
-    fallback: "The sender notification could not be completed.",
+    fallback: "无法完成发件人通知。",
     codes: {
-      RESEND_NOT_CONFIGURED:
-        "The sender notification could not be sent because email sending is not configured.",
-      MISSING_SENDER_EMAIL:
-        "The sender notification could not be sent because the sender email could not be found.",
-      SEND_FAILED: "The sender notification could not be sent.",
+      RESEND_NOT_CONFIGURED: "无法发送发件人通知，因为未配置邮件发送。",
+      MISSING_SENDER_EMAIL: "无法发送发件人通知，因为找不到发件人邮箱。",
+      SEND_FAILED: "无法发送发件人通知。",
     },
   },
-  // Only the action type and error code survive in the stored reason, so this
-  // copy stays integration-neutral. The executor records a message naming the
-  // integration alongside it.
+  // 存储的原因中只保留操作类型和错误代码，因此这段文案保持与具体集成无关。
+  // 执行器会在其旁边记录一条指明该集成的消息。
   [ActionType.INTEGRATION]: {
-    fallback: "The integration action could not be completed.",
+    fallback: "无法完成集成操作。",
     codes: {
-      INTEGRATION_NOT_CONNECTED:
-        "The integration isn't connected. Connect it on the Integrations page.",
-      MISSING_INTEGRATION_ARGS:
-        "The integration action could not run because a required field was empty.",
-      INTEGRATION_CALL_FAILED: "The integration action could not be completed.",
+      INTEGRATION_NOT_CONNECTED: "该集成尚未连接。请在“集成”页面连接它。",
+      MISSING_INTEGRATION_ARGS: "无法运行集成操作，因为某个必填字段为空。",
+      INTEGRATION_CALL_FAILED: "无法完成集成操作。",
     },
   },
 };
@@ -423,7 +412,7 @@ function getActionFailureMessage(actionType: string, errorCode: string) {
   const entry = Object.hasOwn(ACTION_FAILURE_MESSAGES, actionType)
     ? ACTION_FAILURE_MESSAGES[actionType as ActionType]
     : undefined;
-  if (!entry) return "An action could not be completed.";
+  if (!entry) return "无法完成某项操作。";
   return Object.hasOwn(entry.codes, errorCode)
     ? entry.codes[errorCode]
     : entry.fallback;

@@ -31,7 +31,7 @@ export type ChildToMainMessage =
 
 export type ChildHealth = {
   eventLoopDelayMs: DurationSummary | null;
-  /** From the call, so including time queued behind other transactions. */
+  /** 从调用开始计时，因此包含在其他事务之后排队的时间。 */
   sqliteReadMs: DurationSummary | null;
   sqliteWriteMs: DurationSummary | null;
 };
@@ -56,7 +56,7 @@ export function createUtilityChildRuntime(
   const sqliteReads = createDurationRecorder();
   const sqliteWrites = createDurationRecorder();
 
-  // Session cookies stay in the main process; it answers per request.
+  // 会话 cookie 保留在主进程；主进程按请求作答。
   function requestCookieHeader(url: string) {
     const requestId = randomUUID();
     return new Promise<string>((resolve, reject) => {
@@ -67,13 +67,13 @@ export function createUtilityChildRuntime(
 
   function rejectPendingCookieRequests() {
     for (const pending of cookieRequests.values()) {
-      pending.reject(new Error("mail engine is closed"));
+      pending.reject(new Error("邮件引擎已关闭"));
     }
     cookieRequests.clear();
   }
 
   function requireOwner() {
-    if (!owner) throw new Error("mail engine is not started");
+    if (!owner) throw new Error("邮件引擎未启动");
     return owner;
   }
 

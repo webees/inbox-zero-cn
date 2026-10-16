@@ -45,7 +45,7 @@ export function ConnectCalendar({
       });
 
       if (!response.ok) {
-        throw new Error("Failed to initiate Google calendar connection");
+        throw new Error("无法发起 Google 日历连接");
       }
 
       const data: GetCalendarAuthUrlResponse = await response.json();
@@ -56,11 +56,11 @@ export function ConnectCalendar({
         provider: "google",
       });
       captureException(error, {
-        extra: { context: "Google Calendar OAuth initiation" },
+        extra: { context: "Google 日历 OAuth 发起" },
       });
       toastError({
-        title: "Error initiating Google calendar connection",
-        description: "Please try again or contact support",
+        title: "发起 Google 日历连接时出错",
+        description: "请重试或联系支持人员",
       });
       setIsConnectingGoogle(false);
     }
@@ -80,7 +80,7 @@ export function ConnectCalendar({
       });
 
       if (!response.ok) {
-        throw new Error("Failed to initiate Microsoft calendar connection");
+        throw new Error("无法发起 Microsoft 日历连接");
       }
 
       const data: GetCalendarAuthUrlResponse = await response.json();
@@ -91,11 +91,11 @@ export function ConnectCalendar({
         provider: "microsoft",
       });
       captureException(error, {
-        extra: { context: "Microsoft Calendar OAuth initiation" },
+        extra: { context: "Microsoft 日历 OAuth 发起" },
       });
       toastError({
-        title: "Error initiating Microsoft calendar connection",
-        description: "Please try again or contact support",
+        title: "发起 Microsoft 日历连接时出错",
+        description: "请重试或联系支持人员",
       });
       setIsConnectingMicrosoft(false);
     }
@@ -116,7 +116,7 @@ export function ConnectCalendar({
           height={16}
           unoptimized
         />
-        {isConnectingGoogle ? "Connecting..." : "Add Google Calendar"}
+        {isConnectingGoogle ? "正在连接…" : "添加 Google 日历"}
       </Button>
 
       <Button
@@ -132,7 +132,7 @@ export function ConnectCalendar({
           height={16}
           unoptimized
         />
-        {isConnectingMicrosoft ? "Connecting..." : "Add Outlook Calendar"}
+        {isConnectingMicrosoft ? "正在连接…" : "添加 Outlook 日历"}
       </Button>
     </div>
   );

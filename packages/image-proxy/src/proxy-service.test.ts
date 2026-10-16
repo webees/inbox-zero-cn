@@ -551,18 +551,15 @@ describe("handleImageProxyRequest", () => {
     expect(response.status).toBe(508);
     await expect(response.text()).resolves.toBe("Upstream fetch failed");
     expect(upstreamFetch).toHaveBeenCalledTimes(4);
-    expect(logger.warn).toHaveBeenCalledWith(
-      "Image proxy redirect limit exceeded",
-      {
-        initialUrl: "https://cdn.example.com/photo.png",
-        method: "GET",
-        redirectChain: [
-          "https://cdn.example.com/photo.png",
-          "https://cdn.example.com/photo.png",
-          "https://cdn.example.com/photo.png",
-        ],
-      },
-    );
+    expect(logger.warn).toHaveBeenCalledWith("图片代理重定向次数超限", {
+      initialUrl: "https://cdn.example.com/photo.png",
+      method: "GET",
+      redirectChain: [
+        "https://cdn.example.com/photo.png",
+        "https://cdn.example.com/photo.png",
+        "https://cdn.example.com/photo.png",
+      ],
+    });
   });
 
   it("stores successful GET responses in cache via waitUntil", async () => {

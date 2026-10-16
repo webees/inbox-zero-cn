@@ -22,13 +22,10 @@ export async function forwardQueueMessageToInternalApi<T>({
       body: JSON.stringify(body),
     });
   } catch (error) {
-    logger.error(
-      "Failed to reach internal API while forwarding queue message",
-      {
-        path,
-        error,
-      },
-    );
+    logger.error("转发队列消息时无法访问内部 API", {
+      path,
+      error,
+    });
     throw error;
   }
 
@@ -36,7 +33,7 @@ export async function forwardQueueMessageToInternalApi<T>({
 
   const responseBody = await getResponseBody(response);
 
-  logger.error("Failed to forward Vercel queue callback to internal API", {
+  logger.error("将 Vercel 队列回调转发到内部 API 失败", {
     path,
     status: response.status,
     responseBody,

@@ -80,7 +80,7 @@ describe("normalizeMessagingAssistantText", () => {
       normalizeMessagingAssistantText({
         text: "Please click the Send button in this Telegram thread.",
       }),
-    ).toBe("This draft is pending confirmation.");
+    ).toBe("该草稿待确认。");
   });
 
   it("does not append redundant send-button guidance", () => {
@@ -113,17 +113,17 @@ describe("normalizeMessagingAssistantText", () => {
     });
 
     expect(output).toContain("Here are a few suggestions.");
-    expect(output).toContain("Suggested rules:");
+    expect(output).toContain("建议规则：");
     expect(output).toContain("**Monitoring**");
     expect(output).toContain("When: mention alerts from monitoring tools");
-    expect(output).toContain("Then: Label as 'Monitoring', Archive");
+    expect(output).toContain("Then: 打标签为 'Monitoring', 归档");
     expect(output).toContain("**Digest Updates**");
     expect(output).toContain("When: summary emails from Inbox Zero");
-    expect(output).toContain("Then: Label as 'Notification'");
+    expect(output).toContain("Then: 打标签为 'Notification'");
     expect(output).toContain("Want me to create either one?");
     expect(output).not.toContain("<rule-suggestion");
     expect(output).not.toContain("</rule-suggestions>");
-    expect(output).not.toContain("Then: Label as 'Notification', Archive");
+    expect(output).not.toContain("Then: 打标签为 'Notification', 归档");
   });
 
   it("formats standalone free-form rule suggestions", () => {
@@ -132,7 +132,7 @@ describe("normalizeMessagingAssistantText", () => {
         text: '<rule-suggestion name="Road Trip Plans" when="emails discussing road trips" do="move to Travels and notify Telegram" />',
       }),
     ).toBe(
-      "Suggested rule:\n**Road Trip Plans**\nWhen: emails discussing road trips\nThen: move to Travels and notify Telegram",
+      "建议规则：\n**Road Trip Plans**\nWhen: emails discussing road trips\nThen: move to Travels and notify Telegram",
     );
   });
 
@@ -141,7 +141,7 @@ describe("normalizeMessagingAssistantText", () => {
       normalizeMessagingAssistantText({
         text: '<Rule-Suggestion name="Monitoring" when="alerts" archive="true" />',
       }),
-    ).toBe("Suggested rule:\n**Monitoring**\nWhen: alerts\nThen: Archive");
+    ).toBe("建议规则：\n**Monitoring**\nWhen: alerts\nThen: 归档");
   });
 
   it("treats shorthand boolean rule suggestion attributes as enabled", () => {
@@ -150,7 +150,7 @@ describe("normalizeMessagingAssistantText", () => {
         text: '<rule-suggestion name="Updates" when="low-priority updates" archive draft markread />',
       }),
     ).toBe(
-      "Suggested rule:\n**Updates**\nWhen: low-priority updates\nThen: Archive, Draft Reply, Mark Read",
+      "建议规则：\n**Updates**\nWhen: low-priority updates\nThen: 归档, 草稿回复, 标为已读",
     );
   });
 });
@@ -228,7 +228,7 @@ describe("buildPendingEmailSummary", () => {
         referenceFrom: "sender@example.com",
         referenceSubject: "Question",
       }),
-    ).toBe('Reply to sender@example.com about "Question".');
+    ).toBe("回复 sender@example.com，主题为“Question”。");
   });
 
   it("formats forward summaries with source and destination", () => {
@@ -240,7 +240,7 @@ describe("buildPendingEmailSummary", () => {
         referenceSubject: "Project update",
       }),
     ).toBe(
-      'Forward "Project update" from sender@example.com to recipient@example.com.',
+      "将来自 sender@example.com 的“Project update”转发给 recipient@example.com。",
     );
   });
 });
@@ -250,7 +250,7 @@ describe("buildPendingEmailCardFallbackText", () => {
     expect(
       buildPendingEmailCardFallbackText("This draft is pending confirmation."),
     ).toBe(
-      "This draft is pending confirmation.\n\nI couldn't show the Send button right now. Ask me to prepare the draft again.",
+      "This draft is pending confirmation.\n\n现在无法显示“发送”按钮。请让我重新准备草稿。",
     );
   });
 
@@ -279,7 +279,7 @@ describe("buildMessagingUserMessages", () => {
     expect(modelUserMessage.parts).toEqual([
       expect.objectContaining({
         type: "text",
-        text: expect.stringContaining("unsupported non-image file attachments"),
+        text: expect.stringContaining("不受支持的非图片附件"),
       }),
       { type: "text", text: "Please draft a reply about this file." },
     ]);
@@ -420,7 +420,7 @@ describe("postPendingEmailCard", () => {
       type: "actions",
       elements: [
         expect.objectContaining({
-          text: expect.objectContaining({ text: "Send" }),
+          text: expect.objectContaining({ text: "发送" }),
         }),
       ],
     });
@@ -551,8 +551,8 @@ describe("getMessagingAiGeneratedPostPayload", () => {
 
 describe("pending email handled state helpers", () => {
   it("uses reply-specific sent copy", () => {
-    expect(getPendingEmailHandledTitle("reply_email")).toBe("Reply sent");
-    expect(getPendingEmailHandledStatus("reply_email")).toBe("Reply sent. ✅");
+    expect(getPendingEmailHandledTitle("reply_email")).toBe("回复已发送");
+    expect(getPendingEmailHandledStatus("reply_email")).toBe("回复已发送。✅");
   });
 
   it("builds a mailbox deep link when confirmation ids are present", () => {
@@ -566,7 +566,7 @@ describe("pending email handled state helpers", () => {
         },
       }),
     ).toBe(
-      "Open in Gmail: https://mail.google.com/mail/u/?authuser=user%40example.com#all/message-1",
+      "在 Gmail 中打开: https://mail.google.com/mail/u/?authuser=user%40example.com#all/message-1",
     );
   });
 
@@ -604,7 +604,7 @@ describe("pending email handled state helpers", () => {
         children: [
           expect.objectContaining({
             type: "link-button",
-            label: "Open in Gmail",
+            label: "在 Gmail 中打开",
             url: "https://mail.google.com/mail/u/?authuser=user%40example.com#all/message-1",
           }),
         ],
@@ -656,7 +656,7 @@ describe("pending email handled state helpers", () => {
         children: [
           expect.objectContaining({
             type: "link-button",
-            label: "Open in Outlook",
+            label: "在 Outlook 中打开",
             url: "https://outlook.office.com/owa/?ItemID=sent-1&ispopout=0",
           }),
         ],

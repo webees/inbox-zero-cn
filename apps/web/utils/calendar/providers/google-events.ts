@@ -72,7 +72,7 @@ export class GoogleCalendarEventProvider implements CalendarEventProvider {
 
     const events = response.data.items || [];
 
-    // Filter to events that actually have this attendee
+    // 过滤出实际拥有该参与者的事件
     return events
       .filter((event) =>
         event.attendees?.some(
@@ -113,12 +113,12 @@ export class GoogleCalendarEventProvider implements CalendarEventProvider {
     return events.map((event) => this.parseEvent(event));
   }
 
-  // Google Calendar keeps the organizer's UID, so it does not need the mailbox
-  // event id that Outlook relies on.
+  // Google Calendar 保留组织者的 UID，因此不需要 Outlook
+  // 所依赖的邮箱事件 id。
   async findInvitationEvent(
     invitation: CalendarInvitation,
   ): Promise<InvitationEvent | null> {
-    // An exception must never accidentally update the whole recurring series.
+    // 例外项绝不能意外更新整个重复系列。
     if (invitation.recurrenceId) return null;
     const client = await this.getClient();
     let pageToken: string | undefined;

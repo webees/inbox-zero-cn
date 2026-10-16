@@ -38,9 +38,9 @@ export function BulkUnsubscribeDesktop({
   onToggleSelectAll: () => void;
 }) {
   return (
-    // Only let the header stick to the page once the widest rows fit (~800px);
-    // narrower, e.g. with the chat sidebar open, the table keeps its own
-    // horizontal scroll so the actions column isn't clipped.
+    // 只有当最宽的行能放下（约 800px）时才让表头吸附到页面；
+    // 更窄时（例如聊天侧边栏打开时），表格保留自身的横向滚动，
+    // 以免操作列被裁掉。
     <div className="[container-type:inline-size]">
       <Table
         className="bulk-unsub-table min-[641px]:min-w-[800px] sm:table-fixed"
@@ -53,16 +53,14 @@ export function BulkUnsubscribeDesktop({
           <TableRow>
             <TableHead className="w-10 pr-0">
               <ButtonCheckbox
-                label={
-                  isAllSelected ? "Deselect all senders" : "Select all senders"
-                }
+                label={isAllSelected ? "取消选择所有发件人" : "选择所有发件人"}
                 checked={isAllSelected}
                 indeterminate={isSomeSelected && !isAllSelected}
                 onChange={() => onToggleSelectAll()}
               />
             </TableHead>
             <TableHead className="pl-4">
-              <span className="text-sm font-medium">From</span>
+              <span className="text-sm font-medium">发件人</span>
             </TableHead>
             <TableHead className="w-[90px] whitespace-nowrap">
               <HeaderButton
@@ -72,7 +70,7 @@ export function BulkUnsubscribeDesktop({
                 }
                 onClick={() => onSort("emails")}
               >
-                Emails
+                邮件
               </HeaderButton>
             </TableHead>
             <TableHead className="w-[150px] whitespace-nowrap">
@@ -83,7 +81,7 @@ export function BulkUnsubscribeDesktop({
                 }
                 onClick={() => onSort("unread")}
               >
-                Read
+                已读
               </HeaderButton>
             </TableHead>
             <TableHead className="w-[300px]" />
@@ -126,8 +124,8 @@ export function BulkUnsubscribeRowDesktop({
       data-selected={selected || undefined}
       onMouseEnter={onSelectRow}
       onClick={(event) => {
-        // Clicks from portaled menus and dialogs bubble through the React tree
-        // but are not DOM descendants of the row.
+        // 来自 portal 菜单和对话框的点击会冒泡经过 React 树，
+        // 但它们并不是该行的 DOM 后代。
         const target = event.target as HTMLElement;
         if (!event.currentTarget.contains(target)) return;
         if (target.closest("button, a, input, [data-cell=checkbox]")) return;
@@ -137,7 +135,7 @@ export function BulkUnsubscribeRowDesktop({
     >
       <TableCell className="w-10 pr-0" data-cell="checkbox">
         <ButtonCheckbox
-          label={`Select ${item.fromName || item.name}`}
+          label={`选择 ${item.fromName || item.name}`}
           checked={checked}
           onChange={(shiftKey) => onToggleSelect?.(item.name, shiftKey)}
         />
@@ -157,10 +155,10 @@ export function BulkUnsubscribeRowDesktop({
           </div>
         </div>
       </TableCell>
-      <TableCell className="whitespace-nowrap" data-label="Emails">
+      <TableCell className="whitespace-nowrap" data-label="邮件">
         <span className="font-medium text-foreground/80">{item.value}</span>
       </TableCell>
-      <TableCell className="whitespace-nowrap" data-label="Read">
+      <TableCell className="whitespace-nowrap" data-label="已读">
         <div className="flex items-center gap-2">
           <Progress
             value={readPercentage}

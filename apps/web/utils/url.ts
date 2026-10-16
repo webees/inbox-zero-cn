@@ -20,11 +20,11 @@ function getGmailUrlForFragment(
   return `https://mail.google.com/mail/u/?authuser=${encodeURIComponent(emailAddress)}#${fragment}`;
 }
 
-// Personal Microsoft accounts (outlook / hotmail / live / msn) sign in at
-// outlook.live.com; everything else is an Entra ID / Microsoft 365 mailbox
-// served from outlook.office.com. The two hosts route to separate services, so
-// pointing a business user at outlook.live.com lands them on the homepage.
-// Prefix match covers country variants like outlook.fr, live.co.uk, hotmail.de.
+// 个人 Microsoft 账号（outlook / hotmail / live / msn）在
+// outlook.live.com 登录；其他都是 Entra ID / Microsoft 365 邮箱，
+// 由 outlook.office.com 提供服务。这两个主机路由到不同的服务，因此
+// 将企业用户指向 outlook.live.com 会把他们带到主页。
+// 前缀匹配可覆盖 outlook.fr、live.co.uk、hotmail.de 等国家/地区变体。
 const PERSONAL_MICROSOFT_DOMAIN_PREFIXES = ["outlook.", "hotmail.", "live."];
 const PERSONAL_MICROSOFT_DOMAINS = new Set(["msn.com", "passport.com"]);
 
@@ -50,7 +50,7 @@ const OUTLOOK_WEB_HOSTS = new Set([
   "outlook.live.com",
 ]);
 
-// Graph's `webLink` is redirected to, so only Outlook hosts are allowed.
+// Graph 的 `webLink` 会被重定向，因此仅允许 Outlook 主机。
 function toOutlookReadingPaneUrl(webLink?: string | null) {
   if (!webLink) return null;
 
@@ -68,7 +68,7 @@ function toOutlookReadingPaneUrl(webLink?: string | null) {
   return url.toString();
 }
 
-// Only the fields a draft deeplink can be built from.
+// 仅包含构建草稿深度链接所需的字段。
 type DraftLinkTarget = {
   id: string;
   threadId?: string | null;
@@ -96,9 +96,9 @@ const GOOGLE_CONFIG: ProviderUrlConfig = {
   requiresMessageId: false,
   buildUrl: (messageOrThreadId: string, emailAddress?: string | null) =>
     getGmailUrlForFragment(`all/${messageOrThreadId}`, emailAddress),
-  // Gmail's compose deeplink takes an internal id that cannot be derived from
-  // an API id, so the draft itself cannot be opened. Its conversation can, and
-  // Drafts is the one label that holds it.
+  // Gmail 的写信深度链接使用无法从 API id 推导出的内部 id，
+  // 因此草稿本身无法打开。但它的会话可以打开，而草稿箱是
+  // 唯一包含它的标签。
   buildDraftUrl: (draft: DraftLinkTarget, emailAddress?: string | null) =>
     getGmailUrlForFragment(
       `drafts/${encodeURIComponent(draft.threadId || draft.id)}`,
@@ -165,13 +165,13 @@ export function getEmailUrl(
 }
 
 /**
- * Takes the draft message itself rather than an id, because Gmail links to the
- * draft's thread while Outlook links to its message. Resolve the draft via
+ * 传入的是草稿邮件本身而非 id，因为 Gmail 链接到
+ * 草稿所在的会话，而 Outlook 链接到其消息。通过
  * `EmailProvider.getDraft` at link time — its message id changes on every edit.
  *
- * Outlook opens the draft via Graph's `webLink`, falling back to Drafts.
- * Gmail returns a Drafts conversation URL (composer deeplinks need an internal
- * id the API does not expose).
+ * Outlook 通过 Graph 的 `webLink` 打开草稿，回退到草稿箱。
+ * Gmail 返回草稿箱会话 URL（写信深度链接需要 API
+ * 未暴露的内部 id）。
  */
 export function getEmailDraftUrl(
   draft: DraftLinkTarget,
@@ -183,9 +183,9 @@ export function getEmailDraftUrl(
 }
 
 /**
- * Get the appropriate email URL based on provider and available IDs.
- * For Google, uses messageId if available, otherwise threadId.
- * For other providers, uses threadId.
+ * 根据服务商和可用 ID 获取合适的邮件 URL。
+ * 对于 Google，如果有 messageId 则使用它，否则使用 threadId。
+ * 对于其他服务商，使用 threadId。
  */
 export function getEmailUrlForMessage(
   messageId: string,
@@ -229,7 +229,7 @@ export function getEmailUrlForOptionalMessage({
   );
 }
 
-// Keep the old function name for backward compatibility
+// 为向后兼容保留旧函数名
 export function getGmailUrl(
   messageOrThreadId: string,
   emailAddress?: string | null,
@@ -243,8 +243,8 @@ export function getGmailSearchUrl(from: string, emailAddress?: string | null) {
 }
 
 const OPEN_IN_MAILBOX_LABELS: Record<string, string> = {
-  google: "Open in Gmail",
-  microsoft: "Open in Outlook",
+  google: "在 Gmail 中打开",
+  microsoft: "在 Outlook 中打开",
 };
 
 export function getOpenInMailboxLabel(provider?: string | null) {

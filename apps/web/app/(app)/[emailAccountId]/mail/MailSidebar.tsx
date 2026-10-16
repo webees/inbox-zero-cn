@@ -52,26 +52,26 @@ import {
   type MailboxItemEdit,
 } from "./MailboxItemContextMenu";
 
-/** Where a sidebar row navigates. Mirrors the mail page's `?type=` query shape. */
+/** 侧边栏行导航到的位置。与邮件页面的 `?type=` 查询结构一致。 */
 export type MailNavTarget =
   | { kind: "type"; type: string }
   | { kind: "label"; labelId: string }
   | { kind: "folder"; folderId: string };
 
 export type MailSidebarProps = {
-  /** `?type=` of the current view — `inbox` when nothing is selected. */
+  /** 当前视图的 `?type=`——未选择任何内容时为 `inbox`。 */
   activeType: string | null;
-  /** `?labelId=` of the current view, when a user label is open. */
+  /** 打开用户标签时当前视图的 `?labelId=`。 */
   activeLabelId: string | null;
-  /** `?folderId=` of the current view, when an Outlook folder is open. */
+  /** 打开 Outlook 文件夹时当前视图的 `?folderId=`。 */
   activeFolderId: string | null;
-  /** Builds the href for a row so the sidebar never owns routing. */
+  /** 为某一行构建 href，这样侧边栏无需负责路由。 */
   hrefFor: (target: MailNavTarget) => string;
   /** Runs when a row navigates in place, including to the view already open. */
   onNavigate: () => void;
   labels: EmailLabel[];
   folders: OutlookFolder[];
-  /** Keyed by provider label/folder id. Arrives after first paint; may be empty. */
+  /** 以服务商标签/文件夹 id 为键。首屏之后才到达；可能为空。 */
   countsById: Map<string, MailboxLabelCount>;
   categories: MailCategory[];
   categoryHeading: string;
@@ -84,11 +84,11 @@ export type MailSidebarProps = {
   onDeleteMailboxItem: (item: MailboxItem) => Promise<boolean>;
   labelEditMode: "color" | "name-and-color";
   labelColorOptions: readonly MailboxItemColorOption[];
-  /** Gmail lets a label be hidden from the label and message lists. */
+  /** Gmail 允许将标签从标签列表与邮件列表中隐藏。 */
   supportsLabelVisibility?: boolean;
-  /** Hide the categories group behind a toggle, collapsed by default. */
+  /** 将分类分组藏在开关后面，默认折叠。 */
   collapsibleCategories?: boolean;
-  /** Icon-only rail: rows shrink to their icon and names move into tooltips. */
+  /** 仅图标栏：各行收缩为图标，名称移入提示中。 */
   collapsed?: boolean;
   footer?: ReactNode;
   unified?: boolean;
@@ -98,27 +98,27 @@ export type MailSidebarProps = {
 type SystemItem = {
   name: string;
   type: string;
-  /** null means the row never shows a count (a "sent unread" number is noise). */
+  /** null 表示该行从不显示计数（“已发送未读”这样的数字是噪声）。 */
   countId: string | null;
   Icon: LucideIcon;
 };
 
 export const MAIL_SCHEDULED_TYPE = "scheduled";
 
-/** Everything the inbox isn't. Visited rarely enough to stay behind a toggle. */
+/** 收件箱之外的一切。访问频率低，足以待在开关后面。 */
 const MAILBOX_ITEMS: SystemItem[] = [
-  { name: "Drafts", type: "draft", countId: "DRAFT", Icon: FileIcon },
-  { name: "Sent", type: "sent", countId: null, Icon: SendIcon },
-  { name: "Archived", type: "archive", countId: null, Icon: ArchiveIcon },
-  { name: "Starred", type: "starred", countId: null, Icon: StarIcon },
+  { name: "草稿", type: "draft", countId: "DRAFT", Icon: FileIcon },
+  { name: "已发送", type: "sent", countId: null, Icon: SendIcon },
+  { name: "已归档", type: "archive", countId: null, Icon: ArchiveIcon },
+  { name: "已加星标", type: "starred", countId: null, Icon: StarIcon },
   {
-    name: "Scheduled",
+    name: "已定时",
     type: MAIL_SCHEDULED_TYPE,
     countId: null,
     Icon: Clock3Icon,
   },
-  { name: "Spam", type: "spam", countId: null, Icon: ShieldAlertIcon },
-  { name: "Trash", type: "trash", countId: null, Icon: Trash2Icon },
+  { name: "垃圾邮件", type: "spam", countId: null, Icon: ShieldAlertIcon },
+  { name: "回收站", type: "trash", countId: null, Icon: Trash2Icon },
 ];
 
 export type MailCategory = {
@@ -129,27 +129,27 @@ export type MailCategory = {
 
 export const MAIL_CATEGORIES: MailCategory[] = [
   {
-    name: "Personal",
+    name: "个人",
     type: GmailLabel.PERSONAL,
     Icon: UserIcon,
   },
   {
-    name: "Social",
+    name: "社交",
     type: GmailLabel.SOCIAL,
     Icon: Users2Icon,
   },
   {
-    name: "Updates",
+    name: "更新",
     type: GmailLabel.UPDATES,
     Icon: BellIcon,
   },
   {
-    name: "Forums",
+    name: "论坛",
     type: GmailLabel.FORUMS,
     Icon: MessagesSquareIcon,
   },
   {
-    name: "Promotions",
+    name: "促销",
     type: GmailLabel.PROMOTIONS,
     Icon: MegaphoneIcon,
   },
@@ -200,7 +200,7 @@ export function MailSidebar({
     labelEditMode === "name-and-color",
   );
   const hasNestedLabels = labelTree.some((root) => root.children.length > 0);
-  // Hidden labels stay flat: they are an escape hatch, not a place to browse.
+  // 隐藏的标签保持扁平：它们是一种备用入口，而不是用来浏览的地方。
   const hiddenLabelNodes = getLabelTree(hiddenLabels, false);
   const hasHiddenActiveLabel = hiddenLabels.some(
     (label) => label.id === activeLabelId,
@@ -213,9 +213,9 @@ export function MailSidebar({
   const [showCategories, setShowCategories] = useState(isCategoryActive);
   const [showLabels, setShowLabels] = useState(true);
   const [showHiddenLabels, setShowHiddenLabels] = useState(false);
-  // Nothing in the rail can toggle a group, so there a group follows the open
-  // view rather than a stored choice, which would otherwise be a one-way door.
-  // The expanded sidebar keeps whatever the user chose.
+  // 图标栏中没有任何东西能切换分组，因此在那里分组跟随打开的
+  // 视图而不是已保存的选择，否则就成了单向门。
+  // 展开的侧边栏则保留用户的选择。
   const showCategoryRows =
     !collapsibleCategories || (collapsed ? isCategoryActive : showCategories);
 
@@ -234,14 +234,14 @@ export function MailSidebar({
     if (isMailboxActive) setShowMailboxes(true);
   }, [isMailboxActive]);
 
-  // Expand when the open view changes to a label so a collapsed list can
-  // still reveal the selected row. A same-label collapse stays put.
+  // 当打开视图切换为某个标签时展开，这样折叠的列表
+  // 仍能显示所选中行。同一标签下的折叠保持不变。
   useEffect(() => {
     if (activeLabelId) setShowLabels(true);
   }, [activeLabelId]);
 
-  // Opening a hidden label from elsewhere (search, a thread's chips) must not
-  // leave the sidebar without a row for the view the user is looking at.
+  // 从别处打开隐藏标签（搜索、会话的标签片）时，
+  // 不能让侧边栏缺少用户正在查看的视图对应的行。
   useEffect(() => {
     if (hasHiddenActiveLabel) setShowHiddenLabels(true);
   }, [hasHiddenActiveLabel]);
@@ -263,7 +263,7 @@ export function MailSidebar({
         className,
       )}
     >
-      {/* Collapsed, the toggle moves beside the traffic lights (`MailTitlebarNav`). */}
+      {/* 折叠时，开关移到窗口控制按钮旁（`MailTitlebarNav`）。 */}
       {collapsed ? (
         <div data-desktop-mac-titlebar-spacer className="shrink-0" />
       ) : (
@@ -286,7 +286,7 @@ export function MailSidebar({
       )}
 
       <ShortcutTooltip
-        shortcuts={[{ id: "compose", label: "Compose" }]}
+        shortcuts={[{ id: "compose", label: "撰写" }]}
         side={collapsed ? "right" : "bottom"}
       >
         {collapsed ? (
@@ -294,7 +294,7 @@ export function MailSidebar({
             variant="gradient"
             size="icon"
             onClick={onCompose}
-            aria-label="Compose"
+            aria-label="撰写"
             className="mb-3.5 size-10 shrink-0 self-center rounded-xl"
           >
             <PenLineIcon className="size-4" />
@@ -306,13 +306,13 @@ export function MailSidebar({
             className="mb-3.5 w-full shrink-0 justify-start gap-2 rounded-xl px-3"
           >
             <PenLineIcon className="size-4 shrink-0" />
-            Compose
+            撰写
           </Button>
         )}
       </ShortcutTooltip>
 
-      {/* The negative margin lets the scrollbar sit in the sidebar's own
-          padding, so a platform-width bar can't crowd the unread counts. */}
+      {/* 负外边距让滚动条落在侧边栏自身的
+          内边距中，这样平台宽度的滚动条不会挤到未读计数。 */}
       <div className="-mr-1.5 flex min-h-0 flex-1 flex-col overflow-y-auto pr-1.5 scrollbar-thin">
         <nav className="flex flex-col gap-px">
           <NavRow
@@ -325,7 +325,7 @@ export function MailSidebar({
               (!activeLabelId && !activeFolderId && activeType === "inbox")
             }
             icon={<InboxIcon className="size-4 shrink-0" />}
-            name={unified ? "All inboxes" : "Inbox"}
+            name={unified ? "全部收件箱" : "收件箱"}
             count={unified ? null : displayCount(countsById.get("INBOX"))}
             emphasizeCount
             collapsed={collapsed}
@@ -339,7 +339,7 @@ export function MailSidebar({
               expanded={showMailboxes}
               onToggle={() => setShowMailboxes((open) => !open)}
             >
-              Mail
+              邮件
             </GroupHeading>
             {showMailboxRows && (
               <nav className="flex flex-col gap-px">
@@ -364,8 +364,8 @@ export function MailSidebar({
           </>
         )}
 
-        {/* The rail replaces headings with a rule, so an empty group would
-            leave a stray line behind. */}
+        {/* 图标栏用分隔线代替标题，因此空分组会
+            留下一条多余的线。 */}
         {!unified &&
           categories.length > 0 &&
           (!collapsed || showCategoryRows) && (
@@ -404,7 +404,7 @@ export function MailSidebar({
 
         {!unified && sidebarFolders.length > 0 && (
           <>
-            <GroupHeading collapsed={collapsed}>Folders</GroupHeading>
+            <GroupHeading collapsed={collapsed}>文件夹</GroupHeading>
             <nav className="flex flex-col gap-px">
               {sidebarFolders.map((folder) => (
                 <MailboxItemContextMenu
@@ -414,7 +414,7 @@ export function MailSidebar({
                     id: folder.id,
                     name: folder.displayName,
                   }}
-                  typeName="folder"
+                  typeName="文件夹"
                   editMode="name"
                   onEdit={onEditMailboxItem}
                   onDelete={onDeleteMailboxItem}
@@ -457,7 +457,7 @@ export function MailSidebar({
                     setIsAddingLabel((open) => !open);
                   }}
                   aria-expanded={isAddingLabel}
-                  aria-label={`Create ${labelSingular}`}
+                  aria-label={`创建${labelSingular}`}
                   className="rounded-md p-0.5 text-muted-foreground hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <PlusIcon className="size-3.5" />
@@ -502,7 +502,7 @@ export function MailSidebar({
                   ) : (
                     <ChevronRightIcon className="size-3" />
                   )}
-                  More
+                  更多
                 </button>
                 {showHiddenLabels && (
                   <nav className="flex flex-col gap-px">
@@ -540,8 +540,8 @@ export function MailSidebar({
                   onKeyDown={(event) => {
                     if (event.key === "Escape") setIsAddingLabel(false);
                   }}
-                  placeholder={`${labelSingular} name`}
-                  aria-label={`New ${labelSingular} name`}
+                  placeholder={`${labelSingular}名称`}
+                  aria-label={`新建${labelSingular}名称`}
                   autoFocus
                   className="h-7 min-w-0 flex-1 px-2 text-xs"
                 />
@@ -551,7 +551,7 @@ export function MailSidebar({
                   size="xs-2"
                   disabled={!newLabelName.trim()}
                 >
-                  Add
+                  添加
                 </Button>
               </form>
             ) : null}
@@ -587,20 +587,20 @@ function LabelBranch({
   )
     ? props.activeLabelId
     : null;
-  // Branches start closed so a deep label tree doesn't flood the sidebar; only
-  // the branch holding the open label reveals itself.
+  // 分支默认关闭，这样很深的标签树不会淹没侧边栏；
+  // 只有包含所打开标签的分支会展开自己。
   const [expansion, setExpansion] = useState({
     activeDescendantId,
     expanded: activeDescendantId !== null,
   });
-  // Reveal each newly selected descendant while retaining unrelated collapse choices.
+  // 展开每个新选中的后代，同时保留无关的折叠选择。
   if (expansion.activeDescendantId !== activeDescendantId) {
     setExpansion({
       activeDescendantId,
       expanded: activeDescendantId !== null || expansion.expanded,
     });
   }
-  // The rail has no room for a disclosure arrow, so it lists every label flat.
+  // 图标栏没有空间放展开箭头，因此它把所有标签平铺列出。
   const expanded = collapsed || expansion.expanded;
 
   return (
@@ -626,7 +626,7 @@ function LabelBranch({
           {children.length > 0 && !collapsed && (
             <button
               type="button"
-              aria-label={`${expanded ? "Collapse" : "Expand"} ${label.name}`}
+              aria-label={`${expanded ? "折叠" : "展开"} ${label.name}`}
               aria-expanded={expanded}
               onClick={() =>
                 setExpansion({ activeDescendantId, expanded: !expanded })
@@ -661,8 +661,8 @@ function LabelBranch({
                 />
               )
             }
-            // Flattened rows lose their parent context, so the tooltip carries
-            // the full path instead of the leaf name.
+            // 平铺的行会丢失父级上下文，因此提示显示完整路径
+            // 而不是叶子名称。
             name={collapsed ? label.name : node.name}
             count={displayCount(props.countsById.get(label.id))}
             nested={hasNestedLabels && !collapsed}
@@ -700,7 +700,7 @@ function GroupHeading({
   onToggle?: () => void;
   collapsed?: boolean;
 }) {
-  // A heading can't fit in the rail, so groups are separated by a rule instead.
+  // 图标栏放不下标题，因此改为用一条分隔线区分分组。
   if (collapsed) return <div className="mx-auto my-2 h-px w-6 bg-border" />;
 
   return (
@@ -796,7 +796,7 @@ function NavRow({
   );
 }
 
-/** Names a rail control that has room for its icon only. `null` when expanded. */
+/** 为只能放下图标的图标栏控件命名。展开时为 `null`。 */
 export function RailTooltip({
   label,
   children,
@@ -838,8 +838,8 @@ export function getMailNavPath(target: MailNavTarget): `/${string}` {
 }
 
 /**
- * Drafts are never unread, so the only number worth showing there is the total.
- * A zero is noise, so it renders as nothing at all.
+ * 草稿永远不会是未读，因此那里唯一值得显示的数字是总数。
+ * 零是噪声，因此完全不渲染。
  */
 function displayCount(count: MailboxLabelCount | undefined): number | null {
   if (!count) return null;

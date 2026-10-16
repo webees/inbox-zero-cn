@@ -12,8 +12,8 @@ export interface CalendarEvent {
   endTime: Date;
   eventUrl?: string;
   id: string;
-  // True when the connected calendar's own account organizes the event. This is
-  // relative to the calendar connection, which is not always the EmailAccount.
+  // 当已连接日历自身的账号组织该事件时为 true。这是
+  // 相对于日历连接的，而日历连接并不总是 EmailAccount。
   isOrganizer?: boolean;
   location?: string;
   organizerEmail?: string;

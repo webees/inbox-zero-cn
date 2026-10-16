@@ -40,7 +40,7 @@ export const deleteMeetingNotesAction = actionClient
       },
       select: { recordingId: true },
     });
-    if (!meeting?.recordingId) throw new SafeError("Meeting not found");
+    if (!meeting?.recordingId) throw new SafeError("未找到会议");
 
     await prisma.$transaction([
       prisma.meeting.update({
@@ -67,7 +67,7 @@ export const updateMeetingRecorderSettingsAction = actionClient
         minimumTier: MEETING_RECORDER_MIN_TIER,
       });
       if (!hasAccess) {
-        throw new SafeError("The notetaker is not included in your plan");
+        throw new SafeError("你的套餐不包含记录助手");
       }
     }
 
@@ -81,8 +81,8 @@ export const updateMeetingRecorderSettingsAction = actionClient
       },
     });
 
-    // Turning the notetaker off also drops this account from the cron's query,
-    // so nothing else would ever cancel the bots it has already booked.
+    // 关闭记录助手也会将此账号从定时任务查询中移除，
+    // 因此没有其他机制会取消它已预约的机器人。
     if (parsedInput.enabled === false) {
       await releaseAccountBookings({ emailAccountId, logger });
     } else if (parsedInput.joinRule === MeetingJoinRule.OFF) {
@@ -109,9 +109,9 @@ export const setMeetingJoinOverrideAction = actionClient
           meetingRecorderJoinRule: true,
         },
       });
-      if (!emailAccount) throw new SafeError("Email account not found");
+      if (!emailAccount) throw new SafeError("未找到邮箱账号");
       if (!emailAccount.meetingRecorderEnabled) {
-        throw new SafeError("The notetaker is turned off for this account");
+        throw new SafeError("此账号的记录助手已关闭");
       }
 
       if (
@@ -126,15 +126,15 @@ export const setMeetingJoinOverrideAction = actionClient
       }
 
       if (join) {
-        // The cron filters on the paid tier before it books anything, and this
-        // path books too, so it has to apply the same entitlement. Turning a
-        // meeting off must remain available after a downgrade.
+        // 定时任务在预约前会按付费档位过滤，而此路径也会预约，
+        // 因此必须应用相同的权限。降级后
+        // 必须仍能关闭会议记录。
         const hasAccess = await checkHasAccess({
           userId: emailAccount.userId,
           minimumTier: MEETING_RECORDER_MIN_TIER,
         });
         if (!hasAccess) {
-          throw new SafeError("The notetaker is not included in your plan");
+          throw new SafeError("你的套餐不包含记录助手");
         }
       }
 
@@ -147,14 +147,14 @@ export const setMeetingJoinOverrideAction = actionClient
         logger,
       });
 
-      // Reading the event back from the user's own calendars is what keeps a
-      // caller from attaching themselves to a meeting that is not theirs.
+      // 从用户自己的日历中重新读取事件，可以防止
+      // 调用方将自己附加到不属于他们的会议。
       const event = events.find(
         (candidate) => candidate.id === calendarEventId,
       );
-      if (!event) throw new SafeError("Meeting not found on your calendar");
+      if (!event) throw new SafeError("你的日历中未找到该会议");
       if (!event.videoConferenceLink) {
-        throw new SafeError("This meeting has no video link to join");
+        throw new SafeError("此会议没有可加入的视频链接");
       }
 
       const meeting = await upsertMeeting({
@@ -163,9 +163,9 @@ export const setMeetingJoinOverrideAction = actionClient
         joinOverride: join,
       });
 
-      // New future bookings can wait for the cron. Removals and existing
-      // bookings reconcile now so a moved event cannot strand the old bot
-      // outside the cron window.
+      // 新的未来预约可以等待定时任务。移除操作和现有
+      // 预约会立即协调，这样被移动的事件不会把旧机器人
+      // 遗留在定时任务窗口之外。
       const startsBeforeNextPass =
         differenceInMinutes(event.startTime, new Date()) <
         RECONCILE_WINDOW_MINUTES;

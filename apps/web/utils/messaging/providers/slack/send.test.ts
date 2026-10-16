@@ -44,9 +44,7 @@ describe("slack send helpers", () => {
     expect(mockPostMessage).toHaveBeenCalledWith(
       expect.objectContaining({
         channel: "C123",
-        text: expect.stringContaining(
-          "You can mention <@UAPP123> in this channel",
-        ),
+        text: expect.stringContaining("你可以在本渠道中 @提及 <@UAPP123>"),
         unfurl_links: false,
         unfurl_media: false,
       }),
@@ -95,7 +93,7 @@ describe("slack send helpers", () => {
     expect(mockPostMessage).toHaveBeenCalledWith(
       expect.objectContaining({
         channel: "C123",
-        text: expect.stringContaining("Follow-up: Project update"),
+        text: expect.stringContaining("跟进：Project update"),
         unfurl_links: false,
         unfurl_media: false,
       }),
@@ -144,7 +142,7 @@ describe("slack send helpers", () => {
     expect(mockPostMessage).toHaveBeenCalledWith(
       expect.objectContaining({
         channel: "U123",
-        text: expect.stringContaining("invite <@UAPP123> there"),
+        text: expect.stringContaining("请把 <@UAPP123> 邀请进去"),
         unfurl_links: false,
         unfurl_media: false,
       }),

@@ -67,10 +67,10 @@ describe("messaging channel validity", () => {
 
   it("returns provider-specific reconnect messages", () => {
     expect(getMessagingChannelReconnectMessage(MessagingProvider.SLACK)).toBe(
-      "Please reconnect Slack before configuring notifications.",
+      "请先重新连接 Slack，再配置通知。",
     );
     expect(getMessagingChannelReconnectMessage(MessagingProvider.TEAMS)).toBe(
-      "Please reconnect Teams before configuring notifications.",
+      "请先重新连接 Teams，再配置通知。",
     );
   });
 

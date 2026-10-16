@@ -25,7 +25,7 @@ import { logReplyTrackerError } from "./error-logging";
 
 const DRAFT_SENT_SIMILARITY_THRESHOLD = 0.7;
 /**
- * Checks if a sent message originated from an AI draft and logs its similarity.
+ * 检查已发送的邮件是否源自 AI 草稿，并记录其相似度。
  */
 export async function trackSentDraftStatus({
   emailAccountId,
@@ -40,14 +40,14 @@ export async function trackSentDraftStatus({
 }) {
   const { threadId, id: sentMessageId } = message;
 
-  logger.info("Checking if sent message corresponds to an AI draft");
+  logger.info("检查已发送邮件是否对应某个 AI 草稿");
 
   if (!sentMessageId) {
     logger.warn("Sent message missing ID, cannot track draft status");
     return;
   }
 
-  // Find the most recently created draft for this thread
+  // 查找此会话中最近创建的草稿
   const executedAction = await prisma.executedAction.findFirst({
     where: {
       executedRule: {
@@ -80,7 +80,7 @@ export async function trackSentDraftStatus({
   });
 
   if (!executedAction?.draftId) {
-    logger.info("No corresponding AI draft action with draftId found");
+    logger.info("未找到具有 draftId 的对应 AI 草稿操作");
     return;
   }
 
@@ -89,7 +89,7 @@ export async function trackSentDraftStatus({
     provider
       .getMessage(executedAction.executedRule.messageId)
       .catch((error) => {
-        logger.warn("Failed to load source message for sent draft tracking", {
+        logger.warn("加载已发送草稿跟踪的来源邮件失败", {
           error,
           executedActionId: executedAction.id,
         });
@@ -99,8 +99,8 @@ export async function trackSentDraftStatus({
 
   const executedActionId = executedAction.id;
 
-  // Calculate similarity between sent message and AI draft content
-  // Pass full message to properly handle Outlook HTML content
+  // 计算已发送邮件与 AI 草稿内容之间的相似度
+  // 传入完整邮件以正确处理 Outlook 的 HTML 内容
   const accountSignature = executedAction.executedRule.emailAccount?.signature;
   const similarityScore = calculateSimilarity(executedAction.content, message, {
     excludedSignatures: accountSignature ? [accountSignature] : [],
@@ -128,7 +128,7 @@ export async function trackSentDraftStatus({
     ...similarityFields,
   });
 
-  logger.info("Calculated similarity score", {
+  logger.info("已计算相似度分数", {
     executedActionId,
     similarityScore,
     draftExists: !!draftExists,
@@ -136,7 +136,7 @@ export async function trackSentDraftStatus({
   });
 
   if (draftExists || sentMessageRepliesToSource === false) {
-    logger.info("Marking AI draft as not sent", {
+    logger.info("将 AI 草稿标记为未发送", {
       executedActionId: executedAction.id,
       draftId: executedAction.draftId,
       similarityScore,
@@ -144,7 +144,7 @@ export async function trackSentDraftStatus({
       sentMessageRepliesToSource,
     });
 
-    // Create DraftSendLog to record the comparison.
+    // 创建 DraftSendLog 以记录该比较。
     const [draftSendLog] = await withPrismaRetry(
       () =>
         prisma.$transaction([
@@ -161,7 +161,7 @@ export async function trackSentDraftStatus({
       { logger },
     );
 
-    logger.info("Created draft send log and marked action as not sent", {
+    logger.info("已创建草稿发送日志并将操作标记为未发送", {
       executedActionId,
       sentMessageRepliesToSource,
     });
@@ -193,10 +193,10 @@ export async function trackSentDraftStatus({
     },
   );
 
-  // Gmail and Outlook both make "missing draft" ambiguous: it can mean sent,
-  // deleted, moved, or no longer reachable under the stored draft ID. When the
-  // sent message targets the original sender, record the lifecycle as likely
-  // sent and leave edit strength to similarityScore.
+  // Gmail 和 Outlook 都让「草稿缺失」具有歧义：它可能意味着已发送、
+  // 已删除、已移动，或无法再通过存储的草稿 ID 访问。当
+  // 已发送邮件的收件人是原始发件人时，将生命周期记录为很可能
+  // 已发送，并将编辑强度留给 similarityScore。
   const draftStatus = getSentDraftStatus({
     similarityScore,
     sentMessageRepliesToSource,
@@ -219,10 +219,9 @@ export async function trackSentDraftStatus({
     { logger },
   );
 
-  logger.info(
-    "Successfully created draft send log and updated action status via transaction",
-    { executedActionId },
-  );
+  logger.info("已通过事务成功创建草稿发送日志并更新操作状态", {
+    executedActionId,
+  });
 
   if (wasLikelyDraftSent) {
     after(() =>
@@ -254,10 +253,10 @@ export async function trackSentDraftStatus({
 }
 
 /**
- * Cleans up old AI-generated drafts in a thread.
- * Handles both rule-based drafts (ExecutedAction) and follow-up drafts (ThreadTracker).
- * For rule drafts: checks if unmodified before deleting.
- * For follow-up drafts: deletes unconditionally (stale if new message arrived).
+ * 清理会话中旧的 AI 生成草稿。
+ * 同时处理基于规则的草稿（ExecutedAction）和跟进草稿（ThreadTracker）。
+ * 对于规则草稿：删除前检查是否未被修改。
+ * 对于跟进草稿：无条件删除（若有新邮件到达则视为过期）。
  */
 export async function cleanupThreadAIDrafts({
   threadId,
@@ -272,12 +271,12 @@ export async function cleanupThreadAIDrafts({
   logger: Logger;
   excludeMessageId: string;
 }) {
-  logger.info("Starting cleanup of old AI drafts for thread");
+  logger.info("开始清理会话中旧的 AI 草稿");
 
   try {
-    // Find draft actions that are still pending, or where the user replied
-    // without using the draft and the old draft may still need cleanup.
-    // Excludes drafts for the current message to avoid deleting a draft that was just created
+    // 查找仍处于待处理状态的草稿操作，或用户已回复
+    // 但未使用该草稿、旧草稿可能仍需清理的情况。
+    // 排除当前邮件的草稿，以免删除刚创建的草稿
     const potentialDraftsToClean = await prisma.executedAction.findMany({
       where: {
         executedRule: {
@@ -303,11 +302,11 @@ export async function cleanupThreadAIDrafts({
     });
 
     if (potentialDraftsToClean.length === 0) {
-      logger.info("No relevant old AI drafts found to cleanup");
+      logger.info("未找到需要清理的相关旧 AI 草稿");
       return;
     }
 
-    logger.info("Found potential AI drafts to check for cleanup", {
+    logger.info("找到可能需要清理的潜在 AI 草稿", {
       potentialDraftsToCleanLength: potentialDraftsToClean.length,
     });
 
@@ -321,7 +320,7 @@ export async function cleanupThreadAIDrafts({
       try {
         const draftDetails = await provider.getDraft(action.draftId);
 
-        logger.info("Fetched draft details for cleanup check", {
+        logger.info("已拉取用于清理检查的草稿详情", {
           ...actionLoggerOptions,
           draftExists: !!draftDetails,
           draftEmbeddedMessageId: draftDetails?.id,
@@ -329,7 +328,7 @@ export async function cleanupThreadAIDrafts({
           hasTextPlain: !!draftDetails?.textPlain,
           hasTextHtml: !!draftDetails?.textHtml,
         });
-        logger.trace("Draft content preview", {
+        logger.trace("草稿内容预览", {
           ...actionLoggerOptions,
           draftTextPreview: (
             draftDetails?.textPlain || draftDetails?.textHtml
@@ -337,8 +336,8 @@ export async function cleanupThreadAIDrafts({
         });
 
         if (draftDetails?.textPlain || draftDetails?.textHtml) {
-          // Draft exists, check if modified
-          // Pass full draftDetails to properly handle Outlook HTML content
+          // 草稿存在，检查是否被修改
+          // 传入完整的 draftDetails 以正确处理 Outlook 的 HTML 内容
           const similarityScore = calculateSimilarity(
             action.content,
             draftDetails,
@@ -351,13 +350,13 @@ export async function cleanupThreadAIDrafts({
               })
             : false;
 
-          logger.info("Checked existing draft for modification", {
+          logger.info("已检查现有草稿是否被修改", {
             ...actionLoggerOptions,
             draftEmbeddedMessageId: draftDetails.id,
             similarityScore,
             isUnmodified,
           });
-          logger.trace("Original content preview for similarity check", {
+          logger.trace("用于相似度检查的原始内容预览", {
             ...actionLoggerOptions,
             originalContentPreview: action.content?.slice(0, 100),
           });
@@ -385,7 +384,7 @@ export async function cleanupThreadAIDrafts({
                   )
                 : Promise.resolve(),
             ]);
-            logger.info("Deleted unmodified draft.", actionLoggerOptions);
+            logger.info("已删除未修改的草稿。", actionLoggerOptions);
           } else {
             logger.info(
               "Draft has been modified, skipping deletion.",
@@ -417,7 +416,7 @@ export async function cleanupThreadAIDrafts({
           logger,
           emailAccountId,
           scope: "draft-tracking",
-          message: "Error checking draft for cleanup",
+          message: "检查草稿以进行清理时出错",
           operation: "check-draft-for-cleanup",
           context: actionLoggerOptions,
           error,
@@ -425,9 +424,9 @@ export async function cleanupThreadAIDrafts({
       }
     }
 
-    // Also clean up follow-up drafts for this thread (safety net).
-    // clearFollowUpLabel already handles this synchronously, so this will
-    // typically find nothing. Kept as a fallback for non-standard code paths.
+    // 同时清理此会话的跟进草稿（安全网）。
+    // clearFollowUpLabel 已经同步处理了这一点，因此这里
+    // 通常什么都找不到。保留作为非标准代码路径的回退。
     const followUpTrackers = await prisma.threadTracker.findMany({
       where: {
         emailAccountId,
@@ -468,9 +467,9 @@ export async function cleanupThreadAIDrafts({
       }
     }
 
-    logger.info("Completed cleanup of AI drafts for thread");
+    logger.info("已完成会话 AI 草稿的清理");
   } catch (error) {
-    logger.error("Error during thread draft cleanup", { error });
+    logger.error("会话草稿清理过程中出错", { error });
   }
 }
 
@@ -519,7 +518,7 @@ function queueReplyMemoryLearning({
         logger,
       });
     } catch (error) {
-      logger.error("Failed to learn reply memories from draft edit", {
+      logger.error("从草稿编辑中学习回复记忆失败", {
         error,
         executedActionId,
       });

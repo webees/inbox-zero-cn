@@ -76,14 +76,14 @@ export function SnippetForm({
 
     if (result?.serverError) {
       toastError({
-        title: `Error ${editingItem ? "updating" : "creating"} snippet`,
+        title: editingItem ? "更新片段时出错" : "创建片段时出错",
         description: result.serverError,
       });
       return;
     }
 
     toastSuccess({
-      description: `Snippet ${editingItem ? "updated" : "created"}`,
+      description: editingItem ? "片段已更新" : "片段已创建",
     });
     if (!editingItem && result?.data?.snippet) {
       onCreated?.(result.data.snippet);
@@ -96,7 +96,7 @@ export function SnippetForm({
     <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
       <Input
         error={errors.shortcut}
-        label="Shortcut"
+        label="快捷指令"
         leftText="/"
         name="shortcut"
         registerProps={register("shortcut")}
@@ -105,15 +105,15 @@ export function SnippetForm({
       <Input
         autosizeTextarea
         error={errors.content}
-        explainText="Use {first_name}, {name}, or {email} for the first recipient."
-        label="Content"
+        explainText="用 {first_name}、{name} 或 {email} 代表第一个收件人"
+        label="内容"
         name="content"
         registerProps={register("content")}
         rows={6}
         type="text"
       />
       <Button loading={isSubmitting} type="submit">
-        {editingItem ? "Update" : "Save snippet"}
+        {editingItem ? "更新" : "保存片段"}
       </Button>
     </form>
   );

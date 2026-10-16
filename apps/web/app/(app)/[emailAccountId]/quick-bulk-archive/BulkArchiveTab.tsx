@@ -42,8 +42,8 @@ import type { CategorizedSendersResponse } from "@/app/api/user/categorize/sende
 
 const confidenceConfig = {
   high: {
-    label: "Safe to Archive",
-    description: "Marketing emails and newsletters you likely don't need",
+    label: "可安全归档",
+    description: "营销邮件和简报，你很可能不需要",
     icon: MailXIcon,
     color: "text-green-600",
     bgColor: "bg-green-50 dark:bg-green-950/30",
@@ -52,8 +52,8 @@ const confidenceConfig = {
     badgeVariant: "default" as const,
   },
   medium: {
-    label: "Probably Safe",
-    description: "Automated notifications and updates",
+    label: "可能安全",
+    description: "自动通知和更新",
     icon: BellOffIcon,
     color: "text-amber-600",
     bgColor: "bg-amber-50 dark:bg-amber-950/30",
@@ -62,8 +62,8 @@ const confidenceConfig = {
     badgeVariant: "secondary" as const,
   },
   low: {
-    label: "Review Recommended",
-    description: "Senders that may need a closer look",
+    label: "建议复查",
+    description: "可能需要仔细查看的发件人",
     icon: MailOpenIcon,
     color: "text-blue-600",
     bgColor: "bg-blue-50 dark:bg-blue-950/30",
@@ -113,7 +113,7 @@ export function BulkArchiveTab() {
     [emailGroups],
   );
 
-  // Initialize selection when data loads
+  // 数据加载完成后初始化选择
   useEffect(() => {
     if (candidates.length > 0 && !hasInitializedSelection) {
       const initial: Record<string, boolean> = {};
@@ -198,10 +198,10 @@ export function BulkArchiveTab() {
         senders: toArchive.map((candidate) => candidate.address),
       });
       if (!queuedSenders) {
-        toast.info("No new senders to archive");
+        toast.info("没有新的发件人需要归档");
       }
     } catch {
-      toast.error("Failed to archive some senders. Please try again.");
+      toast.error("部分发件人归档失败，请重试。");
     } finally {
       setIsArchiving(false);
     }
@@ -230,10 +230,9 @@ export function BulkArchiveTab() {
           <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-muted">
             <InboxIcon className="size-8 text-muted-foreground" />
           </div>
-          <h2 className="mb-2 text-xl font-semibold">No Senders to Archive</h2>
+          <h2 className="mb-2 text-xl font-semibold">没有可归档的发件人</h2>
           <p className="text-muted-foreground">
-            Once our AI categorizes your senders, you&apos;ll see archive
-            suggestions here.
+            当我们的 AI 对发件人完成分类后，你会在这里看到归档建议。
           </p>
         </Card>
       </div>
@@ -252,36 +251,32 @@ export function BulkArchiveTab() {
               <ArchiveIcon className="size-6 text-muted-foreground" />
             </div>
             <div className="flex-1">
-              <h2 className="mb-1 text-xl font-semibold">Ready to Clean Up</h2>
+              <h2 className="mb-1 text-xl font-semibold">可以清理了</h2>
               <p className="mb-4 text-muted-foreground">
-                We found{" "}
+                我们发现{" "}
                 <span className="font-medium text-foreground">
                   {totalCount}
                 </span>{" "}
-                senders you may want to archive
+                个你可能想归档的发件人
               </p>
 
               <div className="mb-4 flex flex-wrap gap-3 text-sm">
                 {groupedByConfidence.high.length > 0 && (
                   <div className="flex items-center gap-1.5">
                     <div className="size-2 rounded-full bg-green-500" />
-                    <span>
-                      {groupedByConfidence.high.length} safe to archive
-                    </span>
+                    <span>{groupedByConfidence.high.length} 个可安全归档</span>
                   </div>
                 )}
                 {groupedByConfidence.medium.length > 0 && (
                   <div className="flex items-center gap-1.5">
                     <div className="size-2 rounded-full bg-amber-500" />
-                    <span>
-                      {groupedByConfidence.medium.length} probably safe
-                    </span>
+                    <span>{groupedByConfidence.medium.length} 个可能安全</span>
                   </div>
                 )}
                 {groupedByConfidence.low.length > 0 && (
                   <div className="flex items-center gap-1.5">
                     <div className="size-2 rounded-full bg-blue-500" />
-                    <span>{groupedByConfidence.low.length} to review</span>
+                    <span>{groupedByConfidence.low.length} 个待复查</span>
                   </div>
                 )}
               </div>
@@ -292,9 +287,7 @@ export function BulkArchiveTab() {
                   disabled={selectedCount === 0 || isArchiving}
                 >
                   <ArchiveIcon className="mr-2 size-4" />
-                  {isArchiving
-                    ? "Archiving..."
-                    : `Archive ${selectedCount} Sender${selectedCount !== 1 ? "s" : ""}`}
+                  {isArchiving ? "归档中..." : `归档 ${selectedCount} 个发件人`}
                 </Button>
               </div>
             </div>
@@ -306,10 +299,10 @@ export function BulkArchiveTab() {
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">
               <TrendingDownIcon className="mr-1.5 inline size-4" />
-              {selectedCount} of {totalCount} senders selected
+              已选择 {selectedCount}/{totalCount} 个发件人
             </span>
             <span className="font-medium">
-              {Math.round((selectedCount / totalCount) * 100)}% inbox cleanup
+              {Math.round((selectedCount / totalCount) * 100)}% 收件箱已清理
             </span>
           </div>
           <Progress
@@ -387,8 +380,8 @@ export function BulkArchiveTab() {
                       }}
                     >
                       {selectedInSection === senders.length
-                        ? "Deselect All"
-                        : "Select All"}
+                        ? "取消全选"
+                        : "全选"}
                     </Button>
                     <span className="min-w-[60px] text-right text-sm text-muted-foreground">
                       {selectedInSection}/{senders.length}
@@ -510,23 +503,23 @@ function ArchiveStatus({
 }) {
   switch (status?.status) {
     case "pending":
-      return <span className="text-sm text-muted-foreground">Queued</span>;
+      return <span className="text-sm text-muted-foreground">已排队</span>;
     case "processing":
       return (
         <span className="text-sm text-blue-600">
           {status.threadsTotal
             ? `${status.threadsTotal - status.threadIds.length} / ${status.threadsTotal}`
-            : "Archiving..."}
+            : "归档中..."}
         </span>
       );
     case "completed":
       return (
         <span className="text-sm text-muted-foreground">
-          {status.threadsTotal ? `Archived ${status.threadsTotal}` : "Archived"}
+          {status.threadsTotal ? `已归档 ${status.threadsTotal}` : "已归档"}
         </span>
       );
     case "failed":
-      return <span className="text-sm text-red-600">Failed</span>;
+      return <span className="text-sm text-red-600">失败</span>;
     default:
       return null;
   }
@@ -558,7 +551,7 @@ function ExpandedEmails({
   if (error) {
     return (
       <div className="border-t bg-muted/30 p-4 text-sm text-muted-foreground">
-        Error loading emails
+        加载邮件时出错
       </div>
     );
   }
@@ -566,7 +559,7 @@ function ExpandedEmails({
   if (!data?.threads.length) {
     return (
       <div className="border-t bg-muted/30 p-4 text-sm text-muted-foreground">
-        No emails found
+        未找到邮件
       </div>
     );
   }

@@ -19,14 +19,14 @@ export function handleOAuthCallbackError({
   logger,
   provider,
 }: ErrorHandlerParams): NextResponse {
-  logger.error("Error in OAuth linking callback:", { error });
-  const errorMessage = error instanceof Error ? error.message : "Unknown error";
+  logger.error("OAuth 关联回调出错：", { error });
+  const errorMessage = error instanceof Error ? error.message : "未知错误";
 
   if (provider === "microsoft") {
     const mappedError = classifyMicrosoftOAuthError(errorMessage);
 
     if (mappedError) {
-      logger.warn("Mapped Microsoft OAuth linking error", {
+      logger.warn("已映射 Microsoft OAuth 关联错误", {
         mappedError: mappedError.errorCode,
         aadstsCode: mappedError.aadstsCode,
       });

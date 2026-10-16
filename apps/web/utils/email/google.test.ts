@@ -90,7 +90,7 @@ describe("GmailProvider.countMessages", () => {
     const provider = new GmailProvider({ users: { getProfile } } as any);
     await expect(
       provider.countMessages({ folderId: "folder-1" }),
-    ).rejects.toThrow("folder");
+    ).rejects.toThrow("文件夹");
     expect(getProfile).not.toHaveBeenCalled();
   });
 
@@ -99,7 +99,7 @@ describe("GmailProvider.countMessages", () => {
     const provider = new GmailProvider({ users: { labels: { get } } } as any);
     await expect(
       provider.countMessages({ labelId: "label-1" }),
-    ).rejects.toThrow("exact message count");
+    ).rejects.toThrow("准确的邮件数量");
   });
 });
 
@@ -174,7 +174,7 @@ describe("GmailProvider.sendEmail", () => {
         subject: "Subject",
         messageText: "Message",
       }),
-    ).rejects.toThrow("Provider did not return a sent message ID");
+    ).rejects.toThrow("服务商未返回已发送邮件的 ID");
   });
 });
 
@@ -1031,7 +1031,7 @@ describe("GmailProvider.updateDraft", () => {
 
     await expect(
       provider.updateDraft("r-123", { messageHtml: "<p>Edited</p>" }),
-    ).rejects.toThrow("Missing Gmail attachment data");
+    ).rejects.toThrow("缺少 Gmail 附件数据");
     expect(update).not.toHaveBeenCalled();
   });
 

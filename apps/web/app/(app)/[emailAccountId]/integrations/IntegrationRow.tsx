@@ -66,8 +66,8 @@ export function IntegrationRow({
         reason: "unsupported_auth_type",
       });
       toastError({
-        title: "Error connecting to integration",
-        description: "API token connections are not supported yet",
+        title: "连接集成时出错",
+        description: "暂不支持 API 令牌连接",
       });
       return;
     }
@@ -86,16 +86,13 @@ export function IntegrationRow({
         error_message:
           error instanceof Error && error.message ? error.message : undefined,
       });
-      console.error(
-        `Failed to initiate ${integration.name} connection:`,
-        error,
-      );
+      console.error(`无法发起 ${integration.name} 连接：`, error);
       toastError({
-        title: `Error connecting to ${integration.displayName}`,
+        title: `连接 ${integration.displayName} 时出错`,
         description:
           error instanceof Error && error.message
             ? error.message
-            : "Please try again or contact support if the issue persists.",
+            : "请重试，如果问题仍然存在，请联系支持人员。",
       });
       setConnecting(false);
     }
@@ -128,19 +125,19 @@ export function IntegrationRow({
 
       if (result?.serverError) {
         toastError({
-          title: "Error updating integration",
+          title: "更新集成时出错",
           description: result.serverError,
         });
       } else {
         toastSuccess({
-          description: `${integration.displayName} ${nextActive ? "resumed" : "paused"}`,
+          description: `${integration.displayName} ${nextActive ? "已恢复" : "已暂停"}`,
         });
         onConnectionChange();
       }
     } catch (error) {
       toastError({
-        title: "Error updating integration",
-        description: error instanceof Error ? error.message : "Unknown error",
+        title: "更新集成时出错",
+        description: error instanceof Error ? error.message : "未知错误",
       });
     }
   };
@@ -159,25 +156,25 @@ export function IntegrationRow({
 
       if (result?.serverError) {
         toastError({
-          title: "Error toggling tool",
+          title: "切换工具时出错",
           description: result.serverError,
         });
       } else {
-        toastSuccess({ description: "Tool updated" });
+        toastSuccess({ description: "工具已更新" });
         onConnectionChange();
       }
     } catch (error) {
       toastError({
-        title: "Error toggling tool",
-        description: error instanceof Error ? error.message : "Unknown error",
+        title: "切换工具时出错",
+        description: error instanceof Error ? error.message : "未知错误",
       });
     }
   };
 
   const handleDisconnect = async () => {
     const confirmMessage = isCustom
-      ? "Are you sure you want to remove this server? This permanently deletes its connection, credentials, and tools."
-      : "Are you sure you want to disconnect this integration? This will remove all associated tools.";
+      ? "确定要删除此服务器吗？这将永久删除其连接、凭据和工具。"
+      : "确定要断开此集成吗？这将移除所有关联的工具。";
 
     if (!confirm(confirmMessage)) return;
 
@@ -199,7 +196,7 @@ export function IntegrationRow({
 
       if (result?.serverError) {
         toastError({
-          title: "Error disconnecting",
+          title: "断开连接时出错",
           description: result.serverError,
         });
       } else {
@@ -207,17 +204,17 @@ export function IntegrationRow({
           integration: integration.name,
         });
         toastSuccess({
-          title: isCustom ? "Server removed" : "Disconnected successfully",
+          title: isCustom ? "服务器已删除" : "已成功断开连接",
           description: isCustom
-            ? `Removed ${integration.displayName}`
-            : `Disconnected from ${integration.displayName}`,
+            ? `已删除 ${integration.displayName}`
+            : `已断开与 ${integration.displayName} 的连接`,
         });
         onConnectionChange();
       }
     } catch (error) {
       toastError({
-        title: "Error disconnecting",
-        description: error instanceof Error ? error.message : "Unknown error",
+        title: "断开连接时出错",
+        description: error instanceof Error ? error.message : "未知错误",
       });
     } finally {
       setDisconnecting(false);
@@ -234,9 +231,9 @@ export function IntegrationRow({
               <div className="flex items-center gap-2">
                 <span>{integration.shortName || integration.displayName}</span>
                 {integration.comingSoon && (
-                  <Badge variant="secondary">Coming soon</Badge>
+                  <Badge variant="secondary">即将推出</Badge>
                 )}
-                {isCustom && <Badge variant="secondary">Custom</Badge>}
+                {isCustom && <Badge variant="secondary">自定义</Badge>}
               </div>
               {integration.description && (
                 <MutedText>{integration.description}</MutedText>
@@ -251,9 +248,9 @@ export function IntegrationRow({
             <div className="flex items-center gap-2">
               {connected ? (
                 isActive ? (
-                  <span className="text-green-600 text-sm">✓ Connected</span>
+                  <span className="text-green-600 text-sm">✓ 已连接</span>
                 ) : (
-                  <span className="text-muted-foreground text-sm">Paused</span>
+                  <span className="text-muted-foreground text-sm">已暂停</span>
                 )
               ) : (
                 <Button
@@ -263,16 +260,16 @@ export function IntegrationRow({
                   disabled={connecting}
                 >
                   {connecting
-                    ? "Connecting..."
+                    ? "正在连接…"
                     : integration.authType === "api-token"
-                      ? "Connect with API Key"
-                      : "Connect"}
+                      ? "使用 API 密钥连接"
+                      : "连接"}
                 </Button>
               )}
             </div>
           ) : (
             <TypographyP className="text-sm text-gray-500">
-              No Auth Required
+              无需身份验证
             </TypographyP>
           )}
         </TableCell>
@@ -280,11 +277,7 @@ export function IntegrationRow({
           {(connected || isCustom) && !integration.comingSoon && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="iconSm"
-                  aria-label="Integration actions"
-                >
+                <Button variant="ghost" size="iconSm" aria-label="集成操作">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -294,19 +287,19 @@ export function IntegrationRow({
                     {tools.length > 0 && (
                       <DropdownMenuItem onClick={handleToggleToolsExpanded}>
                         {expandedTools
-                          ? "Hide tools"
-                          : `Manage tools (${toolsCount} of ${totalTools} on)`}
+                          ? "隐藏工具"
+                          : `管理工具（${totalTools} 个中有 ${toolsCount} 个已开启）`}
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuItem onClick={handleTogglePause}>
-                      {isActive ? "Pause" : "Resume"}
+                      {isActive ? "暂停" : "恢复"}
                     </DropdownMenuItem>
                     {integration.authType === "oauth" && (
                       <DropdownMenuItem
                         onClick={handleConnect}
                         disabled={connecting}
                       >
-                        {connecting ? "Reconnecting..." : "Reconnect"}
+                        {connecting ? "正在重新连接…" : "重新连接"}
                       </DropdownMenuItem>
                     )}
                   </>
@@ -338,8 +331,8 @@ function getDisconnectLabel({
   isCustom: boolean;
   disconnecting: boolean;
 }) {
-  if (isCustom) return disconnecting ? "Removing..." : "Remove";
-  return disconnecting ? "Disconnecting..." : "Disconnect";
+  if (isCustom) return disconnecting ? "正在删除…" : "删除";
+  return disconnecting ? "正在断开连接…" : "断开连接";
 }
 
 interface ToolsListProps {

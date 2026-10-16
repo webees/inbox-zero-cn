@@ -49,16 +49,15 @@ const baseClient = createSafeActionClient({
       provider: context?.provider,
     });
 
-    // Expected user-facing rejections are shown to the client and never sent
-    // to Sentry.
+    // 预期面向用户的拒绝会展示给客户端，绝不会发送到 Sentry。
     if (error instanceof SafeError || isProviderRateLimit) {
-      logger.warn("Server action error:", {
+      logger.warn("服务端操作错误：", {
         metadata,
         bindArgsClientInputs,
         error,
       });
     } else {
-      logger.error("Server action error:", {
+      logger.error("服务端操作错误：", {
         metadata,
         bindArgsClientInputs,
         error,
@@ -74,7 +73,7 @@ const baseClient = createSafeActionClient({
 
     if (env.NODE_ENV !== "production") {
       // biome-ignore lint/suspicious/noConsole: helpful for debugging
-      console.error("Error in server action", error);
+      console.error("服务端操作出错", error);
     }
     if (isProviderRateLimit) return EMAIL_PROVIDER_RATE_LIMIT_MESSAGE;
     if (error instanceof SafeError) return error.message;
@@ -113,7 +112,7 @@ const baseClient = createSafeActionClient({
       const result = await next({ ctx: { logger, requestId } });
 
       if (result.validationErrors) {
-        logger.warn("Action validation error", {
+        logger.warn("操作校验错误", {
           action: metadata.name,
           validationErrors: result.validationErrors,
         });
@@ -129,15 +128,15 @@ export const actionClient = baseClient
   .use(async ({ next, metadata, bindArgsClientInputs, ctx }) => {
     const session = await auth();
 
-    if (!session?.user) throw new SafeError("Unauthorized");
+    if (!session?.user) throw new SafeError("未授权");
     const userEmail = session.user.email;
-    if (!userEmail) throw new SafeError("Unauthorized");
+    if (!userEmail) throw new SafeError("未授权");
 
     const userId = session.user.id;
     const emailAccountId = bindArgsClientInputs[0] as string;
     setAuditContext({ actorType: "user", userId });
 
-    // validate user owns this email
+    // 校验该用户拥有此邮箱
     const emailAccount = await prisma.emailAccount.findUnique({
       where: { id: emailAccountId },
       select: {
@@ -151,9 +150,9 @@ export const actionClient = baseClient
       },
     });
     if (!emailAccount || emailAccount?.account.userId !== userId) {
-      // expected with stale client state (e.g. account removed or switched)
+      // 客户端状态过期时会出现（例如账号被移除或切换）
       ctx.logger.warn("Unauthorized", metadata);
-      throw new SafeError("Unauthorized");
+      throw new SafeError("未授权");
     }
 
     Sentry.setTag("emailAccountId", emailAccountId);
@@ -190,15 +189,15 @@ export const actionClient = baseClient
     });
   });
 
-// doesn't bind to a specific email
+// 不绑定到特定邮箱
 export const actionClientUser = baseClient.use(
   async ({ next, metadata, ctx }) => {
     const session = await auth();
 
     if (!session?.user) {
-      // expected when the session has expired or the user logged out
+      // 会话已过期或用户已登出时会出现
       ctx.logger.warn("Unauthorized", metadata);
-      throw new SafeError("Unauthorized");
+      throw new SafeError("未授权");
     }
 
     const userId = session.user.id;
@@ -221,9 +220,8 @@ export const actionClientUser = baseClient.use(
 export const adminActionClient = baseClient.use(
   async ({ next, metadata, ctx }) => {
     const session = await auth();
-    if (!session?.user) throw new SafeError("Unauthorized");
-    if (!isAdmin({ email: session.user.email }))
-      throw new SafeError("Unauthorized");
+    if (!session?.user) throw new SafeError("未授权");
+    if (!isAdmin({ email: session.user.email })) throw new SafeError("未授权");
     setAuditContext({ actorType: "admin", userId: session.user.id });
 
     const logger = ctx.logger.with({ admin: true });
@@ -245,6 +243,6 @@ function runInstrumentedAction<T>({
   logger: ReturnType<typeof createScopedLogger>;
   run: () => Promise<T>;
 }) {
-  logger.info("Calling action");
+  logger.info("调用操作");
   return withServerActionInstrumentation(actionName, run);
 }

@@ -34,77 +34,77 @@ export interface Announcement {
 export const ANNOUNCEMENTS: Announcement[] = [
   {
     id: "email-client-launch",
-    title: "The email app is live",
+    title: "邮件应用已上线",
     description:
-      "A fast email app for web, desktop, and iPhone, with your AI assistant built in.",
+      "一款适用于网页、桌面端和 iPhone 的快速邮件应用，内置你的 AI 助手。",
     image: (
       <AnnouncementVideo
         playbackId={EMAIL_CLIENT_LAUNCH_VIDEO_ID}
         thumbnailTime={1.5}
-        title="Meet the Inbox Zero email app"
+        title="认识 Inbox Zero 邮件应用"
       />
     ),
     link: "/mail",
-    linkLabel: "Try it",
-    secondaryLink: { href: "/download", label: "Download the app" },
+    linkLabel: "试用",
+    secondaryLink: { href: "/download", label: "下载应用" },
     publishedAt: "2026-10-15T00:00:00Z",
     details: [
       {
-        title: "Web, desktop, and mobile",
+        title: "网页、桌面端和移动端",
         icon: <MonitorSmartphone className={DETAIL_ICON_CLASS} />,
       },
-      { title: "Unified inbox", icon: <Inbox className={DETAIL_ICON_CLASS} /> },
-      { title: "Split inbox", icon: <Rows3 className={DETAIL_ICON_CLASS} /> },
+      { title: "统一收件箱", icon: <Inbox className={DETAIL_ICON_CLASS} /> },
+      { title: "分类收件箱", icon: <Rows3 className={DETAIL_ICON_CLASS} /> },
       {
-        title: "Private team comments",
+        title: "私密团队评论",
         icon: <MessagesSquare className={DETAIL_ICON_CLASS} />,
       },
       {
-        title: "AI sorting and drafts",
+        title: "AI 分类和草稿",
         icon: <Sparkles className={DETAIL_ICON_CLASS} />,
       },
     ],
   },
   // {
   //   id: "follow-up-reminders",
-  //   title: "Follow-up Reminders",
+  //   title: "跟进提醒",
   //   description:
-  //     "Track replies and get reminded about unanswered emails. Never let an important email slip through the cracks.",
+  //     "跟踪回复并提醒你未回复的邮件。绝不让重要邮件被遗漏。",
   //   image: <FollowUpRemindersIllustration />,
   //   link: "/automation?tab=settings",
-  //   secondaryLink: { href: "/#", label: "Learn more" },
+  //   secondaryLink: { href: "/#", label: "了解更多" },
   //   publishedAt: "2026-01-15T00:00:00Z",
   //   details: [
   //     {
-  //       title: "Automatic follow-up labels",
-  //       description: "Labels threads after 3 days with no response.",
+  //       title: "自动跟进标签",
+  //       description: "在 3 天没有回复后为会话打上标签。",
   //       icon: <Tag className={DETAIL_ICON_CLASS} />,
   //     },
   //     {
-  //       title: "Auto-generated drafts",
-  //       description: "Creates a draft to nudge unresponsive contacts.",
+  //       title: "自动生成的草稿",
+  //       description: "创建草稿以催促未回复的联系人。",
   //       icon: <FileEdit className={DETAIL_ICON_CLASS} />,
   //     },
   //   ],
   // },
   // {
   //   id: "meeting-briefs",
-  //   title: "Meeting Briefs",
+  //   title: "会议简报",
   //   description:
-  //     "Get AI-powered briefings before your meetings. Know who you're meeting and what you've discussed.",
+  //     "在会议前获取 AI 生成的简报。了解你会见的是谁，以及你们讨论过什么。",
   //   image: <MeetingBriefsIllustration />,
   //   link: "/briefs",
-  //   secondaryLink: { href: "/#", label: "Learn more" },
+  //   secondaryLink: { href: "/#", label: "了解更多" },
   //   publishedAt: "2024-12-28T00:00:00Z",
   //   details: [
   //     {
-  //       title: "AI-powered research",
-  //       description: "Researches attendees before your meetings.",
+  //       title: "AI 调研",
+  //       description: "在会议前调研参会者。",
   //       icon: <Search className={DETAIL_ICON_CLASS} />,
   //     },
   //     {
-  //       title: "Email context",
-  //       description: "Includes recent email history with each guest.",
+  //       title: "邮件背景",
+  //       description: "包含与每位来宾的近期邮件往来。",
   //       icon: <Mail className={DETAIL_ICON_CLASS} />,
   //     },
   //   ],

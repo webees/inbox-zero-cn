@@ -95,7 +95,7 @@ export async function aiExtractRelevantKnowledge({
 
     const generateObject = createGenerateObject({
       emailAccount,
-      label: "Knowledge extraction",
+      label: "知识提取",
       modelOptions,
       promptHardening: { trust: "untrusted", level: "compact" },
     });
@@ -109,7 +109,7 @@ export async function aiExtractRelevantKnowledge({
 
     return result.object;
   } catch (error) {
-    logger.error("Failed to extract knowledge", { error });
+    logger.error("提取知识失败", { error });
     return null;
   }
 }

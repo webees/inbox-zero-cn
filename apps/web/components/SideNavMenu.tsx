@@ -80,12 +80,12 @@ export function SideNavMenu({
               <span>{item.name}</span>
               {item.new && (
                 <Badge variant="green" className="ml-auto text-[10px]">
-                  New!
+                  新增
                 </Badge>
               )}
               {item.beta && (
                 <Badge variant="secondary" className="ml-auto text-[10px]">
-                  Beta
+                  测试版
                 </Badge>
               )}
             </Link>

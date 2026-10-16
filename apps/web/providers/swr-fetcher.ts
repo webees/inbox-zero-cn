@@ -33,15 +33,10 @@ export const swrFetcher = async (
       throw error;
     }
     // Browsers reject with an opaque "Failed to fetch" / "Load failed".
-    const message =
-      "Couldn't connect to Inbox Zero. Check your internet connection and try again.";
-    const networkError: Error & { info?: Record<string, unknown> } = new Error(
-      message,
+    throw new Error(
+      "Couldn't connect to Inbox Zero. Check your internet connection and try again.",
       { cause: error },
     );
-    // Error screens read the message from `info`, like a server error.
-    networkError.info = { error: message };
-    throw networkError;
   }
 
   if (!res.ok) {

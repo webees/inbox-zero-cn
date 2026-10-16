@@ -62,7 +62,7 @@ ${getEmailListPrompt({ messages, messageMaxLength: 1000, maxMessages: 5 })}
 
   const generateText = createGenerateText({
     emailAccount,
-    label: "MCP Agent",
+    label: "MCP 智能体",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "full" },
   });
@@ -74,14 +74,14 @@ ${getEmailListPrompt({ messages, messageMaxLength: 1000, maxMessages: 5 })}
     prompt,
     stopWhen: isStepCount(10),
     onStepEnd: async ({ text, toolCalls }) => {
-      logger.trace("Step finished", { text, toolCalls });
+      logger.trace("步骤完成", { text, toolCalls });
     },
   });
 
   const hasNoRelevantInfo = result.text.includes(NO_RELEVANT_INFO_FOUND);
 
   if (hasNoRelevantInfo) {
-    logger.trace("No relevant information found", {
+    logger.trace("未找到相关信息", {
       explanation: result.text.replace(NO_RELEVANT_INFO_FOUND, "").trim(),
     });
   }
@@ -89,7 +89,7 @@ ${getEmailListPrompt({ messages, messageMaxLength: 1000, maxMessages: 5 })}
   return {
     response: hasNoRelevantInfo ? null : result.text,
     getToolCalls: () => {
-      // Extract tool calls and results from all steps
+      // 从所有步骤中提取工具调用和结果
       const allToolCallsWithResults = result.steps.flatMap((step) =>
         step.toolCalls.map((call) => {
           const toolResult = step.toolResults?.find(

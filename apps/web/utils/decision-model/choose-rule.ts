@@ -112,7 +112,7 @@ export async function decisionModelChooseRule<T extends RuleCandidate>({
         : null,
     }),
     questions,
-    label: "Choose rule",
+    label: "选择规则",
     logger,
   });
 

@@ -38,23 +38,23 @@ const SenderContextPanel = dynamic(
 );
 
 /**
- * Below this the reader would be squeezed too far by a pane beside it, so the
- * sender profile slides over the reader instead.
+ * 低于此宽度时，阅读器会被旁边的面板挤得太窄，因此
+ * 发件人资料会改为滑到阅读器上方。
  */
 const INLINE_SENDER_CONTEXT_MIN_WIDTH = 880;
 
 export type ThreadReaderProps = {
   enableMessageNavigation: boolean;
-  /** The row that is open. It may lag behind the selected thread while loading. */
+  /** 已打开的行。加载期间它可能滞后于所选的会话。 */
   thread: ListThread | null;
-  /** The selected thread, including while its row and messages are loading. */
+  /** 所选的会话，包括其行与消息正在加载期间。 */
   threadId: string | null;
-  /** Whether the deferred detail selection has caught up to the open row. */
+  /** 延迟的详情选择是否已跟上已打开的行。 */
   detailSelectionSettled: boolean;
   loading: boolean;
   error?: ComponentProps<typeof LoadingContent>["error"];
   /**
-   * Messages currently available to the reader, including partial local pages.
+   * 阅读器当前可用的消息，包括部分本地分页。
    */
   messages: ThreadMessage[];
   localAvailability?: {
@@ -75,21 +75,21 @@ export type ThreadReaderProps = {
   isUnread: boolean;
   onMarkRead: () => void;
   onMarkUnread: () => void;
-  /** Refreshes the open thread after a reply is sent or a draft changes. */
+  /** 在回复发送后或草稿变化后刷新已打开的会话。 */
   refetch: () => void;
-  /** Opens a different provider thread when a sent message starts one. */
+  /** 当已发送的邮件开启一个新的服务商会话时，打开该会话。 */
   onSendSuccess?: (
     messageId: string,
     sentThreadId: string,
     repliedThreadId: string,
   ) => void;
   /**
-   * Set by the reply action. Left unset the composer still opens on its own for
-   * a message that already has an AI draft.
+   * 由回复操作设置。若未设置，对于已有 AI 草稿的邮件，
+   * 撰写器仍会自行打开。
    */
   autoOpenReplyForMessageId?: string;
   autoOpenForwardForMessageId?: string;
-  /** The ⋯ dropdown, i.e. `ThreadActionsMenu`, composed by the shell. */
+  /** ⋯ 下拉菜单，即 `ThreadActionsMenu`，由外壳组合。 */
   menu?: ReactNode;
   renderMessageMenu?: (message: ThreadMessage) => ReactNode;
 };
@@ -154,15 +154,15 @@ export function ThreadReader({
           errorComponent={<ThreadReaderError error={error} onRetry={refetch} />}
           loadingComponent={
             <Loader2Icon
-              aria-label="Loading email"
+              aria-label="正在加载邮件"
               className="size-6 animate-spin text-muted-foreground"
             />
           }
         >
           <MailIcon className="size-6 text-muted-foreground" />
-          <div className="text-foreground text-sm">Nothing selected</div>
+          <div className="text-foreground text-sm">未选择任何内容</div>
           <div className="text-muted-foreground text-xs">
-            Pick another view, or head back to the inbox.
+            选择其他视图，或返回收件箱。
           </div>
         </LoadingContent>
       </div>
@@ -193,9 +193,7 @@ export function ThreadReader({
       onMarkUnread={onMarkUnread}
       onBackToInbox={onBackToInbox}
       onRemoveLabel={onRemoveLabel}
-      subject={
-        translatedSubject ?? headerMessage?.headers.subject ?? "Conversation"
-      }
+      subject={translatedSubject ?? headerMessage?.headers.subject ?? "会话"}
     />
   );
 
@@ -212,7 +210,7 @@ export function ThreadReader({
           onClick={onClick}
           variant="outline"
         >
-          {loading ? "Loading messages…" : "Load older messages"}
+          {loading ? "正在加载邮件…" : "加载更早的邮件"}
         </Button>
       )}
       sidePanel={
@@ -256,8 +254,8 @@ export function ThreadReader({
           refetch={refetch}
           onSendSuccess={onSendSuccess}
           onThreadDiscarded={
-            // A partially loaded conversation can look draft-only, so only
-            // leave once every message is here to say it is.
+            // 部分加载的会话可能看起来只有草稿，因此要等到
+            // 所有消息都到齐后再认定它是这样，才离开。
             localAvailability?.hasMore ? undefined : onBackToInbox
           }
           showReplyButton
@@ -277,9 +275,9 @@ export function ThreadReader({
 }
 
 /**
- * Loading a thread can fail for reasons the reader can recover from, such as a
- * message that the provider has not made readable yet, so this offers a retry
- * instead of the generic app-wide error screen.
+ * 加载会话可能因阅读器能够恢复的原因而失败，例如服务商尚未
+ * 使某条消息可读，因此这里提供重试，
+ * 而不是显示通用的全应用错误页。
  */
 function ThreadReaderError({
   error,
@@ -291,22 +289,20 @@ function ThreadReaderError({
   return (
     <>
       <AlertCircleIcon className="size-6 text-muted-foreground" />
-      <div className="text-foreground text-sm">
-        Couldn't open this conversation
-      </div>
+      <div className="text-foreground text-sm">无法打开此会话</div>
       <div className="text-muted-foreground text-xs">
         {getSWRFetchErrorMessage(error?.info)}
       </div>
       <Button className="mt-2" onClick={onRetry} size="sm" variant="outline">
-        Try again
+        重试
       </Button>
     </>
   );
 }
 
 /**
- * A callback ref rather than an effect: the reader mounts its measured element
- * only once a thread is open, after the loading branch has come and gone.
+ * 使用回调 ref 而不是 effect：阅读器只有在会话打开后、
+ * 加载分支来去之后，才会挂载其被测量的元素。
  */
 function useElementWidth() {
   const [width, setWidth] = useState(0);
@@ -322,8 +318,8 @@ function useElementWidth() {
   return [ref, width] as const;
 }
 
-// A draft that a pending send stands in for isn't shown, so it doesn't title
-// the thread either.
+// 被待发送邮件替代的草稿不会显示，因此它也不会
+// 成为会话的标题。
 function latestShownMessage<T extends { id: string }>(
   messages: T[],
   hiddenDraftMessageIds: string[],

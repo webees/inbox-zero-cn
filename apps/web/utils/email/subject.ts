@@ -1,15 +1,15 @@
 /**
- * Formats a subject line for a reply email.
- * Adds "Re:" prefix if not already present (case-insensitive).
- * Per RFC 5322, replies should use a single "Re:" prefix, not stacked.
+ * 为回复邮件格式化主题行。
+ * 如果尚不存在则添加 "Re:" 前缀（不区分大小写）。
+ * 根据 RFC 5322，回复应使用单个 "Re:" 前缀，而不是叠加。
  */
 export function formatReplySubject(subject: string): string {
   const trimmed = (subject ?? "").trim();
-  // Avoid "Re: " with no subject
+  // 避免只有 "Re: " 而没有主题
   if (!trimmed) {
     return "Re: (no subject)";
   }
-  // Avoid duplicate "Re:" prefix (case-insensitive check)
+  // 避免重复的 "Re:" 前缀（不区分大小写检查）
   if (/^re:/i.test(trimmed)) {
     return trimmed;
   }

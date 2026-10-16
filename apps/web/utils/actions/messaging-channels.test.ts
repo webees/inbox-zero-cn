@@ -106,7 +106,7 @@ describe("createMessagingLinkCodeAction", () => {
       },
     );
 
-    expect(result?.serverError).toBe("Teams integration is not configured");
+    expect(result?.serverError).toBe("未配置 Teams 集成");
     expect(generateMessagingLinkCodeMock).not.toHaveBeenCalled();
   });
 
@@ -120,7 +120,7 @@ describe("createMessagingLinkCodeAction", () => {
       },
     );
 
-    expect(result?.serverError).toBe("Teams integration is not configured");
+    expect(result?.serverError).toBe("未配置 Teams 集成");
     expect(generateMessagingLinkCodeMock).not.toHaveBeenCalled();
   });
 
@@ -164,7 +164,7 @@ describe("createMessagingLinkCodeAction", () => {
       },
     );
 
-    expect(result?.serverError).toBe("Telegram integration is not configured");
+    expect(result?.serverError).toBe("未配置 Telegram 集成");
     expect(generateMessagingLinkCodeMock).not.toHaveBeenCalled();
   });
 });
@@ -237,9 +237,7 @@ describe("updateMessagingFeatureRouteAction", () => {
       },
     );
 
-    expect(result?.serverError).toBe(
-      "Please select a target channel before enabling features",
-    );
+    expect(result?.serverError).toBe("启用功能前请先选择目标渠道");
     expect(prisma.messagingChannel.update).not.toHaveBeenCalled();
   });
 
@@ -263,9 +261,7 @@ describe("updateMessagingFeatureRouteAction", () => {
       },
     );
 
-    expect(result?.serverError).toBe(
-      "Please reconnect Teams before configuring notifications.",
-    );
+    expect(result?.serverError).toBe("请先重新连接 Teams，再配置通知。");
   });
 });
 
@@ -311,7 +307,7 @@ describe("updateSlackRouteAction", () => {
     });
 
     expect(result?.serverError).toBe(
-      "Only private channels you are a member of are allowed. Please select one of your private channels.",
+      "只允许使用你已加入的私密渠道。请选择你自己的某个私密渠道。",
     );
     expect(prisma.messagingRoute.upsert).not.toHaveBeenCalled();
     expect(sendChannelConfirmation).not.toHaveBeenCalled();
@@ -338,9 +334,7 @@ describe("updateSlackRouteAction", () => {
       targetId: "C123",
     });
 
-    expect(result?.serverError).toBe(
-      "Please reconnect Slack before configuring notifications.",
-    );
+    expect(result?.serverError).toBe("请先重新连接 Slack，再配置通知。");
     expect(listChannels).not.toHaveBeenCalled();
     expect(listPrivateChannelsForUser).not.toHaveBeenCalled();
     expect(prisma.messagingRoute.upsert).not.toHaveBeenCalled();
@@ -621,9 +615,7 @@ describe("toggleRuleChannelAction", () => {
       enabled: true,
     });
 
-    expect(result?.serverError).toBe(
-      "Please reconnect Teams before configuring notifications.",
-    );
+    expect(result?.serverError).toBe("请先重新连接 Teams，再配置通知。");
     expect(prisma.action.create).not.toHaveBeenCalled();
   });
 });

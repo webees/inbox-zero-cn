@@ -15,7 +15,7 @@ export async function executeSnoozedThread(
     await provider.unarchiveThread(snoozedThread.threadId);
   } catch (error) {
     await releaseSnoozedThreadForRetry(snoozedThread.id, leaseStartedAt);
-    logger.error("Failed to restore snoozed thread", {
+    logger.error("恢复已暂缓会话失败", {
       error,
       snoozedThreadId: snoozedThread.id,
     });
@@ -32,13 +32,13 @@ export async function executeSnoozedThread(
       data: { status: SnoozedThreadStatus.COMPLETED },
     });
     if (completed.count !== 1) {
-      throw new Error("Snoozed thread execution claim was lost");
+      throw new Error("已暂缓会话的执行占用已丢失");
     }
     return { success: true as const };
   } catch (error) {
-    // Keep EXECUTING so a quick duplicate cannot repeat the provider call.
-    // Stale execution recovery will retry and reconcile this record later.
-    logger.error("Restored snoozed thread but failed to record completion", {
+    // 保持 EXECUTING 状态，这样快速重复的请求不会重复调用服务商。
+    // 过期执行恢复稍后会重试并核对此记录。
+    logger.error("已恢复暂缓会话，但记录完成状态失败", {
       error,
       snoozedThreadId: snoozedThread.id,
     });

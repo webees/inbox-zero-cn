@@ -20,7 +20,7 @@ export function DraftReplies() {
         await toggleDraftReplies(enable);
       } catch (error) {
         toastError({
-          description: `There was an error: ${error instanceof Error ? error.message : "Unknown error"}`,
+          description: `发生错误：${error instanceof Error ? error.message : "未知错误"}`,
         });
       }
     },
@@ -29,8 +29,8 @@ export function DraftReplies() {
 
   return (
     <SettingCard
-      title="Auto draft replies"
-      description="Automatically draft replies written in your tone to emails needing a reply."
+      title="自动起草回复"
+      description="自动为需要回复的邮件起草使用你的语气撰写的回复。"
       right={
         <LoadingContent
           loading={loading}

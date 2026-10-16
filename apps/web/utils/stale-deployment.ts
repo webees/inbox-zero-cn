@@ -5,10 +5,10 @@ const RELOADED_AT_KEY = "stale-deployment-reloaded-at";
 const RELOAD_COOLDOWN_MS = 5 * 60 * 1000;
 const TOAST_ID = "stale-deployment";
 
-// A window left open across a deploy still calls the previous build's server
-// action ids, which Next.js rejects with UnrecognizedActionError. Call sites
-// catch that error in many different ways, so this watches the one place every
-// action call passes through: the response Next.js marks as "action not found".
+// 部署期间一直打开的窗口仍会调用上一个构建的 server action id，
+// Next.js 会以 UnrecognizedActionError 拒绝。各调用点捕获该错误的
+// 方式多种多样，因此这里监视每个 action 调用都会经过的唯一位置：
+// Next.js 标记为 "action not found" 的响应。
 export function installStaleDeploymentReload() {
   const fetchBeforeInstall = window.fetch;
   window.fetch = async (...args) => {
@@ -25,27 +25,27 @@ export function claimStaleDeploymentReload(
   nowMs: number,
 ) {
   const reloadedAt = Number(storage.getItem(RELOADED_AT_KEY));
-  // A reload that still lands on the old build (for example the offline copy
-  // of the page) must not turn into a reload loop.
+  // 重新加载后仍落到旧构建（例如页面的离线副本）时，
+  // 绝不能变成重新加载循环。
   if (reloadedAt && nowMs - reloadedAt < RELOAD_COOLDOWN_MS) return false;
   storage.setItem(RELOADED_AT_KEY, String(nowMs));
   return true;
 }
 
 function handleStaleDeployment() {
-  // Drafts save on a short debounce, so reloading mid-keystroke could drop the
-  // last few characters. When typing, or when the loop guard or storage rules
-  // out an automatic reload, let the user pick the moment instead.
+  // 草稿通过短防抖保存，因此在输入过程中重新加载可能会丢失
+  // 最后几个字符。当用户正在输入，或循环保护或存储规则
+  // 排除自动重新加载时，让用户自行选择时机。
   if (!isEditingText() && claimAutomaticReload()) {
     window.location.reload();
     return;
   }
-  toast.info("Inbox Zero was updated", {
+  toast.info("Inbox Zero 已更新", {
     id: TOAST_ID,
-    description: "Reload to keep using the latest version.",
+    description: "重新加载以继续使用最新版本。",
     duration: Number.POSITIVE_INFINITY,
     action: {
-      label: "Reload",
+      label: "重新加载",
       onClick: () => window.location.reload(),
     },
   });

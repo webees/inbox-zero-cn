@@ -19,7 +19,7 @@ export function LandingErrorBoundary({
     <div className="p-4">
       <ErrorDisplay error={{ error: error?.message }} />
       <Button className="mt-2" onClick={() => logOut()}>
-        Log out
+        退出登录
       </Button>
     </div>
   );

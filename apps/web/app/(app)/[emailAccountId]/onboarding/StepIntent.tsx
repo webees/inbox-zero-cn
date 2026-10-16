@@ -20,21 +20,20 @@ const options: {
 }[] = [
   {
     intent: "AI_ASSISTANT",
-    title: "AI assistant",
-    description:
-      "AI labels emails and drafts replies. Keep using Gmail or Outlook.",
+    title: "AI 助手",
+    description: "AI 为邮件打标签并起草回复。你仍可继续使用 Gmail 或 Outlook。",
     icon: <SparklesIcon className="size-4" />,
   },
   {
     intent: "MAIL_CLIENT",
-    title: "Email app",
-    description: "A fast, free app for reading and sending your email.",
+    title: "邮件应用",
+    description: "一款快速、免费的收发邮件应用。",
     icon: <InboxIcon className="size-4" />,
   },
   {
     intent: "BOTH",
-    title: "Both",
-    description: "Our email app with the AI assistant built in.",
+    title: "两者都要",
+    description: "内置 AI 助手的我们自己的邮件应用。",
     icon: <Layers className="size-4" />,
   },
 ];
@@ -61,7 +60,7 @@ export function StepIntent({
       </IconCircle>
 
       <PageHeading className="mt-4 text-balance text-center">
-        How do you want to use {BRAND_NAME}?
+        你想如何使用 {BRAND_NAME}？
       </PageHeading>
 
       <div className="mx-auto mt-6 grid w-full max-w-md gap-3">

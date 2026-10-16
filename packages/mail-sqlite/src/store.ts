@@ -2752,7 +2752,7 @@ async function recomputeTargets(tx: SqlTransaction, targets: MessageKey[]) {
         return {
           operationId: String(row.command_id),
           change: payload.change,
-          // Preparing payloads name conversations; the join scopes the row.
+          // preparing 负载以会话命名；该 join 限定了行的范围。
           targets: payload.targets ?? [target],
         };
       });
@@ -3244,8 +3244,7 @@ async function readConversationSends(tx: SqlTransaction, key: ConversationKey) {
      ORDER BY o.created_at_ms ASC, o.rowid ASC`,
     [...OUTGOING_SEND_STATUSES, key.accountId, key.conversationId],
   );
-  // Reached through the sent message so the lookup stays indexed however many
-  // commands the account has settled.
+  // 通过已发送的邮件访问，这样无论账号处理了多少命令，查询都保持走索引。
   const confirmed = await tx.query(
     `SELECT o.command_id, o.status, o.payload_json, o.sent_message_id, d.content_json
      FROM messages m

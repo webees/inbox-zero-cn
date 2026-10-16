@@ -1,31 +1,31 @@
 ---
-title: 'Call Webhook'
-description: 'Send rule and email metadata to an external HTTP endpoint.'
+title: '调用 Webhook'
+description: '把规则和邮件元数据发送到外部 HTTP 端点。'
 icon: 'webhook'
 ---
 
-The **Call webhook** rule action sends a JSON request to an external service when an email matches a rule.
+**调用 webhook** 规则操作会在邮件匹配规则时向外部服务发送一个 JSON 请求。
 
-## Configure the Action
+## 配置该操作
 
-1. Open **Assistant** and edit a rule.
-2. Add the **Call webhook** action.
-3. Enter a publicly reachable HTTP or HTTPS endpoint.
-4. Save the rule.
+1. 打开**助手**并编辑一条规则。
+2. 添加**调用 webhook** 操作。
+3. 输入一个可公开访问的 HTTP 或 HTTPS 端点。
+4. 保存规则。
 
-Inbox Zero validates webhook destinations and rejects unsafe or private-network addresses.
+Inbox Zero 会校验 webhook 目标，并拒绝不安全或私有网络地址。
 
-## Request Contract
+## 请求契约
 
-- **Method:** `POST`
-- **Content-Type:** `application/json`
-- **Authentication header:** `X-Webhook-Secret`
-- **Success response:** Any `2xx` status
-- **Timeout:** 1 second
+- **方法：** `POST`
+- **Content-Type：** `application/json`
+- **认证头：** `X-Webhook-Secret`
+- **成功响应：** 任意 `2xx` 状态码
+- **超时：** 1 秒
 
-Inbox Zero does not wait for or parse the response body. A timeout, blocked destination, network failure, or non-`2xx` response is logged but does not stop the remaining rule actions. Webhook calls are not retried, so the endpoint should acknowledge quickly and queue longer work asynchronously.
+Inbox Zero 不会等待或解析响应体。超时、被拦截的目标、网络故障或非 `2xx` 响应会被记录，但不会阻止其余规则操作。Webhook 调用不会重试，因此端点应快速确认，并把耗时更长的工作异步排队。
 
-## Payload
+## 负载
 
 ```typescript
 {
@@ -48,10 +48,10 @@ Inbox Zero does not wait for or parse the response body. A timeout, blocked dest
 }
 ```
 
-`threadId` and `messageId` are provider-specific Gmail or Outlook identifiers. `createdAt` is an ISO 8601 timestamp. `ruleId` can be `null` if the original rule no longer exists.
+`threadId` 和 `messageId` 是服务商特定的 Gmail 或 Outlook 标识符。`createdAt` 是 ISO 8601 时间戳。如果原始规则已不存在，`ruleId` 可能为 `null`。
 
-## Webhook Secret
+## Webhook 密钥
 
-Open **Settings**, find the **Developer** section, and generate a Webhook Secret. The secret is shown only when generated, so copy it before closing the dialog. Regenerating it immediately changes the value sent with future requests.
+打开**设置**，找到**开发者**部分，生成一个 Webhook 密钥。该密钥仅在生成时显示，因此请在关闭对话框前复制它。重新生成会立即改变未来请求所发送的值。
 
-Every request includes the `X-Webhook-Secret` header. Your endpoint should compare the header to the stored secret before processing the payload.
+每个请求都包含 `X-Webhook-Secret` 头。你的端点应在处理负载前把该头与存储的密钥进行比较。

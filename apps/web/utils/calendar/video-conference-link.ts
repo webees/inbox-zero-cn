@@ -1,8 +1,8 @@
 import he from "he";
 import { isHost } from "@/utils/meeting-recorder/normalize-meeting-url";
 
-// Keep these hosts in sync with normalizeMeetingUrl: links extracted here
-// become its input when building recording dedup keys.
+// 使这些主机与 normalizeMeetingUrl 保持同步：此处提取的链接
+// 在构建录音去重键时会成为它的输入。
 const KNOWN_MEETING_HOST =
   /meet\.google\.com|zoom\.us|zoom\.com|teams\.microsoft\.com|teams\.live\.com/i;
 
@@ -14,8 +14,8 @@ export function findVideoConferenceLink(
   for (const detail of eventDetails) {
     if (!detail) continue;
 
-    // Decode before filtering: HTML bodies can entity-encode any character,
-    // including dots in hostnames (e.g. meet&#46;google&#46;com).
+    // 过滤前先解码：HTML 正文可以对任何字符进行实体编码，
+    // 包括主机名中的点（例如 meet&#46;google&#46;com）。
     const decoded = he.decode(detail);
     if (!KNOWN_MEETING_HOST.test(decoded)) continue;
 
@@ -24,8 +24,8 @@ export function findVideoConferenceLink(
     for (const url of urls ?? []) {
       if (!KNOWN_MEETING_HOST.test(url)) continue;
       const candidate = url.replace(TRAILING_PUNCTUATION, "");
-      // Every host above serves HTTPS only, so an http:// link would leak the
-      // meeting id and passcode in cleartext before redirecting anyway.
+      // 上面每个主机都只提供 HTTPS，因此 http:// 链接会在重定向前
+      // 以明文泄露会议 id 和密码。
       if (isVideoConferenceLink(candidate))
         return candidate.replace(/^http:\/\//i, "https://");
     }

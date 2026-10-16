@@ -59,7 +59,7 @@ export async function withSentMessageOpenTracking({
       select: { sentMessageOpenTrackingEnabled: true },
     });
   } catch (error) {
-    logger.error("Failed to read sent-message open tracking setting", {
+    logger.error("读取已发送邮件打开跟踪设置失败", {
       error,
     });
     return { email: { ...email, messageHtml }, token: null };
@@ -73,7 +73,7 @@ export async function withSentMessageOpenTracking({
 
   const token = createSentMessageOpenToken();
   if (!isSentMessageOpenToken(token)) {
-    logger.error("Generated an invalid sent-message open token");
+    logger.error("生成了无效的已发送邮件打开令牌");
     return { email: { ...email, messageHtml }, token: null };
   }
 
@@ -86,7 +86,7 @@ export async function withSentMessageOpenTracking({
       },
     });
   } catch (error) {
-    logger.error("Failed to create sent-message open tracking", { error });
+    logger.error("创建已发送邮件打开跟踪失败", { error });
     return { email: { ...email, messageHtml }, token: null };
   }
 
@@ -124,10 +124,10 @@ export async function associateSentMessageOpen({
     });
   } catch (error) {
     if (isDuplicateError(error, ["emailAccountId", "messageId"])) {
-      logger.warn("Sent-message open already associated with this message");
+      logger.warn("已发送邮件打开已与此邮件关联");
       return;
     }
-    logger.error("Failed to associate sent-message open tracking", { error });
+    logger.error("关联已发送邮件打开跟踪失败", { error });
   }
 }
 

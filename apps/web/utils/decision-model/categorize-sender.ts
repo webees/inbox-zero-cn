@@ -39,12 +39,10 @@ export async function decideSenderCategory({
     senders: [{ emailAddress: sender, emails: previousEmails.slice(0, 3) }],
     categories,
     logger,
-    label: "Categorize sender",
+    label: "对发件人分类",
   });
   const category = result[0]?.category;
-  return category
-    ? { category, rationale: "Selected by the decision model." }
-    : null;
+  return category ? { category, rationale: "由决策模型选定。" } : null;
 }
 
 export async function decideBulkSenderCategories({
@@ -66,7 +64,7 @@ export async function decideBulkSenderCategories({
     senders,
     categories,
     logger,
-    label: "Categorize senders bulk",
+    label: "批量对发件人分类",
   });
 }
 

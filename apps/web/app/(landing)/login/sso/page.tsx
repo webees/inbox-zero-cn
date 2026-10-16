@@ -20,14 +20,11 @@ import {
 } from "@/utils/analytics/auth-funnel";
 
 const ssoLoginSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  email: z.string().email("请输入有效的邮箱地址"),
   organizationSlug: z
     .string()
-    .regex(
-      /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/,
-      "Please enter a valid organization slug",
-    )
-    .max(63, "Organization slug must be 63 characters or fewer"),
+    .regex(/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/, "请输入有效的组织标识")
+    .max(63, "组织标识不能超过 63 个字符"),
 });
 
 type SsoLoginBody = z.infer<typeof ssoLoginSchema>;
@@ -85,8 +82,8 @@ function SSOLoginForm() {
             errorCode: "sso_start_rejected",
           });
           toastError({
-            title: "SSO Sign-in Error",
-            description: responseData.error || "Failed to initiate SSO sign-in",
+            title: "SSO 登录出错",
+            description: responseData.error || "无法发起 SSO 登录",
           });
           return;
         }
@@ -94,7 +91,7 @@ function SSOLoginForm() {
         const res: GetSsoSignInResponse = responseData;
 
         if (res.redirectUrl) {
-          toastSuccess({ description: "Redirecting to SSO provider..." });
+          toastSuccess({ description: "正在重定向到 SSO 服务商..." });
           router.push(res.redirectUrl);
         }
       } catch {
@@ -104,8 +101,8 @@ function SSOLoginForm() {
           errorCode: "network_error",
         });
         toastError({
-          title: "SSO Sign-in Error",
-          description: "An unexpected error occurred. Please try again.",
+          title: "SSO 登录出错",
+          description: "发生了意外错误。请重试。",
         });
       } finally {
         setIsSubmitting(false);
@@ -118,10 +115,8 @@ function SSOLoginForm() {
     <div className="flex h-screen flex-col justify-center text-foreground">
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
         <div className="flex flex-col text-center">
-          <h1 className="font-title text-2xl text-foreground">SSO Sign In</h1>
-          <p className="mt-4 text-muted-foreground">
-            Sign in to your organization account
-          </p>
+          <h1 className="font-title text-2xl text-foreground">SSO 登录</h1>
+          <p className="mt-4 text-muted-foreground">登录你的组织账号</p>
         </div>
 
         <div className="mt-4">
@@ -130,7 +125,7 @@ function SSOLoginForm() {
               <Input
                 type="email"
                 name="email"
-                label="Email"
+                label="邮箱"
                 registerProps={register("email")}
                 error={errors.email}
               />
@@ -138,14 +133,14 @@ function SSOLoginForm() {
               <Input
                 type="text"
                 name="organizationSlug"
-                label="Organization Slug"
+                label="组织标识"
                 placeholder="your-org-slug"
                 registerProps={register("organizationSlug")}
                 error={errors.organizationSlug}
               />
 
               <Button type="submit" size="lg" full loading={isSubmitting}>
-                Continue with SSO
+                使用 SSO 继续
               </Button>
             </form>
           </div>

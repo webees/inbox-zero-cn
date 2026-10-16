@@ -38,17 +38,16 @@ export function IntroStep({
 
         {unhandledCount === null ? (
           <SectionDescription className="mx-auto mt-2 max-w-prose">
-            Checking your inbox...
+            正在检查你的收件箱…
           </SectionDescription>
         ) : (
           <>
             <SectionDescription className="mx-auto mt-2 max-w-prose">
-              You have {unhandledCount.toLocaleString()}{" "}
-              {cleanAction === CleanAction.ARCHIVE ? "unarchived" : "unread"}{" "}
-              emails in your inbox.
+              你的收件箱中有 {unhandledCount.toLocaleString()} 封
+              {cleanAction === CleanAction.ARCHIVE ? "未归档" : "未读"}邮件。
             </SectionDescription>
             <SectionDescription className="mx-auto mt-2 max-w-prose">
-              Let's clean up your inbox while keeping important emails safe.
+              让我们清理你的收件箱，同时确保重要邮件安全。
             </SectionDescription>
           </>
         )}
@@ -64,7 +63,7 @@ export function IntroStep({
             }}
             disabled={unhandledCount === null}
           >
-            Next
+            下一步
           </Button>
         </div>
       </div>

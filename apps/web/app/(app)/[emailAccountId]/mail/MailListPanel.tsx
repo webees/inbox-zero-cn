@@ -36,9 +36,8 @@ export function MailListPanel({
 
   if (layout !== "split") {
     return (
-      // min-w-0 matters: a flex item won't shrink below its content width
-      // without it, so long snippets would widen the column past the viewport
-      // instead of truncating.
+      // min-w-0 很关键：没有它，flex 子项不会收缩到内容宽度以下，
+      // 过长的摘要会把这一列撑出视口，而不是被截断。
       <section className="flex min-h-0 min-w-0 flex-1 flex-col">
         {children}
       </section>
@@ -50,15 +49,14 @@ export function MailListPanel({
       ref={panelRef}
       className="relative flex min-h-0 shrink-0 flex-col border-r border-border"
       style={{
-        // The reader keeps a usable width however wide the list was dragged or
-        // however narrow the window gets afterwards, until the window is too
-        // narrow for both and the list holds its minimum as before.
+        // 无论列表被拖到多宽，或之后窗口变得多窄，阅读区都会保持可用宽度；
+        // 直到窗口窄到两者都无法容纳时，列表才会像以前一样保持最小宽度。
         width: `max(${MAIL_LIST_WIDTH_BOUNDS.min}px, min(var(--mail-list-width, ${DEFAULT_WIDTH}), calc(100% - ${READER_MIN_WIDTH})))`,
       }}
     >
       {children}
       <PanelResizeHandle
-        label="Resize email list"
+        label="调整邮件列表大小"
         edge="right"
         bounds={MAIL_LIST_WIDTH_BOUNDS}
         onResize={onResize}

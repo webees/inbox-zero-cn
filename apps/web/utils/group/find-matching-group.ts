@@ -40,7 +40,7 @@ export function findMatchingGroup(
   if (matchingItem)
     return { group, matchingItem, excluded: false, excludedItem: null };
 
-  // No matches at all
+  // 完全没有匹配
   return {
     group: null,
     matchingItem: null,
@@ -62,7 +62,7 @@ function matchesPattern<T extends Pick<GroupItem, "type" | "value">>(
     return lowerValue.includes(lowerFrom) || lowerFrom.includes(lowerValue);
   }
 
-  // subject check
+  // 主题检查
   if (item.type === GroupItemType.SUBJECT && subject) {
     const lowerSubject = subject.toLowerCase();
     const lowerItemValue = item.value.toLowerCase();
@@ -79,7 +79,7 @@ function matchesPattern<T extends Pick<GroupItem, "type" | "value">>(
   return false;
 }
 
-// Keep this for backward compatibility
+// 保留此项以向后兼容
 export function findMatchingGroupItem<
   T extends Pick<GroupItem, "type" | "value" | "exclude"> &
     Partial<Pick<GroupItem, "source" | "updatedAt">>,
@@ -96,7 +96,7 @@ function findBestMatchingItem<
   if (!matches.length) return;
 
   const userMatches = matches.filter(
-    // Unknown legacy provenance may represent an explicit user instruction.
+    // 未知的旧来源可能代表用户的明确指示。
     (item) => item.source == null || item.source === GroupItemSource.USER,
   );
   const candidates = userMatches.length ? userMatches : matches;

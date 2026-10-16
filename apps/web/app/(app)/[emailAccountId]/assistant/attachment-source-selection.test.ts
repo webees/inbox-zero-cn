@@ -16,14 +16,14 @@ import {
 describe("formatAttachmentSourceCount", () => {
   it.each([
     [0, 0, ""],
-    [1, 0, "1 folder"],
-    [3, 0, "3 folders"],
-    [0, 1, "1 file"],
-    [0, 3, "3 files"],
-    [1, 1, "1 folder, 1 file"],
-    [1, 2, "1 folder, 2 files"],
-    [2, 1, "2 folders, 1 file"],
-    [2, 3, "2 folders, 3 files"],
+    [1, 0, "1 个文件夹"],
+    [3, 0, "3 个文件夹"],
+    [0, 1, "1 个文件"],
+    [0, 3, "3 个文件"],
+    [1, 1, "1 个文件夹，1 个文件"],
+    [1, 2, "1 个文件夹，2 个文件"],
+    [2, 1, "2 个文件夹，1 个文件"],
+    [2, 3, "2 个文件夹，3 个文件"],
   ])("formats %i folders and %i files as %s", (folders, files, expected) => {
     const sources = [
       ...Array.from({ length: files }, (_, i) =>

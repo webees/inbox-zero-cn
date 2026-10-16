@@ -19,7 +19,7 @@ export async function notifyMailboxChanged({
     await publishLocalMailHint(emailAccountId, logger);
     await sendMailboxPushes({ emailAccountId, logger });
   } catch (error) {
-    logger.warn("Failed to notify native mailbox clients", { error });
+    logger.warn("通知原生邮箱客户端失败", { error });
   }
 }
 
@@ -65,7 +65,7 @@ async function sendMailboxPushes({
   await prisma.mobilePushToken.deleteMany({
     where: { token: { in: rejectedTokens } },
   });
-  logger.info("Pruned rejected mailbox push tokens", {
+  logger.info("已清理被拒绝的邮箱推送令牌", {
     count: rejectedTokens.length,
   });
 }
@@ -79,7 +79,7 @@ async function reserveMailboxPush(emailAccountId: string, logger: Logger) {
     );
     return Boolean(acquired);
   } catch (error) {
-    logger.warn("Mailbox push cooldown check failed", { error });
+    logger.warn("邮箱推送冷却检查失败", { error });
     return true;
   }
 }

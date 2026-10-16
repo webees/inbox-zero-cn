@@ -16,7 +16,7 @@ export async function markSpam(
     threadId,
     destinationId: "junkemail",
     logger,
-    failureMessage: "Failed to move message to spam",
+    failureMessage: "未能将邮件移动到垃圾邮件",
     noMessagesMessage:
       "No messages found for conversationId, skipping spam move",
   });
@@ -32,7 +32,7 @@ export async function markNotSpam(
     threadId,
     destinationId: "inbox",
     logger,
-    failureMessage: "Failed to move message out of spam",
+    failureMessage: "未能将邮件移出垃圾邮件",
     noMessagesMessage:
       "No messages found for conversationId, skipping not-spam move",
   });
@@ -78,7 +78,7 @@ async function moveThreadToSpamState({
       throwIfAllFail: true,
     });
   } catch (error) {
-    logger.warn("Filter failed, trying alternative approach", {
+    logger.warn("过滤器失败，尝试替代方法", {
       threadId,
       error,
     });

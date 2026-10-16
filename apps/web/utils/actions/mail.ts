@@ -55,8 +55,8 @@ export const archiveThreadAction = actionClient
           labelId,
         );
       } catch (error) {
-        logger.error("Failed to archive thread", { error });
-        throw new SafeError("Failed to archive email. Please try again.");
+        logger.error("归档会话失败", { error });
+        throw new SafeError("归档邮件失败。请重试。");
       }
     },
   );
@@ -78,8 +78,8 @@ export const unarchiveThreadAction = actionClient
       try {
         await emailProvider.unarchiveThread(threadId);
       } catch (error) {
-        logger.error("Failed to unarchive thread", { error });
-        throw new SafeError("Failed to unarchive email. Please try again.");
+        logger.error("取消归档会话失败", { error });
+        throw new SafeError("取消归档邮件失败。请重试。");
       }
     },
   );
@@ -101,8 +101,8 @@ export const trashThreadAction = actionClient
       try {
         await emailProvider.trashThread(threadId, emailAccount.email, "user");
       } catch (error) {
-        logger.error("Failed to trash thread", { error });
-        throw new SafeError("Failed to delete email. Please try again.");
+        logger.error("将会话移入回收站失败", { error });
+        throw new SafeError("删除邮件失败。请重试。");
       }
     },
   );
@@ -124,8 +124,8 @@ export const untrashThreadAction = actionClient
       try {
         await emailProvider.untrashThread(threadId);
       } catch (error) {
-        logger.error("Failed to untrash thread", { error });
-        throw new SafeError("Failed to restore email. Please try again.");
+        logger.error("从回收站恢复会话失败", { error });
+        throw new SafeError("恢复邮件失败。请重试。");
       }
     },
   );
@@ -147,9 +147,9 @@ export const markReadThreadAction = actionClient
       try {
         await emailProvider.markReadThread(threadId, read);
       } catch (error) {
-        logger.error("Failed to mark thread read state", { error });
+        logger.error("标记会话已读状态失败", { error });
         throw new SafeError(
-          `Failed to mark email as ${read ? "read" : "unread"}. Please try again.`,
+          `将邮件标记为${read ? "已读" : "未读"}失败。请重试。`,
         );
       }
     },
@@ -203,12 +203,12 @@ export const createFilterAction = actionClient
       });
 
       if (!isStatusOk(res.status)) {
-        logger.error("Failed to create filter", {
+        logger.error("创建过滤器失败", {
           from,
           gmailLabelId,
           status: res.status,
         });
-        throw new SafeError("Failed to create filter");
+        throw new SafeError("创建过滤器失败");
       }
     },
   );
@@ -230,11 +230,11 @@ export const deleteFilterAction = actionClient
       const res = await emailProvider.deleteFilter(id);
 
       if (!isStatusOk(res.status)) {
-        logger.error("Failed to delete filter", {
+        logger.error("删除过滤器失败", {
           filterId: id,
           status: res.status,
         });
-        throw new SafeError("Failed to delete filter");
+        throw new SafeError("删除过滤器失败");
       }
     },
   );
@@ -276,27 +276,23 @@ export const updateMailboxItemAction = actionClient
     }) => {
       assertMailboxItemMutationSupported({ kind, provider });
       if (kind === "label" && isMicrosoftProvider(provider) && name) {
-        throw new SafeError(
-          "Outlook category names cannot be changed. Edit its color instead.",
-        );
+        throw new SafeError("Outlook 分类名称无法更改。请改为编辑其颜色。");
       }
       if (
         (labelListVisibility || messageListVisibility) &&
         !isGoogleProvider(provider)
       ) {
-        throw new SafeError(
-          "Visibility settings are only available for Gmail.",
-        );
+        throw new SafeError("可见性设置仅适用于 Gmail。");
       }
       if (color && isGoogleProvider(provider) && !isGmailLabelColor(color)) {
-        throw new SafeError("Select a supported Gmail label color.");
+        throw new SafeError("请选择受支持的 Gmail 标签颜色。");
       }
       if (
         color &&
         isMicrosoftProvider(provider) &&
         !getOutlookCategoryPreset(color.backgroundColor)
       ) {
-        throw new SafeError("Select a supported Outlook category color.");
+        throw new SafeError("请选择受支持的 Outlook 分类颜色。");
       }
       const emailProvider = await createEmailProvider({
         emailAccountId,
@@ -314,7 +310,7 @@ export const updateMailboxItemAction = actionClient
             messageListVisibility,
           });
       } catch (error) {
-        logger.error("Failed to update mailbox item", { error, kind });
+        logger.error("更新邮箱项目失败", { error, kind });
         throw new SafeError(`Failed to update ${kind}. Please try again.`);
       }
     },
@@ -343,7 +339,7 @@ export const deleteMailboxItemAction = actionClient
           await removeLabelFromMailSplits({ emailAccountId, labelId: id });
         }
       } catch (error) {
-        logger.error("Failed to delete mailbox item", { error, kind });
+        logger.error("删除邮箱项目失败", { error, kind });
         throw new SafeError(`Failed to delete ${kind}. Please try again.`);
       }
     },
@@ -439,8 +435,8 @@ export const updateDraftAction = actionClient
         parsedInput.draftId ??
         (await provider.getDraftReferenceForMessage(parsedInput.draftMessageId))
           ?.id;
-      // A draft sent, deleted, or replaced elsewhere can never be saved, so the
-      // composer is told to stop syncing rather than retry.
+      // 在别处已发送、删除或替换的草稿永远无法保存，因此
+      // 会通知编辑器停止同步，而不是重试。
       if (!draftId) return { status: "missing" as const };
       const {
         draftMessageId: _messageId,
@@ -454,8 +450,8 @@ export const updateDraftAction = actionClient
           return { status: "missing" as const };
         throw error;
       }
-      // Gmail may have moved the draft to a new message; the composer needs it,
-      // so a failed read fails the save and autosave retries it.
+      // Gmail 可能已将草稿移动到新的邮件；编辑器需要它，
+      // 因此读取失败会导致保存失败，自动保存随后会重试。
       const message = await provider.getDraft(draftId);
       return {
         status: "saved" as const,
@@ -487,7 +483,7 @@ export const deleteDraftAction = actionClient
               message ? provider.getDraftReferenceForMessage(message.id) : null,
             )
         : await provider.getDraftReferenceForMessage(draftMessageId);
-      // Already sent, deleted, or replaced elsewhere: nothing left to discard.
+      // 在别处已发送、删除或替换：没有可丢弃的内容。
       if (!draft) return;
 
       const wasDeleted = await provider.deleteDraft(draft.id, draft.version);
@@ -500,7 +496,7 @@ export const deleteDraftAction = actionClient
           logger,
         });
       } catch (error) {
-        logger.error("Failed to update tracking after deleting draft", {
+        logger.error("删除草稿后更新追踪失败", {
           error,
         });
       }
@@ -515,9 +511,7 @@ function assertMailboxItemMutationSupported({
   provider: string;
 }) {
   if (kind === "folder" && !isMicrosoftProvider(provider)) {
-    throw new SafeError(
-      "Folder actions are only available for Outlook accounts.",
-    );
+    throw new SafeError("文件夹操作仅适用于 Outlook 账号。");
   }
 }
 

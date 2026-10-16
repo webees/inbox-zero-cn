@@ -92,7 +92,7 @@ describe.runIf(isAiTest)("AI Sender Categorization", () => {
       "should categorize senders for all valid SenderCategory values",
       async () => {
         const senders = getEnabledCategories()
-          .filter((category) => category.name !== "Other")
+          .filter((category) => category.name !== defaultCategory.OTHER.name)
           .map((category) => `${category.name}@example.com`);
 
         const result = await aiCategorizeSenders({

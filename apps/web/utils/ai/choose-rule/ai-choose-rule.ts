@@ -56,7 +56,9 @@ export async function aiChooseRule<
   const rulesWithMetadata = aiResponse.matchedRules
     .map((match) => {
       if (!match.ruleName) return;
-      const rule = findReturnedRule(orderedRules, match.ruleName);
+      const rule = orderedRules.find(
+        (r) => r.name.toLowerCase() === match.ruleName.toLowerCase(),
+      );
       return rule ? { rule, isPrimary: match.isPrimary } : undefined;
     })
     .filter(isDefined);
@@ -71,7 +73,7 @@ export async function aiChooseRule<
   if (aiResponse.noMatchFound) {
     return {
       rules: [],
-      reason: aiResponse.reasoning || "AI determined no rules matched",
+      reason: aiResponse.reasoning || "AI 判定没有匹配的规则",
     };
   }
 
@@ -101,7 +103,7 @@ async function getAiResponse(options: GetAiResponseOptions): Promise<{
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Choose rule",
+    label: "选择规则",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "full" },
     cacheSystemPrompt: true,
@@ -367,7 +369,10 @@ function logAiChooseRuleResult<
     .filter(Boolean);
   const resolvedRuleNames = rulesWithMetadata.map(({ rule }) => rule.name);
   const unresolvedRuleNames = returnedRuleNames.filter(
-    (ruleName) => !findReturnedRule(orderedRules, ruleName),
+    (ruleName) =>
+      !orderedRules.some(
+        (rule) => rule.name.toLowerCase() === ruleName.toLowerCase(),
+      ),
   );
 
   const logPayload = {
@@ -387,43 +392,17 @@ function logAiChooseRuleResult<
   };
 
   if (resolvedRuleNames.length === 0) {
-    logger.warn("AI choose rule returned no usable rule", logPayload);
+    logger.warn("AI 选择规则未返回可用规则", logPayload);
   } else {
-    logger.info("AI choose rule completed", logPayload);
+    logger.info("AI 选择规则已完成", logPayload);
   }
 
   if (aiResponse.reasoning) {
-    logger.trace("AI choose rule reasoning", {
+    logger.trace("AI 选择规则推理", {
       reasoning: aiResponse.reasoning,
     });
   }
 }
-
-// Some models leak JSON syntax into the string value (e.g. `Newsletter',` or
-// `Newsletter», noMatchFound: false}`), so also accept a rule name followed by
-// stray quote/brace/comma characters. The longest name wins so "To Reply Later',"
-// never resolves to "To Reply".
-function findReturnedRule<T extends { name: string }>(
-  rules: T[],
-  returnedName: string,
-): T | undefined {
-  const normalized = returnedName.trim().toLowerCase();
-
-  const exact = rules.find((rule) => rule.name.toLowerCase() === normalized);
-  if (exact) return exact;
-
-  return rules
-    .filter((rule) => {
-      const name = rule.name.toLowerCase();
-      return (
-        normalized.startsWith(name) &&
-        LEAKED_JSON_SUFFIX.test(normalized.slice(name.length))
-      );
-    })
-    .sort((a, b) => b.name.length - a.name.length)[0];
-}
-
-const LEAKED_JSON_SUFFIX = /^\s*["'`\u00ab\u00bb\u201c\u201d\u2018\u2019}\],]/;
 
 function joinLogValues(values: (string | null | undefined)[]) {
   return values.filter(isDefined).join(", ");
@@ -451,7 +430,7 @@ These are hints from past user actions. Still evaluate the current email on its 
 </classification_feedback>`;
 }
 
-// Per-sender feedback stays out of the system prompt so the prefix is cacheable.
+// 每个发件人的反馈不放在系统提示词中，以便前缀可被缓存。
 function appendClassificationFeedback(
   feedback: ClassificationFeedbackItem[] | null | undefined,
 ): string {
@@ -466,7 +445,7 @@ const OLLAMA_MULTI_RULE_SELECTION_GUIDANCE = [
   "Prefer one best rule when candidate rules refer to the same underlying event.",
 ] as const;
 
-// Multiple rules only make sense when the user has custom rules to combine.
+// 只有当用户有可组合的自定义规则时，多规则才有意义。
 export function shouldSelectMultipleRules({
   rules,
   emailAccount,

@@ -61,16 +61,16 @@ export function getInboxHealthSkipReason({
   now: Date;
 }): string | null {
   if (statsEmailFrequency === Frequency.NEVER) {
-    return "stats emails disabled";
+    return "统计邮件已禁用";
   }
   if (createdAt > subDays(now, INBOX_HEALTH_MIN_ACCOUNT_AGE_DAYS)) {
-    return `account younger than ${INBOX_HEALTH_MIN_ACCOUNT_AGE_DAYS} days`;
+    return `账号创建时间不足 ${INBOX_HEALTH_MIN_ACCOUNT_AGE_DAYS} 天`;
   }
   if (
     lastInboxHealthEmailAt &&
     lastInboxHealthEmailAt > subDays(now, INBOX_HEALTH_INTERVAL_DAYS)
   ) {
-    return `sent within the last ${INBOX_HEALTH_INTERVAL_DAYS} days`;
+    return `最近 ${INBOX_HEALTH_INTERVAL_DAYS} 天内已发送`;
   }
   return null;
 }

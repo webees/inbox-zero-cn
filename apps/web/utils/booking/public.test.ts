@@ -187,7 +187,7 @@ describe("public booking", () => {
         input: publicBookingInput({ idempotencyToken: "token-unavailable" }),
         logger,
       }),
-    ).rejects.toThrow("Calendar availability is temporarily unavailable");
+    ).rejects.toThrow("日历可用性暂时不可用");
 
     expect(prisma.booking.create).not.toHaveBeenCalled();
   });
@@ -203,7 +203,7 @@ describe("public booking", () => {
         input: publicBookingInput({ idempotencyToken: "token-db-unavailable" }),
         logger,
       }),
-    ).rejects.toThrow("Calendar availability is temporarily unavailable");
+    ).rejects.toThrow("日历可用性暂时不可用");
 
     expect(prisma.booking.create).not.toHaveBeenCalled();
   });
@@ -248,7 +248,7 @@ describe("public booking", () => {
       expect.objectContaining({
         attendees: [{ name: "Guest <User>", email: "GUEST@EXAMPLE.COM" }],
         description: expect.stringContaining(
-          "Booked with Guest <User>\nGuest email: GUEST@EXAMPLE.COM\nGuest note: Please share <agenda> & links.",
+          "预订人：Guest <User>\n来宾邮箱：GUEST@EXAMPLE.COM\n来宾备注：Please share <agenda> & links.",
         ),
         destinationCalendarId: "calendar-row-id",
         emailAccountId: "email-account-id",
@@ -257,14 +257,14 @@ describe("public booking", () => {
         locationValue: "Video link",
         startTime: new Date("2026-05-04T09:00:00.000Z"),
         timezone: "UTC",
-        title: "Intro call between Host User and Guest <User>",
+        title: "Intro call（Host User 与 Guest <User>）",
       }),
     );
     const calendarEventCall = vi.mocked(createCalendarEvent).mock.calls[0][0];
     expect(calendarEventCall.description).not.toContain("key=");
     expect(calendarEventCall.description).not.toContain("/book/cancel/");
     expect(calendarEventCall.description).toMatch(
-      /Need to reschedule or cancel\? https?:\/\/[^\s]+\/book\/reschedule\/booking-id\?token=/,
+      /需要改期或取消？https?:\/\/[^\s]+\/book\/reschedule\/booking-id\?token=/,
     );
     expect(prisma.booking.create).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -381,9 +381,7 @@ describe("public booking", () => {
         input: publicBookingInput({ idempotencyToken: "canceled-token" }),
         logger,
       }),
-    ).rejects.toThrow(
-      "Booking was canceled. Please submit a new booking request.",
-    );
+    ).rejects.toThrow("预约已取消。请重新提交预约请求。");
 
     expect(prisma.booking.create).not.toHaveBeenCalled();
   });
@@ -435,7 +433,7 @@ describe("public booking", () => {
         input: publicBookingInput({ idempotencyToken: "pending-token" }),
         logger,
       }),
-    ).rejects.toThrow("Booking request is still being processed");
+    ).rejects.toThrow("预约请求仍在处理中");
 
     expect(prisma.booking.delete).not.toHaveBeenCalled();
     expect(prisma.booking.create).not.toHaveBeenCalled();
@@ -453,7 +451,7 @@ describe("public booking", () => {
         input: publicBookingInput({ idempotencyToken: "token-overlap" }),
         logger,
       }),
-    ).rejects.toThrow("Selected slot is no longer available");
+    ).rejects.toThrow("所选时段不再可用");
 
     expect(createCalendarEvent).not.toHaveBeenCalled();
   });
@@ -481,7 +479,7 @@ describe("public booking", () => {
         },
         logger,
       }),
-    ).rejects.toThrow("Failed to create calendar event");
+    ).rejects.toThrow("创建日历事件失败");
 
     expect(cancelCalendarEvent).toHaveBeenCalledWith({
       emailAccountId: "email-account-id",
@@ -609,7 +607,7 @@ describe("public booking", () => {
         token: "cancel-token",
         logger,
       }),
-    ).rejects.toThrow("Booking is already canceled");
+    ).rejects.toThrow("预约已取消");
 
     expect(cancelCalendarEvent).not.toHaveBeenCalled();
     expect(sendBookingCancellationEmails).not.toHaveBeenCalled();
@@ -626,7 +624,7 @@ describe("public booking", () => {
       }),
     ).rejects.toMatchObject({
       name: "SafeError",
-      safeMessage: "Invalid cancellation link",
+      safeMessage: "无效的取消链接",
       statusCode: 404,
     });
 
@@ -645,7 +643,7 @@ describe("public booking", () => {
       }),
     ).rejects.toMatchObject({
       name: "SafeError",
-      safeMessage: "Invalid cancellation link",
+      safeMessage: "无效的取消链接",
       statusCode: 404,
     });
 
@@ -668,7 +666,7 @@ describe("public booking", () => {
         token: "cancel-token",
         logger,
       }),
-    ).rejects.toThrow("Bookings that have started cannot be canceled");
+    ).rejects.toThrow("已开始的预约无法取消");
 
     expect(cancelCalendarEvent).not.toHaveBeenCalled();
     expect(prisma.booking.updateMany).not.toHaveBeenCalled();
@@ -774,7 +772,7 @@ describe("public booking", () => {
         guestTimezone: "UTC",
         logger,
       }),
-    ).rejects.toThrow("Booking cannot be rescheduled");
+    ).rejects.toThrow("无法改期预约");
 
     expect(prisma.booking.updateMany).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -813,7 +811,7 @@ describe("public booking", () => {
         guestTimezone: "UTC",
         logger,
       }),
-    ).rejects.toThrow("Failed to update calendar event");
+    ).rejects.toThrow("更新日历事件失败");
 
     // First call claims the new slot, second call rolls it back.
     expect(prisma.booking.updateMany).toHaveBeenCalledTimes(2);
@@ -854,13 +852,13 @@ describe("public booking", () => {
         guestTimezone: "UTC",
         logger,
       }),
-    ).rejects.toThrow("Failed to update calendar event");
+    ).rejects.toThrow("更新日历事件失败");
 
     expect(errorSpy).toHaveBeenCalledWith(
-      "Failed to roll back reschedule slot claim",
+      "回滚改期时段占用失败",
       expect.objectContaining({
         bookingId: "booking-id",
-        reason: "no matching booking state",
+        reason: "没有匹配的预约状态",
       }),
     );
   });
@@ -883,7 +881,7 @@ describe("public booking", () => {
       }),
     ).rejects.toMatchObject({
       name: "SafeError",
-      safeMessage: "Invalid reschedule link",
+      safeMessage: "无效的改期链接",
       statusCode: 404,
     });
 
@@ -908,7 +906,7 @@ describe("public booking", () => {
         guestTimezone: "UTC",
         logger,
       }),
-    ).rejects.toThrow("Bookings that have started cannot be rescheduled");
+    ).rejects.toThrow("已开始的预约无法改期");
 
     expect(prisma.booking.updateMany).not.toHaveBeenCalled();
   });
@@ -929,7 +927,7 @@ describe("public booking", () => {
         guestTimezone: "UTC",
         logger,
       }),
-    ).rejects.toThrow("Pick a different time to reschedule");
+    ).rejects.toThrow("请选择其他时间改期");
 
     expect(prisma.booking.updateMany).not.toHaveBeenCalled();
   });
@@ -1081,7 +1079,7 @@ describe("public booking", () => {
         end: new Date("2026-05-05T00:00:00.000Z"),
         logger,
       }),
-    ).rejects.toThrow("No enabled calendar is available for this host");
+    ).rejects.toThrow("此主机没有可用的已启用日历");
   });
 });
 

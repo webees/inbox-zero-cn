@@ -10,11 +10,14 @@ import { strictOptional } from "@/utils/llms/strict-optional";
 import { createScopedLogger } from "@/utils/logger";
 import { decideBulkSenderCategories } from "@/utils/decision-model/categorize-sender";
 import { runDecisionModelOrFallback } from "@/utils/decision-model/decision-model";
+import { defaultCategory } from "@/utils/categories";
 
 const logger = createScopedLogger("categorize-senders-bulk");
 
 export const REQUEST_MORE_INFORMATION_CATEGORY = "RequestMoreInformation";
-export const UNKNOWN_CATEGORY = "Other";
+// 必须与默认分类里「其他」的名称保持一致：批量分类用它做兜底，
+// 而 Category 行是按名称匹配的。
+export const UNKNOWN_CATEGORY = defaultCategory.OTHER.name;
 
 const categorizeSendersSchema = z.object({
   senders: z.array(
@@ -140,7 +143,7 @@ ${formatCategoriesForPrompt(categories)}
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Categorize senders bulk",
+    label: "批量分类发件人",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "compact" },
   });

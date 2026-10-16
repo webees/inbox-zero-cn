@@ -171,13 +171,13 @@ export function useThreadActions({
       const failedCount = batch.snapshots.length - restoredKeys.length;
 
       if (restoredKeys.length) {
-        toast.success(summarise("Restored", restoredKeys.length));
+        toast.success(summarise("已恢复", restoredKeys.length));
       }
       if (failedCount) {
         toast.error(
           failedCount === batch.snapshots.length
-            ? "Couldn't restore"
-            : `Couldn't restore ${failedCount} of ${batch.snapshots.length}`,
+            ? "无法恢复"
+            : `无法恢复 ${batch.snapshots.length} 个中的 ${failedCount} 个`,
         );
       }
       if (!restoredKeys.length) {
@@ -204,7 +204,7 @@ export function useThreadActions({
         if (threadKeys.length) {
           toast.error(
             enqueueFailureCopy(
-              `Couldn't queue ${UNDOABLE_COPY[action].noun}`,
+              `无法排队${UNDOABLE_COPY[action].noun}`,
               rejectionCodes,
             ),
           );
@@ -225,7 +225,7 @@ export function useThreadActions({
       if (failedCount) {
         toast.error(
           enqueueFailureCopy(
-            `Couldn't queue ${failedCount} of ${threadKeys.length} for ${UNDOABLE_COPY[action].noun}`,
+            `无法将 ${threadKeys.length} 个中的 ${failedCount} 个排队以${UNDOABLE_COPY[action].noun}`,
             rejectionCodes,
           ),
         );
@@ -246,16 +246,16 @@ export function useThreadActions({
       if (snapshots.length && notifySuccess) {
         toast.success(
           snapshots.length === 1
-            ? `Marked as ${read ? "read" : "unread"}`
-            : `Marked ${snapshots.length} conversations as ${read ? "read" : "unread"}`,
+            ? `已标记为${read ? "已读" : "未读"}`
+            : `已将 ${snapshots.length} 个会话标记为${read ? "已读" : "未读"}`,
         );
       }
       if (failedCount) {
         toast.error(
           enqueueFailureCopy(
             failedCount === threadKeys.length
-              ? `Couldn't queue marking as ${read ? "read" : "unread"}`
-              : `Couldn't queue ${failedCount} of ${threadKeys.length} as ${read ? "read" : "unread"}`,
+              ? `无法排队标记为${read ? "已读" : "未读"}`
+              : `无法将 ${threadKeys.length} 个中的 ${failedCount} 个排队标记为${read ? "已读" : "未读"}`,
             rejectionCodes,
           ),
         );
@@ -276,10 +276,7 @@ export function useThreadActions({
       );
       if (snapshots.length < threadKeys.length) {
         toast.error(
-          enqueueFailureCopy(
-            "Couldn’t update stars for all conversations",
-            rejectionCodes,
-          ),
+          enqueueFailureCopy("无法更新所有会话的星标", rejectionCodes),
         );
       }
       return snapshots.map((snapshot) => snapshot.key);
@@ -298,8 +295,8 @@ export function useThreadActions({
       if (snapshots.length) {
         toast.success(
           snapshots.length === 1
-            ? `Snoozed until ${format(snoozedUntil, "EEE, MMM d 'at' p")}`
-            : `Snoozed ${snapshots.length} conversations`,
+            ? `已推迟到 ${format(snoozedUntil, "EEE, MMM d 'at' p")}`
+            : `已推迟 ${snapshots.length} 个会话`,
         );
       }
       if (failedCount) {
@@ -307,9 +304,9 @@ export function useThreadActions({
           enqueueFailureCopy(
             failedCount === threadKeys.length
               ? threadKeys.length === 1
-                ? "Couldn't queue snoozing"
-                : "Couldn't queue snoozing conversations"
-              : `Couldn't queue ${failedCount} of ${threadKeys.length} for snoozing`,
+                ? "无法排队推迟"
+                : "无法排队推迟会话"
+              : `无法将 ${threadKeys.length} 个中的 ${failedCount} 个排队以推迟`,
             rejectionCodes,
           ),
         );
@@ -329,16 +326,16 @@ export function useThreadActions({
       if (snapshots.length) {
         toast.success(
           snapshots.length === 1
-            ? "Marked as spam"
-            : `Marked ${snapshots.length} conversations as spam`,
+            ? "已标记为垃圾邮件"
+            : `已将 ${snapshots.length} 个会话标记为垃圾邮件`,
         );
       }
       if (failedCount) {
         toast.error(
           enqueueFailureCopy(
             failedCount === threadKeys.length
-              ? "Couldn't queue marking as spam"
-              : `Couldn't queue ${failedCount} of ${threadKeys.length} as spam`,
+              ? "无法排队标记为垃圾邮件"
+              : `无法将 ${threadKeys.length} 个中的 ${failedCount} 个排队标记为垃圾邮件`,
             rejectionCodes,
           ),
         );
@@ -383,24 +380,24 @@ const UNDOABLE_COPY: Record<
 > = {
   archive: {
     compensation: "unarchive",
-    done: (count) => summarise("Archived", count),
-    noun: "archiving",
+    done: (count) => summarise("已归档", count),
+    noun: "归档",
   },
   unarchive: {
     compensation: "archive",
     done: (count) =>
-      count === 1 ? "Moved to inbox" : `Moved ${count} conversations to inbox`,
-    noun: "moving to inbox",
+      count === 1 ? "已移至收件箱" : `已将 ${count} 个会话移至收件箱`,
+    noun: "移至收件箱",
   },
   trash: {
     compensation: "untrash",
-    done: (count) => summarise("Deleted", count),
-    noun: "deletion",
+    done: (count) => summarise("已删除", count),
+    noun: "删除",
   },
 };
 
 function summarise(verb: string, count: number) {
-  return count === 1 ? verb : `${verb} ${count} conversations`;
+  return count === 1 ? verb : `${verb} ${count} 个会话`;
 }
 
 function enqueueFailureCopy(generic: string, rejectionCodes: string[]) {

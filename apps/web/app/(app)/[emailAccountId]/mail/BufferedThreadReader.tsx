@@ -21,8 +21,8 @@ export function BufferedThreadReader({
   onReady: (threadKey: string) => void;
 }) {
   const [visibleKey, setVisibleKey] = useState<string | null>(null);
-  // Kept out of state so a parent re-render of the same thread doesn't render
-  // the reader a second time.
+  // 保存在 state 之外，这样同一会话的父级重新渲染不会
+  // 让阅读器渲染两次。
   const visibleContent = useRef<ReactElement<ThreadReaderProps> | null>(null);
   const pendingRef = useRef<HTMLDivElement>(null);
   const readinessDeadline = useRef<{ key: string; expiresAt: number } | null>(
@@ -52,15 +52,15 @@ export function BufferedThreadReader({
       setVisibleKey(threadKey);
       onReady(threadKey);
     };
-    // A slow load or a malformed email must not leave the previous thread on
-    // screen indefinitely; past the deadline the reader shows its own loading
-    // or error state instead.
+    // 加载缓慢或邮件格式错误时，不能让上一个会话无限期地留在
+    // 屏幕上；超过期限后阅读器会改为显示自己的加载
+    // 或错误状态。
     const timeout = setTimeout(commit, Math.max(0, remaining));
     if (!dataReady) return () => clearTimeout(timeout);
     const reveal = () => {
       const iframes = pendingRef.current?.querySelectorAll("iframe");
-      // React committing the message does not mean its srcDoc has been parsed
-      // and measured. Keep the complete previous reader until both are ready.
+      // React 提交该消息并不意味着它的 srcDoc 已被解析
+      // 和测量。在两者都就绪之前，保留完整的上一个阅读器。
       if (
         performance.now() < expiresAt &&
         iframes &&

@@ -5,8 +5,8 @@ export function escapeHtml(text: string | null | undefined): string {
   return he.escape(text);
 }
 
-// Blank lines separate paragraphs, single newlines become line breaks. Escaped
-// because the text is usually model- or user-written and ends up in sent HTML.
+// 空行分隔段落，单个换行变成换行符。之所以转义，是因为这些文本
+// 通常由模型或用户撰写，并最终出现在发送的 HTML 中。
 export function textToHtmlParagraphs(text?: string | null): string {
   if (!text) return "";
 
@@ -27,7 +27,7 @@ export function truncate(str: string, length: number) {
 
 const HEAD_TAIL_ELLIPSIS = "\n...\n";
 
-// Keep the start and end of a long string so closing asks/CTAs survive truncation.
+// 保留长字符串的开头和结尾，以便结尾的请求/CTA 在截断后仍然保留。
 export function truncateHeadTail(
   str: string,
   maxLength: number,
@@ -60,21 +60,21 @@ export function trimToNonEmptyString(value: unknown): string | undefined {
 export function removeExcessiveWhitespace(str: string) {
   return (
     str
-      // First remove all zero-width spaces, soft hyphens, and other invisible characters
-      // Handle each special character separately to avoid combining character issues
+      // 首先移除所有零宽空格、软连字符和其他不可见字符
+      // 分别处理每个特殊字符，以避免组合字符问题
       .replace(
         /\u200B|\u200C|\u200D|\u200E|\u200F|\uFEFF|\u3164|\u00AD|\u034F/g,
         " ",
       )
-      // Normalize all types of line breaks to \n
+      // 将所有类型的换行统一规范化为 \n
       .replace(/\r\n|\r/g, "\n")
-      // Then collapse multiple newlines (3 or more) into double newlines
+      // 然后将多个换行（3 个或更多）合并为两个换行
       .replace(/\n\s*\n\s*\n+/g, "\n\n")
-      // Clean up spaces around newlines (but preserve double newlines)
+      // 清理换行周围的空格（但保留双换行）
       .replace(/[^\S\n]*\n[^\S\n]*/g, "\n")
-      // Replace multiple spaces (but not newlines) with single space
+      // 将多个空格（但非换行）替换为单个空格
       .replace(/[^\S\n]+/g, " ")
-      // Clean up any trailing/leading whitespace
+      // 清理任何首尾空白
       .trim()
   );
 }
@@ -82,11 +82,11 @@ export function removeExcessiveWhitespace(str: string) {
 export function generalizeSubject(subject = "") {
   return (
     subject
-      // Remove content in parentheses
+      // 移除括号中的内容
       .replace(/\([^)]*\)/g, "")
-      // Remove numbers and IDs
+      // 移除数字和 ID
       .replace(/(?:#\d+|\b\d+\b)/g, "")
-      // Clean up extra whitespace
+      // 清理多余空白
       .replace(/\s+/g, " ")
       .trim()
   );
@@ -117,9 +117,9 @@ export function convertNewlinesToBr(text: string): string {
   return text.replace(/\r\n/g, "\n").replace(/\n/g, "<br>");
 }
 
-// slice() counts UTF-16 code units, so a cut can land inside an emoji or other
-// astral character and leave a lone surrogate. Some LLM APIs reject a request
-// body that contains one as invalid JSON, so drop the half character instead.
+// slice() 按 UTF-16 代码单元计数，因此截断可能落在 emoji 或其他
+// 星平面字符中间，留下孤立代理项。某些 LLM API 会将以无效 JSON 形式
+// 包含孤立代理项的请求体拒掉，因此改为丢弃这半个字符。
 function sliceHead(str: string, length: number) {
   const head = str.slice(0, length);
   return isHighSurrogate(head.charCodeAt(head.length - 1))

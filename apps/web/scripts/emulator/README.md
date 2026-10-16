@@ -1,8 +1,7 @@
 # Local emulator
 
-Runs the real web backend with the Google and Microsoft emulators and throwaway
-Postgres and Redis. Use it for local development, agents, and any client.
-Nothing here talks to production.
+使用 Google 和 Microsoft 模拟器以及一次性的 Postgres 和 Redis 运行真实的 Web 后端。用于本地开发、代理以及任何客户端。
+这里不会与生产环境通信。
 
 Playwright's `webServer` starts one provider for a spec and exits. This stack
 stays up until you stop it.
@@ -74,10 +73,8 @@ Call these with the Better Auth session cookie and the `X-Email-Account-ID`
 header. The same Next.js app still serves the server actions used by the web
 composer.
 
-The stack sets a local `CRON_SECRET` and polls
-`GET /api/cron/scheduled-actions` with `Authorization: Bearer $CRON_SECRET`
-every few seconds. A future `sendAt` is delivered by that timer. There is no
-QStash process.
+该栈会设置一个本地 `CRON_SECRET`，并每隔几秒使用 `Authorization: Bearer $CRON_SECRET` 轮询 `GET /api/cron/scheduled-actions`。
+未来的 `sendAt` 由该定时器投递。没有 QStash 进程。
 
 Schedule a send. `sendAt` and `remindAt` are ISO timestamps, or `null`. A null
 `sendAt` sends immediately.
@@ -271,7 +268,7 @@ curl -X POST "$BASE_URL/api/user/snoozed-threads" \
   -d '{ "threadIds": ["THREAD_ID"], "snoozedUntil": "2026-10-06T09:00:00.000Z" }'
 ```
 
-List inbox categories and user splits.
+列出收件箱分类和用户分区。
 
 ```sh
 curl "$BASE_URL/api/user/mail-splits" \

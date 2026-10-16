@@ -58,7 +58,7 @@ export async function getThread(
           ).get() as Promise<{ value: Message[] }>;
         }, logger);
 
-    // Sort in memory to avoid "restriction or sort order is too complex" error
+    // 在内存中排序以避免 "restriction or sort order is too complex" 错误
     return messages.value.sort((a, b) => {
       const dateA =
         a.isDraft && !a.receivedDateTime
@@ -82,9 +82,9 @@ export async function getThread(
       errorStatusCode: err?.statusCode,
     };
     if (isRetryableError(extractErrorInfo(error)).isRateLimit) {
-      logger.warn("getThread failed", context);
+      logger.warn("getThread 失败", context);
     } else {
-      logger.error("getThread failed", context);
+      logger.error("getThread 失败", context);
     }
     throw error;
   }
@@ -117,7 +117,7 @@ export async function getThreads(
       logger,
     );
 
-  // Group messages by conversationId to create thread-like structure
+  // 按 conversationId 分组邮件以创建类似会话的结构
   const threadMap = new Map<string, { id: string; snippet: string }>();
   for (const message of response.value) {
     if (message.conversationId && !threadMap.has(message.conversationId)) {
@@ -164,7 +164,7 @@ export async function getThreadsWithNextPageToken({
   const response: { value: Message[]; "@odata.nextLink"?: string } =
     await withMicrosoftGraphRetry(() => request.get(), logger);
 
-  // Group messages by conversationId to create thread-like structure
+  // 按 conversationId 分组邮件以创建类似会话的结构
   const threadMap = new Map<string, { id: string; snippet: string }>();
   for (const message of response.value) {
     if (message.conversationId && !threadMap.has(message.conversationId)) {
@@ -199,7 +199,7 @@ export async function getThreadsFromSender(
     logger,
   );
 
-  // Group messages by conversationId
+  // 按 conversationId 分组邮件
   const threadMap = new Map<string, { id: string; snippet: string }>();
   for (const message of response.value) {
     if (message.conversationId && !threadMap.has(message.conversationId)) {
@@ -231,7 +231,7 @@ export async function getThreadsFromSenderWithSubject(
     logger,
   );
 
-  // Group messages by conversationId
+  // 按 conversationId 分组邮件
   const threadMap = new Map<
     string,
     { id: string; snippet: string; subject: string }
@@ -296,13 +296,11 @@ async function getCompleteThreadMessages(
         message.conversationId !== threadId ||
         ids.has(message.id)
       )
-        throw new Error("Inconsistent conversation snapshot");
+        throw new Error("会话快照不一致");
       ids.add(message.id);
       messages.push(message);
       if (messages.length > COMPLETE_THREAD_MESSAGE_LIMIT)
-        throw new Error(
-          "Conversation exceeds the offline snapshot message limit",
-        );
+        throw new Error("会话超过了离线快照的消息上限");
     }
     const next = completeNextLink(
       page["@odata.nextLink"],
@@ -353,7 +351,7 @@ async function getCompleteThreadMessages(
       new Set(attachments.map((attachment) => attachment.id)).size !==
         attachments.length
     )
-      throw new Error("Inconsistent attachment snapshot");
+      throw new Error("附件快照不一致");
     message.attachments = attachments;
   }
   return messages;
@@ -365,8 +363,7 @@ async function readCompleteGraphPage<T>(
   logger: Logger,
   signal?: AbortSignal,
 ) {
-  if (budget.remainingPages <= 0)
-    throw new Error("Conversation exceeds the offline snapshot page limit");
+  if (budget.remainingPages <= 0) throw new Error("会话超出离线快照页数上限");
   const response: Response = await withMicrosoftGraphRetry(async () => {
     signal?.throwIfAborted();
     const result: Response = await request
@@ -375,28 +372,26 @@ async function readCompleteGraphPage<T>(
       .get();
     if (!result.ok) {
       await result.body?.cancel().catch(() => undefined);
-      throw Object.assign(new Error("Unable to read complete conversation"), {
+      throw Object.assign(new Error("无法读取完整会话"), {
         statusCode: result.status,
       });
     }
     return result;
   }, logger);
-  if (!response.body) throw new Error("Missing conversation response");
+  if (!response.body) throw new Error("缺少会话响应");
   const page = await readCompleteThreadJson<{
     value: T[];
     "@odata.nextLink"?: string;
   }>(response.body, budget, signal);
-  if (!page || !Array.isArray(page.value))
-    throw new Error("Invalid conversation response");
+  if (!page || !Array.isArray(page.value)) throw new Error("无效的会话响应");
   return page;
 }
 
 function completeNextLink(value: unknown, path: string, seen: Set<string>) {
   if (value === undefined || value === null) return;
-  if (typeof value !== "string" || !value)
-    throw new Error("Invalid conversation continuation");
+  if (typeof value !== "string" || !value) throw new Error("无效的会话续传");
   const next = resolveMicrosoftGraphNextLink(value);
-  if (!next) throw new Error("Invalid conversation continuation");
+  if (!next) throw new Error("无效的会话续传");
   const url = new URL(next);
   if (
     url.username ||
@@ -405,7 +400,7 @@ function completeNextLink(value: unknown, path: string, seen: Set<string>) {
     decodeURIComponent(url.pathname) !== `/v1.0${decodeURIComponent(path)}` ||
     seen.has(url.href)
   )
-    throw new Error("Invalid or repeated conversation continuation");
+    throw new Error("无效或重复的会话续传");
   seen.add(url.href);
   return next;
 }

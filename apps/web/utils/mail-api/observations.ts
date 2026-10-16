@@ -96,8 +96,8 @@ export function parsedMessageBodyObservation(
   ) {
     return null;
   }
-  // Protocol limits are enforced on every page, so one oversized message
-  // would otherwise fail its whole page on every retry and stall sync.
+  // 协议限制会在每一页强制执行，因此一封超大邮件
+  // 否则会在每次重试时让其整页失败并拖慢同步。
   return {
     key: { accountId, messageId: message.id },
     version: message.historyId || null,
@@ -119,7 +119,7 @@ function parsedMessageAttachmentDescriptors(
       descriptorFromParsed(attachment, true),
     ),
   ].filter(
-    // A provider part without a native or authoritative MIME reference cannot be retrieved.
+    // 没有原生或权威 MIME 引用的服务商部件无法被检索。
     (descriptor) => Boolean(descriptor.attachmentId),
   );
 }
@@ -171,8 +171,8 @@ function rolesFromFolder(
 ): Array<"inbox" | "sent" | "draft" | "trash" | "spam"> {
   if (!folderId) return [];
   const folder = folderId.toLowerCase();
-  // Folder ids are often opaque. A substring match treated archive folders
-  // whose id happened to contain "inbox" as the inbox itself.
+  // 文件夹 id 通常是不透明的。子串匹配会把 id 中恰好包含 "inbox"
+  // 的归档文件夹当作收件箱本身。
   if (folder === "inbox") return ["inbox"];
   if (folder.includes("sent")) return ["sent"];
   if (folder.includes("draft")) return ["draft"];

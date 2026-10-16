@@ -122,10 +122,7 @@ export function normalizeActionExecutionError(
       getString(outer, "code") ||
       getString(nested, "code") ||
       (error instanceof Error ? error.name : "UNKNOWN_ACTION_ERROR"),
-    message: truncate(
-      getErrorMessage(error) || "Unknown action execution error",
-      4000,
-    ),
+    message: truncate(getErrorMessage(error) || "未知的操作执行错误", 4000),
     stack:
       error instanceof Error && error.stack
         ? truncate(error.stack, 12_000)

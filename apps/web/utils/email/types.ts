@@ -38,10 +38,10 @@ export type DraftAttachmentsResult = {
 };
 
 /**
- * How the browser sends a file too large for one request to our server.
- * Outlook hands out a pre-authenticated URL the browser uploads to directly.
- * Gmail replaces the whole message, so the browser uploads the full MIME
- * (server-built text around the attachment bytes) through our chunk proxy.
+ * 浏览器如何将单个请求无法容纳的大文件发送到我们的服务器。
+ * Outlook 会提供一个预认证 URL，浏览器直接上传到它。
+ * Gmail 会替换整封邮件，因此浏览器上传完整的 MIME
+ * （服务端在附件字节周围构建的文本）通过我们的分块代理传输。
  */
 export type DraftAttachmentUploadStart =
   | { type: "provider-url"; uploadUrl: string }
@@ -87,7 +87,7 @@ export interface EmailLabel {
   messageListVisibility?: string;
   name: string;
   threadsTotal?: number;
-  // Only populated by providers that report per-label counts (Gmail `labels.get`)
+  // 仅由报告每个标签计数的服务商填充（Gmail `labels.get`）
   threadsUnread?: number;
   type: string;
 }
@@ -228,7 +228,7 @@ export interface EmailProvider {
     bcc?: string;
     subject: string;
     messageHtml: string;
-    replyToMessageId?: string; // For proper threading
+    replyToMessageId?: string; // 用于正确的会话串接
     /** Starts the draft as a forward of this message, carrying its files. */
     forwardedMessageId?: string;
   }): Promise<{ id: string }>;
@@ -354,8 +354,8 @@ export interface EmailProvider {
     messageIds: string[],
   ): Promise<ParsedMessage[]>;
   /**
-   * The addresses the user can send from. Empty when the provider doesn't
-   * offer a choice, so mail goes out from the account address.
+   * 用户可以从中发送的地址。当服务商不提供选择时为空，
+   * 因此邮件从账号地址发出。
    */
   getSendAsAddresses(): Promise<SendAsAddress[]>;
   getSentMessageIds(options: {
@@ -371,7 +371,7 @@ export interface EmailProvider {
     maxResults?: number;
   }): Promise<EmailThread[]>;
   getSignatures(): Promise<EmailSignature[]>;
-  // Thread messages are returned in chronological order with drafts excluded unless requested.
+  // 会话邮件按时间顺序返回，除非有请求否则排除草稿。
   getThread(threadId: string, options?: GetThreadOptions): Promise<EmailThread>;
   getThreadMessages(threadId: string): Promise<ParsedMessage[]>;
   getThreadMessagesInInbox(threadId: string): Promise<ParsedMessage[]>;
@@ -432,6 +432,11 @@ export interface EmailProvider {
   removeThreadLabel(threadId: string, labelId: string): Promise<void>;
   removeThreadLabels(threadId: string, labelIds: string[]): Promise<void>;
   renameFolder(folderId: string, name: string): Promise<void>;
+  /**
+   * 就地重命名标签/类别，保留 id 与已打标签的邮件。
+   * Gmail 直接 patch label 名称；Outlook 需要同时改写邮件上的类别名。
+   */
+  renameLabel(labelId: string, newName: string): Promise<void>;
   replyToEmail(
     email: ParsedMessage,
     /** HTML-safe: escape untrusted text; newlines become line breaks. */
@@ -510,8 +515,8 @@ export interface EmailProvider {
   unarchiveMessages(messageIds: string[]): Promise<void>;
   unarchiveThread(threadId: string): Promise<void>;
   /**
-   * Restores a trashed thread, to undo `trashThread`. Gmail puts it back under
-   * its pre-trash labels; Outlook has no such record and moves it to the inbox.
+   * 恢复已删除的会话，以撤销 `trashThread`。Gmail 会将其放回
+   * 删除前的标签下；Outlook 没有此类记录，会将其移动到收件箱。
    */
   untrashMessages(messageIds: string[]): Promise<void>;
   untrashThread(threadId: string): Promise<void>;

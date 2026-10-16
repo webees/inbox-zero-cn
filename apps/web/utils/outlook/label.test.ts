@@ -6,6 +6,7 @@ import {
   createLabel,
   getLabel,
   getOrCreateLabels,
+  renameCategoryOnMessages,
   unarchiveThread,
   untrashThread,
   updateMessageCategories,
@@ -136,7 +137,7 @@ describe("unarchiveThread", () => {
         threadId: "thread-1",
         logger: createTestLogger(),
       }),
-    ).rejects.toThrow("Archive folder not found");
+    ).rejects.toThrow("归档 文件夹未找到");
 
     expect(post).not.toHaveBeenCalled();
   });
@@ -172,9 +173,68 @@ describe("untrashThread", () => {
         threadId: "thread-1",
         logger: createTestLogger(),
       }),
-    ).rejects.toThrow("Deleted items folder not found");
+    ).rejects.toThrow("已删除邮件 文件夹未找到");
 
     expect(post).not.toHaveBeenCalled();
+  });
+});
+
+describe("renameCategoryOnMessages", () => {
+  it("rewrites the old category name on messages that still carry it", async () => {
+    const stored = new Map<string, string[]>([
+      ["message-1", ["Newsletter", "待回复"]],
+      ["message-2", ["待回复"]],
+    ]);
+    const patched: Array<{ id: string; categories: string[] }> = [];
+    const filters: string[] = [];
+
+    const api = vi.fn().mockImplementation((path: string) => {
+      if (path === "/me/messages") {
+        const builder = {
+          select: () => builder,
+          top: () => builder,
+          filter: (expression: string) => {
+            filters.push(expression);
+            return builder;
+          },
+          get: async () => ({
+            value: [...stored.keys()].map((id) => ({ id })),
+          }),
+        };
+        return builder;
+      }
+
+      const messageId = path.split("/").pop() as string;
+      const builder = {
+        select: () => builder,
+        header: () => builder,
+        get: async () => ({
+          categories: stored.get(messageId),
+          "@odata.etag": `W/"${messageId}"`,
+        }),
+        patch: async ({ categories }: { categories: string[] }) => {
+          stored.set(messageId, categories);
+          patched.push({ id: messageId, categories });
+        },
+      };
+      return builder;
+    });
+
+    const client = createMockOutlookClient(api);
+    const result = await renameCategoryOnMessages({
+      client,
+      previousName: "Newsletter",
+      nextName: "订阅简报",
+      logger: createTestLogger(),
+    });
+
+    // 只改写着旧名字的邮件，别的邮件保持原样。
+    expect(result.updated).toBe(1);
+    expect(patched).toEqual([
+      { id: "message-1", categories: ["订阅简报", "待回复"] },
+    ]);
+    expect(filters[0]).toContain("categories/any");
+    expect(filters[0]).toContain("Newsletter");
   });
 });
 

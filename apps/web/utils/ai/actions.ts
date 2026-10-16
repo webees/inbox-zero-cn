@@ -628,7 +628,7 @@ const integration: ActionFunction<{
     return {
       success: false,
       errorCode: "UNSUPPORTED_INTEGRATION_TOOL",
-      errorMessage: `Unsupported integration tool: ${integrationName}/${integrationToolName}`,
+      errorMessage: `不支持的集成工具：${integrationName}/${integrationToolName}`,
     };
   }
 
@@ -644,7 +644,7 @@ const integration: ActionFunction<{
     return {
       success: false,
       errorCode: "INTEGRATION_NOT_CONNECTED",
-      errorMessage: `${integrationConfig.displayName} is not connected. Connect it on the Integrations page.`,
+      errorMessage: `${integrationConfig.displayName} 尚未连接。请在「集成」页面连接它。`,
     };
   }
 
@@ -653,7 +653,7 @@ const integration: ActionFunction<{
     return {
       success: false,
       errorCode: "UNSUPPORTED_INTEGRATION_TOOL",
-      errorMessage: `Unsupported integration tool: ${integrationName}/${integrationToolName}`,
+      errorMessage: `不支持的集成工具：${integrationName}/${integrationToolName}`,
     };
   }
 
@@ -665,7 +665,7 @@ const integration: ActionFunction<{
     return {
       success: false,
       errorCode: "MISSING_INTEGRATION_ARGS",
-      errorMessage: `The integration action has no ${missingArg.label.toLowerCase()}`,
+      errorMessage: `集成操作缺少 ${missingArg.label.toLowerCase()}`,
     };
   }
 
@@ -856,14 +856,14 @@ async function runMessagingNotificationAction({
   logger: Logger;
 }) {
   if (!actionId) {
-    throw new Error(`Missing action id for ${actionType}`);
+    throw new Error(`缺少 ${actionType} 的操作 ID`);
   }
 
   if (!messagingChannelId) {
     await markMessagingActionFailed({
       actionId,
       logger,
-      reason: `Missing messaging channel for ${actionType}`,
+      reason: `缺少 ${actionType} 的消息渠道`,
     });
     return { success: false, errorCode: "MISSING_MESSAGING_CHANNEL" };
   }
@@ -879,7 +879,7 @@ async function runMessagingNotificationAction({
   await markMessagingActionFailed({
     actionId,
     logger,
-    reason: `Failed to deliver ${actionType} notification`,
+    reason: `发送 ${actionType} 通知失败`,
   });
   return { success: false, errorCode: "MESSAGING_DELIVERY_FAILED" };
 }

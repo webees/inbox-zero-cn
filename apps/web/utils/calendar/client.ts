@@ -56,17 +56,17 @@ export const getCalendarClientWithRefresh = async ({
     throw new SafeError("No refresh token");
   }
 
-  // Check if token is still valid
+  // 检查令牌是否仍然有效
   if (expiresAt && expiresAt > Date.now()) {
     const auth = getAuth({ accessToken, refreshToken, expiresAt });
     return calendar({ version: "v3", auth, rootUrl: getGoogleApiRootUrl() });
   }
 
-  // Token is expired or missing, need to refresh
+  // 令牌已过期或缺失，需要刷新
   const auth = getAuth({ accessToken, refreshToken });
   const cal = calendar({ version: "v3", auth, rootUrl: getGoogleApiRootUrl() });
 
-  // may throw `invalid_grant` error
+  // 可能抛出 `invalid_grant` 错误
   try {
     const tokens = await auth.refreshAccessToken();
     const newAccessToken = tokens.credentials.access_token;
@@ -98,7 +98,7 @@ export const getCalendarClientWithRefresh = async ({
         logger,
       });
     } else {
-      logger.warn("No calendar connection found to update tokens", {
+      logger.warn("未找到可更新令牌的日历连接", {
         emailAccountId,
       });
     }
@@ -106,7 +106,7 @@ export const getCalendarClientWithRefresh = async ({
     return cal;
   } catch (error) {
     if (isInvalidGrantError(error)) {
-      logger.warn("Error refreshing Calendar access token", {
+      logger.warn("刷新日历访问令牌出错", {
         emailAccountId,
         error: error instanceof Error ? error.message : String(error),
         errorDescription: (
@@ -129,7 +129,7 @@ export async function fetchGoogleCalendars(
     const response = await calendarClient.calendarList.list();
     return response.data.items || [];
   } catch (error) {
-    logger.error("Error fetching Google calendars", { error });
-    throw new SafeError("Failed to fetch calendars");
+    logger.error("获取 Google 日历出错", { error });
+    throw new SafeError("获取日历失败");
   }
 }

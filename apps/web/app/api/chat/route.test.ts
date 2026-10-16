@@ -259,7 +259,7 @@ describe("chat route rule freshness persistence", () => {
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({
-      error: "Messages can be up to 20,000 characters.",
+      error: "消息最长可为 20,000 个字符。",
     });
     expect(prisma.chat.findUnique).not.toHaveBeenCalled();
     expect(prisma.chatMessage.create).not.toHaveBeenCalled();

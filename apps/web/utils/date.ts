@@ -45,21 +45,21 @@ export function formatShortDate(
 }
 
 /**
- * Labels a date for grouping an email list into sections. The sections are
- * deliberately coarse so a list only ever carries a handful of headings.
- * - Today and yesterday get their own sections.
- * - The rest of the past week is one "Last 7 days" section.
- * - Older days in the current month are one "Earlier this month" section.
- * - Earlier dates are labelled by month (e.g. "August", or "August 2024").
- * - A date ahead of today keeps its own day, so a sender with a skewed clock
- *   is never filed under a section that has already passed.
+ * 为日期打标签，以便将邮件列表分组为若干区块。这些区块刻意划分得较为
+ * 粗略，因此列表最多只会包含少量标题。
+ * - 今天和昨天各自成为单独区块。
+ * - 过去一周的其余日期合并为一个「最近 7 天」区块。
+ * - 当月更早的日期合并为一个「本月早些时候」区块。
+ * - 更早的日期按月份标注（例如 "August" 或 "August 2024"）。
+ * - 晚于今天的日期保留自身的日期，因此时钟偏差的发件人永远不会被归入
+ *   已经过去的区块中。
  */
 export function formatDateGroupLabel(date: Date, now: Date = new Date()) {
-  if (isSameDay(date, now)) return "Today";
-  if (isSameDay(date, subDays(now, 1))) return "Yesterday";
+  if (isSameDay(date, now)) return "今天";
+  if (isSameDay(date, subDays(now, 1))) return "昨天";
   if (date > now) return format(date, "MMMM do, yyyy");
-  if (date >= startOfDay(subDays(now, 6))) return "Last 7 days";
-  if (isSameMonth(date, now)) return "Earlier this month";
+  if (date >= startOfDay(subDays(now, 6))) return "最近 7 天";
+  if (isSameMonth(date, now)) return "本月早些时候";
   if (isSameYear(date, now)) return format(date, "MMMM");
   return format(date, "MMMM yyyy");
 }
@@ -77,11 +77,11 @@ export function internalDateToDate(
     return fallbackToNow ? new Date() : new Date(Number.NaN);
   }
 
-  // First try to parse as a regular date string (for ISO strings like "2025-06-19T21:46:31Z")
+  // 首先尝试按普通日期字符串解析（用于 "2025-06-19T21:46:31Z" 这类 ISO 字符串）
   let date = new Date(internalDate);
   if (!Number.isNaN(date.getTime())) return date;
 
-  // Fallback to the old behavior for numeric timestamps
+  // 对数字时间戳回退到旧有行为
   date = new Date(+internalDate);
   if (Number.isNaN(date.getTime())) {
     return fallbackToNow ? new Date() : new Date(Number.NaN);
@@ -102,7 +102,7 @@ export function formatRelativeTimeForLLM(date: Date) {
   return formatDistanceToNow(date, { addSuffix: true });
 }
 
-// Format: Mar 18, 2025
+// 格式：Mar 18, 2025
 export function formatDateSimple(date: Date) {
   return date.toLocaleDateString("en-US", {
     month: "short",
@@ -112,8 +112,8 @@ export function formatDateSimple(date: Date) {
 }
 
 /**
- * Comparator function for sorting messages by internalDate
- * @param direction - 'asc' for oldest first (default, chronological), 'desc' for newest first
+ * 按 internalDate 对邮件排序的比较函数
+ * @param direction - 'asc' 表示最旧在前（默认，按时间顺序），'desc' 表示最新在前
  */
 export function sortByInternalDate<T extends { internalDate?: string | null }>(
   direction: "asc" | "desc" = "asc",
@@ -133,12 +133,12 @@ const DEFAULT_TIMEZONE = "UTC";
 const logger = createScopedLogger("date-utils");
 
 /**
- * Formats a date/time in the user's timezone.
- * Falls back to UTC if the timezone is invalid (corrupted/legacy/non-IANA values).
- * @param date - The date to format (typically from a calendar event)
- * @param timezone - The user's timezone (e.g., "America/Sao_Paulo", "America/New_York")
- * @param formatString - The date-fns format string (e.g., "h:mm a", "MMM d, yyyy 'at' h:mm a")
- * @returns The formatted date string in the user's timezone
+ * 在用户时区中格式化日期/时间。
+ * 如果时区无效（损坏、旧版或非 IANA 值），则回退到 UTC。
+ * @param date - 要格式化的日期（通常来自日历事件）
+ * @param timezone - 用户的时区（例如 "America/Sao_Paulo"、"America/New_York"）
+ * @param formatString - date-fns 格式字符串（例如 "h:mm a"、"MMM d, yyyy 'at' h:mm a"）
+ * @returns 按用户时区格式化后的日期字符串
  */
 export function formatInUserTimezone(
   date: Date,
@@ -150,8 +150,8 @@ export function formatInUserTimezone(
     const dateInTZ = new TZDate(date, tz);
     return format(dateInTZ, formatString);
   } catch (error) {
-    // Invalid timezone (corrupted/legacy/non-IANA) - log and fall back to UTC
-    logger.error("Invalid timezone, falling back to UTC", {
+    // 时区无效（损坏、旧版或非 IANA）- 记录日志并回退到 UTC
+    logger.error("时区无效，回退到 UTC", {
       timezone: tz,
       error,
     });
@@ -164,8 +164,8 @@ export function formatInUserTimezone(
 }
 
 /**
- * Formats a time (without date) in the user's timezone.
- * Example output: "4:00 PM"
+ * 在用户时区中格式化时间（不含日期）。
+ * 示例输出："4:00 PM"
  */
 export function formatTimeInUserTimezone(
   date: Date,
@@ -175,8 +175,8 @@ export function formatTimeInUserTimezone(
 }
 
 /**
- * Formats a date and time in the user's timezone.
- * Example output: "Dec 30, 2024 at 4:00 PM"
+ * 在用户时区中格式化日期和时间。
+ * 示例输出："Dec 30, 2024 at 4:00 PM"
  */
 export function formatDateTimeInUserTimezone(
   date: Date,
@@ -269,13 +269,13 @@ function getNextZonedMidnight(date: Date, timezone: string) {
 }
 
 const shortDateFormats = {
-  // Numeric hours avoid leading zeros (3:44 PM, not 03:44 PM).
+  // 数字小时避免前导零（3:44 PM，而非 03:44 PM）。
   time: { hour: "numeric", minute: "2-digit" },
   date: { month: "short", day: "numeric" },
   dateWithYear: { month: "short", day: "numeric", year: "numeric" },
 } satisfies Record<string, Intl.DateTimeFormatOptions>;
-// Mail lists format a date per row on every render, and building an Intl
-// formatter each time dominated that cost.
+// 邮件列表每次渲染都会为每一行格式化日期，而每次都构建 Intl
+// 格式化器会占据这项开销的主要部分。
 const shortDateFormatters = new Map<
   keyof typeof shortDateFormats,
   Intl.DateTimeFormat

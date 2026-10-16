@@ -21,13 +21,13 @@ export type ToggleMcpToolBody = z.infer<typeof toggleMcpToolBody>;
 
 export const createCustomMcpServerBody = z
   .object({
-    displayName: z.string().trim().min(1, "Name is required").max(50),
-    serverUrl: z.string().trim().url("Enter a valid URL").max(2048),
+    displayName: z.string().trim().min(1, "名称为必填项").max(50),
+    serverUrl: z.string().trim().url("请输入有效的 URL").max(2048),
     authType: z.enum(["oauth", "api-token", "none"]),
     apiKey: z.string().trim().max(4096).optional(),
   })
   .refine((data) => data.authType !== "api-token" || !!data.apiKey, {
-    message: "API key is required",
+    message: "API 密钥为必填项",
     path: ["apiKey"],
   });
 export type CreateCustomMcpServerBody = z.infer<

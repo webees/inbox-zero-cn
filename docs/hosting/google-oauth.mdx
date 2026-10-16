@@ -1,65 +1,63 @@
 ---
 title: 'Google OAuth'
-description: 'Configure Google OAuth credentials, scopes, and required APIs'
+description: '配置 Google OAuth 凭据、作用域和所需的 API'
 ---
 
 <Tip>
-  **Quick Setup with CLI:** If you have the `gcloud` CLI installed, run `inbox-zero setup-google` to automate API enabling and Pub/Sub setup. It will guide you through the OAuth steps that require manual console access.
+  **使用 CLI 快速设置：** 如果你安装了 `gcloud` CLI，请运行 `inbox-zero setup-google` 来自动启用 API 并设置 Pub/Sub。它会引导你完成需要在控制台手动操作的 OAuth 步骤。
 </Tip>
 
-Go to [Google Cloud Console](https://console.cloud.google.com/) and create a new project if necessary.
+前往 [Google Cloud Console](https://console.cloud.google.com/)，必要时创建一个新项目。
 
-1. **Configure consent screen:**
-   Go to [Credentials](https://console.cloud.google.com/apis/credentials). If the banner shows up, click it and then click `Get Started`. Follow the prompts to name your app and set your contact email.
+1. **配置同意屏幕：**
+   前往[凭据](https://console.cloud.google.com/apis/credentials)。如果出现横幅，请点击它，然后点击 `Get Started`。按提示为你的应用命名并设置联系邮箱。
 
-   - **Internal** — Google Workspace only. All members of your organization can sign in without additional setup. Personal Gmail accounts cannot use Internal apps.
-   - **External** — any Google account, including personal Gmail. You'll need to add yourself as a test user (see step 5 below).
+   - **内部** —— 仅限 Google Workspace。你组织的所有成员无需额外设置即可登录。个人 Gmail 账号无法使用内部应用。
+   - **外部** —— 任何 Google 账号，包括个人 Gmail。你需要把自己添加为测试用户（见下文第 5 步）。
 
    <Warning>
-     If you chose **External**: since your app is unverified (normal for self-hosted), you must add yourself as a test user (see step 5 below) before you can sign in. You'll also see a "This app isn't verified" warning screen when signing in — click "Advanced" then "Go to [app name]" to proceed.
+     如果你选择了**外部**：由于你的应用未经验证（自托管的正常情况），你必须先把自己添加为测试用户（见下文第 5 步）才能登录。登录时你还会看到一个「此应用未经验证」的警告页面 —— 点击「高级」然后点击「转到 [应用名]」即可继续。
    </Warning>
 
-2. **Create OAuth credentials:**
-   1. Click `+Create Credentials` > `OAuth Client ID`.
-   2. Application Type: `Web application`.
-   3. Authorized JavaScript origins: `http://localhost:3000` (replace with your domain in production)
-   4. Authorized redirect URIs (replace `localhost:3000` with your domain in production):
+2. **创建 OAuth 凭据：**
+   1. 点击 `+Create Credentials` > `OAuth Client ID`。
+   2. 应用类型：`Web application`。
+   3. 已授权的 JavaScript 来源：`http://localhost:3000`（生产环境请替换为你的域名）
+   4. 已授权的重定向 URI（生产环境请把 `localhost:3000` 替换为你的域名）：
       - `http://localhost:3000/api/auth/callback/google`
       - `http://localhost:3000/api/google/linking/callback`
-      - `http://localhost:3000/api/google/calendar/callback` (optional, for calendar)
-      - `http://localhost:3000/api/google/drive/callback` (optional, for Drive)
-   5. Click `Create` and copy the Client ID and secret.
+      - `http://localhost:3000/api/google/calendar/callback`（可选，用于日历）
+      - `http://localhost:3000/api/google/drive/callback`（可选，用于 Drive）
+   5. 点击 `Create` 并复制 Client ID 和密钥。
 
-   ![Create OAuth Client ID](/images/self-hosting/google-auth/1-create-oauth-client.png)
-   ![Configure Web Application](/images/self-hosting/google-auth/2-create-oauth-client.png)
-   ![Client ID and Secret](/images/self-hosting/google-auth/3-clientid-secret.png)
+   ![创建 OAuth Client ID](/images/self-hosting/google-auth/1-create-oauth-client.png)
+   ![配置 Web 应用](/images/self-hosting/google-auth/2-create-oauth-client.png)
+   ![Client ID 和密钥](/images/self-hosting/google-auth/3-clientid-secret.png)
 
-3. **Update `.env` file:**
-   - Set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
+3. **更新 `.env` 文件：**
+   - 设置 `GOOGLE_CLIENT_ID` 和 `GOOGLE_CLIENT_SECRET`。
 
-4. **Update [scopes](https://console.cloud.google.com/auth/scopes):**
-   1. Go to `Data Access` in the sidebar.
-   2. Click `Add or remove scopes`.
-   3. Manually add the core sign-in and Gmail scopes:
+4. **更新[作用域](https://console.cloud.google.com/auth/scopes)：**
+   1. 前往侧边栏中的 `Data Access`。
+   2. 点击 `Add or remove scopes`。
+   3. 手动添加核心登录和 Gmail 作用域：
       ```
       https://www.googleapis.com/auth/userinfo.profile
       https://www.googleapis.com/auth/userinfo.email
       https://www.googleapis.com/auth/gmail.modify
       https://www.googleapis.com/auth/gmail.settings.basic
       ```
-   4. Add only the optional feature scopes your deployment will use:
+   4. 仅添加你的部署将使用的可选功能作用域：
 
-      **Contacts** — only when `NEXT_PUBLIC_CONTACTS_ENABLED=true`:
+      **通讯录** —— 仅在 `NEXT_PUBLIC_CONTACTS_ENABLED=true` 时：
 
       ```
       https://www.googleapis.com/auth/contacts
       ```
 
-      Existing accounts can continue using core email features without this
-      scope. When they open the composer, Inbox Zero offers an optional
-      reconnect action if they want contact suggestions.
+      已有账号即使没有此作用域也可以继续使用核心邮件功能。当他们打开撰写框时，如果他们想要联系人建议，Inbox Zero 会提供一个可选的重新连接操作。
 
-      **Calendar:**
+      **日历：**
 
       ```
       https://www.googleapis.com/auth/calendar.readonly
@@ -67,38 +65,38 @@ Go to [Google Cloud Console](https://console.cloud.google.com/) and create a new
       https://www.googleapis.com/auth/calendar.freebusy
       ```
 
-      **Google Drive, Standard access** — lets Inbox Zero create folders and access files it created or the user explicitly opened with it:
+      **Google Drive，标准访问权限** —— 让 Inbox Zero 可以创建文件夹，并访问它创建的或用户明确用其打开的文件：
 
       ```
       https://www.googleapis.com/auth/drive.file
       ```
 
-      If users will select **Full access** when connecting Drive so they can choose existing folders, also declare:
+      如果用户连接 Drive 时会选择**完全访问权限**以便选择现有文件夹，还要声明：
 
       ```
       https://www.googleapis.com/auth/drive
       ```
-   5. Click `Update`, then `Save`.
+   5. 点击 `Update`，然后点击 `Save`。
 
-   ![Add Scopes](/images/self-hosting/google-auth/6-add-scopes.png)
-   ![Manually Add Scopes](/images/self-hosting/google-auth/7-add-scopes.png)
-   ![Save Scopes](/images/self-hosting/google-auth/8-save-scopes.png)
+   ![添加作用域](/images/self-hosting/google-auth/6-add-scopes.png)
+   ![手动添加作用域](/images/self-hosting/google-auth/7-add-scopes.png)
+   ![保存作用域](/images/self-hosting/google-auth/8-save-scopes.png)
 
-5. **Add yourself as a test user (External only):**
-   1. Go to [Audience](https://console.cloud.google.com/auth/audience).
-   2. In `Test users`, click `+Add users` and enter your email.
+5. **把自己添加为测试用户（仅外部）：**
+   1. 前往[受众](https://console.cloud.google.com/auth/audience)。
+   2. 在 `Test users` 中，点击 `+Add users` 并输入你的邮箱。
 
-   ![Add Test User](/images/self-hosting/google-auth/5-extenal-add-user.png)
+   ![添加测试用户](/images/self-hosting/google-auth/5-extenal-add-user.png)
 
-   Skip this step if you chose Internal — all org members can sign in automatically.
+   如果你选择了内部，请跳过此步骤 —— 所有组织成员都能自动登录。
 
-6. **Enable required APIs:**
-   - [Gmail API](https://console.cloud.google.com/apis/library/gmail.googleapis.com) (required)
-   - [Google People API](https://console.cloud.google.com/marketplace/product/google/people.googleapis.com) (optional, for Contacts)
-   - [Google Calendar API](https://console.cloud.google.com/marketplace/product/google/calendar-json.googleapis.com) (optional)
-   - [Google Drive API](https://console.cloud.google.com/marketplace/product/google/drive.googleapis.com) (optional)
+6. **启用所需的 API：**
+   - [Gmail API](https://console.cloud.google.com/apis/library/gmail.googleapis.com)（必需）
+   - [Google People API](https://console.cloud.google.com/marketplace/product/google/people.googleapis.com)（可选，用于通讯录）
+   - [Google Calendar API](https://console.cloud.google.com/marketplace/product/google/calendar-json.googleapis.com)（可选）
+   - [Google Drive API](https://console.cloud.google.com/marketplace/product/google/drive.googleapis.com)（可选）
 
-   ![Enable Gmail API](/images/self-hosting/google-auth/9-enable-gmail-api.png)
-   ![Enable People API](/images/self-hosting/google-auth/10-enable-people-api.png)
+   ![启用 Gmail API](/images/self-hosting/google-auth/9-enable-gmail-api.png)
+   ![启用 People API](/images/self-hosting/google-auth/10-enable-people-api.png)
 
-Next step for real-time notifications: [Google PubSub](/hosting/google-pubsub)
+实时通知的下一步：[Google PubSub](/hosting/google-pubsub)

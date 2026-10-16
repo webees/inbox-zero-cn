@@ -22,7 +22,7 @@ export function buildMeetingBriefingBlocks({
       type: "header",
       text: {
         type: "plain_text",
-        text: `📅 Briefing: ${meetingTitle}`,
+        text: `📅 会议简报：${meetingTitle}`,
         emoji: true,
       },
     },
@@ -30,17 +30,17 @@ export function buildMeetingBriefingBlocks({
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `*Starting at* ${formattedTime}`,
+        text: `*开始时间* ${formattedTime}`,
       },
     },
   ];
 
   const links: string[] = [];
   if (videoConferenceLink) {
-    links.push(`<${videoConferenceLink}|Join Meeting>`);
+    links.push(`<${videoConferenceLink}|加入会议>`);
   }
   if (eventUrl) {
-    links.push(`<${eventUrl}|View Calendar Event>`);
+    links.push(`<${eventUrl}|查看日历事件>`);
   }
 
   if (links.length > 0) {
@@ -58,7 +58,7 @@ export function buildMeetingBriefingBlocks({
   if (briefingContent.priorities.length > 0) {
     blocks.push({
       type: "section",
-      text: { type: "mrkdwn", text: "*Meeting priorities*" },
+      text: { type: "mrkdwn", text: "*会议重点*" },
     });
     for (const priority of briefingContent.priorities) {
       blocks.push({
@@ -93,7 +93,7 @@ export function buildMeetingBriefingBlocks({
       elements: [
         {
           type: "mrkdwn",
-          text: `_Also attending: ${names} (internal team)_`,
+          text: `_共同参会：${names}（内部团队）_`,
         },
       ],
     });
@@ -104,7 +104,7 @@ export function buildMeetingBriefingBlocks({
     elements: [
       {
         type: "mrkdwn",
-        text: "_AI-generated briefing from Inbox Zero • May contain inaccuracies_",
+        text: "_由 Inbox Zero 生成的 AI 会议简报 • 可能存在不准确之处_",
       },
     ],
   });

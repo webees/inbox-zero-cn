@@ -50,11 +50,11 @@ import { env } from "@/env";
 
 const FOLLOW_UP_ELIGIBILITY_WINDOW_MINUTES = 15;
 const FOLLOW_UP_THREAD_SCAN_LIMIT = 50;
-// Completed candidates don't use up the scan limit, so a large labeled backlog
-// would otherwise be re-read in full every run. Each scanned thread is a
-// provider read, and an unbounded scan exceeds Gmail's per-user quota.
+// 已完成的候选不占用扫描额度，否则大量带标签的积压邮件
+// 会在每次运行时被完整重读。每个被扫描的会话都是一次
+// 服务商读取，无上限的扫描会超出 Gmail 的单用户配额。
 const FOLLOW_UP_MAX_SCANNED_THREADS = 250;
-// Avoid carrying an entire email through channel fan-out beyond any preview limit.
+// 避免在渠道分发时携带超出任何预览限制的整封邮件。
 const FOLLOW_UP_SNIPPET_SOURCE_MAX_CHARS = 3000;
 
 const followUpReminderAccountSelect = {
@@ -105,7 +105,7 @@ export async function getEligibleFollowUpReminderEmailAccountIds() {
 }
 
 export async function processAllFollowUpReminders(logger: Logger) {
-  logger.info("Processing follow-up reminders for all users");
+  logger.info("正在为所有用户处理跟进提醒");
   const startTime = Date.now();
 
   const emailAccounts = await prisma.emailAccount.findMany({
@@ -113,7 +113,7 @@ export async function processAllFollowUpReminders(logger: Logger) {
     select: followUpReminderAccountSelect,
   });
 
-  logger.info("Found eligible accounts", { count: emailAccounts.length });
+  logger.info("找到符合条件的账号", { count: emailAccounts.length });
 
   let successCount = 0;
   let errorCount = 0;
@@ -143,7 +143,7 @@ export async function processAllFollowUpReminders(logger: Logger) {
     }
   }
 
-  logger.info("Completed processing follow-up reminders", {
+  logger.info("完成跟进提醒处理", {
     total: emailAccounts.length,
     success: successCount,
     errors: errorCount,
@@ -176,7 +176,7 @@ export async function processFollowUpRemindersForEmailAccountId({
   });
 
   if (!emailAccount) {
-    accountLogger.info("Skipping account that is no longer eligible");
+    accountLogger.info("跳过已不再符合条件的账号");
     return "not-eligible";
   }
 
@@ -196,10 +196,10 @@ export async function processAccountFollowUps({
   const now = new Date();
   const emailAccountId = emailAccount.id;
 
-  logger.info("Processing follow-ups for account");
+  logger.info("正在处理该账号的跟进");
 
   if (!emailAccount.account?.provider) {
-    logger.warn("Skipping account with no provider");
+    logger.warn("跳过没有服务商的账号");
     return;
   }
 
@@ -216,7 +216,7 @@ export async function processAccountFollowUps({
     getFollowUpNotificationChannels(emailAccountId),
   ]);
 
-  logger.info("Loaded follow-up reminder prerequisites", {
+  logger.info("已加载跟进提醒的前置数据", {
     providerName,
     providerLabelCount: providerLabels.length,
     notificationChannelCount: notificationChannels.length,
@@ -259,8 +259,8 @@ export async function processAccountFollowUps({
     logger,
   });
 
-  // Draft cleanup temporarily disabled to avoid deleting old drafts.
-  // Wrapped in try/catch since it's non-critical
+  // 草稿清理暂时停用，以避免删除旧草稿。
+  // 由于并非关键路径，包裹在 try/catch 中
   // try {
   //   await cleanupStaleDrafts({
   //     emailAccountId,
@@ -268,11 +268,11 @@ export async function processAccountFollowUps({
   //     logger,
   //   });
   // } catch (error) {
-  //   logger.error("Failed to cleanup stale drafts", { error });
+  //   logger.error("清理过期草稿失败", { error });
   //   captureException(error);
   // }
 
-  logger.info("Finished processing follow-ups for account");
+  logger.info("完成该账号的跟进处理");
 }
 
 function getRetryAtFromRateLimitError(
@@ -337,7 +337,7 @@ async function processFollowUpsForType({
       (l) => l.name === getRuleLabel(systemType),
     );
     if (!found) {
-      logger.info("Label not found, skipping", { systemType });
+      logger.info("找不到标签，跳过", { systemType });
       return;
     }
     labelId = found.id;
@@ -359,8 +359,8 @@ async function processFollowUpsForType({
   const seenPageTokens = new Set<string>();
   let pageToken: string | undefined;
 
-  // Labels can survive a failed tracker write or cleanup. Only the ledger can
-  // identify completed candidates that should not consume this run's budget.
+  // 标签可能在追踪项写入或清理失败后仍保留。只有台账能够
+  // 识别出不应占用本次运行额度的已完成候选。
   do {
     const page = await provider.getThreadsWithQuery({
       query: { labelId },
@@ -378,7 +378,7 @@ async function processFollowUpsForType({
     });
     pageToken = page.nextPageToken;
 
-    logger.info("Found threads with label", {
+    logger.info("找到带标签的会话", {
       systemType,
       count: threads.length,
     });
@@ -391,7 +391,7 @@ async function processFollowUpsForType({
     const processedLedgerStats =
       summarizeProcessedFollowUpLedger(processedLedger);
 
-    logger.info("Loaded processed follow-up ledger", {
+    logger.info("已加载已处理的跟进台账", {
       systemType,
       candidateThreadCount: threadIds.length,
       ledgerThreadCount: processedLedgerStats.threadCount,
@@ -437,7 +437,7 @@ async function processFollowUpsForType({
         if (processedReason) {
           skippedAlreadyProcessedCount++;
           skippedAlreadyProcessedThreadIds.add(thread.id);
-          threadLogger.info("Skipping already-processed follow-up candidate", {
+          threadLogger.info("跳过已处理过的跟进候选", {
             systemType,
             messageId: lastMessage.id,
             sentAt: messageDate.toISOString(),
@@ -448,7 +448,7 @@ async function processFollowUpsForType({
           continue;
         }
 
-        threadLogger.info("Follow-up candidate missing from processed ledger", {
+        threadLogger.info("已处理的台账中缺少跟进候选", {
           systemType,
           messageId: lastMessage.id,
           sentAt: messageDate.toISOString(),
@@ -548,7 +548,7 @@ async function processFollowUpsForType({
           }
         }
 
-        threadLogger.info("Stored follow-up tracker state", {
+        threadLogger.info("已存储跟进追踪状态", {
           trackerId: tracker.id,
           messageId: lastMessage.id,
           sentAt: messageDate.toISOString(),
@@ -570,26 +570,22 @@ async function processFollowUpsForType({
               });
               draftCreated = true;
             } catch (draftError) {
-              threadLogger.error(
-                "Draft generation failed, label still applied",
-                {
-                  error: draftError,
-                },
-              );
+              threadLogger.error("草稿生成失败，标签仍已应用", {
+                error: draftError,
+              });
               captureException(draftError);
             }
           } else {
-            threadLogger.info(
-              "Skipping follow-up draft because latest message was not sent by the user",
-              { messageId: lastMessage.id },
-            );
+            threadLogger.info("跳过跟进草稿：最新邮件不是用户发送的", {
+              messageId: lastMessage.id,
+            });
           }
         }
 
         if (notificationChannels.length > 0) {
-          // Fire-and-forget: we try once per (threadId, messageId) and rely on
-          // the ledger to skip next run. Retrying would burn provider rate
-          // limits (Gmail re-labeling, Slack API) if a channel is misconfigured.
+          // 即发即忘：我们按 (threadId, messageId) 尝试一次，并依赖
+          // 台账在下次运行时跳过。重试会消耗服务商速率
+          // 限制（Gmail 重新打标签、Slack API）。
           try {
             const { name: counterpartyName, email: counterpartyEmail } =
               resolveFollowUpCounterparty({
@@ -599,7 +595,7 @@ async function processFollowUpsForType({
               });
             const notificationDeliveries = await sendFollowUpNotification({
               channels: notificationChannels,
-              subject: lastMessage.subject || "(no subject)",
+              subject: lastMessage.subject || "(无主题)",
               counterpartyName,
               counterpartyEmail,
               trackerType,
@@ -608,8 +604,8 @@ async function processFollowUpsForType({
                 end: now,
                 timezone: emailAccount.timezone,
               }),
-              // Provider previews are pre-truncated with no indicator; the full
-              // parsed body lets each channel truncate with an ellipsis instead.
+              // 服务商预览已被预先截断且没有提示；完整的
+              // 解析正文让各渠道改用省略号截断。
               snippet:
                 emailToContent(lastMessage, {
                   maxLength: FOLLOW_UP_SNIPPET_SOURCE_MAX_CHARS,
@@ -642,35 +638,31 @@ async function processFollowUpsForType({
                 },
               });
             }
-            threadLogger.info(
-              "Follow-up notification delivery attempt finished",
-              {
-                trackerId: tracker.id,
-                configuredChannelCount: notificationChannels.length,
-                deliveryCount: notificationDeliveries.length,
-              },
-            );
+            threadLogger.info("跟进通知投递尝试已完成", {
+              trackerId: tracker.id,
+              configuredChannelCount: notificationChannels.length,
+              deliveryCount: notificationDeliveries.length,
+            });
           } catch (notifyError) {
-            threadLogger.error(
-              "Follow-up notification failed, label still applied",
-              { error: notifyError },
-            );
+            threadLogger.error("跟进通知失败，标签仍已应用", {
+              error: notifyError,
+            });
             captureException(notifyError);
           }
         }
 
-        threadLogger.info("Processed follow-up", { draftCreated });
+        threadLogger.info("已处理跟进", { draftCreated });
         processedCount++;
       } catch (error) {
         errorCount++;
-        threadLogger.error("Failed to process thread", { error });
+        threadLogger.error("处理会话失败", { error });
         captureException(error);
       }
     }
 
     if (pageToken) {
       if (seenPageTokens.has(pageToken)) {
-        logger.warn("Stopping follow-up scan after repeated page token", {
+        logger.warn("分页令牌重复，停止跟进扫描", {
           systemType,
         });
         break;
@@ -685,7 +677,7 @@ async function processFollowUpsForType({
   );
 
   if (pageToken && scannedThreadIds.size >= FOLLOW_UP_MAX_SCANNED_THREADS) {
-    logger.warn("Stopped follow-up scan at the thread limit", {
+    logger.warn("已达会话上限，停止跟进扫描", {
       systemType,
       scanned: scannedThreadIds.size,
       skippedAlreadyProcessed: skippedAlreadyProcessedCount,
@@ -698,17 +690,17 @@ async function processFollowUpsForType({
     skippedTooRecentCount;
 
   if (skippedAlreadyProcessedThreadIds.size > 0) {
-    logger.info("Skipping already-processed threads", {
+    logger.info("跳过已处理的会话", {
       systemType,
       skipped: skippedAlreadyProcessedThreadIds.size,
     });
-    logger.trace("Skipped thread IDs for already-processed threads", {
+    logger.trace("已跳过会话 ID（这些会话已处理过）", {
       systemType,
       skippedThreadIds: [...skippedAlreadyProcessedThreadIds],
     });
   }
 
-  logger.info("Finished processing follow-ups", {
+  logger.info("完成跟进处理", {
     systemType,
     processed: processedCount,
     skipped: skippedCount,
@@ -783,10 +775,10 @@ function summarizeProcessedFollowUpLedger(ledger: ProcessedFollowUpLedger) {
 
 type FollowUpProcessedReason = "message-id" | "sent-at";
 
-// sentAt is checked because Outlook can return a different provider message ID
-// for the same sent message across runs, including after Mark done. The ledger
-// only includes rows that already have follow-up history, so ordinary Reply Zero
-// trackers still receive their first follow-up.
+// 需要检查 sentAt，因为 Outlook 可能对同一封已发送邮件返回不同的服务商消息 ID
+// 在多次运行之间（包括标记完成之后）。该台账
+// 只包含已有跟进历史的记录，因此普通的 Reply Zero
+// 追踪项仍会收到首次跟进。
 function getFollowUpProcessedReason({
   processedLedger,
   threadId,
@@ -839,23 +831,18 @@ async function processLoadedFollowUpReminderAccount({
     const retryAt = recordedRetryAt || retryAtFromError;
 
     if (retryAt) {
-      logger.warn(
-        "Skipping follow-up reminders while provider rate limit is active",
-        {
-          retryAt: retryAt.toISOString(),
-        },
-      );
+      logger.warn("服务商限流生效期间，跳过跟进提醒", {
+        retryAt: retryAt.toISOString(),
+      });
       return "rate-limited";
     }
 
     if (error instanceof SafeError && error.message === "No refresh token") {
-      logger.warn(
-        "Skipping follow-up reminders for account without refresh token",
-      );
+      logger.warn("账号缺少刷新令牌，跳过跟进提醒");
       return "error";
     }
 
-    logger.error("Failed to process follow-up reminders for user", {
+    logger.error("处理用户的跟进提醒失败", {
       error,
     });
     captureException(error);
@@ -889,11 +876,11 @@ function resolveFollowUpCounterparty({
   fromHeader: string;
   toHeader: string;
 }): { name: string; email: string } {
-  // AWAITING: user emailed someone — return the recipient.
-  // NEEDS_REPLY: someone emailed the user — return the sender.
+  // AWAITING：用户给对方发了邮件——返回收件人。
+  // NEEDS_REPLY：对方给用户发了邮件——返回发件人。
   const header =
     trackerType === ThreadTrackerType.AWAITING ? toHeader : fromHeader;
   const email = extractEmailAddress(header || "") || header || "";
-  const name = extractNameFromEmail(header || "") || email || "someone";
+  const name = extractNameFromEmail(header || "") || email || "某人";
   return { name, email };
 }

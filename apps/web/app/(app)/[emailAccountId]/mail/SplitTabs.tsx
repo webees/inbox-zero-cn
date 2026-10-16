@@ -13,22 +13,22 @@ import { cn } from "@/utils";
 export type MailSplitTab = {
   id: string;
   name: string;
-  /** Built-in splits (e.g. All) can't be edited or removed. */
+  /** 内置分栏（例如“全部”）不能编辑或移除。 */
   deletable: boolean;
 };
 
 export type SplitTabsProps = {
   splits: MailSplitTab[];
   activeSplitId: string | null;
-  /** Conversations currently in each split. Missing entries and zeros stay blank. */
+  /** 当前位于各分栏中的会话数。缺失的项和零保持空白。 */
   countsById?: ReadonlyMap<string, number>;
   onSelect: (splitId: string) => void;
   onDelete: (splitId: string) => void;
   onEdit?: (splitId: string) => void;
   onNewSplit: () => void;
-  /** Split creation stays account-scoped, so it is hidden in All accounts. */
+  /** 创建分栏仍限定在单个账号内，因此在“全部账号”中隐藏。 */
   canCreateSplits: boolean;
-  /** Sits before the tabs, lined up with the row checkboxes below. */
+  /** 位于标签之前，与下方的行复选框对齐。 */
   leading?: ReactNode;
   className?: string;
 };
@@ -67,9 +67,9 @@ export function SplitTabs({
     <div
       ref={tabsRef}
       className={cn(
-        // Padded to sit under the toolbar's search field rather than against
-        // the column edge, and ruled off so the tabs read as a header for the
-        // list instead of crowding the first row.
+        // 通过内边距使其位于工具栏搜索框下方而不是紧贴列边缘，
+        // 并用分隔线隔开，使标签读起来像是列表的标题，
+        // 而不是挤在第一行旁边。
         "flex flex-wrap items-center gap-1 border-border border-b px-3 pb-2",
         className,
       )}
@@ -87,12 +87,12 @@ export function SplitTabs({
                 ref={active ? activeTabRef : undefined}
                 data-split-tab
                 onClick={() => onSelect(split.id)}
-                // The count sits in this button, so innerText includes it.
-                // The accessible name stays the split itself.
+                // 计数位于此按钮内，因此 innerText 会包含它。
+                // 无障碍名称仍保持为分栏本身。
                 aria-label={split.name}
                 aria-current={active ? "true" : undefined}
                 aria-description={
-                  countLabel ? `${countLabel} in this view` : undefined
+                  countLabel ? `${countLabel} 个位于此视图` : undefined
                 }
                 className={cn(
                   "flex items-center gap-1 rounded-full py-0.5 pr-2 pl-2.5 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
@@ -118,14 +118,14 @@ export function SplitTabs({
             <ContextMenuContent className="w-44">
               {onEdit && (
                 <ContextMenuItem onSelect={() => onEdit(split.id)}>
-                  Edit filters and name
+                  编辑筛选条件和名称
                 </ContextMenuItem>
               )}
               <ContextMenuItem
                 className="text-destructive focus:text-destructive"
                 onSelect={() => onDelete(split.id)}
               >
-                Turn off split
+                关闭分栏
               </ContextMenuItem>
             </ContextMenuContent>
           </ContextMenu>
@@ -135,7 +135,7 @@ export function SplitTabs({
       {canCreateSplits && (
         <button
           type="button"
-          aria-label="New split"
+          aria-label="新建分栏"
           onClick={onNewSplit}
           className="flex size-6 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >

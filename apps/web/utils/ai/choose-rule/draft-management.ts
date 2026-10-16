@@ -181,10 +181,12 @@ export function extractDraftPlainText(draft: ParsedMessage): string {
  * Removes quoted content from email text.
  */
 export function stripQuotedContent(text: string): string {
+  // 引用头有两种可能：上游英文格式（"On ... wrote:"）和本仓库汉化后的中文格式
+  // （"在 ... 写道："）。只认英文会让中文草稿的引用内容留在正文里，所以两种都要匹配。
   const quoteHeaderPatterns = [
-    /\n\nOn .* wrote:/,
+    /\n\n(?:On .* wrote:|在 .*写道：)/,
     /\n\n----+ Original Message ----+/,
-    /\n\n>+ On .*/,
+    /\n\n>+ (?:On .*|在 .*)/,
     /\n\nFrom: .*/,
   ];
 

@@ -78,18 +78,18 @@ export async function aiGenerateArgs({
   modelType: ModelType;
   logger: Logger;
 }): Promise<ActionArgGenerationResult> {
-  logger.info("Generating args for rule");
+  logger.info("正在为规则生成参数");
 
-  // If no parameters, skip
+  // 如果没有参数则跳过
   if (parameters.length === 0) {
-    logger.info("Skipping. No parameters for rule");
+    logger.info("跳过：规则没有参数");
     return { args: undefined, attribution: null };
   }
 
   const system = getSystemPrompt();
   const prompt = getPrompt({ email, selectedRule, emailAccount });
 
-  logger.info("Calling chat completion tools");
+  logger.info("正在调用对话补全工具");
   // logger.trace("Parameters:", zodToJsonSchema(parameters));
 
   const modelOptions = getModel(emailAccount.user, modelType);
@@ -98,7 +98,7 @@ export async function aiGenerateArgs({
   );
 
   const generateObject = createGenerateObject({
-    label: "Args for rule",
+    label: "规则参数",
     emailAccount,
     modelOptions,
     promptHardening: {
@@ -132,7 +132,7 @@ export async function aiGenerateArgs({
   const result = aiResponse.object;
 
   if (!result) {
-    logger.warn("No tool call found", { aiResponse });
+    logger.warn("未找到工具调用", { aiResponse });
     return {
       args: undefined,
       attribution: attributionTracker.attribution,

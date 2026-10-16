@@ -1,60 +1,60 @@
 ---
 title: 'Google PubSub'
-description: 'Configure Gmail push notifications with Google PubSub'
+description: '使用 Google PubSub 配置 Gmail 推送通知'
 ---
 
 <Tip>
-  **Automated Setup:** If you ran `inbox-zero setup-google`, the Pub/Sub topic and subscription were created automatically. Skip to the "For local development" section below.
+  **自动化设置：** 如果你运行了 `inbox-zero setup-google`，Pub/Sub 主题和订阅已自动创建。请跳到下文的「本地开发」部分。
 </Tip>
 
-Complete [Google OAuth](/hosting/google-oauth) first.
+请先完成 [Google OAuth](/hosting/google-oauth)。
 
-PubSub enables real-time email notifications so Inbox Zero is notified immediately when new emails arrive.
+PubSub 启用实时邮件通知，使 Inbox Zero 在新邮件到达时立即得到通知。
 
-### 1. Create a topic
+### 1. 创建主题
 
-1. Go to the [Pub/Sub Topics page](https://console.cloud.google.com/cloudpubsub/topic/list) in Google Cloud Console.
-2. Click **Create Topic**.
-3. Enter a topic ID (e.g., `inbox-zero-emails`).
-4. Click **Create**.
+1. 前往 Google Cloud Console 中的 [Pub/Sub 主题页面](https://console.cloud.google.com/cloudpubsub/topic/list)。
+2. 点击**创建主题**。
+3. 输入主题 ID（例如 `inbox-zero-emails`）。
+4. 点击**创建**。
 
-### 2. Grant Gmail publish access
+### 2. 授予 Gmail 发布访问权限
 
-Gmail needs permission to send notifications to your topic. This is the step that allows Google's servers to push email events into your Pub/Sub topic.
+Gmail 需要权限才能向你的主题发送通知。这一步让 Google 的服务器可以把邮件事件推送到你的 Pub/Sub 主题。
 
-1. Click your topic name to open it.
-2. Go to the **Permissions** tab (you may see it labeled "Info Panel" on the right side — look for the "Permissions" section).
-3. Click **Add Principal**.
-4. In the "New principals" field, enter: `gmail-api-push@system.gserviceaccount.com`
-5. In the "Role" dropdown, select **Pub/Sub Publisher**.
-6. Click **Save**.
+1. 点击你的主题名称以打开它。
+2. 前往**权限**标签页（你可能会看到它标为右侧的「信息面板」—— 寻找「权限」部分）。
+3. 点击**添加主账号**。
+4. 在「新主账号」字段中，输入：`gmail-api-push@system.gserviceaccount.com`
+5. 在「角色」下拉菜单中，选择 **Pub/Sub 发布者**。
+6. 点击**保存**。
 
 <Info>
-  `gmail-api-push@system.gserviceaccount.com` is Google's service account that sends Gmail push notifications. This is not your account — it's a Google-managed service account used by the Gmail API. See the [official docs](https://developers.google.com/gmail/api/guides/push#grant_publish_rights_on_your_topic) for more details.
+  `gmail-api-push@system.gserviceaccount.com` 是 Google 用于发送 Gmail 推送通知的服务账号。这不是你的账号 —— 它是 Gmail API 使用的、由 Google 管理的服务账号。更多详情请参阅[官方文档](https://developers.google.com/gmail/api/guides/push#grant_publish_rights_on_your_topic)。
 </Info>
 
-### 3. Create a push subscription
+### 3. 创建推送订阅
 
-1. In your topic, go to the **Subscriptions** tab.
-2. Click **Create Subscription**.
-3. Set the **Delivery type** to **Push**.
-4. Set the **Endpoint URL** to: `https://yourdomain.com/api/google/webhook?token=TOKEN`
-5. Click **Create**.
+1. 在你的主题中，前往**订阅**标签页。
+2. 点击**创建订阅**。
+3. 把**投递类型**设为**推送**。
+4. 把**端点 URL**设为：`https://yourdomain.com/api/google/webhook?token=TOKEN`
+5. 点击**创建**。
 
-### 4. Update your environment variables
+### 4. 更新你的环境变量
 
-Set these in your `.env` file:
-- `GOOGLE_PUBSUB_TOPIC_NAME` — the full topic name (e.g., `projects/your-project-id/topics/inbox-zero-emails`)
-- `GOOGLE_PUBSUB_VERIFICATION_TOKEN` — the value of `TOKEN` you used in the webhook URL above
+在你的 `.env` 文件中设置以下内容：
+- `GOOGLE_PUBSUB_TOPIC_NAME` —— 完整的主题名称（例如 `projects/your-project-id/topics/inbox-zero-emails`）
+- `GOOGLE_PUBSUB_VERIFICATION_TOKEN` —— 你在上面 webhook URL 中使用的 `TOKEN` 值
 
-If your deployment protects `/api/google/webhook` with upstream authentication, you can set `GOOGLE_PUBSUB_VERIFICATION_TOKEN` to an empty string to intentionally disable query-parameter verification. Leaving it unset is treated as a misconfiguration.
+如果你的部署用上游认证保护 `/api/google/webhook`，可以把 `GOOGLE_PUBSUB_VERIFICATION_TOKEN` 设为空字符串，以有意禁用查询参数验证。不设置它会被视为配置错误。
 
-### For local development
+### 本地开发
 
-Use ngrok to expose your local server:
+使用 ngrok 暴露你的本地服务器：
 
 ```bash
 ngrok http 3000
 ```
 
-Then update the webhook endpoint in the [Google PubSub subscriptions dashboard](https://console.cloud.google.com/cloudpubsub/subscription/list) to use your ngrok URL (e.g., `https://abc123.ngrok.io/api/google/webhook?token=TOKEN`).
+然后在 [Google PubSub 订阅仪表板](https://console.cloud.google.com/cloudpubsub/subscription/list)中把 webhook 端点更新为你的 ngrok URL（例如 `https://abc123.ngrok.io/api/google/webhook?token=TOKEN`）。

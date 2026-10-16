@@ -77,7 +77,7 @@ export function createSystemOneDecisionModel({
       if (!response.ok) {
         // The request body is email content, so it stays out of the error.
         throw new APICallError({
-          message: `${provider} decision request failed with status ${response.status}`,
+          message: `${provider} 决策请求失败，状态码 ${response.status}`,
           url,
           requestBodyValues: { model: modelId },
           statusCode: response.status,

@@ -80,9 +80,9 @@ export const OnboardingForm = (props: { questionIndex: number }) => {
         totalSteps: survey.questions.length,
         destination: isPremium ? "setup" : "welcome-upgrade",
       });
-      // Index-based `$survey_response` / `$survey_response_N` keys — legacy PostHog
-      // format still supported. Migrating to ID-based keys needs question UUIDs from
-      // the PostHog survey and would break historical response mapping.
+      // 基于索引的 `$survey_response` / `$survey_response_N` 键——仍支持旧版 PostHog
+      // 格式。迁移到基于 ID 的键需要来自 PostHog 调查的问题 UUID，
+      // 并且会破坏历史响应映射。
       if (!surveyId) return;
       posthog.capture("survey sent", { ...responses, $survey_id: surveyId });
     },
@@ -93,8 +93,8 @@ export const OnboardingForm = (props: { questionIndex: number }) => {
     async (data) => {
       const answer = data[name];
 
-      // ask user to fill in other input
-      if (answer === "Other") {
+      // 请用户填写其他输入
+      if (answer === "其他") {
         setShowOtherInput(true);
         setValue(name, "");
         return;
@@ -127,7 +127,7 @@ export const OnboardingForm = (props: { questionIndex: number }) => {
         answers: responses,
       });
 
-      // submit on last question
+      // 在最后一个问题上提交
       if (isFinalQuestion) {
         submitPosthog(responses);
         await completedOnboardingAction();
@@ -171,7 +171,7 @@ export const OnboardingForm = (props: { questionIndex: number }) => {
                   watch(name)?.includes(answer) ? "secondary" : "outline"
                 }
                 type="button"
-                // quick and dirty radio button implementation
+                // 简易的单选按钮实现
                 onClick={(e) => {
                   if (question.type === "multiple_choice") {
                     const values = new Set(getValues(name)?.split(","));
@@ -212,14 +212,14 @@ export const OnboardingForm = (props: { questionIndex: number }) => {
               name={name}
               registerProps={register(name)}
               error={errors[name]}
-              placeholder="Optional"
+              placeholder="可选"
             />
             <Button
               className="mt-4 w-full"
               type="submit"
               loading={isSubmitting}
             >
-              Get Started
+              开始使用
             </Button>
           </div>
         )}
@@ -228,7 +228,7 @@ export const OnboardingForm = (props: { questionIndex: number }) => {
           showOtherInput ||
           question.skippable) && (
           <Button className="mt-4 w-full" type="submit" loading={isSubmitting}>
-            {question.skippable ? "Skip" : "Next"}
+            {question.skippable ? "跳过" : "下一步"}
           </Button>
         )}
       </div>

@@ -184,7 +184,7 @@ function renderConfirmationPage(token: string) {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="referrer" content="no-referrer" />
-    <title>Confirm unsubscribe</title>
+    <title>确认退订</title>
     <style>
       body {
         margin: 0;
@@ -229,11 +229,11 @@ function renderConfirmationPage(token: string) {
   </head>
   <body>
     <main>
-      <h1>Confirm unsubscribe</h1>
-      <p>Click the button below to stop email updates like this from Inbox Zero.</p>
+      <h1>确认退订</h1>
+      <p>点击下方按钮以停止接收 Inbox Zero 发送的此类邮件。</p>
       <form method="POST" action="/api/unsubscribe">
         <input type="hidden" name="token" value="${escapeHtml(token)}" />
-        <button type="submit">Unsubscribe</button>
+        <button type="submit">退订</button>
       </form>
     </main>
   </body>

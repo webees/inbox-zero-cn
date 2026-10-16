@@ -194,8 +194,7 @@ function getAccountRedirectLog(consoleLogSpy: ReturnType<typeof vi.spyOn>) {
     .reverse()
     .find(
       ([message]) =>
-        typeof message === "string" &&
-        message.includes("[account-redirect]: Resolved account redirect"),
+        typeof message === "string" && message.includes("已解析账号重定向"),
     );
 
   expect(logCall).toBeDefined();

@@ -79,7 +79,7 @@ export const scanFollowUpRemindersAction = actionClient
       },
     });
 
-    if (!emailAccount) throw new SafeError("Email account not found");
+    if (!emailAccount) throw new SafeError("未找到邮箱账号");
 
     await processAccountFollowUps({ emailAccount, logger });
   });

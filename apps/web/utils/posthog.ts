@@ -53,16 +53,16 @@ async function getPosthogUserId(options: { email: string }) {
     await responseGet.json();
 
   if (!resGet.results?.[0]) {
-    logger.error("No Posthog user found with distinct id", {
+    logger.error("未找到具有该 distinct id 的 Posthog 用户", {
       email: options.email,
     });
     return;
   }
 
   if (!resGet.results[0].distinct_ids?.includes(options.email)) {
-    // double check distinct id
+    // 再次确认 distinct id
     throw new Error(
-      `Distinct id ${resGet.results[0].distinct_ids} does not include ${options.email}`,
+      `Distinct id ${resGet.results[0].distinct_ids} 不包含 ${options.email}`,
     );
   }
 
@@ -73,15 +73,15 @@ async function getPosthogUserId(options: { email: string }) {
 
 export async function deletePosthogUser(options: { email: string }) {
   if (!env.POSTHOG_API_SECRET || !env.POSTHOG_PROJECT_ID) {
-    logger.warn("Posthog env variables not set");
+    logger.warn("Posthog 环境变量未设置");
     return;
   }
 
-  // 1. find user id by distinct id
+  // 1. 通过 distinct id 查找用户 id
   const userId = await getPosthogUserId({ email: options.email });
 
   if (!userId) {
-    logger.warn("No Posthog user found with distinct id", {
+    logger.warn("未找到具有该 distinct id 的 Posthog 用户", {
       email: options.email,
     });
     return;
@@ -89,7 +89,7 @@ export async function deletePosthogUser(options: { email: string }) {
 
   const personsEndpoint = `https://app.posthog.com/api/projects/${env.POSTHOG_PROJECT_ID}/persons/`;
 
-  // 2. delete user by id
+  // 2. 通过 id 删除用户
   try {
     await fetch(`${personsEndpoint}${userId}/?delete_events=true`, {
       method: "DELETE",
@@ -98,7 +98,7 @@ export async function deletePosthogUser(options: { email: string }) {
       },
     });
   } catch (error) {
-    logger.error("Error deleting Posthog user", { error });
+    logger.error("删除 Posthog 用户时出错", { error });
   }
 }
 
@@ -110,22 +110,22 @@ export async function aliasPosthogUser({
   newEmail: string;
 }) {
   if (!env.NEXT_PUBLIC_POSTHOG_KEY) {
-    logger.warn("NEXT_PUBLIC_POSTHOG_KEY not set");
+    logger.warn("NEXT_PUBLIC_POSTHOG_KEY 未设置");
     return;
   }
 
   try {
     const client = new PostHog(env.NEXT_PUBLIC_POSTHOG_KEY);
-    // Alias links the old distinct ID to the new distinct ID
-    // This ensures all historical events remain connected
+    // Alias 将旧 distinct ID 关联到新 distinct ID
+    // 这确保所有历史事件保持关联
     client.alias({ distinctId: newEmail, alias: oldEmail });
     await client.shutdown();
-    logger.info("PostHog user aliased", {
+    logger.info("已为 PostHog 用户建立别名", {
       oldEmail: hash(oldEmail),
       newEmail: hash(newEmail),
     });
   } catch (error) {
-    logger.error("Error aliasing PostHog user", { error });
+    logger.error("为 PostHog 用户建立别名失败", { error });
   }
 }
 
@@ -135,12 +135,12 @@ export async function posthogCaptureEvent(
   // biome-ignore lint/suspicious/noExplicitAny: existing loose external shape
   properties?: Record<string, any>,
   sendFeatureFlags?: boolean,
-  // A stable uuid with the same timestamp lets PostHog drop redeliveries.
+  // 使用同一时间戳的稳定 uuid 可让 PostHog 丢弃重复投递。
   { uuid, timestamp }: { uuid?: string; timestamp?: Date } = {},
 ) {
   try {
     if (!env.NEXT_PUBLIC_POSTHOG_KEY) {
-      logger.warn("NEXT_PUBLIC_POSTHOG_KEY not set");
+      logger.warn("NEXT_PUBLIC_POSTHOG_KEY 未设置");
       return false;
     }
 
@@ -159,14 +159,14 @@ export async function posthogCaptureEvent(
     } finally {
       try {
         Promise.resolve(client.shutdown()).catch((error) => {
-          logger.error("Error shutting down PostHog client", { error });
+          logger.error("关闭 PostHog 客户端失败", { error });
         });
       } catch (error) {
-        logger.error("Error shutting down PostHog client", { error });
+        logger.error("关闭 PostHog 客户端失败", { error });
       }
     }
   } catch (error) {
-    logger.error("Error capturing PostHog event", { error });
+    logger.error("捕获 PostHog 事件失败", { error });
     return false;
   }
 }
@@ -214,7 +214,7 @@ export async function trackStripeCheckoutCreated(
       ex: 172_800,
     });
   } catch (error) {
-    logger.error("Error deduplicating Stripe checkout creation event", {
+    logger.error("对 Stripe 结账创建事件去重失败", {
       error,
     });
     return posthogCaptureEvent(
@@ -236,7 +236,7 @@ export async function trackStripeCheckoutCreated(
   try {
     await redis.del(dedupeKey);
   } catch (error) {
-    logger.error("Error releasing Stripe checkout creation event lock", {
+    logger.error("释放 Stripe 结账创建事件锁失败", {
       error,
     });
   }
@@ -463,8 +463,8 @@ const MAX_FIRST_TIME_EVENT_CACHE_SIZE = 1000;
 const firedFirstTimeEvents = new Map<string, true>();
 
 /**
- * Uses User.email as distinctId (not EmailAccount.email) so the event attaches
- * to the same PostHog person as signup/billing events.
+ * 使用 User.email 作为 distinctId（而非 EmailAccount.email），
+ * 以便事件与注册/账单事件关联到同一个 PostHog 用户。
  */
 export async function trackFirstTimeEvent({
   emailAccountId,
@@ -495,7 +495,7 @@ export async function trackFirstTimeEvent({
       ...properties,
     });
   } catch (error) {
-    logger.error("Error tracking first-time event", { error, event });
+    logger.error("跟踪首次事件失败", { error, event });
   }
 }
 
@@ -524,7 +524,7 @@ export async function trackOnboardingAnswer(
 }
 
 export async function trackProductFeedback(email: string, feedback: string) {
-  // Regular analytics event so feedback remains queryable even if survey quota is hit
+  // 常规分析事件，因此即使问卷配额用尽，反馈仍可查询
   await posthogCaptureEvent(email, "Product feedback submitted", {
     feedback,
   });
@@ -533,19 +533,19 @@ export async function trackProductFeedback(email: string, feedback: string) {
   const questionId = env.POSTHOG_FEEDBACK_SURVEY_QUESTION_ID;
   if (!surveyId || !questionId) {
     logger.warn(
-      "POSTHOG_FEEDBACK_SURVEY_ID or POSTHOG_FEEDBACK_SURVEY_QUESTION_ID not set",
+      "POSTHOG_FEEDBACK_SURVEY_ID 或 POSTHOG_FEEDBACK_SURVEY_QUESTION_ID 未设置",
     );
     return;
   }
 
-  // Surveys API event — ID-based response key (current PostHog recommendation)
+  // Surveys API 事件 — 基于 ID 的响应键（PostHog 当前推荐做法）
   await posthogCaptureEvent(email, "survey sent", {
     $survey_id: surveyId,
     [`$survey_response_${questionId}`]: feedback,
     $survey_questions: [
       {
         id: questionId,
-        question: "What's your feedback?",
+        question: "你的反馈是什么？",
       },
     ],
     $survey_completed: true,

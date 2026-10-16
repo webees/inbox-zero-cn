@@ -261,8 +261,7 @@ describe("createGenerateObject repairText", () => {
     const wasMissingJsonWarned = () =>
       warnSpy.mock.calls.some((args) =>
         args.some(
-          (arg) =>
-            typeof arg === "string" && arg.includes("Missing JSON in prompt"),
+          (arg) => typeof arg === "string" && arg.includes("提示词中缺少 JSON"),
         ),
       );
 
@@ -599,8 +598,7 @@ describe("createGenerateObject repairText", () => {
         .flat()
         .find(
           (value) =>
-            typeof value === "string" &&
-            value.includes("LLM object generation completed"),
+            typeof value === "string" && value.includes("LLM 对象生成完成"),
         );
 
       expect(outcomeLog).toContain('"fallbackDepth": 1');

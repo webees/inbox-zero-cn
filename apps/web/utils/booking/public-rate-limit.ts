@@ -14,8 +14,8 @@ type EnforceableRule = {
   windowSeconds: number;
 };
 
-// Run checks serially: once a rule limits, skipping the rest avoids
-// incrementing later windows on requests we're already rejecting.
+// 串行执行检查：一旦某个规则限流，跳过其余规则可避免
+// 在我们已在拒绝的请求上递增后续窗口。
 async function enforceRateLimitRules({
   rules,
   logger,
@@ -131,8 +131,8 @@ export async function enforcePublicBookingRateLimit({
   await enforceRateLimitRules({
     rules,
     logger,
-    warnMessage: "Public booking rate limit exceeded",
-    limitedMessage: "Too many booking attempts. Please try again later.",
+    warnMessage: "公开预约速率限制已超出",
+    limitedMessage: "预约尝试过于频繁。请稍后再试。",
   });
 }
 
@@ -185,8 +185,8 @@ export async function enforcePublicAvailabilityRateLimit({
   await enforceRateLimitRules({
     rules,
     logger,
-    warnMessage: "Public booking availability rate limit exceeded",
-    limitedMessage: "Too many availability checks. Please try again later.",
+    warnMessage: "公开预约可用性速率限制已超出",
+    limitedMessage: "可用性查询过于频繁。请稍后再试。",
   });
 }
 
@@ -197,12 +197,12 @@ const MANAGE_ACTION_COPY: Record<
   { warnMessage: string; limitedMessage: string }
 > = {
   cancel: {
-    warnMessage: "Public booking cancellation rate limit exceeded",
-    limitedMessage: "Too many cancellation attempts. Please try again later.",
+    warnMessage: "公开预约取消速率限制已超出",
+    limitedMessage: "取消尝试过于频繁。请稍后再试。",
   },
   reschedule: {
-    warnMessage: "Public booking reschedule rate limit exceeded",
-    limitedMessage: "Too many reschedule attempts. Please try again later.",
+    warnMessage: "公开预约改期速率限制已超出",
+    limitedMessage: "改期尝试过于频繁。请稍后再试。",
   },
 };
 

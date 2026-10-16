@@ -25,7 +25,7 @@ export function SentWithSignatureSetting() {
       },
       onError: createSettingActionErrorHandler({
         mutate,
-        prefix: `Failed to update 'Sent with ${BRAND_NAME}' setting`,
+        prefix: `更新“使用 ${BRAND_NAME} 发送”设置失败`,
       }),
     },
   );
@@ -47,8 +47,8 @@ export function SentWithSignatureSetting() {
 
   return (
     <SettingCard
-      title={`Include 'Sent with ${BRAND_NAME}'`}
-      description={`Add 'Sent with ${BRAND_NAME}' with your referral link after your signature on emails you send from the mail client. Earn a month of credit for each person who signs up with your link.`}
+      title={`包含“使用 ${BRAND_NAME} 发送”`}
+      description={`在你从邮件客户端发送的邮件中，在签名后添加带有你推荐链接的“使用 ${BRAND_NAME} 发送”。每有一位通过你的链接注册，你就能获得一个月的额度。`}
       right={
         <LoadingContent
           loading={isLoading}

@@ -23,7 +23,7 @@ export async function sendOtpPushNotification({
     userId,
     deduplicationKey: `otp:${emailAccountId}:${message.id}`,
     notification: {
-      title: "Verification code",
+      title: "验证码",
       body: message.subject,
       sound: "default",
       channelId: "otp",

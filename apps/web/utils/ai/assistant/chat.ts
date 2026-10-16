@@ -914,11 +914,11 @@ Inline email cards:
 - For triage or inbox summary, render <email> tags inside an <emails> container.
 - Format:
 <emails>
-<email index="1" threadid="THREAD_ID">Brief context</email>
-<email index="2" threadid="THREAD_ID">Brief context</email>
+<email index="1" threadid="THREAD_ID">简要上下文</email>
+<email index="2" threadid="THREAD_ID">简要上下文</email>
 </emails>
 - Number every <email> starting from 1, continuing across blocks within the same response (two groups of 4 are 1–8, not 1–4 twice). The index lets you map "#6" back to its threadid in later turns even if the list changes.
-- For a single email or thread, use <email-detail threadid="THREAD_ID">Brief context</email-detail>.
+- For a single email or thread, use <email-detail threadid="THREAD_ID">简要上下文</email-detail>.
 - The threadid must be a threadId from searchInbox results (not the HTML id).
 - Inner text must say what the email actually contains — its concrete ask, news, or detail (amounts, dates, requested actions) — drawn from the subject and snippet, so the user understands it without opening it. Do not just restate the group header or a recommendation like "worth deciding whether to reply"; the header already conveys what to do. Default to one sentence; use two only when the email has distinct parts the user needs to know. Never pad.
 - The UI resolves sender, subject, and date from the threadId — don't repeat them.

@@ -7,9 +7,9 @@ import type { DeploymentResponse } from "@/app/api/deployment/route";
 const CHECK_INTERVAL_MS = 10 * 60 * 1000;
 const MIN_CHECK_GAP_MS = 60 * 1000;
 
-// Mail tabs stay open for days, past the host's skew protection window. Once a
-// tab's deployment is gone, its server actions and lazy chunks can fail with
-// errors that make no sense to the user, so ask for a reload instead.
+// 邮件标签页会持续打开数天，超过主机的时钟偏差保护窗口。一旦某个标签页
+// 对应的部署已不存在，它的 server action 和懒加载代码块可能会以用户无法
+// 理解的方式失败，因此改为提示用户重新加载。
 export function DeploymentUpdateNotice() {
   useEffect(() => {
     const tabDeploymentId = process.env.NEXT_DEPLOYMENT_ID;
@@ -29,13 +29,16 @@ export function DeploymentUpdateNotice() {
         notified = true;
         toastInfo({
           id: "deployment-update",
-          title: "Inbox Zero has been updated",
-          description: "Reload to get the latest version.",
+          title: "Inbox Zero 已更新",
+          description: "重新加载以获取最新版本。",
           duration: Number.POSITIVE_INFINITY,
-          action: { label: "Reload", onClick: () => window.location.reload() },
+          action: {
+            label: "重新加载",
+            onClick: () => window.location.reload(),
+          },
         });
       } catch {
-        // Offline or mid-deploy; the next check will try again.
+        // 离线或正在部署中；下次检查会重试。
       }
     };
     const onVisibilityChange = () => {

@@ -303,38 +303,38 @@ function stripSetupAwsDoubleDash(argv: string[]) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Setup Command
+// 设置命令
 // ═══════════════════════════════════════════════════════════════════════════
 
 async function runSetup(options: { name?: string }) {
-  p.intro("Inbox Zero Setup");
+  p.intro("Inbox Zero 设置");
   if (process.platform === "win32") {
-    p.log.info("Run the Docker commands printed by setup in PowerShell.");
+    p.log.info("在 PowerShell 中运行 setup 打印出的 Docker 命令。");
   }
   p.note(
-    "Quick setup uses production defaults with Docker Compose infrastructure\n" +
-      "(Postgres + Redis) and runs the web app in Docker.",
-    "Quick Setup Includes",
+    "快速设置使用生产环境默认配置，搭配 Docker Compose 基础设施\n" +
+      "（Postgres + Redis），并在 Docker 中运行 Web 应用。",
+    "快速设置包含内容",
   );
 
   const mode = await p.select({
-    message: "How would you like to set up?",
+    message: "你想如何设置？",
     options: [
       {
         value: "quick",
-        label: "Quick setup",
-        hint: "production defaults with Docker Postgres + Redis",
+        label: "快速设置",
+        hint: "使用 Docker Postgres + Redis 的生产环境默认配置",
       },
       {
         value: "custom",
-        label: "Custom setup",
-        hint: "configure infrastructure, providers, and more",
+        label: "自定义设置",
+        hint: "配置基础设施、服务提供商等",
       },
     ],
   });
 
   if (p.isCancel(mode)) {
-    p.cancel("Setup cancelled.");
+    p.cancel("设置已取消。");
     process.exit(0);
   }
 
@@ -345,7 +345,7 @@ async function runSetup(options: { name?: string }) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Quick Setup (minimal questions)
+// 快速设置（最少问题）
 // ═══════════════════════════════════════════════════════════════════════════
 
 async function runSetupQuick(options: { name?: string }) {
@@ -356,17 +356,17 @@ async function runSetupQuick(options: { name?: string }) {
     await resolveSetupPorts({ useDockerInfra: true });
   const portConfigNote = formatPortConfigNote(changedPorts);
   if (portConfigNote) {
-    p.note(portConfigNote, "Port Configuration");
+    p.note(portConfigNote, "端口配置");
   }
 
   p.note(
-    "Choose the email provider(s) you want to enable now.\n" +
-      "You can add or change providers later with: inbox-zero config",
-    "Step 1: OAuth Providers",
+    "选择你现在要启用的邮件服务商。\n" +
+      "之后可以用 inbox-zero config 添加或更改服务商",
+    "第 1 步：OAuth 服务商",
   );
 
   const oauthProviders = await p.multiselect({
-    message: "Which OAuth providers do you want to configure?",
+    message: "你想配置哪些 OAuth 服务商？",
     options: [
       { value: "google", label: "Google (Gmail)" },
       { value: "microsoft", label: "Microsoft (Outlook)" },
@@ -375,7 +375,7 @@ async function runSetupQuick(options: { name?: string }) {
   });
 
   if (p.isCancel(oauthProviders)) {
-    p.cancel("Setup cancelled.");
+    p.cancel("设置已取消。");
     process.exit(0);
   }
 
@@ -389,43 +389,43 @@ async function runSetupQuick(options: { name?: string }) {
     const linkingCallbackUrl = `http://localhost:${webPort}/api/google/linking/callback`;
 
     p.note(
-      "You need a Google OAuth app to connect your Gmail.\n\n" +
-        "First, enable the required APIs (otherwise sign-in will fail):\n" +
-        "1. Open: https://console.cloud.google.com/apis/library\n" +
-        "2. Enable each of these for your project:\n" +
+      "连接 Gmail 需要一个 Google OAuth 应用。\n\n" +
+        "首先启用所需的 API（否则登录会失败）：\n" +
+        "1. 打开：https://console.cloud.google.com/apis/library\n" +
+        "2. 为你的项目启用以下每一项：\n" +
         "   - Gmail API (gmail.googleapis.com)\n" +
         "   - People API (people.googleapis.com)\n" +
-        "   - Google Calendar API (optional)\n" +
-        "   - Google Drive API (optional)\n\n" +
-        "Then, set up the OAuth consent screen:\n" +
-        "3. Open: https://console.cloud.google.com/apis/credentials/consent\n" +
-        '4. Click "Get Started" (if shown)\n' +
-        "5. User type:\n" +
-        '   - "Internal" — Google Workspace only, all org members can sign in\n' +
-        '   - "External" — works with any Google account (including personal Gmail)\n' +
-        "     You'll need to add yourself as a test user (step 8)\n" +
-        "6. Fill in the app name and your email\n" +
-        '7. Click "Save and Continue" through the scopes section\n' +
-        "8. If External: add your email as a test user\n" +
-        "9. Complete the wizard\n\n" +
-        "Then, create OAuth credentials:\n" +
-        "10. Open: https://console.cloud.google.com/apis/credentials\n" +
-        `11. Click "Create Credentials" → "OAuth client ID"\n` +
-        `12. Select "Web application"\n` +
-        `13. Under "Authorized redirect URIs" add:\n` +
+        "   - Google Calendar API（可选）\n" +
+        "   - Google Drive API（可选）\n\n" +
+        "然后设置 OAuth 同意屏幕：\n" +
+        "3. 打开：https://console.cloud.google.com/apis/credentials/consent\n" +
+        '4. 点击 "Get Started"（如果显示）\n' +
+        "5. 用户类型：\n" +
+        '   - "Internal" — 仅限 Google Workspace，所有组织成员都可以登录\n' +
+        '   - "External" — 适用于任何 Google 账号（包括个人 Gmail）\n' +
+        "     你需要把自己添加为测试用户（第 8 步）\n" +
+        "6. 填写应用名称和你的邮箱\n" +
+        '7. 在范围（scopes）部分依次点击 "Save and Continue"\n' +
+        "8. 如果是 External：把你的邮箱添加为测试用户\n" +
+        "9. 完成向导\n\n" +
+        "然后创建 OAuth 凭据：\n" +
+        "10. 打开：https://console.cloud.google.com/apis/credentials\n" +
+        `11. 点击 "Create Credentials" → "OAuth client ID"\n` +
+        `12. 选择 "Web application"\n` +
+        `13. 在 "Authorized redirect URIs" 下添加：\n` +
         `    ${callbackUrl}\n` +
         `    ${linkingCallbackUrl}\n` +
-        "14. Copy the Client ID and Client Secret\n\n" +
-        "If External: you'll see a \"This app isn't verified\" warning when\n" +
-        'signing in. Click "Advanced" then "Go to [app name]" to proceed.\n\n' +
-        "Tip: if you have the gcloud CLI, run 'inbox-zero setup-google'\n" +
-        "to enable APIs and set up Pub/Sub automatically.\n\n" +
-        "Full guide: https://docs.getinboxzero.com/hosting/setup-guides",
+        "14. 复制客户端 ID 和客户端密钥\n\n" +
+        '如果是 External：登录时会看到 "This app isn\'t verified" 警告。\n' +
+        '点击 "Advanced"，然后点击 "Go to [app name]" 继续。\n\n' +
+        "提示：如果你安装了 gcloud CLI，可以运行 'inbox-zero setup-google'\n" +
+        "来自动启用 API 并设置 Pub/Sub。\n\n" +
+        "完整指南：https://docs.getinboxzero.com/hosting/setup-guides",
       "Google OAuth",
     );
 
     const googleClientIdResult = await p.text({
-      message: "Google Client ID",
+      message: "Google 客户端 ID",
       placeholder: "paste your Client ID here",
     });
     if (p.isCancel(googleClientIdResult)) {
@@ -435,7 +435,7 @@ async function runSetupQuick(options: { name?: string }) {
     googleClientId = googleClientIdResult;
 
     const googleClientSecretResult = await p.text({
-      message: "Google Client Secret",
+      message: "Google 客户端密钥",
       placeholder: "paste your Client Secret here",
     });
     if (p.isCancel(googleClientSecretResult)) {
@@ -475,12 +475,12 @@ async function runSetupQuick(options: { name?: string }) {
       {
         clientId: () =>
           p.text({
-            message: "Microsoft Client ID",
+            message: "Microsoft 客户端 ID",
             placeholder: "paste your Client ID here",
           }),
         clientSecret: () =>
           p.text({
-            message: "Microsoft Client Secret",
+            message: "Microsoft 客户端密钥",
             placeholder: "paste your Client Secret here",
           }),
         tenantId: () =>
@@ -691,7 +691,7 @@ async function runSetupQuick(options: { name?: string }) {
   );
 
   const shouldStart = await p.confirm({
-    message: "Start Inbox Zero now?",
+    message: "现在启动 Inbox Zero 吗？",
     initialValue: true,
   });
 
@@ -710,7 +710,7 @@ async function runSetupQuick(options: { name?: string }) {
 
   if (checkContainersRunning(composeArgs)) {
     const restart = await p.confirm({
-      message: "Inbox Zero is already running. Restart?",
+      message: "Inbox Zero 已在运行，要重启吗？",
       initialValue: true,
     });
     if (p.isCancel(restart) || !restart) {
@@ -975,18 +975,18 @@ Full guide: https://docs.getinboxzero.com/self-hosting/google-oauth`,
       {
         clientId: () =>
           p.text({
-            message: "Google Client ID (press Enter to skip)",
+            message: "Google 客户端 ID（按 Enter 跳过）",
             placeholder: "123456789012-abcdefghijk.apps.googleusercontent.com",
           }),
         clientSecret: () =>
           p.text({
-            message: "Google Client Secret (press Enter to skip)",
+            message: "Google 客户端密钥（按 Enter 跳过）",
             placeholder: "GOCSPX-...",
           }),
       },
       {
         onCancel: () => {
-          p.cancel("Setup cancelled.");
+          p.cancel("配置已取消");
           process.exit(0);
         },
       },
@@ -996,38 +996,38 @@ Full guide: https://docs.getinboxzero.com/self-hosting/google-oauth`,
     env.GOOGLE_CLIENT_SECRET =
       googleOAuth.clientSecret || "your-google-client-secret";
 
-    // Google Pub/Sub setup for real-time email notifications
+    // 用于实时邮件通知的 Google Pub/Sub 配置
     p.note(
-      `To receive real-time email notifications, you need to set up Google Pub/Sub:
+      `要接收实时邮件通知，你需要配置 Google Pub/Sub：
 
-1. Go to Google Cloud Console: https://console.cloud.google.com/cloudpubsub/topic/list
-2. Create a new topic (e.g., "inbox-zero-emails")
-3. Add the Gmail API service account as a publisher:
-   - Click on the topic → Permissions → Add Principal
-   - Add: gmail-api-push@system.gserviceaccount.com
-   - Role: Pub/Sub Publisher
-4. Create a push subscription pointing to your webhook URL:
-   - Endpoint: https://yourdomain.com/api/google/webhook?token=${pubsubVerificationToken}
-5. Copy the full topic name (e.g., projects/my-project-123/topics/inbox-zero-emails)
+1. 打开 Google Cloud Console：https://console.cloud.google.com/cloudpubsub/topic/list
+2. 创建一个新主题（例如 "inbox-zero-emails"）
+3. 将 Gmail API 服务账号添加为发布者：
+   - 点击该主题 → 权限 → 添加主账号
+   - 添加：gmail-api-push@system.gserviceaccount.com
+   - 角色：Pub/Sub Publisher
+4. 创建一个指向你的 webhook URL 的推送订阅：
+   - 端点：https://yourdomain.com/api/google/webhook?token=${pubsubVerificationToken}
+5. 复制完整的主题名称（例如 projects/my-project-123/topics/inbox-zero-emails）
 
-Full guide: https://docs.getinboxzero.com/self-hosting/google-pubsub`,
-      "Google Pub/Sub Setup (Required for Gmail)",
+完整指南：https://docs.getinboxzero.com/self-hosting/google-pubsub`,
+      "Google Pub/Sub 配置（Gmail 必需）",
     );
 
     const pubsubTopic = await p.text({
-      message: "Google Pub/Sub Topic Name",
+      message: "Google Pub/Sub 主题名称",
       placeholder: "projects/your-project-id/topics/inbox-zero-emails",
       validate: (v) => {
-        if (!v) return; // Allow empty to skip
+        if (!v) return; // 允许留空以跳过
         if (!v.startsWith("projects/") || !v.includes("/topics/")) {
-          return "Topic name must be in format: projects/PROJECT_ID/topics/TOPIC_NAME";
+          return "主题名称格式必须为：projects/PROJECT_ID/topics/TOPIC_NAME";
         }
         return;
       },
     });
 
     if (p.isCancel(pubsubTopic)) {
-      p.cancel("Setup cancelled.");
+      p.cancel("配置已取消");
       process.exit(0);
     }
 
@@ -1041,42 +1041,42 @@ Full guide: https://docs.getinboxzero.com/self-hosting/google-pubsub`,
   // Microsoft OAuth
   if (wantsMicrosoft) {
     p.note(
-      `1. Go to Azure Portal: https://portal.azure.com/
-2. Navigate to App registrations → New registration
-3. Set account type: "Accounts in any organizational directory and personal Microsoft accounts"
-4. Add redirect URIs:
+      `1. 打开 Azure 门户：https://portal.azure.com/
+2. 进入应用注册 → 新注册
+3. 设置账户类型："任何组织目录中的账户和个人 Microsoft 账户"
+4. 添加重定向 URI：
    - http://localhost:${webPort}/api/auth/callback/microsoft
    - http://localhost:${webPort}/api/outlook/linking/callback
-   - http://localhost:${webPort}/api/outlook/calendar/callback (only required for calendar integration)
-5. Go to Certificates & secrets → New client secret
-6. Copy Application (client) ID and the secret Value
+   - http://localhost:${webPort}/api/outlook/calendar/callback（仅日历集成需要）
+5. 进入证书和密码 → 新客户端密码
+6. 复制应用程序（客户端）ID 和密码值
 
-Full guide: https://docs.getinboxzero.com/self-hosting/microsoft-oauth`,
-      "Microsoft OAuth Setup",
+完整指南：https://docs.getinboxzero.com/self-hosting/microsoft-oauth`,
+      "Microsoft OAuth 配置",
     );
 
     const microsoftOAuth = await p.group(
       {
         clientId: () =>
           p.text({
-            message: "Microsoft Client ID (press Enter to skip)",
+            message: "Microsoft 客户端 ID（按 Enter 跳过）",
             placeholder: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
           }),
         clientSecret: () =>
           p.text({
-            message: "Microsoft Client Secret (press Enter to skip)",
-            placeholder: "your-client-secret",
+            message: "Microsoft 客户端密钥（按 Enter 跳过）",
+            placeholder: "你的客户端密钥",
           }),
         tenantId: () =>
           p.text({
-            message: "Microsoft Tenant ID",
+            message: "Microsoft 租户 ID",
             placeholder: "common",
             initialValue: "common",
           }),
       },
       {
         onCancel: () => {
-          p.cancel("Setup cancelled.");
+          p.cancel("配置已取消");
           process.exit(0);
         },
       },
@@ -1091,16 +1091,13 @@ Full guide: https://docs.getinboxzero.com/self-hosting/microsoft-oauth`,
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // LLM Provider
+  // LLM 服务提供商
   // ═══════════════════════════════════════════════════════════════════════════
 
-  p.note(
-    "Choose your AI provider. You can change this later in settings.",
-    "LLM Configuration",
-  );
+  p.note("选择你的 AI 服务提供商。你之后可以在设置中更改。", "LLM 配置");
 
   const llmProvider = await p.select({
-    message: "LLM Provider",
+    message: "LLM 服务提供商",
     options: [...LLM_PROVIDER_OPTIONS],
   });
   if (p.isCancel(llmProvider)) cancelSetup();
@@ -1109,20 +1106,20 @@ Full guide: https://docs.getinboxzero.com/self-hosting/microsoft-oauth`,
   await promptLlmCredentials(selectedLlmProvider, env);
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // Auto-generated values
+  // 自动生成的值
   // ═══════════════════════════════════════════════════════════════════════════
 
   const spinner = p.spinner();
-  spinner.start("Generating configuration...");
+  spinner.start("正在生成配置...");
 
-  // Set NODE_ENV based on environment mode
+  // 根据环境模式设置 NODE_ENV
   env.NODE_ENV = isDevMode ? "development" : "production";
 
-  // Redis token (used for Docker Redis)
+  // Redis token（用于 Docker Redis）
   const redisToken = generateSecret(32);
 
   if (useDockerInfra) {
-    // Using Docker Compose for Postgres/Redis
+    // 使用 Docker Compose 运行 Postgres/Redis
     env.POSTGRES_USER = "postgres";
     env.POSTGRES_PASSWORD =
       existingEnv.POSTGRES_PASSWORD ||
@@ -1173,7 +1170,7 @@ Full guide: https://docs.getinboxzero.com/self-hosting/microsoft-oauth`,
   env.NEXT_PUBLIC_BASE_URL = `http://localhost:${webPort}`;
   env.NEXT_PUBLIC_BYPASS_PREMIUM_CHECKS = "true";
 
-  spinner.stop("Configuration generated");
+  spinner.stop("配置已生成");
 
   // ═══════════════════════════════════════════════════════════════════════════
   // Write files
@@ -1232,79 +1229,79 @@ Full guide: https://docs.getinboxzero.com/self-hosting/microsoft-oauth`,
   spinner.stop(".env file created");
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // Summary
+  // 摘要
   // ═══════════════════════════════════════════════════════════════════════════
 
   const configuredFeatures = [
-    `✓ Environment: ${isDevMode ? "Development" : "Production"}`,
-    `✓ Infrastructure: ${useDockerInfra ? "Docker Compose" : "External"}`,
+    `✓ 环境：${isDevMode ? "开发" : "生产"}`,
+    `✓ 基础设施：${useDockerInfra ? "Docker Compose" : "外部"}`,
     useDockerInfra
-      ? `✓ Web app: ${runWebInDocker ? "In Docker" : "On host"}`
+      ? `✓ Web 应用：${runWebInDocker ? "在 Docker 中" : "在宿主机上"}`
       : null,
-    wantsGoogle ? "✓ Google OAuth" : "✗ Google OAuth (skipped)",
-    wantsMicrosoft ? "✓ Microsoft OAuth" : "✗ Microsoft OAuth (skipped)",
-    `✓ LLM Provider (${llmProvider})`,
+    wantsGoogle ? "✓ Google OAuth" : "✗ Google OAuth（已跳过）",
+    wantsMicrosoft ? "✓ Microsoft OAuth" : "✗ Microsoft OAuth（已跳过）",
+    `✓ LLM 服务提供商（${llmProvider}）`,
   ]
     .filter(Boolean)
     .join("\n");
 
-  p.note(configuredFeatures, "Configuration Summary");
+  p.note(configuredFeatures, "配置摘要");
 
-  p.note(`Environment file saved to:\n${envFile}`, "Output");
+  p.note(`环境文件已保存到：\n${envFile}`, "输出");
 
   if (!useDockerInfra) {
     p.log.warn(
-      "You selected external infrastructure.\n" +
-        "Please update DATABASE_URL and REDIS_HTTP_URL in your .env file.",
+      "你选择了外部基础设施。\n" +
+        "请更新 .env 文件中的 DATABASE_URL 和 REDIS_HTTP_URL。",
     );
   }
 
-  // Build next steps based on configuration
+  // 根据配置构建后续步骤
   let nextSteps: string;
 
   const composeCmd = getComposeCommand(envFile, composeFile);
 
   if (runWebInDocker) {
-    // Web app runs in Docker with database & Redis
+    // Web 应用在 Docker 中运行，包含数据库与 Redis
     const baseUrlCommand =
       process.platform === "win32"
         ? "$env:NEXT_PUBLIC_BASE_URL = 'https://yourdomain.com';"
         : "NEXT_PUBLIC_BASE_URL=https://yourdomain.com";
-    nextSteps = `# Start all services (web, database & Redis):
+    nextSteps = `# 启动所有服务（Web、数据库与 Redis）：
 ${baseUrlCommand} ${composeCmd} --profile all up -d
 
-# View logs:
+# 查看日志：
 docker logs inbox-zero-services-web-1 -f
 
-# Then open:
+# 然后打开：
 https://yourdomain.com`;
   } else {
-    // Web app runs on host (pnpm dev or pnpm start)
+    // Web 应用在宿主机上运行（pnpm dev 或 pnpm start）
     const dockerStep = useDockerInfra
-      ? `# Start Docker services (database & Redis):\n${composeCmd} --profile local-db --profile local-redis up -d\n\n`
+      ? `# 启动 Docker 服务（数据库与 Redis）：\n${composeCmd} --profile local-db --profile local-redis up -d\n\n`
       : "";
     const migrateCmd = isDevMode
       ? "pnpm prisma:migrate:dev"
       : "pnpm prisma:migrate:deploy";
     const startCmd = isDevMode ? "pnpm dev" : "pnpm build && pnpm start";
 
-    nextSteps = `${dockerStep}# Run database migrations:
+    nextSteps = `${dockerStep}# 运行数据库迁移：
 ${migrateCmd}
 
-# Start the server:
+# 启动服务器：
 ${startCmd}
 
-# Then open:
+# 然后打开：
 http://localhost:${webPort}`;
   }
 
-  p.note(nextSteps, "Next Steps");
+  p.note(nextSteps, "后续步骤");
 
-  p.outro("Setup complete! 🎉");
+  p.outro("设置完成！🎉");
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Start Command
+// 启动命令
 // ═══════════════════════════════════════════════════════════════════════════
 
 async function runStart(options: { detach: boolean }) {
@@ -1312,46 +1309,46 @@ async function runStart(options: { detach: boolean }) {
 
   if (!existsSync(STANDALONE_COMPOSE_FILE)) {
     p.log.error(
-      "Inbox Zero is not configured for production mode.\n" +
-        "Run 'inbox-zero setup' and choose Production (Docker) first.",
+      "Inbox Zero 尚未配置生产模式。\n" +
+        "请先运行 'inbox-zero setup' 并选择 Production (Docker)。",
     );
     process.exit(1);
   }
 
-  p.intro("🚀 Starting Inbox Zero");
+  p.intro("🚀 正在启动 Inbox Zero");
 
   const composeArgs = ["compose", "-f", STANDALONE_COMPOSE_FILE];
 
   if (checkContainersRunning(composeArgs)) {
     const restart = await p.confirm({
-      message: "Inbox Zero is already running. Restart?",
+      message: "Inbox Zero 已在运行，要重启吗？",
       initialValue: true,
     });
     if (p.isCancel(restart) || !restart) {
-      p.outro("Inbox Zero is already running.");
+      p.outro("Inbox Zero 已在运行。");
       return;
     }
     const stopSpinner = p.spinner();
-    stopSpinner.start("Stopping existing containers...");
+    stopSpinner.start("正在停止现有容器...");
     await runDockerCommand([...composeArgs, "down"]);
-    stopSpinner.stop("Stopped");
+    stopSpinner.stop("已停止");
   }
 
   const spinner = p.spinner();
-  spinner.start("Pulling latest image...");
+  spinner.start("正在拉取最新镜像...");
 
   const pullResult = await runDockerCommand([...composeArgs, "pull"]);
 
   if (pullResult.status !== 0) {
-    spinner.stop("Failed to pull image");
-    p.log.error(pullResult.stderr || "Unknown error");
+    spinner.stop("拉取镜像失败");
+    p.log.error(pullResult.stderr || "未知错误");
     process.exit(1);
   }
 
-  spinner.stop("Image pulled");
+  spinner.stop("镜像已拉取");
 
   if (options.detach) {
-    spinner.start("Starting containers...");
+    spinner.start("正在启动容器...");
 
     const upResult = await runDockerCommand([
       ...composeArgs,
@@ -1498,21 +1495,21 @@ async function runStatus() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Update Command
+// 更新命令
 // ═══════════════════════════════════════════════════════════════════════════
 
 async function runUpdate() {
   requireDocker();
 
   if (!existsSync(STANDALONE_COMPOSE_FILE)) {
-    p.log.error("Inbox Zero is not configured.");
+    p.log.error("Inbox Zero 尚未配置。");
     process.exit(1);
   }
 
-  p.intro("Updating Inbox Zero");
+  p.intro("正在更新 Inbox Zero");
 
   const spinner = p.spinner();
-  spinner.start("Pulling latest image...");
+  spinner.start("正在拉取最新镜像...");
 
   const pullResult = await runDockerCommand([
     "compose",
@@ -1522,25 +1519,25 @@ async function runUpdate() {
   ]);
 
   if (pullResult.status !== 0) {
-    spinner.stop("Failed to pull");
-    p.log.error(pullResult.stderr || "Unknown error");
+    spinner.stop("拉取失败");
+    p.log.error(pullResult.stderr || "未知错误");
     process.exit(1);
   }
 
-  spinner.stop("Image updated");
+  spinner.stop("镜像已更新");
 
   const restart = await p.confirm({
-    message: "Restart with new image?",
+    message: "是否使用新镜像重启？",
     initialValue: true,
   });
 
   if (p.isCancel(restart)) {
-    p.outro("Update complete. Run 'inbox-zero start' to use the new version.");
+    p.outro("更新完成。运行 'inbox-zero start' 以使用新版本。");
     return;
   }
 
   if (restart) {
-    spinner.start("Restarting...");
+    spinner.start("正在重启...");
 
     await runDockerCommand(["compose", "-f", STANDALONE_COMPOSE_FILE, "down"]);
     const upResult = await runDockerCommand([
@@ -1555,24 +1552,24 @@ async function runUpdate() {
 
     if (upResult.status !== 0) {
       const portError = parsePortConflict(upResult.stderr);
-      spinner.stop("Failed to restart");
+      spinner.stop("重启失败");
       if (portError) {
         p.log.error(portError);
         logPortConflictGuidance();
       } else {
-        p.log.error(upResult.stderr || "Unknown error");
+        p.log.error(upResult.stderr || "未知错误");
       }
       process.exit(1);
     }
 
-    spinner.stop("Restarted");
+    spinner.stop("已重启");
   }
 
-  p.outro("Update complete! 🎉");
+  p.outro("更新完成！🎉");
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Config Command
+// 配置命令
 // ═══════════════════════════════════════════════════════════════════════════
 
 const CONFIG_CATEGORIES: Record<
@@ -1580,7 +1577,7 @@ const CONFIG_CATEGORIES: Record<
   { description: string; keys: string[] }
 > = {
   "Google (OAuth & Pub/Sub)": {
-    description: "Gmail integration and real-time notifications",
+    description: "Gmail 集成与实时通知",
     keys: [
       "GOOGLE_CLIENT_ID",
       "GOOGLE_CLIENT_SECRET",
@@ -1589,7 +1586,7 @@ const CONFIG_CATEGORIES: Record<
     ],
   },
   "Microsoft (OAuth)": {
-    description: "Outlook / Microsoft 365 integration",
+    description: "Outlook / Microsoft 365 集成",
     keys: [
       "MICROSOFT_CLIENT_ID",
       "MICROSOFT_CLIENT_SECRET",
@@ -1597,7 +1594,7 @@ const CONFIG_CATEGORIES: Record<
     ],
   },
   "AI Provider": {
-    description: "LLM provider and API keys",
+    description: "LLM 服务提供商与 API 密钥",
     keys: [
       "DEFAULT_LLMS",
       "ECONOMY_LLMS",
@@ -1611,7 +1608,7 @@ const CONFIG_CATEGORIES: Record<
     ],
   },
   "Database & Redis": {
-    description: "Database and cache connections",
+    description: "数据库与缓存连接",
     keys: [
       "DATABASE_URL",
       "DIRECT_URL",
@@ -1622,11 +1619,11 @@ const CONFIG_CATEGORIES: Record<
     ],
   },
   "Local Ports": {
-    description: "Docker host port bindings",
+    description: "Docker 主机端口绑定",
     keys: ["WEB_PORT", "POSTGRES_PORT", "REDIS_PORT", "REDIS_HTTP_PORT"],
   },
   "App Settings": {
-    description: "Application URL and feature flags",
+    description: "应用 URL 与功能开关",
     keys: [
       "NEXT_PUBLIC_BASE_URL",
       "NEXT_PUBLIC_BYPASS_PREMIUM_CHECKS",
@@ -1640,7 +1637,7 @@ function requireEnvFile(name?: string): { envFile: string; content: string } {
   if (!envFile) {
     const suffix = name ? ` (${name})` : "";
     p.log.error(
-      `No .env file found${suffix}.\nRun 'inbox-zero setup' first to create one.`,
+      `未找到 .env 文件${suffix}。\n请先运行 'inbox-zero setup' 创建。`,
     );
     process.exit(1);
   }
@@ -1648,13 +1645,13 @@ function requireEnvFile(name?: string): { envFile: string; content: string } {
 }
 
 async function runConfigInteractive(name?: string) {
-  p.intro("Inbox Zero Configuration");
+  p.intro("Inbox Zero 配置");
 
   const { envFile, content } = requireEnvFile(name);
   const env = parseEnvFile(content);
 
   const category = await p.select({
-    message: "What would you like to configure?",
+    message: "你想配置什么？",
     options: Object.entries(CONFIG_CATEGORIES).map(
       ([name, { description }]) => ({
         value: name,
@@ -1665,7 +1662,7 @@ async function runConfigInteractive(name?: string) {
   });
 
   if (p.isCancel(category)) {
-    p.cancel("Cancelled.");
+    p.cancel("已取消");
     process.exit(0);
   }
 
@@ -1674,41 +1671,41 @@ async function runConfigInteractive(name?: string) {
   const currentValues = keys
     .map((key) => {
       const value = env[key];
-      const display = value ? redactValue(key, value) : "(not set)";
+      const display = value ? redactValue(key, value) : "（未设置）";
       return `  ${key} = ${display}`;
     })
     .join("\n");
 
-  p.note(currentValues, `Current ${category} settings`);
+  p.note(currentValues, `当前 ${category} 设置`);
 
   const keyToUpdate = await p.select({
-    message: "Which setting to update?",
+    message: "要更新哪项设置？",
     options: keys.map((key) => ({
       value: key,
       label: key,
-      hint: env[key] ? redactValue(key, env[key]) : "(not set)",
+      hint: env[key] ? redactValue(key, env[key]) : "（未设置）",
     })),
   });
 
   if (p.isCancel(keyToUpdate)) {
-    p.cancel("Cancelled.");
+    p.cancel("已取消");
     process.exit(0);
   }
 
   const currentValue = env[keyToUpdate];
   const newValue = await p.text({
-    message: `New value for ${keyToUpdate}`,
-    placeholder: currentValue || "enter value",
+    message: `请输入 ${keyToUpdate} 的新值`,
+    placeholder: currentValue || "请输入值",
     initialValue: isSensitiveKey(keyToUpdate) ? "" : currentValue || "",
   });
 
   if (p.isCancel(newValue)) {
-    p.cancel("Cancelled.");
+    p.cancel("已取消");
     process.exit(0);
   }
 
   if (!newValue) {
-    p.log.warn("No value entered. Nothing changed.");
+    p.log.warn("未输入任何值，未做更改");
     process.exit(0);
   }
 
@@ -1729,16 +1726,16 @@ const VALID_CONFIG_KEYS = new Set(
 
 async function runConfigSet(key: string, value: string, name?: string) {
   if (!VALID_CONFIG_KEYS.has(key)) {
-    p.log.error(`Unknown key: ${key}`);
+    p.log.error(`未知的键：${key}`);
     p.log.info(
-      `Valid keys:\n${[...VALID_CONFIG_KEYS].map((k) => `  ${k}`).join("\n")}`,
+      `有效键：\n${[...VALID_CONFIG_KEYS].map((k) => `  ${k}`).join("\n")}`,
     );
     process.exit(1);
   }
   const { envFile, content } = requireEnvFile(name);
   const updated = updateEnvValue(content, key, value);
   saveEnvFile(envFile, updated);
-  p.log.success(`Set ${key}`);
+  p.log.success(`已设置 ${key}`);
 }
 
 async function runConfigGet(key: string, name?: string) {
@@ -1746,14 +1743,14 @@ async function runConfigGet(key: string, name?: string) {
   const env = parseEnvFile(content);
   const value = env[key];
   if (value === undefined) {
-    p.log.warn(`${key} is not set`);
+    p.log.warn(`${key} 未设置`);
   } else {
     p.log.info(`${key} = ${redactValue(key, value)}`);
   }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Env File Generator (template-based)
+// 环境文件生成器（基于模板）
 // ═══════════════════════════════════════════════════════════════════════════
 
 const ENV_EXAMPLE_URL =
@@ -1762,7 +1759,7 @@ const ENV_EXAMPLE_URL =
 async function fetchEnvExample(): Promise<string> {
   const response = await fetch(ENV_EXAMPLE_URL);
   if (!response.ok) {
-    throw new Error(`Failed to fetch .env.example: ${response.statusText}`);
+    throw new Error(`获取 .env.example 失败：${response.statusText}`);
   }
   return response.text();
 }
@@ -1778,12 +1775,12 @@ async function getEnvTemplate(): Promise<string> {
 }
 
 function cancelSetup(): never {
-  p.cancel("Setup cancelled.");
+  p.cancel("设置已取消。");
   process.exit(0);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Docker Compose Fetcher
+// Docker Compose 获取器
 // ═══════════════════════════════════════════════════════════════════════════
 
 const COMPOSE_URL =
@@ -1792,15 +1789,13 @@ const COMPOSE_URL =
 async function fetchDockerCompose(): Promise<string> {
   const response = await fetch(COMPOSE_URL);
   if (!response.ok) {
-    throw new Error(
-      `Failed to fetch docker-compose.yml: ${response.statusText}`,
-    );
+    throw new Error(`获取 docker-compose.yml 失败：${response.statusText}`);
   }
   return response.text();
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Docker Command Helpers
+// Docker 命令辅助函数
 // ═══════════════════════════════════════════════════════════════════════════
 
 function runDockerCommand(

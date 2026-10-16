@@ -50,8 +50,7 @@ export function DraftRepliesIllustration() {
         </div>
 
         <div className="px-3 pb-2 text-left text-[10px] leading-relaxed text-gray-700 dark:text-gray-300">
-          Hi John, I wanted to follow up on the project timeline. When would be
-          a good time to discuss the next steps?
+          你好 John，我想跟进一下项目进度。什么时候方便讨论下一步？
         </div>
       </motion.div>
 
@@ -79,7 +78,7 @@ export function DraftRepliesIllustration() {
             transition={{ duration: 0.3 }}
             className="text-left text-[10px] leading-relaxed text-gray-800 dark:text-gray-200"
           >
-            <p>Hi Sarah,</p>
+            <p>你好 Sarah，</p>
           </motion.div>
 
           <motion.div
@@ -88,11 +87,8 @@ export function DraftRepliesIllustration() {
             transition={{ duration: 0.3 }}
             className="mt-1 text-left text-[10px] leading-relaxed text-gray-800 dark:text-gray-200"
           >
-            <p>
-              Thanks for reaching out! I&apos;d be happy to discuss the project
-              timeline. How about tomorrow at 2pm?
-            </p>
-            <p className="mt-1">Best, John</p>
+            <p>感谢你的来信！我很乐意讨论项目进度。明天下午 2 点怎么样？</p>
+            <p className="mt-1">祝好，John</p>
           </motion.div>
         </div>
 
@@ -102,7 +98,7 @@ export function DraftRepliesIllustration() {
         >
           <div className="flex items-center gap-1">
             <span className="rounded bg-blue-600 px-2.5 py-0.5 text-[9px] font-medium text-white">
-              Send
+              发送
             </span>
             <div className="ml-1 flex items-center">
               <span className="rounded p-0.5 text-gray-400">

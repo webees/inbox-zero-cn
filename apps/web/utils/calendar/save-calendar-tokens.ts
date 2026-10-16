@@ -17,7 +17,7 @@ export async function saveCalendarTokens({
   logger: Logger;
 }) {
   if (!tokens.accessToken) {
-    logger.warn("No access token to save for calendar connection", {
+    logger.warn("没有可保存的日历连接访问令牌", {
       connectionId,
     });
     return;
@@ -37,14 +37,14 @@ export async function saveCalendarTokens({
     });
 
     if (result.count === 0) {
-      logger.info("Skipped stale calendar token update", { connectionId });
+      logger.info("已跳过过期的日历令牌更新", { connectionId });
       return { status: "conflict" as const };
     }
 
-    logger.info("Calendar tokens saved successfully", { connectionId });
+    logger.info("日历令牌保存成功", { connectionId });
     return { status: "saved" as const };
   } catch (error) {
-    logger.error("Failed to save calendar tokens", { error, connectionId });
+    logger.error("保存日历令牌失败", { error, connectionId });
     throw error;
   }
 }

@@ -79,7 +79,7 @@ export async function analyzeDocument({
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Document filing",
+    label: "文档归档",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "compact" },
   });

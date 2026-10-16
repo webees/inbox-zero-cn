@@ -104,7 +104,7 @@ describe("executeAutomationJobRun", () => {
       where: { id: "run-1" },
       data: expect.objectContaining({
         status: AutomationJobRunStatus.SKIPPED,
-        error: "Scheduled check-in destination is not configured",
+        error: "未配置定时签到目标",
       }),
     });
   });

@@ -167,7 +167,7 @@ async function generateDashboard() {
   );
 
   console.log(
-    `Playwright dashboard generated with ${history.length} runs and ${screenshots.length} screenshots.`,
+    `已生成 Playwright 仪表盘，包含 ${history.length} 次运行和 ${screenshots.length} 张截图。`,
   );
 }
 
@@ -180,7 +180,7 @@ async function collectScreenshots(
   );
   if (files.length > MAX_SCREENSHOT_COUNT) {
     throw new Error(
-      `Playwright artifact contains ${files.length} screenshots; maximum is ${MAX_SCREENSHOT_COUNT}`,
+      `Playwright 产物包含 ${files.length} 张截图；最大为 ${MAX_SCREENSHOT_COUNT}`,
     );
   }
   // Full-suite galleries exceed 100 captures; bound total bytes before decoding.
@@ -197,7 +197,7 @@ async function collectScreenshots(
     totalBytes += info.size;
     if (totalBytes > MAX_TOTAL_SCREENSHOT_BYTES) {
       throw new Error(
-        `Playwright artifact exceeds maximum total screenshot size of ${MAX_TOTAL_SCREENSHOT_BYTES} bytes`,
+        `Playwright 产物超过截图总大小上限 ${MAX_TOTAL_SCREENSHOT_BYTES} 字节`,
       );
     }
   }
@@ -330,7 +330,7 @@ function testIdFromSource(source: string): string {
 
 function getRequiredEnvironmentVariable(name: string): string {
   const value = process.env[name];
-  if (!value) throw new Error(`${name} is required`);
+  if (!value) throw new Error(`必须提供 ${name}`);
   return value;
 }
 
@@ -338,14 +338,14 @@ function getOptionalHttpsEnvironmentVariable(name: string): string | undefined {
   const value = process.env[name]?.trim();
   if (!value) return;
   if (!URL.canParse(value) || new URL(value).protocol !== "https:") {
-    throw new Error(`${name} must use HTTPS`);
+    throw new Error(`${name} 必须使用 HTTPS`);
   }
   return value;
 }
 
 function getRequiredNumber(name: string): number {
   const value = Number(getRequiredEnvironmentVariable(name));
-  if (!Number.isFinite(value)) throw new Error(`${name} must be a number`);
+  if (!Number.isFinite(value)) throw new Error(`${name} 必须是数字`);
   return value;
 }
 
@@ -354,7 +354,7 @@ function getOptionalNumber(name: string): number | undefined {
   if (!value) return;
   const parsed = Number(value);
   if (!Number.isInteger(parsed) || parsed <= 0)
-    throw new Error(`${name} must be a positive integer`);
+    throw new Error(`${name} 必须是正整数`);
   return parsed;
 }
 

@@ -14,16 +14,12 @@ export type ToggleCalendarBody = z.infer<typeof toggleCalendarBody>;
 
 export const updateTimezoneBody = z.object({
   timezone: z.string().refine(isValidTimeZone, {
-    message: "Use a valid IANA timezone",
+    message: "请使用有效的 IANA 时区",
   }),
 });
 export type UpdateTimezoneBody = z.infer<typeof updateTimezoneBody>;
 
 export const updateBookingLinkBody = z.object({
-  bookingLink: z
-    .string()
-    .url("Must be a valid URL")
-    .optional()
-    .or(z.literal("")),
+  bookingLink: z.string().url("必须是有效的 URL").optional().or(z.literal("")),
 });
 export type UpdateBookingLinkBody = z.infer<typeof updateBookingLinkBody>;

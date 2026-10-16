@@ -10,7 +10,7 @@ import { env } from "@/env";
 import { cn } from "@/utils";
 
 export type MailSearchSuggestion = {
-  /** Query committed when the suggestion is chosen. */
+  /** 选择该建议时提交的查询。 */
   query: string;
 } & (
   | { kind: "recent" }
@@ -66,8 +66,8 @@ export function useMailSearchSuggestions({
     draft,
   ).map((query) => ({ kind: "recent", query }));
 
-  // Contacts for a stale draft would flash and then reshuffle under the
-  // pointer, so they only show once the debounced fetch matches the input.
+  // 过时草稿对应的联系人会闪现，然后在指针下重新排序，
+  // 因此只有在防抖后的获取与输入一致时才显示它们。
   const matchedContacts =
     normalizedDraft && normalizedDraft === debouncedDraft
       ? (contacts?.contacts ?? [])
@@ -98,7 +98,7 @@ export function MailSearchSuggestionList({
 }) {
   return (
     <div
-      aria-label="Search suggestions"
+      aria-label="搜索建议"
       className="absolute top-full right-0 left-0 z-20 mt-1 overflow-hidden rounded-lg border border-border bg-popover py-1 text-popover-foreground text-sm shadow-md"
       id={id}
       role="listbox"
@@ -112,15 +112,15 @@ export function MailSearchSuggestionList({
           )}
           id={suggestionOptionId(id, index)}
           key={`${suggestion.kind}:${suggestion.query}`}
-          // Selecting on mousedown keeps the input focused, which is what
-          // holds the list open long enough for the click to land.
+          // 在 mousedown 时选择可让输入框保持聚焦，正是这一点
+          // 让列表保持打开足够久，使点击能够生效。
           onMouseDown={(event) => {
             event.preventDefault();
             onSelect(suggestion);
           }}
           role="option"
-          // Focus stays on the input; aria-activedescendant conveys the
-          // highlighted option.
+          // 焦点保持在输入框上；aria-activedescendant 传达
+          // 当前高亮的选项。
           tabIndex={-1}
         >
           {suggestion.kind === "recent" ? (

@@ -639,7 +639,7 @@ const parsedEnv = createEnv({
 
 if (process.env.TELEGRAM_BOT_TOKEN && !process.env.TELEGRAM_BOT_SECRET_TOKEN) {
   throw new Error(
-    "TELEGRAM_BOT_SECRET_TOKEN is required when TELEGRAM_BOT_TOKEN is set.",
+    "设置 TELEGRAM_BOT_TOKEN 时必须提供 TELEGRAM_BOT_SECRET_TOKEN。",
   );
 }
 
@@ -648,7 +648,7 @@ if (
   !process.env.UNSUBSCRIBE_WORKER_SECRET
 ) {
   throw new Error(
-    "UNSUBSCRIBE_WORKER_SECRET is required when UNSUBSCRIBE_WORKER_URL is set.",
+    "设置 UNSUBSCRIBE_WORKER_URL 时必须提供 UNSUBSCRIBE_WORKER_SECRET。",
   );
 }
 
@@ -661,7 +661,7 @@ const decisionModelApiKeyNames: Record<string, string> = {
 const decisionModelProvider =
   process.env.DEFAULT_DECISION_MODEL?.split(":")[0] ?? "";
 const decisionModelApiKeyName = decisionModelApiKeyNames[decisionModelProvider];
-// TypeSafe is not an LLM provider, so LLM_API_KEY cannot stand in for its key.
+// TypeSafe 不是 LLM 提供商，因此 LLM_API_KEY 不能代替它的密钥。
 const acceptsLlmApiKey = decisionModelProvider !== "typesafe";
 if (
   decisionModelApiKeyName &&
@@ -669,7 +669,7 @@ if (
   !(acceptsLlmApiKey && process.env.LLM_API_KEY?.trim())
 ) {
   throw new Error(
-    `${decisionModelApiKeyName}${acceptsLlmApiKey ? " or LLM_API_KEY" : ""} is required for DEFAULT_DECISION_MODEL=${process.env.DEFAULT_DECISION_MODEL}.`,
+    `${decisionModelApiKeyName}${acceptsLlmApiKey ? " 或 LLM_API_KEY" : ""} 是必需的：DEFAULT_DECISION_MODEL=${process.env.DEFAULT_DECISION_MODEL}。`,
   );
 }
 

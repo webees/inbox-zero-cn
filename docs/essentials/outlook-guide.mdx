@@ -1,36 +1,36 @@
 ---
-title: 'Using Outlook'
-description: 'Terminology, tips, and troubleshooting for Outlook and Microsoft 365 accounts.'
+title: '使用 Outlook'
+description: 'Outlook 和 Microsoft 365 账号的术语、技巧与故障排查。'
 icon: 'microsoft'
 ---
 
-Inbox Zero fully supports Outlook, including Microsoft 365 work or school accounts and personal Outlook accounts. Connecting works the same way as Gmail: follow the [Getting Started guide](/essentials/getting-started), choose Outlook when connecting, and approve the requested Microsoft permissions.
+Inbox Zero 全面支持 Outlook，包括 Microsoft 365 工作或学校账号以及个人 Outlook 账号。连接方式与 Gmail 相同：遵循[开始使用指南](/essentials/getting-started)，在连接时选择 Outlook，并批准所请求的 Microsoft 权限。
 
-Everything in the main documentation applies to both providers. This page covers the small number of things that are specific to Outlook.
+主文档中的所有内容都适用于两个服务商。本页面涵盖少量 Outlook 特有的内容。
 
 <Note>
-On a managed Microsoft 365 tenant, an organization administrator may need to approve the app before your account can connect. If access is later revoked in Microsoft, reconnect the mailbox from Inbox Zero.
+在受管理的 Microsoft 365 租户上，组织管理员可能需要先批准该应用，你的账号才能连接。如果之后在 Microsoft 中撤销了访问权限，请从 Inbox Zero 重新连接该邮箱。
 </Note>
 
-## Gmail terms in Outlook
+## Outlook 中的 Gmail 术语
 
-Some Inbox Zero videos and screenshots were recorded with Gmail. The steps are the same in Outlook; only the mail concepts differ:
+Inbox Zero 的一些视频和截图是用 Gmail 录制的。步骤在 Outlook 中相同，只是邮件概念不同：
 
-| Gmail term | Outlook equivalent |
+| Gmail 术语 | Outlook 对应概念 |
 | --- | --- |
-| Label | Category |
-| Move to label | Move to folder |
-| Archive | Archive folder |
-| Trash | Deleted Items |
-| Spam | Junk Email |
-| Google Calendar | Outlook Calendar |
-| Google Drive | OneDrive or SharePoint |
+| 标签 | 类别 |
+| 移动到标签 | 移动到文件夹 |
+| 归档 | 存档文件夹 |
+| 回收站 | 已删除邮件 |
+| 垃圾邮件 | 垃圾邮件 |
+| Google 日历 | Outlook 日历 |
+| Google Drive | OneDrive 或 SharePoint |
 
-## The Tabs extension
+## Tabs 扩展
 
-The [Inbox Zero Tabs](/essentials/inbox-zero-tabs-extension) browser extension is the one feature that only applies to Gmail. Outlook includes similar inbox-organization tools natively, such as folders, categories, and Focused Inbox, so the extension targets Gmail specifically.
+[Inbox Zero Tabs](/essentials/inbox-zero-tabs-extension) 浏览器扩展是唯一仅适用于 Gmail 的功能。Outlook 原生就包含类似的收件箱整理工具，例如文件夹、类别和重点收件箱，因此该扩展专门面向 Gmail。
 
-Some [Early Access](/essentials/deep-clean) experiments may also launch on one provider before the other.
+一些[抢先体验](/essentials/deep-clean)实验也可能先在一个服务商上线，再在另一个上线。
 
 ## Shared mailboxes
 
@@ -40,14 +40,14 @@ To use Inbox Zero on a shared mailbox, a Microsoft 365 administrator can [conver
 
 ## Outlook troubleshooting
 
-### Microsoft will not authorize the connection
+### Microsoft 不授权该连接
 
-Retry with the intended Microsoft account. For a managed Microsoft 365 tenant, ask an administrator whether user consent is restricted or whether the Inbox Zero app requires approval.
+用预期的 Microsoft 账号重试。对于受管理的 Microsoft 365 租户，请询问管理员用户同意是否受限制，或 Inbox Zero 应用是否需要审批。
 
-### A rule uses the wrong category or folder
+### 规则使用了错误的类别或文件夹
 
-Confirm that the category or folder still exists in the connected Outlook mailbox, then edit and retest the rule. Settings and rules are not shared automatically between connected mailboxes.
+确认该类别或文件夹在已连接的 Outlook 邮箱中仍然存在，然后编辑并重新测试该规则。设置和规则不会在各已连接邮箱之间自动共享。
 
-### Inbox Zero stopped receiving Outlook mail
+### Inbox Zero 停止接收 Outlook 邮件
 
-Open **Settings → Email Accounts** and reconnect the Outlook account if it shows a permissions or subscription error. You can also review or revoke Inbox Zero from the [Microsoft App permissions page](https://account.microsoft.com/privacy/app-access).
+打开**设置 → 邮箱账号**，如果该 Outlook 账号显示权限或订阅错误，请重新连接它。你也可以从 [Microsoft 应用权限页面](https://account.microsoft.com/privacy/app-access)查看或撤销 Inbox Zero。

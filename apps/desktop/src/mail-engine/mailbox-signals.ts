@@ -6,8 +6,8 @@ const CHANGE_EVENT_LINES = new Set(["event: mailbox-change", "event: ready"]);
 export function consumeMailboxSignalBuffer(buffer: string) {
   const events = buffer.split("\n\n");
   const rest = events.pop() ?? "";
-  // Every (re)connect sends `ready`; changes while disconnected are not
-  // replayed, so treat it as a change to catch up immediately.
+  // 每次（重新）连接都会发送 `ready`；断开期间的变更不会被重放，
+  // 因此把它当作一次变更立即追赶。
   const changed = events.some((event) =>
     event.split("\n").some((line) => CHANGE_EVENT_LINES.has(line.trim())),
   );
@@ -88,8 +88,8 @@ export async function watchMailboxSignals(input: {
   } finally {
     for (const controller of active.values()) controller.abort();
     active.clear();
-    // Followers can still emit a sync while they unwind. Drain that after
-    // the followers themselves so close does not race the engine.
+    // 跟随者在退订过程中仍可能发出同步。要在跟随者自身之后排空，
+    // 这样关闭时不会与引擎产生竞态。
     await Promise.allSettled(follows);
     await Promise.allSettled(changes);
   }

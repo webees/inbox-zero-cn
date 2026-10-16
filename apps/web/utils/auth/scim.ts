@@ -50,6 +50,6 @@ export async function assertScimUserActive(userId: string) {
   });
   if (user?.scimAccessDisabled)
     throw new APIError("FORBIDDEN", {
-      message: "Account access was disabled by your organization",
+      message: "你的组织已禁用账号访问",
     });
 }

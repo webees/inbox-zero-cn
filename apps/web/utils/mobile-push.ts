@@ -150,7 +150,7 @@ async function sendPushBatch({
       ),
     });
   } catch (error) {
-    logger.warn("Mobile push request outcome is unknown", { error });
+    logger.warn("移动推送请求结果未知", { error });
     return;
   }
 
@@ -161,7 +161,7 @@ async function sendPushBatch({
         deduplicationKey,
       });
     }
-    logger.warn("Expo rejected mobile push request", {
+    logger.warn("Expo 拒绝了移动推送请求", {
       status: response.status,
     });
     return;
@@ -178,12 +178,12 @@ async function sendPushBatch({
       tickets = result.data ? [result.data] : [];
     }
   } catch (error) {
-    logger.warn("Mobile push response outcome is unknown", { error });
+    logger.warn("移动推送响应结果未知", { error });
     return;
   }
 
   if (tickets.length !== pushTokens.length) {
-    logger.warn("Mobile push response outcome is unknown", {
+    logger.warn("移动推送响应结果未知", {
       expectedTicketCount: pushTokens.length,
       receivedTicketCount: tickets.length,
     });
@@ -221,7 +221,7 @@ async function sendPushBatch({
     });
   }
   if (errorCodes.size > 0) {
-    logger.warn("Expo rejected mobile push notifications", {
+    logger.warn("Expo 拒绝了移动推送通知", {
       count: unregisteredTokenIds.length + rejectedTokens.length,
       errorCodes: [...errorCodes],
     });
