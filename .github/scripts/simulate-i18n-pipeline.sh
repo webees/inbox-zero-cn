@@ -8,6 +8,9 @@
 #   4. 压缩后快照恰好领先上游 1 个提交、落后 0 个（单提交不变量）
 #   5. 每 9 轮注入一次「pre-commit 失败 → stash 跳过本批」，被跳过的文件必须在
 #      下一轮重新入队（改动不会因为提交失败而永久丢失）
+#   6. 批次推送被拒时，`git pull --rebase` + 重试能推上去且双方改动都在
+#   7. 远端在压缩前已被别人推进时，守卫判定放弃压缩（不强推覆盖）
+#   8. fetch 之后远端又被推进时，`--force-with-lease` 拒绝推送（远端内容不被覆盖）
 #
 # 覆盖范围说明：本脚本复刻的是「同步/扫描/记账/压缩」这段数据与 Git 逻辑，
 # 不含 Codex 调用、测试步骤与 GHCR 触发；那些靠工作流自身的步骤条件与 CI 结果验证。
@@ -218,10 +221,89 @@ for r in $(seq 1 "$ROUNDS"); do
     "$r" "${#changed[@]}" "$queued" "$lost" "$total" "$ahead" "$behind"
 done
 
+# ---------- 附加验证：推送冲突与强推保护（与工作流里那几段逻辑一一对应） ----------
+printf '\n--- 推送/强推保护验证 ---\n'
+SAFE="$WORK/safety"
+git init -q --bare "$SAFE/remote.git"
+git clone -q "$SAFE/remote.git" "$SAFE/work" 2>/dev/null || true
+cd "$SAFE/work" || exit 1
+git config user.email a@example.com
+git config user.name a
+printf 'base\n' > base.txt
+git add -A
+git commit -qm base
+git push -q origin HEAD:main
+git clone -q "$SAFE/remote.git" "$SAFE/other" 2>/dev/null || true
+cd "$SAFE/other" || exit 1
+git config user.email b@example.com
+git config user.name b
+
+# A) 批次推送被拒 → git pull --rebase → 重试（localize-zh.yml:511-514）
+printf 'ours\n' > ours.txt
+git add -A
+git commit -qm ours
+cd "$SAFE/work" || exit 1
+printf 'theirs\n' > theirs.txt
+git add -A
+git commit -qm theirs
+cd "$SAFE/other" || exit 1
+git push -q origin HEAD:main
+cd "$SAFE/work" || exit 1
+if git push -q origin HEAD:main 2>/dev/null; then
+  problem "推送冲突验证：第一次推送竟然成功了，说明用例没有真的制造冲突"
+fi
+git pull -q --rebase origin main >/dev/null 2>&1
+git push -q origin HEAD:main >/dev/null 2>&1 ||
+  problem "推送冲突验证：pull --rebase 之后仍然推不上去"
+for f in ours.txt theirs.txt; do
+  git cat-file -e "HEAD:$f" 2>/dev/null ||
+    problem "推送冲突验证：rebase 之后 $f 丢了"
+done
+printf '  ✓ 推送被拒 → pull --rebase → 重试成功，双方文件都在\n'
+
+# B) 远端在压缩前已被别人推进 → 守卫必须放弃压缩（localize-zh.yml:870-876）
+cd "$SAFE/other" || exit 1
+git pull -q --rebase origin main >/dev/null 2>&1
+printf 'foreign\n' > foreign.txt
+git add -A
+git commit -qm foreign
+git push -q origin HEAD:main || problem "强推保护验证：B 的并发提交没能推上去（用例自身有问题）"
+cd "$SAFE/work" || exit 1
+git fetch -q origin main
+remote_tip="$(git rev-parse FETCH_HEAD)"
+head_sha="$(git rev-parse HEAD)"
+if [ "$remote_tip" != "$head_sha" ] && ! git merge-base --is-ancestor "$remote_tip" HEAD; then
+  printf '  ✓ 远端已变化 → 守卫判定放弃压缩（不强推覆盖）\n'
+else
+  problem "强推保护验证：远端已被别人推进，守卫却没有判定放弃（remote_tip=${remote_tip:0:7} HEAD=${head_sha:0:7}）"
+fi
+
+# C) fetch 之后远端又被推进 → force-with-lease 必须拒绝（localize-zh.yml:878-888）
+cd "$SAFE/other" || exit 1
+git pull -q --rebase origin main >/dev/null 2>&1
+printf 'race\n' > race.txt
+git add -A
+git commit -qm race
+git push -q origin HEAD:main || problem "强推保护验证：C 的并发提交没能推上去（用例自身有问题）"
+cd "$SAFE/work" || exit 1
+lease_out="$(git push --force-with-lease origin HEAD:main 2>&1 || true)"
+if printf '%s' "$lease_out" | grep -q "rejected\|stale info"; then
+  printf '  ✓ fetch 之后的并发推送被 force-with-lease 拒绝\n'
+else
+  problem "强推保护验证：fetch 之后的并发推送没有被租约挡住（输出：$(printf '%s' "$lease_out" | head -1)）"
+fi
+remote_intact=1
+for f in foreign.txt race.txt; do
+  git -C "$SAFE/remote.git" cat-file -e "main:$f" 2>/dev/null ||
+    { problem "强推保护验证：远端上的 $f 被覆盖掉了"; remote_intact=0; }
+done
+[ "$remote_intact" = "1" ] && printf '  ✓ 远端内容未被覆盖\n'
+
 printf '\n==============================================\n'
 printf '轮数：%s    问题数：%s\n' "$ROUNDS" "$fail"
 if [ "$fail" -gt 0 ]; then
   printf ' - %s\n' "${problems[@]}" | head -20
   exit 1
 fi
-printf '四项不变量全部成立：无翻译丢失、无重复翻译、无残留英文、单提交快照稳定。\n'
+printf '全部检查通过：无翻译丢失、无重复翻译、无残留英文、单提交快照稳定，\n'
+printf '提交失败会重新入队，推送冲突与强推保护行为符合预期。\n'
