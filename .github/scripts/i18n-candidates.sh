@@ -37,6 +37,10 @@ done
 rg_args+=(
   # JSX 文本（紧跟标签）
   -e '>\s*[A-Z][a-z]+\s+[a-z]+'
+  # JSX 文本里的单个 TitleCase 单词，例如 >Unread< / >Done<。
+  # 只匹配首字母大写、其余小写（≥3 字母），避免把 OK / ID / USD 这类全大写缩写扫进来。
+  # 少了这条，All / Unread 这类单词文案永远不入队、永远不翻。
+  -e '>\s*[A-Z][a-z]{2,}\s*<'
   # JSX 属性里的文案
   -e '(?:placeholder|aria-label|title|description|label|name|message|text)="[A-Z][A-Za-z][^"]{3,}"'
   # 多词英文常量

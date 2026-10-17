@@ -207,9 +207,22 @@ jobs:
         working-directory: /tmp/digests
         run: |
           set -euo pipefail
+          # 用数组传参，而不是把命令替换直接展开：文件名或标签里出现空白时不会被拆成两个参数。
+          tag_args=()
+          while IFS= read -r tag; do
+            [ -n "$tag" ] || continue
+            tag_args+=("-t" "$tag")
+          done < <(jq -r '.tags[]' <<< "$DOCKER_METADATA_OUTPUT_JSON")
+          # 每个 digest 文件以摘要命名；先展开文件名再拼前缀（前缀含 `/`，直接写成
+          # `"前缀"*` 会被当成路径模式、匹配不到而保持字面量）。
+          digest_args=()
+          for digest_file in *; do
+            [ -e "$digest_file" ] || continue
+            digest_args+=("${{ env.IMAGE_NAME }}@sha256:${digest_file}")
+          done
           docker buildx imagetools create \
-            $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-            $(printf '${{ env.IMAGE_NAME }}@sha256:%s ' *)
+            "${tag_args[@]}" \
+            "${digest_args[@]}"
 
       - name: 校验清单
         run: docker buildx imagetools inspect "${{ env.IMAGE_NAME }}:latest"

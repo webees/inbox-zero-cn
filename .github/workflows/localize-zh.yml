@@ -381,7 +381,10 @@ jobs:
             fi
             # 把命中行号一并交给模型，让它只读必要区域，减少整文件通读的 token 消耗
             file_list=""
-            for f in $batch; do
+            # 用 read 逐行读而不是 for f in $batch：路径里有 `[emailAccountId]` 这类
+            # glob 元字符，未加引号的展开在存在同名目录时会把路径换成别的文件。
+            while IFS= read -r f; do
+              [ -n "$f" ] || continue
               lines=$(grep -F "$f:" "$RUNNER_TEMP/i18n-candidate-lines.txt" 2>/dev/null \
                 | cut -d: -f2 | head -12 | paste -sd, - || true)
               if [ -n "$lines" ]; then
@@ -389,8 +392,8 @@ jobs:
               else
                 file_list="${file_list} ${f}"
               fi
-            done
-            file_count=$(printf '%s\n' $batch | wc -l | tr -d ' ')
+            done <<< "$batch"
+            file_count=$(printf '%s\n' "$batch" | wc -l | tr -d ' ')
             batch_log="$RUNNER_TEMP/codex-r${ROUND:-0}-${i}.jsonl"
             echo "::group::第 ${i} 批汉化（单批上限 ${CODEX_BATCH_SECONDS}s，${file_count} 个文件）"
             # --kill-after 兜底：codex 有时不响应 TERM，单批必须能被强制结束，避免整轮挂死
@@ -465,7 +468,8 @@ jobs:
               : > "$RUNNER_TEMP/i18n-record-clean.txt"
               : > "$RUNNER_TEMP/i18n-record-residual.txt"
               : > "$RUNNER_TEMP/i18n-record-skipped.txt"
-              for f in $batch; do
+              while IFS= read -r f; do
+                [ -n "$f" ] || continue
                 if printf '%s\n' "$staged_changed" | grep -qxF "$f"; then
                   if [ -n "$(bash .github/scripts/i18n-candidates.sh "$f" 2>/dev/null)" ]; then
                     printf '%s\n' "$f" >> "$RUNNER_TEMP/i18n-record-residual.txt"
@@ -475,7 +479,7 @@ jobs:
                 else
                   printf '%s\n' "$f" >> "$RUNNER_TEMP/i18n-record-skipped.txt"
                 fi
-              done
+              done <<< "$batch"
               for status in clean residual skipped; do
                 record_list="$RUNNER_TEMP/i18n-record-${status}.txt"
                 [ -s "$record_list" ] || continue
@@ -801,8 +805,15 @@ jobs:
         if: always() && steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true'
         run: |
           set -euo pipefail
-          # 只保留最近 50 次运行的指标文件，避免目录无限增长
-          ls -1t .github/i18n-metrics/*.jsonl 2>/dev/null | tail -n +51 | xargs -r rm -f -- || true
+          # 只保留最近 50 次运行的指标文件，避免目录无限增长。
+          # 用 find+sort 而不是 `ls -1t`：后者遇到非字母数字文件名会解析出错。
+          if [ -d .github/i18n-metrics ]; then
+            find .github/i18n-metrics -maxdepth 1 -type f -name '*.jsonl' -printf '%T@ %p\n' 2>/dev/null \
+              | sort -rn \
+              | tail -n +51 \
+              | cut -d' ' -f2- \
+              | xargs -r -d '\n' rm -f -- || true
+          fi
           {
             echo "### 汉化 token 成本（累计）"
             echo '```'
@@ -891,13 +902,23 @@ jobs:
         run: |
           set -euo pipefail
           round="${ROUND:-0}"
+          trigger_image() {
+            echo "触发 GHCR 镜像打包。"
+            gh workflow run publish-ghcr.yml --repo "$GITHUB_REPOSITORY"
+          }
           if [ "${REMAINING:-0}" -gt 0 ]; then
             if [ "$round" -ge "$MAX_ROUNDS" ]; then
               echo "::warning title=达到轮次上限::仍有 ${REMAINING} 个待办文件，但已跑满 ${MAX_ROUNDS} 轮，停止自我重排。"
+              # 停止重排 ≠ 不用打镜像：这一轮已经改过 main，镜像必须跟上，
+              # 否则线上会一直停在旧内容（历史上这里直接 exit 0，漏掉了镜像）。
+              trigger_image
               exit 0
             fi
             if [ "${{ steps.localize.outputs.changed }}" != "1" ]; then
               echo "::warning title=本轮没有产出::仍有 ${REMAINING} 个待办文件，但本轮没有任何改动，停止自我重排以免空转烧 token。"
+              # 没有产出时镜像内容通常没变，触发一次只是约 10 秒的指纹跳过；
+              # 万一此前有未打包的改动，这一步能兜住。
+              trigger_image
               exit 0
             fi
             echo "账本仍有 ${REMAINING} 个待办文件，排队第 $((round + 1)) 轮。"
@@ -906,6 +927,6 @@ jobs:
               -f round="$((round + 1))"
           else
             echo "队列已清空（第 ${round} 轮完成），触发 GHCR 镜像打包。"
-            gh workflow run publish-ghcr.yml --repo "$GITHUB_REPOSITORY"
+            trigger_image
           fi
 
