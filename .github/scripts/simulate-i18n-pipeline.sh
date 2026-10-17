@@ -6,6 +6,8 @@
 #   2. 入队文件只包含上游这一轮改过的文件（不会重复翻译已完成的文件）
 #   3. 翻译后机械扫描不再命中英文（该轮确实翻干净了）
 #   4. 压缩后快照恰好领先上游 1 个提交、落后 0 个（单提交不变量）
+#   5. 每 9 轮注入一次「pre-commit 失败 → stash 跳过本批」，被跳过的文件必须在
+#      下一轮重新入队（改动不会因为提交失败而永久丢失）
 #
 # 覆盖范围说明：本脚本复刻的是「同步/扫描/记账/压缩」这段数据与 Git 逻辑，
 # 不含 Codex 调用、测试步骤与 GHCR 触发；那些靠工作流自身的步骤条件与 CI 结果验证。
@@ -24,6 +26,8 @@ FORK="$WORK/fork"
 
 fail=0
 declare -a problems=()
+# 上一轮「pre-commit 失败被 stash 掉」的文件，下一轮必须重新入队（不能永久丢失）
+declare -a stash_pending=()
 
 problem() {
   problems+=("$1")
@@ -99,6 +103,9 @@ for r in $(seq 1 "$ROUNDS"); do
   git add -A
   git commit -qm "upstream round $r"
 
+  # 允许「本轮上游改动」+「上一轮被 stash 掉、本来就要重译」这两类文件暂时是英文
+  allowed=("${changed[@]}" ${stash_pending[@]+"${stash_pending[@]}"})
+
   # ---------- fork 同步：与 localize-zh.yml「同步上游代码」同一套逻辑 ----------
   cd "$FORK" || exit 1
   git remote remove upstream >/dev/null 2>&1 || true
@@ -128,7 +135,7 @@ for r in $(seq 1 "$ROUNDS"); do
   # 不变量 1：未被上游碰过的文件必须还是中文
   lost=0
   for f in src/*.tsx; do
-    case " ${changed[*]} " in
+    case " ${allowed[*]} " in
       *" $f "*) continue ;;
     esac
     if grep -q "Save changes" "$f" 2>/dev/null; then
@@ -147,12 +154,19 @@ for r in $(seq 1 "$ROUNDS"); do
   extra=0
   while IFS= read -r q; do
     [ -n "$q" ] || continue
-    case " ${changed[*]} " in
+    case " ${allowed[*]} " in
       *" $q "*) ;;
       *) extra=$((extra + 1)) ;;
     esac
   done < "$WORK/queue.txt"
   [ "$extra" -eq 0 ] || problem "第 $r 轮：队列里有 $extra 个未被上游改动的文件（重复翻译）"
+
+  # 不变量 2b：上一轮因 pre-commit 失败被 stash 掉的文件，这一轮必须重新入队
+  for pending in ${stash_pending[@]+"${stash_pending[@]}"}; do
+    grep -qxF "$pending" "$WORK/queue.txt" ||
+      problem "第 $r 轮：上一轮未提交的 $pending 没有重新入队（改动被永久丢弃）"
+  done
+  stash_pending=()
 
   # ---------- 翻译并记账 ----------
   while IFS= read -r f; do
@@ -163,12 +177,27 @@ for r in $(seq 1 "$ROUNDS"); do
     node .github/scripts/i18n-ledger.mjs record --status clean \
       --files "$WORK/queue.txt" --hits "$WORK/lines.txt" >/dev/null || true
   fi
-  git add -A
-  git diff --cached --quiet || git commit -qm "translate round $r"
+  if [ $(( r % 9 )) -eq 0 ]; then
+    # 注入扰动：模拟 pre-commit 校验失败。工作流的做法是 stash 掉本批改动后跳过，
+    # 这里照做，并记录下这批文件，下一轮断言它们会重新入队。
+    while IFS= read -r f; do
+      [ -n "$f" ] || continue
+      stash_pending+=("$f")
+    done < "$WORK/queue.txt"
+    git stash push --include-untracked -m "bad-batch-r$r" >/dev/null 2>&1 || true
+    printf '轮 %3s: 注入 pre-commit 失败 → stash 跳过（待下一轮重新入队 %s 个）\n' \
+      "$r" "${#stash_pending[@]}"
+  else
+    git add -A
+    git diff --cached --quiet || git commit -qm "translate round $r"
+  fi
 
-  # 不变量 3：翻译后不应再有英文候选（对应工作流的 remaining=0 → 收尾打镜像）
-  left=$(candidates | wc -l | tr -d ' ')
-  [ "$left" -eq 0 ] || problem "第 $r 轮：翻译后仍有 $left 个文件命中英文扫描"
+  # 不变量 3：翻译后不应再有英文候选（对应工作流的 remaining=0 → 收尾打镜像）。
+  # 注入了 pre-commit 失败的那一轮除外：改动被 stash 掉，本来就该还留在队列里。
+  if [ "${#stash_pending[@]}" -eq 0 ]; then
+    left=$(candidates | wc -l | tr -d ' ')
+    [ "$left" -eq 0 ] || problem "第 $r 轮：翻译后仍有 $left 个文件命中英文扫描"
+  fi
 
   # ---------- 收尾压缩：与「压缩为单个提交并强推」同一套逻辑 ----------
   git fetch --no-tags upstream main >/dev/null 2>&1
