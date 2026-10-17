@@ -568,10 +568,11 @@ jobs:
 
       - name: 运行单元测试与集成测试
         id: verify
-        # 队列没清空时只跑相关测试（秒级）；队列清空（收尾轮）才跑完整套件，
-        # 失败不直接终止：先让 Codex 同步失效的测试断言，再复验。
+        # 每轮都跑完整套件；失败不直接终止：先让 Codex 同步失效的测试断言，再复验。
+        # 触发条件不依赖「队列里有没有待译文件」：上游有更新就跑测试，
+        # 否则队列为空的那几轮即使 main 已经红着也不会被修复。
         continue-on-error: true
-        if: steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true' && steps.queue.outputs.has_candidates == 'true'
+        if: steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true'
         env:
           REMAINING: ${{ steps.localize.outputs.remaining }}
           RUN_AI_TESTS: "false"
@@ -614,13 +615,18 @@ jobs:
           fi
           logs=("$RUNNER_TEMP/verify/unit.log" "$RUNNER_TEMP/verify/integration.log" "$RUNNER_TEMP/verify/packages.log")
 
-          # 提取失败的测试文件，供下一步用 Codex 同步断言。
-          # 字符类里绝不能再放 \[ \]：GNU grep 下会让整个字符类失配，
-          # 历史上就是它让这份清单永远是空的，Codex 只能拿到一句模糊提示、白烧一整轮预算。
-          # 同时补上 .test.mjs（Playwright 套件选择这类脚本测试）。
+          # 提取「真正失败」的测试文件，供下一步用 Codex 同步断言。
+          # vitest 的失败行形如：
+          #   apps/desktop test:  FAIL  src/context-menu.test.ts > 套件 > 用例   （pnpm -r 各包）
+          #    FAIL  src/foo.test.ts > 套件 > 用例                              （在 apps/web 下跑）
+          # 旧实现把日志里出现过的所有 *.test.* 文件名都收进来（进度输出、汇总表、
+          # 已通过的文件全在内），一次给模型几百个无关文件，断言同步长期没有产出，
+          # main 也就一直红着。这里只取失败行，并把相对路径补成仓库内路径。
+          # 字符类里绝不能再放 \[ \]（GNU grep 下会让整个字符类失配，清单永远是空的）；
           # 日志里可能混入非 UTF-8 字节，用 -a + LC_ALL=C 保证不会中途报错。
-          LC_ALL=C grep -hoaE '[A-Za-z0-9_./@-]+\.test\.(tsx?|mjs)' "${logs[@]}" \
-            | sed -E 's#^.*/apps/web/#apps/web/#' \
+          LC_ALL=C sed -E 's/\x1b\[[0-9;]*[a-zA-Z]//g' "${logs[@]}" 2>/dev/null \
+            | grep -aoE '([A-Za-z0-9_./@-]+ test: +)?FAIL +[^ ]+\.test\.(tsx?|mjs)' \
+            | sed -E -e 's/^([A-Za-z0-9_./@-]+) test: +FAIL +/\1\//' -e 's/^FAIL +/apps\/web\//' \
             | sort -u > "$RUNNER_TEMP/verify/failing-tests.txt" || true
 
           # 纯超时是 runner 负载抖动，不是汉化回归：这种失败交给 Codex 只会白烧一轮预算。
@@ -643,8 +649,9 @@ jobs:
         # 汉化偶尔会把机器可读的字面量（联合类型成员、枚举值、对象键）翻成中文，
         # 这类问题测试跑得过、只有 next build 的类型检查才会暴露。
         # 失败不直接掐断链条：交给下一步的 Codex 把这些字面量改回英文。
+        # 同 verify：不依赖队列是否有待译文件，上游有更新就校验。
         continue-on-error: true
-        if: steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true' && steps.queue.outputs.has_candidates == 'true'
+        if: steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true'
         env:
           NODE_OPTIONS: "--max_old_space_size=16384"
           NODE_ENV: production
@@ -685,7 +692,7 @@ jobs:
 
       - name: 用 Codex 同步失效的测试断言
         id: fixup
-        if: steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true' && steps.queue.outputs.has_candidates == 'true' && (steps.verify.outputs.failed == 'true' || steps.buildcheck.outputs.passed == 'false')
+        if: steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true' && (steps.verify.outputs.failed == 'true' || steps.buildcheck.outputs.passed == 'false')
         env:
           AI_API_URL: ${{ secrets.AI_API_URL || vars.AI_API_URL }}
           AI_API_KEY: ${{ secrets.AI_API_KEY }}
@@ -758,7 +765,7 @@ jobs:
         # 复验本身仍只作提示、不掐断链条：这里剩下的失败几乎都是 runner 负载下的超时抖动
         # （日志里只有 "Test timed out"），真正的硬门禁是 push 之后自动跑的 Run Tests。
         continue-on-error: true
-        if: steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true' && steps.queue.outputs.has_candidates == 'true' && steps.verify.outputs.failed == 'true' && steps.fixup.outputs.changed == 'true'
+        if: steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true' && steps.verify.outputs.failed == 'true' && steps.fixup.outputs.changed == 'true'
         env:
           RUN_AI_TESTS: "false"
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
