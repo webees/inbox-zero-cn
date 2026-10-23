@@ -144,7 +144,7 @@ describe("seedLlmPlaceholderCredentials", () => {
   it("rejects unsupported providers with a clear error", () => {
     expect(() =>
       seedLlmPlaceholderCredentials("unknown-provider", {}),
-    ).toThrowError("Unsupported LLM provider: unknown-provider");
+    ).toThrowError(/Unsupported LLM provider|不支持的 LLM 提供商/);
   });
 });
 

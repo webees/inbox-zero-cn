@@ -67,7 +67,7 @@ describe("desktop IPC startup", () => {
         publish,
         onSyncError,
       }),
-    ).rejects.toThrow("Desktop mail engine IPC is unavailable");
+    ).rejects.toThrow("桌面邮件引擎 IPC 不可用");
     expect(publish).not.toHaveBeenCalled();
     expect(onSyncError).not.toHaveBeenCalled();
   });

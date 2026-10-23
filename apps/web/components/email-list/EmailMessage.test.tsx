@@ -153,7 +153,7 @@ describe("EmailMessage draft recovery", () => {
 
     expect(screen.getByTestId("composer")).toBeTruthy();
     expect(mocks.toastError).toHaveBeenCalledWith({
-      description: "Failed to discard draft",
+      description: "无法丢弃草稿",
     });
     expect(refetch).toHaveBeenCalledTimes(1);
   });
@@ -182,7 +182,7 @@ describe("EmailMessage draft recovery", () => {
     fireEvent.click(screen.getByRole("button", { name: "Discard draft" }));
     expect(screen.queryByTestId("composer")).toBeNull();
 
-    fireEvent.click(screen.getByRole("button", { name: "Forward" }));
+    fireEvent.click(screen.getByRole("button", { name: "转发" }));
     expect(screen.getByTestId("composer").textContent).toContain("forward");
 
     await act(async () => {
@@ -192,12 +192,12 @@ describe("EmailMessage draft recovery", () => {
     expect(
       screen.getAllByTestId("composer").map((composer) => composer.textContent),
     ).toEqual(["replyDiscard draft", "forwardDiscard draft"]);
-    fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+    fireEvent.click(screen.getByRole("button", { name: "回复" }));
     expect(
       screen.getAllByTestId("composer").map((composer) => composer.textContent),
     ).toEqual(["replyDiscard draft"]);
     expect(mocks.toastError).toHaveBeenCalledWith({
-      description: "Failed to discard draft",
+      description: "无法丢弃草稿",
     });
     expect(refetch).toHaveBeenCalledTimes(1);
   });
@@ -220,7 +220,7 @@ describe("EmailMessage reply", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+    fireEvent.click(screen.getByRole("button", { name: "回复" }));
     expect(onExpand).toHaveBeenCalledOnce();
     expect(screen.queryByRole("textbox", { name: "Email message" })).toBeNull();
 
@@ -271,7 +271,7 @@ describe("EmailMessage reply", () => {
       showReplyButton: true,
     };
     const view = render(<EmailMessage {...props} />);
-    fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+    fireEvent.click(screen.getByRole("button", { name: "回复" }));
     const editor = screen.getByRole("textbox", { name: "Email message" });
     editor.focus();
 
@@ -303,7 +303,7 @@ describe("EmailMessage reply", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+    fireEvent.click(screen.getByRole("button", { name: "回复" }));
 
     expect(screen.getByTestId("composer").dataset.to).toBe(
       "Support <session-123@helpdesk.example>",
@@ -413,7 +413,7 @@ describe("EmailMessage reply all", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Reply all" }));
+    fireEvent.click(screen.getByRole("button", { name: "全部回复" }));
 
     const composer = screen.getByTestId("composer");
     expect(composer.dataset.to).toBe("sender@example.com");
@@ -440,7 +440,7 @@ describe("EmailMessage reply all", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Reply all" }));
+    fireEvent.click(screen.getByRole("button", { name: "全部回复" }));
 
     const composer = screen.getByTestId("composer");
     expect(composer.dataset.to).toBe("list@example.com");
@@ -458,8 +458,8 @@ describe("EmailMessage reply all", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: "Reply" })).toBeTruthy();
-    expect(screen.queryByRole("button", { name: "Reply all" })).toBeNull();
+    expect(screen.getByRole("button", { name: "回复" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "全部回复" })).toBeNull();
   });
 });
 
@@ -484,11 +484,9 @@ describe("EmailMessage forward", () => {
       <EmailMessage {...props} bodyAvailable={false} />,
     );
     if (entry === "button")
-      fireEvent.click(screen.getByRole("button", { name: "Forward" }));
+      fireEvent.click(screen.getByRole("button", { name: "转发" }));
     expect(screen.queryByTestId("composer")).toBeNull();
-    fireEvent.click(
-      screen.getByRole("button", { name: "Load message to forward" }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: "加载要转发的邮件" }));
     expect(refetch).toHaveBeenCalledOnce();
     rerender(<EmailMessage {...props} bodyAvailable />);
     expect(screen.getByTestId("composer").dataset.forwardedMessageId).toBe(
@@ -543,7 +541,7 @@ describe("EmailMessage forward", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Forward" }));
+    fireEvent.click(screen.getByRole("button", { name: "转发" }));
 
     const composer = screen.getByTestId("composer");
     expect(composer.dataset.threadId).toBe("thread-1");

@@ -342,7 +342,7 @@ export async function processAttachment({
         logger: log,
       });
     } catch (messagingError) {
-      log.error("Failed to send messaging notification", {
+      log.error("发送消息通知失败", {
         error: messagingError,
       });
     }
@@ -366,29 +366,29 @@ export async function processAttachment({
           where: { id: claimedFilingId },
           data: {
             status: "ERROR",
-            reasoning: error instanceof Error ? error.message : "Unknown error",
+            reasoning: error instanceof Error ? error.message : "未知错误",
           },
         });
       } catch (cleanupError) {
-        log.error("Failed to mark filing as errored", { error: cleanupError });
+        log.error("标记归档为出错状态失败", { error: cleanupError });
       }
     }
 
-    log.error("Error processing attachment", { error });
+    log.error("处理附件时出错", { error });
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : "未知错误",
     };
   }
 }
 
 /**
- * Get all filable attachments from a message.
- * All user attachment types are supported - text-extractable files (PDF, DOCX,
- * TXT) get full content analysis, while other types (images, spreadsheets,
- * etc.) are filed based on filename and email metadata. Inline email assets and
- * calendar invite artifacts are excluded because they are part of the message
- * itself rather than user documents.
+ * 获取消息中所有可归档的附件。
+ * 支持所有用户附件类型——可提取文本的文件（PDF、DOCX、
+ * TXT）会进行完整内容分析，其他类型（图片、表格
+ * 等）则根据文件名和邮件元数据归档。内嵌邮件资源和
+ * 日历邀请产物会被排除，因为它们是消息本身的
+ * 组成部分，而不是用户文档。
  */
 export function getFilableAttachments(message: ParsedMessage): Attachment[] {
   return (message.attachments || []).filter((attachment) => {

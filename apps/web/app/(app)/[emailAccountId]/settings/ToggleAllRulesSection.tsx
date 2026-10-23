@@ -39,7 +39,7 @@ export function ToggleAllRulesSection({
     toggleAllRulesAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: "All rules disabled" });
+        toastSuccess({ description: "所有规则已停用" });
         mutate();
       },
       onError: (error) => {
@@ -55,30 +55,30 @@ export function ToggleAllRulesSection({
       <ItemSeparator />
       <Item size="sm">
         <ItemContent>
-          <ItemTitle>Disable All Rules</ItemTitle>
+          <ItemTitle>停用所有规则</ItemTitle>
         </ItemContent>
         <ItemActions>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button size="sm" variant="outline" disabled={isExecuting}>
-                Disable All
+                全部停用
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Disable all rules?</AlertDialogTitle>
+                <AlertDialogTitle>停用所有规则？</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This will disable all AI rules for this account. You can
-                  re-enable individual rules from the Rules page.
+                  这将停用此账号的所有 AI
+                  规则。你可以在规则页面重新启用单条规则。
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel>取消</AlertDialogCancel>
                 <AlertDialogAction
                   type="button"
                   onClick={() => execute({ enabled: false })}
                 >
-                  Disable All
+                  全部停用
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

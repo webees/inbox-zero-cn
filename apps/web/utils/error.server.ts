@@ -23,6 +23,6 @@ export async function logErrorToPosthog(
       });
     }
   } catch (error) {
-    logger.error("Error logging to PostHog:", { error });
+    logger.error("记录到 PostHog 时出错：", { error });
   }
 }

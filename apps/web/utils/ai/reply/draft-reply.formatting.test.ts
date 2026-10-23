@@ -176,7 +176,7 @@ describe("aiDraftReply formatting", () => {
       .mockResolvedValueOnce({ object: { reply: repetitiveReply } });
 
     await expect(aiDraftReply(getDraftParams())).rejects.toThrow(
-      "Draft reply generation produced invalid output",
+      "回复草稿生成产生了无效输出",
     );
     expect(mockGenerateObject).toHaveBeenCalledTimes(2);
   });
@@ -317,12 +317,12 @@ describe("aiDraftReply formatting", () => {
     const [callArgs] = mockGenerateObject.mock.calls.at(-1)!;
 
     expect(callArgs.prompt).toContain(
-      "2026-01-15 10:00 to 2026-01-15 10:30 (EST;",
+      "2026-01-15 10:00 至 2026-01-15 10:30（EST；",
     );
     expect(callArgs.prompt).toContain(
-      "2026-07-15 10:00 to 2026-07-15 10:30 (EDT;",
+      "2026-07-15 10:00 至 2026-07-15 10:30（EDT；",
     );
-    expect(callArgs.prompt).toContain("Available time slots are in EST/EDT");
+    expect(callArgs.prompt).toContain("可用时间段位于 EST/EDT");
   });
 
   it("uses learned writing style as the primary style block when explicit style is absent", async () => {
@@ -370,7 +370,7 @@ Representative edits:
     const [callArgs] = mockGenerateObject.mock.calls.at(-1)!;
 
     expect(callArgs.prompt).toContain("Be warm and expansive.");
-    expect(callArgs.prompt).toContain("Match the length of the reply");
+    expect(callArgs.prompt).toContain("根据实际被询问的内容控制回复长度");
   });
 
   it("keeps length discipline when only a learned writing style is present", async () => {
@@ -388,7 +388,7 @@ Representative edits:
 
     const [callArgs] = mockGenerateObject.mock.calls.at(-1)!;
 
-    expect(callArgs.prompt).toContain("Match the length of the reply");
+    expect(callArgs.prompt).toContain("根据实际被询问的内容控制回复长度");
   });
 
   it("treats whitespace-only explicit writing style as absent", async () => {

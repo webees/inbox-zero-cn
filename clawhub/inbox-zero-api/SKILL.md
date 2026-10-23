@@ -1,23 +1,23 @@
 ---
 name: inbox-zero-api
-description: Use the Inbox Zero API CLI to inspect the live API schema, list and manage automation rules, and read inbox analytics through the public API. Use this when a task involves Inbox Zero rules, stats, or API-driven automation and can be solved through the CLI instead of browser interaction.
+description: 使用 Inbox Zero API CLI 检查实时 API schema、列出并管理自动化规则，并通过公开 API 读取收件箱分析数据。当任务涉及 Inbox Zero 规则、统计或 API 驱动的自动化，且可以通过 CLI 而非浏览器交互解决时使用。
 homepage: https://www.getinboxzero.com/api-reference/cli
-metadata: { "openclaw": { "skillKey": "inboxZeroApi", "requires": { "bins": ["inbox-zero-api"], "env": ["INBOX_ZERO_API_KEY"] }, "primaryEnv": "INBOX_ZERO_API_KEY", "install": [ { "id": "node", "kind": "node", "package": "@inbox-zero/api", "bins": ["inbox-zero-api"], "label": "Install Inbox Zero API CLI (npm)" } ] } }
+metadata: { "openclaw": { "skillKey": "inboxZeroApi", "requires": { "bins": ["inbox-zero-api"], "env": ["INBOX_ZERO_API_KEY"] }, "primaryEnv": "INBOX_ZERO_API_KEY", "install": [ { "id": "node", "kind": "node", "package": "@inbox-zero/api", "bins": ["inbox-zero-api"], "label": "安装 Inbox Zero API CLI（npm）" } ] } }
 ---
 
 # Inbox Zero API CLI
 
-Use this skill when the task is to inspect or change Inbox Zero state through the public API.
+当任务是通过公开 API 检查或修改 Inbox Zero 状态时，使用本技能。
 
-## Workflow
+## 工作流程
 
-1. Prefer `--json` so the output is stable and machine-readable.
-2. For authenticated commands (`rules`, `stats`, etc.), keep credentials in `INBOX_ZERO_API_KEY` or OpenClaw skill config. Avoid passing API keys as CLI flags unless there is no alternative.
-3. Before creating or replacing a rule body, fetch the live schema with `inbox-zero-api openapi --json` (no API key required).
-4. For create and update flows, write JSON into a workspace file or pipe it on stdin.
-5. Treat `rules update` as a full replacement. Read the current rule first if you only intend to change part of it.
+1. 优先使用 `--json`，让输出稳定且便于机器读取。
+2. 对于需要认证的命令（`rules`、`stats` 等），把凭据保存在 `INBOX_ZERO_API_KEY` 或 OpenClaw 技能配置中。除非没有其他办法，避免把 API 密钥作为 CLI 标志传入。
+3. 在创建或替换规则内容之前，用 `inbox-zero-api openapi --json` 获取实时 schema（无需 API 密钥）。
+4. 在创建和更新流程中，把 JSON 写入工作区文件，或通过 stdin 管道传入。
+5. 把 `rules update` 视为整体替换。如果你只想改动规则的一部分，请先读取当前规则。
 
-## Quick Start
+## 快速开始
 
 ```bash
 inbox-zero-api rules list --json
@@ -25,18 +25,18 @@ inbox-zero-api stats by-period --period week --json
 inbox-zero-api openapi --json
 ```
 
-If the CLI is not installed yet, install it with the OpenClaw installer or run `npm install -g @inbox-zero/api`.
+如果尚未安装 CLI，可以用 OpenClaw 安装器安装，或运行 `npm install -g @inbox-zero/api`。
 
 ## Cursor
 
-Set `INBOX_ZERO_API_KEY` when using authenticated commands (`rules`, `stats`, etc.); `openapi --json` works without a key. Use shell profile, Cursor env, or a local env file—never commit keys. Install: `npm install -g @inbox-zero/api` or `npx @inbox-zero/api`.
+使用需要认证的命令（`rules`、`stats` 等）时设置 `INBOX_ZERO_API_KEY`；`openapi --json` 无需密钥即可使用。可通过 shell 配置文件、Cursor 环境变量或本地 env 文件设置——切勿提交密钥。安装：`npm install -g @inbox-zero/api` 或 `npx @inbox-zero/api`。
 
-## OpenClaw Config
+## OpenClaw 配置
 
-Set the API key in `~/.openclaw/openclaw.json` under `skills.entries.inboxZeroApi.apiKey`, or export `INBOX_ZERO_API_KEY` in the host environment.
+在 `~/.openclaw/openclaw.json` 的 `skills.entries.inboxZeroApi.apiKey` 下设置 API 密钥，或在宿主机环境中导出 `INBOX_ZERO_API_KEY`。
 
-Use `INBOX_ZERO_BASE_URL` or `inbox-zero-api config set base-url <url>` only for self-hosted or nonstandard deployments.
+仅在自托管或非标准部署时才使用 `INBOX_ZERO_BASE_URL` 或 `inbox-zero-api config set base-url <url>`。
 
-## Reference
+## 参考
 
-For exact command patterns and a safe mutation flow, read `references/cli-reference.md`.
+确切的命令模式与安全的变更流程请阅读 `references/cli-reference.md`。

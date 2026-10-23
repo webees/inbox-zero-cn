@@ -42,7 +42,7 @@ describe("unsubscribe route", () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get("content-type")).toContain("text/html");
-    expect(body).toContain("Confirm unsubscribe");
+    expect(body).toContain("确认退订");
     expect(body).toContain('method="POST"');
     expect(prisma.emailAccount.update).not.toHaveBeenCalled();
     expect(prisma.emailToken.delete).not.toHaveBeenCalled();

@@ -77,9 +77,9 @@ export function createSystemOneDecisionModel({
       });
 
       if (!response.ok) {
-        // The request body is email content, so it stays out of the error.
+        // 请求体是邮件内容，因此不要放进错误信息。
         throw new APICallError({
-          message: `${provider} decision request failed with status ${response.status}`,
+          message: `${provider} 决策请求失败，状态码 ${response.status}`,
           url,
           requestBodyValues: { model: modelId },
           statusCode: response.status,
@@ -95,7 +95,7 @@ export function createSystemOneDecisionModel({
             fromSystemOneAnswer(answer),
           ]),
         ),
-        // Distributions arrive rounded, and precision varies by hosted model.
+        // 分布值返回时已四舍五入，精度因托管模型而异。
         rounding: { probabilityDecimals: 2 },
         usage: {
           inputTokens: body.usage.input_tokens,

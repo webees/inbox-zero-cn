@@ -5,7 +5,7 @@ export type BusyPeriod = {
 
 export interface CalendarAvailabilityProvider {
   /**
-   * Fetch busy periods for the given calendars
+   * 获取给定日历的忙碌时段
    */
   fetchBusyPeriods(params: {
     accessToken?: string | null;

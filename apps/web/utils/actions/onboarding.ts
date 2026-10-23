@@ -61,7 +61,7 @@ export const saveOnboardingAnswersAction = actionClientUser
 
         if (!questions || !answers) return result;
 
-        // Helper to get answer by question key
+        // 按问题键获取答案的辅助函数
         const getAnswerByKey = (key: string) => {
           const questionIndex = questions.findIndex((q) => q.key === key);
           if (questionIndex === -1) return null;
@@ -75,7 +75,7 @@ export const saveOnboardingAnswersAction = actionClientUser
           return answer && answer !== "" ? answer : null;
         };
 
-        // Extract features (multiple choice)
+        // 提取功能（多选）
         const featuresAnswer = getAnswerByKey("features");
         if (featuresAnswer) {
           if (typeof featuresAnswer === "string") {
@@ -97,7 +97,7 @@ export const saveOnboardingAnswersAction = actionClientUser
           }
         }
 
-        // Extract other single choice/text answers - only set if not undefined/null/empty
+        // 提取其他单选/文本答案 - 仅在不为 undefined/null/空时设置
         const roleAnswer = getAnswerByKey("role");
         if (roleAnswer && roleAnswer !== "undefined") {
           result.surveyRole = roleAnswer;
@@ -151,7 +151,7 @@ export const saveOnboardingAnswersAction = actionClientUser
                 email: userEmail,
                 role: extractedAnswers.surveyRole,
               }).catch((error) => {
-                logger.error("Loops: Error updating role", { error });
+                logger.error("Loops：更新角色时出错", { error });
               })
             : null,
           extractedAnswers.surveyCompanySize
@@ -159,13 +159,13 @@ export const saveOnboardingAnswersAction = actionClientUser
                 email: userEmail,
                 companySize: extractedAnswers.surveyCompanySize,
               }).catch((error) => {
-                logger.error("Loops: Error updating company size", { error });
+                logger.error("Loops：更新公司规模时出错", { error });
               })
             : null,
           Object.keys(extractedAnswers).length > 0
             ? trackOnboardingAnswer(userEmail, extractedAnswers).catch(
                 (error) => {
-                  logger.error("PostHog: Error tracking onboarding answers", {
+                  logger.error("PostHog：追踪引导流程答案时出错", {
                     error,
                   });
                 },

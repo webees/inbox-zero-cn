@@ -44,7 +44,7 @@ export async function handleFollowUpReminderAction({
   });
 
   if (!tracker) {
-    await postFeedback(event, logger, "That follow-up is no longer active.");
+    await postFeedback(event, logger, "该跟进已不再有效。");
     return;
   }
 
@@ -63,11 +63,7 @@ export async function handleFollowUpReminderAction({
     : null;
 
   if (!channel) {
-    await postFeedback(
-      event,
-      logger,
-      "You don't have permission to act on this follow-up.",
-    );
+    await postFeedback(event, logger, "你无权对该跟进执行操作。");
     return;
   }
 
@@ -76,7 +72,7 @@ export async function handleFollowUpReminderAction({
   );
   const card = buildResolvedCard();
 
-  // Mark resolved up front so the action is idempotent if subsequent steps fail.
+  // 先标记为已解决，以便后续步骤失败时该操作仍然幂等。
   await prisma.threadTracker.update({
     where: { id: trackerId },
     data:
@@ -101,8 +97,8 @@ export async function handleFollowUpReminderAction({
     storedNotifications.length > 0 && (allStoredReplaced || fallbackHandled);
 
   const feedback = tracker.resolved
-    ? "This follow-up is already done."
-    : "Marked done. We won't follow up on this thread again.";
+    ? "该跟进已完成。"
+    : "已标记完成。我们不会再跟进此会话。";
 
   await Promise.all([
     shouldClearNotificationReferences
@@ -126,7 +122,7 @@ async function replaceWithResolvedCard(
     await event.adapter.editMessage(event.threadId, event.messageId, card);
     return true;
   } catch (error) {
-    logger.warn("Failed to update follow-up notification after Mark done", {
+    logger.warn("标记完成后更新跟进通知失败", {
       actionId: event.actionId,
       error,
     });
@@ -186,7 +182,7 @@ async function replaceStoredResolvedCards({
         );
         return true;
       } catch (error) {
-        logger.warn("Failed to update stored Slack follow-up notification", {
+        logger.warn("更新已存储的 Slack 跟进通知失败", {
           messagingChannelId: notification.messagingChannelId,
           error,
         });
@@ -200,8 +196,8 @@ async function replaceStoredResolvedCards({
 
 function buildResolvedCard() {
   return Card({
-    title: "✅ Follow-up marked done",
-    children: [CardText("We won't follow up on this thread again.")],
+    title: "✅ 跟进已标记完成",
+    children: [CardText("我们不会再跟进此会话。")],
   });
 }
 
@@ -218,7 +214,7 @@ async function postFeedback(
       await thread.postEphemeral(event.user, text, { fallbackToDM: false });
       return;
     } catch (error) {
-      logger.warn("Failed to post follow-up feedback (slack ephemeral)", {
+      logger.warn("发布跟进反馈失败（Slack 临时消息）", {
         actionId: event.actionId,
         error,
       });
@@ -228,7 +224,7 @@ async function postFeedback(
   try {
     await thread.post(text);
   } catch (error) {
-    logger.warn("Failed to post follow-up feedback", {
+    logger.warn("发布跟进反馈失败", {
       actionId: event.actionId,
       error,
     });

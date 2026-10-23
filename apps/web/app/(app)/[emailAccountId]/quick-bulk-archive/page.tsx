@@ -11,7 +11,7 @@ export default function QuickBulkArchivePage() {
       <PermissionsCheck />
 
       <PageWrapper>
-        <PageHeader title="Quick Bulk Archive" />
+        <PageHeader title="快速批量归档" />
 
         <ClientOnly>
           <EmailStatsPreloader />

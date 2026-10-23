@@ -63,7 +63,7 @@ export async function upsertSlackRoute({
         botUserId,
       });
     } catch (error) {
-      logger.error("Failed to send channel confirmation", { error });
+      logger.error("发送渠道确认消息失败", { error });
     }
   }
 }
@@ -80,13 +80,13 @@ export async function resolveSlackRouteTarget({
   logger: Logger;
 }) {
   if (targetId === "dm") {
-    logger.trace("Resolving Slack direct-message target", {
+    logger.trace("正在解析 Slack 私信目标", {
       hasProviderUserId: Boolean(providerUserId),
     });
 
     if (!providerUserId) {
-      logger.error("Slack direct-message target is unavailable");
-      throw new SafeError("Direct messages are not available for this channel");
+      logger.error("Slack 私信目标不可用");
+      throw new SafeError("此渠道不支持私信");
     }
 
     return {
@@ -96,35 +96,31 @@ export async function resolveSlackRouteTarget({
   }
 
   const client = createSlackClient(accessToken);
-  logger.trace("Resolving Slack channel target", { targetId });
+  logger.trace("正在解析 Slack 渠道目标", { targetId });
 
   let channelInfo: Awaited<ReturnType<typeof getChannelInfo>> = null;
   try {
     channelInfo = await getChannelInfo(client, targetId);
   } catch (error) {
-    logger.error("Failed to resolve Slack channel target", { error, targetId });
+    logger.error("解析 Slack 渠道目标失败", { error, targetId });
     throw error;
   }
 
   if (!channelInfo) {
-    logger.error("Slack channel target not found", { targetId });
-    throw new SafeError("Could not find the selected Slack channel");
+    logger.error("未找到 Slack 渠道目标", { targetId });
+    throw new SafeError("找不到所选的 Slack 渠道");
   }
 
   if (!channelInfo.isPrivate) {
-    logger.error("Slack channel target is not private", { targetId });
-    throw new SafeError(
-      "Only private channels are allowed. Please select a private channel.",
-    );
+    logger.error("Slack 渠道目标不是私密渠道", { targetId });
+    throw new SafeError("只允许使用私密渠道。请选择一个私密渠道。");
   }
 
   if (!providerUserId) {
-    logger.error("Slack channel target cannot be validated without user id", {
+    logger.error("缺少用户 ID，无法验证 Slack 渠道目标", {
       targetId,
     });
-    throw new SafeError(
-      "Please reconnect Slack before selecting a private channel.",
-    );
+    throw new SafeError("请先重新连接 Slack，再选择私密渠道。");
   }
 
   const availablePrivateChannels = await listPrivateChannelsForUser(
@@ -136,11 +132,11 @@ export async function resolveSlackRouteTarget({
   );
 
   if (!isAvailableToUser) {
-    logger.error("Slack channel target is unavailable to user", {
+    logger.error("该用户无法访问此 Slack 渠道目标", {
       targetId,
     });
     throw new SafeError(
-      "Only private channels you are a member of are allowed. Please select one of your private channels.",
+      "只允许使用你已加入的私密渠道。请选择你自己的某个私密渠道。",
     );
   }
 

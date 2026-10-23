@@ -140,7 +140,7 @@ describe("sendFollowUpNotification", () => {
       ...baseArgs,
       trackerId,
       threadLink,
-      threadLinkLabel: "Open in Outlook",
+      threadLinkLabel: "在 Outlook 中打开",
     });
 
     expect(sendAutomationMessage).not.toHaveBeenCalled();
@@ -149,13 +149,13 @@ describe("sendFollowUpNotification", () => {
 
     const [, card] = mockTelegramPostMessage.mock.calls[0];
     const serializedCard = JSON.stringify(card);
-    expect(serializedCard).toContain("Follow-up nudge");
-    expect(serializedCard).toContain("Open in Outlook");
+    expect(serializedCard).toContain("跟进提醒");
+    expect(serializedCard).toContain("在 Outlook 中打开");
     expect(serializedCard).toContain(threadLink);
     expect(serializedCard).toContain(FOLLOW_UP_MARK_DONE_ACTION_ID);
-    expect(serializedCard).toContain("Mark done");
+    expect(serializedCard).toContain("标记完成");
     expect(serializedCard).toContain(trackerId);
-    expect(serializedCard).not.toContain(`Open: ${threadLink}`);
+    expect(serializedCard).not.toContain(`打开：${threadLink}`);
   });
 
   it("preserves multi-line Telegram snippets past the old short preview cap", async () => {
@@ -181,7 +181,7 @@ describe("sendFollowUpNotification", () => {
     const [, card] = mockTelegramPostMessage.mock.calls[0];
     const snippetChild = (card as any).children.find(
       (child: any) =>
-        child.type === "text" && child.content.includes("Your sent email:"),
+        child.type === "text" && child.content.includes("Your sent email："),
     );
 
     expect(snippetChild.content).toContain("> Hi Barbara,\n>\n> I hope");

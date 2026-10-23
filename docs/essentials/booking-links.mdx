@@ -1,82 +1,81 @@
 ---
-title: 'Booking Links'
-description: 'Share your availability and let guests schedule directly on your calendar.'
+title: '预约链接'
+description: '分享你的空闲时间，让访客直接在你的日历上预约。'
 icon: 'calendar-days'
 ---
 
-Inbox Zero booking links give guests a public page where they can choose a free time, enter their details, and create a calendar event. The page respects your working hours, timezone, existing calendar conflicts, minimum notice, and meeting duration.
+Inbox Zero 预约链接为访客提供一个公开页面，他们可以在其中选择空闲时间、填写信息并创建日历事件。该页面会遵循你的工作时间、时区、现有日历冲突、最短提前通知时间和会议时长。
 
 <iframe
   src="https://player.mux.com/qj7VuzsTmpx00HeJr02R2LXpfcgsI1HTAscEHighd7D5o?metadata-video-title=Calendar%20and%20booking%20links%20walkthrough&accent-color=%233b82f6"
-  title="Calendar and booking links walkthrough"
+  title="日历与预约链接演示"
   style={{ width: "100%", border: "none", aspectRatio: "16/9" }}
   loading="lazy"
   allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
   allowFullScreen
 ></iframe>
 
-You can create one Inbox Zero booking link per email account. If you already use another scheduling service, you can instead save that external URL as your **Calendar Booking Link** so the AI can include it in scheduling replies.
+每个邮箱账号可以创建一个 Inbox Zero 预约链接。如果你已经使用其他日程安排服务，也可以改为把该外部 URL 保存为你的**日历预约链接**，以便 AI 把它包含在日程安排回复中。
 
-## Requirements
+## 要求
 
-- Connect at least one Google or Microsoft calendar.
-- Enable the calendars that should block busy times.
+- 至少连接一个 Google 或 Microsoft 日历。
+- 启用应占用繁忙时间的日历。
 
-## Set your availability
+## 设置你的空闲时间
 
-1. Open **Calendars** in the left sidebar.
-2. Under **Availability**, choose the days and time windows when guests may book.
-3. Select **Save**.
-4. Confirm your timezone in the **Timezone** section at the bottom of the page. If you change it, select that section's **Save**.
+1. 打开左侧边栏中的**日历**。
+2. 在**空闲时间**下，选择允许访客预约的日期和时间段。
+3. 选择**保存**。
+4. 在页面底部的**时区**部分确认你的时区。如果你更改了它，请选择该部分的**保存**。
 
-This is the account's default availability. It also guides times the AI suggests in scheduling emails, even if you do not create an Inbox Zero booking link.
+这是该账号的默认空闲时间。即使在你不创建 Inbox Zero 预约链接的情况下，它也会指导 AI 在日程安排邮件中建议的时间。
 
-## Create a booking link
+## 创建预约链接
 
-1. On **Calendars**, find **Booking link** and select **Create booking link**.
-2. Enter the title in **What guests see** and a unique slug in **Link URL**.
-3. Choose a **Duration** and, under **Add events to**, the calendar where new events should be created.
-4. Optionally add a description. **Video conferencing** is on by default when the calendar supports it.
-5. Select **Create**. The **Configure booking link** dialog opens so you can review the remaining settings.
+1. 在**日历**上找到**预约链接**，选择**创建预约链接**。
+2. 在**访客看到的内容**中输入标题，在**链接 URL**中输入唯一 slug。
+3. 选择**时长**，并在**将事件添加到**下选择应在哪个日历中创建新事件。
+4. 可选择添加描述。当日历支持时，**视频会议**默认开启。
+5. 选择**创建**。会打开**配置预约链接**对话框，供你查看其余设置。
 
-When **Video conferencing** is on, Google calendars add Google Meet links and Microsoft calendars add Microsoft Teams links.
+当**视频会议**开启时，Google 日历会添加 Google Meet 链接，Microsoft 日历会添加 Microsoft Teams 链接。
 
-After creation, copy the `/book/your-slug` URL and share it. The active Inbox Zero booking link is also the link the AI shares in scheduling replies.
+创建后，复制 `/book/your-slug` URL 并分享它。处于活动状态的 Inbox Zero 预约链接也是 AI 在日程安排回复中分享的链接。
 
-## Configure or pause the link
+## 配置或暂停链接
 
-Select **Configure** to edit the link's details, including the minimum notice before a meeting. The default notice is two hours.
+选择**配置**以编辑链接的详情，包括会议前的最短提前通知时间。默认提前通知时间为两小时。
 
-Use the switch on the booking-link card to make the public page active or inactive. An inactive link cannot be booked and is not used by the AI. When an Inbox Zero link is active, it takes precedence over the external **Calendar Booking Link** field.
+使用预约链接卡片上的开关让公开页面处于活动或非活动状态。非活动链接无法被预约，也不会被 AI 使用。当某个 Inbox Zero 链接处于活动状态时，它的优先级高于外部的**日历预约链接**字段。
 
-Deleting the link is permanent and also removes its booking history. Pausing the link is safer when you may want to use it again.
+删除链接是永久性的，也会移除其预约历史。当你可能还想再次使用它时，暂停链接更安全。
 
-## What guests experience
+## 访客的体验
 
-Guests can:
+访客可以：
 
-1. View open slots in their chosen timezone.
-2. Select a time and enter their name and email, plus an optional note.
-3. Receive a calendar invite and confirmation email.
-4. Use secure links from the confirmation to reschedule or cancel.
+1. 在他们选择的时区中查看空闲时段。
+2. 选择时间并输入姓名和邮箱，以及可选备注。
+3. 收到日历邀请和确认邮件。
+4. 使用确认邮件中的安全链接改期或取消。
 
-The host also receives booking notifications.
+主持人也会收到预约通知。
 
-## Troubleshooting
+## 故障排查
 
-### Create booking link is unavailable
+### 「创建预约链接」不可用
 
-Connect a calendar and make sure at least one calendar is enabled.
+连接一个日历，并确保至少启用了一个日历。
 
-### No times appear on the public page
+### 公开页面上不显示任何时间
 
-Check your weekly availability and timezone, minimum notice, and busy events across all enabled calendars. A disconnected calendar or temporary provider-availability failure can also hide all slots to prevent double booking.
+检查你的每周空闲时间和时区、最短提前通知时间，以及所有已启用日历上的繁忙事件。已断开的日历或服务商可用性临时故障也可能隐藏所有时段，以防止重复预约。
 
-### A video link was not added
+### 未添加视频链接
 
-Confirm that the destination calendar belongs to Google or Microsoft and that video conferencing is enabled in the booking-link configuration. Changing the destination calendar can also change which conferencing option is available.
+确认目标日历属于 Google 或 Microsoft，并且已在预约链接配置中启用视频会议。更改目标日历也可能改变可用的会议选项。
 
-### The AI shares the wrong scheduling link
+### AI 分享了错误的日程链接
 
-Verify which Inbox Zero link is active. If no Inbox Zero link is active, review the external **Calendar Booking Link** field on the Calendars page.
-
+核实哪个 Inbox Zero 链接处于活动状态。如果没有活动的 Inbox Zero 链接，请检查日历页面上的外部**日历预约链接**字段。

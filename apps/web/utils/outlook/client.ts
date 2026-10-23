@@ -17,10 +17,10 @@ import {
 import { SCOPES } from "@/utils/outlook/scopes";
 import { isInvalidGrantError, SafeError } from "@/utils/error";
 
-// Add buffer time to prevent token expiry during long-running operations
+// 增加缓冲时间以防止长时间运行的操作期间令牌过期
 const TOKEN_REFRESH_BUFFER_MS = 10 * 60 * 1000; // 10 minutes
 
-// Wrapper class to hold both the Microsoft Graph client and its access token
+// 同时持有 Microsoft Graph 客户端及其访问令牌的包装类
 export class OutlookClient {
   private readonly client: Client;
   private readonly accessToken: string;
@@ -95,7 +95,7 @@ export class OutlookClient {
     this.categoryMapCache = null;
   }
 
-  // Helper methods for common operations
+  // 常见操作的辅助方法
   async getUserProfile(): Promise<User> {
     return await this.client
       .api("/me")
@@ -114,7 +114,7 @@ export class OutlookClient {
       }
       return null;
     } catch {
-      this.logger.warn("Error getting user photo");
+      this.logger.warn("获取用户照片时出错");
       return null;
     }
   }
@@ -146,19 +146,18 @@ class OutlookEmulatorUrlMiddleware implements Middleware {
         ? rewrittenUrl
         : new Request(rewrittenUrl, context.request);
 
-    if (!this.next)
-      throw new Error("Outlook emulator middleware is incomplete");
+    if (!this.next) throw new Error("Outlook 模拟器中间件不完整");
     await this.next.execute(context);
   }
 }
 
-// Helper to create OutlookClient instance
+// 创建 OutlookClient 实例的辅助函数
 export const createOutlookClient = (accessToken: string, logger: Logger) => {
-  if (!accessToken) throw new SafeError("No access token provided");
+  if (!accessToken) throw new SafeError("未提供访问令牌");
   return new OutlookClient(accessToken, logger);
 };
 
-// Similar to Gmail's getGmailClientWithRefresh
+// 类似 Gmail 的 getGmailClientWithRefresh
 export const getOutlookClientWithRefresh = async ({
   accessToken,
   refreshToken,
@@ -173,21 +172,19 @@ export const getOutlookClientWithRefresh = async ({
   logger: Logger;
 }): Promise<OutlookClient> => {
   if (!refreshToken) {
-    // expected for disconnected accounts
-    logger.warn("No refresh token", { emailAccountId });
+    // 对于已断开连接的账号是预期行为
+    logger.warn("没有刷新令牌", { emailAccountId });
     await cleanupInvalidTokens({
       emailAccountId,
       reason: "invalid_grant",
       failedAccessToken: accessToken ?? undefined,
       failedRefreshToken: null,
       logger,
-    }).catch((error) =>
-      logger.warn("Failed to record missing refresh token", { error }),
-    );
+    }).catch((error) => logger.warn("记录缺失的刷新令牌失败", { error }));
     throw new SafeError("No refresh token");
   }
 
-  // Check if token needs refresh
+  // 检查令牌是否需要刷新
   const expiryDate = expiresAt ? expiresAt : null;
   if (
     accessToken &&
@@ -197,10 +194,10 @@ export const getOutlookClientWithRefresh = async ({
     return createOutlookClient(accessToken, logger);
   }
 
-  // Refresh token
+  // 刷新令牌
   try {
     if (!env.MICROSOFT_CLIENT_ID || !env.MICROSOFT_CLIENT_SECRET) {
-      throw new Error("Microsoft login not enabled - missing credentials");
+      throw new Error("Microsoft 登录未启用 - 缺少凭据");
     }
 
     const response = await requestMicrosoftToken({
@@ -213,36 +210,32 @@ export const getOutlookClientWithRefresh = async ({
     const tokens = await response.json();
 
     if (!response.ok) {
-      const errorMessage =
-        tokens.error_description || "Failed to refresh token";
+      const errorMessage = tokens.error_description || "刷新令牌失败";
 
-      // AADSTS7000215 = Invalid client secret
-      // Happens when Azure AD client secret rotates or refresh token expires
-      // Background processes (watch-manager) will catch and log this as a warning
-      // User-facing flows will show an error prompting reconnection
+      // AADSTS7000215 = 无效的客户端密钥
+      // 当 Azure AD 客户端密钥轮换或刷新令牌过期时发生
+      // 后台进程（watch-manager）会捕获并将其记录为警告
+      // 面向用户的流程会显示错误并提示重新连接
       if (errorMessage.includes("AADSTS7000215")) {
-        logger.warn(
-          "Microsoft refresh token failed - user may need to reconnect",
-          {
-            emailAccountId,
-          },
-        );
+        logger.warn("Microsoft 刷新令牌失败——用户可能需要重新连接", {
+          emailAccountId,
+        });
       }
 
-      // Microsoft identity platform errors that require user re-authentication:
-      // AADSTS70000 = Scopes unauthorized or expired
-      // AADSTS70008 = Refresh token expired due to inactivity
-      // AADSTS70011 = Invalid scope
-      // AADSTS700082 = Refresh token expired
-      // AADSTS65001 = User hasn't consented to permissions
-      // AADSTS500011 = Resource principal not found (scope issue)
-      // AADSTS54005 = Authorization code already redeemed
-      // AADSTS50076 = MFA required (Conditional Access policy)
-      // AADSTS50079 = MFA registration required
-      // AADSTS50158 = External security challenge not satisfied
-      // AADSTS530003 = Device must be managed (Conditional Access policy)
-      // AADSTS9002313 = Malformed request, e.g. a corrupt refresh token
-      // Invalid grants are handled by isInvalidGrantError.
+      // 需要用户重新认证的 Microsoft 身份平台错误：
+      // AADSTS70000 = 范围未授权或已过期
+      // AADSTS70008 = 刷新令牌因不活动而过期
+      // AADSTS70011 = 无效范围
+      // AADSTS700082 = 刷新令牌已过期
+      // AADSTS65001 = 用户未同意权限
+      // AADSTS500011 = 找不到资源主体（范围问题）
+      // AADSTS54005 = 授权码已被兑换
+      // AADSTS50076 = 需要 MFA（条件访问策略）
+      // AADSTS50079 = 需要注册 MFA
+      // AADSTS50158 = 外部安全质询未满足
+      // AADSTS530003 = 设备必须受管理（条件访问策略）
+      // AADSTS9002313 = 格式错误的请求，例如损坏的刷新令牌
+      // 无效授权由 isInvalidGrantError 处理。
       const requiresReauth =
         isInvalidGrantError(errorMessage) ||
         errorMessage.includes("AADSTS70000") ||
@@ -259,13 +252,10 @@ export const getOutlookClientWithRefresh = async ({
         errorMessage.includes("AADSTS9002313");
 
       if (requiresReauth) {
-        logger.warn(
-          "Microsoft authorization expired - user needs to reconnect",
-          {
-            emailAccountId,
-            errorMessage,
-          },
-        );
+        logger.warn("Microsoft 授权已过期——用户需要重新连接", {
+          emailAccountId,
+          errorMessage,
+        });
 
         await cleanupInvalidTokens({
           emailAccountId,
@@ -274,7 +264,7 @@ export const getOutlookClientWithRefresh = async ({
           failedRefreshToken: refreshToken,
           logger,
         }).catch((cleanupError) =>
-          logger.warn("Failed to clean up invalid Outlook tokens", {
+          logger.warn("清理无效的 Outlook 令牌失败", {
             cleanupError,
           }),
         );
@@ -287,7 +277,7 @@ export const getOutlookClientWithRefresh = async ({
       throw new Error(errorMessage);
     }
 
-    // Save new tokens
+    // 保存新令牌
     await saveTokens({
       tokens: {
         access_token: tokens.access_token,
@@ -302,7 +292,7 @@ export const getOutlookClientWithRefresh = async ({
     return createOutlookClient(tokens.access_token, logger);
   } catch (error) {
     if (isInvalidGrantError(error)) {
-      logger.warn("Error refreshing Outlook access token", { error });
+      logger.warn("刷新 Outlook 访问令牌时出错", { error });
     }
 
     throw error;
@@ -312,14 +302,14 @@ export const getOutlookClientWithRefresh = async ({
 export const getAccessTokenFromClient = (client: OutlookClient): string =>
   client.getAccessToken();
 
-// Helper function to get the OAuth2 URL for linking accounts
+// 获取用于关联账号的 OAuth2 URL 的辅助函数
 export function getLinkingOAuth2Url({
   loginHint,
 }: {
   loginHint?: string;
 } = {}) {
   if (!env.MICROSOFT_CLIENT_ID) {
-    throw new Error("Microsoft login not enabled - missing client ID");
+    throw new Error("Microsoft 登录未启用 - 缺少客户端 ID");
   }
 
   const params = new URLSearchParams({
@@ -327,16 +317,16 @@ export function getLinkingOAuth2Url({
     response_type: "code",
     redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/api/outlook/linking/callback`,
     scope: SCOPES.join(" "),
-    // we can't use select_account because we need a new refresh token if the users is stale
+    // 不能使用 select_account，因为如果用户已过期我们需要新的刷新令牌
     prompt: "consent",
   });
 
-  // Reconnects target one mailbox, so point Microsoft at it rather than letting
-  // whichever account the browser is already signed into decide.
+  // 重新连接针对单个邮箱，因此让 Microsoft 指向它，而不是让
+  // 浏览器已登录的账号来决定。
   if (loginHint) params.set("login_hint", loginHint);
 
   return `${getMicrosoftOauthAuthorizeUrl()}?${params.toString()}`;
 }
 
-// Helper types for common Microsoft Graph operations
+// 常见 Microsoft Graph 操作的辅助类型
 export type { Client as GraphClient };

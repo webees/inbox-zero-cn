@@ -183,12 +183,12 @@ export default async function RootLayout({
           rel="alternate"
           type="text/plain"
           href="/llms.txt"
-          title={`${BRAND_NAME} agent resources`}
+          title={`${BRAND_NAME} 智能体资源`}
         />
         <link
           rel="help"
           href="https://docs.getinboxzero.com/essentials/getting-started"
-          title="Getting started"
+          title="入门指南"
         />
         {env.NEXT_PUBLIC_EXTERNAL_API_ENABLED && (
           <link
@@ -202,7 +202,7 @@ export default async function RootLayout({
           <link
             rel="service-doc"
             href="https://docs.getinboxzero.com/essentials/mcp"
-            title="Connect to the mailbox MCP server"
+            title="连接邮箱 MCP 服务器"
           />
         )}
       </head>
@@ -210,8 +210,8 @@ export default async function RootLayout({
         className={`h-full ${env.NEXT_PUBLIC_USE_AEONIK_FONT ? aeonikFont.variable : ""} ${geist.variable} font-sans antialiased`}
       >
         <script
-          // Marks the Mac Electron shell before paint so traffic-light
-          // insets apply without a logo flash. Harmless in the browser.
+          // 在绘制前标记 Mac Electron 外壳，以便应用红绿灯按钮的内边距
+          // 且不会闪现 logo。在浏览器中无影响。
           // biome-ignore lint/security/noDangerouslySetInnerHtml: static UA check, no user input
           dangerouslySetInnerHTML={{
             __html:
@@ -264,7 +264,7 @@ function subscriptionOffers(): Offer[] {
       billingDuration: "P1M",
     }),
     subscriptionOffer({
-      name: `${tier.name} annual`,
+      name: `${tier.name} 年度`,
       price: tier.price.annually * 12,
       billingDuration: "P1Y",
     }),

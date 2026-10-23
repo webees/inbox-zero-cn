@@ -7,7 +7,6 @@ import {
   truncateSnippet,
 } from "@/utils/follow-up/copy";
 import { FOLLOW_UP_MARK_DONE_ACTION_ID } from "@/utils/follow-up/follow-up-actions";
-import { pluralize } from "@/utils/string";
 
 const SLACK_SNIPPET_MAX_CHARS = 2200;
 const SLACK_SECTION_TEXT_MAX_CHARS = 3000;
@@ -37,10 +36,8 @@ export function buildFollowUpReminderBlocks({
 }: FollowUpReminderBlocksParams): (KnownBlock | Block)[] {
   const { isAwaiting, counterpartyPrefix, snippetLabel, emoji } =
     getFollowUpCopy(trackerType);
-  const elapsedTime = `${daysSinceSent} ${pluralize(daysSinceSent, "day")} ago`;
-  const title = isAwaiting
-    ? "Follow-up: waiting for their reply"
-    : "Follow-up: reply needed from you";
+  const elapsedTime = `${daysSinceSent} 天前`;
+  const title = isAwaiting ? "跟进：等待对方回复" : "跟进：需要你回复";
 
   const counterpartyMarkdown = `${escapeSlackText(counterpartyPrefix)} *${escapeSlackText(normalizeFollowUpText(counterpartyName))}* \`<${escapeSlackText(counterpartyEmail)}>\``;
 
@@ -78,7 +75,7 @@ export function buildFollowUpReminderBlocks({
       type: "button",
       text: {
         type: "plain_text",
-        text: threadLinkLabel ?? "Open email",
+        text: threadLinkLabel ?? "打开邮件",
         emoji: true,
       },
       url: threadLink,
@@ -87,7 +84,7 @@ export function buildFollowUpReminderBlocks({
   actionElements.push({
     type: "button",
     action_id: FOLLOW_UP_MARK_DONE_ACTION_ID,
-    text: { type: "plain_text", text: "Mark done", emoji: true },
+    text: { type: "plain_text", text: "标记完成", emoji: true },
     value: trackerId,
   });
   const actionsBlock: ActionsBlock = {
@@ -100,7 +97,7 @@ export function buildFollowUpReminderBlocks({
 }
 
 function formatSlackSnippetSectionText(label: string, snippet: string): string {
-  const prefix = `*${escapeSlackText(label)}:*`;
+  const prefix = `*${escapeSlackText(label)}：*`;
   const format = (maxChars: number) =>
     `${prefix}\n${formatSlackQuotedText(truncateSnippet(snippet, maxChars))}`;
 

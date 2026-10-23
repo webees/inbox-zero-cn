@@ -77,7 +77,7 @@ describe("automation job actions", () => {
       where: { id: "automation-job-1" },
       data: expect.objectContaining({
         enabled: true,
-        name: "Scheduled check-ins",
+        name: "定时检查",
         cronExpression: "0 9 * * 1-5",
         prompt: "Focus on urgent mail.",
         messagingChannelId: CHANNEL_ID,
@@ -96,7 +96,7 @@ describe("automation job actions", () => {
       prompt: null,
     });
 
-    expect(result?.serverError).toBe("Messaging channel is not connected");
+    expect(result?.serverError).toBe("消息渠道未连接");
     expect(prisma.messagingRoute.create).not.toHaveBeenCalled();
     expect(prisma.automationJob.update).not.toHaveBeenCalled();
     expect(prisma.automationJob.create).not.toHaveBeenCalled();
@@ -180,7 +180,7 @@ describe("automation job actions", () => {
       enabled: true,
     });
 
-    expect(result?.serverError).toBe("Messaging channel is not connected");
+    expect(result?.serverError).toBe("消息渠道未连接");
     expect(prisma.automationJob.update).not.toHaveBeenCalled();
   });
 });

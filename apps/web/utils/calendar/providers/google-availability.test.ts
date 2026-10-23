@@ -77,7 +77,7 @@ describe("createGoogleAvailabilityProvider", () => {
         timeMin: "2026-05-04T00:00:00.000Z",
       }),
     ).rejects.toMatchObject({
-      message: "Failed to fetch Google calendar availability",
+      message: "无法获取 Google 日历可用性",
       name: "CalendarAvailabilityError",
       provider: "google",
       calendarErrors: [{ calendarId: "cal-1", errors: calendarErrors }],

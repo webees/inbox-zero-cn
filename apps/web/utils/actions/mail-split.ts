@@ -51,8 +51,8 @@ export const updateMailSplitAction = actionClient
   );
 
 /**
- * Turns a description into conditions the reader then reviews in the builder —
- * it never creates the split outright, so a wrong guess costs a click, not a tab.
+ * 把一段描述转换为条件，供用户在构建器中复核——
+ * 它绝不会直接创建分类，因此即便猜错也只损失一次点击，而不是一个标签页。
  */
 export const buildMailSplitFromPromptAction = actionClient
   .metadata({ name: "buildMailSplitFromPrompt" })
@@ -63,7 +63,7 @@ export const buildMailSplitFromPromptAction = actionClient
       parsedInput: { prompt, options, senders },
     }) => {
       const emailAccount = await getEmailAccountWithAi({ emailAccountId });
-      if (!emailAccount) throw new SafeError("Email account not found");
+      if (!emailAccount) throw new SafeError("未找到邮箱账号");
 
       const result = await aiPromptToSplitFilters({
         emailAccount,
@@ -74,7 +74,7 @@ export const buildMailSplitFromPromptAction = actionClient
 
       if (!result.filters.length) {
         throw new SafeError(
-          "I couldn't find filters in that — name a sender, label or category.",
+          "我没能从中找到筛选条件——请指明发件人、标签或分类。",
         );
       }
 

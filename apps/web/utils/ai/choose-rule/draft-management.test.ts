@@ -361,6 +361,11 @@ describe("stripQuotedContent", () => {
       expected: "My reply",
     },
     {
+      name: "在 ... 写道：（汉化后的引用头）",
+      text: "我的回复\n\n在 Mon, 10 Aug 2026 at 09:00，John <john@example.com> 写道：\n> 引用的内容",
+      expected: "我的回复",
+    },
+    {
       name: "Original Message",
       text: "My reply\n\n---- Original Message ----\nFrom: test@example.com",
       expected: "My reply",
@@ -369,6 +374,11 @@ describe("stripQuotedContent", () => {
       name: "> quote",
       text: "My reply\n\n> On Monday:\n> Quoted content",
       expected: "My reply",
+    },
+    {
+      name: "> 在（汉化后的引用行）",
+      text: "我的回复\n\n> 在 Monday：\n> 引用的内容",
+      expected: "我的回复",
     },
     {
       name: "From:",

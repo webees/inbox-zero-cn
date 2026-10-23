@@ -99,7 +99,7 @@ export function MailSearchSuggestionList({
 }) {
   return (
     <div
-      aria-label="Search suggestions"
+      aria-label="搜索建议"
       className="absolute top-full right-0 left-0 z-20 mt-1 overflow-hidden rounded-lg border border-border bg-popover py-1 text-popover-foreground text-sm shadow-md"
       id={id}
       role="listbox"
@@ -113,15 +113,15 @@ export function MailSearchSuggestionList({
           )}
           id={suggestionOptionId(id, index)}
           key={`${suggestion.kind}:${suggestion.query}`}
-          // Selecting on mousedown keeps the input focused, which is what
-          // holds the list open long enough for the click to land.
+          // 在 mousedown 时选择可让输入框保持焦点，从而使列表保持打开，
+          // 以便点击能够生效。
           onMouseDown={(event) => {
             event.preventDefault();
             onSelect(suggestion);
           }}
           role="option"
-          // Focus stays on the input; aria-activedescendant conveys the
-          // highlighted option.
+          // 焦点留在输入框上；aria-activedescendant 用于传达
+          // 高亮选项。
           tabIndex={-1}
         >
           {suggestion.kind === "recent" ? (
@@ -166,10 +166,10 @@ export function MailSearchHint() {
   return (
     <div className="absolute top-full right-0 left-0 z-20 mt-1 flex items-center justify-between gap-3 rounded-lg border border-border bg-popover px-3 py-2 text-muted-foreground text-sm shadow-md">
       <span className="min-w-0 truncate">
-        Search by sender, subject, or any words in the email
+        按发件人、主题或邮件中的任意词语搜索
       </span>
       <span className="flex shrink-0 items-center gap-1.5 text-xs">
-        <Kbd>Esc</Kbd> to close
+        <Kbd>Esc</Kbd> 关闭
       </span>
     </div>
   );

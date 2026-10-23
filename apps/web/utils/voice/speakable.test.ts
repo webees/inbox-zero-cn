@@ -6,7 +6,7 @@ describe("speakable", () => {
     const out = speakable(
       "Here's the fix:\n\n```ts\nconst x = 1;\n```\n\nThat's it.",
     );
-    expect(out).toContain("TypeScript code block");
+    expect(out).toContain("一个 TypeScript 代码块");
     expect(out).not.toContain("const x");
     expect(out).toContain("That's it.");
   });

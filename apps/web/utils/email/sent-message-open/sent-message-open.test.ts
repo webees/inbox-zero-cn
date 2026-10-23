@@ -123,7 +123,7 @@ describe("describeSentMessageOpen", () => {
         { firstOpenedAt: null, lastOpenedAt: null, openCount: 0 },
         formatRelative,
       ),
-    ).toBe("Not opened yet");
+    ).toBe("尚未打开");
   });
 
   it("describes a single open", () => {
@@ -136,7 +136,7 @@ describe("describeSentMessageOpen", () => {
         },
         formatRelative,
       ),
-    ).toBe("Opened 2 hours ago");
+    ).toBe("已于 2 hours ago 打开");
   });
 
   it("describes repeated opens", () => {
@@ -149,7 +149,7 @@ describe("describeSentMessageOpen", () => {
         },
         formatRelative,
       ),
-    ).toBe("Opened 3 times · Last opened 2 hours ago");
+    ).toBe("已打开 3 次 · 最近打开于 2 hours ago");
   });
 });
 

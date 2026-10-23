@@ -95,11 +95,9 @@ export function ComposeHeaderFields({
       redirectToSafeUrl(url, { allowExternal: true });
     } catch (error) {
       toastError({
-        title: "Error initiating reconnection",
+        title: "发起重新连接时出错",
         description:
-          error instanceof Error
-            ? error.message
-            : "Please try again or contact support.",
+          error instanceof Error ? error.message : "请重试或联系支持团队。",
       });
       setIsReconnectingContacts(false);
     }
@@ -221,11 +219,9 @@ export function ComposeHeaderFields({
             onClick={openInlineReplyFields}
             className="flex min-w-0 items-center gap-1.5 rounded-sm text-left text-sm font-medium leading-5 text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <span className="text-emerald-600 dark:text-emerald-400">
-              Draft
-            </span>
+            <span className="text-emerald-600 dark:text-emerald-400">草稿</span>
             <span className="min-w-0 truncate">
-              to{" "}
+              收件人{" "}
               {formatRecipientNames(
                 [
                   ...splitRecipientList(
@@ -236,11 +232,11 @@ export function ComposeHeaderFields({
                   ),
                 ],
                 userEmail,
-              ) || "recipients"}
+              ) || "收件人"}
             </span>
             {selectedSendAs && !selectedSendAs.isDefault && (
               <span className="min-w-0 truncate font-normal text-muted-foreground">
-                from {selectedSendAs.email}
+                来自 {selectedSendAs.email}
               </span>
             )}
             <ChevronDownIcon className="size-3 shrink-0 text-muted-foreground" />
@@ -251,7 +247,7 @@ export function ComposeHeaderFields({
         <div className="space-y-1 [&_input]:bg-transparent">
           {selectedSendAs && !showAccountPicker && (
             <div className="flex min-h-7 items-center gap-2">
-              <ComposeFieldLabel htmlFor="from-address" label="From" />
+              <ComposeFieldLabel htmlFor="from-address" label="发件人" />
               <Select
                 value={selectedSendAs.email}
                 onValueChange={onChangeSendAs}
@@ -293,7 +289,7 @@ export function ComposeHeaderFields({
                 {field === "to" && canCollapseInlineReplyFields && (
                   <button
                     type="button"
-                    aria-label="Hide recipients"
+                    aria-label="隐藏收件人"
                     ref={collapseInlineReplyFieldsButtonRef}
                     onClick={closeInlineReplyFields}
                     className="rounded-sm text-muted-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -305,9 +301,7 @@ export function ComposeHeaderFields({
                   <button
                     type="button"
                     aria-expanded={showCcBcc}
-                    aria-label={
-                      showCcBcc ? "Hide Cc and Bcc" : "Show Cc and Bcc"
-                    }
+                    aria-label={showCcBcc ? "隐藏抄送和密送" : "显示抄送和密送"}
                     onClick={toggleCcBcc}
                     className="rounded-sm text-muted-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
@@ -326,7 +320,7 @@ export function ComposeHeaderFields({
               name="subject"
               registerProps={subjectRegisterProps}
               error={subjectError}
-              placeholder="Subject"
+              placeholder="主题"
               className="h-8 rounded-none border-0 bg-transparent p-0 text-sm font-medium text-foreground shadow-none focus:border-transparent focus:ring-0 sm:text-sm"
             />
           </div>
@@ -337,9 +331,9 @@ export function ComposeHeaderFields({
 }
 
 const RECIPIENT_LABELS: Record<ComposeRecipientField, string> = {
-  to: "To",
-  cc: "Cc",
-  bcc: "Bcc",
+  to: "收件人",
+  cc: "抄送",
+  bcc: "密送",
 };
 
 function ComposeFieldLabel({

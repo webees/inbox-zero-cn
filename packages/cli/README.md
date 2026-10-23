@@ -69,15 +69,15 @@ inbox-zero setup-vercel --skip-neon
 inbox-zero setup-vercel --yes
 ```
 
-Use `--deploy` if you want the CLI to trigger `vercel deploy --prod` after setup.
+如果希望 CLI 在设置完成后触发 `vercel deploy --prod`，请使用 `--deploy`。
 
 ### `inbox-zero start`
 
-Pulls the latest Docker image and starts all containers:
-- PostgreSQL database
-- Redis cache
-- Inbox Zero web app
-- Cron job for email sync
+拉取最新的 Docker 镜像并启动所有容器：
+- PostgreSQL 数据库
+- Redis 缓存
+- Inbox Zero Web 应用
+- 用于邮件同步的定时任务
 
 ```bash
 inbox-zero start           # Start in background
@@ -86,7 +86,7 @@ inbox-zero start --no-detach  # Start in foreground
 
 ### `inbox-zero stop`
 
-Stops all running containers.
+停止所有正在运行的容器。
 
 ```bash
 inbox-zero stop
@@ -94,7 +94,7 @@ inbox-zero stop
 
 ### `inbox-zero logs`
 
-View container logs.
+查看容器日志。
 
 ```bash
 inbox-zero logs            # Show last 100 lines
@@ -104,30 +104,30 @@ inbox-zero logs -n 500     # Show last 500 lines
 
 ### `inbox-zero status`
 
-Show status of running containers.
+显示正在运行的容器状态。
 
 ### `inbox-zero update`
 
-Pull the latest Inbox Zero image and optionally restart.
+拉取最新的 Inbox Zero 镜像并可选择重启。
 
 ```bash
 inbox-zero update
 ```
 
-## Requirements
+## 环境要求
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
-- OAuth credentials from Google and/or Microsoft
-- An LLM API key (Anthropic, OpenAI, Google, etc.)
+- 已安装并正在运行 [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- 来自 Google 和/或 Microsoft 的 OAuth 凭据
+- 一个 LLM API 密钥（Anthropic、OpenAI、Google 等）
 
-## Configuration
+## 配置
 
-All configuration is stored in `~/.inbox-zero/`:
-- `.env` - Environment variables
-- `docker-compose.yml` - Docker Compose configuration
+所有配置都存储在 `~/.inbox-zero/`：
+- `.env` - 环境变量
+- `docker-compose.yml` - Docker Compose 配置
 
-To reconfigure, run `inbox-zero setup` again.
+如需重新配置，请再次运行 `inbox-zero setup`。
 
-## License
+## 许可证
 
-See [LICENSE](../../LICENSE) in the repository root.
+请参阅仓库根目录下的 [LICENSE](../../LICENSE)。

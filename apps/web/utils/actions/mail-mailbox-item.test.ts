@@ -108,12 +108,8 @@ describe("mailbox item actions", () => {
   });
 
   it.each([
-    ["google" as const, "#123456", "Select a supported Gmail label color."],
-    [
-      "microsoft" as const,
-      "#654321",
-      "Select a supported Outlook category color.",
-    ],
+    ["google" as const, "#123456", "请选择受支持的 Gmail 标签颜色。"],
+    ["microsoft" as const, "#654321", "请选择受支持的 Outlook 分类颜色。"],
   ])("rejects unsupported %s label colors before calling the provider", async (provider, backgroundColor, expectedError) => {
     setProvider(provider);
 
@@ -189,9 +185,7 @@ describe("mailbox item actions", () => {
       id: "folder-1",
     });
 
-    expect(result?.serverError).toBe(
-      "Folder actions are only available for Outlook accounts.",
-    );
+    expect(result?.serverError).toBe("文件夹操作仅适用于 Outlook 账号。");
     expect(mockDeleteFolder).not.toHaveBeenCalled();
   });
 });

@@ -28,12 +28,12 @@ export const sendEmailBody = z
     replyToEmail: z
       .object({
         threadId: z.string(),
-        // Absent on a forward, which threads on the thread id alone.
+        // 转发时不存在，转发仅按会话 id 归并。
         headerMessageId: z.string().optional(),
         references: z.string().optional(),
         messageId: z.string().optional(),
-        // The message being forwarded, which Outlook drafts from to keep the
-        // forward in its conversation.
+        // 被转发的邮件，Outlook 从它开始起草以让
+        // 转发保留在其会话中。
         forwardedMessageId: z.string().optional(),
       })
       .optional(),
@@ -109,7 +109,7 @@ export function validateSendEmailPayloadSize(
 ): { valid: true } | { valid: false; error: string } {
   const serialized = JSON.stringify(payload);
   if (!serialized) {
-    return { valid: false, error: "The email payload is invalid." };
+    return { valid: false, error: "邮件负载无效。" };
   }
   const size = new TextEncoder().encode(serialized).byteLength;
   if (size <= EMAIL_SEND_LIMITS.maxSerializedPayloadBytes) {
@@ -117,7 +117,7 @@ export function validateSendEmailPayloadSize(
   }
   return {
     valid: false,
-    error: "The email body and attachments are too large to send together.",
+    error: "邮件正文和附件合在一起太大，无法发送。",
   };
 }
 

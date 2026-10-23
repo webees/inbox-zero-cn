@@ -85,7 +85,7 @@ Determine the action and write a reply.`;
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Parse filing reply",
+    label: "解析归档回复",
     modelOptions,
     promptHardening: { trust: "trusted" },
   });

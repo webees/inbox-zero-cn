@@ -12,14 +12,15 @@ import {
   getRuleLabel,
   STANDARD_CATEGORY_SYSTEM_TYPES,
 } from "@/utils/rule/consts";
+import { SystemType } from "@/generated/prisma/enums";
 import type { ThreadsQuery } from "@/utils/threads/validation";
 
 const GMAIL_CATEGORIES = [
-  { name: "Personal", type: GmailLabel.PERSONAL },
-  { name: "Social", type: GmailLabel.SOCIAL },
-  { name: "Updates", type: GmailLabel.UPDATES },
-  { name: "Forums", type: GmailLabel.FORUMS },
-  { name: "Promotions", type: GmailLabel.PROMOTIONS },
+  { name: "主要", type: GmailLabel.PERSONAL },
+  { name: "社交", type: GmailLabel.SOCIAL },
+  { name: "更新", type: GmailLabel.UPDATES },
+  { name: "论坛", type: GmailLabel.FORUMS },
+  { name: "推广", type: GmailLabel.PROMOTIONS },
 ] as const;
 
 const MAILBOX_TYPES = new Set([
@@ -52,6 +53,31 @@ for (const systemType of STANDARD_CATEGORY_SYSTEM_TYPES) {
   const key = normalizeCategoryKey(label);
   LABEL_NAME_BY_ALIAS[key] = label;
   LABEL_NAME_BY_ALIAS[`${key}s`] = label;
+}
+
+/**
+ * 本地化之前用过的英文类别别名。
+ * 旧链接、旧前端状态里仍可能出现这些值，解析时把它们映射回当前的中文标签名。
+ */
+const LEGACY_LABEL_ALIASES: Array<{ alias: string; systemType: SystemType }> = [
+  { alias: "to reply", systemType: SystemType.TO_REPLY },
+  { alias: "awaiting reply", systemType: SystemType.AWAITING_REPLY },
+  { alias: "fyi", systemType: SystemType.FYI },
+  { alias: "actioned", systemType: SystemType.ACTIONED },
+  { alias: "newsletter", systemType: SystemType.NEWSLETTER },
+  { alias: "newsletters", systemType: SystemType.NEWSLETTER },
+  { alias: "marketing", systemType: SystemType.MARKETING },
+  { alias: "calendar", systemType: SystemType.CALENDAR },
+  { alias: "receipt", systemType: SystemType.RECEIPT },
+  { alias: "receipts", systemType: SystemType.RECEIPT },
+  { alias: "notification", systemType: SystemType.NOTIFICATION },
+  { alias: "notifications", systemType: SystemType.NOTIFICATION },
+  { alias: "otp", systemType: SystemType.OTP },
+  { alias: "cold email", systemType: SystemType.COLD_EMAIL },
+];
+
+for (const { alias, systemType } of LEGACY_LABEL_ALIASES) {
+  LABEL_NAME_BY_ALIAS[normalizeCategoryKey(alias)] = getRuleLabel(systemType);
 }
 
 export type NativeMailCategory = {
@@ -119,14 +145,14 @@ export async function listNativeMailSplits({
   } else if (emailProvider.name === "microsoft") {
     categories.push(
       {
-        name: "Focused",
+        name: "主要",
         type: "inbox",
         inboxSection: "focused",
         labelId: null,
         folderId: null,
       },
       {
-        name: "Other",
+        name: "其他",
         type: "inbox",
         inboxSection: "other",
         labelId: null,
@@ -236,7 +262,7 @@ export async function resolveNativeThreadsQuery({
   );
   if (label) return { ...page, labelIds: ["INBOX", label.id] };
 
-  throw new SafeError("Unknown inbox category", 400);
+  throw new SafeError("未知的收件箱类别", 400);
 }
 
 async function findSplit(

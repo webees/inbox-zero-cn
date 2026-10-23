@@ -153,7 +153,7 @@ export function useComposeSend({
         pendingRecipients: pendingRecipientsRef.current,
       });
       if (!recipients.to) {
-        toastError({ description: "Enter a valid recipient email address." });
+        toastError({ description: "请输入有效的收件人邮箱地址" });
         return;
       }
 
@@ -165,7 +165,7 @@ export function useComposeSend({
       );
       if (failedAttachment) {
         toastError({
-          description: `${failedAttachment.filename} isn't attached. Remove it or attach it again before sending.`,
+          description: `${failedAttachment.filename} 未添加附件，请在发送前移除或重新添加`,
         });
         return;
       }
@@ -271,8 +271,8 @@ export function useComposeSend({
             setSubmissionError(
               getActionErrorMessage(result ?? {}, {
                 prefix: scheduledThreadId
-                  ? "Could not schedule this reply"
-                  : "Could not schedule this email",
+                  ? "无法安排发送这封回复"
+                  : "无法安排发送这封邮件",
               }),
             );
             return;
@@ -283,8 +283,7 @@ export function useComposeSend({
             await clearLocalDraft();
           } catch {
             toastError({
-              description:
-                "Reply scheduled, but its local draft copy could not be cleared.",
+              description: "回复已安排发送，但无法清除本地草稿副本",
             });
           }
           if (markDoneAfterSend) onMarkDone?.();
@@ -298,7 +297,7 @@ export function useComposeSend({
             scheduledThreadId,
           );
           if (!scheduledThreadId) {
-            toastSuccess({ description: "Email scheduled." });
+            toastSuccess({ description: "邮件已安排发送" });
           }
           onClose?.();
           refetch?.();
@@ -314,12 +313,9 @@ export function useComposeSend({
           requestId;
         const online = navigator.onLine;
         if (!client) {
-          setSubmissionError(
-            "Mail is still starting. Try sending again in a moment.",
-          );
+          setSubmissionError("邮件服务仍在启动，请稍后重试发送");
           toastError({
-            description:
-              "Mail is still starting. Try sending again in a moment.",
+            description: "邮件服务仍在启动，请稍后重试发送",
           });
           return;
         }
@@ -431,8 +427,7 @@ export function useComposeSend({
                 settled.ownsNotification
               ) {
                 toastError({
-                  description:
-                    "This reply may have been sent. Check Sent before retrying.",
+                  description: "这封回复可能已发送，重试前请检查“已发送”",
                 });
               }
             })
@@ -451,9 +446,9 @@ export function useComposeSend({
               outcome.threadId,
             );
             toastSuccess({
-              description: "Email sent!",
+              description: "邮件已发送",
               action: viewSentEmail
-                ? { label: "View", onClick: viewSentEmail }
+                ? { label: "查看", onClick: viewSentEmail }
                 : undefined,
             });
           }
@@ -470,8 +465,7 @@ export function useComposeSend({
         } else if (outcome.status === "uncertain") {
           if (outcome.ownsNotification) {
             toastError({
-              description:
-                "This reply may have been sent. Check Sent before retrying.",
+              description: "这封回复可能已发送，重试前请检查“已发送”",
             });
           }
           onClose?.();
@@ -481,10 +475,8 @@ export function useComposeSend({
       } catch (error) {
         // biome-ignore lint/suspicious/noConsole: send failures stay visible in the browser console
         console.error(error);
-        setSubmissionError(
-          "Could not confirm delivery. Check the thread status before trying again.",
-        );
-        toastError({ description: "There was an error sending the email :(" });
+        setSubmissionError("无法确认投递状态，重试前请检查会话状态");
+        toastError({ description: "发送邮件时出错 :(" });
       } finally {
         if (!deliveryAccepted) resumeProviderAutosave();
       }

@@ -50,7 +50,7 @@ describe("ThreadReader", () => {
     expect(
       screen.getByText("This conversation isn't available yet."),
     ).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Try again" }));
+    fireEvent.click(screen.getByRole("button", { name: "重试" }));
     expect(refetch).toHaveBeenCalledTimes(1);
   });
 

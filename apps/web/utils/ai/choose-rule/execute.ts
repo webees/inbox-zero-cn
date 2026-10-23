@@ -139,7 +139,7 @@ export async function executeAct({
           logger,
         });
       } else if (action.type === ActionType.DRAFT_EMAIL) {
-        log.warn("Draft action completed without a draft ID", {
+        log.warn("草稿操作已完成，但没有草稿 ID", {
           actionId: action.id,
         });
       }
@@ -153,7 +153,7 @@ export async function executeAct({
       });
       await logErrorWithDedupe({
         logger: log,
-        message: "Error executing action",
+        message: "执行操作时出错",
         error,
         dedupeKeyParts: {
           scope: "ai/choose-rule/execute",

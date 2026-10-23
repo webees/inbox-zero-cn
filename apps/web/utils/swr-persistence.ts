@@ -1,8 +1,7 @@
 const STORAGE_PREFIX = "inbox-zero:swr:v2:";
 
-// These hooks use plain-string SWR keys that are not account-scoped (the
-// account travels in a request header), so the snapshot is namespaced by
-// emailAccountId instead.
+// 这些 hook 使用不按账号隔离的纯字符串 SWR 键（账号通过请求头传递），
+// 因此快照改为按 emailAccountId 进行命名空间隔离。
 export const PERSISTED_SWR_KEYS = [
   "/api/labels",
   "/api/user/folders",
@@ -15,15 +14,14 @@ type SwrCacheState = {
   isValidating?: boolean;
 };
 
-// Matches both a plain Map and SWR's Cache interface.
+// 同时匹配普通的 Map 和 SWR 的 Cache 接口。
 type ReadableCache = {
   get(key: string): SwrCacheState | undefined;
 };
 
-// Set by the clear functions so a later pagehide/visibility snapshot can't
-// resurrect cleared data from the still-warm in-memory cache — the logout
-// redirect itself fires pagehide. Module state resets on the next page load,
-// which is exactly the lifetime the block needs.
+// 由清理函数设置，这样后续的 pagehide/visibility 快照就无法从仍然
+// 温热的内存缓存中恢复已清理的数据 —— 退出登录的重定向本身会触发
+// pagehide。模块状态会在下次页面加载时重置，这正是该屏蔽所需的生命周期。
 let allPersistenceBlocked = false;
 const blockedAccountIds = new Set<string>();
 
@@ -34,7 +32,7 @@ export function readPersistedSwrEntries(
   if (!emailAccountId || typeof window === "undefined") return entries;
 
   for (const [key, data] of Object.entries(readRawSnapshot(emailAccountId))) {
-    // Hydrated data is stale by definition; SWR revalidates on mount.
+    // 水合的数据按定义就是过期的；SWR 会在挂载时重新校验。
     entries.set(key, { data, isLoading: false, isValidating: false });
   }
   return entries;
@@ -48,8 +46,8 @@ export function persistSwrEntries(
   if (allPersistenceBlocked || blockedAccountIds.has(emailAccountId)) return;
 
   try {
-    // Seed from the stored snapshot so a page that only fetched a subset of
-    // the whitelisted keys doesn't drop the rest on overwrite.
+    // 从已存储的快照初始化，这样只获取了白名单键中一部分的页面
+    // 就不会在覆盖时丢掉其余部分。
     const snapshot = readRawSnapshot(emailAccountId);
     let hasData = false;
     for (const key of PERSISTED_SWR_KEYS) {
@@ -65,7 +63,7 @@ export function persistSwrEntries(
       JSON.stringify(snapshot),
     );
   } catch {
-    // Quota or serialization failures must never break the app.
+    // 配额或序列化失败绝不能破坏应用。
   }
 }
 
@@ -77,7 +75,7 @@ export function clearPersistedSwrCache() {
       window.localStorage.removeItem(key);
     }
   } catch {
-    // Ignore storage failures during logout.
+    // 退出登录期间忽略存储失败。
   }
 }
 
@@ -87,7 +85,7 @@ export function clearPersistedSwrCacheForAccount(emailAccountId: string) {
   try {
     window.localStorage.removeItem(storageKey(emailAccountId));
   } catch {
-    // Ignore storage failures.
+    // 忽略存储失败。
   }
 }
 
@@ -120,7 +118,7 @@ function readRawSnapshot(emailAccountId: string): Record<string, unknown> {
       if (data !== undefined) snapshot[key] = data;
     }
   } catch {
-    // A corrupt snapshot must never break the app.
+    // 损坏的快照绝不能破坏应用。
   }
   return snapshot;
 }

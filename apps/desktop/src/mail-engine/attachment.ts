@@ -36,7 +36,7 @@ export async function readDesktopAttachment(input: {
     Number(response.headers.get("content-length")) > MAX_INLINE_IMAGE_BYTES
   ) {
     await response.body?.cancel();
-    throw new Error("Inline image download failed");
+    throw new Error("内嵌图片下载失败");
   }
   const reader = response.body?.getReader();
   if (!reader) return new Uint8Array();

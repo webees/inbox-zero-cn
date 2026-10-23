@@ -228,9 +228,7 @@ describe("Chat history", () => {
 
     render(<Chat open />);
 
-    fireEvent.pointerDown(
-      screen.getByRole("button", { name: /chat history/i }),
-    );
+    fireEvent.pointerDown(screen.getByRole("button", { name: /聊天记录/ }));
 
     expect(await screen.findByText("Project update")).toBeTruthy();
 

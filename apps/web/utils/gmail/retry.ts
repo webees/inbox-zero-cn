@@ -23,9 +23,9 @@ interface ErrorInfo {
 }
 
 /**
- * Retries a Gmail API operation when rate limits or temporary server errors are encountered
- * - Rate limits: 429, 403 with specific reasons
- * - Server errors: 502, 503, 504
+ * 在遇到限流或临时服务器错误时重试 Gmail API 操作
+ * - 限流：429、带特定原因的 403
+ * - 服务器错误：502、503、504
  */
 export async function withGmailRetry<T>(
   operation: () => Promise<T>,
@@ -35,7 +35,7 @@ export async function withGmailRetry<T>(
   return withGmailRetryPolicy(operation, maxRetries, context, "all");
 }
 
-/** Retries ambiguous sends only when Gmail explicitly rejected them for throttling. */
+/** 仅当 Gmail 明确以限流为由拒绝时，才重试结果不确定的发送操作。 */
 export async function withGmailNonIdempotentWriteRetry<T>(
   operation: () => Promise<T>,
   maxRetries = 5,
@@ -94,7 +94,7 @@ async function withGmailRetryPolicy<T>(
 }
 
 /**
- * Extracts error information from various error shapes
+ * 从各种错误形态中提取错误信息
  */
 export function extractErrorInfo(error: unknown): ErrorInfo {
   const err = toRecord(getRetryAttemptError(error));
@@ -131,7 +131,7 @@ export function extractErrorInfo(error: unknown): ErrorInfo {
 }
 
 /**
- * Determines if an error is retryable (rate limit, server error, or network error)
+ * 判断错误是否可重试（限流、服务器错误或网络错误）
  */
 export function isRetryableError(errorInfo: ErrorInfo): {
   retryable: boolean;
@@ -142,7 +142,7 @@ export function isRetryableError(errorInfo: ErrorInfo): {
   const { status, reason, errorMessage, googleErrorStatus } = errorInfo;
   const hasExistingPushClient = isExistingGmailPushClientError(errorInfo);
 
-  // Broad rate-limit detection: 429, 403 + known reasons, or well-known messages
+  // 宽泛的限流检测：429、403 + 已知原因，或知名消息
   const isRateLimit =
     status === 429 ||
     googleErrorStatus === "RESOURCE_EXHAUSTED" ||
@@ -156,7 +156,7 @@ export function isRetryableError(errorInfo: ErrorInfo): {
     /resource exhausted/i.test(errorMessage) ||
     /too many concurrent requests for user/i.test(errorMessage);
 
-  // Temporary server errors that should be retried
+  // 应重试的临时服务器错误
   const isServerError =
     status === 500 ||
     status === 502 ||
@@ -201,7 +201,7 @@ export function isExistingGmailPushClientError(errorInfo: {
 }
 
 /**
- * Calculates retry delay based on error type and attempt number
+ * 根据错误类型和尝试次数计算重试延迟
  */
 export function calculateRetryDelay(
   isRateLimit: boolean,
@@ -211,54 +211,54 @@ export function calculateRetryDelay(
   retryAfterHeader?: string,
   errorMessage?: string,
 ): number {
-  // Try to parse retry time from error message
+  // 尝试从错误消息中解析重试时间
   const retryTime = parseRetryTime(errorMessage || "");
   if (retryTime) {
     const delayMs = Math.max(0, retryTime.getTime() - Date.now());
     if (delayMs > 0) {
       return delayMs;
     }
-    // If stale, fall through to fallback logic
+    // 如果已过期，则落入回退逻辑
   }
 
   const retryAfterDelayMs = getRetryAfterDelayMs(retryAfterHeader);
   if (retryAfterDelayMs !== undefined) return retryAfterDelayMs;
 
-  // Use different fallback delays based on error type
+  // 根据错误类型使用不同的回退延迟
   if (isServerError) {
-    // Exponential backoff for server errors: 5s, 10s, 20s, 40s, 80s
+    // 服务器错误的指数退避：5s、10s、20s、40s、80s
     return Math.min(5000 * 2 ** (attemptNumber - 1), 80_000);
   }
 
   if (isRateLimit) {
-    // Short exponential backoff keeps retries within request lifetimes unless Gmail provides an explicit retry time.
+    // 短指数退避使重试保持在请求生命周期内，除非 Gmail 提供明确的重试时间。
     return Math.min(1000 * 2 ** (attemptNumber - 1), 10_000);
   }
 
   if (isFailedPrecondition) {
-    // Short exponential backoff for transient precondition failures: 1s, 2s, 4s, 8s, 10s
+    // 瞬时前置条件失败的短指数退避：1s、2s、4s、8s、10s
     return Math.min(1000 * 2 ** (attemptNumber - 1), 10_000);
   }
 
-  // Default exponential backoff for other retryable errors: 1s, 2s, 4s, 8s, 16s
+  // 其他可重试错误的默认指数退避：1s、2s、4s、8s、16s
   return Math.min(1000 * 2 ** (attemptNumber - 1), 16_000);
 }
 
 /**
- * Parses the retry time from Gmail rate limit error messages
- * Example: "User-rate limit exceeded. Retry after 2025-08-22T18:22:38.763Z"
+ * 从 Gmail 限流错误消息中解析重试时间
+ * 示例："User-rate limit exceeded. Retry after 2025-08-22T18:22:38.763Z"
  */
 function parseRetryTime(errorMessage: string): Date | null {
   const retryMatch = errorMessage.match(/Retry after (.+?)(\s|$)/);
   if (retryMatch?.[1]) {
     try {
       const retryDate = new Date(retryMatch[1]);
-      // Validate the date is valid (not NaN)
+      // 校验日期有效（非 NaN）
       if (!Number.isNaN(retryDate.getTime())) {
         return retryDate;
       }
     } catch {
-      // Invalid date format
+      // 无效的日期格式
     }
   }
   return null;

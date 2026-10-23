@@ -2,10 +2,10 @@ import { SafeError } from "@/utils/error";
 import { getGoogleGmailApiRootUrl } from "@/utils/gmail/oauth";
 
 /**
- * Opens a Gmail resumable upload that replaces the whole draft message.
- * The session URI must stay on the server: Gmail's docs only describe using
- * it with the account's Authorization header, and a client-supplied URL
- * would let a caller aim our token anywhere.
+ * 开启一个 Gmail 可续传上传，用于替换整封草稿邮件。
+ * 会话 URI 必须留在服务器上：Gmail 文档只描述了将其与
+ * 账号的 Authorization 头一起使用，而客户端提供的 URL
+ * 会让调用方将我们的令牌指向任意位置。
  */
 export async function startGmailDraftUploadSession({
   accessToken,
@@ -38,14 +38,12 @@ export async function startGmailDraftUploadSession({
     signal: AbortSignal.timeout(30_000),
   });
   if (response.status === 404)
-    throw new SafeError(
-      "This draft is no longer available in Gmail. Check Sent before trying again.",
-    );
+    throw new SafeError("此草稿在 Gmail 中已不可用。重试前请检查「已发送」。");
   if (!response.ok)
     throw new Error(`Gmail upload session failed with ${response.status}`);
   const sessionUri = response.headers.get("location");
   if (!sessionUri || !isGmailUploadUrl(sessionUri))
-    throw new Error("Gmail did not return a usable upload session.");
+    throw new Error("Gmail 未返回可用的上传会话。");
   return sessionUri;
 }
 
@@ -82,7 +80,7 @@ export async function uploadGmailDraftChunk({
   }
   if (response.ok) return { status: "complete" };
   if (response.status === 404 || response.status === 410)
-    throw new SafeError("This upload expired. Attach the file again.");
+    throw new SafeError("此上传已过期。请重新附加文件。");
   throw new Error(`Gmail upload chunk failed with ${response.status}`);
 }
 

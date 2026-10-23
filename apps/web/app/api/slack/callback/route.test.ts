@@ -252,7 +252,7 @@ describe("slack callback route", () => {
       "oauth_invalid_auth",
     );
     expect(location.searchParams.get("error_detail")).toBe(
-      "Slack OAuth error: invalid_auth",
+      "Slack OAuth 错误：invalid_auth",
     );
     expect(mockClearOAuthCode).toHaveBeenCalledWith("valid-auth-code");
   });

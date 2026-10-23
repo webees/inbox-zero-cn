@@ -92,14 +92,14 @@ export default function MeetingBriefingEmail({
                 Briefing for <strong>{meetingTitle}</strong>
               </Text>
               <Text className="text-base text-gray-900 mt-0 mb-0">
-                Starting at <strong>{formattedTime}</strong>
+                开始时间 <strong>{formattedTime}</strong>
               </Text>
             </Section>
 
             <Section className="px-8 pt-2 pb-6">
               {videoConferenceLink && (
                 <Text className="text-sm text-gray-700 mt-0 mb-2">
-                  - Join link:{" "}
+                  - 加入链接：{" "}
                   <Link
                     href={videoConferenceLink}
                     className="text-blue-600 underline"
@@ -110,7 +110,7 @@ export default function MeetingBriefingEmail({
               )}
               {eventUrl && (
                 <Text className="text-sm text-gray-700 mt-0 mb-0">
-                  - Calendar link:{" "}
+                  - 日历链接：{" "}
                   <Link href={eventUrl} className="text-blue-600 underline">
                     {eventUrl}
                   </Link>
@@ -121,7 +121,7 @@ export default function MeetingBriefingEmail({
             {briefingContent.priorities.length > 0 && (
               <Section className="px-8 pb-4">
                 <Text className="text-sm text-gray-900 mt-0 mb-2">
-                  <strong>Meeting priorities</strong>
+                  <strong>会议重点</strong>
                 </Text>
                 {briefingContent.priorities.map((priority, index) => (
                   <Text
@@ -143,8 +143,7 @@ export default function MeetingBriefingEmail({
 
             <Section className="px-8 pb-6">
               <Text className="text-xs text-gray-400 mt-0 mb-0 italic">
-                Note: This briefing is AI-generated and may be inaccurate,
-                especially for common names.
+                注意：本简报由 AI 生成，可能不准确，尤其是常见姓名。
               </Text>
             </Section>
 
@@ -152,15 +151,14 @@ export default function MeetingBriefingEmail({
 
             <Section className="px-8 pb-8">
               <Text className="text-xs text-gray-500 mt-0 mb-2">
-                You're receiving this briefing because you enabled Meeting
-                Briefs in your Inbox Zero settings.
+                你收到本简报，是因为你在 Inbox Zero 设置中启用了会议简报功能。
               </Text>
               <Text className="text-xs text-gray-500 mt-0 mb-0">
                 <Link
                   href={`${baseUrl}/${emailAccountId}/briefs`}
                   className="text-gray-600 underline"
                 >
-                  Manage settings
+                  管理设置
                 </Link>
               </Text>
             </Section>
@@ -175,39 +173,37 @@ MeetingBriefingEmail.PreviewProps = {
   baseUrl: "https://www.getinboxzero.com",
   unsubscribeToken: "test-token",
   emailAccountId: "test-account",
-  meetingTitle: "Product Strategy Review with Acme Corp",
+  meetingTitle: "与 Acme Corp 的产品战略评审",
   formattedTime: "2:00 PM",
   videoConferenceLink: "https://meet.google.com/abc-defg-hij",
   eventUrl: "https://calendar.google.com/event/123",
   briefingContent: {
-    priorities: [
-      "Agree on an integration timeline and confirm who owns the technical evaluation.",
-    ],
+    priorities: ["就集成时间表达成一致，并确认由谁负责技术评估。"],
     guests: [
       {
-        name: "John Smith",
+        name: "约翰·史密斯",
         email: "john@acmecorp.com",
         bullets: [
-          "CEO of Acme Corp, joined 2019",
-          "Last met 3 weeks ago for quarterly review",
-          "Recent email: Discussed pricing for enterprise tier",
-          "Interested in API integrations",
-          "Decision maker for their team of 50+",
+          "Acme Corp 首席执行官，2019 年加入",
+          "3 周前季度评审时见过面",
+          "近期邮件：讨论了企业版套餐定价",
+          "对 API 集成感兴趣",
+          "其 50 多人团队的决策者",
         ],
       },
       {
-        name: "Sarah Johnson",
+        name: "莎拉·约翰逊",
         email: "sarah@acmecorp.com",
         bullets: [
-          "VP of Engineering at Acme Corp",
-          "First time meeting this contact",
-          "Technical evaluator for the deal",
+          "Acme Corp 工程副总裁",
+          "首次与这位联系人会面",
+          "该交易的技术评估人",
         ],
       },
     ],
     internalTeamMembers: [
-      { name: "Alice Chen", email: "alice@mycompany.com" },
-      { name: "Bob Williams", email: "bob@mycompany.com" },
+      { name: "爱丽丝·陈", email: "alice@mycompany.com" },
+      { name: "鲍勃·威廉姆斯", email: "bob@mycompany.com" },
     ],
   },
 };
@@ -217,5 +213,5 @@ export function generateMeetingBriefingSubject(
 ): string {
   const { meetingTitle, formattedTime } = props;
 
-  return `Briefing for ${meetingTitle}, starting at ${formattedTime}`;
+  return `关于 ${meetingTitle} 的会议简报，开始时间 ${formattedTime}`;
 }

@@ -38,7 +38,7 @@ export function useOptimisticArchive(
       }
       const offset = previousTop - row.getBoundingClientRect().top;
       if (!offset) continue;
-      // Hold the empty space while focus moves on, then let the remaining rows close it.
+      // 焦点移走后保持空白空间，然后让其余行合拢
       const animation = row.animate(
         [
           { transform: `translateY(${offset}px)` },
@@ -65,7 +65,7 @@ export function useOptimisticArchive(
       try {
         return await submit(keys);
       } catch {
-        toast.error("Couldn't queue archiving");
+        toast.error("无法将归档加入队列");
         return [];
       } finally {
         setPending((current) => {

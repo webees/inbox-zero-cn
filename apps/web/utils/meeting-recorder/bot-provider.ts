@@ -1,4 +1,4 @@
-// Product-facing name of the bot that appears in the participant list.
+// 出现在参会者列表中的机器人对外的产品名称。
 export const MEETING_BOT_DISPLAY_NAME = "Inbox Zero Notetaker";
 const MAX_MEETING_BOT_DISPLAY_NAME_LENGTH = 100;
 
@@ -7,18 +7,18 @@ interface TranscriptUtterance {
   endTime: number;
   isHost: boolean;
   speakerName: string;
-  /** Seconds from the start of the recording. */
+  /** 从录制开始算起的秒数。 */
   startTime: number;
   text: string;
 }
 
-/** Provider-neutral transcript. Everything downstream consumes only this. */
+/** 与服务商无关的转录。下游只消费这个。 */
 export type NormalizedTranscript = TranscriptUtterance[];
 
 /**
- * A provider call that failed. `permanent` tells the reconciler whether
- * retrying the same request could ever succeed, so it can decide between
- * releasing its claim and leaving the row for the next pass.
+ * 一次失败的服务商调用。`permanent` 告诉 reconciler 重试
+ * 同一请求是否有可能成功，以便它决定是
+ * 释放认领还是把该行留给下一轮。
  */
 export class MeetingBotProviderError extends Error {
   readonly permanent: boolean;
@@ -31,27 +31,27 @@ export class MeetingBotProviderError extends Error {
 }
 
 export interface MeetingBotProvider {
-  /** Tolerant: a bot that is already gone is not an error. */
+  /** 宽容处理：机器人已不存在不算错误。 */
   cancelBot(externalBotId: string): Promise<void>;
   /**
-   * Asks the provider to start producing a transcript for a finished
-   * recording. Providers that transcribe automatically may make this a no-op,
-   * but the caller must always invoke it once the recording is ready.
+   * 请求服务商开始为已完成的录制生成转录。
+   * 自动转录的服务商可能将其实现为空操作，
+   * 但调用方必须在录制就绪后始终调用它。
    */
   createTranscript(externalRecordingId: string): Promise<void>;
-  /** Tolerant: media that is already gone is not an error. */
+  /** 宽容处理：媒体已不存在不算错误。 */
   deleteMedia(externalBotId: string): Promise<void>;
   fetchTranscript(externalTranscriptId: string): Promise<NormalizedTranscript>;
   /**
-   * The bot stays for the life of the call, not the calendar slot: it must
-   * leave when the participants do, not at a scheduled end time.
+   * 机器人在整个通话期间驻留，而不是日历时段：它必须在
+   * 参会者离开时离开，而不是在预定的结束时间。
    */
   scheduleBot(params: {
     botName?: string;
     meetingUrl: string;
     joinAt: Date;
   }): Promise<{ externalBotId: string }>;
-  /** Updates a bot that has been scheduled but has not started joining yet. */
+  /** 更新一个已调度但尚未开始加入的机器人。 */
   updateBot(
     externalBotId: string,
     params: { botName: string; joinAt?: Date; meetingUrl?: string },

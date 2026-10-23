@@ -90,7 +90,7 @@ async function watchEmailAccounts(
 ): Promise<WatchEmailAccountResult[]> {
   if (!emailAccounts.length) return [];
 
-  logger.info("Watching email accounts", { count: emailAccounts.length });
+  logger.info("正在监控邮箱账号", { count: emailAccounts.length });
 
   const results: WatchEmailAccountResult[] = [];
 
@@ -108,14 +108,14 @@ async function watchEmailAccounts(
         const warn = [
           "Mail service not enabled",
           "Insufficient Permission",
-          "AADSTS7000215", // Raw Azure AD error for invalid client secret (old tokens after secret rotation)
+          "AADSTS7000215", // 无效 client secret 的原始 Azure AD 错误（密钥轮换后的旧令牌）
         ];
 
         if (
           isInvalidGrantError(error) ||
           warn.some((w) => error.message.includes(w))
         ) {
-          logger.warn("Not watching emails for user", {
+          logger.warn("不为用户监控邮件", {
             email: emailAccount.email,
             error,
           });
@@ -123,12 +123,11 @@ async function watchEmailAccounts(
         }
       }
 
-      logger.error("Error for user", { error });
+      logger.error("用户出错", { error });
       results.push({
         emailAccountId: emailAccount.id,
         status: "error",
-        message:
-          "An unexpected error occurred while setting up watch for this account.",
+        message: "为该账号设置监控时发生意外错误。",
         errorDetails: error instanceof Error ? error.message : String(error),
       });
     }
@@ -149,7 +148,7 @@ async function watchEmailAccount(
   );
 
   if (!userHasAiAccess) {
-    logger.info("User does not have access to AI or cold email");
+    logger.info("用户没有使用 AI 或冷邮件的权限");
 
     if (
       watchEmailsExpirationDate &&
@@ -168,16 +167,16 @@ async function watchEmailAccount(
   }
 
   if (!account?.access_token || !account?.refresh_token) {
-    logger.info("User has no access token or refresh token");
+    logger.info("用户没有访问令牌或刷新令牌");
 
     return {
       emailAccountId: emailAccount.id,
       status: "error",
-      message: "Missing authentication tokens.",
+      message: "缺少认证令牌。",
     };
   }
 
-  logger.info("Watching emails for account");
+  logger.info("正在为账号监控邮件");
 
   const provider = await createEmailProvider({
     emailAccountId: emailAccount.id,
@@ -194,7 +193,7 @@ async function watchEmailAccount(
   if (!result.success) {
     await logErrorWithDedupe({
       logger,
-      message: "Failed to watch emails for account",
+      message: "监控账号邮件失败",
       error: result.error,
       dedupeKeyParts: {
         scope: "watch/all",
@@ -208,7 +207,7 @@ async function watchEmailAccount(
     return {
       emailAccountId: emailAccount.id,
       status: "error",
-      message: "Failed to set up watch for this account.",
+      message: "为该账号设置监控失败。",
       errorDetails:
         result.error instanceof Error
           ? result.error.message
@@ -232,9 +231,9 @@ async function watchEmailAccount(
         userEmail: user.email,
         accessToken: provider.getAccessToken(),
       });
-      if (renamed) logger.info("Synced renamed Google mailbox address");
+      if (renamed) logger.info("已同步重命名的 Google 邮箱地址");
     } catch (error) {
-      logger.warn("Failed to sync Google mailbox address", { error });
+      logger.warn("同步 Google 邮箱地址失败", { error });
     }
   }
 
@@ -243,8 +242,8 @@ async function watchEmailAccount(
     new Date(watchEmailsExpirationDate) < new Date();
 
   if (wasLapsed) {
-    // The watch is healthy again, so clear the lapse error. This lets us
-    // notify again if the account lapses in the future.
+    // watch 已恢复健康，因此清除失效错误。这让我们在
+    // 账号将来再次失效时能再次通知。
     await clearWatchLapsedErrorIfResolved({
       userId: user.id,
       emailAccountId: emailAccount.id,
@@ -270,14 +269,14 @@ async function watchEmails({
 }): Promise<
   { success: true; expirationDate: Date } | { success: false; error: unknown }
 > {
-  logger.info("Watching emails");
+  logger.info("正在监控邮件");
   let failedAccessToken: string | undefined;
 
   try {
     try {
       failedAccessToken = provider.getAccessToken();
     } catch {
-      // The watch request may still refresh a missing cached access token.
+      // watch 请求仍可能刷新缺失的缓存访问令牌。
     }
     if (isMicrosoftProvider(provider.name)) {
       const result = await createManagedOutlookSubscription({
@@ -299,7 +298,7 @@ async function watchEmails({
       }
     }
 
-    const error = new Error("Provider returned no result for watch setup");
+    const error = new Error("服务商未返回监控设置结果");
     return { success: false, error };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -310,7 +309,7 @@ async function watchEmails({
     const isInvalidGrant = isInvalidGrantError(error);
 
     if (isInsufficientPermissions || isInvalidGrant) {
-      logger.warn("Auth failure while watching inbox - cleaning up tokens", {
+      logger.warn("监控收件箱时认证失败 - 正在清理令牌", {
         error,
       });
       await cleanupInvalidTokens({
@@ -319,7 +318,7 @@ async function watchEmails({
         failedAccessToken,
         logger,
       }).catch((cleanupError) =>
-        logger.warn("Failed to clean up watch authentication failure", {
+        logger.warn("清理 watch 认证失败时出错", {
           cleanupError,
         }),
       );
@@ -350,7 +349,7 @@ export async function stopWatchingEmailAccount({
       logger,
     });
   } catch (error) {
-    logger.warn("Could not create provider to unwatch account", {
+    logger.warn("无法创建服务商以取消监控账号", {
       emailAccountId,
       error,
     });
@@ -377,19 +376,19 @@ export async function unwatchEmails({
   logger: Logger;
 }) {
   try {
-    logger.info("Unwatching emails");
+    logger.info("正在取消监控邮件");
 
     await provider.unwatchEmails(subscriptionId || undefined);
   } catch (error) {
     if (isInvalidGrantError(error)) {
-      logger.warn("Error unwatching emails, invalid grant");
+      logger.warn("取消监控邮件时出错，无效授权");
     } else {
-      logger.error("Error unwatching emails", { error });
+      logger.error("取消监控邮件时出错", { error });
       captureException(error, { emailAccountId });
     }
   }
 
-  // Clear the watch data regardless of provider
+  // 无论服务商如何都清除 watch 数据
   await prisma.emailAccount.updateMany({
     where: { id: emailAccountId },
     data: {
@@ -399,9 +398,9 @@ export async function unwatchEmails({
   });
 }
 
-// The profile lookup adds a request per account, and the hourly renewal already
-// runs close to its time budget, so each account is checked once a day in a
-// fixed hour slot instead of on every run.
+// 资料查询会为每个账号增加一次请求，而每小时续订已经
+// 接近其时间预算，因此每个账号每天在固定小时时段
+// 检查一次，而不是每次运行都检查。
 function isEmailSyncDue(emailAccountId: string, now: Date) {
   let hash = 0;
   for (const char of emailAccountId) {

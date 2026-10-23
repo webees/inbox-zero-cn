@@ -11,7 +11,6 @@ import {
   type SetStateAction,
 } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
-import { capitalCase } from "capital-case";
 import { toastSuccess, toastError } from "@/components/Toast";
 import type { GroupItemsResponse } from "@/app/api/user/group/[groupId]/items/route";
 import { LoadingContent } from "@/components/LoadingContent";
@@ -75,10 +74,10 @@ function ViewGroupInner({ groupId }: { groupId: string }) {
           <div className="sm:flex sm:items-center sm:justify-between">
             <div />
             {/* <div className="flex items-center space-x-1.5">
-            <TooltipExplanation text="Automatically detect and add new matching patterns from incoming emails." />
+            <TooltipExplanation text="自动从收到的邮件中检测并添加新的匹配模式。" />
             <Toggle
               name="auto-update"
-              label="Auto-add patterns"
+              label="自动添加模式"
               enabled={true}
               onChange={(enabled) => {}}
             />
@@ -91,7 +90,7 @@ function ViewGroupInner({ groupId }: { groupId: string }) {
                 onClick={() => setShowAddItem(true)}
               >
                 <PlusIcon className="mr-2 h-4 w-4" />
-                Add pattern
+                添加模式
               </Button>
             </div>
           </div>
@@ -107,9 +106,7 @@ function ViewGroupInner({ groupId }: { groupId: string }) {
             (group?.items?.length ? (
               <GroupItems items={group.items} mutate={mutate} />
             ) : (
-              <MessageText className="my-4 px-4">
-                No learned patterns yet
-              </MessageText>
+              <MessageText className="my-4 px-4">尚无学习模式</MessageText>
             ))}
         </LoadingContent>
       </div>
@@ -150,10 +147,10 @@ const AddGroupItemForm = ({
       });
       if (result?.serverError) {
         toastError({
-          description: `Failed to add pattern. ${result.serverError || ""}`,
+          description: `添加模式失败。${result.serverError || ""}`,
         });
       } else {
-        toastSuccess({ description: "Pattern added!" });
+        toastSuccess({ description: "模式已添加！" });
       }
       mutate();
       onClose();
@@ -178,8 +175,8 @@ const AddGroupItemForm = ({
         <Select
           label=""
           options={[
-            { label: "From", value: GroupItemType.FROM },
-            { label: "Subject", value: GroupItemType.SUBJECT },
+            { label: "发件人", value: GroupItemType.FROM },
+            { label: "主题", value: GroupItemType.SUBJECT },
           ]}
           {...register("type", { required: true })}
           error={errors.type}
@@ -188,7 +185,7 @@ const AddGroupItemForm = ({
           <Input
             type="text"
             name="value"
-            placeholder="e.g. hello@company.com"
+            placeholder="例如 hello@company.com"
             registerProps={register("value", { required: true })}
             error={errors.value}
           />
@@ -202,10 +199,10 @@ const AddGroupItemForm = ({
               handleSubmit(onSubmit)();
             }}
           >
-            Add
+            添加
           </Button>
           <Button variant="outline" size="sm" onClick={onClose}>
-            Cancel
+            取消
           </Button>
         </div>
       </div>
@@ -213,8 +210,8 @@ const AddGroupItemForm = ({
       <div className="mt-4 flex justify-end">
         <Toggle
           name="exclude"
-          tooltipText="When enabled, never match this pattern."
-          label="Exclude"
+          tooltipText="启用后，永不匹配此模式。"
+          label="排除"
           enabled={exclude}
           onChange={setExclude}
         />
@@ -239,8 +236,7 @@ function GroupItems({
       <GroupItemList
         title={
           <div className="flex items-center gap-x-1.5">
-            When these patterns are encountered, the rule will automatically
-            match:
+            当遇到这些模式时，规则将自动匹配：
           </div>
         }
         items={groupedByStatus.include || []}
@@ -250,7 +246,7 @@ function GroupItems({
         <GroupItemList
           title={
             <div className="flex items-center gap-x-1.5">
-              When these patterns are encountered, the rule will never match:
+              当遇到这些模式时，规则将永不匹配：
             </div>
           }
           items={groupedByStatus.exclude || []}
@@ -295,7 +291,7 @@ function GroupItemList({
                   {isCreatedRecently ||
                     (isUpdatedRecently && (
                       <Badge variant="green" className="mr-1">
-                        {isCreatedRecently ? "New!" : "Updated"}
+                        {isCreatedRecently ? "新！" : "已更新"}
                       </Badge>
                     ))}
 
@@ -305,7 +301,7 @@ function GroupItemList({
                 </div>
               </TableCell>
               <TableCell className="flex items-center justify-end gap-4 py-2 text-right">
-                <Tooltip content="Date added">
+                <Tooltip content="添加日期">
                   <MutedText className="hidden sm:block">
                     {formatShortDate(new Date(item.createdAt))}
                   </MutedText>
@@ -320,11 +316,11 @@ function GroupItemList({
                     });
                     if (result?.serverError) {
                       toastError({
-                        description: `Failed to remove ${item.value}. ${result.serverError || ""}`,
+                        description: `移除 ${item.value} 失败。${result.serverError || ""}`,
                       });
                     } else {
                       toastSuccess({
-                        description: "Removed learned pattern!",
+                        description: "已移除学习模式！",
                       });
                       mutate();
                     }
@@ -340,7 +336,7 @@ function GroupItemList({
         {items.length === 0 && (
           <TableRow>
             <TableCell colSpan={3}>
-              <MessageText>No items</MessageText>
+              <MessageText>无项目</MessageText>
             </TableCell>
           </TableRow>
         )}
@@ -358,13 +354,19 @@ export function GroupItemDisplay({
     <>
       {item.exclude && (
         <Badge variant="destructive" className="mr-2">
-          Exclude
+          排除
         </Badge>
       )}
       <Badge variant="secondary" className="mr-2">
-        {capitalCase(item.type)}
+        {GROUP_ITEM_TYPE_LABELS[item.type] ?? item.type}
       </Badge>
       {item.value}
     </>
   );
 }
+
+const GROUP_ITEM_TYPE_LABELS: Record<GroupItemType, string> = {
+  FROM: "发件人",
+  SUBJECT: "主题",
+  BODY: "正文",
+};

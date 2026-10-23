@@ -20,15 +20,15 @@ export default function NotFound() {
   return (
     <BasicLayout>
       <ErrorPage
-        title="Page Not Found"
-        description="The page you are looking for could not be found."
+        title="页面未找到"
+        description="找不到你要访问的页面。"
         button={
           <div className="flex flex-wrap justify-center gap-2">
             <Button asChild>
               <Link href="/">Return Home</Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link href="https://docs.getinboxzero.com">Documentation</Link>
+              <Link href="https://docs.getinboxzero.com">文档</Link>
             </Button>
           </div>
         }

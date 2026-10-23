@@ -6,11 +6,10 @@ import {
 import prisma from "@/utils/prisma";
 
 /**
- * Moves one recording to `next` only if that is a step forwards, so a
- * concurrent DONE or CANCELLING write can never be clobbered. The recording is
- * addressed either by id or by its provider identity (which is all a webhook
- * has). Returns the update count; zero means the recording had already moved
- * on.
+ * 仅当移动到 `next` 是向前一步时才移动某段录制，因此并发的
+ * DONE 或 CANCELLING 写入绝不会被覆盖。录制通过 id 或其服务商
+ * 标识（webhook 所拥有的全部信息）来定位。返回更新计数；
+ * 零表示该录制已经向前移动过了。
  */
 export function transitionRecording(
   params: (

@@ -30,9 +30,8 @@ const MAIL_ENGINE_TIMEOUT_MS = 10_000;
 const TRACE_FILE = "trace.json.gz";
 const SNAPSHOT_FILE = "diagnostics.json";
 
-// Timeline categories for main-thread and renderer work plus sampled JS stacks.
-// Paint/layer snapshot and screenshot categories are left out because they
-// capture rendered pixels and text.
+// 主线程与渲染进程工作以及采样的 JS 调用栈的时间线类别。
+// 绘制/图层快照和截图类别被排除在外，因为它们会捕获渲染后的像素和文本。
 const TRACE_CONFIG: TraceConfig = {
   recording_mode: "record-continuously",
   trace_buffer_size_in_kb: 64 * 1024,
@@ -55,15 +54,15 @@ type MailEngineOwner = { handleIpc(payload: unknown): Promise<unknown> };
 let recording = false;
 
 export async function recordDesktopDiagnostics(input: {
-  /** Undefined when the local mail engine hasn't been started this session. */
+  /** 当本地邮件引擎本次会话尚未启动时为 undefined。 */
   getMailOwner: () => MailEngineOwner | undefined;
   databasePath: string;
 }) {
   if (recording) {
     await showMessage({
       type: "info",
-      message: "Diagnostics are already recording",
-      detail: "Wait for the current recording to finish.",
+      message: "诊断已在录制中",
+      detail: "请等待当前录制完成。",
     });
     return;
   }
@@ -73,7 +72,7 @@ export async function recordDesktopDiagnostics(input: {
   } catch (error) {
     captureDesktopError(error, { area: "diagnostics" });
     dialog.showErrorBox(
-      "Could not record diagnostics",
+      "无法录制诊断",
       error instanceof Error ? error.message : String(error),
     );
   } finally {
@@ -86,9 +85,8 @@ export function diagnosticsFolderName(date: Date) {
 }
 
 /**
- * Keeps counts, statuses, and sync coverage only. Messages, operation targets,
- * command payloads, and assistant entries can carry mail content, so they are
- * dropped rather than filtered.
+ * 只保留计数、状态和同步覆盖范围。消息、操作目标、命令负载和助手条目
+ * 可能携带邮件内容，因此直接丢弃而不是过滤。
  */
 export function summarizeMailEngine(
   inspection: MailStoreInspection,
@@ -135,17 +133,16 @@ export function summarizeMailEngine(
 }
 
 /**
- * Drops query strings and fragments from URL values in trace JSON. Rewriting
- * the text avoids parsing a trace that can reach tens of megabytes on the main
- * process.
+ * 从 trace JSON 里的 URL 值中去掉查询字符串和片段。重写文本可以避免
+ * 在主进程中解析可能达到数十兆字节的 trace。
  */
 export function stripTraceUrlQueries(json: string) {
   return json.replace(/"(https?:\/\/[^"?#\\]*)[?#](?:[^"\\]|\\.)*"/gi, '"$1"');
 }
 
 /**
- * Local file paths in a trace include the OS username, as plain paths,
- * JSON-escaped paths, and file URL paths (forward slashes, `%20` for spaces).
+ * trace 中的本地文件路径包含操作系统用户名，形式有普通路径、JSON 转义路径
+ * 以及文件 URL 路径（正斜杠、空格用 `%20` 表示）。
  */
 export function redactHomeDirectory(
   json: string,
@@ -177,12 +174,12 @@ async function recordDiagnostics({
 }) {
   const { response } = await showMessage({
     type: "info",
-    buttons: ["Start", "Cancel"],
+    buttons: ["开始", "取消"],
     defaultId: 0,
     cancelId: 1,
-    message: "Record Diagnostics",
+    message: "录制诊断",
     detail:
-      "Inbox Zero will record 30 seconds of performance data while you reproduce the problem. It includes timings and app state, not email content.",
+      "在你复现问题时，Inbox Zero 将录制 30 秒的性能数据。其中包含计时与应用状态，不包含邮件内容。",
   });
   if (response !== 0) return;
 
@@ -191,8 +188,8 @@ async function recordDiagnostics({
     app.getPath("downloads"),
     diagnosticsFolderName(startedAt),
   );
-  // CPU usage in app metrics covers the time since the previous call, so this
-  // sample makes the final one cover the recording.
+  // 应用指标里的 CPU 使用率覆盖自上次调用以来的时间，因此这次采样
+  // 能让最后一次采样覆盖整个录制过程。
   const processesAtStart = app.getAppMetrics();
   await contentTracing.startRecording(TRACE_CONFIG);
   await waitForRecording();
@@ -209,7 +206,7 @@ async function recordDiagnostics({
       homedir(),
     );
   } finally {
-    // The raw trace still has URL queries and home paths in it.
+    // 原始 trace 中仍含有 URL 查询和主目录路径。
     await rm(rawTracePath, { force: true });
   }
   const traceData = await promisify(gzip)(trace);
@@ -248,19 +245,19 @@ async function recordDiagnostics({
   if (!isDesktopSentryEnabled()) {
     await showMessage({
       type: "info",
-      message: "Diagnostics saved",
-      detail: `Saved to ${folder}. Send these files to Inbox Zero support.`,
+      message: "诊断已保存",
+      detail: `已保存至 ${folder}。请将这些文件发送给 Inbox Zero 支持团队。`,
     });
     return;
   }
 
   const send = await showMessage({
     type: "info",
-    buttons: ["Send to Inbox Zero", "Done"],
+    buttons: ["发送给 Inbox Zero", "完成"],
     defaultId: 0,
     cancelId: 1,
-    message: "Diagnostics saved",
-    detail: `Saved to ${folder}. Send them to Inbox Zero so we can look into the problem.`,
+    message: "诊断已保存",
+    detail: `已保存至 ${folder}。请将它们发送给 Inbox Zero，以便我们调查问题。`,
   });
   if (send.response !== 0) return;
 
@@ -271,30 +268,30 @@ async function recordDiagnostics({
   if (!eventId) {
     await showMessage({
       type: "warning",
-      message: "Could not send diagnostics",
-      detail: `Send the files in ${folder} to Inbox Zero support instead.`,
+      message: "无法发送诊断",
+      detail: `请改为将 ${folder} 中的文件发送给 Inbox Zero 支持团队。`,
     });
     return;
   }
   const sent = await showMessage({
     type: "info",
-    buttons: ["Copy ID", "Done"],
+    buttons: ["复制 ID", "完成"],
     defaultId: 0,
     cancelId: 1,
-    message: "Diagnostics sent",
-    detail: `Quote this ID when contacting support: ${eventId}`,
+    message: "诊断已发送",
+    detail: `联系支持时请提供此 ID：${eventId}`,
   });
   if (sent.response === 0) clipboard.writeText(eventId);
 }
 
-// A message box without a parent window is app-modal on macOS and would block
-// reproducing the problem, so progress is shown as a notification instead.
+// 没有父窗口的消息框在 macOS 上会成为应用级模态，阻塞复现问题，
+// 因此改用通知来展示进度。
 function waitForRecording() {
   return new Promise<void>((resolve) => {
     const notification = Notification.isSupported()
       ? new Notification({
-          title: "Recording diagnostics",
-          body: "Reproduce the problem now. Recording stops after 30 seconds, or click to stop now.",
+          title: "正在录制诊断",
+          body: "请现在复现问题。录制将在 30 秒后停止，或点击立即停止。",
         })
       : null;
     const timer = setTimeout(finish, RECORDING_MS);
@@ -352,7 +349,7 @@ async function callMailEngine<T>(
     payload,
   })) as { status: string; result?: T };
   if (response.status !== "ok") {
-    throw new Error(`Mail engine ${method} returned ${response.status}`);
+    throw new Error(`邮件引擎 ${method} 返回了 ${response.status}`);
   }
   return response.result as T;
 }
@@ -381,10 +378,7 @@ function withTimeout<T>(promise: Promise<T>, ms: number) {
   return Promise.race([
     promise,
     new Promise<never>((_, reject) => {
-      timer = setTimeout(
-        () => reject(new Error(`Timed out after ${ms}ms`)),
-        ms,
-      );
+      timer = setTimeout(() => reject(new Error(`在 ${ms}ms 后超时`)), ms);
     }),
   ]).finally(() => clearTimeout(timer));
 }

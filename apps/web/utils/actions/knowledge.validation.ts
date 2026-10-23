@@ -2,7 +2,7 @@ import { z } from "zod";
 import { DRAFT_DOCS_MAX_URLS } from "@/utils/config";
 
 export const createKnowledgeBody = z.object({
-  title: z.string().min(1, "Title is required"),
+  title: z.string().min(1, "标题为必填项"),
   content: z.string(),
 });
 
@@ -10,7 +10,7 @@ export type CreateKnowledgeBody = z.infer<typeof createKnowledgeBody>;
 
 export const updateKnowledgeBody = z.object({
   id: z.string(),
-  title: z.string().min(1, "Title is required"),
+  title: z.string().min(1, "标题为必填项"),
   content: z.string(),
 });
 
@@ -25,8 +25,5 @@ export type DeleteKnowledgeBody = z.infer<typeof deleteKnowledgeBody>;
 export const updateDraftDocsUrlsBody = z.object({
   urls: z
     .array(z.string().trim().min(1))
-    .max(
-      DRAFT_DOCS_MAX_URLS,
-      `You can add up to ${DRAFT_DOCS_MAX_URLS} documentation sites`,
-    ),
+    .max(DRAFT_DOCS_MAX_URLS, `最多可以添加 ${DRAFT_DOCS_MAX_URLS} 个文档站点`),
 });

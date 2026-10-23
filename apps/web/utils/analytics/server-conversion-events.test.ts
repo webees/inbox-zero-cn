@@ -204,7 +204,7 @@ describe("trackServerConversionEvent", () => {
 
     expect(publishToQstashMock).not.toHaveBeenCalled();
     expect(logger.error).toHaveBeenCalledWith(
-      "Server conversion tracking failed",
+      "服务端转化跟踪失败",
       expect.objectContaining({ eventId: "evt_paid" }),
     );
   });
@@ -220,7 +220,7 @@ describe("trackServerConversionEvent", () => {
     });
 
     expect(logger.error).toHaveBeenCalledWith(
-      "Server conversion tracking failed",
+      "服务端转化跟踪失败",
       expect.objectContaining({ eventId: "evt_paid" }),
     );
   });

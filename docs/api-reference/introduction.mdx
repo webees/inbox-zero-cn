@@ -1,70 +1,70 @@
 ---
-title: "Introduction"
+title: "简介"
 ---
 
-Use the Inbox Zero API to read inbox statistics, manage automation rules, and unsubscribe from senders programmatically.
+使用 Inbox Zero API 以编程方式读取收件箱统计、管理自动化规则并退订发件人。
 
-If you prefer a CLI wrapper for scripts or bots, see the [API CLI](/api-reference/cli). To connect Cursor or Claude Code to your mailbox with OAuth, see the [MCP server](/api-reference/mcp).
+如果你更想要用于脚本或机器人的 CLI 封装，请参阅 [API CLI](/api-reference/cli)。若要通过 OAuth 把 Cursor 或 Claude Code 连接到你的邮箱，请参阅 [MCP 服务器](/api-reference/mcp)。
 
-## Supported Email Providers
+## 支持的邮件服务商
 
-Inbox Zero supports integration with:
-- **Gmail** (Google Workspace and personal accounts)
-- **Outlook** (Microsoft 365 and personal accounts)
+Inbox Zero 支持与以下服务集成：
+- **Gmail**（Google Workspace 和个人账号）
+- **Outlook**（Microsoft 365 和个人账号）
 
-## Getting Started
+## 开始使用
 
-To begin using the Inbox Zero API, you'll need to obtain an API key. Here's how:
+要开始使用 Inbox Zero API，你需要获取一个 API 密钥。方法如下：
 
-1. Log in to your Inbox Zero account
-2. Navigate to the [Settings](https://www.getinboxzero.com/settings) page and scroll down to the `API Keys` section
-3. Click on the `Create New Secret Key` button
-4. Select the permissions (scopes) you need for your key
-5. Choose an expiry period
+1. 登录你的 Inbox Zero 账号
+2. 导航到[设置](https://www.getinboxzero.com/settings)页面，向下滚动到 `API Keys` 部分
+3. 点击 `Create New Secret Key` 按钮
+4. 选择你的密钥所需的权限（作用域）
+5. 选择一个有效期
 
-<img src="/images/settings-api-key.png" alt="Create New Secret Key" />
+<img src="/images/settings-api-key.png" alt="创建新的密钥" />
 
-API keys are scoped to a specific inbox account and only grant access to the permissions you select. Keep your key secure and do not share it publicly.
+API 密钥限定于某个特定的收件箱账号，并且只授予你选择的权限。请妥善保管你的密钥，不要公开分享。
 
-### Permissions
+### 权限
 
-| Scope | Endpoints |
+| 作用域 | 端点 |
 |---|---|
-| `STATS_READ` | `GET /stats/by-period`, `GET /stats/response-time` |
-| `RULES_READ` | `GET /rules`, `GET /rules/{id}` |
-| `RULES_WRITE` | `POST /rules`, `PUT /rules/{id}`, `DELETE /rules/{id}` |
+| `STATS_READ` | `GET /stats/by-period`、`GET /stats/response-time` |
+| `RULES_READ` | `GET /rules`、`GET /rules/{id}` |
+| `RULES_WRITE` | `POST /rules`、`PUT /rules/{id}`、`DELETE /rules/{id}` |
 | `SENDERS_UNSUBSCRIBE` | `POST /senders/unsubscribe` |
 
-A key may include more than one scope. Keys are also bound to one inbox account; they cannot read or change another inbox.
+一个密钥可以包含多个作用域。密钥也绑定到一个收件箱账号；它们无法读取或更改另一个收件箱。
 
-### Self-Hosting
+### 自托管
 
-If you are self-hosting Inbox Zero, set `NEXT_PUBLIC_EXTERNAL_API_ENABLED=true` and `API_KEY_SALT` before rebuilding the app. Generate the salt with `openssl rand -hex 32`. Use your deployment URL as the base URL for requests (for example, `https://your-domain.com/api/v1`).
+如果你自托管 Inbox Zero，请在重新构建应用前设置 `NEXT_PUBLIC_EXTERNAL_API_ENABLED=true` 和 `API_KEY_SALT`。用 `openssl rand -hex 32` 生成该 salt。把你的部署 URL 用作请求的基础 URL（例如 `https://your-domain.com/api/v1`）。
 
-## Base URL
+## 基础 URL
 
-All API requests should be made to the following base URL:
+所有 API 请求都应发送到以下基础 URL：
 
 ```
 https://www.getinboxzero.com/api/v1
 ```
 
-## Authentication
+## 认证
 
-Include your API key in the header of each request:
+在每个请求的头中包含你的 API 密钥：
 
 ```
 API-Key: YOUR_API_KEY
 ```
 
-For example, list rules:
+例如，列出规则：
 
 ```bash
 curl "https://www.getinboxzero.com/api/v1/rules" \
   -H "API-Key: YOUR_API_KEY"
 ```
 
-Unsubscribe from a sender, using the same `API-Key` header as above:
+退订某位发件人，使用与上面相同的 `API-Key` 头：
 
 ```bash
 curl -X POST "https://www.getinboxzero.com/api/v1/senders/unsubscribe" \
@@ -73,7 +73,7 @@ curl -X POST "https://www.getinboxzero.com/api/v1/senders/unsubscribe" \
   --data '{ "senderEmail": "news@example.com" }'
 ```
 
-To create a rule:
+创建一条规则：
 
 ```bash
 curl -X POST "https://www.getinboxzero.com/api/v1/rules" \
@@ -89,9 +89,9 @@ curl -X POST "https://www.getinboxzero.com/api/v1/rules" \
   }'
 ```
 
-### Errors
+### 错误
 
-API errors are returned as structured JSON:
+API 错误以结构化 JSON 返回：
 
 ```json
 {
@@ -103,20 +103,20 @@ API errors are returned as structured JSON:
 }
 ```
 
-| Status | Code | Meaning |
+| 状态码 | 代码 | 含义 |
 |---|---|---|
-| `400` | `BAD_REQUEST` | Invalid query, path, or request body; an action may also be disabled by the deployment's feature flags |
-| `401` | `UNAUTHORIZED` | The `API-Key` header is missing, invalid, or expired |
-| `403` | `FORBIDDEN` | The key lacks a required scope or is not account-scoped |
-| `404` | `NOT_FOUND` | The requested route or rule does not exist |
-| `405` | `METHOD_NOT_ALLOWED` | The route exists, but does not support the requested HTTP method |
-| `429` | `RATE_LIMITED` | Rate limited by the API or email provider |
-| `500` | `INTERNAL_ERROR` | An unexpected server error occurred |
+| `400` | `BAD_REQUEST` | 查询、路径或请求体无效；某操作也可能因部署的功能开关而被禁用 |
+| `401` | `UNAUTHORIZED` | `API-Key` 头缺失、无效或已过期 |
+| `403` | `FORBIDDEN` | 密钥缺少必需的作用域，或不是账号范围内的 |
+| `404` | `NOT_FOUND` | 所请求的路由或规则不存在 |
+| `405` | `METHOD_NOT_ALLOWED` | 路由存在，但不支持所请求的 HTTP 方法 |
+| `429` | `RATE_LIMITED` | 被 API 或邮件服务商限流 |
+| `500` | `INTERNAL_ERROR` | 发生了意外的服务器错误 |
 
-The OpenAPI schema is published at [https://www.getinboxzero.com/openapi.json](https://www.getinboxzero.com/openapi.json) (also `/api/v1/openapi` and `/.well-known/openapi.json`).
+OpenAPI schema 发布在 [https://www.getinboxzero.com/openapi.json](https://www.getinboxzero.com/openapi.json)（也可在 `/api/v1/openapi` 和 `/.well-known/openapi.json` 获取）。
 
-The `DELETE` rule action, which moves matching emails to trash, is available only when the deployment enables `NEXT_PUBLIC_DELETE_EMAIL_ACTION_ENABLED`. This feature flag is separate from `DELETE /rules/{id}`, which deletes a rule definition.
+`DELETE` 规则操作会把匹配的邮件移动到回收站，仅在部署启用 `NEXT_PUBLIC_DELETE_EMAIL_ACTION_ENABLED` 时可用。此功能开关与 `DELETE /rules/{id}`（删除规则定义）不同。
 
-## Request New Endpoint
+## 请求新端点
 
-If you have a new endpoint that you would like to add to the API, open an issue on [GitHub](https://github.com/elie222/inbox-zero/issues/new).
+如果你有想添加到 API 的新端点，请在 [GitHub](https://github.com/elie222/inbox-zero/issues/new) 上提交一个 issue。

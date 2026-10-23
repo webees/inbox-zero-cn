@@ -38,21 +38,19 @@ export function AcceptInvitation({ invitationId }: { invitationId: string }) {
             hasErrored
               ? {
                   error: getActionErrorMessage(result, {
-                    fallback: "Failed to accept the invitation",
+                    fallback: "接受邀请失败",
                   }),
                 }
               : undefined
           }
         >
           <CardHeader>
-            <CardTitle>Welcome!</CardTitle>
-            <CardDescription>
-              You're now part of the organization.
-            </CardDescription>
+            <CardTitle>欢迎！</CardTitle>
+            <CardDescription>你现在已是该组织的成员。</CardDescription>
           </CardHeader>
           <CardContent>
             <Button asChild className="w-full">
-              <Link href={WELCOME_PATH}>Continue</Link>
+              <Link href={WELCOME_PATH}>继续</Link>
             </Button>
           </CardContent>
         </LoadingContent>

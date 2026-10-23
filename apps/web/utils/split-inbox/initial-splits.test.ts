@@ -5,13 +5,13 @@ describe("ensureAllMailSplit", () => {
   it("restores the unfiltered inbox when its tab was deleted", () => {
     const unread = {
       id: "unread",
-      name: "Unread",
+      name: "未读",
       order: 1,
       matchAll: true,
       filters: [{ kind: "UNREAD" as const, value: null }],
     };
     expect(ensureAllMailSplit([unread])).toEqual([
-      { id: "all", name: "All", order: -1, matchAll: true, filters: [] },
+      { id: "all", name: "全部", order: -1, matchAll: true, filters: [] },
       unread,
     ]);
   });

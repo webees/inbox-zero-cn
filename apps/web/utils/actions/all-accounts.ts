@@ -18,7 +18,7 @@ export const updateAllAccountsSelectionAction = actionClientUser
     );
 
     if (emailAccountIds.some((id) => !ownedAccountIds.has(id))) {
-      throw new SafeError("Email account not found");
+      throw new SafeError("未找到邮箱账号");
     }
 
     await prisma.$transaction([

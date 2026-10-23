@@ -17,8 +17,8 @@ export type OutlookSystemFolder =
 const OUTLOOK_FOLDER_FIELDS =
   "id,displayName,childFolderCount,totalItemCount,unreadItemCount";
 
-// Should not use a common separator like "/|\>" as it may be used in the folder name.
-// Using U+2999 as it is unlikely to appear in normal text
+// 不应使用像 "/|\>" 这样的常见分隔符，因为它可能出现在文件夹名称中。
+// 使用 U+2999，因为它不太可能出现在正常文本中
 export const FOLDER_SEPARATOR = " ⦙ ";
 
 export type OutlookFolder = {
@@ -109,7 +109,7 @@ async function findOutlookFolderByName(
     }
     return;
   } catch (error) {
-    logger.warn("Error finding folder by name", { folderName, error });
+    logger.warn("按名称查找文件夹时出错", { folderName, error });
     return;
   }
 }
@@ -125,7 +125,7 @@ async function expandFolderChildren(
     return;
   }
 
-  // Use childFolderCount to know if folder has children that need fetching
+  // 使用 childFolderCount 判断文件夹是否有需要获取的子项
   const hasUnfetchedChildren =
     (folder.childFolderCount ?? 0) > 0 &&
     (!folder.childFolders || folder.childFolders.length === 0);
@@ -138,7 +138,7 @@ async function expandFolderChildren(
         logger,
       );
     } catch (error) {
-      logger.warn("Failed to fetch folder children", {
+      logger.warn("获取文件夹子项失败", {
         folderId: folder.id,
         folderName: folder.displayName,
         error,
@@ -147,7 +147,7 @@ async function expandFolderChildren(
     }
   }
 
-  // Recursively expand children
+  // 递归展开子项
   for (const child of folder.childFolders || []) {
     await expandFolderChildren(
       client,
@@ -166,12 +166,12 @@ export async function getOutlookFolderTree(
 ): Promise<OutlookFolder[]> {
   const folders = await getOutlookRootFolders(client, logger);
 
-  // Recursively expand folders that have children
-  // Process in parallel batches for better performance
+  // 递归展开有子项的文件夹
+  // 并行分批处理以获得更好的性能
   const expandPromises: Promise<void>[] = [];
 
   for (const folder of folders) {
-    // Expand root folder itself if it has unfetched children
+    // 如果根文件夹有未获取的子项，则展开它本身
     expandPromises.push(
       expandFolderChildren(client, folder, 1, maxDepth ?? 6, logger),
     );
@@ -228,12 +228,12 @@ export async function getOrCreateOutlookFolderIdByName(
 
     return response.id;
   } catch (error) {
-    // If folder already exists (race condition or created between check and create),
-    // fetch folders again and return the existing folder ID
+    // 如果文件夹已经存在（竞态条件或在检查与创建之间被创建），
+    // 则再次获取文件夹并返回现有文件夹 ID
     // biome-ignore lint/suspicious/noExplicitAny: existing loose external shape
     const err = error as any;
     if (err?.code === "ErrorFolderExists" || err?.statusCode === 409) {
-      logger.info("Folder already exists, fetching existing folder", {
+      logger.info("文件夹已存在，获取现有文件夹", {
         folderName,
       });
       const folder = await findOutlookFolderByName(client, folderName, logger);

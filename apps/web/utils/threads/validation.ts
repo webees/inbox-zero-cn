@@ -11,8 +11,8 @@ import { microsoftGraphPageTokenSchema } from "@/utils/outlook/page-token";
 import { createSearchParams } from "@/utils/url";
 
 /**
- * One branch of a "match any" split. Leaves are single conditions, so the
- * provider can OR them without having to interpret a nested expression.
+ * “匹配任一”分栏的一个分支。叶子节点都是单一条件，因此
+ * 提供方可以直接对它们做 OR，而无需解析嵌套表达式。
  */
 const threadsQueryLeaf = z
   .strictObject({
@@ -27,7 +27,7 @@ const threadsQueryLeaf = z
       Object.values(leaf).filter(
         (value) => value !== null && value !== undefined,
       ).length === 1,
-    { message: "Each match-any branch must contain one condition" },
+    { message: "每个「匹配任一」分支只能包含一个条件" },
   );
 export type ThreadsQueryLeaf = z.infer<typeof threadsQueryLeaf>;
 
@@ -46,7 +46,7 @@ export const threadsQuery = z
                     filter.kind !== "CATEGORY" ||
                     !["focused", "other"].includes(filter.value ?? ""),
                 ),
-              { message: "Other split exclusions require Gmail conditions" },
+              { message: "排除其他分栏需要 Gmail 条件" },
             ),
           }),
         )
@@ -57,23 +57,23 @@ export const threadsQuery = z
     fromEmail: z.string().nullish(),
     limit: z.coerce.number().max(100).nullish(),
     type: z.string().nullish(),
-    folderId: z.string().nullish(), // For Outlook
+    folderId: z.string().nullish(), // 用于 Outlook
     inboxSection: z.enum(["focused", "other"]).nullish(),
     category: z.string().trim().min(1).max(256).nullish(),
     splitId: z.string().trim().min(1).max(128).nullish(),
     nextPageToken: microsoftGraphPageTokenSchema,
-    labelId: z.string().nullish(), // For Google
-    labelIds: z.array(z.string()).nullish(), // For Google
-    // Threads matching any one of these labels, on top of `labelIds`, which all
-    // have to match. Served by fanning out one provider query per label.
+    labelId: z.string().nullish(), // 用于 Google
+    labelIds: z.array(z.string()).nullish(), // 用于 Google
+    // 除必须全部匹配的 `labelIds` 之外，还匹配这些标签中任意一个的会话。
+    // 通过为每个标签分别发起一次提供方查询来实现。
     anyLabelIds: z.array(z.string()).max(MAX_SPLIT_LABELS).nullish(),
-    excludeLabelNames: z.array(z.string()).nullish(), // For Google
+    excludeLabelNames: z.array(z.string()).nullish(), // 用于 Google
     after: z.coerce.date().nullish(),
     before: z.coerce.date().nullish(),
     isUnread: z.coerce.boolean().nullish(),
     /**
-     * Match any one of these, ANDed with the rest of the query. Travels over the
-     * wire as JSON, since a list of objects has no natural query-string form.
+     * 匹配其中任意一个，并与查询的其余部分做 AND。由于对象列表没有自然的
+     * query-string 形式，因此以 JSON 传输。
      */
     anyOf: z.preprocess(
       (value) => (typeof value === "string" ? parseAnyOf(value) : value),
@@ -98,7 +98,7 @@ export const threadsQuery = z
         !query.splitId &&
         !query.anyOf?.length &&
         !query.anyLabelIds?.length),
-    { message: "Other split exclusions require a plain inbox query" },
+    { message: "排除其他分栏需要普通的收件箱查询" },
   )
   .refine(
     (query) =>
@@ -108,17 +108,16 @@ export const threadsQuery = z
         !query.folderId &&
         (!query.type || query.type === "inbox")),
     {
-      message:
-        "Match-any conditions require an inbox query without search or label unions",
+      message: "「匹配任一」条件需要一个不含搜索或标签并集的收件箱查询",
     },
   );
 export type ThreadsQuery = z.infer<typeof threadsQuery>;
 
-// Opt-in slim response for list rows. Anything unrecognised falls back to the
-// full response so a bad param can never drop data a caller depends on.
+// 为列表行提供的可选精简响应。任何无法识别的值都会回退到
+// 完整响应，因此错误的参数绝不会丢弃调用方依赖的数据。
 export const threadsView = z.enum(["full", "list"]).catch("full");
 
-/** Preserve invalid input so validation rejects it instead of widening the query. */
+/** 保留无效输入，让校验拒绝它而不是放宽查询条件。 */
 function parseAnyOf(value: string): unknown {
   try {
     return JSON.parse(value);
@@ -127,7 +126,7 @@ function parseAnyOf(value: string): unknown {
   }
 }
 
-/** Serialises a query for `/api/threads`, JSON-encoding the `anyOf` branches. */
+/** 为 `/api/threads` 序列化查询，将 `anyOf` 分支以 JSON 编码。 */
 export function threadsQueryToSearchParams(
   query: ThreadsQuery & Record<string, unknown>,
 ) {

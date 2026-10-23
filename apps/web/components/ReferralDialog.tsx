@@ -30,7 +30,7 @@ export function ReferralDialog() {
       <DialogTrigger asChild>
         <SidebarMenuButton sidebarName="left-sidebar">
           <GiftIcon />
-          <span className="font-semibold">Refer friend</span>
+          <span className="font-semibold">推荐好友</span>
         </SidebarMenuButton>
       </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -76,11 +76,13 @@ export function Referrals({ source }: { source: ReferralSurface }) {
 
     try {
       await navigator.clipboard.writeText(text);
-      toastSuccess({ description: `Referral ${type} copied to clipboard!` });
+      toastSuccess({
+        description: `推荐${type === "code" ? "码" : "链接"}已复制到剪贴板！`,
+      });
     } catch {
       toastError({
-        title: `Failed to copy ${type}`,
-        description: "Please try again",
+        title: `复制${type === "code" ? "推荐码" : "推荐链接"}失败`,
+        description: "请重试",
       });
     }
   };
@@ -100,15 +102,15 @@ export function Referrals({ source }: { source: ReferralSurface }) {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Join Inbox Zero with my referral link",
-          text: "Use my referral link to get started with Inbox Zero!",
+          title: "通过我的推荐链接加入 Inbox Zero",
+          text: "使用我的推荐链接开始使用 Inbox Zero！",
           url: link,
         });
       } catch (error) {
         if ((error as Error).name !== "AbortError") {
           toastError({
-            title: "Failed to share",
-            description: "Please try again",
+            title: "分享失败",
+            description: "请重试",
           });
         }
       }
@@ -122,25 +124,22 @@ export function Referrals({ source }: { source: ReferralSurface }) {
   }
 
   if (errorCode || errorStats) {
-    return <ErrorDisplay error={{ error: "Error loading referral data" }} />;
+    return <ErrorDisplay error={{ error: "加载推荐数据出错" }} />;
   }
 
   return (
     <div className="space-y-6 sm:space-y-8">
       <div className="text-center">
-        <PageHeading>Refer Friends, Get Rewards</PageHeading>
+        <PageHeading>推荐好友，赢取奖励</PageHeading>
         <PageSubHeading className="mt-2">
-          Share Inbox Zero with friends and get a free month for each friend who
-          completes their trial
+          把 Inbox Zero 分享给好友，每位完成试用的好友都能为你赢得一个月免费使用
         </PageSubHeading>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Your referral code</CardTitle>
-          <CardDescription>
-            Share this code with friends to earn rewards
-          </CardDescription>
+          <CardTitle>你的推荐码</CardTitle>
+          <CardDescription>与好友分享此推荐码即可赢取奖励</CardDescription>
         </CardHeader>
         <CardContent>
           {codeData?.code ? (
@@ -160,7 +159,7 @@ export function Referrals({ source }: { source: ReferralSurface }) {
                   className="flex-1"
                 >
                   <Copy className="mr-2 h-4 w-4" />
-                  Copy Link
+                  复制链接
                 </Button>
                 <Button
                   onClick={shareReferralLink}
@@ -168,50 +167,42 @@ export function Referrals({ source }: { source: ReferralSurface }) {
                   className="flex-1"
                 >
                   <Share2 className="mr-2 h-4 w-4" />
-                  Share
+                  分享
                 </Button>
               </div>
             </div>
           ) : (
-            <p className="text-gray-500">Unable to load referral code</p>
+            <p className="text-gray-500">无法加载推荐码</p>
           )}
         </CardContent>
       </Card>
 
-      {/* Stats Cards */}
+      {/* 统计卡片 */}
       {statsData && (
         <div className="grid gap-4 md:grid-cols-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total referrals
-              </CardTitle>
+              <CardTitle className="text-sm font-medium">推荐总数</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
                 {statsData.stats.totalReferrals}
               </div>
-              <p className="text-xs text-muted-foreground">
-                Friends you've referred
-              </p>
+              <p className="text-xs text-muted-foreground">你推荐的好友</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Rewards earned
-              </CardTitle>
+              <CardTitle className="text-sm font-medium">已获奖励</CardTitle>
               <Trophy className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
                 {statsData.stats.totalRewards}
               </div>
-              <p className="text-xs text-muted-foreground">
-                Free months earned
-              </p>
+              <p className="text-xs text-muted-foreground">已获免费月数</p>
             </CardContent>
           </Card>
         </div>

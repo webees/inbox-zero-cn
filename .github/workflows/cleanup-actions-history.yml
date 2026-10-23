@@ -1,0 +1,45 @@
+name: 清理 Actions 历史记录
+
+# 用插件 Mattraks/delete-workflow-runs 定期清理旧的 workflow run，避免 Actions 历史无限增长。
+# 只删除超过保留期的运行，并保证每个 workflow 至少保留最近若干次。
+# 保留天数与最少保留数量可按需用仓库 Variables 覆盖。
+
+on:
+  schedule:
+    # 每天 UTC 03:00（Asia/Bangkok 10:00）
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "仅模拟，不实际删除"
+        type: boolean
+        default: false
+      retain_days:
+        description: "保留天数，留空则用变量 ACTION_RETENTION_DAYS 或默认 7；填 0 可立即清理超出保留数量的旧运行"
+        type: string
+      keep_minimum_runs:
+        description: "每个工作流至少保留的最近运行数，留空则用变量 ACTION_KEEP_MINIMUM_RUNS 或默认 10"
+        type: string
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: cleanup-actions-history
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    name: 删除旧运行
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: 清理超过保留期的运行
+        uses: Mattraks/delete-workflow-runs@v2.1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          retain_days: ${{ inputs.retain_days || vars.ACTION_RETENTION_DAYS || '7' }}
+          keep_minimum_runs: ${{ inputs.keep_minimum_runs || vars.ACTION_KEEP_MINIMUM_RUNS || '10' }}
+          dry_run: ${{ inputs.dry_run || 'false' }}

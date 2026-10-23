@@ -26,19 +26,19 @@ export function OrganizationTabs({ organizationId }: OrganizationTabsProps) {
   const tabs = [
     {
       id: "members",
-      label: "Members",
+      label: "成员",
       href: `/organization/${organizationId}`,
     },
     ...(isAdmin
       ? [
           {
             id: "rules",
-            label: "Rules",
+            label: "规则",
             href: `/organization/${organizationId}/rules`,
           },
           {
             id: "stats",
-            label: "Analytics",
+            label: "分析",
             href: `/organization/${organizationId}/stats`,
           },
         ]

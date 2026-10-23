@@ -903,9 +903,7 @@ export async function assertIntegrationActionsConnected(
     if (connectedNames.has(name)) continue;
 
     const displayName = findIntegration(name)?.displayName ?? name;
-    throw new SafeError(
-      `${displayName} isn't connected. Connect it to use this action.`,
-    );
+    throw new SafeError(`${displayName} 尚未连接。连接后才能使用此操作。`);
   }
 }
 
@@ -916,7 +914,7 @@ async function assertIntegrationActionsEnabled(
   if (!actions.some((action) => action.type === ActionType.INTEGRATION)) return;
 
   if (!(await isIntegrationActionEnabledForEmailAccountId(emailAccountId))) {
-    throw new SafeError("Integration actions are not enabled for this user.");
+    throw new SafeError("此用户未启用集成操作。");
   }
 }
 

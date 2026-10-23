@@ -207,7 +207,7 @@ describe("createCalendarEvent", () => {
         providerEventId: "provider-event-id",
         logger: createTestLogger(),
       }),
-    ).rejects.toThrow("Destination calendar not found");
+    ).rejects.toThrow("未找到目标日历");
 
     expect(providerMocks.cancelEvent).not.toHaveBeenCalled();
   });
@@ -308,6 +308,6 @@ describe("createCalendarEvent", () => {
         timezone: "UTC",
         title: "Intro call",
       }),
-    ).rejects.toThrow("Unsupported calendar provider");
+    ).rejects.toThrow("不支持的日历服务商");
   });
 });

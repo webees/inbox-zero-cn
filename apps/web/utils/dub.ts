@@ -24,7 +24,7 @@ export async function trackDubSignUp(
   const clickId = cookieStore.get("dub_id")?.value;
 
   if (!clickId) {
-    logger.info("No dub_id cookie found");
+    logger.info("未找到 dub_id cookie");
     return;
   }
 

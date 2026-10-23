@@ -59,7 +59,7 @@ describe("emailToContent", () => {
         snippet: "",
       };
       const result = emailToContent(email, { maxLength: 20 });
-      // truncate() adds "..." so result is maxLength + 3
+      // truncate() 会追加 "..."，因此结果为 maxLength + 3
       expect(result).toBe("This is a very long ...");
       expect(result.length).toBe(23);
     });
@@ -83,7 +83,7 @@ describe("emailToContent", () => {
         snippet: "",
       };
       const result = emailToContent(email);
-      // truncate adds "..." so 2000 + 3 = 2003
+      // truncate 会追加 "..."，因此 2000 + 3 = 2003
       expect(result.length).toBe(2003);
       expect(result.endsWith("...")).toBe(true);
     });
@@ -291,7 +291,7 @@ describe("convertEmailHtmlToText", () => {
         </html>
       `,
     });
-    // html-to-text uppercases h1 tags
+    // html-to-text 会将 h1 标签转为大写
     expect(result).toContain("TITLE");
     expect(result).toContain("Paragraph one");
     expect(result).toContain("Item 1");
@@ -303,7 +303,7 @@ describe("convertEmailHtmlToText", () => {
       htmlText: '<a href="https://example.com">https://example.com</a>',
       includeLinks: true,
     });
-    // Should not duplicate the URL
+    // 不应重复该 URL
     const urlCount = (result.match(/https:\/\/example\.com/g) || []).length;
     expect(urlCount).toBe(1);
   });

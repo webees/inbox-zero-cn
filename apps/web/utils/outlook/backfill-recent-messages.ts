@@ -41,7 +41,7 @@ export async function backfillRecentOutlookMessages({
   });
 
   if (!candidateMessages.length) {
-    logger.info("No recent Outlook messages found for reconciliation", {
+    logger.info("未找到用于对账的近期 Outlook 邮件", {
       after,
       maxMessages,
       pageCount,
@@ -68,7 +68,7 @@ export async function backfillRecentOutlookMessages({
     );
   const unseenThreads = getOldestMessagePerThread(unseenMessages);
 
-  logger.info("Reconciling recent Outlook messages", {
+  logger.info("正在对账近期 Outlook 邮件", {
     after,
     maxMessages,
     pageCount,
@@ -78,8 +78,8 @@ export async function backfillRecentOutlookMessages({
     subscriptionId,
   });
 
-  // Once the provider rate limits the account, every remaining call fails fast,
-  // so skip the rest instead of logging one error per thread.
+  // 一旦服务商对该账号限流，剩余的每次调用都会快速失败，
+  // 因此跳过其余部分，而不是为每个会话记录一次错误。
   let rateLimitError: ProviderRateLimitModeError | undefined;
   const results = await runWithBoundedConcurrency({
     items: unseenThreads,
@@ -117,23 +117,20 @@ export async function backfillRecentOutlookMessages({
       continue;
     }
 
-    logger.error("Failed to process message during backfill", {
+    logger.error("回填期间处理邮件失败", {
       messageId: message.id,
       error: result.reason,
     });
   }
 
   if (rateLimitError) {
-    logger.warn(
-      "Stopped Outlook backfill because the account is rate limited",
-      {
-        rateLimitedCount,
-        retryAt: rateLimitError.retryAt,
-      },
-    );
+    logger.warn("因账号被限流而停止 Outlook 回填", {
+      rateLimitedCount,
+      retryAt: rateLimitError.retryAt,
+    });
   }
 
-  logger.info("Finished reconciling recent Outlook messages", {
+  logger.info("已完成近期 Outlook 邮件的对账", {
     after,
     maxMessages,
     pageCount,

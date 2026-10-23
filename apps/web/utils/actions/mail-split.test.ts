@@ -117,7 +117,7 @@ describe("mail split actions", () => {
       filters: [UNREAD_FILTER],
     });
 
-    expect(result?.serverError).toBe("You can only have 14 splits.");
+    expect(result?.serverError).toBe("你最多只能有 14 个分类");
   });
 
   it("returns a user-safe error when a split name already exists", async () => {
@@ -133,7 +133,7 @@ describe("mail split actions", () => {
       filters: [UNREAD_FILTER],
     });
 
-    expect(result?.serverError).toBe('You already have a "Unread" split.');
+    expect(result?.serverError).toBe('你已经有一个名为 "Unread" 的分类');
   });
 
   it("handles a duplicate-name constraint race with a safe error", async () => {
@@ -145,7 +145,7 @@ describe("mail split actions", () => {
       filters: [UNREAD_FILTER],
     });
 
-    expect(result?.serverError).toBe('You already have a "Unread" split.');
+    expect(result?.serverError).toBe('你已经有一个名为 "Unread" 的分类');
   });
 
   it("rejects a condition that needs a value but has none", async () => {
@@ -201,7 +201,7 @@ describe("mail split actions", () => {
     });
 
     expect(result?.serverError).toBe(
-      "I couldn't find filters in that — name a sender, label or category.",
+      "我没能从中找到筛选条件——请指明发件人、标签或分类。",
     );
   });
 
@@ -215,7 +215,7 @@ describe("mail split actions", () => {
       filters: [UNREAD_FILTER],
     });
 
-    expect(result?.serverError).toBe('You already have a "Unread" split.');
+    expect(result?.serverError).toBe('你已经有一个名为 "Unread" 的分类');
   });
 
   it("replaces an edited split's conditions in the same locked transaction", async () => {

@@ -648,7 +648,7 @@ const integration: ActionFunction<{
     return {
       success: false,
       errorCode: "INTEGRATION_NOT_CONNECTED",
-      errorMessage: `${integrationConfig.displayName} is not connected. Connect it on the Integrations page.`,
+      errorMessage: `${integrationConfig.displayName} 未连接。请在集成页面连接。`,
     };
   }
 
@@ -883,7 +883,7 @@ async function runMessagingNotificationAction({
   await markMessagingActionFailed({
     actionId,
     logger,
-    reason: `Failed to deliver ${actionType} notification`,
+    reason: `发送 ${actionType} 通知失败`,
   });
   return { success: false, errorCode: "MESSAGING_DELIVERY_FAILED" };
 }

@@ -49,19 +49,19 @@ export function describeCronSchedule(cronExpression: string): string {
     const timeList =
       localTimes.length === 1
         ? localTimes[0]
-        : `${localTimes.slice(0, -1).join(", ")} and ${localTimes[localTimes.length - 1]}`;
+        : `${localTimes.slice(0, -1).join("、")} 和 ${localTimes[localTimes.length - 1]}`;
 
-    return `${weekdayText} at ${timeList} ${tzAbbr}`;
+    return `${weekdayText} ${timeList} ${tzAbbr}`;
   } catch {
     return cronstrueFallback(cronExpression);
   }
 }
 
 function describeWeekdays(dowField: string): string {
-  if (dowField === "*") return "Every day";
-  if (dowField === "1-5") return "Weekdays";
-  if (dowField === "0,6" || dowField === "6,0") return "Weekends";
-  if (dowField === "1-7" || dowField === "0-6") return "Every day";
+  if (dowField === "*") return "每天";
+  if (dowField === "1-5") return "工作日";
+  if (dowField === "0,6" || dowField === "6,0") return "周末";
+  if (dowField === "1-7" || dowField === "0-6") return "每天";
   return cronstrue.toString(`0 0 * * ${dowField}`).replace("At 12:00 AM, ", "");
 }
 

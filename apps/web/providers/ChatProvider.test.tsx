@@ -392,7 +392,7 @@ describe("ChatProvider", () => {
       expect(latestContext?.input).toBe(draft);
     });
     expect(mockClientLoggerError).toHaveBeenCalledWith(
-      "Assistant chat request failed",
+      "AI 助手对话请求失败",
       expect.objectContaining({
         attachmentCount: 0,
         emailAccountId: "account-a",
@@ -404,7 +404,7 @@ describe("ChatProvider", () => {
       draft,
     );
     expect(mockToastError).toHaveBeenCalledWith({
-      description: "We couldn't send your message. Please try again.",
+      description: "无法发送你的消息，请重试。",
     });
     expect(mockCaptureException).toHaveBeenCalledWith(error);
   });
@@ -434,10 +434,10 @@ describe("ChatProvider", () => {
     expect(mockSendMessage).not.toHaveBeenCalled();
     expect(latestContext?.input).toBe(draft);
     expect(mockToastError).toHaveBeenCalledWith({
-      description: "Messages can be up to 20,000 characters.",
+      description: "消息最长可为 20,000 个字符。",
     });
     expect(mockClientLoggerWarn).toHaveBeenCalledWith(
-      "Assistant chat input rejected",
+      "AI 助手对话输入被拒绝",
       expect.objectContaining({
         emailAccountId: "account-a",
         failureCategory: "message_too_long",

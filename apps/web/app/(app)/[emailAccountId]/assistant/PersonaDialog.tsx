@@ -18,9 +18,7 @@ export function PersonaDialog({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent>
-        <DialogTitle className="text-lg font-medium">
-          Choose a persona
-        </DialogTitle>
+        <DialogTitle className="text-lg font-medium">选择用户画像</DialogTitle>
 
         <ButtonList
           items={Object.entries(personas).map(([id, persona]) => ({

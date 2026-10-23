@@ -36,7 +36,7 @@ export async function startMobileSocialAuth(input: {
   ).toString();
   const completionToken = createMobileAuthState();
   const errorCallbackUrl = getMobileAuthWebCallbackUrl(state);
-  // Kept inside Better Auth's protected OAuth state until provider completion.
+  // 保留在 Better Auth 受保护的 OAuth state 中，直到服务商完成。
   const callbackUrl = new URL(errorCallbackUrl);
   callbackUrl.searchParams.set("completion", completionToken);
   const webCallbackUrl = callbackUrl.toString();
@@ -65,7 +65,7 @@ export async function startMobileSocialAuth(input: {
   const oauthState = getOAuthStateCookieValue(signInResponse.headers);
 
   if (!signInResponse.ok || !signInBody?.url || !oauthState) {
-    throw new SafeError("Failed to start authentication", 500);
+    throw new SafeError("无法启动认证", 500);
   }
 
   assertHttpAuthorizationUrl(signInBody.url);
@@ -92,10 +92,10 @@ function assertHttpAuthorizationUrl(url: string) {
   try {
     parsed = new URL(url);
   } catch {
-    throw new SafeError("Failed to start authentication", 500);
+    throw new SafeError("无法启动认证", 500);
   }
 
   if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
-    throw new SafeError("Failed to start authentication", 500);
+    throw new SafeError("无法启动认证", 500);
   }
 }

@@ -53,7 +53,7 @@ export const searchMemoriesTool = ({
         });
 
         if (memories.length === 0) {
-          return { memories: [], message: "No matching memories found." };
+          return { memories: [], message: "未找到匹配的记忆。" };
         }
 
         return {
@@ -63,9 +63,9 @@ export const searchMemoriesTool = ({
           })),
         };
       } catch (error) {
-        logger.error("Failed to search memories", { error });
+        logger.error("搜索记忆失败", { error });
         return {
-          error: "Failed to search memories",
+          error: "搜索记忆失败",
         };
       }
     },

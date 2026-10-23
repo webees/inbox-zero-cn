@@ -14,7 +14,7 @@ export async function createRedisHttpServer({
   const server = createServer(async (request, response) => {
     response.setHeader("Content-Type", "application/json");
     if (request.headers.authorization !== `Bearer ${token}`) {
-      response.writeHead(401).end(JSON.stringify({ error: "Unauthorized" }));
+      response.writeHead(401).end(JSON.stringify({ error: "未授权" }));
       return;
     }
 
@@ -27,7 +27,7 @@ export async function createRedisHttpServer({
         request.method !== "POST" ||
         !["/", "/pipeline", "/multi-exec"].includes(request.url ?? "")
       ) {
-        response.writeHead(404).end(JSON.stringify({ error: "Not found" }));
+        response.writeHead(404).end(JSON.stringify({ error: "未找到" }));
         return;
       }
       const body: unknown = JSON.parse(await readBody(request));
@@ -36,7 +36,7 @@ export async function createRedisHttpServer({
       if (!Array.isArray(commands) || !commands.every(isCommand)) {
         response
           .writeHead(400)
-          .end(JSON.stringify({ error: "Expected Redis command arrays" }));
+          .end(JSON.stringify({ error: "需要 Redis 命令数组" }));
         return;
       }
       const pipeline =
@@ -44,7 +44,7 @@ export async function createRedisHttpServer({
       for (const [command, ...args] of commands)
         pipeline.call(command, ...args);
       const results = await pipeline.exec();
-      if (!results) throw new Error("Redis returned no pipeline results");
+      if (!results) throw new Error("Redis 未返回管道结果");
       const replies = results.map(([error, result]) =>
         error
           ? { error: error.message }
@@ -59,7 +59,7 @@ export async function createRedisHttpServer({
     } catch (error) {
       response.writeHead(400).end(
         JSON.stringify({
-          error: error instanceof Error ? error.message : "Invalid request",
+          error: error instanceof Error ? error.message : "无效请求",
         }),
       );
     }

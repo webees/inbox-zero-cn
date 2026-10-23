@@ -54,9 +54,9 @@ class StatLoader {
 
     if (showToast) {
       if (isError(res)) {
-        toastError({ description: "Error loading stats." });
+        toastError({ description: "加载统计数据出错。" });
       } else {
-        toastSuccess({ description: "Stats loaded!" });
+        toastSuccess({ description: "统计数据已加载！" });
       }
     }
 
@@ -89,7 +89,7 @@ export function StatLoaderProvider(props: { children: React.ReactNode }) {
       const batchSize = 50;
       for (let i = 0; i < batchSize; i++) {
         if (stopLoading) break;
-        console.log("Loading batch", i);
+        console.log("正在加载批次", i);
         await onLoad({
           ...options,
           showToast: options.showToast && i === batchSize - 1,

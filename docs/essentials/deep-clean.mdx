@@ -1,66 +1,66 @@
 ---
-title: 'Deep Clean'
-description: 'Preview an AI-assisted cleanup of older Gmail messages before applying it to the rest of your inbox.'
+title: '深度清理'
+description: '在把 AI 辅助的旧 Gmail 邮件清理方案应用到收件箱其余部分之前，先预览它。'
 icon: 'brush'
 ---
 
 <Note>
-Deep Clean is in Early Access and currently supports Gmail accounts.
+深度清理处于抢先体验阶段，目前支持 Gmail 账号。
 </Note>
 
-Deep Clean reviews older inbox threads and decides which should stay and which can be archived or marked as read.
+深度清理会审阅较早的收件箱会话，并决定哪些应保留、哪些可以归档或标记为已读。
 
-## Requirements
+## 要求
 
-- Deep Clean currently supports **Google accounts only**. It does not appear for Outlook accounts.
-- An active premium plan is required.
-- Early Access must be enabled for your account.
+- 深度清理目前**仅支持 Google 账号**。它不会对 Outlook 账号显示。
+- 需要有效的付费套餐。
+- 你的账号必须已启用抢先体验。
 
-## Run a cleanup
+## 运行一次清理
 
-1. Open **Deep Clean** in the left sidebar.
-2. Choose whether matching messages should be **Archived** or **Marked as Read**.
-3. Select a time range, from all messages to messages older than one year. **Older than one week** is the recommended starting point.
-4. Choose which mail must stay in the inbox:
-   - Emails needing replies.
-   - Starred emails.
-   - Future calendar events.
-   - Payment receipts.
-   - Mail matching your optional custom instructions.
-5. Review the confirmation and select **Start Cleaning**.
+1. 打开左侧边栏中的**深度清理**。
+2. 选择匹配的邮件应被**归档**还是**标记为已读**。
+3. 选择一个时间范围，从所有邮件到早于一年的邮件。**早于一周**是推荐的起点。
+4. 选择哪些邮件必须留在收件箱中：
+   - 需要回复的邮件。
+   - 已加星标的邮件。
+   - 未来的日历事件。
+   - 付款收据。
+   - 匹配你可选自定义说明的邮件。
+5. 查看确认信息并选择**开始清理**。
 
-Deep Clean processes an initial preview of 50 messages. Review the live results before selecting **Run on Full Inbox**.
+深度清理会先处理 50 封邮件的初始预览。在实时结果中审阅后，再选择**在整个收件箱上运行**。
 
-## How messages are evaluated
+## 邮件如何被评估
 
-AI classification can be wrong. Use the preview to confirm that your protected message types and custom instructions behave as expected.
+AI 分类可能会出错。请使用预览来确认你受保护的邮件类型和自定义说明是否按预期工作。
 
-## Safety and undo
+## 安全与撤销
 
-Deep Clean does not delete email.
+深度清理不会删除邮件。
 
-- **Archive** removes the Gmail Inbox label and adds an Inbox Zero archive label.
-- **Mark as Read** removes the unread state and adds an Inbox Zero processed label.
-- Every processed thread remains searchable in Gmail.
-- Hover a completed action in the live results and select **Undo** to restore that thread to the inbox or mark it unread again.
-- If Deep Clean chose **Keep**, hover the result to manually archive or mark the message as read.
+- **归档**会移除 Gmail 收件箱标签，并添加一个 Inbox Zero 归档标签。
+- **标记为已读**会清除未读状态，并添加一个 Inbox Zero 已处理标签。
+- 每个已处理的会话在 Gmail 中仍可搜索。
+- 将鼠标悬停在实时结果中已完成的某条操作上，选择**撤销**即可把该会话恢复到收件箱或再次标记为未读。
+- 如果深度清理选择了**保留**，请把鼠标悬停在该结果上，手动归档或把该邮件标记为已读。
 
-After the first run, the Deep Clean page reuses your previous settings. Use **Edit settings** to change them, and **History** to review earlier cleanup jobs.
+首次运行后，深度清理页面会复用你之前的设置。使用**编辑设置**更改它们，使用**历史**查看更早的清理任务。
 
-## Troubleshooting
+## 故障排查
 
-### Deep Clean is missing
+### 找不到深度清理
 
-Confirm that the selected account is Gmail, the account has an active premium plan, and Early Access is enabled.
+确认所选账号是 Gmail、该账号有有效的付费套餐，并且已启用抢先体验。
 
-### Processing appears stuck
+### 处理似乎卡住了
 
-Large cleanups can take time. Keep the run page open or return through **History**. If nothing changes, refresh and confirm that the Gmail connection is still active.
+大型清理可能需要时间。请保持运行页面打开，或通过**历史**返回。如果没有任何变化，请刷新并确认 Gmail 连接仍然有效。
 
-### Important mail was cleaned
+### 重要邮件被清理了
 
-Use **Undo** on the affected result. Before another full run, enable the relevant protection or add a broader custom instruction, then start with a new 50-message preview.
+对受影响的结果使用**撤销**。在下一次完整运行之前，启用相关保护或添加更宽泛的自定义说明，然后从一个新的 50 封邮件预览开始。
 
-### Too much mail is kept
+### 保留的邮件太多
 
-Review which protections are enabled and simplify conflicting custom instructions. Use the preview result's manual action for individual messages before expanding the cleanup to the full inbox.
+检查启用了哪些保护，并简化相互冲突的自定义说明。在把清理扩展到整个收件箱之前，先对个别邮件使用预览结果中的手动操作。

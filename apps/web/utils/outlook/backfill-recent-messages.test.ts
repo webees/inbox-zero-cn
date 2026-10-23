@@ -257,7 +257,7 @@ describe("backfillRecentOutlookMessages", () => {
     expect(errorSpy).not.toHaveBeenCalled();
     expect(warnSpy).toHaveBeenCalledTimes(1);
     expect(warnSpy).toHaveBeenCalledWith(
-      "Stopped Outlook backfill because the account is rate limited",
+      "因账号被限流而停止 Outlook 回填",
       expect.objectContaining({
         rateLimitedCount: 8,
         retryAt: "2026-04-16T12:00:00.000Z",

@@ -329,11 +329,7 @@ describe("engine bootstrap coverage", () => {
     });
     await engine.requestSync(["acc-1"]);
     await engine.runUntil(1500);
-    // The lane outlives the spent budget, so wait on it rather than racing
-    // runUntil's zero-delay return.
-    await vi.waitFor(() =>
-      expect(receivedScopes).toEqual(["folder:a", "folder:b"]),
-    );
+    expect(receivedScopes).toEqual(["folder:a", "folder:b"]);
     expect((await engine.getDiagnostics("acc-1")).coverage).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ scopeId: "folder:a", metadata: "complete" }),

@@ -1,6 +1,6 @@
 export const OUTLOOK_INBOX_SECTIONS = [
-  { name: "Focused", type: "focused" },
-  { name: "Other", type: "other" },
+  { name: "重点", type: "focused" },
+  { name: "其他", type: "other" },
 ] as const;
 
 export type OutlookInboxSection =

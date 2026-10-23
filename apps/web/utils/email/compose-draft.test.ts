@@ -109,7 +109,7 @@ it("never replaces the attachments already on the mailbox draft when saving", as
 it("rejects an unconfirmed creation", async () => {
   vi.mocked(provider.createDraft).mockResolvedValue({ id: "" });
   await expect(saveComposeDraft({ provider, content })).rejects.toThrow(
-    "Could not confirm",
+    "无法确认邮箱草稿。",
   );
 });
 it("conditionally discards the provider draft", async () => {
@@ -120,7 +120,7 @@ it("keeps local recovery possible when the provider rejects deletion", async () 
   vi.mocked(provider.deleteDraft).mockResolvedValue(false);
   await expect(
     discardComposeDraft({ provider, draftId: "draft-1" }),
-  ).rejects.toThrow("changed");
+  ).rejects.toThrow("邮箱草稿已变更。丢弃前请重新打开。");
 });
 it("accepts discarding a draft already removed in the mailbox", async () => {
   vi.mocked(provider.getDraft).mockResolvedValue(null);

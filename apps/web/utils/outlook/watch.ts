@@ -8,7 +8,7 @@ import type { Logger } from "@/utils/logger";
 export async function watchOutlook(client: Client, logger: Logger) {
   const base = env.WEBHOOK_URL || env.NEXT_PUBLIC_BASE_URL;
 
-  // must be https
+  // 必须是 https
   const notificationUrl = new URL("/api/outlook/webhook", base);
   if (notificationUrl.protocol === "http:") {
     notificationUrl.protocol = "https:";
@@ -19,7 +19,7 @@ export async function watchOutlook(client: Client, logger: Logger) {
     notificationUrl: notificationUrl.toString(),
     lifecycleNotificationUrl: notificationUrl.toString(),
     resource: "/me/messages",
-    expirationDateTime: addDays(new Date(), 3).toISOString(), // 3 days (max allowed)
+    expirationDateTime: addDays(new Date(), 3).toISOString(), // 3 天（允许的最大值）
     clientState: env.MICROSOFT_WEBHOOK_CLIENT_STATE,
   };
 

@@ -200,9 +200,11 @@ describe("chat settings tools", () => {
         ],
       },
     });
-    expect(digestCapability?.reason).toContain("not yet exposed");
+    expect(digestCapability?.reason).toContain(
+      "尚未通过 updateAssistantSettings 开放写入",
+    );
     expect(digestCapability?.description).toContain(
-      "sent automatically to delivery.destinationEmail",
+      "自动发送到 delivery.destinationEmail",
     );
 
     const scheduledCheckInsCapability = result.capabilities.find(
@@ -585,7 +587,7 @@ describe("chat settings tools", () => {
     expect(prisma.automationJob.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         enabled: true,
-        name: "Scheduled check-ins",
+        name: "定时检查",
         cronExpression: "0 9,14 * * 1-5",
         prompt: null,
         messagingChannelId: "c000000000000000000000000",

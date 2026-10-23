@@ -8,13 +8,13 @@ import { clearOwnedLock } from "@/utils/redis/owned-lock";
 const GMAIL_HISTORY_CATCH_UP_KEY_PREFIX = "gmail-history-catch-up";
 const GMAIL_HISTORY_CATCH_UP_TTL_SECONDS = 24 * 60 * 60;
 
-// Failures only cost the wider catch-up window, so they never fail the webhook.
-// Shares the rate-limit state's Redis check: without that state, webhooks never
-// skip history, so there is nothing to catch up on.
+// 失败只会损失更宽的补偿窗口，因此绝不会导致 webhook 失败。
+// 与限流状态共用 Redis 检查：没有该状态时，webhook 永远不会
+// 跳过历史记录，因此没有需要补偿的内容。
 
 /**
- * Records that webhook history was left unprocessed because Gmail was rate
- * limiting the account. Each mark gets a new token so a catch-up run only
+ * 记录因 Gmail 对账号限流而导致 webhook 历史
+ * 未被处理。每次标记都会获得新 token，使一次补偿运行
  * clears the mark it read, not one set by a webhook skipped during that run.
  */
 export async function markGmailHistoryCatchUp(

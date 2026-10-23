@@ -197,7 +197,7 @@ export function useComposeAttachments({
       for (const { file } of created) {
         if (!(await isInlineImageContent(file))) {
           toastError({
-            description: "Inline image content does not match its file type.",
+            description: "内嵌图片的内容与其文件类型不匹配。",
           });
           return;
         }
@@ -220,7 +220,7 @@ export function useComposeAttachments({
     });
     if (accepted.length !== created.length) {
       toastError({
-        description: "One of the inline images could not be inserted.",
+        description: "有一张内嵌图片无法插入。",
       });
     }
     if (!accepted.length) return;
@@ -250,7 +250,7 @@ export function useComposeAttachments({
       event.target.value = "";
       if (files.length) {
         addFiles(files, disposition).catch(() =>
-          toastError({ description: "One of the files could not be read." }),
+          toastError({ description: "有一个文件无法读取。" }),
         );
       }
     };

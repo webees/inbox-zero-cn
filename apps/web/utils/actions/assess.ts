@@ -13,7 +13,7 @@ import { SafeError } from "@/utils/error";
 const SENT_MESSAGE_SAMPLE_POOL_SIZE = 60;
 const STYLE_SAMPLE_SIZE = 20;
 
-// to help with onboarding and provide the best flow to new users
+// 帮助引导流程并为新用户提供最佳体验
 export const assessAction = actionClient
   .metadata({ name: "assessUser" })
   .action(async ({ ctx: { emailAccountId, provider, logger } }) => {
@@ -58,7 +58,7 @@ export const analyzeWritingStyleAction = actionClient
       },
     });
 
-    if (!emailAccount) throw new SafeError("Email account not found");
+    if (!emailAccount) throw new SafeError("未找到邮箱账号");
 
     if (emailAccount?.writingStyle) return { success: true, skipped: true };
 
@@ -74,7 +74,7 @@ export const analyzeWritingStyleAction = actionClient
       sentMessages,
     ).slice(0, STYLE_SAMPLE_SIZE);
 
-    // analyze writing style
+    // 分析写作风格
     const style = await aiAnalyzeWritingStyle({
       emails: styleSourceMessages.map((email) =>
         getEmailForLLM(email, { extractReply: true }),
@@ -84,7 +84,7 @@ export const analyzeWritingStyleAction = actionClient
 
     if (!style) return;
 
-    // save writing style
+    // 保存写作风格
     const writingStyle = [
       style.typicalLength ? `Typical Length: ${style.typicalLength}` : null,
       style.formality ? `Formality: ${style.formality}` : null,

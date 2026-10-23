@@ -21,8 +21,8 @@ export function PublisherDiscussion({
   emailAccountId: string;
   threadId: string;
 }) {
-  // Shared threads always show their comments; unshared ones stay hidden
-  // until the composer is opened from the menu, command palette, or shortcut.
+  // 已共享的会话始终显示其评论；未共享的会话保持隐藏，
+  // 直到从菜单、命令面板或快捷键打开发表框。
   const [open, setOpen] = useState(false);
   const [focusRequest, setFocusRequest] = useState(0);
   useEffect(() => {
@@ -46,7 +46,7 @@ export function PublisherDiscussion({
     ? `/api/team-comments/conversations?memberId=${encodeURIComponent(memberId)}&emailAccountId=${encodeURIComponent(emailAccountId)}&threadId=${encodeURIComponent(threadId)}`
     : null;
   const source = useSWR<TeamConversationsResponse>(url);
-  // The composer only renders once membership and sharing state have loaded.
+  // 只有在成员关系和共享状态加载完成后才会渲染发表框。
   const composerReady = Boolean(memberId && source.data);
   useEffect(() => {
     if (!focusRequest || !composerReady) return;
@@ -56,8 +56,8 @@ export function PublisherDiscussion({
       composer?.scrollIntoView({ block: "nearest" });
     };
     focus();
-    // A closing menu or command palette hands focus back to its trigger once
-    // its exit animation ends, so focus again unless the user moved on.
+    // 菜单或命令面板关闭后，会在退出动画结束时把焦点交还给其触发器，
+    // 因此除非用户已经移开焦点，否则再次聚焦。
     const timeout = setTimeout(() => {
       const active = document.activeElement;
       if (!active || active === document.body || active.tagName === "BUTTON")
@@ -91,10 +91,7 @@ export function PublisherDiscussion({
             requireMention
             hint={
               <>
-                <span>
-                  Comments are never sent as email. @mention a teammate to share
-                  this conversation.
-                </span>
+                <span>评论绝不会作为邮件发送。@提及队友以共享此会话。</span>
                 <span className="flex shrink-0 items-center">
                   <ShareConversationDialog
                     memberId={memberId}
@@ -106,7 +103,7 @@ export function PublisherDiscussion({
                   <Button
                     size="icon2xs"
                     variant="ghost"
-                    aria-label="Close comments"
+                    aria-label="关闭评论"
                     onClick={() => setOpen(false)}
                   >
                     <XIcon className="size-3.5" />

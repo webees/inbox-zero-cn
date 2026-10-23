@@ -23,7 +23,7 @@ export function HiddenAiDraftLinksSetting() {
       },
       onError: createSettingActionErrorHandler({
         mutate,
-        prefix: "Failed to update hidden AI draft links setting",
+        prefix: "更新隐藏 AI 草稿链接设置失败",
       }),
     },
   );
@@ -49,8 +49,8 @@ export function HiddenAiDraftLinksSetting() {
 
   return (
     <SettingCard
-      title="Allow hidden links in AI drafts"
-      description="Let AI-generated drafts use custom anchor text like 'click here'. This is more convenient, but it hides the full destination and any data in the link."
+      title="允许 AI 草稿中的隐藏链接"
+      description="允许 AI 生成的草稿使用“点击此处”之类的自定义锚文本。这更方便，但会隐藏完整目标地址以及链接中的任何数据。"
       right={
         <LoadingContent
           loading={isLoading}

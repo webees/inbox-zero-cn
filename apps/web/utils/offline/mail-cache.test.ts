@@ -152,7 +152,7 @@ describe("offline mail cache", () => {
     );
     const result = expect(
       makeCache().handle(documentRequest(), waitUntil),
-    ).rejects.toThrow("Mailbox request timed out");
+    ).rejects.toThrow("邮箱请求超时");
     await vi.advanceTimersByTimeAsync(15_000);
     await result;
     await Promise.all(pending);

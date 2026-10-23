@@ -183,7 +183,7 @@ export function MailboxThreadList<T>({
         ) : (
           <>
             <div
-              aria-label="Conversations"
+              aria-label="会话"
               aria-multiselectable={selectionEnabled || undefined}
               className={listClassName}
               role="listbox"
@@ -235,7 +235,7 @@ export function MailboxThreadList<T>({
                 ) : (
                   (loadMoreButton ?? (
                     <button onClick={onLoadMore} type="button">
-                      Load more
+                      加载更多
                     </button>
                   ))
                 )}
@@ -263,7 +263,7 @@ export type MailReaderPaneProps = {
 export function MailReaderPane({
   selected,
   children,
-  empty = "Select an email to read it.",
+  empty = "选择一封邮件以阅读",
   loading = false,
   error,
   className,
@@ -272,14 +272,14 @@ export function MailReaderPane({
   bodyStyle,
 }: MailReaderPaneProps) {
   return (
-    <section aria-label="Reader" className={className} style={style}>
+    <section aria-label="阅读器" className={className} style={style}>
       {!selected ? (
         <div className={bodyClassName} style={bodyStyle}>
           {empty}
         </div>
       ) : loading ? (
         <div className={bodyClassName} style={bodyStyle}>
-          Loading…
+          加载中…
         </div>
       ) : error ? (
         <div className={bodyClassName} style={bodyStyle}>

@@ -75,7 +75,7 @@ describe("aiTranslateEmails", () => {
     ]);
     expect(mockCreateGenerateObject).toHaveBeenCalledWith(
       expect.objectContaining({
-        label: "Translate email",
+        label: "翻译邮件",
         promptHardening: { trust: "untrusted", level: "compact" },
       }),
     );
@@ -99,7 +99,7 @@ describe("aiTranslateEmails", () => {
         targetLanguage: "en",
         emailAccount: getEmailAccount(),
       }),
-    ).rejects.toThrow("Expected 2 translations, received 1");
+    ).rejects.toThrow("期望收到 2 条翻译，但实际收到 1 条");
   });
 
   it("hard-slices long texts without appending an ellipsis", async () => {

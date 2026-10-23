@@ -1,8 +1,8 @@
 import type { WebContents } from "electron";
 
 const NAVIGATION_TIMEOUT_MS = 15_000;
-// Measured from commit, so it covers subresources and hydration. A page that
-// is still downloading gets more time on slow links, up to the cap.
+// 从提交开始计时，因此覆盖到子资源和 hydration。仍在下载的页面在慢速链路上
+// 会获得更多时间，直到上限。
 const BOOT_CHECK_INTERVAL_MS = 30_000;
 const MAX_BOOT_CHECKS = 3;
 const FIRST_RETRY_DELAY_MS = 10_000;
@@ -94,8 +94,8 @@ export function installDesktopLoadRecovery(
       bootTimeout = setTimeout(checkBoot, BOOT_CHECK_INTERVAL_MS);
       return;
     }
-    // Route handlers on the app origin (JSON, files) never mount the web app,
-    // so they can't signal. Only the renderer knows what it committed.
+    // 应用源上的路由处理程序（JSON、文件）不会挂载 Web 应用，因此无法发出信号。
+    // 只有渲染进程知道它提交了什么。
     const generation = documentGeneration;
     readContentType(contents).then((contentType) => {
       if (
@@ -137,10 +137,9 @@ export function installDesktopLoadRecovery(
       }, NAVIGATION_TIMEOUT_MS);
     },
   );
-  // Fires only for main-frame, cross-document commits. Arming here rather than
-  // at navigation start means a ready signal from the outgoing document can't
-  // count for the new one. From here the boot watchdog, which tolerates a slow
-  // but progressing page, replaces the navigation timeout.
+  // 只对主框架的跨文档提交触发。在这里而不是导航开始时布防，意味着
+  // 离开的文档发出的就绪信号不会被算到新文档上。从这里开始，能容忍
+  // 缓慢但持续加载页面的启动看门狗会取代导航超时。
   contents.on("did-navigate", (_event, url) => {
     if (!isAppUrl(url, appOrigin)) return;
     clearTimeout(navigationTimeout);
@@ -158,8 +157,8 @@ export function installDesktopLoadRecovery(
   contents.on(
     "did-fail-load",
     (_event, code, _description, url, isMainFrame) => {
-      // Chromium aborts superseded navigations; images and iframes must never
-      // replace an otherwise usable inbox with the recovery screen.
+      // Chromium 会中止被取代的导航；图片和 iframe 绝不能把原本可用的
+      // 收件箱替换成恢复界面。
       if (!isMainFrame || code === -3 || !isAppUrl(url, appOrigin)) return;
       targetUrl = url;
       showRecovery();
@@ -173,7 +172,7 @@ export function installDesktopLoadRecovery(
   contents.on("render-process-gone", showRecovery);
   contents.once("destroyed", cancelTimers);
 
-  // Reloading the local recovery page from View > Reload should retry the app.
+  // 从“视图 > 重新加载”重新加载本地恢复页面应重试应用。
   contents.on("did-start-navigation", ({ url, isMainFrame }) => {
     if (!showingRecovery || !isMainFrame || !url.startsWith("data:text/html"))
       return;
@@ -188,7 +187,7 @@ export function installDesktopLoadRecovery(
   return {
     markReady() {
       if (!booting) return;
-      // Scripts can hydrate without the CSS, which still leaves the app unusable.
+      // 脚本可以在没有 CSS 的情况下 hydrate，这仍会让应用无法使用。
       if (requestFailures.failedRequests.stylesheet) {
         failBoot("stylesheet-failed");
         return;
@@ -212,7 +211,7 @@ export function installDesktopLoadRecovery(
         failedPaths.push(URL.parse(details.url)?.pathname ?? "");
       }
     },
-    /** For moments the network likely came back, such as waking from sleep. */
+    /** 用于网络很可能恢复的时刻，例如从睡眠中唤醒。 */
     retryIfNotBooted() {
       if (booted || contents.isDestroyed()) return;
       if (!showingRecovery && !isAppUrl(contents.getURL(), appOrigin)) return;
@@ -237,9 +236,9 @@ main { max-width: 420px; padding: 40px; text-align: center; }
 h1 { font-size: 24px; letter-spacing: -.5px; } p { color: #52525b; line-height: 1.6; }
 a { display: inline-block; margin: 16px 0; padding: 12px 24px; background: #18181b; color: white; border-radius: 8px; text-decoration: none; }
 small { display: block; color: #71717a; }
-</style></head><body><main><h1>Connecting to Inbox Zero</h1>
-<p>We couldn't load your mailbox. Check your connection. We'll retry automatically.</p>
-<a href="${href}">Retry now</a><small>You can also use View → Reload.</small>
+</style></head><body><main><h1>正在连接到 Inbox Zero</h1>
+<p>无法加载您的邮箱。请检查网络连接。我们将自动重试。</p>
+<a href="${href}">立即重试</a><small>您也可以使用 视图 → 重新加载。</small>
 </main></body></html>`)}`;
 }
 
@@ -266,7 +265,7 @@ function getRetryDelay(failedAttempts: number) {
   );
 }
 
-// A hung renderer never answers; treat that like an HTML page that didn't boot.
+// 卡死的渲染进程永远不会响应；把它当作未能启动的 HTML 页面处理。
 function readContentType(contents: WebContents): Promise<string | null> {
   return Promise.race([
     contents

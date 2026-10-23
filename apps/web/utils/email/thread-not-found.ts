@@ -1,8 +1,8 @@
 import { isOutlookItemNotFoundError } from "@/utils/error";
 
 /**
- * Whether the provider rejected an operation because the thread is gone, so
- * callers can tell "already handled" apart from a real failure.
+ * 服务商是否因为会话已不存在而拒绝了操作，以便
+ * 调用方能够区分“已处理过”与真正的失败。
  */
 export function isThreadNotFoundError(error: unknown): boolean {
   if (isOutlookItemNotFoundError(error)) return true;

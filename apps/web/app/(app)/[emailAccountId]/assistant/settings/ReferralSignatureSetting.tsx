@@ -23,12 +23,12 @@ export function ReferralSignatureSetting() {
     {
       onSuccess: () => {
         toastSuccess({
-          description: "Referral signature setting updated!",
+          description: "推荐签名设置已更新！",
         });
       },
       onError: createSettingActionErrorHandler({
         mutate,
-        prefix: "Failed to update referral signature setting",
+        prefix: "更新推荐签名设置失败",
       }),
       onSettled: () => {
         mutate();
@@ -57,8 +57,8 @@ export function ReferralSignatureSetting() {
 
   return (
     <SettingCard
-      title="Include referral signature"
-      description={`Add 'Drafted by ${BRAND_NAME}' with your referral link to emails we draft for you. Earn a month of credit for each person who signs up with your link.`}
+      title="包含推荐签名"
+      description={`在我们为你起草的邮件中添加带有你推荐链接的“由 ${BRAND_NAME} 起草”。每有一位通过你的链接注册，你就能获得一个月的额度。`}
       right={
         <LoadingContent
           loading={isLoading}

@@ -10,9 +10,9 @@ export const GET = withError("unsubscribe", async (request) => {
   if (!token) {
     return createUnsubscribeResponse(request, {
       status: 400,
-      title: "Invalid unsubscribe link",
-      message: "This unsubscribe link is missing the required token.",
-      json: { error: "Token is required" },
+      title: "无效的退订链接",
+      message: "此退订链接缺少必要的令牌。",
+      json: { error: "令牌为必填项" },
     });
   }
 
@@ -20,12 +20,10 @@ export const GET = withError("unsubscribe", async (request) => {
   if (!emailToken) {
     return createUnsubscribeResponse(request, {
       status: 400,
-      title: "Link unavailable",
-      message:
-        "This unsubscribe link is invalid or has already been used. Request a new email to try again.",
+      title: "链接不可用",
+      message: "此退订链接无效或已被使用。请重新请求一封邮件后再试。",
       json: {
-        error:
-          "Invalid unsubscribe token. You might have already unsubscribed.",
+        error: "退订令牌无效。你可能已经退订。",
       },
     });
   }
@@ -41,9 +39,9 @@ export const POST = withError("unsubscribe", async (request) => {
   if (!token) {
     return createUnsubscribeResponse(request, {
       status: 400,
-      title: "Invalid unsubscribe request",
-      message: "This unsubscribe request is missing the required token.",
-      json: { error: "Token is required" },
+      title: "无效的退订请求",
+      message: "此退订请求缺少必要的令牌。",
+      json: { error: "令牌为必填项" },
     });
   }
 
@@ -51,12 +49,10 @@ export const POST = withError("unsubscribe", async (request) => {
   if (!emailToken) {
     return createUnsubscribeResponse(request, {
       status: 400,
-      title: "Link unavailable",
-      message:
-        "This unsubscribe link is invalid or has already been used. Request a new email to try again.",
+      title: "链接不可用",
+      message: "此退订链接无效或已被使用。请重新请求一封邮件后再试。",
       json: {
-        error:
-          "Invalid unsubscribe token. You might have already unsubscribed.",
+        error: "退订令牌无效。你可能已经退订。",
       },
     });
   }
@@ -83,13 +79,11 @@ export const POST = withError("unsubscribe", async (request) => {
 
     return createUnsubscribeResponse(request, {
       status: 500,
-      title: "Unsubscribe failed",
-      message:
-        "We couldn't update your email preferences right now. Visit Settings to unsubscribe manually.",
+      title: "退订失败",
+      message: "目前无法更新你的邮件偏好设置。请前往设置页面手动退订。",
       json: {
         success: false,
-        message:
-          "Error unsubscribing. Visit Settings page to unsubscribe from emails.",
+        message: "退订时出错。请前往设置页面退订邮件。",
       },
     });
   }
@@ -108,8 +102,8 @@ export const POST = withError("unsubscribe", async (request) => {
 
   return createUnsubscribeResponse(request, {
     status: 200,
-    title: "You're unsubscribed",
-    message: "Email updates like this have been turned off for your account.",
+    title: "你已退订",
+    message: "你的账号已关闭此类邮件更新。",
     json: { success: true },
   });
 });
@@ -179,12 +173,12 @@ function getHtmlHeaders() {
 
 function renderConfirmationPage(token: string) {
   return `<!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="referrer" content="no-referrer" />
-    <title>Confirm unsubscribe</title>
+    <title>确认退订</title>
     <style>
       body {
         margin: 0;
@@ -229,11 +223,11 @@ function renderConfirmationPage(token: string) {
   </head>
   <body>
     <main>
-      <h1>Confirm unsubscribe</h1>
-      <p>Click the button below to stop email updates like this from Inbox Zero.</p>
+      <h1>确认退订</h1>
+      <p>点击下方按钮以停止接收 Inbox Zero 发送的此类邮件。</p>
       <form method="POST" action="/api/unsubscribe">
         <input type="hidden" name="token" value="${escapeHtml(token)}" />
-        <button type="submit">Unsubscribe</button>
+        <button type="submit">退订</button>
       </form>
     </main>
   </body>
@@ -242,7 +236,7 @@ function renderConfirmationPage(token: string) {
 
 function renderStatusPage(title: string, message: string) {
   return `<!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

@@ -92,7 +92,7 @@ export function DeliveryChannelsSetting({
           {email && (
             <div className="flex items-center gap-3">
               <MailIcon className="h-5 w-5 text-muted-foreground" />
-              <div className="flex-1 text-sm font-medium">Email</div>
+              <div className="flex-1 text-sm font-medium">邮件</div>
               <Toggle
                 name="emailDelivery"
                 enabled={email.enabled}
@@ -123,7 +123,7 @@ export function DeliveryChannelsSetting({
                 onClick={openSettings}
                 className="text-foreground underline"
               >
-                Connect Slack in Settings
+                在设置中连接 Slack
               </button>
             </MutedText>
           )}
@@ -166,12 +166,12 @@ function ChannelRow({
     updateMessagingFeatureRouteAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: "Settings saved" });
+        toastSuccess({ description: "设置已保存" });
         onUpdate();
       },
       onError: (error) => {
         toastError({
-          description: getActionErrorMessage(error.error) ?? "Failed to update",
+          description: getActionErrorMessage(error.error) ?? "更新失败",
         });
       },
     },
@@ -193,20 +193,18 @@ function ChannelRow({
               isDm={destination.isDm}
               canSendAsDm={channel.canSendAsDm}
               onUpdate={onUpdate}
-              placeholder="Select destination"
+              placeholder="选择目标"
               className="h-8 w-48 text-xs"
             />
             <MutedText className="text-xs">
-              Pick where {featureLabel} should be delivered for this Slack
-              workspace.
+              选择 {featureLabel} 在此 Slack 工作区的投递位置。
             </MutedText>
           </div>
         ) : (
           <div className="space-y-1">
             <span className="text-sm font-medium">{config.name}</span>
             <MutedText className="text-xs">
-              {featureLabel} will be sent to this connected app&apos;s direct
-              message destination.
+              {featureLabel} 将发送到此已连接应用的私信目标。
             </MutedText>
           </div>
         )}

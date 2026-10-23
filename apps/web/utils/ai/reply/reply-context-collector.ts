@@ -109,7 +109,7 @@ ${getTodayForLLM()}`;
 
     const generateText = createGenerateText({
       emailAccount,
-      label: "Reply context collector",
+      label: "回复上下文收集器",
       modelOptions,
       promptHardening: { trust: "untrusted", level: "full" },
     });
@@ -135,7 +135,7 @@ ${getTodayForLLM()}`;
               .describe("Search query to find relevant emails in history"),
           }),
           execute: async ({ query }) => {
-            logger.info("Searching emails", { query });
+            logger.info("正在搜索邮件", { query });
             try {
               const emails = await searchReplyContextEmails({
                 emailProvider,
@@ -152,7 +152,7 @@ ${getTodayForLLM()}`;
                 seenSearchResultIds.add(email.id);
               }
 
-              logger.info("Found emails", {
+              logger.info("找到邮件", {
                 emailCount: emails.length,
                 returnedEmailCount: unseenEmails.length,
                 duplicateEmailCount: emails.length - unseenEmails.length,
@@ -162,13 +162,13 @@ ${getTodayForLLM()}`;
               return unseenEmails;
             } catch (error) {
               const errorMessage =
-                error instanceof Error ? error.message : "Unknown error";
+                error instanceof Error ? error.message : "未知错误";
 
               const err = error as Record<string, unknown>;
               const responseBody =
                 typeof err?.body === "string" ? err.body : undefined;
 
-              logger.error("Email search failed", {
+              logger.error("邮件搜索失败", {
                 error,
                 errorMessage,
                 query,
@@ -189,10 +189,10 @@ ${getTodayForLLM()}`;
             "Finalize and return your compiled results for downstream drafting",
           inputSchema: resultSchema,
           execute: async (finalResult) => {
-            logger.info("Finalizing results", {
+            logger.info("正在汇总结果", {
               relevantEmails: finalResult.relevantEmails.length,
             });
-            logger.trace("Finalizing results", {
+            logger.trace("正在汇总结果", {
               notes: finalResult.notes,
               relevantEmails: finalResult.relevantEmails,
             });

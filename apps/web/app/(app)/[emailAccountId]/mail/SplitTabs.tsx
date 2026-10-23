@@ -248,7 +248,7 @@ export function SplitTabs({
                   aria-label={split.name}
                   aria-current={active ? "true" : undefined}
                   aria-description={
-                    countLabel ? `${countLabel} in this view` : undefined
+                    countLabel ? `${countLabel}（当前视图）` : undefined
                   }
                   className={cn(
                     "relative flex select-none items-center gap-1.5 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
@@ -285,14 +285,14 @@ export function SplitTabs({
               <ContextMenuContent className="w-44">
                 {onEdit && (
                   <ContextMenuItem onSelect={() => onEdit(split.id)}>
-                    Edit filters and name
+                    编辑筛选条件和名称
                   </ContextMenuItem>
                 )}
                 <ContextMenuItem
                   className="text-destructive focus:text-destructive"
                   onSelect={() => onDelete(split.id)}
                 >
-                  Turn off split
+                  关闭分类标签页
                 </ContextMenuItem>
               </ContextMenuContent>
             </ContextMenu>
@@ -326,7 +326,7 @@ export function SplitTabs({
       {canCreateSplits && (
         <button
           type="button"
-          aria-label="New split"
+          aria-label="新建分类标签页"
           onClick={onNewSplit}
           className="flex size-6 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >

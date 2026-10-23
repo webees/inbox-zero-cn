@@ -73,7 +73,7 @@ export async function createLabel({
   logger: Logger;
 }) {
   const sanitizedName = sanitizeOutlookCategoryName(name);
-  if (!sanitizedName) throw new Error("Label name cannot be empty");
+  if (!sanitizedName) throw new Error("标签名称不能为空");
 
   try {
     // Use a random preset color if none provided or if the provided color is not supported
@@ -97,7 +97,7 @@ export async function createLabel({
   } catch (error) {
     let { errorMessage } = extractErrorInfo(error);
     if (!errorMessage) {
-      errorMessage = error instanceof Error ? error.message : "Unknown error";
+      errorMessage = error instanceof Error ? error.message : "未知错误";
     }
     if (
       errorMessage.includes("already exists") ||
@@ -106,11 +106,9 @@ export async function createLabel({
       logger.warn("Label already exists", { name: sanitizedName });
       const label = await getLabel({ client, name: sanitizedName });
       if (label) return label;
-      throw new Error(`Label conflict but not found: ${sanitizedName}`);
+      throw new Error(`标签冲突但未找到：${sanitizedName}`);
     }
-    throw new Error(
-      `Failed to create Outlook category "${sanitizedName}": ${errorMessage}`,
-    );
+    throw new Error(`创建 Outlook 类别“${sanitizedName}”失败：${errorMessage}`);
   }
 }
 
@@ -473,7 +471,7 @@ export async function archiveThread({
     const error = archiveResult.reason;
     if (error.message?.includes("Requested entity was not found")) {
       logger.warn("Thread not found", { threadId, userEmail: ownerEmail });
-      return { status: 404, message: "Thread not found" };
+      return { status: 404, message: "未找到会话" };
     }
     logger.error("Failed to move thread to folder", {
       folderId,
@@ -487,8 +485,8 @@ export async function archiveThread({
 }
 
 const SOURCE_FOLDER_LABELS = {
-  archive: "Archive",
-  deleteditems: "Deleted items",
+  archive: "归档",
+  deleteditems: "已删除邮件",
 } as const;
 
 /**
@@ -521,7 +519,7 @@ async function moveThreadFromFolderToInbox({
   // would be worse than failing.
   if (!sourceFolderId) {
     throw new Error(
-      `${SOURCE_FOLDER_LABELS[sourceFolder]} folder not found, cannot move thread to inbox`,
+      `未找到${SOURCE_FOLDER_LABELS[sourceFolder]}文件夹，无法将会话移至收件箱`,
     );
   }
 
@@ -546,7 +544,7 @@ async function moveThreadFromFolderToInbox({
             .post({ destinationId: WELL_KNOWN_FOLDERS.inbox }),
         logger,
       ),
-    failureMessage: "Failed to move message back to inbox",
+    failureMessage: "无法将邮件移回收件箱",
   });
 }
 

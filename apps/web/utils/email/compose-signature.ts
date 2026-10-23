@@ -6,8 +6,8 @@ import { getOrCreateReferralCode } from "@/utils/referral/referral-code";
 import { generateReferralLink } from "@/utils/referral/referral-link";
 
 /**
- * The signature and "Sent with" footer every composer adds to a new message,
- * so web and the mobile apps send the same thing.
+ * 每个写信器都会添加到新邮件的签名和“Sent with”页脚，
+ * 使网页端和移动应用发送相同的内容。
  */
 export async function getComposeSignature({
   emailAccountId,
@@ -20,7 +20,7 @@ export async function getComposeSignature({
     where: { id: emailAccountId },
     select: { signature: true, includeSentWithSignature: true },
   });
-  if (!emailAccount) throw new SafeError("Email account not found");
+  if (!emailAccount) throw new SafeError("未找到邮箱账号");
 
   const includeFooter =
     !env.NEXT_PUBLIC_DISABLE_REFERRAL_SIGNATURE &&
@@ -33,7 +33,7 @@ export async function getComposeSignature({
   };
 }
 
-// A failed referral lookup still sends the footer, just without the referral link.
+// 推荐查询失败仍会发送页脚，只是不带推荐链接。
 async function getFooterLink(userId: string) {
   try {
     const { code } = await getOrCreateReferralCode(userId);

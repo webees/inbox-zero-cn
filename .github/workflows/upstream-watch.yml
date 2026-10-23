@@ -1,0 +1,137 @@
+name: 上游变更监听
+
+# 为什么需要它：GitHub 的 schedule 对这个仓库会延迟 2–4 小时（实测：本应 12:00 的
+# 定时运行 15:07 才跑），改成每 15 分钟一个 cron 也拿不到 15 分钟延迟——调度由
+# GitHub 决定，我们只能决定「多久检查一次」。所以这里用一个长驻的轻量 job 代替 cron
+# 计时：job 自己每 POLL_SECONDS 秒查一次上游，查到新提交就触发 localize-zh。
+#
+# 判定「上游有没有新东西」用 compare 接口：比较 upstream tip 与我们的 main，
+# behind_by == 0 就是已同步。不要用「这个提交在本仓库是否存在」——这是 fork，
+# fork 网络里的对象互相可见，上游刚推的新提交查本仓库也返回 200，会永远判成已同步。
+# 也不要比父提交：我们自己也会往 main 上追加提交，父提交不一定是上游 tip。
+#
+# cron 只作为兜底：watcher 意外死亡时把它拉起来。它同样会被 GitHub 延迟，但只影响
+# 兜底路径；正常路径靠 job 结束前的自触发接力，不依赖 cron。
+#
+# 需要权限：actions: write（触发 localize-zh 与自触发）。无需额外 secret，
+# 上游是公开仓库，用自带的 GITHUB_TOKEN 读提交即可。
+# 可选 Variables：
+#   UPSTREAM_REPO        上游仓库地址，默认 https://github.com/elie222/inbox-zero.git
+#   UPSTREAM_BRANCH      上游分支，默认 main
+#   UPSTREAM_POLL_SECONDS  轮询间隔秒数，默认 180
+#   UPSTREAM_WATCH_MINUTES 单个 watcher 的监听时长（分钟），默认 330（留出 30 分钟余量）
+
+on:
+  schedule:
+    # 兜底拉起；不要指望它准时（GitHub 会延迟数小时）
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  # 与 localize 同理：同组只保留 1 running + 1 pending，后到的 pending 会顶掉先到的。
+  # 按事件分组，避免兜底 cron 把「排队中的自触发接力」顶掉。
+  group: upstream-watch-${{ github.event_name }}
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    # GitHub 托管 runner 单 job 硬上限 6 小时，留 30 分钟余量给收尾与自触发
+    timeout-minutes: 350
+    steps:
+      - name: 去重（同一时刻只保留一个 watcher）
+        id: dedupe
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          others=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow upstream-watch.yml \
+            --limit 20 --json databaseId,status \
+            --jq "[.[] | select(.databaseId != ${GITHUB_RUN_ID} and (.status == \"in_progress\" or .status == \"queued\"))] | length" \
+            2>/dev/null || echo 0)
+          if [ "${others:-0}" -gt 0 ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice title=已有 watcher 在跑::跳过本次，避免重复触发汉化。"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 轮询上游并在有更新时触发汉化
+        if: steps.dedupe.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          UPSTREAM_REPO: ${{ vars.UPSTREAM_REPO || 'https://github.com/elie222/inbox-zero.git' }}
+          UPSTREAM_BRANCH: ${{ vars.UPSTREAM_BRANCH || 'main' }}
+          MAIN_BRANCH: ${{ github.event.repository.default_branch }}
+          POLL_SECONDS: ${{ vars.UPSTREAM_POLL_SECONDS || '180' }}
+          WATCH_MINUTES: ${{ vars.UPSTREAM_WATCH_MINUTES || '330' }}
+        run: |
+          set -euo pipefail
+
+          # 把 https://github.com/owner/repo.git 或 git@github.com:owner/repo.git 归一成 owner/repo
+          slug="$(printf '%s' "$UPSTREAM_REPO" \
+            | sed -E 's#^git@[^:]+:##; s#^[a-z]+://[^/]+/##; s#\.git$##; s#/$##')"
+          if ! printf '%s' "$slug" | grep -qE '^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$'; then
+            echo "::error title=上游地址无法解析::UPSTREAM_REPO=${UPSTREAM_REPO}"
+            exit 1
+          fi
+
+          deadline=$(( $(date +%s) + WATCH_MINUTES * 60 ))
+          # 触发冷却：链条可能失败或仍在收敛，避免每轮都重复触发
+          cooldown=600
+          last_dispatch=0
+          polls=0
+
+          echo "监听 ${slug}@${UPSTREAM_BRANCH}：每 ${POLL_SECONDS}s 一次，最长 ${WATCH_MINUTES} 分钟。"
+
+          while :; do
+            now=$(date +%s)
+            if [ "$now" -ge "$deadline" ]; then
+              echo "监听窗口结束，自触发下一个 watcher 接力。"
+              gh workflow run upstream-watch.yml --repo "$GITHUB_REPOSITORY" \
+                || echo "::warning title=自触发失败::只能等兜底 cron 重新拉起 watcher。"
+              break
+            fi
+
+            polls=$((polls + 1))
+            upstream_tip="$(gh api "repos/${slug}/commits/${UPSTREAM_BRANCH}" --jq .sha 2>/dev/null || true)"
+
+            if [ -z "$upstream_tip" ]; then
+              echo "::warning title=读取上游失败::第 ${polls} 次轮询没拿到 ${slug}@${UPSTREAM_BRANCH} 的提交。"
+            else
+              # 判定「是否已同步」必须用 compare：behind_by == 0 表示上游 tip 已在
+              # main 的祖先链上。不能用「这个提交在本仓库是否存在」——我们是 fork，
+              # fork 网络里的对象互相可见，上游刚推的新提交查本仓库也会返回 200，
+              # 于是永远被判成「已同步」（实测踩过：上游 6a1a29d4d 被漏掉）。
+              behind="$(gh api "repos/${GITHUB_REPOSITORY}/compare/${upstream_tip}...${MAIN_BRANCH}" \
+                --jq '.behind_by' 2>/dev/null || true)"
+              if [ -z "$behind" ]; then
+                echo "::warning title=比较提交失败::第 ${polls} 次轮询没能比较 ${upstream_tip:0:9} 与 ${MAIN_BRANCH}。"
+              elif [ "$behind" = "0" ]; then
+                # 已同步，无事可做
+                :
+              elif [ "$((now - last_dispatch))" -lt "$cooldown" ]; then
+                echo "上游 ${upstream_tip:0:9} 未同步（落后 ${behind} 个提交），但距上次触发不足 ${cooldown}s，等待冷却。"
+              else
+                busy="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow localize-zh.yml \
+                  --limit 20 --json status \
+                  --jq '[.[] | select(.status == "in_progress" or .status == "queued")] | length' \
+                  2>/dev/null || echo 0)"
+                if [ "${busy:-0}" -gt 0 ]; then
+                  echo "上游 ${upstream_tip:0:9} 未同步（落后 ${behind} 个提交），但已有 ${busy} 个汉化运行在跑，等下一轮。"
+                else
+                  echo "上游 ${upstream_tip:0:9} 未同步（落后 ${behind} 个提交），触发汉化。"
+                  gh workflow run localize-zh.yml --repo "$GITHUB_REPOSITORY"
+                  last_dispatch="$now"
+                fi
+              fi
+            fi
+
+            sleep "$POLL_SECONDS"
+          done
+
+          echo "本轮共轮询 ${polls} 次。"

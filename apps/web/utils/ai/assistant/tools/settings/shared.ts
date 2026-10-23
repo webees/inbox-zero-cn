@@ -61,7 +61,7 @@ const scheduledCheckInsConfigSchema = z
       value.cronExpression != null ||
       value.messagingChannelId != null ||
       value.prompt !== undefined,
-    { message: "At least one scheduled check-ins field must be provided." },
+    { message: "必须至少提供一个定时签到字段。" },
   )
   .describe("Scheduled check-ins configuration payload.");
 
@@ -428,47 +428,40 @@ type ScheduledCheckInsSnapshotSource = {
 const readOnlyCapabilities = [
   {
     path: "assistant.writingStyle",
-    title: "Writing style",
-    reason:
-      "Readable in chat, but writes are not yet exposed through updateAssistantSettings.",
+    title: "写作风格",
+    reason: "可在聊天中读取，但尚未通过 updateAssistantSettings 开放写入。",
   },
   {
     path: "assistant.signature",
-    title: "Personal signature",
-    reason:
-      "Readable in chat, but writes are not yet exposed through updateAssistantSettings.",
+    title: "个人签名",
+    reason: "可在聊天中读取，但尚未通过 updateAssistantSettings 开放写入。",
   },
   {
     path: "assistant.referralSignature.enabled",
-    title: "Referral signature",
-    reason:
-      "Readable in chat, but writes are not yet exposed through updateAssistantSettings.",
+    title: "推荐签名",
+    reason: "可在聊天中读取，但尚未通过 updateAssistantSettings 开放写入。",
   },
   {
     path: "assistant.followUp.awaitingReplyDays",
-    title: "Follow-up (awaiting reply days)",
-    reason:
-      "Readable in chat, but writes are not yet exposed through updateAssistantSettings.",
+    title: "跟进（等待回复天数）",
+    reason: "可在聊天中读取，但尚未通过 updateAssistantSettings 开放写入。",
   },
   {
     path: "assistant.followUp.needsReplyDays",
-    title: "Follow-up (needs reply days)",
-    reason:
-      "Readable in chat, but writes are not yet exposed through updateAssistantSettings.",
+    title: "跟进（需要回复天数）",
+    reason: "可在聊天中读取，但尚未通过 updateAssistantSettings 开放写入。",
   },
   {
     path: "assistant.followUp.autoDraftEnabled",
-    title: "Follow-up auto-draft",
-    reason:
-      "Readable in chat, but writes are not yet exposed through updateAssistantSettings.",
+    title: "跟进自动草稿",
+    reason: "可在聊天中读取，但尚未通过 updateAssistantSettings 开放写入。",
   },
   {
     path: "assistant.digest",
-    title: "Digest configuration",
-    reason:
-      "Readable in chat, but writes are not yet exposed through updateAssistantSettings.",
+    title: "邮件摘要配置",
+    reason: "可在聊天中读取，但尚未通过 updateAssistantSettings 开放写入。",
     description:
-      "All included rules are combined into one account-level digest. When email delivery is enabled, it is sent automatically to delivery.destinationEmail; there is no separate recipient setting. The scheduled time makes the digest eligible, while estimatedNextDeliveryAt accounts for the dispatch interval.",
+      "所有启用的规则会合并为一个账号级邮件摘要。启用邮件投递后，它会自动发送到 delivery.destinationEmail，没有单独的收件人设置。计划时间只是让摘要具备发送资格，而 estimatedNextDeliveryAt 会考虑发送间隔。",
   },
 ] as const;
 
@@ -669,7 +662,7 @@ export async function executeUpdateAssistantSettings({
     if (appliedChanges.length === 0) {
       return {
         success: true,
-        message: "No setting changes were needed.",
+        message: "无需修改任何设置。",
         appliedChanges: [],
       };
     }
@@ -827,49 +820,49 @@ export function getWritableCapabilities(snapshot: AccountSettingsSnapshot) {
   return [
     {
       path: "assistant.multiRuleSelection.enabled",
-      title: "Multi-rule selection",
+      title: "多规则选择",
       canRead: true,
       canWrite: true,
       value: snapshot.multiRuleSelectionEnabled,
     },
     {
       path: "assistant.meetingBriefs.enabled",
-      title: "Meeting briefs enabled",
+      title: "启用会议简报",
       canRead: true,
       canWrite: true,
       value: snapshot.meetingBriefingsEnabled,
     },
     {
       path: "assistant.meetingBriefs.minutesBefore",
-      title: "Meeting briefs minutes before",
+      title: "会议简报提前分钟数",
       canRead: true,
       canWrite: true,
       value: snapshot.meetingBriefingsMinutesBefore,
     },
     {
       path: "assistant.meetingBriefs.sendEmail",
-      title: "Meeting briefs email delivery",
+      title: "会议简报邮件投递",
       canRead: true,
       canWrite: true,
       value: snapshot.meetingBriefsSendEmail,
     },
     {
       path: "assistant.attachmentFiling.enabled",
-      title: "Auto-file attachments enabled",
+      title: "启用自动归档附件",
       canRead: true,
       canWrite: true,
       value: snapshot.filingEnabled,
     },
     {
       path: "assistant.attachmentFiling.prompt",
-      title: "Auto-file attachments prompt",
+      title: "自动归档附件提示词",
       canRead: true,
       canWrite: true,
       value: snapshot.filingPrompt,
     },
     {
       path: "assistant.scheduledCheckIns",
-      title: "Scheduled check-ins",
+      title: "定时签到",
       canRead: true,
       canWrite: true,
       value: snapshot.scheduledCheckIns,
@@ -877,7 +870,7 @@ export function getWritableCapabilities(snapshot: AccountSettingsSnapshot) {
     },
     {
       path: "assistant.draftKnowledgeBase",
-      title: "Draft knowledge base",
+      title: "草稿知识库",
       canRead: true,
       canWrite: true,
       value: {

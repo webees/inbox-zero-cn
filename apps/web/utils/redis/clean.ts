@@ -57,7 +57,7 @@ export async function updateThread({
 }) {
   const thread = await getThread({ emailAccountId, jobId, threadId });
   if (!thread) {
-    logger.warn("Thread not found", { threadId, emailAccountId, jobId });
+    logger.warn("未找到会话", { threadId, emailAccountId, jobId });
     return;
   }
 
@@ -78,9 +78,9 @@ export async function publishThread({
     threadId: thread.threadId,
   });
 
-  // Store the data with expiration
+  // 存储带过期时间的数据
   await redis.set(key, thread, { ex: EXPIRATION });
-  // Publish the update to any listening clients
+  // 将更新发布给所有正在监听的客户端
   await redis.publish(key, JSON.stringify(thread));
 }
 
@@ -109,11 +109,11 @@ export async function getThreadsByJobId({
   const keys = [];
   let cursor = 0;
 
-  // Scan through keys until we hit our limit or run out of keys
+  // 扫描键，直到达到上限或键耗尽
   do {
     const [nextCursor, batch] = await redis.scan(cursor, {
       match: pattern,
-      count: 100, // How many keys to fetch per iteration
+      count: 100, // 每次迭代获取多少个键
     });
     cursor = Number(nextCursor);
     keys.push(...batch);
@@ -121,7 +121,7 @@ export async function getThreadsByJobId({
     if (keys.length >= limit) break;
   } while (cursor !== 0);
 
-  // Slice to ensure we don't exceed limit
+  // 切片以确保不超过上限
   const keysToFetch = keys.slice(0, limit);
   if (keysToFetch.length === 0) return [];
 
@@ -132,7 +132,7 @@ export async function getThreadsByJobId({
 }
 
 export async function deleteAllUserData(userId: string) {
-  // Delete all thread keys for this user
+  // 删除该用户的所有会话键
   const threadPattern = `thread:${userId}:*`;
   let cursor = 0;
   let deletedThreads = 0;
@@ -145,7 +145,7 @@ export async function deleteAllUserData(userId: string) {
     cursor = Number(nextCursor);
 
     if (batch.length > 0) {
-      // Spread the array of keys
+      // 展开键数组
       await redis.unlink(...batch);
       deletedThreads += batch.length;
     }

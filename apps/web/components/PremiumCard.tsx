@@ -42,16 +42,15 @@ export function PremiumExpiredCardContent({
 
   const isUserPremium = isPremiumRecord(premium);
 
-  // Self-hosters running with NEXT_PUBLIC_BYPASS_PREMIUM_CHECKS already have
-  // every premium feature enabled — hasAiAccess and friends short-circuit to
-  // true — so prompting them to upgrade is misleading. They have no premium
-  // record, so the isPremiumRecord check alone never hides this.
+  // 启用 NEXT_PUBLIC_BYPASS_PREMIUM_CHECKS 的自托管用户已拥有全部高级版功能
+  // ——hasAiAccess 等检查会直接返回 true——因此提示他们升级会造成误导。
+  // 他们没有高级版记录，所以仅靠 isPremiumRecord 检查永远无法隐藏此卡片。
   if (isUserPremium || env.NEXT_PUBLIC_BYPASS_PREMIUM_CHECKS) return null;
 
   const getSubscriptionMessage = () => {
     const UPGRADE_MESSAGE = {
-      title: "Upgrade to Premium",
-      description: "Upgrade to Premium to enable your AI email assistant.",
+      title: "升级到高级版",
+      description: "升级到高级版以启用你的 AI 邮件助手。",
     };
 
     if (!premium) {
@@ -62,7 +61,7 @@ export function PremiumExpiredCardContent({
     const hasLemonSqueezyExpired =
       lemonSqueezyRenewsAt && lemonSqueezyRenewsAt < new Date();
 
-    // Check if user never had a subscription
+    // 检查用户是否从未订阅过
     const hasNoSubscription =
       !status &&
       !premium.stripeSubscriptionId &&
@@ -70,50 +69,50 @@ export function PremiumExpiredCardContent({
 
     if (!premium || hasNoSubscription) {
       return {
-        title: "Upgrade to Premium",
-        description: "Upgrade to Premium to enable your AI email assistant.",
+        title: "升级到高级版",
+        description: "升级到高级版以启用你的 AI 邮件助手。",
       };
     }
 
     if (status === "past_due") {
       return {
-        title: "Payment Past Due",
-        description: "Update your payment method to continue service",
+        title: "付款已逾期",
+        description: "更新付款方式以继续使用服务",
       };
     }
 
     if (status === "canceled" || status === "cancelled") {
       return {
-        title: "Subscription Cancelled",
-        description: "Reactivate to resume AI email management",
+        title: "订阅已取消",
+        description: "重新激活以恢复 AI 邮件管理",
       };
     }
 
     if (status === "incomplete" || status === "incomplete_expired") {
       return {
-        title: "Payment Incomplete",
-        description: "Complete your payment to activate service",
+        title: "付款未完成",
+        description: "完成付款以激活服务",
       };
     }
 
     if (status === "unpaid") {
       return {
-        title: "Payment Required",
-        description: "Update payment to continue AI features",
+        title: "需要付款",
+        description: "更新付款信息以继续使用 AI 功能",
       };
     }
 
     if (hasLemonSqueezyExpired || status === "expired") {
       return {
-        title: "Subscription Expired",
-        description: "Renew your subscription to continue",
+        title: "订阅已过期",
+        description: "续订订阅以继续使用",
       };
     }
 
-    // Default fallback
+    // 默认回退
     return {
-      title: "Subscription Issue",
-      description: "Please check your subscription status",
+      title: "订阅问题",
+      description: "请检查你的订阅状态",
     };
   };
 
@@ -189,7 +188,7 @@ export function PremiumExpiredCardContent({
               type="button"
               className="flex-shrink-0 rounded p-1 text-orange-600 hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-orange-300 transition-colors dark:text-orange-400 dark:hover:bg-orange-900/20 dark:focus:ring-orange-700"
               onClick={onDismiss}
-              aria-label="Dismiss banner"
+              aria-label="关闭横幅"
             >
               <XIcon className="h-3 w-3" />
             </button>

@@ -94,7 +94,7 @@ function describeCodeBlock(fence: string): string {
     bash: "shell",
   };
   const name = spoken[lang.toLowerCase()];
-  return name ? `. (a ${name} code block) ` : ". (a code block) ";
+  return name ? `. （一个 ${name} 代码块） ` : ". （一个代码块） ";
 }
 
 function splitLong(text: string, maxChars: number): string[] {

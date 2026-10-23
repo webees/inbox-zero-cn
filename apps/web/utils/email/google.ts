@@ -1788,13 +1788,13 @@ export class GmailProvider implements EmailProvider {
         maxResults: 1,
       });
       const sent = (response.messages?.length ?? 0) > 0;
-      log.info("Checked for sent reply", { sent });
+      log.info("已检查是否发送过回复", { sent });
       return sent;
     } catch (error) {
-      log.error("Error checking if reply was sent", {
+      log.error("检查是否发送过回复时出错", {
         error,
       });
-      return true; // Default to true on error (safer for TO_REPLY filtering)
+      return true; // 出错时默认返回 true（对“待回复”筛选更安全）
     }
   }
 

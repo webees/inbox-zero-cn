@@ -59,12 +59,12 @@ export async function labelThread(options: {
 }) {
   const { gmail, threadId } = options;
 
-  // Filter out empty/invalid label IDs
+  // 过滤掉空/无效的标签 ID
   const addLabelIds = options.addLabelIds?.filter((id) => id?.trim());
   const removeLabelIds = options.removeLabelIds?.filter((id) => id?.trim());
 
   if (!addLabelIds?.length && !removeLabelIds?.length) {
-    logger.warn("No valid labels to add or remove", { threadId });
+    logger.warn("没有可添加或移除的有效标签", { threadId });
     return;
   }
 
@@ -100,7 +100,7 @@ export async function labelThread(options: {
       );
 
     if (isRemovalOnly && (isMissingLabelError || isInvalidRemoval)) {
-      logger.error("Skipping label removal for non-existent label", {
+      logger.error("跳过对不存在标签的移除", {
         threadId,
         removeLabelIds,
         status,
@@ -110,7 +110,7 @@ export async function labelThread(options: {
       return;
     }
 
-    // Re-throw other errors
+    // 重新抛出其他错误
     throw error;
   }
 }
@@ -166,15 +166,15 @@ export async function archiveThread({
   if (archiveResult.status === "rejected") {
     const error = archiveResult.reason as Error;
     if (error.message?.includes("Requested entity was not found")) {
-      logger.warn("Thread not found", { threadId, userEmail: ownerEmail });
-      return { status: 404, message: "Thread not found" };
+      logger.warn("未找到会话", { threadId, userEmail: ownerEmail });
+      return { status: 404, message: "未找到会话" };
     }
-    logger.error("Failed to archive thread", { threadId, error });
+    logger.error("归档会话失败", { threadId, error });
     throw error;
   }
 
   if (publishResult.status === "rejected") {
-    logger.error("Failed to publish archive action", {
+    logger.error("发布归档操作失败", {
       threadId,
       error: publishResult.reason,
     });
@@ -280,7 +280,7 @@ export async function createLabel({
       errorMessage?.includes("Precondition check failed");
 
     if (isLabelExistsError) {
-      logger.warn("Label already exists", { name });
+      logger.warn("标签已存在", { name });
       const labels = await getLabels(gmail);
       const exactLabel = findLabelByName({
         labels,
@@ -309,15 +309,15 @@ export async function createLabel({
 }
 
 /**
- * Ensures all parent labels exist for a nested label
- * For "Work/Projects/2024", creates "Work" and "Work/Projects" if they don't exist
+ * 确保嵌套标签的所有父标签都存在
+ * 对于 "Work/Projects/2024"，如果不存在则创建 "Work" 和 "Work/Projects"
  */
 async function ensureParentLabelsExist(gmail: gmail_v1.Gmail, name: string) {
   if (!name.includes("/")) return;
 
   const parts = name.split("/");
-  // Build up parent paths: ["Work", "Work/Projects", "Work/Projects/2024"]
-  // We only need to check/create up to the second-to-last part
+  // 构建父路径：["Work", "Work/Projects", "Work/Projects/2024"]
+  // 我们只需检查/创建到倒数第二部分
   for (let i = 1; i < parts.length; i++) {
     const parentPath = parts.slice(0, i).join("/");
     const exists = await getLabel({ gmail, name: parentPath });
@@ -370,7 +370,7 @@ export async function getOrCreateLabel({
   gmail: gmail_v1.Gmail;
   name: string;
 }) {
-  if (!name?.trim()) throw new Error("Label name cannot be empty");
+  if (!name?.trim()) throw new Error("标签名称不能为空");
   const label = await getLabel({ gmail, name });
   if (label) return label;
   const createdLabel = await createLabel({ gmail, name });
@@ -387,21 +387,21 @@ export async function getOrCreateInboxZeroLabel({
   const { name, color, messageListVisibility } = inboxZeroLabels[key];
   const labels = await getLabels(gmail);
 
-  // Create parent label if it doesn't exist
+  // 如果父标签不存在则创建
   const parentLabel = labels?.find((label) => PARENT_LABEL === label.name);
   if (!parentLabel) {
     try {
       await createLabel({ gmail, name: PARENT_LABEL });
     } catch {
-      logger.warn("Parent label already exists", { name: PARENT_LABEL });
+      logger.warn("父标签已存在", { name: PARENT_LABEL });
     }
   }
 
-  // Return child label if it exists
+  // 如果子标签存在则返回
   const label = labels?.find((label) => label.name === name);
   if (label) return label;
 
-  // Create child label if it doesn't exist
+  // 如果子标签不存在则创建
   const createdLabel = await createLabel({
     gmail,
     name,

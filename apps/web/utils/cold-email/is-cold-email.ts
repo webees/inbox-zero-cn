@@ -47,8 +47,9 @@ type ColdEmailGuardsInput = {
 };
 
 /**
- * Runs the deterministic cold-email checks (whitelist, same org, learned
- * patterns, prior contact). Returns null when only the AI check remains.
+ * 运行确定性的冷邮件检查（白名单、同一组织、已学习
+ * 的模式、先前联系）。当只剩 AI 检查时返回 null，以便
+ * 调用方自行执行该检查。
  */
 export async function checkColdEmailGuards({
   email,
@@ -57,24 +58,24 @@ export async function checkColdEmailGuards({
   coldEmailRule,
   logger,
 }: ColdEmailGuardsInput): Promise<ColdEmailResult | null> {
-  logger.info("Checking is cold email");
+  logger.info("正在检查是否为冷邮件");
 
   if (
     isWhitelistedSender(email.from, env.RESEND_FROM_EMAIL) ||
     isWhitelistedSender(email.from, env.WHITELIST_FROM)
   ) {
-    logger.info("Sender is an application sender");
+    logger.info("发件人是应用发件人");
     return { isColdEmail: false, reason: "applicationSender" };
   }
 
-  // Nobody at your own company is a cold emailer. Checked here rather than only at the
-  // actions, so a colleague is never labelled or archived either.
+  // 你自己公司的任何人都不是冷邮件发送者。此处进行检查，而不只是在
+  // 操作处检查，这样同事就不会被标记或归档。
   if (isSameOrganization(email.from, emailAccount.email)) {
-    logger.info("Sender is internal");
+    logger.info("发件人为内部人员");
     return { isColdEmail: false, reason: "hasPreviousEmail" };
   }
 
-  // Check if we marked it as a cold email already
+  // 检查我们是否已将其标记为冷邮件
   const groupId = coldEmailRule?.groupId;
   let patternMatch:
     | (Pick<GroupItem, "id" | "type" | "value" | "exclude"> & {
@@ -101,7 +102,7 @@ export async function checkColdEmailGuards({
   }
 
   if (patternMatch && !patternMatch.exclude) {
-    logger.info("Known cold email sender", { from: email.from });
+    logger.info("已知的冷邮件发件人", { from: email.from });
     const { group, ...groupItem } = patternMatch;
     return {
       isColdEmail: true,
@@ -111,7 +112,7 @@ export async function checkColdEmailGuards({
   }
 
   if (patternMatch?.exclude) {
-    logger.info("Sender explicitly excluded from cold email blocker", {
+    logger.info("发件人已被显式排除在冷邮件拦截之外", {
       from: email.from,
     });
     return { isColdEmail: false, reason: "excluded" };
@@ -126,7 +127,7 @@ export async function checkColdEmailGuards({
   });
 
   if (hasPreviousEmail) {
-    logger.info("Has previous email");
+    logger.info("存在先前邮件");
     return { isColdEmail: false, reason: "hasPreviousEmail" };
   }
 
@@ -153,18 +154,25 @@ export async function isColdEmail({
 
   if (guardResult) return guardResult;
 
-  // Off by default: a false "cold" archives a real email, and in evals the
-  // decision model could not separate personalized pitches from legitimate outreach.
-  if (!env.DECISION_MODEL_COLD_EMAIL_ENABLED) {
-    return checkColdEmailWithLlm({
-      email,
-      emailAccount,
-      coldEmailRule,
-      modelType,
-      logger,
-    });
-  }
+  return checkColdEmailWithAi({
+    email,
+    emailAccount,
+    coldEmailRule,
+    modelType,
+    logger,
+  });
+}
 
+/** `isColdEmail` 的 AI 步骤，供已运行过各项守卫的调用方使用。 */
+export async function checkColdEmailWithAi({
+  email,
+  emailAccount,
+  coldEmailRule,
+  modelType,
+  logger,
+}: Omit<ColdEmailGuardsInput, "provider"> & {
+  modelType?: ModelType;
+}): Promise<ColdEmailResult> {
   return runDecisionModelOrFallback({
     emailAccount,
     logger,
@@ -177,7 +185,7 @@ export async function isColdEmail({
         coldEmailRule,
         logger,
       });
-      logger.info("Decision model checked cold email", {
+      logger.info("决策模型已检查冷邮件", {
         coldEmail: result.coldEmail,
       });
       return {
@@ -213,7 +221,7 @@ export async function checkColdEmailWithLlm({
     modelType,
   );
 
-  logger.info("AI is cold email?", {
+  logger.info("AI 判断是否为冷邮件？", {
     coldEmail: res.coldEmail,
   });
 
@@ -244,7 +252,7 @@ ${stringifyEmail(email, 500)}
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Cold email check",
+    label: "冷邮件检查",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "compact" },
   });

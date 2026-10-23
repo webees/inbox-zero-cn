@@ -33,7 +33,7 @@ describe("getComposeSignature", () => {
     ).toEqual({
       signatureHtml: "<div>Example Person</div>",
       footerHtml:
-        '<div>Sent with <a href="https://app.example.com/?ref=abc123">Inbox Zero</a></div>',
+        '<div>使用 <a href="https://app.example.com/?ref=abc123">Inbox Zero</a> 发送</div>',
     });
   });
 
@@ -68,7 +68,7 @@ describe("getComposeSignature", () => {
       (await getComposeSignature({ emailAccountId: "account", userId: "user" }))
         .footerHtml,
     ).toBe(
-      '<div>Sent with <a href="https://app.example.com">Inbox Zero</a></div>',
+      '<div>使用 <a href="https://app.example.com">Inbox Zero</a> 发送</div>',
     );
   });
 });

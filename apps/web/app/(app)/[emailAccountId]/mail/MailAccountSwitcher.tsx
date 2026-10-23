@@ -107,7 +107,7 @@ export const MailAccountSwitcher = memo(function MailAccountSwitcher({
                   onSelect={onSelectAll}
                 >
                   <AllAccountsIcon />
-                  <span className="flex-1 font-medium">All accounts</span>
+                  <span className="flex-1 font-medium">所有账号</span>
                   {isAllAccounts && <CurrentAccountCheck />}
                   {isDesktopApp && (
                     <Kbd className="shrink-0">
@@ -118,14 +118,14 @@ export const MailAccountSwitcher = memo(function MailAccountSwitcher({
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <DropdownMenuItem
-                      aria-label="Choose accounts"
+                      aria-label="选择账号"
                       className="w-10 justify-center rounded-xl p-0 text-muted-foreground"
                       onSelect={() => setIsSelectionOpen(true)}
                     >
                       <SlidersHorizontalIcon />
                     </DropdownMenuItem>
                   </TooltipTrigger>
-                  <TooltipContent side="right">Choose accounts</TooltipContent>
+                  <TooltipContent side="right">选择账号</TooltipContent>
                 </Tooltip>
               </div>
               <DropdownMenuSeparator />
@@ -152,7 +152,7 @@ export const MailAccountSwitcher = memo(function MailAccountSwitcher({
                 <PlusIcon className="size-4" />
               </span>
               <span className="font-medium text-muted-foreground">
-                Add or manage accounts
+                添加或管理账号
               </span>
             </Link>
           </DropdownMenuItem>
@@ -240,7 +240,7 @@ function AccountItem({
 }
 
 function CurrentAccountCheck() {
-  return <CheckIcon aria-label="Current account" className="size-4 shrink-0" />;
+  return <CheckIcon aria-label="当前账号" className="size-4 shrink-0" />;
 }
 
 function AllAccountsIcon() {

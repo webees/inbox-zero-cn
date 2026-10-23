@@ -79,7 +79,7 @@ export async function aiChooseRule<
   // or no name at all). Fail loudly instead of recording the email as skipped.
   if (!rulesWithMetadata.length) {
     throw new Error(
-      `AI rule selection claimed a match but did not resolve to any offered rule (returned ${aiResponse.matchedRules.length} rule name(s) for ${orderedRules.length} candidate(s))`,
+      `AI 规则选择声称匹配，但未解析到任何已提供的规则（返回了 ${aiResponse.matchedRules.length} 个规则名称，候选规则共 ${orderedRules.length} 个）`,
     );
   }
 
@@ -109,7 +109,7 @@ async function getAiResponse(options: GetAiResponseOptions): Promise<{
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Choose rule",
+    label: "选择规则",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "full" },
     cacheSystemPrompt: true,
@@ -450,7 +450,7 @@ function formatClassificationFeedback(
     if (entry.eventType === "LABEL_ADDED") {
       return `- ${subject} → ${entry.ruleName}`;
     }
-    return `- ${subject} removed from ${entry.ruleName}`;
+    return `- ${subject} 已从 ${entry.ruleName} 移除`;
   });
 
   return `<classification_feedback>

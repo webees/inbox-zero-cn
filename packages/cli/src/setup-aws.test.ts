@@ -29,12 +29,12 @@ describe("validateEnvironmentName", () => {
 
   it("rejects unsafe or invalid environment names", () => {
     expect(validateEnvironmentName("../production")).toBe(
-      "Must start with a letter and contain only lowercase letters, numbers, and hyphens",
+      "必须以字母开头，且只能包含小写字母、数字和连字符",
     );
     expect(validateEnvironmentName("Production")).toBe(
-      "Must start with a letter and contain only lowercase letters, numbers, and hyphens",
+      "必须以字母开头，且只能包含小写字母、数字和连字符",
     );
-    expect(validateEnvironmentName("")).toBe("Environment name is required");
+    expect(validateEnvironmentName("")).toBe("环境名称为必填项");
   });
 });
 
@@ -65,7 +65,7 @@ describe("runAwsSetup", () => {
     );
 
     expect(p.log.error).toHaveBeenCalledWith(
-      "Invalid environment name: Must start with a letter and contain only lowercase letters, numbers, and hyphens",
+      "无效的环境名称：必须以字母开头，且只能包含小写字母、数字和连字符",
     );
     expect(spawnSync).not.toHaveBeenCalled();
   });

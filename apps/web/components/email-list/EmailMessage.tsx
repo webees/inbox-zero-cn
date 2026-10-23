@@ -630,7 +630,7 @@ function MessageHeader({
               <EmailDetails message={message}>
                 <Button
                   aria-expanded
-                  aria-label="Hide details"
+                  aria-label="隐藏详情"
                   onClick={toggleDetails}
                   size="iconXs"
                   variant="ghostMuted"
@@ -642,7 +642,7 @@ function MessageHeader({
           ) : (
             <button
               aria-expanded={false}
-              aria-label="Show details"
+              aria-label="显示详情"
               className="group/details flex min-w-0 items-center gap-2 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
               onClick={toggleDetails}
               type="button"
@@ -651,7 +651,7 @@ function MessageHeader({
               <span className={senderNameClassName}>{senderName}</span>
               {recipients && (
                 <span className="hidden min-w-0 shrink-[999] truncate text-muted-foreground text-sm sm:block">
-                  to{" "}
+                  收件人{" "}
                   <span className="font-medium text-foreground">
                     {recipients}
                   </span>
@@ -661,9 +661,9 @@ function MessageHeader({
             </button>
           )}
           {canResearchSender && (
-            <Tooltip content="View public profile">
+            <Tooltip content="查看公开资料">
               <Button
-                aria-label={`View public profile for ${senderName}`}
+                aria-label={`查看 ${senderName} 的公开资料`}
                 className="transition-opacity focus-visible:opacity-100 group-hover/message:opacity-100 sm:opacity-0"
                 onClick={(event) => {
                   event.stopPropagation();
@@ -689,7 +689,7 @@ function MessageHeader({
 
       {hasDraft &&
         (!expanded || message.labelIds?.includes(GmailLabel.DRAFT)) && (
-          <span className="shrink-0 text-primary text-xs">Draft</span>
+          <span className="shrink-0 text-primary text-xs">草稿</span>
         )}
 
       <div className="ml-auto flex shrink-0 items-center gap-2">
@@ -704,18 +704,18 @@ function MessageHeader({
                     variant="ghostMuted"
                   >
                     <ReplyIcon className="size-3.5" />
-                    <span className="sr-only">Reply</span>
+                    <span className="sr-only">回复</span>
                   </Button>
                 </Tooltip>
                 {canReplyAll && (
-                  <Tooltip content="Reply all">
+                  <Tooltip content="全部回复">
                     <Button
                       onClick={compose(onReplyAll)}
                       size="iconXs"
                       variant="ghostMuted"
                     >
                       <ReplyAllIcon className="size-3.5" />
-                      <span className="sr-only">Reply all</span>
+                      <span className="sr-only">全部回复</span>
                     </Button>
                   </Tooltip>
                 )}
@@ -726,7 +726,7 @@ function MessageHeader({
                     variant="ghostMuted"
                   >
                     <ForwardIcon className="size-3.5" />
-                    <span className="sr-only">Forward</span>
+                    <span className="sr-only">转发</span>
                   </Button>
                 </Tooltip>
               </>
@@ -894,14 +894,14 @@ function ReplyPanel({
         ) {
           toastError({
             description: getActionErrorMessage(result, {
-              prefix: "Failed to discard draft",
+              prefix: "无法丢弃草稿",
             }),
           });
           onRestoreCompose(composeSession);
           return false;
         }
       } catch {
-        toastError({ description: "Failed to discard draft" });
+        toastError({ description: "无法丢弃草稿" });
         onRestoreCompose(composeSession);
         return false;
       } finally {
@@ -934,10 +934,10 @@ function ReplyPanel({
     return (
       <div className="mt-5 flex gap-2">
         <Button onClick={refetch} size="sm" variant="outline">
-          Load message to forward
+          加载要转发的邮件
         </Button>
         <Button onClick={onCloseCompose} size="sm" variant="ghost">
-          Cancel
+          取消
         </Button>
       </div>
     );

@@ -36,14 +36,12 @@ export async function createScheduledAction({
   scheduledFor: Date;
 }) {
   if (!canActionBeDelayed(actionItem.type)) {
-    throw new Error(
-      `Action type ${actionItem.type} is not supported for delayed execution`,
-    );
+    throw new Error(`操作类型 ${actionItem.type} 不支持延迟执行`);
   }
 
   if (actionItem.delayInMinutes == null || actionItem.delayInMinutes <= 0) {
     throw new Error(
-      `Invalid delayInMinutes: ${actionItem.delayInMinutes}. Must be a positive number.`,
+      `无效的 delayInMinutes：${actionItem.delayInMinutes}。必须为正数。`,
     );
   }
 
@@ -57,7 +55,7 @@ export async function createScheduledAction({
         emailAccountId,
         scheduledFor,
         status: ScheduledActionStatus.PENDING,
-        // Store ActionItem data for later execution
+        // 存储 ActionItem 数据，供稍后执行
         label: actionItem.label,
         labelId: actionItem.labelId,
         subject: actionItem.subject,

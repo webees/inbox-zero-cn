@@ -55,7 +55,7 @@ export async function getUnhandledCount(client: EmailProvider): Promise<{
   };
 }
 
-// Gmail and Outlook share the same system label ids (see OutlookLabel)
+// Gmail 和 Outlook 共用相同的系统标签 id（参见 OutlookLabel）
 async function getLabelThreadCount(client: EmailProvider, labelId: string) {
   const label = await client.getLabelById(labelId);
   return label?.threadsTotal || 0;
@@ -71,7 +71,7 @@ async function getFiltersCount(client: EmailProvider, logger: Logger) {
     const filters = await client.getFiltersList();
     return filters.length;
   } catch (error) {
-    logger.error("Error getting filters", { error });
+    logger.error("获取筛选器时出错", { error });
     return 0;
   }
 }
@@ -84,8 +84,8 @@ async function getForwardingAddressesCount(
     const forwardingAddresses = await client.getForwardingAddresses();
     return forwardingAddresses.length;
   } catch (error) {
-    // Can happen due to "Forwarding features disabled by administrator"
-    logger.error("Error getting forwarding addresses", { error });
+    // 可能由“管理员已禁用转发功能”导致
+    logger.error("获取转发地址时出错", { error });
     return 0;
   }
 }
@@ -107,7 +107,7 @@ async function getEmailClients(client: EmailProvider, logger: Logger) {
 
     return { clients: uniq(clients), primary: mostPopular[0]?.[0] };
   } catch (error) {
-    logger.error("Error getting email clients", { error });
+    logger.error("获取邮件客户端时出错", { error });
     return { clients: [], primary: undefined };
   }
 }

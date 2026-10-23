@@ -29,10 +29,10 @@ import { textToHtmlParagraphs } from "@/utils/string";
 import { getEmailAccountWithAi, getWritingStyle } from "@/utils/user/get";
 
 /**
- * Turns one account's copy of a finished recording into a summary, a follow-up
- * draft and a recap email. Every step is guarded by the field it writes, so a
- * queue retry after a partial run never sends a second email or leaves a second
- * draft behind.
+ * 将某个账号持有的已完成录制副本转换为摘要、跟进
+ * 草稿和回顾邮件。每一步都由它所写入的字段加以保护，
+ * 因此部分运行后的队列重试绝不会发送第二封邮件或留下
+ * 第二份草稿。
  */
 export async function processMeetingForAccount({
   meetingId,
@@ -44,8 +44,8 @@ export async function processMeetingForAccount({
   const claim = await prisma.meeting.updateMany({
     where: {
       id: meetingId,
-      // Summarizing runs a model, so a meeting that fails every time has to
-      // stop rather than bill on every cron tick.
+      // 摘要生成会调用模型，因此每次都失败的会议必须
+      // 停止重试，而不是在每次 cron 触发时都产生费用。
       processingAttempts: { lt: MAX_PROCESSING_ATTEMPTS },
       OR: [
         {
@@ -56,8 +56,8 @@ export async function processMeetingForAccount({
             ],
           },
         },
-        // A run killed mid-way leaves the row claimed forever. Each sub-step is
-        // guarded by the field it writes, so picking it back up is safe.
+        // 中途被杀死的运行会让该行永远处于已认领状态。每个子步骤
+        // 都由所写入的字段保护，因此重新拾起是安全的。
         {
           processingStatus: MeetingProcessingStatus.PROCESSING,
           updatedAt: { lt: subMinutes(new Date(), STUCK_PROCESSING_MINUTES) },
@@ -90,10 +90,10 @@ export async function processMeetingForAccount({
       data: { processingStatus: MeetingProcessingStatus.FAILED },
     });
 
-    // Mark the failure for the UI, then let the queue see it too. Swallowing
-    // here would report success and burn the only retry a transient AI or
-    // mailbox failure gets. Each sub-step is separately guarded, so a retry
-    // resumes rather than repeating work.
+    // 为 UI 标记该失败，同时让队列也看到它。在此处吞掉错误
+    // 会报告成功，并耗尽瞬时的 AI 或邮箱故障所能获得的
+    // 唯一一次重试。每个子步骤都单独受保护，
+    // 因此重试会继续而不是重复工作。
     throw error;
   }
 }
@@ -182,15 +182,15 @@ async function runProcessingSteps({
     meeting.emailAccount.meetingRecorderRecapEmailEnabled &&
     !meeting.recapSentAt
   ) {
-    // Read before claiming the send, so a transient read failure retries
-    // instead of burning the one-way recap claim.
+    // 在认领发送之前先读取，这样瞬时的读取失败会重试，
+    // 而不是浪费掉一次性的回顾认领。
     const refreshedMeeting = await prisma.meeting.findUnique({
       where: { id: meetingId },
       select: { followUpDraftId: true },
     });
 
-    // Claim the send before doing it: a duplicate recap is worse than a missing
-    // one, and the user can always open the meeting in the app.
+    // 先认领发送再执行：重复的回顾比缺失的回顾更糟，
+    // 而且用户随时可以在应用中打开该会议。
     const claim = await prisma.meeting.updateMany({
       where: { id: meetingId, recapSentAt: null },
       data: { recapSentAt: new Date() },
@@ -281,10 +281,10 @@ async function createFollowUpDraft({
     logger,
   });
 
-  // Claim only after every step without a mailbox side effect has succeeded,
-  // so a transient AI failure leaves the claim for the retry. The claim still
-  // lands before the mailbox write: if we crash between the two, the draft is
-  // forfeited, because a retry that might leave a second draft is worse.
+  // 只有在所有不涉及邮箱副作用的步骤都成功后才认领，
+  // 这样瞬时的 AI 故障会把认领留给重试。认领仍会在
+  // 邮箱写入之前完成：如果我们在两者之间崩溃，草稿就
+  // 作废，因为可能留下第二份草稿的重试更糟。
   const claim = await prisma.meeting.updateMany({
     where: { id: meetingId, followUpDraftStartedAt: null },
     data: { followUpDraftStartedAt: new Date() },

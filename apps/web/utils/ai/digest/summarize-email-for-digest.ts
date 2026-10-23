@@ -23,7 +23,7 @@ export async function aiSummarizeEmailForDigest({
   emailAccount: EmailAccountWithAI & { name: string | null };
   messageToSummarize: EmailForLLM;
 }): Promise<AISummarizeResult | null> {
-  // If messageToSummarize somehow is null/undefined, default to null.
+  // 如果 messageToSummarize 因故为 null/undefined，则默认为 null。
   if (!messageToSummarize) return null;
 
   const userMessageForPrompt = messageToSummarize;
@@ -75,7 +75,7 @@ Guidelines for summarizing the email:
 
 ${getUserInfoPrompt({ emailAccount })}`;
 
-  logger.info("Summarizing email for digest");
+  logger.info("正在总结邮件以生成摘要");
 
   try {
     const modelOptions = getModelForUseCase(
@@ -85,7 +85,7 @@ ${getUserInfoPrompt({ emailAccount })}`;
 
     const generateObject = createGenerateObject({
       emailAccount,
-      label: "Summarize email",
+      label: "总结邮件",
       modelOptions,
       promptHardening: { trust: "untrusted", level: "compact" },
     });
@@ -99,7 +99,7 @@ ${getUserInfoPrompt({ emailAccount })}`;
 
     return aiResponse.object;
   } catch (error) {
-    logger.error("Failed to summarize email", { error });
+    logger.error("总结邮件失败", { error });
 
     return null;
   }

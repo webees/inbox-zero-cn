@@ -171,7 +171,7 @@ describe.skipIf(!RUN_INTEGRATION_TESTS)(
       });
 
       expect(result?.serverError).toBe(
-        "Could not connect to the server. Check the URL and API key.",
+        "无法连接到服务器。请检查 URL 和 API 密钥。",
       );
       expect(emulator.unauthorizedRequests).toBeGreaterThan(unauthorizedBefore);
       expect(db.integrations).toHaveLength(0);

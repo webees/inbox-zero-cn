@@ -249,9 +249,7 @@ export function MailShell() {
           rollbackOnError: true,
         },
       ).catch((error) => {
-        toast.error(
-          error instanceof Error ? error.message : "Couldn't save that",
-        );
+        toast.error(error instanceof Error ? error.message : "无法保存该设置");
       });
     },
     [emailAccountId, mutateSettings, settings],
@@ -339,14 +337,14 @@ export function MailShell() {
           ...split,
           name:
             isGoogle && split.name.trim().toLowerCase() === "other"
-              ? `${split.name} (custom)`
+              ? `${split.name}（自定义）`
               : split.name,
         })),
         ...(isGoogle && !isAllAccounts
           ? [
               {
                 id: OTHER_SPLIT_ID,
-                name: "Other",
+                name: "其他",
                 matchAll: true,
                 filters: [],
               },
@@ -1547,8 +1545,7 @@ export function MailShell() {
               )}
               {isAllAccounts && combinedThreadState.failedAccountIds.length ? (
                 <div className="border-border border-b bg-amber-50 px-3 py-2 text-amber-900 text-xs dark:bg-amber-950/30 dark:text-amber-200">
-                  Some inboxes couldn&apos;t be loaded. Try again shortly or
-                  check their connections.
+                  部分收件箱无法加载。请稍后重试，或检查它们的连接。
                 </div>
               ) : null}
               <MailPanelErrorBoundary
@@ -1559,7 +1556,7 @@ export function MailShell() {
                   displayedActiveSplitId,
                   searchQuery,
                 ])}
-                title="Unable to show your mail list"
+                title="无法显示邮件列表"
               >
                 {isScheduledView ? (
                   <ScheduledEmailList />

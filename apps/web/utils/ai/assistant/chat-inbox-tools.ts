@@ -369,9 +369,9 @@ export const startSenderCategorizationTool = ({
           return { error: error.message };
         }
 
-        logger.error("Failed to start sender categorization", { error });
+        logger.error("启动发件人分类失败", { error });
         return {
-          error: "Failed to start sender categorization",
+          error: "启动发件人分类失败",
         };
       }
     },
@@ -413,9 +413,9 @@ export const getSenderCategorizationStatusTool = ({
         const progress = await getCategorizationProgress({ emailAccountId });
         return getCategorizationStatusSnapshot(progress);
       } catch (error) {
-        logger.error("Failed to load sender categorization status", { error });
+        logger.error("加载发件人分类状态失败", { error });
         return {
-          error: "Failed to load sender categorization status",
+          error: "加载发件人分类状态失败",
         };
       }
     },
@@ -862,7 +862,7 @@ export const readAttachmentTool = ({
             mimeType: resolvedMimeType,
             size: attachment.size,
             contentAvailable: false,
-            message: "Failed to extract text from this attachment.",
+            message: "无法从此附件提取文本。",
           };
         }
 
@@ -875,8 +875,8 @@ export const readAttachmentTool = ({
           truncated: extracted.truncated,
         };
       } catch (error) {
-        logger.error("Failed to read attachment", { error });
-        return { error: "Failed to read attachment" };
+        logger.error("读取附件失败", { error });
+        return { error: "读取附件失败" };
       }
     },
   });
@@ -1697,7 +1697,7 @@ async function applyLabelToThread({
   ).length;
 
   if (failedCount > 0) {
-    throw new Error(`Failed to label ${failedCount} messages in thread`);
+    throw new Error(`在会话中为 ${failedCount} 封邮件打标签失败`);
   }
 }
 
@@ -1940,20 +1940,20 @@ const THREAD_ACTION_CONCURRENCY = 3;
 
 function getValidationErrorMessage(toolName: string, error: z.ZodError) {
   const firstIssue = error.issues[0];
-  if (!firstIssue) return `Invalid ${toolName} input`;
+  if (!firstIssue) return `${toolName} 输入无效`;
 
   if (firstIssue.code === "unrecognized_keys") {
     const firstKey = firstIssue.keys[0];
     if (firstKey) {
-      return `Invalid ${toolName} input: unsupported field "${firstKey}"`;
+      return `${toolName} 输入无效：不支持的字段 "${firstKey}"`;
     }
-    return `Invalid ${toolName} input: unsupported fields`;
+    return `${toolName} 输入无效：不支持的字段`;
   }
 
   const field = firstIssue.path.map(String).join(".");
-  if (!field) return `Invalid ${toolName} input: ${firstIssue.message}`;
+  if (!field) return `${toolName} 输入无效：${firstIssue.message}`;
 
-  return `Invalid ${toolName} input: ${field} ${firstIssue.message}`;
+  return `${toolName} 输入无效：${field} ${firstIssue.message}`;
 }
 
 const MAX_ATTACHMENT_TEXT_LENGTH = 8000;

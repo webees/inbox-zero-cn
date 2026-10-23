@@ -23,16 +23,16 @@ import type { ResolvedMcpIntegration } from "@/utils/mcp/resolve-integration";
 
 const logger = createScopedLogger("mcp-oauth");
 
-// Conservative default expiration window when OAuth provider doesn't return expires_in
-// Set to 1 hour to ensure tokens are refreshed proactively
+// 当 OAuth 服务商不返回 expires_in 时的保守默认过期窗口
+// 设为 1 小时以确保令牌被主动刷新
 const DEFAULT_TOKEN_EXPIRY_MS = 60 * 60 * 1000; // 1 hour
 
-// Refresh slightly early so a token doesn't expire mid-agent-run
+// 略微提前刷新，以免令牌在 agent 运行中途过期
 const TOKEN_EXPIRY_BUFFER_MS = 5 * 60 * 1000; // 5 minutes
 
 /**
- * Start OAuth flow - generate authorization URL with PKCE
- * Returns the URL to redirect to and the code verifier to save in cookies
+ * 启动 OAuth 流程——使用 PKCE 生成授权 URL
+ * 返回要重定向到的 URL 以及要保存在 cookie 中的 code verifier
  */
 export async function generateOAuthUrl({
   integration,
@@ -68,7 +68,7 @@ export async function generateOAuthUrl({
     ...getResourceParam(integration),
   });
 
-  logger.info("OAuth flow started", { integration: integration.name });
+  logger.info("OAuth 流程已开始", { integration: integration.name });
 
   return {
     url: result.authorizationUrl.toString(),
@@ -77,8 +77,8 @@ export async function generateOAuthUrl({
 }
 
 /**
- * Complete OAuth flow - exchange authorization code for tokens
- * Saves tokens to database and returns them
+ * 完成 OAuth 流程——用授权码交换令牌
+ * 将令牌保存到数据库并返回它们
  */
 export async function handleOAuthCallback({
   integration,
@@ -110,8 +110,8 @@ export async function handleOAuthCallback({
     ...getResourceParam(integration),
   });
 
-  // A custom server row is owned by the account and may have been removed while
-  // the user was on the provider's consent screen; never recreate it here
+  // 自定义服务器行由账号拥有，并且可能在用户停留在服务商的
+  // 同意屏幕期间被移除；绝不要在此处重新创建它
   const dbIntegration = integration.isCustom
     ? await prisma.mcpIntegration.findFirst({
         where: { name: integration.name, emailAccountId },
@@ -126,7 +126,7 @@ export async function handleOAuthCallback({
 
   if (!dbIntegration) {
     throw new Error(
-      `Custom MCP server ${integration.name} was removed before the connection completed`,
+      `自定义 MCP 服务器 ${integration.name} 在连接完成前已被移除`,
     );
   }
 
@@ -159,7 +159,7 @@ export async function handleOAuthCallback({
     },
   });
 
-  logger.info("OAuth callback completed", {
+  logger.info("OAuth 回调已完成", {
     integration: integration.name,
     emailAccountId,
     hasRefreshToken: !!tokens.refresh_token,
@@ -169,8 +169,8 @@ export async function handleOAuthCallback({
 }
 
 /**
- * Get authentication token for an integration
- * Handles both OAuth (with auto-refresh) and API token authentication
+ * 获取某个集成的认证令牌
+ * 同时处理 OAuth（带自动刷新）和 API 令牌认证
  */
 export async function getAuthToken({
   integration,
@@ -202,13 +202,13 @@ export async function getAuthToken({
     return connection.apiKey;
   }
 
-  // OAuth flow
+  // OAuth 流程
   return getValidAccessToken({ integration, emailAccountId });
 }
 
 /**
- * Get valid access token for an integration
- * Automatically refreshes if expired
+ * 获取某个集成的有效访问令牌
+ * 过期时自动刷新
  */
 async function getValidAccessToken({
   integration,
@@ -236,7 +236,7 @@ async function getValidAccessToken({
     connection.expiresAt.getTime() - TOKEN_EXPIRY_BUFFER_MS < Date.now();
 
   if (isExpired && connection.refreshToken) {
-    logger.info("Access token expired, refreshing", {
+    logger.info("访问令牌已过期，正在刷新", {
       integration: integration.name,
       emailAccountId,
     });
@@ -246,10 +246,10 @@ async function getValidAccessToken({
   }
 
   if (isExpired) {
-    // Without a refresh token the connection is permanently dead
+    // 没有刷新令牌，该连接就永久失效了
     await deactivateConnection({ connectionId: connection.id, emailAccountId });
     throw new Error(
-      `Access token for ${integration.name} has expired and no refresh token is available. Please reconnect.`,
+      `${integration.name} 的访问令牌已过期，且没有可用的刷新令牌。请重新连接。`,
     );
   }
 
@@ -257,8 +257,8 @@ async function getValidAccessToken({
 }
 
 /**
- * Refresh OAuth tokens for an integration
- * Updates tokens in database and returns new tokens
+ * 刷新某个集成的 OAuth 令牌
+ * 更新数据库中的令牌并返回新令牌
  */
 async function refreshOAuthTokens({
   integration,
@@ -268,7 +268,7 @@ async function refreshOAuthTokens({
   emailAccountId: string;
 }): Promise<OAuthTokens> {
   if (!integration.serverUrl) {
-    throw new Error(`No server URL configured for ${integration.name}`);
+    throw new Error(`未为 ${integration.name} 配置服务器 URL`);
   }
 
   const connection = await prisma.mcpConnection.findFirst({
@@ -284,7 +284,7 @@ async function refreshOAuthTokens({
 
   if (!connection?.refreshToken) {
     throw new Error(
-      `No refresh token found for ${integration.name} connection ${emailAccountId}`,
+      `未找到 ${integration.name} 连接（${emailAccountId}）的刷新令牌`,
     );
   }
 
@@ -301,13 +301,13 @@ async function refreshOAuthTokens({
       ...getResourceParam(integration),
     });
   } catch (error) {
-    // The grant was revoked or the client is no longer valid - retrying will
-    // never succeed, so deactivate the connection until the user reconnects
+    // 授权已被撤销或客户端不再有效——重试永远不会
+    // 成功，因此停用该连接，直到用户重新连接
     if (
       error instanceof InvalidGrantError ||
       error instanceof InvalidClientError
     ) {
-      logger.warn("OAuth grant no longer valid, deactivating connection", {
+      logger.warn("OAuth 授权已失效，正在停用连接", {
         error,
         integration: integration.name,
         emailAccountId,
@@ -317,12 +317,12 @@ async function refreshOAuthTokens({
         emailAccountId,
       });
       if (error instanceof InvalidClientError) {
-        // The registered OAuth client itself was rejected - clear it so the
-        // next connect attempt re-registers instead of reusing the bad client
+        // 注册的 OAuth 客户端本身被拒绝——清除它，以便
+        // 下一次连接尝试重新注册，而不是复用坏的客户端
         await clearRegisteredClient(integration.name);
       }
       throw new Error(
-        `The ${integration.displayName} connection is no longer authorized. Please reconnect.`,
+        `${integration.displayName} 连接已不再被授权。请重新连接。`,
       );
     }
     throw error;
@@ -342,7 +342,7 @@ async function refreshOAuthTokens({
     },
   });
 
-  logger.info("OAuth tokens refreshed", {
+  logger.info("OAuth 令牌已刷新", {
     integration: integration.name,
     emailAccountId,
   });
@@ -351,9 +351,9 @@ async function refreshOAuthTokens({
 }
 
 /**
- * Discover OAuth metadata for an integration
- * Caches discovered metadata in the database for performance
- * Falls back to static oauthConfig if auto-discovery fails
+ * 发现某个集成的 OAuth 元数据
+ * 为性能将发现的元数据缓存到数据库中
+ * 自动发现失败时回退到静态 oauthConfig
  */
 async function discoverMetadata(
   integration: ResolvedMcpIntegration,
@@ -362,7 +362,7 @@ async function discoverMetadata(
   const fetchFn = getMcpFetch(integration);
   const serverUrl = getOAuthServerUrl(integration);
 
-  // Check cache first
+  // 先检查缓存
   const stored = await prisma.mcpIntegration.findUnique({
     where: { name },
     select: {
@@ -373,14 +373,14 @@ async function discoverMetadata(
     },
   });
 
-  // Cached endpoints omit registration metadata, so only reuse them after registration succeeds.
+  // 缓存的端点缺少注册元数据，因此只有在注册成功后才会复用它们。
   if (
     stored?.oauthClientId &&
     stored.registeredAuthorizationUrl &&
     stored?.registeredTokenUrl &&
     stored.registeredServerUrl === serverUrl
   ) {
-    logger.info("Using cached OAuth metadata", { integration: name });
+    logger.info("使用缓存的 OAuth 元数据", { integration: name });
 
     return createAuthServerMetadata(
       serverUrl,
@@ -389,8 +389,8 @@ async function discoverMetadata(
     );
   }
 
-  // Discover via RFC 8414/9728
-  logger.info("Discovering OAuth metadata from server", {
+  // 通过 RFC 8414/9728 发现
+  logger.info("正在从服务器发现 OAuth 元数据", {
     integration: name,
     serverUrl,
   });
@@ -398,7 +398,7 @@ async function discoverMetadata(
   try {
     let authServerUrl = serverUrl;
 
-    // First try protected resource metadata (RFC 9728) - optional
+    // 先尝试受保护资源元数据（RFC 9728）——可选
     try {
       const resourceMetadata = await discoverOAuthProtectedResourceMetadata(
         serverUrl,
@@ -407,36 +407,36 @@ async function discoverMetadata(
       );
       if (resourceMetadata?.authorization_servers?.[0]) {
         authServerUrl = resourceMetadata.authorization_servers[0];
-        logger.info("Found auth server via protected resource metadata", {
+        logger.info("通过受保护资源元数据找到授权服务器", {
           integration: name,
           authServerUrl,
         });
       }
     } catch {
-      // Protected resource metadata is optional - many servers don't implement it
-      logger.info(
-        "Protected resource metadata not available, using server URL directly",
-        { integration: name, serverUrl },
-      );
+      // 受保护资源元数据是可选的——许多服务器不实现它
+      logger.info("受保护资源元数据不可用，直接使用服务器 URL", {
+        integration: name,
+        serverUrl,
+      });
     }
 
-    // Then discover authorization server metadata (RFC 8414) - required
+    // 然后发现授权服务器元数据（RFC 8414）——必需
     const metadata = await discoverAuthorizationServerMetadata(authServerUrl, {
       fetchFn,
     });
 
     if (!metadata) {
-      throw new Error("OAuth metadata discovery returned no results");
+      throw new Error("OAuth 元数据发现未返回结果");
     }
 
-    // Cache the discovered endpoints for next time
+    // 缓存发现的端点以备下次使用
     await upsertMcpIntegration(integration, {
       registeredAuthorizationUrl: metadata.authorization_endpoint,
       registeredTokenUrl: metadata.token_endpoint,
       registeredServerUrl: serverUrl,
     });
 
-    logger.info("OAuth metadata discovered and cached", {
+    logger.info("已发现并缓存 OAuth 元数据", {
       integration: name,
       authEndpoint: metadata.authorization_endpoint,
       tokenEndpoint: metadata.token_endpoint,
@@ -445,14 +445,14 @@ async function discoverMetadata(
 
     return metadata;
   } catch (error) {
-    logger.warn("Failed to discover OAuth metadata, trying fallback config", {
+    logger.warn("发现 OAuth 元数据失败，尝试回退配置", {
       error,
       integration: name,
     });
 
-    // Fallback to static oauthConfig if discovery fails
+    // 发现失败时回退到静态 oauthConfig
     if (integration.oauthConfig) {
-      logger.info("Using static OAuth config fallback", {
+      logger.info("使用静态 OAuth 配置回退", {
         integration: name,
         authEndpoint: integration.oauthConfig.authorization_endpoint,
       });
@@ -473,7 +473,7 @@ async function discoverMetadata(
       return metadata;
     }
 
-    logger.error("No fallback OAuth config available", {
+    logger.error("没有可用的回退 OAuth 配置", {
       error,
       integration: name,
     });
@@ -484,8 +484,8 @@ async function discoverMetadata(
 }
 
 /**
- * Get OAuth client credentials for an integration
- * Uses stored credentials if available, otherwise dynamically registers
+ * 获取某个集成的 OAuth 客户端凭据
+ * 如果有存储的凭据则使用，否则动态注册
  */
 async function getOAuthClient(
   integration: ResolvedMcpIntegration,
@@ -493,7 +493,7 @@ async function getOAuthClient(
 ): Promise<OAuthClientInformation> {
   const name = integration.name;
 
-  // Check if we have dynamically registered credentials in DB
+  // 检查数据库中是否有动态注册的凭据
   const stored = await prisma.mcpIntegration.findUnique({
     where: { name },
     select: {
@@ -503,7 +503,7 @@ async function getOAuthClient(
   });
 
   if (stored?.oauthClientId) {
-    logger.info("Using stored OAuth credentials", { integration: name });
+    logger.info("使用已存储的 OAuth 凭证", { integration: name });
     return {
       client_id: stored.oauthClientId,
       client_secret: stored.oauthClientSecret || undefined,
@@ -511,23 +511,19 @@ async function getOAuthClient(
   }
 
   if (!integration.serverUrl) {
-    throw new Error(`No server URL configured for ${name}`);
+    throw new Error(`${name} 未配置服务器 URL`);
   }
 
   if (!redirectUri) {
-    throw new Error(
-      `redirectUri is required for dynamic client registration for ${name}`,
-    );
+    throw new Error(`动态客户端注册需要 ${name} 提供 redirectUri`);
   }
 
-  logger.info("Performing dynamic client registration", { integration: name });
+  logger.info("正在执行动态客户端注册", { integration: name });
 
   const metadata = await discoverMetadata(integration);
 
   if (!metadata.registration_endpoint) {
-    throw new Error(
-      `Dynamic registration not supported for ${name}. Please configure static OAuth credentials.`,
-    );
+    throw new Error(`${name} 不支持动态注册。请配置静态 OAuth 凭据。`);
   }
 
   const scope = integration.scopes.join(" ");
@@ -537,9 +533,9 @@ async function getOAuthClient(
     redirect_uris: [redirectUri],
     grant_types: ["authorization_code", "refresh_token"],
     response_types: ["code"],
-    token_endpoint_auth_method: "none", // Public client with PKCE
-    // Omit rather than send an empty string: some servers reject `scope: ""`
-    // with invalid_scope instead of falling back to their defaults
+    token_endpoint_auth_method: "none", // 使用 PKCE 的公共客户端
+    // 省略而不是发送空字符串：某些服务器会拒绝 `scope: ""`
+    // 并返回 invalid_scope，而不是回退到其默认值
     ...(scope && { scope }),
     logo_uri: "https://getinboxzero.com/icon.png",
     tos_uri: "https://getinboxzero.com/terms",
@@ -556,7 +552,7 @@ async function getOAuthClient(
     oauthClientSecret: registered.client_secret,
   });
 
-  logger.info("Dynamic client registration successful", {
+  logger.info("动态客户端注册成功", {
     integration: name,
     clientId: registered.client_id,
   });
@@ -577,8 +573,8 @@ async function upsertMcpIntegration(
     oauthClientSecret?: string | null;
   },
 ) {
-  // A custom server row is created by its owner; if it was removed mid-flow,
-  // caching metadata must not resurrect it as an ownerless row
+  // 自定义服务器行由其所有者创建；如果在流程中途被移除，
+  // 缓存元数据绝不能把它复活成无主的行
   if (integration.isCustom) {
     return prisma.mcpIntegration.updateMany({
       where: { name: integration.name },
@@ -621,15 +617,12 @@ function calculateTokenExpiration(
     return new Date(Date.now() + expiresIn * 1000);
   }
 
-  // OAuth provider didn't return expires_in - use conservative default
-  logger.warn(
-    "OAuth provider did not return expires_in, using default expiry",
-    {
-      integration: context?.integration,
-      isRefresh: context?.isRefresh ?? false,
-      defaultExpiryMs: DEFAULT_TOKEN_EXPIRY_MS,
-    },
-  );
+  // OAuth 服务商未返回 expires_in——使用保守默认值
+  logger.warn("OAuth 服务商未返回 expires_in，使用默认过期时间", {
+    integration: context?.integration,
+    isRefresh: context?.isRefresh ?? false,
+    defaultExpiryMs: DEFAULT_TOKEN_EXPIRY_MS,
+  });
 
   return new Date(Date.now() + DEFAULT_TOKEN_EXPIRY_MS);
 }
@@ -637,8 +630,8 @@ function calculateTokenExpiration(
 function getOAuthServerUrl(integration: ResolvedMcpIntegration): string {
   const serverUrl = integration.serverUrl || "";
 
-  // If serverUrl ends with /mcp, OAuth discovery is at the base URL
-  // This is the standard pattern: OAuth at https://mcp.example.com, MCP protocol at https://mcp.example.com/mcp
+  // 如果 serverUrl 以 /mcp 结尾，OAuth 发现位于基础 URL
+  // 这是标准模式：OAuth 在 https://mcp.example.com，MCP 协议在 https://mcp.example.com/mcp
   if (serverUrl.endsWith("/mcp")) {
     return serverUrl.slice(0, -4);
   }
@@ -647,8 +640,8 @@ function getOAuthServerUrl(integration: ResolvedMcpIntegration): string {
 }
 
 /**
- * Returns the resource parameter for OAuth requests if supported by the integration.
- * Some OAuth servers (e.g., Pipedream) don't support RFC 8707 resource parameter.
+ * 如果集成支持，则返回 OAuth 请求的 resource 参数。
+ * 某些 OAuth 服务器（例如 Pipedream）不支持 RFC 8707 resource 参数。
  */
 function getResourceParam(
   integration: ResolvedMcpIntegration,
@@ -672,7 +665,7 @@ async function deactivateConnection({
       data: { isActive: false },
     });
   } catch (error) {
-    logger.error("Failed to deactivate MCP connection", {
+    logger.error("停用 MCP 连接失败", {
       error,
       connectionId,
       emailAccountId,
@@ -682,8 +675,8 @@ async function deactivateConnection({
 
 async function clearRegisteredClient(integration: string) {
   try {
-    // Also clear the cached discovery metadata: the cached variant omits the
-    // registration endpoint, which fresh dynamic registration needs
+    // 同时清除缓存的发现元数据：缓存变体缺少
+    // 新的动态注册所需的注册端点
     await prisma.mcpIntegration.update({
       where: { name: integration },
       data: {
@@ -695,7 +688,7 @@ async function clearRegisteredClient(integration: string) {
       },
     });
   } catch (error) {
-    logger.error("Failed to clear registered OAuth client", {
+    logger.error("清除已注册的 OAuth 客户端失败", {
       error,
       integration,
     });

@@ -37,7 +37,7 @@ describe("createMailIpcClient", () => {
       payload: { accountId: "acc-1" },
     });
     await expect(client.submitMetadata({} as never)).rejects.toThrow(
-      "Mail engine submitMetadata failed",
+      "邮件引擎 submitMetadata 调用失败",
     );
   });
 

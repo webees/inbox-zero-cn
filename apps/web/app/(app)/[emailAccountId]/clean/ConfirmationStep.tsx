@@ -64,60 +64,54 @@ export function ConfirmationStep({
     <div className="text-center">
       <Image
         src="/images/illustrations/business-success-chart.svg"
-        alt="clean up"
+        alt="清理"
         width={200}
         height={200}
         className="mx-auto dark:brightness-90 dark:invert"
         unoptimized
       />
 
-      <TypographyH3 className="mt-2">Ready to clean up your inbox</TypographyH3>
+      <TypographyH3 className="mt-2">准备好清理你的收件箱了吗</TypographyH3>
 
       <ul className="mx-auto mt-4 max-w-prose list-disc space-y-2 pl-4 text-left">
-        <li>
-          We'll process {PREVIEW_RUN_COUNT} emails in an initial clean up.
-        </li>
-        <li>
-          If you're happy with the results, we'll continue to process the rest
-          of your inbox.
-        </li>
-        {/* TODO: we should count only emails we're processing */}
+        <li>我们会在首次清理中处理 {PREVIEW_RUN_COUNT} 封邮件。</li>
+        <li>如果你对结果满意，我们会继续处理你收件箱中剩余的邮件。</li>
+        {/* 待办：我们应只统计正在处理的邮件 */}
         {/* <li>
-          The full process to handle {unhandledCount} emails will take
-          approximately {estimatedTime}
+          处理 {unhandledCount} 封邮件的完整过程大约需要
+          {estimatedTime}
         </li> */}
         <li>
           {action === CleanAction.ARCHIVE ? (
             <>
-              Archived emails will be labeled{" "}
-              <Badge color="green">Archived</Badge> in Gmail.
+              已归档的邮件会在 Gmail 中打上 <Badge color="green">已归档</Badge>
+              标签。
             </>
           ) : (
             <>
-              Emails marked as read will be labeled{" "}
-              <Badge color="green">Read</Badge> in Gmail.
+              标记为已读的邮件会在 Gmail 中打上{" "}
+              <Badge color="green">已读</Badge>标签。
             </>
           )}
         </li>
-        <li>No emails are deleted - everything can be found in search.</li>
+        <li>不会删除任何邮件——所有内容都可以在搜索中找到。</li>
         {reuseSettings && (
           <li>
-            We'll use your settings from the last time you cleaned your inbox.
-            You can adjust these{" "}
+            我们会沿用你上次清理收件箱时的设置。你可以{" "}
             <Link
               className="font-semibold hover:underline"
               href={prefixPath(emailAccountId, "/clean/onboarding")}
             >
-              here
+              在这里
             </Link>
-            .
+            调整。
           </li>
         )}
       </ul>
 
       <div className="mt-6">
         <Button size="lg" onClick={handleStartCleaning}>
-          Start Cleaning
+          开始清理
         </Button>
       </div>
 
@@ -125,12 +119,12 @@ export function ConfirmationStep({
         <MutedText className="mt-6 flex items-center justify-center space-x-6">
           <FooterLink
             icon={HistoryIcon}
-            text="History"
+            text="历史记录"
             href={prefixPath(emailAccountId, "/clean/history")}
           />
           <FooterLink
             icon={SettingsIcon}
-            text="Edit settings"
+            text="编辑设置"
             href={prefixPath(emailAccountId, "/clean/onboarding")}
           />
         </MutedText>

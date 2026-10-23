@@ -9,14 +9,12 @@ const UNTRIMMED_RESULT_CHAR_BUDGET = 200_000;
 const MIN_TRIMMABLE_RESULT_CHARS = 1000;
 const STALE_STRING_CHAR_LIMIT = 500;
 const TRIMMED_NOTE =
-  "Older result shortened to save context. Run the tool again for full details.";
+  "较早的结果已缩短以节省上下文。再次运行工具可查看完整详情。";
 
-// Long tool loops re-send every earlier result on each step. Once enough
-// untrimmed output builds up, older results are reduced to what the model needs
-// to keep acting on them (identifiers and headers). The AI SDK carries a
-// prepareStep messages override forward, and the trigger only counts results
-// that have not been trimmed yet, so the cached prompt prefix changes once per
-// batch rather than on every step.
+// 较长的工具循环会在每一步重新发送所有较早的结果。当未裁剪的输出累积到一定量后，
+// 较早的结果会被缩减为模型继续处理所需的内容（标识符和表头）。AI SDK 会向下
+// 传递 prepareStep 的消息覆盖设置，而触发条件只统计尚未裁剪的结果，因此缓存的
+// 提示词前缀每批只变化一次，而不是每一步都变化。
 export function trimStaleToolResults(messages: ModelMessage[]) {
   const results = messages.flatMap((message) =>
     message.role === "tool"

@@ -19,8 +19,7 @@ import {
   type OrganizationRuleActionSchema,
 } from "@/utils/actions/organization-rule.validation";
 
-const UNAUTHORIZED_MESSAGE =
-  "Only organization owners or admins can manage organization rules.";
+const UNAUTHORIZED_MESSAGE = "只有组织所有者或管理员才能管理组织规则。";
 
 export const createOrganizationRuleAction = actionClientUser
   .metadata({ name: "createOrganizationRule" })

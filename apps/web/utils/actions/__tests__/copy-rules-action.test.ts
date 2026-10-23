@@ -28,9 +28,7 @@ describe("copyRulesFromAccountAction", () => {
       ruleIds: ["rule1"],
     });
 
-    expect(result?.serverError).toBe(
-      "Source and target accounts must be different",
-    );
+    expect(result?.serverError).toBe("源账号和目标账号必须不同");
   });
 
   it("throws error when source account not found", async () => {
@@ -48,9 +46,7 @@ describe("copyRulesFromAccountAction", () => {
       ruleIds: ["rule1"],
     });
 
-    expect(result?.serverError).toBe(
-      "Source account not found or unauthorized",
-    );
+    expect(result?.serverError).toBe("未找到源账号或未授权");
   });
 
   it("throws error when source account belongs to different user", async () => {
@@ -73,9 +69,7 @@ describe("copyRulesFromAccountAction", () => {
       ruleIds: ["rule1"],
     });
 
-    expect(result?.serverError).toBe(
-      "Source account not found or unauthorized",
-    );
+    expect(result?.serverError).toBe("未找到源账号或未授权");
   });
 
   it("throws error when target account not found", async () => {
@@ -93,9 +87,7 @@ describe("copyRulesFromAccountAction", () => {
       ruleIds: ["rule1"],
     });
 
-    expect(result?.serverError).toBe(
-      "Target account not found or unauthorized",
-    );
+    expect(result?.serverError).toBe("未找到目标账号或未授权");
   });
 
   it("throws error when target account belongs to different user", async () => {
@@ -118,9 +110,7 @@ describe("copyRulesFromAccountAction", () => {
       ruleIds: ["rule1"],
     });
 
-    expect(result?.serverError).toBe(
-      "Target account not found or unauthorized",
-    );
+    expect(result?.serverError).toBe("未找到目标账号或未授权");
   });
 
   it("returns zero counts when no rules found in source", async () => {

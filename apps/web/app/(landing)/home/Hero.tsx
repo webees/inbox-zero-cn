@@ -60,7 +60,7 @@ export function Hero({
           <HeroReveal delay={0.125 * 8}>
             <div className="mb-12 flex items-center justify-center gap-2">
               <Paragraph color="light" size="sm">
-                Works with
+                支持
               </Paragraph>
               <Outlook />
               <Gmail />

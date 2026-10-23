@@ -127,7 +127,7 @@ describe("chat inbox tools", () => {
     });
 
     expect(result).toEqual({
-      error: "Invalid sendEmail input: to must include valid email address(es)",
+      error: "sendEmail 输入无效：to must include valid email address(es)",
     });
     expect(createEmailProvider).not.toHaveBeenCalled();
   });
@@ -271,8 +271,7 @@ describe("chat inbox tools", () => {
     });
 
     expect(result).toEqual({
-      error:
-        "Invalid forwardEmail input: to must include valid email address(es)",
+      error: "forwardEmail 输入无效：to must include valid email address(es)",
     });
     expect(createEmailProvider).not.toHaveBeenCalled();
   });
@@ -1052,7 +1051,7 @@ describe("chat inbox tools - bulk pagination guidance (INB-134)", () => {
 
     expect(result).toMatchObject({
       totalReturned: 1,
-      countError: "Exact message count unavailable",
+      countError: "无法获取精确的邮件计数",
     });
     expect(result).not.toHaveProperty("exactCount");
   });
@@ -1370,9 +1369,9 @@ describe("chat inbox tools - bulk pagination guidance (INB-134)", () => {
     });
 
     expect(searchMessages).not.toHaveBeenCalled();
-    expect(result.error).toBe("Failed to search inbox");
+    expect(result.error).toBe("搜索收件箱失败");
     expect(result.microsoftSearchFeedback.attempts[0].message).toBe(
-      "Sender filters conflict. Use one exact sender address.",
+      "发件人过滤器冲突。请使用一个确切的发件人地址。",
     );
   });
 
@@ -2023,7 +2022,7 @@ describe("chat inbox tools - bulk pagination guidance (INB-134)", () => {
     });
 
     expect(result).toMatchObject({
-      error: "Failed to search inbox",
+      error: "搜索收件箱失败",
       provider: "microsoft",
       microsoftSearchFeedback: {
         failureType: "query_failed",
@@ -2064,7 +2063,7 @@ describe("chat inbox tools - bulk pagination guidance (INB-134)", () => {
     expect(result.microsoftSearchFeedback).toMatchObject({
       failureType: "query_failed",
       likelyCause:
-        "The failed query mixed a read-state term with other filters. Retry with one simpler clause.",
+        "失败的查询把已读状态词项与其他筛选混在一起。请用一个更简单的子句重试。",
       removedTerms: ["unread"],
       retryQueries: ['subject:"weekly site report"', '"weekly site report"'],
     });

@@ -132,7 +132,7 @@ export function bindTabMailOwner(input: {
       input.bus.post({
         type: "error",
         id: message.id,
-        message: `unsupported method ${message.method}`,
+        message: `不支持的方法 ${message.method}`,
       });
       return;
     }
@@ -351,8 +351,8 @@ export function createBroadcastTabBus(channel: BroadcastChannel): TabMailBus {
       try {
         channel.postMessage(message);
       } catch {
-        // Owner/follower effects close the channel on unmount; pending
-        // hello/observe replies must not throw into React.
+        // 卸载时，所有者/跟随者副作用会关闭通道；待处理的
+        // hello/observe 回复不能抛入 React。
       }
     },
     subscribe(listener) {

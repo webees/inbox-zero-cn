@@ -33,21 +33,21 @@ export function ConnectDrive() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to initiate Google Drive connection");
+        throw new Error("无法发起 Google Drive 连接");
       }
 
       const data: GetDriveAuthUrlResponse = await response.json();
 
-      if (!data?.url) throw new Error("Invalid auth URL");
+      if (!data?.url) throw new Error("无效的授权 URL");
 
       redirectToSafeUrl(data.url, { allowExternal: true });
     } catch (error) {
       captureException(error, {
-        extra: { context: "Google Drive OAuth initiation" },
+        extra: { context: "Google Drive OAuth 发起" },
       });
       toastError({
-        title: "Error initiating Google Drive connection",
-        description: "Please try again or contact support",
+        title: "发起 Google Drive 连接时出错",
+        description: "请重试或联系支持人员",
       });
       setIsConnectingGoogle(false);
     }
@@ -63,21 +63,21 @@ export function ConnectDrive() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to initiate OneDrive connection");
+        throw new Error("无法发起 OneDrive 连接");
       }
 
       const data: GetDriveAuthUrlResponse = await response.json();
 
-      if (!data?.url) throw new Error("Invalid auth URL");
+      if (!data?.url) throw new Error("无效的授权 URL");
 
       redirectToSafeUrl(data.url, { allowExternal: true });
     } catch (error) {
       captureException(error, {
-        extra: { context: "OneDrive OAuth initiation" },
+        extra: { context: "OneDrive OAuth 发起" },
       });
       toastError({
-        title: "Error initiating OneDrive connection",
-        description: "Please try again or contact support",
+        title: "发起 OneDrive 连接时出错",
+        description: "请重试或联系支持人员",
       });
       setIsConnectingMicrosoft(false);
     }
@@ -100,7 +100,7 @@ export function ConnectDrive() {
             height={16}
             unoptimized
           />
-          {isConnectingGoogle ? "Connecting..." : "Add Google Drive"}
+          {isConnectingGoogle ? "正在连接…" : "添加 Google Drive"}
         </Button>
 
         <Button
@@ -117,22 +117,22 @@ export function ConnectDrive() {
             height={16}
             unoptimized
           />
-          {isConnectingMicrosoft ? "Connecting..." : "Add OneDrive"}
+          {isConnectingMicrosoft ? "正在连接…" : "添加 OneDrive"}
         </Button>
       </div>
 
       <Dialog open={googleDialogOpen} onOpenChange={setGoogleDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Connect Google Drive</DialogTitle>
+            <DialogTitle>连接 Google Drive</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-4 rounded-md border p-3">
               <div>
-                <p className="text-sm font-medium">Standard</p>
+                <p className="text-sm font-medium">标准</p>
                 <p className="text-xs text-muted-foreground">
-                  You&apos;ll need to create new folders for filing
+                  你需要为归档创建新文件夹
                 </p>
               </div>
               <Button
@@ -145,15 +145,15 @@ export function ConnectDrive() {
                 disabled={isConnectingGoogle}
                 loading={isConnectingGoogle}
               >
-                Connect
+                连接
               </Button>
             </div>
 
             <div className="flex items-center justify-between gap-4 rounded-md border p-3">
               <div>
-                <p className="text-sm font-medium">Full access</p>
+                <p className="text-sm font-medium">完全访问权限</p>
                 <p className="text-xs text-muted-foreground">
-                  Use your existing folders
+                  使用你现有的文件夹
                 </p>
               </div>
               <Button
@@ -166,7 +166,7 @@ export function ConnectDrive() {
                 disabled={isConnectingGoogle}
                 loading={isConnectingGoogle}
               >
-                Connect
+                连接
               </Button>
             </div>
           </div>

@@ -23,7 +23,7 @@ export async function aiTranslateEmails({
     return texts.map(() => ({ text: "", sourceLanguage: null }));
   }
 
-  // Hard-slice without ellipsis so truncation markers aren't treated as content.
+  // 直接截断且不加省略号，避免截断标记被当作内容。
   const truncatedTexts = texts.map((text) => text.slice(0, MAX_TEXT_LENGTH));
 
   const system = `You are a precise email translator.
@@ -48,7 +48,7 @@ ${formatTextsForPrompt(truncatedTexts)}`;
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Translate email",
+    label: "翻译邮件",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "compact" },
   });
@@ -63,18 +63,18 @@ ${formatTextsForPrompt(truncatedTexts)}`;
   const translations = result.object.translations;
 
   if (translations.length !== texts.length) {
-    logger.error("Translation count mismatch", {
+    logger.error("翻译数量不匹配", {
       expected: texts.length,
       actual: translations.length,
       targetLanguage,
     });
     throw new Error(
-      `Expected ${texts.length} translations, received ${translations.length}`,
+      `期望收到 ${texts.length} 条翻译，但实际收到 ${translations.length} 条`,
     );
   }
 
-  // Blank inputs have no language; a model-supplied tag (e.g. "und") would
-  // make the client show an empty translation in place of the original.
+  // 空白输入没有语言；模型提供的标签（例如 "und"）
+  // 会让客户端用空翻译替换原文
   return translations.map((translation, index) =>
     texts[index].trim() ? translation : { text: "", sourceLanguage: null },
   );

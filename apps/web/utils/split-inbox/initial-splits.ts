@@ -2,9 +2,9 @@ import type { MailSplit } from "@/utils/split-inbox/split-query";
 import { MailSplitFilterKind } from "@/generated/prisma/enums";
 
 export const INITIAL_MAIL_SPLITS = [
-  { name: "All", matchAll: true, filters: { create: [] } },
+  { name: "全部", matchAll: true, filters: { create: [] } },
   {
-    name: "Unread",
+    name: "未读",
     matchAll: true,
     filters: {
       create: [{ kind: MailSplitFilterKind.UNREAD, value: null, order: 0 }],
@@ -15,9 +15,9 @@ export const INITIAL_MAIL_SPLITS = [
 export function ensureAllMailSplit(splits: (MailSplit & { order: number })[]) {
   if (splits.some((split) => split.filters.length === 0)) return splits;
 
-  // Older accounts may have deleted All before the default tab was protected.
+  // 较旧的账号可能在默认标签页受到保护之前删除了 All。
   return [
-    { id: "all", name: "All", order: -1, matchAll: true, filters: [] },
+    { id: "all", name: "全部", order: -1, matchAll: true, filters: [] },
     ...splits,
   ];
 }

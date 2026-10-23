@@ -10,7 +10,7 @@ const modalTiers = tiers.filter((tier) => tier.name !== "Enterprise");
 function PricingDialogHeader() {
   return (
     <div className="mb-4 text-center">
-      <h2 className="font-title text-2xl text-gray-900">Upgrade to Premium</h2>
+      <h2 className="font-title text-2xl text-gray-900">升级到高级版</h2>
     </div>
   );
 }
@@ -21,12 +21,11 @@ function EnterpriseFooter() {
       <div>
         <h3 className="font-semibold text-gray-900">Enterprise</h3>
         <p className="text-sm text-gray-600">
-          SSO, SCIM, on-premise deployment, and dedicated support for large
-          teams.
+          大型团队可享 SSO、SCIM、本地部署和专属支持。
         </p>
       </div>
       <Button variant="outline" asChild>
-        <Link href="https://www.getinboxzero.com/sales">Speak to Sales</Link>
+        <Link href="https://www.getinboxzero.com/sales">联系销售</Link>
       </Button>
     </div>
   );
@@ -40,7 +39,7 @@ export function usePremiumModal() {
   const PremiumModal = useCallback(() => {
     return (
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        {/* premium upgrade doesn't support dark mode yet as it appears on homepage */}
+        {/* 高级版升级尚不支持深色模式，因为它会出现在首页 */}
         <DialogContent className="max-w-6xl bg-white">
           <Pricing
             header={<PricingDialogHeader />}

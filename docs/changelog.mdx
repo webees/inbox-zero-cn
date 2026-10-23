@@ -1,624 +1,607 @@
 ---
-title: "Changelog"
-description: "Latest updates and improvements to Inbox Zero"
+title: "更新日志"
+description: "Inbox Zero 的最新更新与改进"
 ---
 
-<Update label="October 19, 2026" description="Drafts from Your Docs">
-  Reply drafts can look up your public docs before they write. Add a docs site in your draft knowledge base, and the assistant uses those pages when a reply needs an answer from them.
+<Update label="2026年10月14日" description="从正确的地址回复">
+  当有人写信到你用于发信的某个 Gmail 地址时，你的回复现在会从该地址发出，而不是你的默认地址。
 
-  - Open Assistant settings, then Draft knowledge base, and add the site
-  - Only public pages under the URLs you add are read
-  - You can add one site, or up to five on Plus
+  - 当你可以从多个地址发信时，会出现「发件人」选择器，新邮件中也是如此
+  - 切换地址会带入该地址的 Gmail 签名，且不会改动你已写的内容
+  - AI 草稿和自动回复也会使用匹配的地址
+  - 发送新邮件后，确认提示会提供「查看」，让你无需离开当前位置即可打开它
 </Update>
 
-<Update label="October 16, 2026" description="A Free Email App">
-  You can read and send mail in Inbox Zero for free on the web, desktop, and iPhone. Add the AI assistant only if you want it.
+<Update label="2026年10月10日" description="待回复提醒">
+  当有新邮件进入待回复时，手机会收到推送——无需打开应用，你就知道有哪些需要处理。
 
-  - When you sign up, choose the AI assistant, the email app, or both. Choosing the email app opens your inbox and skips the AI setup.
-  - If you only want the email app, the upgrade page lets you continue for free.
-  - Inbox stays in the sidebar, so you can open the app from the rest of Inbox Zero.
-  - Open Settings from the account menu, or press Cmd/Ctrl+, in the desktop app.
+  - 当应用未聚焦时，桌面端的新邮件通知已恢复
+  - 定时发送和撤销停留期间的发送不再让草稿滞留在「草稿」中
+  - 撤销发送现在是更快的 10 秒窗口
 </Update>
 
-<Update label="October 14, 2026" description="Reply from the Right Address">
-  When someone writes to a Gmail address you send as, your reply now goes out from that address instead of your default one.
+<Update label="2026年10月9日" description="更丰富的撰写编辑">
+  撰写器现在直接编辑真实的邮件 HTML，因此在撰写和发送时，含表格、样式块和托管 Logo 的签名会保持完整——而不是被压平或锁定为只读块。
 
-  - A From picker appears when you can send from more than one address, including on a new message
-  - Switching the address brings in that address's Gmail signature and leaves what you wrote alone
-  - AI drafts and auto-replies use the matching address too
-  - After you send a new message, the confirmation offers View so you can open it without leaving your place
+  - 即使没有 Google 通讯录访问权限，收件人建议也会从你设备上已有的邮件中提取
+  - Slack 确认卡片会显示你完整的待发草稿（而非截断预览），对于非常长的消息，最后一张卡片上会有「发送」
+  - 助手回复会跟随你正在回复的邮件语言，而不是你聊天所用的语言——除非你另有要求
+  - 在稍后处理、删除、标记为垃圾邮件或移动后，阅读器会像归档那样前进到下一个会话
 </Update>
 
-<Update label="October 10, 2026" description="To Reply Alerts">
-  Get a push on your phone when a new email lands in To Reply — so you know what needs your attention without opening the app.
+<Update label="2026年10月8日" description="内联团队评论">
+  团队评论现在就在会话本身中。按 M（或从「更多操作」/ 命令 K）打开它们，在消息下方内联讨论，并通过 @提及队友与他们分享该会话。
 
-  - Desktop new-mail notifications are back when the app isn't focused
-  - Scheduled and undo-held sends no longer leave their drafts sitting in Drafts
-  - Undo send is now a quicker 10-second window
+  - 未分享的会话保持安静——评论只有在你打开后才会出现，且仅当你的组织中有队友时
+  - @提及不在该会话中的人时，会在你发送后与他分享该会话
+  - 回复草稿会同步到你的邮箱，因此会出现在 Gmail、Outlook 以及你的其他设备上
+  - 「与我共享」和「动态」位于你的账号菜单中，这些页面上的「会话」/「动态」标签页也更清晰
 </Update>
 
-<Update label="October 9, 2026" description="Richer Compose Editing">
-  The composer now edits real email HTML, so signatures with tables, styled blocks, and hosted logos stay intact when you write and send — instead of getting flattened or locked as read-only blocks.
+<Update label="2026年10月7日" description="翻译会话">
+  打开一个外语会话并点击翻译——Inbox Zero 会按需将消息转换为你的语言。在你主动请求之前不会运行任何操作，因此 AI 何时读取邮件由你掌控。
 
-  - Recipient suggestions pull from mail already on your device, even without Google Contacts access
-  - Slack confirmation cards show your full pending draft (not a truncated preview), with Send on the last card for very long messages
-  - Assistant replies follow the language of the email you're answering, not the language you're chatting in — unless you ask otherwise
-  - After snooze, trash, spam, or move, the reader advances to the next conversation the way archive already does
+  - 从阅读器的更多菜单、命令面板（Cmd+K）或 Shift+T 进行翻译
+  - 每条已翻译的消息都会显示其原始语言，并提供「显示原文」以切换回来
+  - 已是你的语言的消息保持不变；再次翻译会切回原文，且不会再次调用 AI
+  - 如果连接在回答中途断开，聊天回复会恢复；「停止」现在会真正取消本次运行
 </Update>
 
-<Update label="October 8, 2026" description="Inline Team Comments">
-  Team comments now live in the thread itself. Open them with M (or from More actions / Command K), discuss inline under the messages, and @mention a teammate to share the conversation with them.
+<Update label="2026年10月6日" description="批量退订侧边栏">
+  批量退订现在会在你点击某个发件人时打开侧边栏——统计、他们的邮件以及阅读器全都无需离开页面。更清晰的状态和触手可及的操作让你更快清理列表。
 
-  - Unshared threads stay quiet — comments only appear after you open them, and only if your organization has teammates
-  - @mentioning someone who isn't on the thread shares it with them when you send
-  - Reply drafts sync to your mailbox, so they show up in Gmail, Outlook, and on your other devices
-  - Shared with me and Activity live in your account menu, with clearer Conversations / Activity tabs on those pages
+  - 状态分为待处理、全部发件人、已退订、已自动归档和已保留——除非你主动包含，否则待处理会隐藏没有退订链接的发件人
+  - 当你只想停止接收未来的邮件、保留现有会话时，请关闭「退订时归档」
+  - 退订、保留和归档位于页面底部的悬浮栏中
+  - 很少阅读的发件人邮件与每周摘要外观一致，其中的行可直接链接到批量退订
 </Update>
 
-<Update label="October 7, 2026" description="Translate Threads">
-  Open a foreign-language thread and hit Translate — Inbox Zero turns the messages into your language on demand. Nothing runs until you ask, so you stay in control of when AI reads the mail.
+<Update label="2026年10月3日" description="附件预览">
+  在会话中点击图片或 PDF 附件即可直接在 Inbox Zero 中打开——无需下载。先浏览文件，需要副本时再从对话框中下载。
 
-  - Translate from the reader's more menu, Command Palette (Cmd+K), or Shift+T
-  - Each translated message shows which language it came from, with Show original to toggle back
-  - Messages already in your language stay put; translating again flips back without another AI call
-  - Chat replies resume if your connection drops mid-answer, and Stop now cancels the run for real
+  - 支持常见图片格式和 PDF
+  - 你的账号时区现在会驱动会议简报、空闲时间和预约链接，日历设置中还提供了可搜索的城市选择器
+  - 在批量退订中，滚动较长的发件人列表时表头会保持固定
 </Update>
 
-<Update label="October 6, 2026" description="Bulk Unsubscribe Side Panel">
-  Bulk Unsubscribe now opens a side panel when you click a sender — stats, their emails, and the reader, all without leaving the page. Clear your list faster with clearer statuses and actions that stay within reach.
+<Update label="2026年9月28日" description="连接常用应用">
+  HubSpot、Salesforce、Slack 以及你已经在使用的其他应用现在可通过各自的登录方式连接——无需先注册 Pipedream 账号。连接后，你的助手可以在你起草和整理邮件时从这些应用中查询信息。
 
-  - Statuses are To review, All senders, Unsubscribed, Auto-archived, and Kept — and To review hides senders without an unsubscribe link unless you include them
-  - Turn off "Archive on unsubscribe" when you only want to stop future mail and leave existing threads alone
-  - Unsubscribe, Keep, and Archive sit in a floating bar at the bottom of the page
-  - The rarely read senders email matches the weekly summary look, with rows that link straight into Bulk Unsubscribe
+  - 开箱即用的应用有十一个：HubSpot、Salesforce、Airtable、Google Sheets、Slack、Asana、ClickUp、Jira、Zendesk、QuickBooks 和 Calendly
+  - 每个连接都使用该应用自己的 OAuth 界面
+  - 工具经过精心挑选且为只读，因此助手可以查询信息而不会更改你的数据
+  - 集成列表更简洁，只显示应用名称
 </Update>
 
-<Update label="October 3, 2026" description="Attachment Previews">
-  Click an image or PDF attachment in a thread to open it right in Inbox Zero — no download required. Glance at the file, then download from the dialog if you need a copy.
+<Update label="2026年9月27日" description="撤销发送">
+  不小心点了发送？你的邮件会被保留 30 秒，让你可以撤销——即使你关闭了标签页或退出了应用。从提示中撤销，草稿会立刻回来。
 
-  - Works for common image formats and PDFs
-  - Your account timezone now drives meeting briefs, availability hours, and booking links, with a searchable city picker in Calendar settings
-  - On Bulk Unsubscribe, the table header stays pinned while you scroll long sender lists
+  - 关闭标签页或退出应用不再会提前结束撤销窗口
+  - 发送回复后，会话会跳到你的已发送邮件，方便你继续阅读
+  - HubSpot、Salesforce、Slack 和 Airtable 等常用应用现在会在集成页面上单独显示为一行
 </Update>
 
-<Update label="September 28, 2026" description="Connect Popular Apps">
-  HubSpot, Salesforce, Slack, and other apps you already use now connect through their own sign-in — no Pipedream account needed first. Once connected, your assistant can look things up in those apps while you draft and triage.
+<Update label="2026年9月26日" description="弹出回复">
+  把回复从会话中弹出到独立窗口，这样你在撰写时还能继续浏览其他邮件。使用「草稿到 …」旁边的按钮，或按 Cmd+Shift+P。
 
-  - Eleven apps are ready out of the box: HubSpot, Salesforce, Airtable, Google Sheets, Slack, Asana, ClickUp, Jira, Zendesk, QuickBooks, and Calendly
-  - Each connection uses that app's own OAuth screen
-  - Tools are curated and read-only so the assistant can look things up without changing your data
-  - The Integrations list is cleaner, with just the app names
+  - 适用于回复、转发和已保存的草稿——你的正文、收件人、附件和发送时间都会一并带过去
+  - 关闭窗口会保留草稿，使其重新以内嵌方式出现；从窗口中丢弃则会删除它
+  - 已发送的回复现在会在你点击发送的瞬间出现在会话中
 </Update>
 
-<Update label="September 27, 2026" description="Undo Send">
-  Hit send by mistake? Your message is held for 30 seconds so you can undo — even if you close the tab or quit the app. Undo from the toast and your draft comes right back.
+<Update label="2026年9月23日" description="自定义 MCP 服务器">
+  从集成中连接你自己的远程 MCP 服务器——比如知识库——这样草稿回复就能在研究时结合它，以及你已经使用的内置工具。
 
-  - Closing the tab or quitting the app no longer ends the undo window early
-  - After you send a reply, the thread jumps to your sent message so you can keep reading
-  - Popular apps like HubSpot, Salesforce, Slack, and Airtable now show up as their own rows on Integrations
+  - 使用 OAuth 或 API 密钥添加服务器，随意命名，并可随时移除
+  - 自定义服务器会显示在内置集成旁边，并带有清晰的徽章
+  - 在 Plus 套餐中可用，每个邮箱账号最多可添加 10 个自定义服务器
 </Update>
 
-<Update label="September 26, 2026" description="Pop-Out Replies">
-  Pop a reply out of the thread into its own window so you can keep browsing other mail while you write. Use the button next to "Draft to …" or press Cmd+Shift+P.
+<Update label="2026年9月22日" description="按发件人汇集的每周摘要">
+  你的每周摘要会按发件人对冷邮件和已归档邮件进行分组，让反复出现的发件人折叠为一行，并显示最近的主题和数量——你可以直接跳转到某封邮件，或在 Gmail 或 Outlook 中搜索该发件人。
 
-  - Works for replies, forwards, and saved drafts — your text, recipients, attachments, and delivery times come with you
-  - Closing the window leaves the draft saved so it reappears inline; discarding from the window deletes it
-  - Sent replies now show up in the thread the moment you hit send
+  - 每个主题都链接到邮箱中的对应邮件
+  - 发件人名称（以及「+N 更多」）会打开针对该发件人邮件的搜索
+  - 摘要只关注每周的冷邮件和归档活动，没有新内容时则跳过发送
 </Update>
 
-<Update label="September 23, 2026" description="Custom MCP Servers">
-  Connect your own remote MCP server — like a knowledge base — from Integrations so draft replies can research against it alongside the built-in tools you already use.
+<Update label="2026年9月17日" description="即时本地搜索">
+  邮件搜索会在你输入时就开始给出结果——设备上已缓存的邮件匹配项会立即显示，随后在全量服务商搜索完成后更新，离线时也是如此。
 
-  - Add a server with OAuth or an API key, name it whatever you like, and remove it anytime
-  - Custom servers appear next to built-in integrations with a clear badge
-  - Available on Plus, with up to 10 custom servers per email account
+  - 侧边栏将收件箱置于最前，并把草稿、已发送、已归档、已加星标、已计划、垃圾邮件和回收站收纳进可折叠的邮件分组，需要时可随时访问这些视图
+  - 会遵循 Gmail 标签列表和邮件列表的可见性设置，你可以从标签的右键菜单中更改它们
+  - 你开始撰写的新邮件会保存到邮箱的草稿中，因此关闭撰写器后它们在 Gmail 或 Outlook 中依然可用
 </Update>
 
-<Update label="September 22, 2026" description="Weekly Summaries by Sender">
-  Your weekly summary groups cold emails and archived mail by sender, so repeat senders collapse into one row with recent subjects and a count — and you can jump straight to a message or search that sender in Gmail or Outlook.
+<Update label="2026年9月16日" description="斜杠片段">
+  保存你经常使用的回复，输入 `/` 或使用片段按钮即可将其插入草稿——快捷片段可以为你填好收件人的姓名和邮箱，并在助手设置中管理。
 
-  - Each subject links to the email in your mailbox
-  - Sender names (and "+N more") open a search for that person's mail
-  - Summaries stick to weekly cold-email and archive activity, and skip the send when there's nothing new
+  - 在聊天和撰写中可以说话而不用打字——对着编辑器口述，或与助手开始实时语音对话，完成后插入或发送转录文本
+  - 用清晰的时段稍后提醒，例如今天下午、明天早上或下周一，每个都会显示邮件何时返回
+  - 会议简报先呈现简短的优先事项、决策和阻碍，再给出有用的参会者背景
+  - 转发会显示其携带的文件，这些附件会随邮件在 Gmail 和 Outlook 中一起发送
 </Update>
 
-<Update label="September 17, 2026" description="Instant Local Search">
-  Mail search starts answering as you type — matches from mail already on your device show up right away, then update when the full provider search finishes, including when you're offline.
+<Update label="2026年9月15日" description="高级搜索">
+  按你的本意查找邮件——从搜索栏打开搜索选项，按发件人、收件人、主题、关键词、大小、日期、文件夹或标签以及附件进行筛选，然后用仍可编辑的 Gmail 风格查询进行搜索。
 
-  - The sidebar keeps Inbox up front and tucks Drafts, Sent, Archived, Starred, Scheduled, Spam, and Trash into a collapsible Mail group, with those views available when you need them
-  - Gmail label list and message-list visibility settings are respected, and you can change them from a label's right-click menu
-  - New messages you start composing save to your mailbox Drafts, so they stay available in Gmail or Outlook after you close the composer
+  - 点击发送后有几秒钟的撤销发送时间——取消投递并取回草稿
+  - 在已发送中通过「已打开」或「未打开」查看你的已发送邮件何时被打开，并在设置中按账号切换阅读状态
+  - 在桌面应用中打开多个邮箱窗口，重新启动时从上次离开的地方继续
 </Update>
 
-<Update label="September 16, 2026" description="Slash Snippets">
-  Save replies you use all the time and drop them into a draft by typing `/` or using the snippet button — shortcuts can fill in the recipient's name and email for you, and you manage them from Assistant settings.
+<Update label="2026年9月12日" description="拆分的域名过滤">
+  一步就能为公司里的所有人构建一个拆分——发件人条件现在可以匹配整个域名，比如 `@acme.com`，同时适用于 Gmail 和 Outlook。
 
-  - Talk instead of type in chat and compose — dictate into the editor, or start a live voice conversation with the assistant and insert or send the transcript when you're done
-  - Snooze with clear times of day like this afternoon, tomorrow morning, or next Monday, each showing when the message will return
-  - Meeting briefs lead with short priorities, decisions, and blockers, then useful attendee context
-  - Forwards show the files they're carrying, and those attachments go with the message on Gmail and Outlook
+  - 助手历史记录按会话对活动进行分组，深入查看时可展开到消息级别的详情
+  - 当你批量处理历史邮件时，草稿回复默认关闭，除非你主动开启
+  - 新邮件与回复拥有相同的撰写体验，包括稍后发送和提醒我
+  - 在「你的拆分」中拖动拆分标签页，把它们调整为你想要的顺序
 </Update>
 
-<Update label="September 15, 2026" description="Advanced Search">
-  Find mail the way you mean to — open Search options from the search bar to filter by From, To, Subject, keywords, size, date, folder or label, and attachments, then search with a Gmail-style query you can still edit.
+<Update label="2026年9月11日" description="重要和其他">
+  你的 Gmail 收件箱现在可以把「重要」邮件单独作为一个拆分呈现，而不匹配其他拆分的内容会归入「其他」——这样经过筛选的标签页能保持聚焦，又不会隐藏收件箱的其余部分。
 
-  - Undo send for a few seconds after you hit Send — cancel delivery and get your draft back
-  - See when your sent messages are opened, with Opened or Not opened in Sent and a Read status toggle per account in Settings
-  - Open more than one mailbox window on the desktop app, and pick up where you left off when you relaunch
+  - 开启「重要」以浏览 Gmail 标记为优先级的邮件，与你已构建的拆分并列显示
+  - 「其他」会收纳不匹配任何已启用拆分的收件箱会话
+  - 停用某个拆分会把这些会话移回「其他」；「全部」始终可用于完整的未筛选视图
 </Update>
 
-<Update label="September 12, 2026" description="Domain Filters for Splits">
-  Build a split for everyone at a company in one step — sender conditions now match an entire domain like `@acme.com`, across Gmail and Outlook.
+<Update label="2026年9月10日" description="拆分收件箱库">
+  拆分收件箱不止于多标签筛选。你可以用「全部匹配」或「任意匹配」逻辑组合标签、类别、发件人、未读、星标和邮件时间——或者从新库中挑选预设并就地编辑该拆分。
 
-  - Assistant History groups activity by conversation, with expandable message-level details as you dig in
-  - When you process past email in bulk, draft replies stay off unless you turn them on
-  - New messages get the same compose experience as replies, including Send later and Remind me
-  - Drag your split tabs into the order you want from Your splits
+  - 现成的「常规」和「应用」预设（包括 GitHub 和 Stripe），让常用拆分一键可得
+  - AI 仍能根据大白话建议拆分，你可以在保存前编辑这些条件
+  - 会话列表更易浏览——发件人名称更宽，并用「最近 7 天」和「本月早些时候」取代了每一天的标题
 </Update>
 
-<Update label="September 11, 2026" description="Important and Other">
-  Your Gmail inbox can now surface Important mail in its own split, and anything that doesn't match your other splits lands in Other — so filtered tabs stay focused without hiding the rest of your inbox.
+<Update label="2026年9月9日" description="使用验证码登录">
+  需要有人帮忙处理你的收件箱，又不想分享你的 Google 或 Microsoft 密码？在设置中开启邮箱验证码登录，他们就能用发送到你邮箱的一次性验证码登录。
 
-  - Turn on Important to browse what Gmail marks as priority, alongside the splits you already built
-  - Other catches inbox conversations that match none of your enabled splits
-  - Disabling a split moves those conversations back into Other; All stays available for the full unfiltered view
+  - 在设置中选择启用——它默认关闭，关闭后会立即撤销所有有效的验证码会话
+  - 验证码一次性使用，几分钟内过期，并有速率限制以防被滥用
+  - 基于验证码的会话仍受限：它们无法更改该设置、拉取服务商凭据或创建不受限的移动端会话
 </Update>
 
-<Update label="September 10, 2026" description="Split Inbox Library">
-  Split inboxes go beyond multi-label filters. Combine labels, categories, senders, unread, starred, and message age with match-all or match-any logic — or pick a preset from the new library and edit the split in place.
+<Update label="2026年9月8日" description="多标签拆分">
+  构建一个同时跨越多个标签的拆分——描述你想要的内容，AI 会建议匹配的标签和名称，或者你自己挑选。滚动时合并结果始终保持最新在前。
 
-  - Ready-made General and Apps presets (including GitHub and Stripe) so common splits are one click away
-  - AI still suggests a split from plain language, and you can edit those conditions before saving
-  - Conversation list is easier to scan — wider sender names, plus "Last 7 days" and "Earlier this month" instead of a heading for every day
+  - 直接在邮件阅读器中回复日历邀请：是、否或也许
+  - 将邮件侧边栏折叠为图标栏，或拖动边缘调整其大小
+  - 从任意位置以对话框方式打开设置——包括通过 Command K
+  - 会话列表按日期分组（今天、昨天以及更早），让冗长的收件箱更易浏览
 </Update>
 
-<Update label="September 9, 2026" description="Sign In With a Code">
-  Need someone to help with your inbox without sharing your Google or Microsoft password? Turn on email code sign-in in Settings, then they can sign in with a one-time code sent to your email.
+<Update label="2026年9月7日" description="给会话打标签">
+  无需离开邮件即可应用 Gmail 标签——按 L，选择一个现有标签或创建一个，然后将其应用到当前会话或批量选择。
 
-  - Opt in from Settings — it's off by default, and turning it off immediately revokes any active code sessions
-  - Codes are single-use, expire in minutes, and are rate-limited so they can't be spammed
-  - Code-based sessions stay restricted: they can't change the setting, pull provider credentials, or create unrestricted mobile sessions
+  - 侧边栏中的嵌套标签，让 Inbox Zero/Archived 这样的路径整洁地嵌套在父标签下
+  - 展开会话预览，在打开会话前阅读更多摘要内容
+  - 用 F 或 Command K 转发，并在命令面板中发现更多阅读器操作
+  - 针对发送、计划、提醒和附件的撰写快捷键——还可以从 Command K 切换主题
 </Update>
 
-<Update label="September 8, 2026" description="Multi-Label Splits">
-  Build a split that spans several labels at once — describe what you want and AI suggests matching labels and a name, or pick them yourself. Combined results stay newest-first as you scroll.
+<Update label="2026年9月6日" description="稍后发送">
+  点发送前需要缓一缓？你现在可以安排在稍后发送回复，并设置「提醒我」以免跟进事项被遗漏——就在你正在回复的会话中进行。
 
-  - Reply Yes, No, or Maybe to calendar invitations right from the email reader
-  - Collapse the mail sidebar to an icon rail, or drag the edge to resize it
-  - Open Settings as a dialog from anywhere — including from Command K
-  - Thread list groups by date (Today, Yesterday, and earlier) so long inboxes are easier to scan
+  - 草稿回复在你导航和重新加载时保持存在，包括收件人、附件和格式
+  - 离线或发送失败时邮件仍可恢复，让你可以在重新联网后重试
+  - 按 Enter 打开回复，方向键在消息间移动，工具栏可展开或折叠会话
+  - 更清爽的阅读器和撰写器：日期靠右，收件人和主题可编辑，选中文本时显示格式工具
 </Update>
 
-<Update label="September 7, 2026" description="Label Conversations">
-  Apply Gmail labels without leaving Mail — hit L, pick an existing label or create one, and apply it to the conversation you're on or a bulk selection.
+<Update label="2026年9月3日" description="你的邮件周报">
+  你的每周摘要回来了——而且经过重新设计。每周一你都会收到一份清晰的回顾，包括为你归档了哪些邮件、还有哪些需要回复，以及拦截了多少封冷邮件。
 
-  - Nested labels in the sidebar so paths like Inbox Zero/Archived nest cleanly under a parent
-  - Expand conversation previews to read more of the snippet before you open a thread
-  - Forward with F or Command K, and find more reader actions in the command palette
-  - Compose shortcuts for send, schedule, reminders, and attachments — plus theme switching from Command K
+  - Outlook 会话现在会直接在对话中显示你的草稿回复
+  - 冷邮件拦截器对不请自来的外联更智能——具体、相关的邮件可以通过，而模板化的推销则被挡在外面
+  - 从阅读器中把邮件标记为垃圾邮件，并从操作菜单中管理退订和自动归档
+  - 在桌面端，你会看到更新何时就绪，方便你在合适的时机重新加载
 </Update>
 
-<Update label="September 6, 2026" description="Send Later">
-  Need a minute before you hit send? You can now schedule replies for later and set Remind me so follow-ups don't slip — right from the thread you're answering.
+<Update label="2026年9月1日" description="选择你的账号">
+  管理多个收件箱？你现在可以选择哪些已连接账号显示在「所有账号」中——这样你的合并邮箱只会包含你在意的账号。
 
-  - Draft replies stick as you navigate and reload, including recipients, attachments, and formatting
-  - Offline or failed sends stay recoverable so you can retry when you're back online
-  - Enter opens a reply, arrow keys move between messages, and the toolbar expands or collapses the thread
-  - Cleaner reader and composer: dates on the right, editable recipients and subject, formatting tools when you select text
+  - 从「所有账号」打开账号选择器并保存你的选择；它会在各会话间保持
+  - 新收件箱会获得现成的拆分：待回复、时事通讯、营销、日历、收据等
+  - 在桌面端，Inbox Zero 默认打开邮件，让你更快进入收件箱
 </Update>
 
-<Update label="September 3, 2026" description="Your Week in Email">
-  Your weekly summary is back — and redesigned. Every Monday you'll get a clear recap of what was archived for you, what still needs a reply, and how many cold emails were blocked.
+<Update label="2026年8月31日" description="搜索你的邮件">
+  无需离开 Inbox Zero 就能在邮箱中查找任何东西。邮件界面现在有了真正的搜索框——输入查询，按 Enter，结果直接来自 Gmail 或 Outlook。
 
-  - Outlook threads now show your draft replies right in the conversation
-  - Cold Email Blocker is smarter about unsolicited outreach — specific, relevant messages get through while templated pitches stay out
-  - Mark emails as spam from the reader, and manage unsubscribe and auto-archive from the actions menu
-  - On desktop, you'll see when an update is ready so you can reload when it suits you
+  - 在搜索 Google 账号时使用 `from:` 和 `has:attachment` 等 Gmail 运算符
+  - Outlook 搜索会返回整个邮箱中按相关性排序的匹配项
+  - 用 Escape 或 X 按钮清除搜索；查询会保留在 URL 中，方便你分享或刷新视图
 </Update>
 
-<Update label="September 1, 2026" description="Choose Your Accounts">
-  Running several inboxes? You can now pick which connected accounts show up in All Accounts — so your combined mailbox only includes the ones you care about.
+<Update label="2026年8月28日" description="描述你的拆分">
+  创建拆分收件箱就像输入你想要的内容一样简单。描述这个视图——比如「未读工作邮件」或「时事通讯」——Inbox Zero 会挑选匹配的过滤器并为你打开新标签页。
 
-  - Open the account picker from All Accounts and save your selection; it sticks across sessions
-  - New inboxes get ready-made splits for To Reply, Newsletters, Marketing, Calendar, Receipts, and more
-  - On desktop, Inbox Zero opens to Mail by default so you're in your inbox faster
+  - 会议记录器结束抢先体验——当会话中的每个人都参加了会议时，摘要可以帮助起草回复
+  - 联系人建议现在也适用于抄送和密送，而不仅是收件人
+  - 消息阅读器会显示发件人照片，并折叠引用的回复历史
+  - 从会话菜单在 Gmail 或 Outlook 中打开任意对话
 </Update>
 
-<Update label="August 31, 2026" description="Search Your Mail">
-  Find anything in your mailbox without leaving Inbox Zero. There's now a real search box on the mail screen — type a query, hit Enter, and results come straight from Gmail or Outlook.
+<Update label="2026年8月26日" description="联系人建议">
+  当你开始输入收件人时，Inbox Zero 现在会从你的 Gmail 和 Outlook 联系人中建议人选——这样你无需离开撰写界面就能选对人。
 
-  - Use Gmail operators like `from:` and `has:attachment` when searching a Google account
-  - Outlook search returns relevance-ranked matches across your mailbox
-  - Clear a search with Escape or the X button; the query stays in the URL so you can share or refresh the view
+  - 输入时按姓名或邮箱搜索联系人
+  - Outlook 建议使用你保存的联系人（如果需要授予访问权限，请重新连接账号）
+  - 重复和无效的地址会被自动过滤掉
 </Update>
 
-<Update label="August 28, 2026" description="Describe Your Split">
-  Creating a split inbox is as easy as typing what you want. Describe the view — like "unread work mail" or "newsletters" — and Inbox Zero picks the matching filter and opens the new tab for you.
+<Update label="2026年8月25日" description="更丰富的撰写体验">
+  在 Inbox Zero 中写邮件感觉更接近真正的邮件客户端。撰写会以一个安静的面板打开，带有格式、链接、列表、附件和内嵌图片——同时引用的回复和你的签名会得到保留。
 
-  - Meeting Notetaker is out of early access — summaries can help draft replies when everyone on the thread was in the meeting
-  - Contact suggestions now work in Cc and Bcc, not just To
-  - The message reader shows sender photos and collapses quoted reply history
-  - Open any conversation in Gmail or Outlook from the thread menu
+  - 在「所有账号」中撰写时，选择使用哪个已连接账号发送
+  - 需要更多空间时可将撰写器展开为全屏，或保持紧凑
+  - 粘贴富文本和插入链接时不必与编辑器较劲
+  - 不支持的布局会安全回退，复杂邮件不会被弄乱
 </Update>
 
-<Update label="August 26, 2026" description="Contact Suggestions">
-  When you start typing a recipient, Inbox Zero now suggests people from your Gmail and Outlook contacts — so you can pick the right person without leaving compose.
+<Update label="2026年8月24日" description="本地优先的邮件">
+  你的邮箱现在会在后台同步并保留在设备上，因此收件箱和未读可以即时打开——即使你处于离线状态或正在恢复联网。归档、删除、稍后提醒以及已读/未读更新都感觉即时，同时一切保持同步。
 
-  - Search contacts by name or email as you type
-  - Outlook suggestions use your saved contacts (reconnect your account if you need to grant access)
-  - Duplicate and invalid addresses are filtered out automatically
+  - 右键点击侧边栏中的标签、类别和文件夹，即可重命名、更改颜色或删除
+  - 用 ⌘A / Ctrl+A 选中当前视图中的所有会话
+  - 「所有账号」保持缓存优先，因此页面刷新时合并收件箱依然响应迅速
 </Update>
 
-<Update label="August 25, 2026" description="Richer Compose">
-  Writing email in Inbox Zero feels closer to a real mail client. Compose opens as a quiet panel with formatting, links, lists, attachments, and inline images — while quoted replies and your signature stay protected.
+<Update label="2026年8月18日" description="处处更迅捷">
+  Inbox Zero 在桌面端和网页端都感觉更快了。桌面应用会即时重新打开并从你上次离开的地方继续，悬停邮件会预热它，让打开感觉即时。
 
-  - Choose which connected account to send from when composing in All Accounts
-  - Expand the composer to fullscreen when you need more room, or keep it compact
-  - Paste rich text and insert links without fighting the editor
-  - Unsupported layouts fall back safely so complex messages aren't mangled
+  - 在 Mac 上，关闭窗口会隐藏应用而不是退出，因此从 Dock 重新打开是即时的
+  - 启动时会恢复你上次的页面，而不是引导你经历登录重定向
+  - 悬停或用键盘聚焦某个会话即可在打开前预取它
+  - 标签、文件夹和邮件设置从本地快照加载，因此侧边栏会立即显示
 </Update>
 
-<Update label="August 24, 2026" description="Local-First Mail">
-  Your mailbox now syncs in the background and stays available on your device, so Inbox and Unread open instantly — even when you're offline or coming back online. Archive, delete, snooze, and read/unread updates feel immediate while everything stays in sync.
+<Update label="2026年8月17日" description="桌面版下载">
+  你可以从新的桌面页面下载适用于 Mac 和 Windows 的 Inbox Zero。应用会自行保持更新，Mac 版本经过签名和公证，打开时不会有 Gatekeeper 的阻碍。
 
-  - Right-click labels, categories, and folders in the sidebar to rename, recolor, or delete them
-  - Select all conversations in the current view with ⌘A / Ctrl+A
-  - All Accounts stays cache-first, so the merged inbox stays responsive while pages refresh
+  - 会议跟进草稿会在 Gmail 或 Outlook 中打开，而不是在 Inbox Zero 邮件中
+  - 按 H 可用键盘让选中的会话稍后提醒
+  - 会话行会隐藏 Gmail 的系统类别标签，让你自己的标签保持在显眼位置
+  - 合并收件箱的选择和缓存体验更接近在单一账号中操作
 </Update>
 
-<Update label="August 18, 2026" description="Snappier Everywhere">
-  Inbox Zero feels faster on desktop and the web. The desktop app reopens instantly and picks up where you left off, and hovering an email warms it so opening feels immediate.
+<Update label="2026年8月16日" description="稍后提醒">
+  你可以从 Command K 让邮件稍后提醒——选择一个预设或输入自然语言时间，会话就会在你想要的时间回来。邮件会立即离开收件箱，然后在你选择的时间自动返回。
 
-  - On Mac, closing the window hides the app instead of quitting, so reopening from the dock is instant
-  - Launch restores your last page instead of walking you through login redirects
-  - Hover or keyboard-focus a conversation to prefetch it before you open it
-  - Labels, folders, and mail settings load from a local snapshot so the sidebar appears right away
+  - 从邮件阅读器打开发件人资料，查看关于你正在交谈对象的公开职业背景
+  - 需要更多空间时折叠邮件侧边栏，为列表和阅读器腾出位置
+  - 尝试把 Inbox Zero 作为桌面应用使用，并通过系统浏览器登录
 </Update>
 
-<Update label="August 17, 2026" description="Desktop Downloads">
-  You can download Inbox Zero for Mac and Windows from the new desktop page. The app keeps itself up to date, and Mac builds are signed and notarized so they open without Gatekeeper friction.
+<Update label="2026年8月15日" description="统一收件箱">
+  邮件现在有了「所有账号」视图——在收件箱之间切换，或在一个地方查看全部。来自每个已连接账号的会话会一起显示，并带有清晰的账号标识，让你始终知道某个会话属于哪个邮箱。
 
-  - Meeting follow-up drafts open in Gmail or Outlook instead of Inbox Zero Mail
-  - Press H to snooze the selected conversation from the keyboard
-  - Thread rows hide Gmail's system category labels so your own labels stay front and center
-  - Combined inbox selection and caching feel closer to working in a single account
+  - 键盘导航会让聚焦的会话保持在屏幕上，当接近底部时列表会加载更多会话
+  - 统一收件箱的会话使用紧凑的账号头像，并随会话一起加载标签
+  - 会议录音更易跟进：查看记录器是在等待还是已开始，从「接下来」打开处理中或已完成的笔记，并在转录仍在生成时获取实时更新
 </Update>
 
-<Update label="August 16, 2026" description="Snooze">
-  You can snooze mail from Command K — pick a preset or type a natural-language time, and the conversation comes back when you want it. Messages leave your inbox right away, then return automatically at the time you chose.
+<Update label="2026年8月12日" description="全新打造的邮件">
+  邮件界面焕然一新——更清爽的三栏布局，带有键盘快捷键、拆分视图，以及以扁平消息列表而非堆叠卡片呈现的会话。打开收件箱也感觉更快了，这得益于本地缓存会在后台刷新时立即显示你的邮件。
 
-  - Open a sender profile from the mail reader to see public professional context about who you're talking to
-  - Collapse the mail sidebar when you want more room for your list and reader
-  - Try Inbox Zero as a desktop app, with sign-in through your system browser
+  - 打开会话会立即将其标记为已读，⋯ 菜单让你可以标记已读/未读或退订
+  - Outlook 用户会获得「聚焦/其他」收件箱分区，以及与 Microsoft 一致的文件夹导航
+  - 未读主题更醒目，会话标签在整个对话中保持可见
+  - 集成页面现在会说明每个连接的作用，让你更清楚自己启用了什么
+  - 一旦开启会议记录器，它默认会加入所有符合条件的通话
 </Update>
 
-<Update label="August 15, 2026" description="Unified Inbox">
-  Mail now has an All accounts view — switch between inboxes or see everything in one place. Conversations from every connected account show up together, with clear account indicators so you always know which mailbox a thread belongs to.
+<Update label="2026年8月11日" description="Linear、Attio 与 Intercom">
+  你的助手现在可以从 Linear、Attio 和 Intercom 拉取上下文。从集成中连接它们即可开始——连接后工具会自动开启。
 
-  - Keyboard navigation keeps the focused conversation on screen, and the list loads more threads as you approach the bottom
-  - Unified inbox threads use compact account avatars and load labels alongside conversations
-  - Meeting recordings are easier to follow: see when the notetaker is waiting vs live, open processing or finished notes from Up next, and get live updates while transcripts are still generating
+  - 随时单独开启或关闭某个工具，无需另外进行连接级别的启用操作
+  - 邮件侧边栏会显示与你的 Gmail 标签和 Outlook 类别相匹配的彩色标签圆点
+  - 邮件在较小屏幕上表现更好，测试版横幅已移除，让你的收件箱保持在首屏内
 </Update>
 
-<Update label="August 12, 2026" description="Mail, Rebuilt">
-  The Mail screen has a new look — a cleaner three-column layout with keyboard shortcuts, split views, and threads that read as a flat message list instead of stacked cards. Opening your inbox feels faster too, thanks to a local cache that shows your mail right away while it refreshes in the background.
+<Update label="2026年8月7日" description="会倾听的引导流程">
+  设置 Inbox Zero 现在从一次真正的对话开始。告诉助手是什么让你的收件箱不堪重负，它会在你聊天时以内嵌方式构建个性化设置——规则和清理清单就在会话中。
 
-  - Opening a thread marks it as read right away, and the ⋯ menu lets you mark read/unread or unsubscribe
-  - Outlook users get Focused/Other inbox sections and folder navigation that matches Microsoft
-  - Unread subjects stand out more clearly, and thread labels stay visible across the conversation
-  - The Integrations page now explains what each connection does, so it's clearer what you're enabling
-  - Once you turn on the meeting recorder, it defaults to joining all eligible calls
+  - 自由输入，助手会让回复保持简短，由卡片承载细节
+  - 你的设置和清理卡片会内嵌显示在对话中，并随操作保持可编辑
+  - 从你上次离开的地方继续——如果重新加载或稍后回来，你的聊天、草稿规则和清理选择都会恢复
+  - 快速的收件箱扫描会给出时事通讯建议，让你可以在设置过程中退订
+  - 对话结束后，在打开收件箱前继续完成引导设置
 </Update>
 
-<Update label="August 11, 2026" description="Linear, Attio & Intercom">
-  Your assistant can now pull context from Linear, Attio, and Intercom. Connect them from Integrations and you're ready to go — tools turn on automatically when you connect.
+<Update label="2026年8月2日" description="收件箱健康报告">
+  高级版账号现在会定期收到「收件箱健康」邮件，展示你很少打开的时事通讯和发件人，并提供直接批量清理的路径——让你无需翻找旧邮件就能减少收件箱噪音。
 
-  - Toggle individual tools on or off anytime without a separate connection-level enable step
-  - The Mail sidebar shows colored label dots that match your Gmail labels and Outlook categories
-  - Mail works better on smaller screens, with the beta banner gone so your inbox stays above the fold
+  - 邮件会突出低互动发件人，并估算你每年可以少收到多少封邮件
+  - 一键即可带着已选好的热门建议进入批量退订
+  - 每月最多投递一次，你可以随时在邮件偏好设置中选择退出
 </Update>
 
-<Update label="August 7, 2026" description="Onboarding That Listens">
-  Setting up Inbox Zero now starts with a real conversation. Tell the assistant what's overwhelming your inbox, and it builds a personalized setup inline as you chat — with rules and cleanup checklists right in the thread.
+<Update label="2026年7月31日" description="移动端 OTP 提醒">
+  当验证码或 OTP 邮件到达收件箱时，Inbox Zero 移动应用现在可以把它直接推送到你的手机——这样你在登录其他应用或网站时无需翻找邮件。
 
-  - Type freely and the assistant keeps replies short while cards carry the details
-  - Your setup and cleanup cards appear inline in the conversation and stay editable as you go
-  - Pick up where you left off — your chat, draft rules, and cleanup choices restore if you reload or come back later
-  - A quick inbox scan surfaces newsletter suggestions you can unsubscribe from during setup
-  - When the conversation is done, continue through guided setup before opening your inbox
+  - 新的 OTP 或验证码邮件一到，推送通知就会触发
+  - 移动端的收件箱同步更快、更可靠，采用增量更新而非完整重新加载
 </Update>
 
-<Update label="August 2, 2026" description="Inbox Health Reports">
-  Premium accounts now get periodic Inbox Health emails that surface newsletters and senders you rarely open, with a direct path to clean them up in bulk — so you can cut inbox noise without digging through old mail.
+<Update label="2026年7月30日" description="AI 会议记录器">
+  在抢先体验中，Inbox Zero 可以加入你的视频通话、转录对话，并将其转化为摘要、回顾邮件和跟进草稿，让你每次会议结束时都已有写好的后续步骤。
 
-  - Emails highlight low-engagement senders and estimate how many messages you could avoid each year
-  - One tap takes you to bulk unsubscribe with your top suggestions already selected
-  - Delivered at most once a month, and you can opt out anytime in your email preferences
+  - 新的引导流程会带你连接日历，并选择记录器应加入哪些会议
+  - 重新设计的会议页面在一个地方显示即将进行的录制、摘要、行动项和跟进草稿
+  - Slack、Telegram 和 Teams 上的消息机器人会在你的回复成功发送时显示对勾
 </Update>
 
-<Update label="July 31, 2026" description="OTP Alerts on Mobile">
-  When a verification code or OTP email lands in your inbox, the Inbox Zero mobile app can now push it straight to your phone — so you don't have to dig through email while logging into another app or site.
+<Update label="2026年7月13日" description="更大规模的收件箱清理">
+  你的助手现在可以处理更大规模的收件箱清理任务而不会提前停止，在长列表中查找合适的规则也快得多。
 
-  - Push notifications fire as soon as a new OTP or verification-code email arrives
-  - Inbox sync on mobile is faster and more reliable with incremental updates instead of full reloads
+  - 多步收件箱清理可在单次聊天中跨更多批次持续进行
+  - 更长的助手任务在超时前有更多时间完成
+  - 按名称或条件文本搜索和筛选你的规则列表
+  - 规则按 A–Z 排序，保持可预测的顺序
 </Update>
 
-<Update label="July 30, 2026" description="AI Meeting Recorder">
-  In Early Access, Inbox Zero can join your video calls, transcribe the conversation, and turn it into a summary, recap email, and follow-up draft, so you leave every meeting with next steps already written.
+<Update label="2026年6月28日" description="组织规则">
+  组织管理员现在可以创建会自动推送到每位团队成员身上的 AI 助手规则。在组织设置中一次性设定策略——成员会在自己的规则列表中看到它们，并可为自己的收件箱开启或关闭。
 
-  - A new onboarding flow walks you through connecting your calendar and choosing which meetings the recorder should join
-  - The redesigned Meetings page shows upcoming recordings, summaries, action items, and follow-up drafts in one place
-  - Messaging bots on Slack, Telegram, and Teams show a checkmark when your reply is sent successfully
+  - 组织设置中新增「规则」标签页，供管理员在所有成员中创建、编辑和启用规则
+  - 受管规则会出现在每位成员的助手中，并带有「由组织管理」徽章
+  - 成员可以针对自己的账号切换组织规则，而不会更改组织范围内的定义
 </Update>
 
-<Update label="July 13, 2026" description="Bigger Inbox Cleanups">
-  Your assistant can now work through larger inbox cleanup jobs without stopping early, and finding the right rule in a long list is much faster.
+<Update label="2026年6月23日" description="无需预约链接的空闲时间">
+  你现在可以直接在日历页面设置每周的空闲时间——无需预约链接。在一处定义你何时有空，每个预约链接都会自动继承它。
 
-  - Multi-step inbox cleanups keep going across more batches in a single chat
-  - Longer assistant tasks have more time to finish before timing out
-  - Search and filter your rules list by name or condition text
-  - Rules are sorted A–Z so they stay in a predictable order
+  - 空闲时间管理现在是日历设置页面上的一个独立版块，与单个预约链接分开
+  - 分析日期范围选择器现在在移动端和 PWA 上完全可用
 </Update>
 
-<Update label="June 28, 2026" description="Organization Rules">
-  Organization admins can now create AI assistant rules that roll out to every team member automatically. Set policies once from your organization settings — members see them in their rules list and can turn them on or off for their own inbox.
+<Update label="2026年6月17日" description="更智能的批量退订">
+  批量退订页面现在会根据你的阅读习惯建议退订哪些发件人。点击「选择建议项」，它就会挑出低阅读、高发送量的发件人，让你一键清理收件箱。
 
-  - New Rules tab in organization settings for admins to create, edit, and enable rules across all members
-  - Managed rules appear on each member's assistant with a "Managed by organization" badge
-  - Members can toggle organization rules for their account without changing the org-wide definition
+  - 退订后，一张庆祝卡片会显示你每年将少收到多少封邮件——在 X 或 LinkedIn 上分享你的成果
+  - 引导流程现在会显示你真实的发件人统计，让你甚至在完成设置前就能退订嘈杂的发件人
+  - 聊天整理摘要会描述每封邮件实际说了什么，而不只是重复建议的操作
 </Update>
 
-<Update label="June 23, 2026" description="Availability Without Booking Links">
-  You can now set your weekly availability hours directly from the calendars page — no booking link required. Define when you're free in one place and every booking link inherits it automatically.
+<Update label="2026年6月12日" description="按发件人批量删除">
+  你现在可以按发件人批量删除邮件，而不仅是归档。选择「删除」作为批量操作，彻底清除不需要的发件人。
 
-  - Availability management is now its own section on the calendar settings page, separate from individual booking links
-  - The analytics date range picker is now fully usable on mobile and in the PWA
+  - 来自预约链接的日历事件现在会显示预约标题和访客姓名，让你的日历保持有序
+  - AI 规则创建能更可靠地处理常见的自动化请求——例如归档、加标签和标记已读
 </Update>
 
-<Update label="June 17, 2026" description="Smarter Bulk Unsubscribe">
-  The bulk unsubscribe page now suggests which senders to unsubscribe from based on your reading habits. Hit "Select suggested" and it picks out low-read, high-volume senders so you can clean up your inbox in one click.
+<Update label="2026年6月2日" description="Android 应用现已推出">
+  Inbox Zero 现在已登陆 Android。你可以从 Google Play 商店下载它，与现有的 iOS 应用并列——两者都可以从新的[下载页面](https://www.getinboxzero.com/app)访问。
 
-  - After unsubscribing, a celebration card shows how many fewer emails you'll get per year — share your win on X or LinkedIn
-  - Onboarding now shows your real sender stats so you can unsubscribe from noisy senders before you even finish setup
-  - Chat triage summaries describe what each email actually says instead of just repeating the recommended action
+  - 消息渠道中的规则建议现在会以可读的格式化文本显示，而不是原始标记
+  - 引导流程会根据你的设置调整——只有在启用日历功能时才会出现日历步骤
+  - 内嵌规则建议在你批准后会显示清晰的「已创建」状态
 </Update>
 
-<Update label="June 12, 2026" description="Bulk Delete by Sender">
-  You can now bulk delete emails from senders, not just archive them. Pick "Delete" as your bulk action and clear out unwanted senders for good.
+<Update label="2026年5月20日" description="更智能的 AI 草稿">
+  AI 生成的回复现在能理解你所回复邮件中的链接和上下文。当有人发给你带有 URL 的消息时，你起草的回复可以自然地引用这些链接，而不是忽略它们。
 
-  - Calendar events from booking links now show the booking title and guest name so your calendar stays organized
-  - AI rule creation handles common automation requests — like archiving, labeling, and marking read — more reliably
+  - 新用户引导会显示你实际处理过的邮件及其应用的标签，让你在完成设置前就看到 AI 在工作
+  - 需要租户级应用审批的 Microsoft 组织现在可以直接从 Inbox Zero 完成管理员授权
+  - 预约页面布局更紧凑，日历和时间段能整洁地适配，没有多余的空白
 </Update>
 
-<Update label="June 2, 2026" description="Android App Now Available">
-  Inbox Zero is now available on Android. You can download it from the Google Play Store alongside the existing iOS app — both accessible from the new [download page](https://www.getinboxzero.com/app).
+<Update label="2026年5月18日" description="改期和取消预约">
+  与你预约时间的人现在可以直接从确认邮件中改期或取消——无需来回沟通。你和你的访客都会收到更新的邮件通知，日历事件也会自动调整。
 
-  - Rule suggestions in messaging channels now display as readable, formatted text instead of raw markup
-  - Onboarding flow adapts to your setup — calendar steps only appear when calendar features are enabled
-  - Inline rule suggestions show a clear "created" state after you approve them
+  - 改期页面会显示你的实时空闲时间，方便访客选择新的时段
+  - 取消支持让访客无需联系你就能腾出时间
+  - 当你的 AI 助手无法代表你发送邮件时，错误消息现在会解释原因，而不是显示笼统的失败信息
 </Update>
 
-<Update label="May 20, 2026" description="Smarter AI Drafts">
-  AI-generated replies now understand links and context from the emails you're replying to. When someone sends you a message with URLs, your drafted reply can reference those links naturally instead of ignoring them.
+<Update label="2026年5月13日" description="Outlook 助手与更智能的日程安排">
+  助手现在可原生处理 Outlook 文件夹和类别。如果你使用的是 Microsoft 邮箱账号，可以让助手列出你的文件夹、把会话移入特定文件夹或创建新文件夹——全程无需离开聊天。
 
-  - New user onboarding shows your actual processed emails with their applied labels, so you can see the AI working before you finish setup
-  - Microsoft organizations that require tenant-level app approval can now complete admin consent directly from Inbox Zero
-  - Booking page layout tightened so the calendar and time slots fit cleanly without extra whitespace
+  - 当有人提出会面时，安排回复现在会优先使用你的预约链接，让联系人获得你的空闲时间页面，而不是手动列出时间
+  - 公开预约页面现在在移动端完全自适应——日历、时间段和时区选择器都能适配小屏幕
+  - 规则建议卡片现在会显示「产品更新」这样的描述性标题，而不是笼统的占位符
 </Update>
 
-<Update label="May 18, 2026" description="Reschedule & Cancel Bookings">
-  People who book time with you can now reschedule or cancel directly from their confirmation email — no back-and-forth needed. Both you and your guest receive updated email notifications, and the calendar event is adjusted automatically.
+<Update label="2026年5月12日" description="预约链接">
+  你现在可以直接从 Inbox Zero 创建预约链接。分享一个公开页面，让联系人查看你的空闲时间并预约——日历事件会自动创建，并向双方发送邮件确认。
 
-  - Reschedule page shows your real-time availability so guests can pick a new slot
-  - Cancellation support lets guests free up time without messaging you
-  - When your AI assistant can't send an email on your behalf, the error message now explains why instead of showing a generic failure
+  - 草稿回复现在会参考你对同一发件人的过往回复，生成更符合你语气和风格的回复
+  - 比较回复时会去除签名，让你的草稿不会因服务商附加的签名块而失准
+  - 当 AI 生成的句子边界过长时，草稿格式不再产生合并的段落
 </Update>
 
-<Update label="May 13, 2026" description="Outlook Assistant and Smarter Scheduling">
-  The assistant now works natively with Outlook folders and categories. If you're on a Microsoft email account, you can ask the assistant to list your folders, move threads into specific folders, or create new ones — all without leaving the chat.
+<Update label="2026年5月7日" description="管理聊天记录">
+  你现在可以直接从聊天历史下拉菜单中重命名和删除聊天。悬停任意对话即可显示快捷菜单——把它重命名为好记的名字，或完成后删除。已删除的聊天会被完全抹除，让你的数据保持私密。
 
-  - Scheduling replies now prefer your booking links when someone asks to meet, so contacts get your availability page instead of a manual list of times
-  - The public booking page is now fully responsive on mobile — calendar, time slots, and timezone picker all fit small screens
-  - Rule suggestion cards now display descriptive titles like "Product Updates" instead of generic placeholders
+  - Slack、Teams 和 Telegram 上的通知现在会带有 emoji 前缀，让你一眼分辨类型——跟进、邮件摘要、会议简报等各有自己的图标
+  - 跟进提醒现在会清楚表明你是在等待别人的回复，还是需要自己回复
+  - 通知预览不再包含引用的回复文本，保持简短、便于浏览
 </Update>
 
-<Update label="May 12, 2026" description="Booking Links">
-  You can now create booking links directly from Inbox Zero. Share a public page where contacts can see your availability and book time with you — the calendar event is created automatically with email confirmations for both sides.
+<Update label="2026年5月1日" description="自动加星标">
+  你现在可以为规则添加加星标操作，让重要邮件一到达就被加星标（或在 Outlook 中标记）。把它与现有条件搭配，确保没有任何邮件在你的收件箱中被忽视。
 
-  - Draft replies now reference your past replies to the same sender, producing responses that better match your tone and style
-  - Signatures are stripped from reply comparisons so your drafts aren't thrown off by provider-appended signature blocks
-  - Draft formatting no longer produces collapsed paragraphs when the AI generates run-on sentence boundaries
+  - 批量退订器现在以可视化进度条显示阅读率，并用琥珀色高亮低互动的发件人，让你一眼发现可退订的对象
+  - 针对草稿回复的消息通知现在会包含附件名称，让你在邮件发出前确切知道排队的内容
+  - 安排回复会正确地将你的空闲时间转换为发件人所在时区，让提议的会议时间对双方都合理
 </Update>
 
-<Update label="May 7, 2026" description="Manage Your Chat History">
-  You can now rename and delete chats right from the chat history dropdown. Hover any conversation to reveal a quick menu — rename it to something memorable, or delete it when you're done. Deleted chats are fully redacted so your data stays private.
+<Update label="2026年4月30日" description="更好的跟进提醒">
+  Slack 中的跟进提醒现在会确切显示正在发生什么：谁欠一个回复、上一条消息的片段，以及一个**标记完成**按钮，让你无需离开 Slack 就能解决会话。
 
-  - Notifications on Slack, Teams, and Telegram now open with emoji prefixes so you can tell the type at a glance — follow-ups, digests, meeting briefs, and more each get their own icon
-  - Follow-up reminders now clearly indicate whether you're waiting on someone else's reply or need to respond yourself
-  - Notification previews no longer include quoted reply text, keeping them short and scannable
+  - 从消息模态框发送的已编辑草稿回复现在会立即发出——没有额外的确认步骤
+  - AI 起草回复中的预约链接只在你确实要安排日程时出现，而不是作为通用的行动号召
+  - 回复记忆会生成更具可操作性的写作风格摘要，让草稿更一致地贴合你的语气
 </Update>
 
-<Update label="May 1, 2026" description="Star Messages Automatically">
-  You can now add a star action to your rules so important emails get starred (or flagged in Outlook) the moment they arrive. Pair it with your existing conditions to make sure nothing slips through your inbox unnoticed.
+<Update label="2026年4月28日" description="重新设计的规则编辑器">
+  创建和编辑规则现在更清爽、更快速。规则编辑器采用了精简的扁平布局、可折叠的高级选项，以及虚线的添加行按钮，让你专注于真正重要的条件和操作。
 
-  - The Bulk Unsubscriber now shows read rates as visual progress bars, with low-engagement senders highlighted in amber so you can spot unsubscribe candidates at a glance
-  - Messaging notifications for draft replies now include attachment names, so you know exactly what's queued before a message goes out
-  - Scheduling replies correctly convert your availability into the sender's timezone, so proposed meeting times always make sense for both sides
+  - AI 聊天邮件卡片现在以编号摘要开头，而不是原始主题行，让跨轮次浏览和引用邮件更容易
+  - 助手的测试和历史标签页会按日期分组显示内嵌主题，方便更快浏览
+  - 从助手聊天创建规则现在也走同一个面板，让你在构建规则时保持上下文
 </Update>
 
-<Update label="April 30, 2026" description="Better Follow-Up Nudges">
-  Follow-up reminders in Slack now show you exactly what's going on: who owes a reply, a snippet of the last message, and a **Mark done** button so you can resolve a thread without leaving Slack.
+<Update label="2026年4月22日" description="随处可用的邮件摘要与跟进">
+  你的每日邮件摘要和跟进提醒现在会送达你工作的任何地方——Slack、Teams 或 Telegram。在设置中启用多渠道投递，在你已经打开的（或替代邮件的）应用中接收通知。
 
-  - Edited draft replies sent from the messaging modal now go out immediately — no extra confirmation step
-  - Booking links in AI-drafted replies only appear when you're actually scheduling, not as a generic call to action
-  - Reply memory produces more actionable writing-style summaries, so drafts match your tone more consistently
+  - 更智能的冷邮件检测现在会正确地把来自共同联系人的介绍邮件视为非冷邮件，因此它们不会被过滤掉
 </Update>
 
-<Update label="April 28, 2026" description="Redesigned Rule Editor">
-  Creating and editing rules is now cleaner and faster. The rule editor has a streamlined flat layout, collapsible advanced options, and dashed add-row buttons that keep your focus on the conditions and actions that matter.
+<Update label="2026年4月17日" description="按类别清理收件箱">
+  你的聊天助手现在可以借助发件人类别帮你清理大型收件箱。让它显示类别概览、给你的发件人分类，然后一次性归档整个类别——非常适合批量清理时事通讯、通知或营销邮件。
 
-  - AI chat email cards now lead with a numbered summary instead of raw subject lines, making it easier to scan and reference emails across turns
-  - Assistant test and history tabs show inline subjects grouped by date for quicker browsing
-  - Rule creation from the assistant chat now flows through the same panel, so you stay in context while building rules
+  - Slack、Teams 和 Telegram 中的草稿通知卡片现在会在你从网页回复时折叠为「已处理」状态，让你的渠道保持整洁
+  - Slack 通知目标现在仅限于你所属的私密频道，因此你不会意外地把提醒路由到你看不到的频道
 </Update>
 
-<Update label="April 22, 2026" description="Digests and Follow-Ups Everywhere">
-  Your daily digests and follow-up reminders now go wherever you work — Slack, Teams, or Telegram. Enable multi-channel delivery in settings and get notified in the apps you already have open, alongside (or instead of) email.
+<Update label="2026年4月16日" description="从 Telegram 发送回复">
+  当你的规则起草了一封回复时，Telegram 现在会显示一张带有「发送回复」按钮的交互式卡片——你可以直接从通知中审阅并发送草稿，无需切换到收件箱。
 
-  - Smarter cold email detection now correctly treats introduction emails from mutual contacts as non-cold, so they won't get filtered out
+  - 更智能的回复跟踪：你已经回复过的会话现在会被正确标记为已处理，减少误报的「需要回复」提醒
+  - 修复了回复和转发操作可能丢失发件人信息或会话上下文的问题
 </Update>
 
-<Update label="April 17, 2026" description="Clean Up Your Inbox by Category">
-  Your chat assistant can now help you clean up large inboxes using sender categories. Ask it to show a category overview, categorize your senders, and then archive an entire category at once — perfect for clearing out newsletters, notifications, or marketing emails in bulk.
+<Update label="2026年4月15日" description="聊天中的批量邮件操作">
+  你的聊天助手现在可以处理大规模的批量操作——比如「归档所有超过 3 年的未读邮件」——覆盖整个收件箱。此前它在第一页结果后就停止；现在它会翻遍每一封匹配的邮件，不会遗漏任何东西。
 
-  - Draft notification cards in Slack, Teams, and Telegram now collapse to a "handled" state when you reply from the web, keeping your channels tidy
-  - Slack notification targets are now limited to private channels you belong to, so you won't accidentally route alerts to channels you can't see
+  - Slack、Teams 和 Telegram 中的点赞和对勾 emoji 回复现在会被视为「是」的确认，让你用一个快速回应就能批准操作
+  - OneDrive 中带特殊字符的文件和文件夹名称现在能被正确处理，而不会在上传时失败
+  - 修复了在打开带有多个条件的规则时规则编辑器崩溃的问题
 </Update>
 
-<Update label="April 16, 2026" description="Send Replies from Telegram">
-  When your rules draft a reply, Telegram now shows an interactive card with a "Send reply" button — you can review and send the draft right from the notification without switching to your inbox.
+<Update label="2026年4月14日" description="用表情回应来确认">
+  你现在可以在 Slack、Teams 或 Telegram 中用点赞或对勾 emoji 回应来确认一个操作——不再需要输入「是」。消息机器人会识别肯定性的回应，并像文本确认一样对待它们。
 
-  - Smarter reply tracking: threads where you've already responded are now correctly marked as handled, reducing false "needs reply" alerts
-  - Fixed an issue where reply and forward actions could lose sender information or thread context
+  - 规则编辑器现在会在账号能力加载时保持你已保存的操作可见，选项不再短暂消失
+  - 修复了助手聊天可能返回空白响应而不重试的问题
+  - 像 `*`、`+` 或 `\` 这样带有特殊字符的 Gmail 标签现在又能保存并编辑到规则中了
 </Update>
 
-<Update label="April 15, 2026" description="Bulk Email Actions in Chat">
-  Your chat assistant can now handle large bulk operations — like "archive all unread older than 3 years" — across your entire inbox. Previously it stopped after the first page of results; now it pages through every matching email so nothing gets left behind.
+<Update label="2026年4月7日" description="多目标草稿回复">
+  助手规则现在可以一次性把草稿回复发送到多个消息渠道。在任意草稿回复操作中选择多个 Slack 目标，规则触发时每个渠道都会收到一张交互式卡片——不同团队可以审阅并对同一封邮件采取行动，无需额外设置。
 
-  - Thumbs-up and checkmark emoji replies in Slack, Teams, and Telegram now count as "yes" confirmations, so you can approve actions with a quick reaction
-  - OneDrive file and folder names with special characters are now handled properly instead of failing on upload
-  - Fixed a crash in the rule editor when opening rules with multiple conditions
+  - 按用途区分的通知路由让你为自动化提醒、会议简报和文档归档通知选择不同的渠道
+  - 渠道名称现在会在目标选择器中即时加载，而不是短暂闪出原始 ID
+  - 修复了分栏视图阅读窗格中宽表格或图片邮件的水平溢出问题
 </Update>
 
-<Update label="April 14, 2026" description="React to Confirm">
-  You can now react with a thumbs-up or checkmark emoji in Slack, Teams, or Telegram to confirm an action — no need to type "yes" anymore. The messaging bot recognizes affirmative reactions and treats them just like a text confirmation.
+<Update label="2026年3月31日" description="在一处管理所有渠道">
+  侧边栏中新增了一个「渠道」页面，为你提供一个统一入口来管理所有消息集成——Slack、Teams 和 Telegram。你可以切换哪些规则向每个渠道发送通知、配置会议简报和文档归档，并连接新应用，而无需在多个设置界面之间跳转。
 
-  - Rule editor now keeps your saved actions visible while account capabilities load, so options no longer briefly disappear
-  - Fixed an issue where the assistant chat could return blank responses instead of retrying
-  - Gmail labels with special characters like `*`, `+`, or `\` can now be saved and edited in rules again
+  - 草稿回复规则现在会内嵌显示 Slack 审阅选项，让你无需离开规则对话框就能设置投递
+  - Slack 通知会正确 @提及 Inbox Zero 机器人，让你更容易发现和与自动化消息交互
 </Update>
 
-<Update label="April 7, 2026" description="Multi-Destination Draft Replies">
-  Assistant rules can now send draft replies to multiple messaging channels at once. Pick several Slack destinations on any draft reply action, and each channel gets an interactive card when the rule fires — so different teams can review and act on the same email without extra setup.
+<Update label="2026年3月30日" description="Slack 中的规则通知">
+  你的自动化规则现在可以直接把通知和草稿回复发送到 Slack。在任意草稿或通知操作中选择一个渠道，规则触发时你就会在 Slack 中收到一张交互式卡片——带有发送、编辑、忽略、归档或标记已读按钮。
 
-  - Per-purpose notification routing lets you choose different channels for automation alerts, meeting briefs, and document filing notifications
-  - Channel names now load instantly in the destination picker instead of briefly flashing raw IDs
-  - Fixed horizontal overflow in the split-view reading pane for emails with wide tables or images
+  - 从规则编辑器把草稿回复和通知路由到任意已连接的 Slack 渠道
+  - 交互式 Slack 卡片让你无需切回收件箱就能处理邮件
+  - 引导流程中恢复了草稿偏好步骤，让你可以在设置期间启用草稿回复
 </Update>
 
-<Update label="March 31, 2026" description="Manage All Your Channels in One Place">
-  A new Channels page lives right in your sidebar, giving you a single hub to manage every messaging integration — Slack, Teams, and Telegram. You can toggle which rules send notifications to each channel, configure meeting briefs and document filing, and connect new apps without jumping between settings screens.
+<Update label="2026年3月28日" description="你的标签教会 AI">
+  Inbox Zero 现在会从你整理邮件的方式中学习。当你在 Gmail 中把邮件拖入某个标签或文件夹时，该操作会被作为分类信号采集——帮助 AI 将来为该发件人做出更智能的自动化决策。这对像 Amazon 这样把收据和营销混在一起发送的发件人尤其有用。
 
-  - Draft reply rules now show Slack review options inline, so you can set up delivery without leaving the rule dialog
-  - Slack notifications properly @mention the Inbox Zero bot, making it easier to spot and interact with automated messages
+  - 规则测试结果现在会显示哪些规则因学习到的模式而被跳过，让你确切看到 AI 是如何做出决策的
+  - 助手会在较长的对话中保持规则知识新鲜，让你始终获得最新的建议
+  - 当某个操作未能完成时，助手聊天中会有更清晰的错误消息
 </Update>
 
-<Update label="March 30, 2026" description="Rule Notifications in Slack">
-  Your automation rules can now deliver notifications and draft replies straight to Slack. Pick a channel on any draft or notify action, and when the rule fires you'll get an interactive card right in Slack — with buttons to send, edit, dismiss, archive, or mark as read.
+<Update label="2026年3月22日" description="听起来像你本人的回复">
+  你的助手现在会从你对草稿的编辑中学习你的写作风格。随着时间推移，它会描绘出你的沟通方式，并据此写出契合你语气和偏好的回复。
 
-  - Route draft replies and notifications to any connected Slack channel from the rule editor
-  - Interactive Slack cards let you act on emails without switching back to your inbox
-  - Draft preference step restored in the onboarding flow so you can enable draft replies during setup
+  - 选择是否在附件被自动归档到 Google Drive 时接收确认邮件
+  - 助手现在会在创建代表你发送、回复或转发邮件的自动化规则前请求确认
+  - 修复了通过助手创建规则时在某些 AI 服务商上可能失败的问题
 </Update>
 
-<Update label="March 28, 2026" description="Your Labels Teach the AI">
-  Inbox Zero now learns from how you organize your emails. When you drag a message into a label or folder in Gmail, that action is picked up as a classification signal — helping the AI make smarter automation decisions for that sender in the future. This is especially useful for senders like Amazon that mix receipts and marketing.
+<Update label="2026年3月19日" description="向助手询问附件和日历">
+  你的助手能力大幅提升。你现在可以让它在聊天中直接读取邮件附件——PDF、Word 文档、CSV 等。需要查看日程？助手也能调出你的日历事件。
 
-  - Rule test results now show which rules were skipped due to learned patterns, so you can see exactly how the AI is making decisions
-  - The assistant keeps its rule knowledge fresh across longer conversations, so you always get up-to-date suggestions
-  - Clearer error messages in the assistant chat when an action doesn't go through
+  - 直接从助手聊天中删除或移到回收站
+  - 助手现在只显示它需要的工具，让对话保持聚焦，并按需加载额外能力
+  - 修复了助手有时会给规则操作带来不必要延迟的问题
 </Update>
 
-<Update label="March 22, 2026" description="Replies That Sound Like You">
-  Your assistant now learns your writing style from the edits you make to drafts. Over time, it builds a picture of how you communicate and uses that to write replies that match your tone and preferences.
+<Update label="2026年3月18日" description="会学习你风格的回复">
+  草稿回复现在会从你的编辑中学习。当你在发送前调整建议的回复时，AI 会记住你的偏好——你的语气、关于你的事实以及你处理特定主题的方式——并自动将它们应用到未来的草稿中。
 
-  - Choose whether to receive confirmation emails when attachments are automatically filed to Google Drive
-  - The assistant now asks for confirmation before creating automation rules that send, reply, or forward emails on your behalf
-  - Fixed an issue where creating rules through the assistant could fail with certain AI providers
+  - 当你让助手处理特定发件人或域名时，规则创建更准确
 </Update>
 
-<Update label="March 19, 2026" description="Ask Your Assistant About Attachments and Calendar">
-  Your assistant just got a lot more capable. You can now ask it to read email attachments — PDFs, Word docs, CSVs, and more — right inside the chat. Need to check your schedule? The assistant can pull up your calendar events too.
+<Update label="2026年3月17日" description="带 Drive 附件的 AI 草稿">
+  你的自动化规则现在可以从 Google Drive 或 OneDrive 拉取文件，并将它们附加到 AI 生成的回复中。批准特定文件或文件夹作为附件来源，AI 在起草回复时就会挑选最相关的文档附上。
 
-  - Delete or trash emails directly from the assistant chat
-  - The assistant now shows only the tools it needs, keeping conversations focused and loading additional capabilities on demand
-  - Fixed an issue where the assistant would sometimes add unwanted delays to rule actions
+  - 新增设置，用于控制 AI 草稿使用隐藏的链接文本还是显示可见的 URL，并会自动检测链接目标不匹配的情况
+  - 规则编辑器中提供 Drive 附件选择器，用于选择批准的来源
 </Update>
 
-<Update label="March 18, 2026" description="Replies That Learn Your Style">
-  Draft replies now learn from your edits. When you adjust a suggested reply before sending, the AI remembers your preferences — your tone, facts about you, and how you handle specific topics — and applies them to future drafts automatically.
+<Update label="2026年3月15日" description="命令行自动化">
+  你现在可以通过新的 Inbox Zero CLI 从终端管理收件箱。通过 npm 安装它，即可自动化规则、查看统计并控制你的设置，而无需打开浏览器。
 
-  - More accurate rule creation when you ask the assistant to handle specific senders or domains
+  - AI 回复草稿的依据更充分——无支持的细节不再被当作事实呈现
+  - 规则编辑器中的抄送和密送字段并排分组
+  - 旧套餐订阅者会在账单设置中看到清晰的价格提示
 </Update>
 
-<Update label="March 17, 2026" description="AI Drafts with Drive Attachments">
-  Your automation rules can now pull files from Google Drive or OneDrive and attach them to AI-generated replies. Approve specific files or folders as attachment sources, and the AI will pick the most relevant documents to include when drafting a response.
+<Update label="2026年3月14日" description="用规则 API 实现自动化">
+  你现在可以通过 REST API 管理自动化规则——以编程方式创建、更新和删除规则。API 密钥可以限定到特定收件箱并设置过期时间，让你保持掌控。
 
-  - New setting to control whether AI drafts use hidden link text or show visible URLs, with automatic detection of mismatched link destinations
-  - Drive attachment picker available in the rule editor for selecting approved sources
+  - 设置中提供账号范围的 API 密钥，并带有按收件箱划分的权限
+  - 当你完成某个步骤时，设置清单会立即响应
+  - 连接缺少权限的 Microsoft 账号时会有更清晰的错误消息
 </Update>
 
-<Update label="March 15, 2026" description="Command-Line Automation">
-  You can now manage your inbox from the terminal with the new Inbox Zero CLI. Install it via npm to automate rules, check stats, and control your setup without opening the browser.
+<Update label="2026年3月13日" description="助手保持同步">
+  AI 助手现在会跟踪你直接在收件箱中执行的操作——归档或将邮件标记为已读会更新聊天，使其不再建议你已完成的工作。
 
-  - AI reply drafts are better grounded — unsupported details are no longer presented as facts
-  - CC and BCC fields grouped side by side in the rule editor
-  - Legacy plan subscribers see a clear pricing notice in billing settings
+  - 草稿回复中保留可点击的链接
+  - 以私信而非频道帖子的形式接收 Slack 签到
+  - 带有个人语气的营销邮件不再被误分类为对话
 </Update>
 
-<Update label="March 14, 2026" description="Automate with the Rules API">
-  You can now manage your automation rules through a REST API — create, update, and delete rules programmatically. API keys can be scoped to a specific inbox and set to expire, so you stay in control.
+<Update label="2026年3月12日" description="更丰富的聊天预览">
+  助手聊天现在会在对话中直接渲染完整的邮件预览——标题、正文和附件——让你无需切换到收件箱就能阅读和处理邮件。
 
-  - Account-scoped API keys with per-inbox permissions in your settings
-  - Setup checklist responds instantly when you complete a step
-  - Clearer error messages when connecting Microsoft accounts with missing permissions
+  - 重新设计的聊天中规则卡片，带有更清晰的「当/则」布局和彩色操作徽章
+  - 组织管理员可以直接从成员页面更改成员角色
+  - 深色模式和账号设置合并到主设置页面
 </Update>
 
-<Update label="March 13, 2026" description="Assistant Stays in Sync">
-  The AI assistant now tracks actions you take directly in your inbox — archiving or marking emails as read updates the chat so it won't suggest work you've already done.
+<Update label="2026年3月11日" description="自动归档每个附件">
+  自动归档现在会处理所有附件类型——图片、电子表格、压缩包等——而不仅是 PDF 和文档。无法提取文本的文件会根据其文件名和邮件元数据进行归档。
 
-  - Clickable links preserved in draft replies
-  - Receive Slack check-ins as a DM instead of a channel post
-  - Marketing emails with personal tone no longer misclassified as conversations
+  - 一键将你的标签规则同步到 Inbox Zero Tabs 浏览器扩展
+  - AI 聊天默认搜索未读邮件，让你更快整理
+  - 聊天回复现在会以邮件会话的语言起草，而不是你的聊天语言
+  - 多账号用户会在 Telegram 和 Teams 的回复中看到哪个账号处于活跃状态
 </Update>
 
-<Update label="March 12, 2026" description="Richer Chat Previews">
-  The assistant chat now renders full email previews — headers, body, and attachments — right in the conversation, so you can read and act on emails without switching to your inbox.
+<Update label="2026年3月10日" description="直接在聊天中处理邮件">
+  AI 助手现在会在整理收件箱时显示交互式邮件卡片。你可以预览、归档和回复邮件而无需离开对话——当助手起草邮件时，你可以在发送前内嵌编辑它。
 
-  - Redesigned rule cards in chat with a clearer WHEN/THEN layout and colored action badges
-  - Organization admins can change member roles directly from the members page
-  - Dark mode and account settings consolidated into the main settings page
+  - 聊天中邮件列表上的批量归档和标记已读控件
+  - 当你在邮件客户端中把邮件标记为垃圾时，冷邮件过滤器会从中学习
 </Update>
 
-<Update label="March 11, 2026" description="Auto-File Every Attachment">
-  Auto-filing now handles all attachment types — images, spreadsheets, archives, and more — not just PDFs and documents. Files without extractable text are filed based on their filename and email metadata.
+<Update label="2026年3月5日" description="随处聊天">
+  你的 AI 助手现在可以在 **Telegram 和 Slack** 上使用——而不仅是网页应用。从你已经在用的平台收发消息、分享图片并使用斜杠命令。
 
-  - Sync your label rules to the Inbox Zero Tabs browser extension with one click
-  - AI chat defaults to searching unread emails so you can triage faster
-  - Chat replies are now drafted in the email thread's language, not your chat language
-  - Multi-account users see which account is active in Telegram and Teams responses
+  - Slack、Telegram 和网页聊天中的图片附件
+  - Slack 的斜杠命令
+  - 在从消息平台发送前预览草稿
+  - 直接从助手聊天中退订
 </Update>
 
-<Update label="March 10, 2026" description="Act on Emails Right from Chat">
-  The AI assistant now shows interactive email cards when triaging your inbox. You can preview, archive, and reply to emails without leaving the conversation — and when the assistant drafts an email, you can edit it inline before sending.
+<Update label="2026年3月3日" description="草稿置信度与更智能的日程安排">
+  此前，助手会为每一封需要回复的邮件起草回复。现在你可以设置置信度阈值——助手只会在足够有把握时才起草回复，这样你就不必审阅低质量的草稿。此外，日程建议借助日历链接和格式化时间变得更智能。
 
-  - Bulk archive and mark-read controls on email lists in chat
-  - Cold email filter learns when you mark messages as junk in your mail client
-</Update>
-
-<Update label="March 5, 2026" description="Chat Everywhere">
-  Your AI assistant now works across **Telegram and Slack** — not just the web app. Send and receive messages, share images, and use slash commands from whichever platform you already use.
-
-  - Image attachments in Slack, Telegram, and web chat
-  - Slash commands for Slack
-  - Preview drafts before they send from messaging platforms
-  - Unsubscribe directly from assistant chat
-</Update>
-
-<Update label="March 3, 2026" description="Draft Confidence & Smarter Scheduling">
-  Previously, the assistant would draft a reply for every message that needed one. Now you can set a confidence threshold — the assistant will only draft replies when it's confident enough, so you're not reviewing low-quality drafts. Plus, scheduling suggestions are smarter with calendar links and formatted times.
-
-  - Draft confidence presets so you control when the assistant auto-drafts
-  - Calendar-aware scheduling with direct links
-  - Reorganized assistant settings
+  - 草稿置信度预设，让你控制助手何时自动起草
+  - 感知日历的日程安排，带有直接链接
+  - 重新整理后的助手设置
 </Update>

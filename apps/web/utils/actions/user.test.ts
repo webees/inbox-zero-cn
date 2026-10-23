@@ -183,7 +183,7 @@ describe("deleteEmailAccountAction", () => {
       emailAccountId: "primary-email-account",
     });
 
-    expect(result?.serverError).toBe("Email account already changed");
+    expect(result?.serverError).toBe("邮箱账号已更改");
     expect(aliasPosthogUser).not.toHaveBeenCalled();
     expect(updateAccountSeats).not.toHaveBeenCalled();
   });
@@ -201,7 +201,7 @@ describe("deleteEmailAccountAction", () => {
       emailAccountId: "alternate-email-account",
     });
 
-    expect(result?.serverError).toBe("Email account already changed");
+    expect(result?.serverError).toBe("邮箱账号已更改");
     expect(prisma.emailAccount.delete).toHaveBeenCalledWith({
       where: {
         id: "alternate-email-account",
@@ -348,7 +348,7 @@ describe("deleteEmailAccountAction", () => {
       emailAccountId: "secondary-account",
     });
 
-    expect(result?.serverError).toBe("Email account already changed");
+    expect(result?.serverError).toBe("邮箱账号已更改");
     expect(clearLastEmailAccountCookie).not.toHaveBeenCalled();
   });
 
@@ -398,7 +398,7 @@ describe("deleteEmailAccountAction", () => {
     });
 
     expect(result?.serverError).toBe(
-      "We couldn't make the remaining email account primary because that email is already in use.",
+      "由于该邮箱已被使用，我们无法将剩余的邮箱账号设为主账号。",
     );
     expect(updateAccountSeats).not.toHaveBeenCalled();
   });
@@ -421,7 +421,7 @@ describe("deleteEmailAccountAction", () => {
     });
 
     expect(result?.serverError).toBe(
-      "We couldn't delete this email account because linked data still exists. Please contact support.",
+      "由于仍存在关联数据，我们无法删除此邮箱账号。请联系支持。",
     );
     expect(updateAccountSeats).not.toHaveBeenCalled();
   });
@@ -445,9 +445,7 @@ describe("deleteEmailAccountAction", () => {
       emailAccountId: "primary-email-account",
     });
 
-    expect(result?.serverError).toBe(
-      "Transfer organization ownership before deleting this email account.",
-    );
+    expect(result?.serverError).toBe("删除此邮箱账号前，请先转移组织所有权。");
     expect(updateAccountSeats).not.toHaveBeenCalled();
   });
 
@@ -467,7 +465,7 @@ describe("deleteEmailAccountAction", () => {
     });
 
     expect(result?.serverError).toBe(
-      "We couldn't delete this email account. Please contact support if this keeps happening.",
+      "我们无法删除此邮箱账号。如果问题持续出现，请联系支持。",
     );
     expect(updateAccountSeats).not.toHaveBeenCalled();
   });
@@ -491,9 +489,7 @@ describe("deleteEmailAccountAction", () => {
       emailAccountId: "primary-email-account",
     });
 
-    expect(result?.serverError).toBe(
-      "Transfer organization ownership before deleting this email account.",
-    );
+    expect(result?.serverError).toBe("删除此邮箱账号前，请先转移组织所有权。");
     expect(prisma.emailAccount.delete).not.toHaveBeenCalled();
     expect(prisma.account.delete).not.toHaveBeenCalled();
     expect(updateAccountSeats).not.toHaveBeenCalled();
@@ -603,9 +599,7 @@ describe("deleteEmailAccountAction", () => {
       emailAccountId: "primary-email-account",
     });
 
-    expect(result?.serverError).toBe(
-      "Transfer organization ownership before deleting this email account.",
-    );
+    expect(result?.serverError).toBe("删除此邮箱账号前，请先转移组织所有权。");
     expect(updateAccountSeats).not.toHaveBeenCalled();
   });
 });
@@ -637,9 +631,7 @@ describe("deleteAccountAction", () => {
 
     const result = await deleteAccountAction();
 
-    expect(result?.serverError).toBe(
-      "Transfer organization ownership before deleting your account.",
-    );
+    expect(result?.serverError).toBe("删除你的账号前，请先转移组织所有权。");
     expect(betterAuthConfig.api.signOut).not.toHaveBeenCalled();
     expect(deleteUser).not.toHaveBeenCalled();
   });

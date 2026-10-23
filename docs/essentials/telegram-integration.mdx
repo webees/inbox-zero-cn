@@ -1,65 +1,65 @@
 ---
-title: 'Telegram Integration'
-description: 'Chat with your assistant and receive Inbox Zero updates in Telegram.'
+title: 'Telegram 集成'
+description: '与你的助手聊天，并在 Telegram 中接收 Inbox Zero 更新。'
 icon: 'paper-plane'
 ---
 
-Connect Telegram from the unified **Channels** page. The integration uses a direct message with the Inbox Zero bot for chat and feature delivery.
+从统一的**渠道**页面连接 Telegram。该集成使用与 Inbox Zero 机器人的私信进行聊天和功能投递。
 
 <iframe
   src="https://player.mux.com/QbtTl00g2Gjx3JhM016Xkei0202zW4qpsF302rp01sRQHaf028?metadata-video-title=Slack%20and%20Telegram%20walkthrough&accent-color=%233b82f6"
-  title="Slack and Telegram walkthrough"
+  title="Slack 和 Telegram 操作演示"
   style={{ width: "100%", border: "none", aspectRatio: "16/9" }}
   loading="lazy"
   allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
   allowFullScreen
 ></iframe>
 
-## Connect Telegram
+## 连接 Telegram
 
-1. Open **Channels** in the left sidebar.
-2. Find Telegram and click **Connect**.
-3. Inbox Zero generates a one-time `/connect` command.
-4. Click **Open Telegram bot** in the dialog.
-5. In a new chat with the bot, press **Start**. The bot replies with a welcome message.
-6. Send the complete `/connect` command in the direct message to link your account.
+1. 打开左侧边栏中的**渠道**。
+2. 找到 Telegram 并点击**连接**。
+3. Inbox Zero 会生成一个一次性的 `/connect` 命令。
+4. 在对话框中点击**打开 Telegram 机器人**。
+5. 在与机器人的新聊天中，按**开始**。机器人会回复一条欢迎消息。
+6. 在私信中发送完整的 `/connect` 命令以关联你的账号。
 
-Once connected, Telegram appears on the Channels page with a **Connected** badge.
+连接后，Telegram 会带有**已连接**徽章出现在渠道页面上。
 
-## Chat with the Assistant
+## 与助手聊天
 
-The Telegram bot provides the same core [AI Chat](/essentials/ai-chat) workflow. You can:
+Telegram 机器人提供相同的核心 [AI 聊天](/essentials/ai-chat)工作流。你可以：
 
-- Search and summarize email.
-- Manage inbox messages.
-- Draft messages and replies for review.
-- Create and update automation rules.
-- Ask what needs your attention.
+- 搜索和总结邮件。
+- 管理收件箱邮件。
+- 起草供审阅的消息和回复。
+- 创建和更新自动化规则。
+- 询问哪些内容需要你处理。
 
-If more than one email account is linked, use `/switch` to list them and `/switch <number>` to change the active account.
+如果关联了多个邮箱账号，请使用 `/switch` 列出它们，并使用 `/switch <number>` 切换当前活动账号。
 
-## Commands
+## 命令
 
-- `/connect <code>`: Link an Inbox Zero email account.
-- `/switch`: List linked accounts.
-- `/summary`: Summarize what needs attention today.
-- `/draftreply`: Draft a response to your most urgent unread email.
-- `/followups`: Show emails that may need a follow-up this week.
-- `/cleanup`: Start an inbox cleanup conversation.
-- `/help`: Show available commands.
+- `/connect <code>`：关联一个 Inbox Zero 邮箱账号。
+- `/switch`：列出已关联的账号。
+- `/summary`：总结今天需要处理的内容。
+- `/draftreply`：为你最紧急的未读邮件起草一封回复。
+- `/followups`：显示本周可能需要跟进的邮件。
+- `/cleanup`：开始一次收件箱清理对话。
+- `/help`：显示可用命令。
 
-## Feature Delivery
+## 功能投递
 
-From the connected Telegram section on **Channels**, you can configure:
+从**渠道**上已连接的 Telegram 部分，你可以配置：
 
-- Rule notifications or draft replies for review
-- Meeting briefs
-- Follow-up reminders and scheduled check-ins
-- Digests
-- Document-filing alerts
+- 规则通知或供审阅的草稿回复
+- 会议简报
+- 跟进提醒和定期的定期检查
+- 摘要
+- 文档归档提醒
 
-Telegram delivery goes to the linked direct-message destination; there is no separate channel picker.
+Telegram 投递会发送到已链接的私信目的地；没有单独的频道选择器。
 
-## Disconnect Telegram
+## 断开 Telegram
 
-Open **Channels**, use the menu next to Telegram, and choose **Disconnect Telegram**. This stops Telegram chat access and all configured deliveries.
+打开**渠道**，使用 Telegram 旁的菜单，选择**断开 Telegram**。这会停止 Telegram 聊天访问和所有已配置的投递。

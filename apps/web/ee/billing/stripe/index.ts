@@ -5,7 +5,7 @@ import type { Logger } from "@/utils/logger";
 let stripe: Stripe | null = null;
 
 export const getStripe = () => {
-  if (!env.STRIPE_SECRET_KEY) throw new Error("STRIPE_SECRET_KEY is not set");
+  if (!env.STRIPE_SECRET_KEY) throw new Error("未设置 STRIPE_SECRET_KEY");
   if (!stripe) {
     const apiBaseUrl = getEmulatorApiBaseUrl();
 
@@ -27,11 +27,10 @@ export const getStripe = () => {
 };
 
 /**
- * Resolves the local Stripe emulator override. This client carries
- * STRIPE_SECRET_KEY on every request, so the override is restricted to a
- * loopback address: a misconfigured or injected value must not be able to send
- * a live key to another host. Production runs of the browser suite also set
- * NODE_ENV=production, so the environment cannot be the discriminator here.
+ * 解析本地 Stripe 模拟器覆盖配置。该客户端会在每个请求中携带
+ * STRIPE_SECRET_KEY，因此覆盖配置被限制为回环地址：配置错误或被注入的值
+ * 绝不能把线上密钥发送到其他主机。浏览器测试套件的生产运行也会设置
+ * NODE_ENV=production，因此不能以环境作为这里的区分依据。
  */
 function getEmulatorApiBaseUrl() {
   if (!env.STRIPE_API_BASE_URL) return null;

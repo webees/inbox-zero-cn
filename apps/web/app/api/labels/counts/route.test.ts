@@ -100,7 +100,7 @@ describe("GET /api/labels/counts", () => {
     ]);
     expect(body.counts[0]).toEqual({
       id: "INBOX",
-      name: "Inbox",
+      name: "收件箱",
       kind: "system",
       total: 10,
       unread: 3,
@@ -138,7 +138,7 @@ describe("GET /api/labels/counts", () => {
 
     expect(secondBody.counts[0]).toEqual({
       id: "INBOX",
-      name: "Inbox",
+      name: "收件箱",
       kind: "system",
       total: 8,
       unread: 1,

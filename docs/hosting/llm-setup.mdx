@@ -1,24 +1,24 @@
 ---
 title: 'LLM'
-description: 'Configure your AI provider via environment variables'
+description: '通过环境变量配置你的 AI 服务商'
 ---
 
-For self-hosting, configure AI through environment variables in `apps/web/.env`.
-If you used `inbox-zero setup`, many of these values are configured automatically.
+对于自托管，请在 `apps/web/.env` 中通过环境变量配置 AI。
+如果你使用了 `inbox-zero setup`，其中许多值会自动配置好。
 
-Start here:
+从这里开始：
 
-- [Environment Variables](/hosting/environment-variables) (full reference)
+- [环境变量](/hosting/environment-variables)（完整参考）
 
 <Warning>
-  API keys require billing credits on the provider's platform. A ChatGPT Plus or Claude Pro subscription does **not** include API access.
+  API 密钥需要在服务商平台上拥有计费额度。ChatGPT Plus 或 Claude Pro 订阅**不**包含 API 访问权限。
 </Warning>
 
-## Providers
+## 服务商
 
-Use one of these provider values before the colon in `*_LLMS` entries:
+在 `*_LLMS` 条目中冒号前使用以下服务商值之一：
 
-| Provider | Value |
+| 服务商 | 值 |
 |---|---|
 | [OpenAI](https://platform.openai.com/docs/overview) | `openai` |
 | [Anthropic](https://docs.anthropic.com/en/docs/welcome) | `anthropic` |
@@ -32,23 +32,23 @@ Use one of these provider values before the colon in `*_LLMS` entries:
 | [Vercel AI Gateway](https://ai-sdk.dev/providers/ai-sdk-providers/ai-gateway) | `aigateway` |
 | [AWS Bedrock](https://ai-sdk.dev/providers/ai-sdk-providers/amazon-bedrock) | `bedrock` |
 | [Ollama](https://ollama.com/) | `ollama` |
-| OpenAI-compatible (LM Studio, vLLM, LiteLLM, etc.) | `openai-compatible` |
-| Codex CLI (experimental, self-host only) | `codex-cli` |
-| Claude Code (experimental, self-host only) | `claude-code` |
+| 兼容 OpenAI（LM Studio、vLLM、LiteLLM 等） | `openai-compatible` |
+| Codex CLI（实验性，仅自托管） | `codex-cli` |
+| Claude Code（实验性，仅自托管） | `claude-code` |
 
-## Tiers
+## 层级
 
-For most self-hosted setups, configure the default tier and optionally override cheaper or role-specific tiers:
+对于大多数自托管设置，配置默认层级，并可选地覆盖更便宜或特定角色的层级：
 
-- `DEFAULT_LLMS` (required): normal AI tasks.
-- `ECONOMY_LLMS` (optional): lower-cost model for high-volume tasks. If unset, it falls back to default.
-- `CHAT_LLMS` (optional): assistant chat. If unset, it falls back to default.
-- `DRAFT_LLMS` (optional): reply drafting. If unset, it falls back to default.
-- `NANO_LLMS` (optional): lightweight classification and extraction. If unset, it falls back to economy/default behavior.
+- `DEFAULT_LLMS`（必需）：常规 AI 任务。
+- `ECONOMY_LLMS`（可选）：用于高量任务的低成本模型。若未设置，则回退到默认。
+- `CHAT_LLMS`（可选）：助手聊天。若未设置，则回退到默认。
+- `DRAFT_LLMS`（可选）：回复起草。若未设置，则回退到默认。
+- `NANO_LLMS`（可选）：轻量级分类和提取。若未设置，则回退到 economy/默认行为。
 
-Each value is an ordered comma-separated list in `provider:model` format. The first valid entry is the primary model. Later valid entries are ordered fallbacks. Model names can contain colons; only the first colon separates the provider from the model.
+每个值都是一个有序的、逗号分隔的列表，格式为 `provider:model`。第一个有效条目是主模型。后续有效条目是有序的回退。模型名可以包含冒号；只有第一个冒号用于分隔服务商和模型。
 
-Minimal example:
+最小示例：
 
 ```env
 DEFAULT_LLMS=openai:gpt-6-luna
@@ -56,47 +56,46 @@ ECONOMY_LLMS=openai:gpt-6-luna
 LLM_API_KEY=sk-...
 ```
 
-Provider-specific keys (for example `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`) also work. See [Environment Variables](/hosting/environment-variables) for the full list.
+服务商专属的密钥（例如 `OPENAI_API_KEY`、`ANTHROPIC_API_KEY`）也可以使用。完整列表请参阅[环境变量](/hosting/environment-variables)。
 
-## App Settings
+## 应用设置
 
-The app also has **Settings → AI** for per-user keys/models, but self-hosted deployments usually keep configuration at the environment-variable level.
+应用还有**设置 → AI**，用于按用户配置密钥/模型，但自托管部署通常把配置保持在环境变量层面。
 
-## Sensitive Data Protection
+## 敏感数据保护
 
-Self-hosted deployments can choose how LLM requests handle sensitive data matches before they are sent to an AI provider. The current scanner targets likely credentials/tokens and payment-card-like numbers; it is not a full DLP or PHI classifier.
+自托管部署可以选择 LLM 请求在发送给 AI 服务商之前如何处理敏感数据匹配。当前的扫描器针对可能的凭据/令牌和类似支付卡号的内容；它不是完整的 DLP 或 PHI 分类器。
 
 ```env
 SENSITIVE_DATA_POLICY_DEFAULT=ALLOW # ALLOW, REDACT, or BLOCK
 NEXT_PUBLIC_SENSITIVE_DATA_POLICY_LOCKED=false
 ```
 
-`ALLOW` preserves the default behavior. `REDACT` replaces matched values before the LLM request. `BLOCK` stops the request when a match is found. Leave `NEXT_PUBLIC_SENSITIVE_DATA_POLICY_LOCKED=false` to let users choose per account in Settings, or set it to `true` to enforce the deployment default for all accounts and hide the setting from the UI.
+`ALLOW` 保留默认行为。`REDACT` 在 LLM 请求前替换匹配到的值。`BLOCK` 在发现匹配时停止请求。把 `NEXT_PUBLIC_SENSITIVE_DATA_POLICY_LOCKED=false` 保持为允许用户在每个账号的设置中选择，或设为 `true` 以为所有账号强制采用部署默认值，并在 UI 中隐藏该设置。
 
-## Decision Models
+## 决策模型
 
-Some classification steps (rule selection, sender categorization, thread status) can use a decision model instead of an LLM. Cold email detection uses the LLM unless `DECISION_MODEL_COLD_EMAIL_ENABLED=true`. Decision models answer typed questions about structured state and return calibrated probabilities. They run through the AI SDK's decision model interface, so switching models is a config change:
+一些分类步骤（规则选择、冷邮件检测、发件人分类、会话状态）可以使用决策模型而非 LLM。决策模型回答关于结构化状态的类型化问题，并返回校准过的概率。它们通过 AI SDK 的决策模型接口运行，因此切换模型只是改配置：
 
 ```env
 DEFAULT_DECISION_MODEL=openrouter:typesafe/jev-1.13 # or openrouter:cloudflare/clef
 DEFAULT_DECISION_MODEL_ENABLED=false # true: on for users who haven't chosen; false: users opt in
-DECISION_MODEL_COLD_EMAIL_ENABLED=false # true: the decision model also detects cold email
 ```
 
-Use the same `provider:model` format as the `*_LLMS` variables. Supported providers are `openrouter`, `aigateway`, `openai`, and `typesafe`. Keys resolve the same way too: the provider's key (`OPENROUTER_API_KEY`, `AI_GATEWAY_API_KEY`, or `OPENAI_API_KEY`), falling back to `LLM_API_KEY`. Direct TypeSafe always needs `TYPESAFE_API_KEY`.
+使用与 `*_LLMS` 变量相同的 `provider:model` 格式。支持的服务商有 `openrouter`、`aigateway`、`openai` 和 `typesafe`。密钥的解析方式也相同：服务商的密钥（`OPENROUTER_API_KEY`、`AI_GATEWAY_API_KEY` 或 `OPENAI_API_KEY`），回退到 `LLM_API_KEY`。直接使用 TypeSafe 始终需要 `TYPESAFE_API_KEY`。
 
-The decision model receives the same email content as the LLM it replaces, with the same sensitive data policy applied. Users who set their own AI key are not enrolled by default. If a decision call fails, that step falls back to the configured LLM.
+决策模型接收与其替代的 LLM 相同的邮件内容，并应用相同的敏感数据政策。设置了自己 AI 密钥的用户默认不会纳入。如果决策调用失败，该步骤会回退到已配置的 LLM。
 
-## Provider-specific details
+## 服务商专属细节
 
-- `azure-foundry` requires `AZURE_FOUNDRY_API_KEY` and `AZURE_FOUNDRY_BASE_URL`. Use the deployment name as the model portion of the `azure-foundry:<deployment>` entry.
-- `cerebras` uses `CEREBRAS_API_KEY` (or `LLM_API_KEY`) against `https://api.cerebras.ai/v1`. Example chat model: `CHAT_LLMS=cerebras:qwen-3.8-27b`.
-- `openai-compatible` also requires `OPENAI_COMPATIBLE_BASE_URL`. Set `OPENAI_COMPATIBLE_AUTH_HEADER=api-key` when the server expects an `api-key` header instead of bearer authorization. This can point at Cerebras (`https://api.cerebras.ai/v1`) if you do not want the dedicated provider, but then you cannot also use a local OpenAI-compatible server.
-- `ollama` can use `OLLAMA_BASE_URL` and `OLLAMA_MODEL`.
+- `azure-foundry` 需要 `AZURE_FOUNDRY_API_KEY` 和 `AZURE_FOUNDRY_BASE_URL`。把部署名称用作 `azure-foundry:<deployment>` 条目中的模型部分。
+- `cerebras` 使用 `CEREBRAS_API_KEY`（或 `LLM_API_KEY`）访问 `https://api.cerebras.ai/v1`。示例聊天模型：`CHAT_LLMS=cerebras:qwen-3.8-27b`。
+- `openai-compatible` 还需要 `OPENAI_COMPATIBLE_BASE_URL`。当服务器期望 `api-key` 头而不是 bearer 授权时，设置 `OPENAI_COMPATIBLE_AUTH_HEADER=api-key`。如果你不想使用专用服务商，这也可以指向 Cerebras（`https://api.cerebras.ai/v1`），但那样你就不能同时使用本地兼容 OpenAI 的服务器。
+- `ollama` 可以使用 `OLLAMA_BASE_URL` 和 `OLLAMA_MODEL`。
 
-## Fallbacks
+## 回退
 
-Add fallbacks by adding more entries to the same role list:
+通过向同一个角色列表添加更多条目来添加回退：
 
 ```env
 DEFAULT_LLMS=openrouter:anthropic/claude-sonnet-5,openai:gpt-6-luna
@@ -104,23 +103,19 @@ ECONOMY_LLMS=openrouter:openai/gpt-6-luna,google:gemini-3.1-flash-lite
 CHAT_LLMS=openrouter:anthropic/claude-haiku-4.5,openai:gpt-6-luna
 ```
 
-Unsupported providers, entries without configured credentials, entries without models, and duplicates are skipped with warnings.
+不支持的服务商、没有配置凭据的条目、没有模型的条目以及重复项都会被跳过并给出警告。
 
-### Legacy variables
+### 旧版变量
 
-The old `DEFAULT_LLM_PROVIDER` / `DEFAULT_LLM_MODEL`, role-specific `*_LLM_PROVIDER` / `*_LLM_MODEL`, and `*_LLM_FALLBACKS` variables are deprecated but still supported for existing deployments. At startup, they are converted into the corresponding `*_LLMS` value. New deployments and CLI-generated env files should use `*_LLMS`.
+旧的 `DEFAULT_LLM_PROVIDER` / `DEFAULT_LLM_MODEL`、角色专属的 `*_LLM_PROVIDER` / `*_LLM_MODEL` 以及 `*_LLM_FALLBACKS` 变量已弃用，但对现有部署仍然支持。启动时，它们会被转换为对应的 `*_LLMS` 值。新部署和 CLI 生成的环境文件应使用 `*_LLMS`。
 
-### CLI LLM providers
+### CLI LLM 服务商
 
-`codex-cli` and `claude-code` are experimental self-host options. They use
-third-party community AI SDK provider packages that spawn local CLI tools, so
-they are disabled unless `CLI_LLM_ENABLED=true`.
+`codex-cli` 和 `claude-code` 是实验性的自托管选项。它们使用会启动本地 CLI 工具的第三方社区 AI SDK 服务商包，因此除非 `CLI_LLM_ENABLED=true`，否则它们是禁用的。
 
-Use them only on trusted self-hosted deployments. Review the provider package
-source, pin exact package versions, and make sure you comply with the relevant
-OpenAI or Anthropic terms for your authentication method.
+请仅在可信的自托管部署上使用它们。审阅服务商包的源代码、锁定确切的包版本，并确保你的认证方式符合相关 OpenAI 或 Anthropic 条款。
 
-Codex example:
+Codex 示例：
 
 ```bash
 cd apps/web
@@ -135,7 +130,7 @@ DEFAULT_LLMS=codex-cli:gpt-5.3-codex
 CODEX_CLI_ALLOW_NPX=false
 ```
 
-Claude Code example:
+Claude Code 示例：
 
 ```bash
 cd apps/web

@@ -10,15 +10,15 @@ import {
 // In dev: hello+ai-test@example.com
 const FILEBOT_SUFFIX = `ai${env.NODE_ENV === "development" ? "-test" : ""}`;
 const FILEBOT_DISPLAY_NAME = "Inbox Zero Assistant";
-// Subjects written by utils/drive/filing-notifications.ts. Matched as a fallback
-// because some providers drop the Reply-To and From display name on replies.
+// 由 utils/drive/filing-notifications.ts 生成的主题。作为回退匹配，
+// 因为某些服务商会在回复时丢弃 Reply-To 和 From 显示名。保留英文变体以识别汉化前发送的旧通知。
 const FILEBOT_NOTIFICATION_SUBJECT =
-  /^(?:re:\s*)*(?:✓ Filed |📄 Where should I file |📄 Filing update for )/i;
+  /^(?:re:\s*)*(?:✓ Filed |✓ 已归档 |📄 Where should I file |📄 应该把 |📄 Filing update for |📄 归档更新：)/i;
 
 /**
- * Check if any recipient in the email is a filebot reply address.
+ * 检查邮件中是否有任一收件人是 filebot 回复地址。
  * Pattern: user+ai@domain.com (or user+ai-test@domain.com in dev)
- * Handles multiple recipients in the To field (comma-separated).
+ * 处理 To 字段中的多个收件人（以逗号分隔）。
  */
 export function isFilebotEmail({
   userEmail,
@@ -34,7 +34,7 @@ export function isFilebotEmail({
 
   const pattern = buildFilebotPattern(localPart, domain);
 
-  // Split by comma to handle multiple recipients in To field
+  // 按逗号拆分，以处理 To 字段中的多个收件人
   const recipients = emailToCheck.split(",");
 
   for (const recipient of recipients) {
@@ -48,13 +48,13 @@ export function isFilebotEmail({
 }
 
 /**
- * Generate a filebot reply-to email address.
+ * 生成 filebot 的 reply-to 邮箱地址。
  * Returns: user+filebot@domain.com
  */
 export function getFilebotEmail({ userEmail }: { userEmail: string }): string {
   const [localPart, domain] = userEmail.split("@");
   if (!localPart || !domain) {
-    throw new Error("Invalid email format");
+    throw new Error("无效的邮箱格式");
   }
   return `${localPart}+${FILEBOT_SUFFIX}@${domain}`;
 }
@@ -75,9 +75,9 @@ export function getFilebotFrom({ userEmail }: { userEmail: string }): string {
 }
 
 /**
- * Check whether an outbound message is a filebot notification email.
- * These are internal assistant-generated messages and should not be treated as
- * user-authored outbound replies for conversation status tracking.
+ * 检查某封外发邮件是否为 filebot 通知邮件。
+ * 这些是助手内部生成的消息，不应被视为
+ * 用于会话状态跟踪的用户外发回复。
  */
 export function isFilebotNotificationMessage({
   userEmail,
@@ -114,9 +114,9 @@ export function isFilebotNotificationMessage({
 }
 
 /**
- * Check whether a thread message belongs to the user's exchange with the filing
- * assistant: a notification the app sent into the thread, or the user's reply
- * to one. Neither is a turn in the real conversation.
+ * 检查某条会话消息是否属于用户与归档
+ * 助手的往来：应用发送到该会话的通知，或用户对
+ * 通知的回复。二者都不是真实对话中的一轮。
  */
 export function isFilebotConversationMessage({
   userEmail,
@@ -162,9 +162,9 @@ export function isFilebotConversationMessage({
 }
 
 /**
- * Build a regex pattern for filebot emails.
- * The user's local part and domain are case-insensitive, since providers deliver
- * either casing to the same mailbox. The filebot suffix is case-sensitive for security.
+ * 为 filebot 邮件构建正则模式。
+ * 用户的本地部分和域名不区分大小写，因为不同服务商会
+ * 以不同大小写投递到同一邮箱。出于安全考虑，filebot 后缀区分大小写。
  */
 function buildFilebotPattern(localPart: string, domain: string): RegExp {
   return new RegExp(
@@ -172,7 +172,7 @@ function buildFilebotPattern(localPart: string, domain: string): RegExp {
   );
 }
 
-// Match either case for each letter, without making the whole pattern case-insensitive
+// 为每个字母匹配任一种大小写，同时不使整个模式不区分大小写
 function caseInsensitivePattern(str: string): string {
   return str
     .split("")

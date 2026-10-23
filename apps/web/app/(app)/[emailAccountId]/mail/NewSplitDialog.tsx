@@ -37,15 +37,15 @@ import {
 } from "@/utils/split-inbox/split-library";
 import { cn } from "@/utils";
 
-const YOUR_SPLITS = "Your splits";
+const YOUR_SPLITS = "你的分栏";
 
 const FIELDS = [
-  { kind: MailSplitFilterKind.LABEL, name: "Has label" },
-  { kind: MailSplitFilterKind.FROM, name: "From" },
-  { kind: MailSplitFilterKind.CATEGORY, name: "In category" },
-  { kind: MailSplitFilterKind.UNREAD, name: "Is unread" },
-  { kind: MailSplitFilterKind.STARRED, name: "Is starred" },
-  { kind: MailSplitFilterKind.OLDER_THAN, name: "Older than" },
+  { kind: MailSplitFilterKind.LABEL, name: "含有标签" },
+  { kind: MailSplitFilterKind.FROM, name: "发件人" },
+  { kind: MailSplitFilterKind.CATEGORY, name: "属于分类" },
+  { kind: MailSplitFilterKind.UNREAD, name: "未读" },
+  { kind: MailSplitFilterKind.STARRED, name: "已加星标" },
+  { kind: MailSplitFilterKind.OLDER_THAN, name: "早于" },
 ] as const;
 
 export type SplitChoice = { id: string; name: string; value: string };
@@ -62,9 +62,9 @@ export type NewSplitDialogProps = {
   onOpenChange: (open: boolean) => void;
   labels: SplitChoice[];
   categories: SplitChoice[];
-  /** Splits already on the tab strip, so the library can show what's on. */
+  /** 已位于标签栏上的分栏，这样库可以显示哪些已启用。 */
   existingSplits: ExistingSplit[];
-  /** Set when the dialog was opened to change a split rather than add one. */
+  /** 当对话框是为了修改分栏而非新增时设置。 */
   editing: ExistingSplit | null;
   supportsStarred: boolean;
   onCreate: (split: {
@@ -93,10 +93,10 @@ export type NewSplitDialogProps = {
 };
 
 const EXAMPLES = [
-  "unread mail from my accountant",
-  "receipts from Stripe",
-  "notifications I have not read",
-  "anything awaiting my reply",
+  "来自我会计的未读邮件",
+  "来自 Stripe 的收据",
+  "我还没读的通知",
+  "任何等待我回复的邮件",
 ];
 
 export function NewSplitDialog({
@@ -188,9 +188,8 @@ export function NewSplitDialog({
   );
 
   /**
-   * A new row starts on a field this account can actually fill in — seeding
-   * "Has label" on an account with no labels would open the builder on a
-   * condition that can't be saved.
+   * 新行会从一个该账号确实能填写的字段开始——在没有标签的账号上预先
+   * 设为“含有标签”，会让构建器打开一个无法保存的条件。
    */
   const newCondition = useCallback((): MailSplitFilterDraft => {
     if (labels.length) return defaultCondition(MailSplitFilterKind.LABEL);
@@ -199,7 +198,7 @@ export function NewSplitDialog({
     return defaultCondition(MailSplitFilterKind.UNREAD);
   }, [categories.length, defaultCondition, labels.length]);
 
-  // Opening for an edit drops straight into the builder holding that split.
+  // 为编辑而打开时会直接进入构建器并载入该分栏。
   useEffect(() => {
     if (!open) return;
     if (editing) {
@@ -224,7 +223,7 @@ export function NewSplitDialog({
     () =>
       conditions
         .map((c) => conditionLabel(c, labels, categories))
-        .join(matchAll ? " · " : " or "),
+        .join(matchAll ? " · " : " 或 "),
     [categories, conditions, labels, matchAll],
   );
 
@@ -308,8 +307,8 @@ export function NewSplitDialog({
     try {
       const result = await onDescribe(trimmed);
       if (!result) return;
-      // The conditions land in the builder rather than creating a split, so a
-      // wrong guess costs a click instead of a tab the reader has to undo.
+      // 条件会进入构建器而不创建分栏，因此猜错只会多花一次点击，
+      // 而不是让读者去撤销一个标签。
       setConditions(result.filters);
       setMatchAll(result.matchAll);
       if (result.name) setName(result.name);
@@ -322,19 +321,19 @@ export function NewSplitDialog({
   const title =
     mode === "build"
       ? editing
-        ? "Edit split"
-        : "Build a split"
+        ? "编辑分栏"
+        : "构建分栏"
       : mode === "describe"
-        ? "Describe this split"
-        : "New split inbox";
+        ? "描述此分栏"
+        : "新建分栏收件箱";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={cn(
           "top-[9vh] flex max-h-[80vh] w-[620px] max-w-[94vw] translate-y-0 flex-col gap-0 overflow-hidden p-0",
-          // The dialog primitive sets `md:w-full` and `sm:rounded-lg`; those
-          // responsive variants outrank an unprefixed override in tailwind-merge.
+          // 对话框基础组件设置了 `md:w-full` 与 `sm:rounded-lg`；在
+          // tailwind-merge 中，这些响应式变体的优先级高于无前缀的覆盖。
           "rounded-2xl sm:rounded-2xl md:w-[620px]",
         )}
         hideCloseButton
@@ -343,7 +342,7 @@ export function NewSplitDialog({
           {(mode !== "library" || detail) && (
             <Button
               type="button"
-              aria-label="Back"
+              aria-label="返回"
               onClick={() => {
                 if (detail) setDetail(null);
                 else {
@@ -361,11 +360,11 @@ export function NewSplitDialog({
             {detail ? detail.name : title}
           </DialogTitle>
           <DialogDescription className="sr-only">
-            Add a filtered tab to your inbox.
+            为你的收件箱添加一个带筛选的标签页。
           </DialogDescription>
           <Button
             type="button"
-            aria-label="Close"
+            aria-label="关闭"
             onClick={close}
             variant="ghostMuted"
             size="icon2xs"
@@ -380,7 +379,7 @@ export function NewSplitDialog({
           <div className="flex min-h-0 flex-1 overflow-hidden">
             <div className="flex w-[142px] shrink-0 flex-col gap-0.5 overflow-y-auto border-border border-r bg-sidebar p-2 scrollbar-thin">
               <div className="px-2 pt-0.5 pb-1.5 font-medium text-[11px] text-muted-foreground">
-                Category
+                分类
               </div>
               {[YOUR_SPLITS, ...SPLIT_LIBRARY_CATEGORIES].map((option) => (
                 <button
@@ -404,7 +403,7 @@ export function NewSplitDialog({
               <div className="mb-3.5 grid grid-cols-2 gap-2.5">
                 <RouteCard
                   icon={<PlusIcon className="size-3.5" />}
-                  label="Build your own"
+                  label="自行构建"
                   onClick={() => {
                     setConditions(
                       conditions.length ? conditions : [newCondition()],
@@ -414,7 +413,7 @@ export function NewSplitDialog({
                 />
                 <RouteCard
                   icon={<SparklesIcon className="size-3.5" />}
-                  label="Describe it"
+                  label="描述它"
                   onClick={() => setMode("describe")}
                 />
               </div>
@@ -427,7 +426,7 @@ export function NewSplitDialog({
                 existingSplits.length ? (
                   <ul
                     className="space-y-1"
-                    aria-label="Split order"
+                    aria-label="分栏顺序"
                     aria-busy={isBusy}
                   >
                     {existingSplits.map((split, index) => (
@@ -480,7 +479,7 @@ export function NewSplitDialog({
                         <button
                           type="button"
                           disabled={isBusy || !split.filters.length}
-                          aria-label={`Edit the ${split.name} split`}
+                          aria-label={`编辑 ${split.name} 分栏`}
                           onClick={() => onEdit(split.id)}
                           className="min-w-0 flex-1 truncate rounded text-left font-medium text-[13px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         >
@@ -489,7 +488,7 @@ export function NewSplitDialog({
                         <Button
                           variant="ghostMuted"
                           size="iconXs"
-                          aria-label={`Move ${split.name} up`}
+                          aria-label={`将 ${split.name} 上移`}
                           disabled={
                             isBusy ||
                             split.id === "all" ||
@@ -505,7 +504,7 @@ export function NewSplitDialog({
                         <Button
                           variant="ghostMuted"
                           size="iconXs"
-                          aria-label={`Move ${split.name} down`}
+                          aria-label={`将 ${split.name} 下移`}
                           disabled={
                             isBusy ||
                             split.id === "all" ||
@@ -521,7 +520,7 @@ export function NewSplitDialog({
                           variant="ghostMuted"
                           size="iconXs"
                           disabled={isBusy || !split.filters.length}
-                          aria-label={`Turn off the ${split.name} split`}
+                          aria-label={`关闭 ${split.name} 分栏`}
                           onClick={() => removeSplit(split.id)}
                         >
                           <XIcon className="size-3.5" />
@@ -531,7 +530,7 @@ export function NewSplitDialog({
                   </ul>
                 ) : (
                   <p className="text-muted-foreground text-xs leading-relaxed">
-                    Splits you build yourself land here.
+                    你自己构建的分栏会显示在这里。
                   </p>
                 )
               ) : (
@@ -548,8 +547,7 @@ export function NewSplitDialog({
                   ))}
                   {!libraryEntries.length && (
                     <p className="col-span-2 text-muted-foreground text-xs leading-relaxed">
-                      Nothing here yet — these splits need labels this account
-                      doesn&apos;t have.
+                      这里还没有内容——这些分栏需要此账号没有的标签。
                     </p>
                   )}
                 </div>
@@ -559,24 +557,24 @@ export function NewSplitDialog({
         ) : mode === "build" ? (
           <div className="min-h-0 flex-1 overflow-y-auto p-3.5 scrollbar-thin">
             <div className="mb-3 flex items-center gap-2 text-muted-foreground text-xs">
-              <span>Show mail matching</span>
+              <span>显示匹配以下条件的邮件</span>
               <select
-                aria-label="Match all or any condition"
+                aria-label="匹配全部或任一条件"
                 value={matchAll ? "all" : "any"}
                 onChange={(event) => setMatchAll(event.target.value === "all")}
                 className="h-7 rounded-lg border border-border bg-background py-0 pr-8 pl-1.5 text-foreground text-xs outline-none transition-[color,box-shadow] focus:border-ring focus:ring-[3px] focus:ring-ring/50"
               >
-                <option value="all">all</option>
-                <option value="any">any</option>
+                <option value="all">全部</option>
+                <option value="any">任一</option>
               </select>
-              <span>of these conditions</span>
+              <span>这些条件</span>
             </div>
 
             <div className="flex flex-col gap-2">
               {conditions.map((condition, index) => (
                 <ConditionRow
-                  // Rows are positional: two "Has label" rows are distinct only
-                  // by where they sit, so the index is the identity.
+                  // 各行按位置区分：两个“含有标签”行仅凭位置不同而不同，
+                  // 因此索引就是身份标识。
                   key={index}
                   condition={condition}
                   fields={fields}
@@ -617,7 +615,7 @@ export function NewSplitDialog({
               className="mt-3 inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-primary text-xs hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <PlusIcon className="size-3.5" />
-              Add condition
+              添加条件
             </button>
           </div>
         ) : (
@@ -627,7 +625,7 @@ export function NewSplitDialog({
               rows={3}
               value={prompt}
               onChange={(event) => setPrompt(event.target.value)}
-              placeholder="Describe what should land in this split…"
+              placeholder="描述什么样的邮件应归入此分栏…"
               maxLength={300}
               className="resize-none rounded-xl text-[13.5px]"
             />
@@ -669,17 +667,17 @@ export function NewSplitDialog({
                     detail,
                     libraryFiltersFor(detail, labels, categories) ?? [],
                   )
-                    ? "Turn off split"
-                    : "Turn on split"}
+                    ? "关闭分栏"
+                    : "开启分栏"}
                 </Button>
               </>
             ) : mode === "build" ? (
               <>
                 <span className="shrink-0 text-muted-foreground text-xs">
-                  Split name
+                  分栏名称
                 </span>
                 <Input
-                  aria-label="Split name"
+                  aria-label="分栏名称"
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   onKeyDown={(event) => {
@@ -687,7 +685,7 @@ export function NewSplitDialog({
                     event.preventDefault();
                     save();
                   }}
-                  placeholder={describedName || "Name this split"}
+                  placeholder={describedName || "为此分栏命名"}
                   maxLength={60}
                   className="h-8 w-[190px] shrink-0 text-xs"
                 />
@@ -698,7 +696,7 @@ export function NewSplitDialog({
                   disabled={!conditions.length || isBusy}
                   onClick={save}
                 >
-                  {editing ? "Save changes" : "Add split"}
+                  {editing ? "保存更改" : "添加分栏"}
                 </Button>
               </>
             ) : mode === "describe" ? (
@@ -713,10 +711,10 @@ export function NewSplitDialog({
                   {isBusy ? (
                     <>
                       <Loader2Icon className="mr-1.5 size-3.5 animate-spin" />
-                      Building…
+                      构建中…
                     </>
                   ) : (
-                    "Build it"
+                    "构建"
                   )}
                 </Button>
               </>
@@ -785,7 +783,7 @@ function LibraryTile({
       </button>
       <button
         type="button"
-        aria-label={`What the ${entry.name} split does`}
+        aria-label={`${entry.name} 分栏的作用`}
         onClick={onInfo}
         className="hidden size-4.5 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-focus-within:flex group-hover:flex"
       >
@@ -793,11 +791,7 @@ function LibraryTile({
       </button>
       <button
         type="button"
-        aria-label={
-          on
-            ? `Turn off the ${entry.name} split`
-            : `Turn on the ${entry.name} split`
-        }
+        aria-label={on ? `关闭 ${entry.name} 分栏` : `开启 ${entry.name} 分栏`}
         onClick={onToggle}
         disabled={disabled}
         className={cn(
@@ -820,7 +814,7 @@ function LibraryDetail({ entry }: { entry: SplitLibraryEntry }) {
     <div className="min-h-0 flex-1 overflow-y-auto scrollbar-thin">
       <div className="p-4">
         <div className="mb-2 font-medium text-[11px] text-muted-foreground">
-          Definition
+          定义
         </div>
         <div className="flex flex-col gap-1.5">
           {libraryDefinition(entry).map((row) => (
@@ -865,7 +859,7 @@ function ConditionRow({
   return (
     <div className="flex items-center gap-2">
       <select
-        aria-label="Condition field"
+        aria-label="条件字段"
         value={condition.kind}
         onChange={(event) =>
           onChangeField(event.target.value as MailSplitFilterKind)
@@ -885,13 +879,13 @@ function ConditionRow({
         <Input
           value={condition.value ?? ""}
           onChange={(event) => onChangeValue(event.target.value)}
-          placeholder="name@company.com or @company.com"
-          aria-label="Sender"
+          placeholder="name@company.com 或 @company.com"
+          aria-label="发件人"
           className="h-8 min-w-0 flex-1 text-xs"
         />
       ) : (
         <select
-          aria-label="Condition value"
+          aria-label="条件值"
           value={condition.value ?? ""}
           onChange={(event) => onChangeValue(event.target.value)}
           className="h-8 min-w-0 flex-1 rounded-lg border border-border bg-background px-2 text-foreground text-xs outline-none transition-[color,box-shadow] focus:border-ring focus:ring-[3px] focus:ring-ring/50"
@@ -906,7 +900,7 @@ function ConditionRow({
 
       <Button
         type="button"
-        aria-label="Remove condition"
+        aria-label="移除条件"
         onClick={onRemove}
         variant="destructiveGhost"
         size="iconXs"
@@ -957,24 +951,24 @@ function conditionLabel(
 ): string {
   switch (condition.kind) {
     case MailSplitFilterKind.UNREAD:
-      return "Unread";
+      return "未读";
     case MailSplitFilterKind.STARRED:
-      return "Starred";
+      return "已加星标";
     case MailSplitFilterKind.FROM:
-      return condition.value ?? "From";
+      return condition.value ?? "发件人";
     case MailSplitFilterKind.OLDER_THAN:
-      return `Older than ${
+      return `早于 ${
         OLDER_THAN_OPTIONS.find((o) => o.value === condition.value)?.name ??
         condition.value
       }`;
     case MailSplitFilterKind.LABEL:
       return (
-        labels.find((label) => label.value === condition.value)?.name ?? "Label"
+        labels.find((label) => label.value === condition.value)?.name ?? "标签"
       );
     case MailSplitFilterKind.CATEGORY:
       return (
         categories.find((category) => category.value === condition.value)
-          ?.name ?? "Category"
+          ?.name ?? "分类"
       );
   }
 }

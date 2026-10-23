@@ -831,7 +831,7 @@ describe("integration action access", () => {
         emailAccountId: EMAIL_ACCOUNT_ID,
         logger,
       }),
-    ).rejects.toThrow("Integration actions are not enabled for this user.");
+    ).rejects.toThrow("此用户未启用集成操作。");
 
     expect(prisma.mcpConnection.findMany).not.toHaveBeenCalled();
     expect(prisma.rule.update).not.toHaveBeenCalled();

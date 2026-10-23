@@ -48,7 +48,6 @@ import { assertRuleIsNotOrgManaged } from "@/utils/organizations/rules";
 import { env } from "@/env";
 import { ONE_WEEK_MINUTES } from "@/utils/date";
 import { createEmailProvider } from "@/utils/email/provider";
-import type { EmailProvider } from "@/utils/email/types";
 import { resolveLabelNameAndId } from "@/utils/label/resolve-label";
 import type { Logger } from "@/utils/logger";
 import { validateGmailLabelName } from "@/utils/gmail/label-validation";
@@ -275,16 +274,12 @@ export const deleteRuleAction = actionClient
       },
       select: { systemType: true, groupId: true, organizationRuleId: true },
     });
-    if (!rule) return; // already deleted
+    if (!rule) return; // 已删除
     if (rule.organizationRuleId) {
-      throw new SafeError(
-        "This rule is managed by your organization and can't be deleted here.",
-      );
+      throw new SafeError("此规则由你的组织管理，无法在此删除。");
     }
     if (rule.systemType) {
-      throw new SafeError(
-        "Default rules cannot be deleted. Disable them instead.",
-      );
+      throw new SafeError("默认规则无法删除。请改为禁用它们。");
     }
 
     try {
@@ -318,13 +313,7 @@ export const createRulesOnboardingAction = actionClient
       const emailAccount = await getEmailAccountForRuleExecution({
         emailAccountId,
       });
-      if (!emailAccount) throw new SafeError("User not found");
-
-      const emailProvider = await createEmailProvider({
-        emailAccountId,
-        provider,
-        logger,
-      });
+      if (!emailAccount) throw new SafeError("未找到用户");
 
       const promises: Promise<unknown>[] = [];
       const defaultSplitRulePromises: Array<
@@ -340,7 +329,7 @@ export const createRulesOnboardingAction = actionClient
         | "move_folder"
         | "move_folder_delayed" => value !== "none" && value !== undefined;
 
-      function createSystemRuleForOnboarding(
+      async function createSystemRuleForOnboarding(
         systemType: SystemType,
         userSelectedAction?: CategoryAction,
       ) {
@@ -351,12 +340,13 @@ export const createRulesOnboardingAction = actionClient
 
         const promise = (async () => {
           const actions = await getActionsFromCategoryAction({
+            emailAccountId,
             ruleName: name,
             categoryAction,
             label,
             hasDigest: false,
             draftReply: !!ruleConfiguration.draftReply,
-            emailProvider,
+            provider,
             logger,
             systemType,
           });
@@ -394,7 +384,7 @@ export const createRulesOnboardingAction = actionClient
         promises.push(promise());
       }
 
-      // Process system rules
+      // 处理系统规则
       for (const type of STANDARD_CATEGORY_SYSTEM_TYPES) {
         const config = systemCategoryMap.get(type);
         if (config && isSet(config.action)) {
@@ -421,16 +411,17 @@ export const createRulesOnboardingAction = actionClient
         }
       }
 
-      // Create rules for custom categories
+      // 为自定义分类创建规则
       for (const customCategory of customCategories) {
         if (customCategory.action && isSet(customCategory.action)) {
           const actions = await getActionsFromCategoryAction({
+            emailAccountId,
             ruleName: customCategory.name,
             categoryAction: customCategory.action,
             label: customCategory.name,
             hasDigest: false,
             draftReply: false,
-            emailProvider,
+            provider,
             logger,
             systemType: undefined,
           });
@@ -450,7 +441,7 @@ export const createRulesOnboardingAction = actionClient
             .then(() => {})
             .catch((error) => {
               if (isDuplicateError(error, "name")) return;
-              logger.error("Error creating rule", { error });
+              logger.error("创建规则时出错", { error });
               throw error;
             });
 
@@ -468,7 +459,7 @@ export const createRulesOnboardingAction = actionClient
           enabled: true,
         });
       } catch (error) {
-        logger.error("Error creating default mail splits", { error });
+        logger.error("创建默认邮件拆分时出错", { error });
       }
 
       after(() =>
@@ -539,10 +530,10 @@ export const copyRulesFromAccountAction = actionClientUser
       parsedInput: { sourceEmailAccountId, targetEmailAccountId, ruleIds },
     }) => {
       if (sourceEmailAccountId === targetEmailAccountId) {
-        throw new SafeError("Source and target accounts must be different");
+        throw new SafeError("源账号和目标账号必须不同");
       }
 
-      // Validate user owns both accounts
+      // 校验用户拥有这两个账号
       const [sourceAccount, targetAccount] = await Promise.all([
         prisma.emailAccount.findUnique({
           where: { id: sourceEmailAccountId },
@@ -563,10 +554,10 @@ export const copyRulesFromAccountAction = actionClientUser
       ]);
 
       if (!sourceAccount || sourceAccount.account.userId !== userId) {
-        throw new SafeError("Source account not found or unauthorized");
+        throw new SafeError("未找到源账号或未授权");
       }
       if (!targetAccount || targetAccount.account.userId !== userId) {
-        throw new SafeError("Target account not found or unauthorized");
+        throw new SafeError("未找到目标账号或未授权");
       }
 
       const sourceRules = await prisma.rule.findMany({
@@ -595,7 +586,7 @@ export const copyRulesFromAccountAction = actionClientUser
         select: { id: true, name: true, systemType: true },
       });
 
-      // Build lookup maps for matching existing rules
+      // 为匹配现有规则构建查找映射
       const targetRulesByName = new Map(
         targetRules.map((r) => [r.name.toLowerCase(), r.id]),
       );
@@ -609,16 +600,16 @@ export const copyRulesFromAccountAction = actionClientUser
       let replacedCount = 0;
 
       for (const sourceRule of sourceRules) {
-        // For system rules, match by systemType; for regular rules, match by name
+        // 系统规则按 systemType 匹配；普通规则按名称匹配
         const existingRuleId = sourceRule.systemType
           ? targetRulesBySystemType.get(sourceRule.systemType)
           : targetRulesByName.get(sourceRule.name.toLowerCase());
 
-        // Map actions - keep label names but clear IDs (they'll be resolved when rule executes)
+        // 映射操作 - 保留标签名称但清除 ID（规则执行时会解析它们）
         const mappedActions = sourceRule.actions.map((action) => ({
           type: action.type,
           label: action.label,
-          labelId: null, // Clear the ID - it's account-specific
+          labelId: null, // 清除 ID - 它是账号特有的
           subject: action.subject,
           content: action.content,
           to: action.to,
@@ -626,7 +617,7 @@ export const copyRulesFromAccountAction = actionClientUser
           bcc: action.bcc,
           url: action.url,
           folderName: action.folderName,
-          folderId: null, // Clear the ID - it's account-specific
+          folderId: null, // 清除 ID - 它是账号特有的
           delayInMinutes: action.delayInMinutes,
         }));
 
@@ -670,12 +661,12 @@ export const copyRulesFromAccountAction = actionClientUser
             copiedCount++;
           } catch (error) {
             if (!isDuplicateError(error, "name")) throw error;
-            logger.info("Rule already exists in target account, skipping");
+            logger.info("目标账号中已存在该规则，跳过");
           }
         }
       }
 
-      logger.info("Copied rules between accounts", {
+      logger.info("已在账号之间复制规则", {
         sourceEmailAccountId,
         targetEmailAccountId,
         copiedCount,
@@ -765,15 +756,13 @@ function handleRuleError(error: unknown, logger: Logger) {
   if (error instanceof SafeError) throw error;
 
   if (isDuplicateError(error, "name")) {
-    throw new SafeError("Rule name already exists");
+    throw new SafeError("规则名称已存在");
   }
   if (isDuplicateError(error, "groupId")) {
-    throw new SafeError(
-      "Group already has a rule. Please use the existing rule.",
-    );
+    throw new SafeError("分组已有规则。请使用现有规则。");
   }
-  logger.error("Error creating/updating rule", { error });
-  throw new SafeError("Error creating/updating rule");
+  logger.error("创建/更新规则时出错", { error });
+  throw new SafeError("创建/更新规则时出错");
 }
 
 async function resolveActionLabels<
@@ -847,24 +836,32 @@ async function resolveActionLabels<
 }
 
 async function getActionsFromCategoryAction({
+  emailAccountId,
   ruleName,
   categoryAction,
   label,
   draftReply,
   hasDigest,
-  emailProvider,
+  provider,
   logger,
   systemType,
 }: {
+  emailAccountId: string;
   ruleName: string;
   categoryAction: CategoryAction;
   label: string;
   hasDigest: boolean;
   draftReply: boolean;
-  emailProvider: EmailProvider;
+  provider: string;
   logger: Logger;
   systemType?: SystemType;
 }): Promise<RuleActionCreateData[]> {
+  const emailProvider = await createEmailProvider({
+    emailAccountId,
+    provider,
+    logger,
+  });
+
   function normalizeCategory(action: CategoryAction) {
     switch (action) {
       case "label_archive_delayed":
@@ -900,7 +897,7 @@ async function getActionsFromCategoryAction({
           labelId: null,
         });
 
-        logger.info("Resolved label ID during onboarding", {
+        logger.info("在引导流程中解析了标签 ID", {
           requestedLabel: label,
           resolvedLabelName: labelName,
           resolvedLabelId: labelId,
@@ -914,7 +911,7 @@ async function getActionsFromCategoryAction({
         const folderId =
           await emailProvider.getOrCreateFolderIdByName(ruleName);
 
-        logger.info("Resolved folder ID during onboarding", {
+        logger.info("在引导流程中解析了文件夹 ID", {
           folderName: ruleName,
           resolvedFolderId: folderId,
           categoryAction,
@@ -952,7 +949,7 @@ export const importRulesAction = actionClient
       ctx: { emailAccountId, userId, logger },
       parsedInput: { rules },
     }) => {
-      logger.info("Importing rules", { count: rules.length });
+      logger.info("正在导入规则", { count: rules.length });
 
       await assertCanUseDigestsIfNeeded(
         userId,
@@ -979,12 +976,12 @@ export const importRulesAction = actionClient
 
       for (const rule of rules) {
         try {
-          // Match by systemType first, then by name
+          // 先按 systemType 匹配，再按名称匹配
           const existingRuleId = rule.systemType
             ? rulesBySystemType.get(rule.systemType)
             : rulesByName.get(rule.name.toLowerCase());
 
-          // Map actions - keep label names but clear IDs
+          // 映射操作 - 保留标签名称但清除 ID
           const mappedActions = rule.actions.map((action) => ({
             type: action.type,
             label: action.label,
@@ -1056,7 +1053,7 @@ export const importRulesAction = actionClient
         }
       }
 
-      logger.info("Import complete", {
+      logger.info("导入完成", {
         createdCount,
         updatedCount,
         skippedCount,

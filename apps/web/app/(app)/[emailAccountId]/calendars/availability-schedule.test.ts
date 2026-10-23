@@ -47,14 +47,14 @@ describe("collectWindows", () => {
     const result = collectWindows(days);
 
     expect(result.windows).toBeNull();
-    expect(result.error).toContain("Tuesday");
+    expect(result.error).toContain("星期二");
   });
 
   it("returns an error when no day is enabled", () => {
     const result = collectWindows(buildDayState([]));
 
     expect(result.windows).toBeNull();
-    expect(result.error).toBe("Add at least one available time range.");
+    expect(result.error).toBe("至少添加一个可用时间段。");
   });
 
   it("returns an error when ranges on the same day overlap", () => {
@@ -66,7 +66,7 @@ describe("collectWindows", () => {
     const result = collectWindows(days);
 
     expect(result.windows).toBeNull();
-    expect(result.error).toBe("Monday: time ranges overlap.");
+    expect(result.error).toBe("星期一：时间段重叠。");
   });
 
   it("detects overlaps regardless of range order", () => {
@@ -78,7 +78,7 @@ describe("collectWindows", () => {
     const result = collectWindows(days);
 
     expect(result.windows).toBeNull();
-    expect(result.error).toBe("Thursday: time ranges overlap.");
+    expect(result.error).toBe("星期四：时间段重叠。");
   });
 
   it("allows adjacent ranges on the same day", () => {

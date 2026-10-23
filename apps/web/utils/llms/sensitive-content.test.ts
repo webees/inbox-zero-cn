@@ -74,7 +74,7 @@ describe("Sensitive data policy enforcement", () => {
         logger,
         label: "test",
       }),
-    ).toThrow("blocked by your account settings");
+    ).toThrow("已被你的账号设置阻止");
   });
 
   it("redacts sensitive strings inside readEmail tool output", () => {
@@ -127,7 +127,7 @@ describe("Sensitive data policy enforcement", () => {
 
     expect(result).toMatchObject({
       blocked: true,
-      error: expect.stringContaining("tool result was blocked"),
+      error: expect.stringContaining("该工具结果已被你的账号设置阻止"),
     });
     expect(JSON.stringify(result)).not.toContain("BEGIN PRIVATE KEY");
   });
@@ -171,7 +171,7 @@ describe("Sensitive data policy enforcement", () => {
 
     expect(result).toMatchObject({
       blocked: true,
-      error: expect.stringContaining("tool result was blocked"),
+      error: expect.stringContaining("该工具结果已被你的账号设置阻止"),
     });
     expect(JSON.stringify(result)).not.toContain(secret);
   });
@@ -208,7 +208,7 @@ describe("Sensitive data policy enforcement", () => {
 
     expect(result).toMatchObject({
       blocked: true,
-      error: expect.stringContaining("tool result was blocked"),
+      error: expect.stringContaining("该工具结果已被你的账号设置阻止"),
     });
     expect(JSON.stringify(result)).not.toContain(sensitiveKey);
   });

@@ -25,21 +25,19 @@ export function CalendarConnections() {
             <CardContent className="pt-6">
               <div className="space-y-2">
                 <TypographyP className="text-sm">
-                  Connect your calendar to unlock:
+                  连接你的日历即可解锁：
                 </TypographyP>
 
                 <TypographyP className="text-sm flex items-center gap-2">
                   <CalendarCheckIcon className="size-4 text-blue-600" />
                   <span className="min-w-0">
-                    AI replies based on your real availability
+                    依据你的真实空闲时间生成 AI 回复
                   </span>
                 </TypographyP>
 
                 <TypographyP className="text-sm flex items-center gap-2">
                   <FileTextIcon className="size-4 text-blue-600" />
-                  <span className="min-w-0">
-                    Meeting briefs before every call
-                  </span>
+                  <span className="min-w-0">每次通话前的会议简报</span>
                 </TypographyP>
               </div>
 
@@ -81,52 +79,44 @@ function useCalendarNotifications() {
       { title: string; description: string }
     > = {
       consent_declined: {
-        title: "Calendar consent not granted",
+        title: "未授予日历授权同意",
         description:
-          "Microsoft reported AADSTS65004, which means the consent screen was canceled or not completed. Please complete consent and try again.",
+          "Microsoft 返回 AADSTS65004，表示授权同意页面被取消或未完成。请完成授权同意后重试。",
       },
       admin_consent_required: {
-        title: "Admin consent required",
+        title: "需要管理员授权同意",
         description:
-          "Your Microsoft 365 tenant requires admin approval. Ask an admin to grant consent for this app in Entra ID, then retry.",
+          "你的 Microsoft 365 租户需要管理员批准。请让管理员在 Entra ID 中为此应用授予授权同意，然后重试。",
       },
       access_denied: {
-        title: "Calendar access denied",
-        description:
-          "Microsoft denied the request. Please try again or ask your admin to approve access.",
+        title: "日历访问被拒绝",
+        description: "Microsoft 拒绝了该请求。请重试，或让管理员批准访问。",
       },
       invalid_state: {
-        title: "Invalid calendar request",
-        description:
-          "This calendar authorization request was invalid. Please try again.",
+        title: "无效的日历请求",
+        description: "此日历授权请求无效。请重试。",
       },
       invalid_state_format: {
-        title: "Invalid calendar request",
-        description:
-          "We couldn't validate the calendar authorization. Please try again.",
+        title: "无效的日历请求",
+        description: "我们无法验证日历授权。请重试。",
       },
       missing_code: {
-        title: "Calendar authorization canceled",
-        description:
-          "We didn't receive an authorization code from Microsoft. Please retry the connection.",
+        title: "日历授权已取消",
+        description: "我们未收到来自 Microsoft 的授权码。请重试连接。",
       },
       connection_failed: {
-        title: "Calendar connection failed",
-        description:
-          "We couldn't complete the calendar connection. Please try again.",
+        title: "日历连接失败",
+        description: "我们无法完成日历连接。请重试。",
       },
       oauth_error: {
-        title: "Calendar connection failed",
-        description:
-          "Microsoft returned an OAuth error. Please try again or contact support.",
+        title: "日历连接失败",
+        description: "Microsoft 返回了 OAuth 错误。请重试或联系支持人员。",
       },
     };
 
     const errorMessage = errorMessages[errorParam] || {
-      title: "Calendar connection failed",
-      description:
-        errorDescription ||
-        "We couldn't complete the calendar connection. Please try again.",
+      title: "日历连接失败",
+      description: errorDescription || "我们无法完成日历连接。请重试。",
     };
 
     toastError({

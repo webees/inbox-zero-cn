@@ -49,7 +49,7 @@ describe("updateAllAccountsSelectionAction", () => {
       emailAccountIds: ["account-1", "another-user-account"],
     });
 
-    expect(result?.serverError).toBe("Email account not found");
+    expect(result?.serverError).toBe("未找到邮箱账号");
     expect(prisma.emailAccount.updateMany).not.toHaveBeenCalled();
     expect(prisma.$transaction).not.toHaveBeenCalled();
   });

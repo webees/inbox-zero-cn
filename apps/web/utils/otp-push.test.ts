@@ -33,7 +33,7 @@ describe("sendOtpPushNotification", () => {
       userId: "user-1",
       deduplicationKey: "otp:account-1:message-1",
       notification: {
-        title: "Verification code",
+        title: "验证码",
         body: "Your verification code is 123456",
         sound: "default",
         channelId: "otp",

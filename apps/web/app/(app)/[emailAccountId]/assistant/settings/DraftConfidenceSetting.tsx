@@ -70,13 +70,13 @@ export function DraftConfidenceSetting() {
               validationErrors: result.validationErrors,
             },
             mutate,
-            prefix: "Failed to update draft confidence",
+            prefix: "更新草稿置信度失败",
           });
           return;
         }
 
         toastSuccess({
-          description: "Draft confidence updated",
+          description: "草稿置信度已更新",
         });
         mutate();
       })
@@ -87,7 +87,7 @@ export function DraftConfidenceSetting() {
         showSettingActionError({
           error: {},
           mutate,
-          defaultMessage: "Failed to update draft confidence",
+          defaultMessage: "更新草稿置信度失败",
         });
       });
   };
@@ -100,8 +100,8 @@ export function DraftConfidenceSetting() {
 
   return (
     <SettingCard
-      title="Draft confidence"
-      description="How sure should the AI be before drafting a reply?"
+      title="草稿置信度"
+      description="AI 在起草回复前需要有多大把握？"
       right={
         <LoadingContent
           loading={isLoading}
@@ -114,7 +114,7 @@ export function DraftConfidenceSetting() {
               onValueChange={onValueChange}
               disabled={!data}
             >
-              <SelectTrigger aria-label="Draft confidence">
+              <SelectTrigger aria-label="草稿置信度">
                 <SelectValue>{selectedOption.label}</SelectValue>
               </SelectTrigger>
               <SelectContent align="end" className="w-[22rem]">

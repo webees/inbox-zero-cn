@@ -71,11 +71,11 @@ export function createCliLanguageModel({
   } as unknown as LanguageModelV4;
 }
 
-// AI SDK tools cannot be auto-bridged at the LanguageModelV4 layer: by the
-// time the wrapper sees them they have been reduced to JSON schemas with no
-// `execute`. Callers that pass tools must therefore use this helper, which
-// wires the original tool record through `createAiSdkMcpServer` so the
-// Claude Code CLI can invoke them locally over MCP.
+// AI SDK 工具无法在 LanguageModelV4 层自动桥接：等到
+// 包装器看到它们时，它们已被简化为没有
+// `execute` 的 JSON schema。因此传入工具的调用方必须使用此辅助函数，它
+// 会通过 `createAiSdkMcpServer` 接通原始工具记录，以便
+// Claude Code CLI 能通过 MCP 在本地调用它们。
 export async function createClaudeCodeLanguageModelWithBridgedTools({
   modelName,
   tools,
@@ -125,11 +125,11 @@ function unprefixToolName(name: string): string {
     : name;
 }
 
-// The MCP bridge causes the Claude Code CLI to surface tool calls as
+// MCP 桥接会让 Claude Code CLI 把工具调用暴露为
 // `mcp__inboxzero__<name>`. Inbox Zero callers (stop conditions, UI part
-// renderers, validators) match on the original tool names, so the prefix is
-// stripped from every `toolName` field in both the non-streaming and
-// streaming response paths before it reaches the AI SDK consumer.
+// 渲染器、校验器）会按原始工具名匹配，因此在
+// 非流式和流式响应路径中，都会从每个 `toolName` 字段
+// 中剥离该前缀，然后才交给 AI SDK 消费方。
 function wrapWithUnprefixedToolNames(model: LanguageModelV4): LanguageModelV4 {
   const wrapped = {
     specificationVersion: model.specificationVersion,

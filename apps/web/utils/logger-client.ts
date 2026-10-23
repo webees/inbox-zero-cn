@@ -3,9 +3,9 @@ import { log } from "next-axiom";
 import { env } from "@/env";
 
 /**
- * Client-safe logger that doesn't access server-side env vars.
- * Uses next-axiom for production logging (if NEXT_PUBLIC_AXIOM_TOKEN is set)
- * and falls back to console otherwise.
+ * 客户端安全的 logger，不会访问服务端环境变量。
+ * 生产日志使用 next-axiom（如果设置了 NEXT_PUBLIC_AXIOM_TOKEN），
+ * 否则回退到 console。
  */
 export function createClientLogger(scope: string) {
   const hasAxiom = !!env.NEXT_PUBLIC_AXIOM_TOKEN;

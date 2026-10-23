@@ -247,7 +247,7 @@ describe("aiChooseRule invalid rule selections", () => {
   });
 });
 
-const UNRESOLVED_ERROR = /did not resolve to any offered rule/i;
+const UNRESOLVED_ERROR = /未解析到任何已提供的规则/;
 
 const noopLogger = {
   info: vi.fn(),

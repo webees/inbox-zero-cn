@@ -93,7 +93,7 @@ export function FolderSelector({
   isLoading,
   value,
   onChangeValue,
-  placeholder = "Select a folder...",
+  placeholder = "选择文件夹...",
   error,
 }: FolderSelectorProps) {
   const [open, setOpen] = useState(false);
@@ -212,7 +212,7 @@ export function FolderSelector({
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Loading folders...</span>
+                  <span>正在加载文件夹...</span>
                 </>
               ) : value.id ? (
                 <div className="flex min-w-0 items-center gap-2">
@@ -231,7 +231,7 @@ export function FolderSelector({
         <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
           <Command>
             <CommandInput
-              placeholder="Search folders..."
+              placeholder="搜索文件夹..."
               value={searchQuery}
               onValueChange={setSearchQuery}
             />
@@ -244,11 +244,11 @@ export function FolderSelector({
               {isLoading ? (
                 <div className="flex items-center justify-center py-6">
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  <span>Loading folders...</span>
+                  <span>正在加载文件夹...</span>
                 </div>
               ) : (
                 <>
-                  <CommandEmpty>No folder found.</CommandEmpty>
+                  <CommandEmpty>未找到文件夹。</CommandEmpty>
                   <CommandGroup>
                     {filteredFolders.map(({ folder, displayPath }) => (
                       <FolderItem
@@ -274,8 +274,8 @@ export function FolderSelector({
           size="icon2xs"
           className="absolute right-9 top-2 hover:bg-muted"
           onClick={() => onChangeValue({ name: "", id: "" })}
-          aria-label="Clear folder selection"
-          title="Clear folder selection"
+          aria-label="清除文件夹选择"
+          title="清除文件夹选择"
         >
           <X className="h-3 w-3" />
         </Button>

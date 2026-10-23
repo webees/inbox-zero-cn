@@ -35,8 +35,8 @@ export function EndTrialButton({
   const [endingTrial, setEndingTrial] = useState(false);
   const { mutate } = useSWRConfig();
 
-  // Revalidate on focus: a dialog left open in a background tab must not
-  // charge an amount that no longer matches what is on screen.
+  // 聚焦时重新校验：在后台标签页中保持打开的对话框
+  // 不能按与屏幕上不再一致的金额扣款。
   const {
     data: preview,
     isLoading,
@@ -58,9 +58,9 @@ export function EndTrialButton({
     setOpen(false);
 
     if (result?.data?.status === "active") {
-      toast.success("Your paid plan is active.");
+      toast.success("你的付费套餐已生效。");
     } else {
-      toast.message("Your trial has ended.");
+      toast.message("你的试用已结束。");
     }
 
     await Promise.all([
@@ -78,41 +78,41 @@ export function EndTrialButton({
           className={className}
           Icon={showIcon ? CreditCardIcon : undefined}
         >
-          Start paid plan now
+          立即开始付费套餐
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>End your free trial and pay now?</AlertDialogTitle>
+          <AlertDialogTitle>结束免费试用并立即付款？</AlertDialogTitle>
           <LoadingContent loading={isLoading} error={error}>
             {preview && (
               <AlertDialogDescription asChild>
                 <div className="space-y-2">
                   <p>
-                    We will charge your card{" "}
+                    我们将立即从你的银行卡扣款{" "}
                     <span className="font-semibold text-foreground">
                       {formatStripeAmount(preview.amountDue, preview.currency)}
                     </span>{" "}
-                    immediately for the {preview.planName} plan
+                    ，用于 {preview.planName} 套餐
                     {preview.interval
-                      ? `, billed ${billingCadence[preview.interval]}`
+                      ? `，按${billingCadence[preview.interval]}计费`
                       : ""}
-                    .
+                    。
                   </p>
                   {preview.trialEnd && (
                     <p>
-                      You do not need to do this to keep using Inbox Zero. Your
-                      trial already includes every paid feature and runs free
-                      until {formatDateSimple(new Date(preview.trialEnd))}, when
-                      the same charge happens automatically.
+                      你无需执行此操作即可继续使用 Inbox Zero。你的试用已包含
+                      所有付费功能，并免费持续到{" "}
+                      {formatDateSimple(new Date(preview.trialEnd))}
+                      ，届时将自动进行相同的扣款。
                     </p>
                   )}
                   <p>
-                    Want a different plan or to pay monthly?{" "}
+                    想换其他套餐或按月付费？{" "}
                     <Link href="/premium" className="underline">
-                      Change your plan first
+                      先更改套餐
                     </Link>
-                    .
+                    。
                   </p>
                 </div>
               </AlertDialogDescription>
@@ -120,15 +120,15 @@ export function EndTrialButton({
           </LoadingContent>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Keep my free trial</AlertDialogCancel>
+          <AlertDialogCancel>保留免费试用</AlertDialogCancel>
           <Button
             loading={endingTrial}
             disabled={!preview || isValidating}
             onClick={endTrial}
           >
             {preview
-              ? `Pay ${formatStripeAmount(preview.amountDue, preview.currency)} now`
-              : "Pay now"}
+              ? `立即支付 ${formatStripeAmount(preview.amountDue, preview.currency)}`
+              : "立即支付"}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -140,8 +140,8 @@ const billingCadence: Record<
   NonNullable<GetTrialPreviewResponse["interval"]>,
   string
 > = {
-  day: "daily",
-  week: "weekly",
-  month: "monthly",
-  year: "yearly",
+  day: "每天",
+  week: "每周",
+  month: "每月",
+  year: "每年",
 };

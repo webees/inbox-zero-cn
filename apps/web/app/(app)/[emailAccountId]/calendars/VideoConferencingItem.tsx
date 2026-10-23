@@ -21,17 +21,17 @@ export function VideoConferencingItem({
   return (
     <Item variant="outline">
       <ItemContent>
-        <ItemTitle>Video conferencing</ItemTitle>
+        <ItemTitle>视频会议</ItemTitle>
         <ItemDescription>
           {videoLabel
-            ? `Add ${videoLabel} to calendar events.`
-            : "Video links are unavailable for this calendar."}
+            ? `将 ${videoLabel} 添加到日历活动中。`
+            : "此日历无法使用视频链接。"}
         </ItemDescription>
       </ItemContent>
       <ItemActions>
         <Toggle
           name="videoConferencing"
-          ariaLabel="Toggle video conferencing"
+          ariaLabel="切换视频会议"
           enabled={canAddVideo && videoEnabled}
           disabled={!canAddVideo}
           onChange={onChange}

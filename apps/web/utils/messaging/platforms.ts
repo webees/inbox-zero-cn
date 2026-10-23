@@ -17,8 +17,8 @@ export function getConnectAppLabel(
   providers: ReadonlyArray<MessagingProvider | MessagingPlatform>,
 ): string {
   const names = providers.map(getMessagingProviderName);
-  if (names.length === 0) return "Connect app";
-  if (names.length === 1) return `Connect ${names[0]}`;
-  if (names.length === 2) return `Connect ${names[0]} or ${names[1]}`;
-  return `Connect ${names.slice(0, -1).join(", ")}, or ${names.at(-1)}`;
+  if (names.length === 0) return "连接应用";
+  if (names.length === 1) return `连接 ${names[0]}`;
+  if (names.length === 2) return `连接 ${names[0]} 或 ${names[1]}`;
+  return `连接 ${names.slice(0, -1).join("、")}，或 ${names.at(-1)}`;
 }

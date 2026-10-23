@@ -3,8 +3,23 @@ import { applyThreadStatusLabel } from "./label-helpers";
 import type { EmailProvider } from "@/utils/email/types";
 import prisma from "@/utils/__mocks__/prisma";
 import { createTestLogger } from "@/__tests__/helpers";
+import { SystemType } from "@/generated/prisma/enums";
+import { getRuleLabel } from "@/utils/rule/consts";
 
 const logger = createTestLogger();
+
+// 标签名会随本地化改动，这里统一从规则配置里取，避免测试写死英文。
+const TO_REPLY = getRuleLabel(SystemType.TO_REPLY);
+const AWAITING_REPLY = getRuleLabel(SystemType.AWAITING_REPLY);
+const FYI = getRuleLabel(SystemType.FYI);
+const ACTIONED = getRuleLabel(SystemType.ACTIONED);
+
+const LABEL_ID_BY_NAME: Record<string, string> = {
+  [TO_REPLY]: "label-to-reply",
+  [AWAITING_REPLY]: "label-awaiting-reply",
+  [FYI]: "label-fyi",
+  [ACTIONED]: "label-actioned",
+};
 
 vi.mock("@/utils/prisma");
 
@@ -28,15 +43,15 @@ describe("applyThreadStatusLabel", () => {
       removeThreadLabels: vi.fn().mockResolvedValue(undefined),
       labelMessage: vi.fn().mockResolvedValue({}),
       getLabels: vi.fn().mockResolvedValue([
-        { id: "label-to-reply", name: "To Reply", type: "user" },
-        { id: "label-awaiting-reply", name: "Awaiting Reply", type: "user" },
-        { id: "label-fyi", name: "FYI", type: "user" },
-        { id: "label-actioned", name: "Actioned", type: "user" },
+        { id: "label-to-reply", name: TO_REPLY, type: "user" },
+        { id: "label-awaiting-reply", name: AWAITING_REPLY, type: "user" },
+        { id: "label-fyi", name: FYI, type: "user" },
+        { id: "label-actioned", name: ACTIONED, type: "user" },
       ]),
       getLabelById: vi.fn().mockResolvedValue(null),
       getLabelByName: vi.fn().mockResolvedValue(null),
       createLabel: vi.fn().mockImplementation(async (name: string) => ({
-        id: `label-${name.toLowerCase().replace(/ /g, "-")}`,
+        id: LABEL_ID_BY_NAME[name] ?? `label-${name}`,
         name,
         type: "user",
       })),
@@ -196,7 +211,7 @@ describe("applyThreadStatusLabel", () => {
     ).resolves.toBeUndefined();
 
     expect(errorSpy).toHaveBeenCalledWith(
-      expect.stringContaining("Failed to remove conflicting thread labels"),
+      expect.stringContaining("移除冲突的会话标签失败"),
     );
     expect(logSpy).not.toHaveBeenCalledWith(
       expect.stringContaining("Removed conflicting thread status labels"),
@@ -223,7 +238,7 @@ describe("applyThreadStatusLabel", () => {
     ).resolves.toBeUndefined();
 
     expect(errorSpy).toHaveBeenCalledWith(
-      expect.stringContaining("Failed to apply thread status label"),
+      expect.stringContaining("应用会话状态标签失败"),
     );
     expect(logSpy).not.toHaveBeenCalledWith(
       expect.stringContaining("Thread status label applied successfully"),
@@ -300,13 +315,13 @@ describe("applyThreadStatusLabel", () => {
     ] as any);
 
     vi.mocked(mockProvider.getLabels).mockResolvedValue([
-      { id: "label-to-reply", name: "To Reply", type: "user" },
-      { id: "label-awaiting-reply", name: "Awaiting Reply", type: "user" },
-      { id: "label-actioned", name: "Actioned", type: "user" },
+      { id: "label-to-reply", name: TO_REPLY, type: "user" },
+      { id: "label-awaiting-reply", name: AWAITING_REPLY, type: "user" },
+      { id: "label-actioned", name: ACTIONED, type: "user" },
     ]);
     vi.mocked(mockProvider.getLabelById).mockImplementation(async (labelId) =>
       labelId === "label-fyi"
-        ? { id: "label-fyi", name: "FYI", type: "user" }
+        ? { id: "label-fyi", name: FYI, type: "user" }
         : null,
     );
 
@@ -367,9 +382,9 @@ describe("applyThreadStatusLabel", () => {
 
     // Mock provider labels without TO_REPLY
     vi.mocked(mockProvider.getLabels).mockResolvedValue([
-      { id: "label-awaiting-reply", name: "Awaiting Reply", type: "user" },
-      { id: "label-fyi", name: "FYI", type: "user" },
-      { id: "label-actioned", name: "Actioned", type: "user" },
+      { id: "label-awaiting-reply", name: AWAITING_REPLY, type: "user" },
+      { id: "label-fyi", name: FYI, type: "user" },
+      { id: "label-actioned", name: ACTIONED, type: "user" },
     ]);
 
     await applyThreadStatusLabel({
@@ -382,13 +397,13 @@ describe("applyThreadStatusLabel", () => {
     });
 
     // Should have created the label
-    expect(mockProvider.createLabel).toHaveBeenCalledWith("To Reply");
+    expect(mockProvider.createLabel).toHaveBeenCalledWith(TO_REPLY);
 
     // Should use the newly created label ID
     expect(mockProvider.labelMessage).toHaveBeenCalledWith({
       messageId,
       labelId: "label-to-reply",
-      labelName: "To Reply",
+      labelName: TO_REPLY,
     });
   });
 

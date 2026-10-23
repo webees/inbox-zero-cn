@@ -133,7 +133,9 @@ describe("sending a Gmail draft from the reader", () => {
     const { gmail, drafts, messages } = createGmail();
     drafts.list.mockResolvedValue({ data: { drafts: [] } });
 
-    await expect(sendEmailWithHtml(gmail, email)).rejects.toThrow(/draft/i);
+    await expect(sendEmailWithHtml(gmail, email)).rejects.toThrow(
+      "This draft is no longer available in Gmail. Check Sent before trying again.",
+    );
 
     expect(drafts.send).not.toHaveBeenCalled();
     expect(messages.send).not.toHaveBeenCalled();
@@ -144,7 +146,7 @@ describe("sending a Gmail draft from the reader", () => {
     messages.get.mockResolvedValue({ data: { labelIds: ["DRAFT", "SENT"] } });
 
     await expect(sendEmailWithHtml(gmail, email)).rejects.toThrow(
-      /already.*sent/i,
+      "This draft is already marked as sent in Gmail. Check Sent before sending another copy.",
     );
 
     expect(drafts.send).not.toHaveBeenCalled();
@@ -281,7 +283,9 @@ describe("sending a Gmail draft from the reader", () => {
           forwardedMessageId: "forwarded-message",
         },
       }),
-    ).rejects.toThrow("Reload the original message before forwarding");
+    ).rejects.toThrow(
+      "Reload the original message before forwarding. Its attachments could not be verified.",
+    );
 
     expect(messages.send).not.toHaveBeenCalled();
   });

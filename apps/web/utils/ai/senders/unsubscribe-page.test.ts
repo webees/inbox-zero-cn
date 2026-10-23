@@ -38,7 +38,7 @@ describe("aiCheckUnsubscribePageState", () => {
     expect(result).toBe("confirmed");
     expect(mockCreateGenerateObject).toHaveBeenCalledWith(
       expect.objectContaining({
-        label: "Unsubscribe page state",
+        label: "退订页面状态",
         promptHardening: { trust: "untrusted", level: "compact" },
       }),
     );

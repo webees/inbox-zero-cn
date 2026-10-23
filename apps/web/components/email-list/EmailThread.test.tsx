@@ -120,7 +120,7 @@ describe("EmailThread reply composer", () => {
     const view = render(
       <EmailThread messages={[first]} refetch={vi.fn()} showReplyButton />,
     );
-    fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+    fireEvent.click(screen.getByRole("button", { name: "回复" }));
     expect(screen.getByRole("textbox", { name: "Email message" })).toBeTruthy();
 
     view.rerender(
@@ -183,7 +183,7 @@ describe("EmailThread reply composer", () => {
     const editors = () =>
       screen.getAllByRole("textbox", { name: "Email message" });
     fireEvent.change(editors()[0], { target: { value: "Independent edit" } });
-    fireEvent.click(screen.getByRole("button", { name: "Forward" }));
+    fireEvent.click(screen.getByRole("button", { name: "转发" }));
     expect(editors().map((editor) => editor.dataset.draftSessionId)).toEqual([
       "independent-first:reply",
       "independent-second:reply",
@@ -262,11 +262,11 @@ describe("EmailThread reply composer", () => {
       screen.getByRole("textbox", { name: "Email message" }).dataset
         .draftSessionId,
     ).toBe("draft-v1:reply");
-    fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+    fireEvent.click(screen.getByRole("button", { name: "回复" }));
     expect(
       screen.getAllByRole("textbox", { name: "Email message" }),
     ).toHaveLength(1);
-    fireEvent.click(screen.getByRole("button", { name: "Forward" }));
+    fireEvent.click(screen.getByRole("button", { name: "转发" }));
     expect(
       screen.getAllByRole("textbox", { name: "Email message" }),
     ).toHaveLength(2);
@@ -303,7 +303,7 @@ describe("EmailThread outgoing replies", () => {
     );
     expect(outgoingRow?.querySelector("time")).toBeTruthy();
     expect(outgoingRow?.textContent).not.toContain("Sending");
-    expect(screen.getAllByRole("button", { name: "Reply" })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: "回复" })).toHaveLength(2);
 
     view.rerender(
       <EmailThread
@@ -332,7 +332,7 @@ describe("EmailThread outgoing replies", () => {
         showReplyButton
       />,
     );
-    fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+    fireEvent.click(screen.getByRole("button", { name: "回复" }));
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
 
     view.rerender(
@@ -374,7 +374,7 @@ describe("EmailThread outgoing replies", () => {
       const view = render(
         <EmailThread messages={[parent]} refetch={vi.fn()} showReplyButton />,
       );
-      fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+      fireEvent.click(screen.getByRole("button", { name: "回复" }));
       fireEvent.click(screen.getByRole("button", { name: "Queue send" }));
       view.rerender(
         <EmailThread
@@ -431,7 +431,7 @@ describe("EmailThread outgoing replies", () => {
       const view = render(
         <EmailThread messages={[parent]} refetch={vi.fn()} showReplyButton />,
       );
-      fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+      fireEvent.click(screen.getByRole("button", { name: "回复" }));
       fireEvent.click(screen.getByRole("button", { name: "Submit send" }));
       view.rerender(
         <EmailThread
@@ -579,7 +579,7 @@ describe("EmailThread outgoing replies", () => {
           showReplyButton
         />,
       );
-      fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+      fireEvent.click(screen.getByRole("button", { name: "回复" }));
       fireEvent.click(screen.getByRole("button", { name: "Queue send" }));
       await act(async () => vi.advanceTimersByTimeAsync(500));
       expect(screen.getByLabelText("Email message")).toBeTruthy();
@@ -614,7 +614,7 @@ describe("EmailThread outgoing replies", () => {
     );
     const reply = Array.from(
       outgoingRow?.querySelectorAll("button") ?? [],
-    ).find((button) => button.textContent === "Reply");
+    ).find((button) => button.textContent === "回复");
     if (!reply) throw new Error("expected a reply button on the sent reply");
     fireEvent.click(reply);
 
@@ -659,7 +659,7 @@ describe("EmailThread outgoing replies", () => {
       );
       const replyButton = Array.from(
         outgoingRow?.querySelectorAll("button") ?? [],
-      ).find((button) => button.textContent === "Reply");
+      ).find((button) => button.textContent === "回复");
       if (!replyButton) throw new Error("expected outgoing reply button");
       fireEvent.click(replyButton);
       view.rerender(

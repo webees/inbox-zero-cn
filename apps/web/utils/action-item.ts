@@ -7,14 +7,14 @@ import {
   isAiFilledArgValue,
 } from "@/utils/mcp/tool-specs";
 
-const AI_GENERATED_FIELD_VALUE = "AI-generated";
+const AI_GENERATED_FIELD_VALUE = "AI 生成";
 
 const DRAFT_REPLY_FIELDS = [
-  { name: "subject" as const, label: "Subject", expandable: true },
-  { name: "content" as const, label: "Content", textArea: true },
-  { name: "to" as const, label: "To", expandable: true },
-  { name: "cc" as const, label: "CC", expandable: true },
-  { name: "bcc" as const, label: "BCC", expandable: true },
+  { name: "subject" as const, label: "主题", expandable: true },
+  { name: "content" as const, label: "内容", textArea: true },
+  { name: "to" as const, label: "收件人", expandable: true },
+  { name: "cc" as const, label: "抄送", expandable: true },
+  { name: "bcc" as const, label: "密送", expandable: true },
 ];
 
 export const actionInputs: Record<
@@ -43,7 +43,7 @@ export const actionInputs: Record<
     fields: [
       {
         name: "labelId",
-        label: "Label",
+        label: "标签",
       },
     ],
   },
@@ -54,17 +54,17 @@ export const actionInputs: Record<
     fields: [
       {
         name: "content",
-        label: "Content",
+        label: "内容",
         textArea: true,
       },
       {
         name: "cc",
-        label: "CC",
+        label: "抄送",
         expandable: true,
       },
       {
         name: "bcc",
-        label: "BCC",
+        label: "密送",
         expandable: true,
       },
     ],
@@ -73,25 +73,25 @@ export const actionInputs: Record<
     fields: [
       {
         name: "subject",
-        label: "Subject",
+        label: "主题",
       },
       {
         name: "content",
-        label: "Content",
+        label: "内容",
         textArea: true,
       },
       {
         name: "to",
-        label: "To",
+        label: "收件人",
       },
       {
         name: "cc",
-        label: "CC",
+        label: "抄送",
         expandable: true,
       },
       {
         name: "bcc",
-        label: "BCC",
+        label: "密送",
         expandable: true,
       },
     ],
@@ -100,21 +100,21 @@ export const actionInputs: Record<
     fields: [
       {
         name: "to",
-        label: "To",
+        label: "收件人",
       },
       {
         name: "content",
-        label: "Extra Content",
+        label: "附加内容",
         textArea: true,
       },
       {
         name: "cc",
-        label: "CC",
+        label: "抄送",
         expandable: true,
       },
       {
         name: "bcc",
-        label: "BCC",
+        label: "密送",
         expandable: true,
       },
     ],
@@ -125,7 +125,7 @@ export const actionInputs: Record<
     fields: [
       {
         name: "url",
-        label: "Webhook URL",
+        label: "Webhook 地址",
         placeholder: "https://example.com/webhook",
       },
     ],
@@ -136,7 +136,7 @@ export const actionInputs: Record<
     fields: [
       {
         name: "folderName",
-        label: "Folder name",
+        label: "文件夹名称",
       },
     ],
   },
@@ -152,7 +152,7 @@ export const actionInputs: Record<
 export function getActionFields(fields: Action | ExecutedAction | undefined) {
   const res: Record<string, string> = {};
 
-  // only return fields with a value
+  // 只返回有值的字段
   if (fields?.label) res.label = fields.label;
   if (fields?.subject) res.subject = fields.subject;
   if (fields?.content) res.content = fields.content;

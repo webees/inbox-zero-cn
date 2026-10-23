@@ -1,60 +1,54 @@
 /**
- * Declarative specs for the MCP write tools that rule actions can call.
+ * MCP 写入工具（规则动作可调用）的声明式规格。
  *
- * One spec describes a tool's arguments once, and the rule editor, the AI
- * argument-filling pipeline, the executor, validation and history display all
- * read it. `buildPayload` is the only place that knows a tool's wire format.
+ * 一个规格只描述一次工具的参数，规则编辑器、AI 填参流程、执行器、校验和历史展示
+ * 都会读取它。`buildPayload` 是唯一知道工具线格式的地方。
  *
- * Storage semantics for `Action.integrationArgs`:
+ * `Action.integrationArgs` 的存储语义：
  *
- * - Text args: an empty (or absent) value on an arg with `aiPrompt` means the
- *   AI writes the whole value at execution time — the same convention as an
- *   empty `content` on a draft-reply action. A non-empty value is used
- *   literally, unless it contains `{{...}}`, which keeps working as the
- *   power-user template escape hatch.
- * - Select args: the stored value is always one of the option values, so the
- *   choice survives import/export and the v1 API round trip. An option can mean
- *   "let the AI decide" by matching `aiValue`; that is an explicit stored value,
- *   never an absent-vs-empty-string distinction. `buildPayload` maps option
- *   values to what the tool expects.
+ * - 文本参数：带 `aiPrompt` 的参数为空（或缺失）时，表示 AI 在执行时写入整个值——
+ *   与草稿回复动作的空 `content` 约定相同。非空值按字面使用，除非它包含 `{{...}}`，
+ *   此时仍作为高级用户的模板转义口继续生效。
+ * - 选择参数：存储值始终是某个选项值，因此该选择能在导入/导出和 v1 API 往返中保留。
+ *   选项可以通过匹配 `aiValue` 表示“让 AI 决定”；那是一个显式存储值，绝不是
+ *   缺失与空字符串的区分。`buildPayload` 把选项值映射为工具期望的内容。
  *
- * Display-only args (see `displayValueKey`) are stored alongside their arg so
- * the editor and history can show a human label, and are never sent to the tool.
+ * 仅用于展示的参数（见 `displayValueKey`）与其参数一起存储，以便编辑器和历史
+ * 显示可读的标签，并且永远不会发送给工具。
  */
 
 import type { IntegrationKey } from "@/utils/mcp/integrations";
 
 export type IntegrationArgOption = {
-  value: string; // stored in Action.integrationArgs
-  label: string; // shown in the rule editor
-  payloadValue?: string; // sent to the tool; omitted from the payload when absent
+  value: string; // 存储在 Action.integrationArgs 中
+  label: string; // 显示在规则编辑器中
+  payloadValue?: string; // 发送给工具；缺失时从 payload 中省略
 };
 
 export type IntegrationArgControl =
   | { type: "text" }
   | { type: "select"; options: readonly IntegrationArgOption[] }
-  // Options come from the integration itself: the control names the MCP read
-  // tool to call and how to read its response, so no caller needs to know
-  // which integration it is talking to.
+  // 选项来自集成本身：控件指定要调用的 MCP 读工具以及如何读取其响应，
+  // 因此调用方无需知道自己在与哪个集成交互。
   | {
       type: "remote-select";
-      optionsTool: string; // MCP read tool supplying the options (not the spec's write tool)
+      optionsTool: string; // 提供选项的 MCP 读工具（不是该规格的写工具）
       parseOptions: (content: unknown) => IntegrationArgOption[];
-      fallbackOptions?: readonly IntegrationArgOption[]; // always offered, even if the fetch fails
+      fallbackOptions?: readonly IntegrationArgOption[]; // 即使获取失败也始终提供
     };
 
 export type IntegrationArgSpec = {
-  key: string; // key inside Action.integrationArgs
+  key: string; // Action.integrationArgs 中的键
   label: string;
   control: IntegrationArgControl;
-  placeholder?: string; // plain-English description of what the AI will write
-  aiPrompt?: string; // set => this arg can be filled by the AI at execution time
-  aiValue?: string; // select-only: the stored option value meaning "AI decides"
+  placeholder?: string; // 对 AI 将写入内容的通俗描述
+  aiPrompt?: string; // 设置后 => 该参数可在执行时由 AI 填入
+  aiValue?: string; // 仅用于选择：表示“AI 决定”的存储选项值
   defaultValue?: string;
   defaultDisplayValue?: string;
-  displayValueKey?: string; // companion key holding a human label; never sent to the tool
-  required?: boolean; // must resolve to a non-empty value at execution time
-  llmDescription?: string; // set => the rule-writing LLM may set this arg
+  displayValueKey?: string; // 存放人类可读标签的伴生键；永不发送给工具
+  required?: boolean; // 执行时必须解析为非空值
+  llmDescription?: string; // 设置后 => 编写规则的 LLM 可设置该参数
 };
 
 export type IntegrationToolSpec = {
@@ -62,40 +56,40 @@ export type IntegrationToolSpec = {
   tool: string;
   actionLabel: string;
   displayArgKey?: string;
-  llmDescription: string; // describes the action to the rule-writing LLM
+  llmDescription: string; // 向编写规则的 LLM 描述该动作
   args: readonly IntegrationArgSpec[];
   buildPayload: (resolved: Record<string, string>) => Record<string, unknown>;
 };
 
-// Todoist's virtual inbox: always selectable, even before projects load.
+// Todoist 的虚拟收件箱：即使项目尚未加载也始终可选。
 const TODOIST_INBOX_PROJECT: IntegrationArgOption = {
   value: "inbox",
-  label: "Inbox",
+  label: "收件箱",
 };
 
 const TODOIST_DUE_DATE_AI_VALUE = "ai";
 
 const TODOIST_DUE_DATE_OPTIONS: readonly IntegrationArgOption[] = [
-  { value: TODOIST_DUE_DATE_AI_VALUE, label: "AI decides from email" },
-  { value: "none", label: "No due date" },
-  { value: "today", label: "Today", payloadValue: "today" },
-  { value: "tomorrow", label: "Tomorrow", payloadValue: "tomorrow" },
-  { value: "in-7-days", label: "In a week", payloadValue: "in 7 days" },
+  { value: TODOIST_DUE_DATE_AI_VALUE, label: "由 AI 根据邮件决定" },
+  { value: "none", label: "无截止日期" },
+  { value: "today", label: "今天", payloadValue: "today" },
+  { value: "tomorrow", label: "明天", payloadValue: "tomorrow" },
+  { value: "in-7-days", label: "一周后", payloadValue: "in 7 days" },
 ];
 
 const todoistAddTasksSpec: IntegrationToolSpec = {
   integration: "todoist",
   tool: "add-tasks",
-  actionLabel: "Add Todoist task",
+  actionLabel: "添加 Todoist 任务",
   displayArgKey: "content",
   llmDescription:
     "Add a task to the user's Todoist for the matching email. Only use this when the user explicitly asks to create Todoist tasks. Fails if Todoist isn't connected.",
   args: [
     {
       key: "content",
-      label: "Task",
+      label: "任务",
       control: { type: "text" },
-      placeholder: "AI writes a short action item from the email",
+      placeholder: "AI 根据邮件写一条简短的行动项",
       aiPrompt:
         "A short task title describing what the recipient needs to do about this email. Use a few words, not a sentence.",
       required: true,
@@ -104,9 +98,9 @@ const todoistAddTasksSpec: IntegrationToolSpec = {
     },
     {
       key: "description",
-      label: "Description",
+      label: "描述",
       control: { type: "text" },
-      placeholder: "AI writes one line of context",
+      placeholder: "AI 写一行上下文",
       aiPrompt:
         "One short line of context for the task. Return an empty string if the email adds no useful context.",
       llmDescription:
@@ -114,7 +108,7 @@ const todoistAddTasksSpec: IntegrationToolSpec = {
     },
     {
       key: "projectId",
-      label: "Project",
+      label: "项目",
       control: {
         type: "remote-select",
         optionsTool: "find-projects",
@@ -127,7 +121,7 @@ const todoistAddTasksSpec: IntegrationToolSpec = {
     },
     {
       key: "dueString",
-      label: "Due date",
+      label: "截止日期",
       control: { type: "select", options: TODOIST_DUE_DATE_OPTIONS },
       defaultValue: TODOIST_DUE_DATE_AI_VALUE,
       aiValue: TODOIST_DUE_DATE_AI_VALUE,
@@ -146,7 +140,7 @@ const todoistAddTasksSpec: IntegrationToolSpec = {
       resolved.dueString,
     );
 
-    // Todoist accepts a batch; rule actions always create exactly one task.
+    // Todoist 接受批量；规则动作始终只创建一个任务。
     return {
       tasks: [
         {
@@ -175,10 +169,9 @@ export function getIntegrationToolSpec(
 }
 
 /**
- * The spec to assume when an action doesn't name its integration and tool
- * (AI- and API-authored actions only carry flat fields). Returns undefined once
- * a second write tool exists, so adding one forces callers to be explicit
- * instead of silently picking whichever spec happens to be first.
+ * 当动作未指明其集成和工具时假定的规格（AI 和 API 编写的动作只携带扁平字段）。
+ * 一旦存在第二个写工具就返回 undefined，从而在新增工具时强制调用方显式指定，
+ * 而不是默默选择恰好排在最前面的那个规格。
  */
 export function getOnlyIntegrationToolSpec(): IntegrationToolSpec | undefined {
   return INTEGRATION_TOOL_SPECS.length === 1
@@ -186,19 +179,18 @@ export function getOnlyIntegrationToolSpec(): IntegrationToolSpec | undefined {
     : undefined;
 }
 
-const GENERIC_INTEGRATION_ACTION_LABEL = "Add to integration";
+const GENERIC_INTEGRATION_ACTION_LABEL = "添加到集成";
 
 /**
- * Names the action after the tool it calls. `ActionType` alone cannot say which
- * integration an action targets, so callers that have the action should pass it.
+ * 以动作调用的工具为其命名。仅凭 `ActionType` 无法说明动作针对哪个集成，
+ * 因此拥有该动作的调用方应把它传入。
  */
 export function getIntegrationActionLabel(action?: {
   integrationName?: string | null;
   integrationToolName?: string | null;
 }): string {
-  // Only guess when the action names no tool at all. An action that names an
-  // unknown tool must not borrow another integration's label, or previews and
-  // history would describe the wrong action.
+  // 仅在动作完全未指明工具时才进行猜测。指明了未知工具的动作不得借用其他集成的
+  // 标签，否则预览和历史会描述错误的动作。
   const namesTool = !!action?.integrationName || !!action?.integrationToolName;
   const spec = namesTool
     ? getIntegrationToolSpec(
@@ -228,7 +220,7 @@ export function getIntegrationActionDisplayValue(action: {
   return typeof value === "string" ? value.trim() || null : null;
 }
 
-/** Read tools the app calls directly to populate a remote-select. */
+/** 应用直接调用来填充远程选择的读取工具。 */
 export function getIntegrationRemoteSelectTools(integration: string): string[] {
   return INTEGRATION_TOOL_SPECS.filter(
     (spec) => spec.integration === integration,
@@ -239,7 +231,7 @@ export function getIntegrationRemoteSelectTools(integration: string): string[] {
   );
 }
 
-/** Resolves a remote-select arg from untrusted request parameters. */
+/** 从不可信的请求参数中解析远程选择参数。 */
 export function getRemoteSelectArg({
   integration,
   tool,
@@ -259,8 +251,7 @@ export function getRemoteSelectArg({
 }
 
 /**
- * Whether the AI fills this arg at execution time: an empty text arg, or a
- * select sitting on its "AI decides" option.
+ * AI 是否在执行时填入该参数：空文本参数，或停留在其“AI 决定”选项上的选择参数。
  */
 export function isAiFilledArgValue(
   arg: IntegrationArgSpec | undefined,
@@ -273,7 +264,7 @@ export function isAiFilledArgValue(
   return trimmed === "";
 }
 
-/** Args a newly added action starts with, per the spec's declared defaults. */
+/** 新增动作按规格声明的默认值开始时的参数。 */
 export function buildDefaultIntegrationArgs(
   spec: IntegrationToolSpec,
 ): Record<string, string> {
@@ -290,8 +281,8 @@ export function buildDefaultIntegrationArgs(
 }
 
 /**
- * Maps a loosely-specified select value (e.g. "in 7 days" from an AI-authored
- * rule) onto the option value we store, so the editor can show the choice.
+ * 把宽松指定的选择值（例如 AI 编写的规则里的 "in 7 days"）映射到我们存储的
+ * 选项值，以便编辑器展示该选择。
  */
 export function normalizeSelectArgValue(
   arg: IntegrationArgSpec,
@@ -308,7 +299,7 @@ export function normalizeSelectArgValue(
   return match?.value ?? trimmed;
 }
 
-/** A select value guaranteed to match one of the arg's options. */
+/** 保证能匹配该参数某个选项的选择值。 */
 export function getSelectArgOptionLabel(
   arg: IntegrationArgSpec,
   value: string | null | undefined,
@@ -316,22 +307,22 @@ export function getSelectArgOptionLabel(
   if (arg.control.type !== "select") return;
   const trimmed = value?.trim();
   if (!trimmed) return;
-  // A value outside the presets is a custom value (e.g. a due date the user or
-  // the AI wrote); show it as-is rather than hiding it behind a preset label.
+  // 预设之外的值是自定义值（例如用户或 AI 写的截止日期）；按原样展示，
+  // 而不是把它藏在预设标签后面。
   return (
     arg.control.options.find((option) => option.value === trimmed)?.label ??
     trimmed
   );
 }
 
-/** Keys the spec owns, including display-only companions. */
+/** 该规格拥有的键，包括仅用于展示的伴生键。 */
 export function getIntegrationArgKeys(spec: IntegrationToolSpec): string[] {
   return spec.args.flatMap((arg) =>
     arg.displayValueKey ? [arg.key, arg.displayValueKey] : [arg.key],
   );
 }
 
-/** Reads Todoist's `find-projects` response into selectable options. */
+/** 将 Todoist 的 `find-projects` 响应读取为可选项。 */
 function parseTodoistProjects(content: unknown): IntegrationArgOption[] {
   if (!Array.isArray(content)) return [];
 
@@ -384,6 +375,6 @@ function resolveSelectPayloadValue(
   if (!trimmed) return "";
 
   const option = options.find((candidate) => candidate.value === trimmed);
-  // Unknown values come from AI filling, which returns natural language.
+  // 未知值来自 AI 填充，它会返回自然语言。
   return option ? (option.payloadValue ?? "") : trimmed;
 }

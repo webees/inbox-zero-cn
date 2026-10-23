@@ -138,7 +138,7 @@ async function main() {
   );
   if (arms.length === 0) {
     throw new Error(
-      `no context source is populated on at least ${MIN_ELIGIBLE_CASES} selected cases`,
+      `在至少 ${MIN_ELIGIBLE_CASES} 个选中的用例上，没有任何上下文来源被填充`,
     );
   }
 
@@ -154,9 +154,9 @@ async function main() {
   console.log(
     [
       `model ${model.label} (${model.provider}:${model.model})`,
-      `split ${filters.split} · ${selected.length} cases selected · ${unionCases.length} eligible for at least one arm`,
-      `${arms.length} arms · k=${samples} · concurrency ${concurrency}`,
-      `${(unionCases.length + arms.reduce((total, arm) => total + arm.cases.length, 0)) * samples} drafting calls, each with 2 judge calls`,
+      `划分 ${filters.split} · 已选中 ${selected.length} 个用例 · ${unionCases.length} 个至少适用于一个实验组`,
+      `${arms.length} 个实验组 · k=${samples} · 并发 ${concurrency}`,
+      `${(unionCases.length + arms.reduce((total, arm) => total + arm.cases.length, 0)) * samples} 次起草调用，每次含 2 次评判调用`,
       "",
     ].join("\n"),
   );
@@ -493,9 +493,9 @@ function renderReport({
     ...(process.env.EVAL_INCLUDE_UNREVIEWED === "true"
       ? [PROVISIONAL_NOTE, ""]
       : []),
-    `Baseline over the union of eligible cases: **${formatPercent(baselineOverall.estimate)} send-ready** (95% CI ${formatPercent(baselineOverall.lower)} – ${formatPercent(baselineOverall.upper)}, ${unionCaseCount} cases, k=${samples}).`,
+    `在合格用例并集上的基线：**${formatPercent(baselineOverall.estimate)} 可发送**（95% CI ${formatPercent(baselineOverall.lower)} – ${formatPercent(baselineOverall.upper)}，${unionCaseCount} 个用例，k=${samples}）。`,
     "",
-    `${selectedCaseCount} cases selected · ${unionCaseCount} carry at least one ablatable source · one shared baseline arm · ${outcomes.length} ablated arms.`,
+    `已选中 ${selectedCaseCount} 个用例 · ${unionCaseCount} 个至少包含一个可消融来源 · 一个共享基线实验组 · ${outcomes.length} 个消融实验组。`,
     "",
     "Delta is ablated minus baseline, so a **negative delta means removing the source made drafts worse** (the source helps).",
     "Rows are sorted by absolute effect size. Holm p corrects across all arms in this table.",
@@ -506,9 +506,9 @@ function renderReport({
     "",
     ...(skipped.length > 0
       ? [
-          `Not tested (fewer than ${MIN_ELIGIBLE_CASES} populated cases): ${skipped
+          `未测试（填充用例少于 ${MIN_ELIGIBLE_CASES} 个）：${skipped
             .map((entry) => `\`${entry.source}\` n=${entry.caseCount}`)
-            .join(", ")}.`,
+            .join(", ")}。`,
           "",
         ]
       : []),

@@ -60,7 +60,7 @@ export async function checkRateLimit({
       remaining: Math.max(rule.limit - count, 0),
     };
   } catch (error) {
-    logger?.warn("Redis rate limit unavailable", {
+    logger?.warn("Redis 速率限制不可用", {
       error: error instanceof Error ? error.message : error,
     });
 
@@ -76,11 +76,10 @@ export function createRateLimitKey(parts: string[]) {
   return parts.map((part) => hashKeyPart(part)).join(":");
 }
 
-// Assumes the deployment sits behind a trusted platform or load balancer that
-// appends the real client IP to the trusted edge of the chain, so we read the
-// rightmost `x-forwarded-for` entry. Leftmost values, provider-specific
-// visitor IP headers, and `x-real-ip` can be client-controlled when the origin
-// is directly reachable and are unsafe to trust for rate limiting.
+// 假定部署位于可信平台或负载均衡器之后，它们会将真实客户端 IP 追加到
+// 信任链的可信边缘，因此我们读取最右侧的 `x-forwarded-for` 条目。
+// 当源站可直接访问时，最左侧的值、特定服务商的访客 IP 头以及
+// `x-real-ip` 都可能受客户端控制，用于速率限制并不可信。
 export function getClientIp(headers: Headers) {
   const forwardedFor = headers.get("x-forwarded-for");
   if (forwardedFor) {
@@ -113,7 +112,7 @@ function getRateLimitHashSecret() {
   const secret =
     env.AUTH_SECRET || env.NEXTAUTH_SECRET || env.EMAIL_ENCRYPT_SECRET;
   if (!secret) {
-    throw new Error("Rate limit hash secret missing: set AUTH_SECRET");
+    throw new Error("缺少速率限制哈希密钥：请设置 AUTH_SECRET");
   }
   return secret;
 }

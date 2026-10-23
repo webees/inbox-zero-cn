@@ -115,15 +115,14 @@ export function SetUpCategories({
     <>
       <Card className="m-4">
         <CardHeader>
-          <CardTitle>Set up sender categories</CardTitle>
+          <CardTitle>设置发件人分类</CardTitle>
           <CardDescription className="max-w-sm">
-            Automatically categorize senders for bulk archiving and AI
-            assistant.
+            自动为发件人分类，以便进行批量归档和使用 AI 助手
           </CardDescription>
         </CardHeader>
 
         <CardContent>
-          <TypographyH4>Choose categories</TypographyH4>
+          <TypographyH4>选择分类</TypographyH4>
 
           <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6">
             {combinedCategories.map((category) => (
@@ -158,7 +157,7 @@ export function SetUpCategories({
                 children: (
                   <>
                     <PenIcon className="mr-2 size-4" />
-                    Add your own
+                    添加自定义分类
                   </>
                 ),
               }}
@@ -243,17 +242,17 @@ function CategoryCard({
         <div className="flex gap-1">
           <Button size="iconSm" variant="ghost" onClick={onEdit}>
             <PenIcon className="size-4" />
-            <span className="sr-only">Edit</span>
+            <span className="sr-only">编辑</span>
           </Button>
           <Button size="iconSm" variant="ghost" onClick={onRemove}>
             <TrashIcon className="size-4" />
-            <span className="sr-only">Remove</span>
+            <span className="sr-only">移除</span>
           </Button>
         </div>
       ) : (
         <Button size="iconSm" variant="outline" onClick={onAdd}>
           <PlusIcon className="size-4" />
-          <span className="sr-only">Add</span>
+          <span className="sr-only">添加</span>
         </Button>
       )}
     </Card>

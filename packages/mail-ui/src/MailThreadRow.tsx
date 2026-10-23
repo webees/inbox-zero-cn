@@ -66,7 +66,7 @@ export function MailThreadRow({
   const selectionControl =
     selectionEnabled && renderSelectionControl
       ? renderSelectionControl({
-          ariaLabel: `Select conversation with ${participantSummary}`,
+          ariaLabel: `选择与 ${participantSummary} 的会话`,
           checked: isSelected,
           visible: showSelection,
           onClick: (event) => {
@@ -77,7 +77,7 @@ export function MailThreadRow({
         })
       : null;
   const draftMarker = isDraft ? (
-    <span className="shrink-0 text-primary text-sm">Draft</span>
+    <span className="shrink-0 text-primary text-sm">草稿</span>
   ) : null;
   const messageCountMarker =
     messageCount > 1 ? (
@@ -146,7 +146,7 @@ export function MailThreadRow({
       role="option"
       tabIndex={isFocused ? 0 : -1}
     >
-      {isStarred && <span className="sr-only">Starred conversation</span>}
+      {isStarred && <span className="sr-only">已加星标的会话</span>}
       <span
         className={cx(
           "flex h-3.5 shrink-0 items-center gap-1.5",

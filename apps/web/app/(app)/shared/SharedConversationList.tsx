@@ -37,14 +37,14 @@ export function SharedConversationList() {
             >
               <span>
                 <span className="block font-medium">
-                  Conversation shared by {conversation.publisher}
+                  {conversation.publisher} 分享的会话
                 </span>
                 <span className="text-muted-foreground text-xs">
-                  {conversation.commentCount} comments ·{" "}
+                  {conversation.commentCount} 条评论 ·{" "}
                   {new Date(conversation.updatedAt).toLocaleString()}
                 </span>
               </span>
-              {conversation.unread && <Badge>Unread</Badge>}
+              {conversation.unread && <Badge>未读</Badge>}
             </Link>
           ))}
         </div>

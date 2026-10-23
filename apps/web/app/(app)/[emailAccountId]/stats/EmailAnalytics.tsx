@@ -66,16 +66,16 @@ export function EmailAnalytics(props: {
             icon={
               <Mail className="size-4 text-neutral-500 translate-y-[-0.5px]" />
             }
-            title="Received"
+            title="收到"
             tabs={[
               {
                 id: "emailAddress",
-                label: "Email address",
+                label: "邮箱地址",
                 data: data.mostActiveSenderEmails.map(formatEmailItem),
               },
               {
                 id: "domain",
-                label: "Domain",
+                label: "域名",
                 data: data.mostActiveSenderDomains.map(formatEmailItem),
               },
             ]}
@@ -90,11 +90,11 @@ export function EmailAnalytics(props: {
         {dataRecipients && (
           <BarListCard
             icon={<Send className="size-4 text-neutral-500" />}
-            title="Sent"
+            title="已发送"
             tabs={[
               {
                 id: "emailAddress",
-                label: "Email address",
+                label: "邮箱地址",
                 data:
                   dataRecipients.mostActiveRecipientEmails.map(
                     formatRecipientItem,

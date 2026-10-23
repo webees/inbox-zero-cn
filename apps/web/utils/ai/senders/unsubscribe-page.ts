@@ -61,7 +61,7 @@ export async function aiCheckUnsubscribePageState({
         }),
     });
   } catch (error) {
-    logger.error("Failed to classify unsubscribe page", { error });
+    logger.error("无法对退订页面进行分类", { error });
     return "not_confirmed";
   }
 }
@@ -88,7 +88,7 @@ ${text}
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Unsubscribe page state",
+    label: "退订页面状态",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "compact" },
   });

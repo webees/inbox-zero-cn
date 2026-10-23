@@ -3,9 +3,7 @@
 The original SQL used `\v`, which PostgreSQL 15 interprets as the literal letter
 `v`. The corrected SQL uses the portable octal escape `\013` for vertical tab.
 
-Changing this file does not rerun a completed migration or clear a recorded
-failure. Use this procedure for an affected database, including databases where
-the original migration completed successfully.
+修改此文件不会重新运行已完成的迁移，也不会清除已记录的失败。对于受影响的数据库（包括原始迁移已成功完成的数据库），请使用此过程。
 
 Run from `apps/web` with `DIRECT_URL` set to a writable, direct connection to the
 affected database. Ensure Prisma's configured migration URL points to the same
@@ -34,7 +32,7 @@ database; preview URL variables take precedence over `DIRECT_URL`.
    pnpm exec prisma migrate resolve --applied 20260728170000_normalize_group_item_values
    ```
 
-   Skip this step if the migration was already successfully applied.
+   如果该迁移已成功应用，请跳过此步骤。
 4. Run `pnpm exec prisma migrate status` again, then deploy normally to apply any
    pending migrations.
 

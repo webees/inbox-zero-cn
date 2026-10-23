@@ -76,8 +76,8 @@ export default async function CategoriesPage({
         <Tabs defaultValue="categories">
           <TopBar className="items-center">
             <TabsList>
-              <TabsTrigger value="categories">Categories</TabsTrigger>
-              <TabsTrigger value="uncategorized">Uncategorized</TabsTrigger>
+              <TabsTrigger value="categories">分类</TabsTrigger>
+              <TabsTrigger value="uncategorized">未分类</TabsTrigger>
             </TabsList>
 
             <div className="flex items-center gap-2">
@@ -86,7 +86,7 @@ export default async function CategoriesPage({
                   children: (
                     <>
                       <SparklesIcon className="mr-2 size-4" />
-                      Bulk Categorize
+                      批量分类
                     </>
                   ),
                   variant: "outline",
@@ -97,7 +97,7 @@ export default async function CategoriesPage({
                   href={prefixPath(emailAccountId, "/smart-categories/setup")}
                 >
                   <PenIcon className="mr-2 size-4" />
-                  Edit
+                  编辑
                 </Link>
               </Button>
               <CreateCategoryButton />
@@ -108,10 +108,9 @@ export default async function CategoriesPage({
             {senders.length === 0 && (
               <Card className="m-4">
                 <CardHeader>
-                  <CardTitle>Categorize senders</CardTitle>
+                  <CardTitle>对发件人分类</CardTitle>
                   <CardDescription>
-                    Now that you have some categories, our AI can categorize
-                    senders.
+                    既然你已经有一些分类，我们的 AI 就能对发件人进行分类了。
                   </CardDescription>
                 </CardHeader>
                 <CardContent>

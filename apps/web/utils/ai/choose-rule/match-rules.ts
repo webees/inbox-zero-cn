@@ -158,6 +158,7 @@ export async function findMatchingRules({
       message,
       emailAccount,
       rules: potentialAiMatches,
+      coldEmailRule: null,
       classificationFeedback,
       logger,
     }).catch((error) => {

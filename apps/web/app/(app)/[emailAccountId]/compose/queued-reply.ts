@@ -39,16 +39,16 @@ type QueueReaderEmailOptions = {
   messageIds: string[];
   online: boolean;
   /**
-   * Called with the send's operation id just before it can appear in the
-   * thread. What it returns is called if the send is not admitted.
+   * 在发送操作可能出现在会话中之前，用该操作的 id 调用。
+   * 如果发送未被接纳，则调用其返回值。
    */
   onSubmitting?: (operationId: string) => () => void;
   onQueued?: (operationId: string) => Promise<void>;
   mutationId?: string;
   holdForUndo?: boolean;
-  /** The mailbox draft's saved copies, which the queued send replaces. */
+  /** 邮箱草稿已保存的副本，排队的发送会替换它们 */
   providerDraftMessageIds?: string[];
-  /** The files on the mailbox draft, kept so an undone send lists them. */
+  /** 邮箱草稿上的文件，保留以便撤销发送后仍能列出它们 */
   attachments?: ComposeAttachmentReference[];
   settlementTimeoutMs?: number;
   threadId: string;
@@ -61,9 +61,9 @@ export async function queueReaderEmail(
   if (!mutationId) {
     return queueReaderEmailOnce(options, crypto.randomUUID());
   }
-  // An undone send keeps its command id, so resending the restored draft moves
-  // to the next id in the chain. Deriving ids keeps a send that is still
-  // pending anywhere in the chain blocking duplicates.
+  // 撤销的发送会保留其命令 id，因此重发恢复的草稿时会
+  // 移动到链中的下一个 id。推导 id 可以确保链中任意位置
+  // 仍处于待处理状态的发送都会阻止重复发送。
   for (let attempt = 0; ; attempt += 1) {
     const commandId = sendCommandId(mutationId, attempt);
     try {

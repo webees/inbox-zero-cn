@@ -87,7 +87,7 @@ export async function removeConflictingThreadStatusLabels({
   }
 
   if (removeLabelIds.length === 0) {
-    logger.info("No conflicting labels to remove");
+    logger.info("没有需要移除的冲突标签");
     return true;
   }
 
@@ -98,7 +98,7 @@ export async function removeConflictingThreadStatusLabels({
       logger,
       emailAccountId,
       scope: "label-helpers",
-      message: "Failed to remove conflicting thread labels",
+      message: "移除冲突的会话标签失败",
       operation: "remove-conflicting-thread-status-labels",
       error,
       context: {
@@ -108,7 +108,7 @@ export async function removeConflictingThreadStatusLabels({
     return false;
   }
 
-  logger.info("Removed conflicting thread status labels", {
+  logger.info("已移除冲突的会话状态标签", {
     removedCount: removeLabelIds.length,
   });
   return true;
@@ -159,7 +159,7 @@ export async function applyThreadStatusLabel({
 
     // Must have labelId to proceed
     if (!targetLabel.labelId) {
-      logger.error("Failed to get or create target label", {
+      logger.error("获取或创建目标标签失败", {
         systemType,
         labelName: getRuleLabel(systemType),
       });
@@ -181,7 +181,7 @@ export async function applyThreadStatusLabel({
         logger,
         emailAccountId,
         scope: "label-helpers",
-        message: "Failed to apply thread status label",
+        message: "应用会话状态标签失败",
         operation: "apply-thread-status-label",
         error,
         context: {
@@ -193,8 +193,8 @@ export async function applyThreadStatusLabel({
     }
   };
 
-  // Sequential: Outlook rewrites the whole category list per message, so
-  // overlapping writes to the same message conflict or lose a change.
+  // 顺序执行：Outlook 会按邮件重写整个类别列表，因此
+  // 对同一封邮件的重叠写入会冲突或丢失某次变更。
   const removedConflicts = await removeConflictingThreadStatusLabels({
     emailAccountId,
     threadId,
@@ -207,7 +207,7 @@ export async function applyThreadStatusLabel({
   const addedTargetLabel = await addLabel();
 
   if (!removedConflicts || !addedTargetLabel) {
-    logger.warn("Thread status label application completed with errors", {
+    logger.warn("应用会话状态标签时出现错误", {
       removedConflicts,
       addedTargetLabel,
     });

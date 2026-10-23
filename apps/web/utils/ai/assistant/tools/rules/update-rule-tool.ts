@@ -82,14 +82,14 @@ export const updateRuleTool = ({
               .array(
                 createRuleActionSchema(provider, integrationActionsEnabled),
               )
-              .min(1, "Rules must have at least one action.")
+              .min(1, "规则至少需要有一个操作。")
               .optional()
               .describe(
                 "The full replacement list of actions. Use only when the user explicitly asks to change actions/outcomes. Omit for condition-only, name-only, or enabled-state-only edits; omitted actions are preserved. To remove one action, include every action that should remain and omit the action being removed. Empty action lists are invalid.",
               ),
           })
           .refine((updates) => Object.keys(updates).length > 0, {
-            message: "At least one update field is required.",
+            message: "至少需要一个更新字段。",
           }),
       })
       .describe("Patch update for an existing rule."),

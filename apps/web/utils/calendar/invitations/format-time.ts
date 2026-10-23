@@ -9,11 +9,11 @@ const TIME = "h:mm a";
 const DAY_AND_TIME = "EEE, MMM d, yyyy, h:mm a";
 
 /**
- * Renders an invitation's time range for a viewer in `timeZone`.
+ * 为 `timeZone` 中的查看者渲染邀请的时间范围。
  *
- * `start` and `end` come from the parser as either an absolute instant
- * ("2026-09-29T16:00:00.000Z"), a floating wall-clock time
- * ("2026-09-29T13:00:00"), or a plain date for all-day events.
+ * `start` 和 `end` 来自解析器，可能是绝对时刻
+ * ("2026-09-29T16:00:00.000Z")、浮动的墙上时钟时间
+ * ("2026-09-29T13:00:00")，或全天事件的纯日期。
  */
 export function formatInvitationTime(
   {
@@ -27,7 +27,7 @@ export function formatInvitationTime(
   const endDate = end ? toViewerDate(end, timeZone) : null;
 
   if (allDay) {
-    // DTEND is exclusive for all-day events, so it names the morning after.
+    // 对于全天事件 DTEND 是排他的，因此它指向次日早晨。
     const lastDay = endDate ? subDays(endDate, 1) : startDate;
     if (lastDay.getTime() <= startDate.getTime()) return format(startDate, DAY);
     return `${format(startDate, DAY)} – ${format(lastDay, DAY)}`;
@@ -40,8 +40,8 @@ export function formatInvitationTime(
 }
 
 function toViewerDate(value: string, timeZone: string) {
-  // A floating time or plain date carries no zone, so its wall clock is what
-  // every viewer should read; parseISO leaves those components untouched.
+  // 浮动时间或纯日期不携带时区，因此其挂钟时间才是
+  // 每个查看者应读取的；parseISO 不会改动这些组成部分。
   if (!value.endsWith("Z")) return parseISO(value);
   return new TZDate(new Date(value), timeZone);
 }

@@ -11,12 +11,11 @@ export function buildShareText({
   link,
   yearlyEmails,
 }: ShareParams): string {
-  const lists = senderCount === 1 ? "email list" : "email lists";
-  const base = `I just unsubscribed from ${senderCount} ${lists} with Inbox Zero`;
+  const base = `我刚刚用 Inbox Zero 退订了 ${senderCount} 个邮件列表`;
   if (yearlyEmails != null) {
-    return `${base} — that's ~${yearlyEmails.toLocaleString("en-US")} fewer emails a year. ${link}`;
+    return `${base}——一年大约少收 ${yearlyEmails.toLocaleString("en-US")} 封邮件。${link}`;
   }
-  return `${base}. ${link}`;
+  return `${base}。${link}`;
 }
 
 export function buildXShareUrl(params: ShareParams): string {
@@ -27,9 +26,8 @@ export function buildLinkedInShareUrl(params: ShareParams): string {
   return `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(buildShareText(params))}`;
 }
 
-// Projects how many emails these senders would have sent over a year, based on
-// how often they emailed during the selected range. This future saving is the
-// real win, not the handful of emails from the past few months.
+// 根据所选范围内发件人的发信频率，估算这些发件人在一年内会发来多少封邮件。
+// 未来省下的这些邮件才是真正的收益，而不是过去几个月里的那几封。
 export function projectYearlyEmails({
   emailCount,
   dateRange,
@@ -53,12 +51,12 @@ export function buildCelebrationSubline({
 }): string {
   const yearlyEmails = projectYearlyEmails({ emailCount, dateRange });
   if (yearlyEmails != null) {
-    return `At their current pace, that's about ${yearlyEmails.toLocaleString("en-US")} fewer ${yearlyEmails === 1 ? "email" : "emails"} a year.`;
+    return `按目前的频率，一年大约会少收 ${yearlyEmails.toLocaleString("en-US")} 封邮件。`;
   }
   if (emailCount > 0) {
-    return `That's ${emailCount.toLocaleString("en-US")} ${emailCount === 1 ? "email" : "emails"} you won't get again.`;
+    return `这些是你以后不会再收到的 ${emailCount.toLocaleString("en-US")} 封邮件。`;
   }
-  return "Those senders won't reach your inbox again.";
+  return "这些发件人不会再进入你的收件箱。";
 }
 
 function roundEstimate(value: number): number {

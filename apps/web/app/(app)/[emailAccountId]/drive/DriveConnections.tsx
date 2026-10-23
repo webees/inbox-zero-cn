@@ -25,9 +25,9 @@ export function DriveConnections() {
       ) : (
         <Empty>
           <EmptyHeader>
-            <EmptyTitle>No drive connections found</EmptyTitle>
+            <EmptyTitle>未找到云端硬盘连接</EmptyTitle>
             <EmptyDescription>
-              Connect your drive to start organizing your documents.
+              连接你的云端硬盘以开始整理文档。
             </EmptyDescription>
           </EmptyHeader>
         </Empty>

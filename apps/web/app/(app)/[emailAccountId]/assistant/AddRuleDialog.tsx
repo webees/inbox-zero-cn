@@ -13,7 +13,7 @@ export function AddRuleDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size="sm" Icon={PlusIcon}>
-          Add Rule
+          添加规则
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-5xl">

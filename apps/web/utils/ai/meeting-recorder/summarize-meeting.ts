@@ -64,9 +64,8 @@ export type MeetingSummaryInput = {
 };
 
 /**
- * Reads back a summary we stored as JSON. Parsed rather than cast so a row
- * written before a schema change is re-summarized instead of rendered with
- * fields the UI no longer expects.
+ * 读回我们以 JSON 存储的摘要。使用解析而非类型断言，这样在 schema 变更前写入的行
+ * 会被重新生成摘要，而不是用 UI 已不再期望的字段渲染。
  */
 export function parseMeetingSummary(value: unknown): MeetingSummary | null {
   const parsed = summarySchema.safeParse(value);
@@ -79,18 +78,17 @@ export async function aiSummarizeMeeting({
   attendees,
   transcript,
 }: MeetingSummaryInput): Promise<MeetingSummary> {
-  logger.info("Summarizing meeting", { utterances: transcript.length });
+  logger.info("正在总结会议", { utterances: transcript.length });
 
   const modelOptions = getModelForUseCase(
     emailAccount.user,
     LlmUseCase.MeetingSummary,
   );
 
-  // The transcript is third-party speech, so anything in it that looks like an
-  // instruction is data, not a command.
+  // 转录内容是第三方发言，因此其中任何看起来像指令的内容都是数据，而不是命令
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Summarize meeting",
+    label: "总结会议",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "full" },
   });

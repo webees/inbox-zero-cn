@@ -128,7 +128,7 @@ describe("getFilebotEmail", () => {
       getFilebotEmail({
         userEmail: "notanemail",
       }),
-    ).toThrow("Invalid email format");
+    ).toThrow("无效的邮箱格式");
   });
 });
 

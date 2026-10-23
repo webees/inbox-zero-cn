@@ -36,7 +36,7 @@ function WebhookSectionContent() {
   return (
     <Item size="sm">
       <ItemContent>
-        <ItemTitle>Webhook Secret</ItemTitle>
+        <ItemTitle>Webhook 密钥</ItemTitle>
       </ItemContent>
       <ItemActions>
         <Dialog
@@ -48,16 +48,15 @@ function WebhookSectionContent() {
         >
           <DialogTrigger asChild>
             <Button variant="outline" size="sm">
-              {data?.hasWebhookSecret ? "Manage Secret" : "Generate Secret"}
+              {data?.hasWebhookSecret ? "管理密钥" : "生成密钥"}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Webhook Secret</DialogTitle>
+              <DialogTitle>Webhook 密钥</DialogTitle>
               <DialogDescription>
-                Include this in the X-Webhook-Secret header when setting up
-                webhook endpoints. Existing secrets are not shown again. When
-                you generate a new secret, copy it before closing this dialog.
+                在设置 webhook 端点时，将其包含在 X-Webhook-Secret
+                请求头中。已有密钥不会再次显示。生成新密钥后，请在关闭此对话框前复制它。
               </DialogDescription>
             </DialogHeader>
             <LoadingContent loading={isLoading} error={error}>
@@ -67,8 +66,7 @@ function WebhookSectionContent() {
                     <CopyInput value={generatedSecret} masked />
                   ) : (
                     <p className="text-sm text-muted-foreground">
-                      Generate a new webhook secret to reveal it once for
-                      copying.
+                      生成新的 webhook 密钥以显示一次供复制。
                     </p>
                   )}
                   <RegenerateSecretButton

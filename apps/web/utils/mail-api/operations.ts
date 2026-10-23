@@ -87,7 +87,7 @@ export function createEmailProviderOperationExecutor(input: {
           };
         }
         // One bad message fails the whole bulk call; per-message retries
-        // isolate it so the rest still apply.
+        // 将其隔离，以免影响其余部分。
         return executeMetadataPerTarget(provider, accountId, metadataOperation);
       }
       return observeAppliedMetadata(provider, accountId, metadataOperation);
@@ -185,9 +185,9 @@ async function observeAppliedMetadata(
   return metadataResult(accountId, operation, targets, observations);
 }
 
-// One failed read rejects a whole provider batch, so retry individually to
+// 一次读取失败会导致整个服务商批次被拒，因此逐个重试，以便
 // keep the other messages observable. Unreadable messages stay unobserved;
-// the mutation already applied and catch-up can fill them in.
+// 变更已经应用，并能通过补偿补齐它们。
 async function readMessagesForObservation(
   provider: EmailProvider,
   messageIds: string[],
@@ -195,7 +195,7 @@ async function readMessagesForObservation(
   try {
     return await provider.getMessagesBatch(messageIds);
   } catch (error) {
-    logger.warn("Batched read failed after applying mail operation", {
+    logger.warn("应用邮件操作后批量读取失败", {
       error,
     });
     const messages = await Promise.all(
@@ -269,8 +269,8 @@ async function metadataResult(
         data: { inbox: false },
       });
     } catch (error) {
-      // A stats write failure must not retry an already applied provider move.
-      logger.error("Failed to update archived EmailMessage records", {
+      // 统计写入失败时不得重试已应用的服务商移动操作。
+      logger.error("更新已归档的 EmailMessage 记录失败", {
         emailAccountId: accountId,
         error,
       });
@@ -607,9 +607,9 @@ async function inspectSend(
 }
 
 /**
- * Sends the server holds for their undo window. Execute and inspect both land
- * here: the first call holds the email, and any call after its window sends
- * it, so a client that stays around doesn't wait on the cron.
+ * 服务器在撤销窗口内暂存的发送。执行和检查都会落到
+ * 此处：首次调用会暂存邮件，窗口期过后的任何调用都会发送
+ * 它，因此驻留的客户端无需等待定时任务。
  */
 async function driveHeldSend(
   provider: EmailProvider,
@@ -652,8 +652,8 @@ async function holdEngineSend(
       targets: [],
     };
   }
-  // A send with files goes out from the mailbox draft that holds them, so the
-  // hold keeps only that draft's id.
+  // 带文件的发送会从持有它们的邮箱草稿发出，因此
+  // 暂存只保留该草稿的 id。
   const input = scheduleEmailBody.safeParse({
     clientMutationId: mutationId,
     ...sendRequest(intent),
@@ -911,7 +911,7 @@ async function cancelPreparedSnooze(accountId: string, operationId: string) {
       emailAccountId: accountId,
     });
   } catch {
-    // The prepare row is optional once we are already rejecting.
+    // 既然我们已经拒绝，prepare 记录就是可选的。
   }
 }
 
@@ -929,8 +929,8 @@ async function threadIdForSnooze(
   }
 }
 
-// The body rides along so the sent message replaces the device's outgoing
-// copy fully rendered, rather than as a header waiting on its body.
+// 正文会一并携带，使已发送的消息能完全渲染地替换设备的
+// 发件副本，而不是仅有一个等待正文的头部。
 async function observeSentMessage(
   provider: EmailProvider,
   accountId: string,

@@ -52,7 +52,7 @@ describe("decideThreadStatus", () => {
     });
 
     expect(result.status).toBe(SystemType.TO_REPLY);
-    expect(result.rationale).toContain("85% confidence");
+    expect(result.rationale).toContain("85% 的置信度");
   });
 
   it("rejects a low-confidence status so the caller can use the LLM", async () => {
@@ -76,6 +76,6 @@ describe("decideThreadStatus", () => {
         userSentLastEmail: false,
         logger: createTestLogger(),
       }),
-    ).rejects.toThrow("confidence is too low");
+    ).rejects.toThrow("决策模型对会话状态的置信度过低");
   });
 });

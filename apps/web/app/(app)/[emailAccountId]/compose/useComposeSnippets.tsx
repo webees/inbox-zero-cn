@@ -140,10 +140,10 @@ export function useComposeSnippets({
         }}
         open={pickerOpen}
       >
-        <Tooltip content="Insert snippet">
+        <Tooltip content="插入片段">
           <PopoverTrigger asChild>
             <Button
-              aria-label="Insert snippet"
+              aria-label="插入片段"
               className="hover:bg-transparent"
               size="icon"
               type="button"
@@ -186,9 +186,9 @@ export function useComposeSnippets({
           onEscapeKeyDown={(event) => event.stopPropagation()}
         >
           <DialogHeader>
-            <DialogTitle>Save snippet</DialogTitle>
+            <DialogTitle>保存片段</DialogTitle>
             <DialogDescription className="sr-only">
-              Save a reusable snippet.
+              保存一个可复用的片段。
             </DialogDescription>
           </DialogHeader>
           <SnippetForm

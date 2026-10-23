@@ -238,7 +238,7 @@ describe.skipIf(!RUN_INTEGRATION_TESTS)(
         data: { status: string; failureReason: string };
       };
       expect(data.status).toBe(MeetingRecordingStatus.FAILED);
-      expect(data.failureReason).toMatch(/declined/i);
+      expect(data.failureReason).toMatch(/拒绝/);
     });
 
     test("does not request transcription twice for a redelivered recording", async () => {

@@ -143,7 +143,7 @@ export function getCategorizationStatusSnapshot(
       totalItems: 0,
       completedItems: 0,
       remainingItems: 0,
-      message: "Sender categorization has not started.",
+      message: "发件人分类尚未开始。",
     };
   }
 
@@ -158,8 +158,8 @@ export function getCategorizationStatusSnapshot(
       remainingItems: 0,
       message:
         progress.totalItems > 0
-          ? `Sender categorization completed for ${completedItems} senders.`
-          : "Sender categorization completed.",
+          ? `已完成 ${completedItems} 个发件人的分类。`
+          : "发件人分类已完成。",
     };
   }
 
@@ -168,7 +168,7 @@ export function getCategorizationStatusSnapshot(
     totalItems: progress.totalItems,
     completedItems,
     remainingItems,
-    message: `Categorizing senders: ${completedItems} of ${progress.totalItems} completed.`,
+    message: `正在分类发件人：已完成 ${completedItems}/${progress.totalItems}。`,
   };
 }
 

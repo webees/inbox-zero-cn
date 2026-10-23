@@ -68,16 +68,16 @@ export const adminProcessHistoryAction = adminActionClient
       });
 
       if (!emailAccount) {
-        throw new SafeError("Email account not found");
+        throw new SafeError("未找到邮箱账号");
       }
 
       const provider = emailAccount.account?.provider;
 
       if (!provider) {
-        throw new SafeError("No provider found for email account");
+        throw new SafeError("未找到该邮箱账号的服务商");
       }
 
-      logger.info("Starting admin process history", {
+      logger.info("开始管理员处理历史记录", {
         emailAccountId: emailAccount.id,
         provider,
         historyId,
@@ -99,7 +99,7 @@ export const adminProcessHistoryAction = adminActionClient
         logger,
       });
 
-      logger.info("Finished admin process history", {
+      logger.info("管理员处理历史记录完成", {
         emailAccountId: emailAccount.id,
         provider,
         historyId,
@@ -114,17 +114,17 @@ export const adminDeleteAccountAction = adminActionClient
   .action(async ({ parsedInput: { email }, ctx: { logger } }) => {
     try {
       const userToDelete = await prisma.user.findUnique({ where: { email } });
-      if (!userToDelete) throw new SafeError("User not found");
+      if (!userToDelete) throw new SafeError("未找到用户");
 
       await deleteUser({ userId: userToDelete.id, logger });
     } catch (error) {
-      logger.error("Failed to delete user", { email, error });
+      logger.error("删除用户失败", { email, error });
       throw new SafeError(
         `Failed to delete user: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
 
-    return { success: "User deleted" };
+    return { success: "用户已删除" };
   });
 
 export const adminSyncStripeForAllUsersAction = adminActionClient
@@ -137,7 +137,7 @@ export const adminSyncStripeForAllUsersAction = adminActionClient
     });
     for (const premium of users) {
       if (!premium.stripeCustomerId) continue;
-      logger.info("Syncing Stripe", {
+      logger.info("正在同步 Stripe", {
         stripeCustomerId: premium.stripeCustomerId,
       });
       await syncStripeDataToDb({
@@ -180,7 +180,7 @@ export const adminBackfillPremiumAdminsAction = adminActionClient
         if (connected) backfilled++;
         else skipped++;
       } catch (error) {
-        logger.error("Failed to backfill premium admin", {
+        logger.error("回填高级版管理员失败", {
           premiumId: premium.id,
           error,
         });
@@ -188,7 +188,7 @@ export const adminBackfillPremiumAdminsAction = adminActionClient
       }
     }
 
-    logger.info("Completed premium admin backfill", { backfilled, skipped });
+    logger.info("高级版管理员回填完成", { backfilled, skipped });
     return { backfilled, skipped };
   });
 
@@ -201,14 +201,14 @@ export const adminSyncStripeForUserAction = adminActionClient
     const user = await findUserByUserOrAccountEmail(normalizedEmail);
 
     if (!user?.premium) {
-      throw new SafeError("Premium record not found");
+      throw new SafeError("未找到高级版记录");
     }
 
     if (!user.premium.stripeCustomerId) {
-      throw new SafeError("Stripe customer ID not found");
+      throw new SafeError("未找到 Stripe 客户 ID");
     }
 
-    logger.info("Starting admin Stripe sync for user", {
+    logger.info("开始为用户同步管理员 Stripe 数据", {
       userId: user.id,
       premiumId: user.premium.id,
       stripeCustomerId: user.premium.stripeCustomerId,
@@ -228,7 +228,7 @@ export const adminSyncStripeForUserAction = adminActionClient
       },
     });
 
-    logger.info("Finished admin Stripe sync for user", {
+    logger.info("用户的管理员 Stripe 同步完成", {
       userId: user.id,
       premiumId: user.premium.id,
       stripeCustomerId: user.premium.stripeCustomerId,
@@ -252,10 +252,10 @@ export const adminSyncAppleSubscriptionForUserAction = adminActionClient
       const user = await findUserByUserOrAccountEmail(normalizedEmail);
 
       if (!user) {
-        throw new SafeError("User not found");
+        throw new SafeError("未找到用户");
       }
 
-      logger.info("Starting admin Apple subscription sync for user", {
+      logger.info("开始为用户同步管理员 Apple 订阅", {
         userId: user.id,
         transactionId,
       });
@@ -267,10 +267,10 @@ export const adminSyncAppleSubscriptionForUserAction = adminActionClient
       });
 
       if (!premium) {
-        throw new SafeError("Apple subscription could not be mapped to a user");
+        throw new SafeError("Apple 订阅无法映射到用户");
       }
 
-      logger.info("Finished admin Apple subscription sync for user", {
+      logger.info("用户的管理员 Apple 订阅同步完成", {
         userId: user.id,
         premiumId: premium.id,
         appleProductId: premium.appleProductId,
@@ -295,7 +295,7 @@ export const adminSyncAllStripeCustomersToDbAction = adminActionClient
   .action(async ({ ctx: { logger } }) => {
     const stripe = getStripe();
 
-    logger.info("Starting sync of all Stripe customers to DB");
+    logger.info("开始将所有 Stripe 客户同步到数据库");
 
     let hasMore = true;
     let startingAfter: string | undefined;
@@ -321,13 +321,13 @@ export const adminSyncAllStripeCustomersToDbAction = adminActionClient
       (c) => c.subscriptions && c.subscriptions.data.length > 0,
     );
 
-    logger.info("Found active customers in Stripe.", {
+    logger.info("在 Stripe 中找到有效客户。", {
       activeCustomersLength: activeCustomers.length,
     });
 
     for (const customer of activeCustomers) {
       if (!customer.email) {
-        logger.warn("Customer in Stripe has no email", {
+        logger.warn("Stripe 中的客户没有邮箱", {
           customerId: customer.id,
         });
         continue;
@@ -339,7 +339,7 @@ export const adminSyncAllStripeCustomersToDbAction = adminActionClient
       });
 
       if (!user) {
-        logger.warn("No user found in our DB for stripe customer", {
+        logger.warn("数据库中未找到该 Stripe 客户对应的用户", {
           stripeCustomerId: customer.id,
           stripeCustomerEmail: customer.email,
         });
@@ -351,7 +351,7 @@ export const adminSyncAllStripeCustomersToDbAction = adminActionClient
           user.premium.stripeCustomerId &&
           user.premium.stripeCustomerId !== customer.id
         ) {
-          logger.warn("Stripe customer ID mismatch for user", {
+          logger.warn("用户的 Stripe 客户 ID 不匹配", {
             dbStripeCustomerId: user.premium.stripeCustomerId,
             stripeCustomerId: customer.id,
           });
@@ -362,20 +362,17 @@ export const adminSyncAllStripeCustomersToDbAction = adminActionClient
             where: { id: user.premium.id },
             data: { stripeCustomerId: customer.id },
           });
-          logger.info("Updated stripe customer ID for user", {
+          logger.info("已更新用户的 Stripe 客户 ID", {
             stripeCustomerId: customer.id,
           });
         }
       } else {
-        logger.warn(
-          "User with stripe customer email exists, but has no premium account",
-          {
-            stripeCustomerId: customer.id,
-          },
-        );
+        logger.warn("存在使用该 Stripe 客户邮箱的用户，但其没有高级版账号", {
+          stripeCustomerId: customer.id,
+        });
       }
     }
-    logger.info("Finished syncing all Stripe customers to DB");
+    logger.info("所有 Stripe 客户同步到数据库完成");
     return { success: `Synced ${activeCustomers.length} customers.` };
   });
 
@@ -392,7 +389,7 @@ export const adminConvertGmailUrlAction = adminActionClient
   .inputSchema(convertGmailUrlBody)
   .action(
     async ({ parsedInput: { rfc822MessageId, email }, ctx: { logger } }) => {
-      // Clean up Message-ID (remove < > if present)
+      // 清理 Message-ID（如果存在 < > 则移除）
       const cleanMessageId = rfc822MessageId.trim().replace(/^<|>$/g, "");
 
       const emailAccount = await prisma.emailAccount.findUnique({
@@ -408,7 +405,7 @@ export const adminConvertGmailUrlAction = adminActionClient
       });
 
       if (!emailAccount) {
-        throw new SafeError("Email account not found");
+        throw new SafeError("未找到邮箱账号");
       }
 
       const emailProvider = await createEmailProvider({
@@ -427,13 +424,13 @@ export const adminConvertGmailUrlAction = adminActionClient
       }
 
       if (!message.threadId) {
-        throw new SafeError("Message does not have a thread ID");
+        throw new SafeError("邮件没有会话 ID");
       }
 
       const thread = await emailProvider.getThread(message.threadId);
 
       if (!thread) {
-        throw new SafeError("Could not find thread for message");
+        throw new SafeError("找不到该邮件的会话");
       }
 
       const messages =
@@ -467,7 +464,7 @@ export const adminGetLabelsAction = adminActionClient
     });
 
     if (!emailAccount) {
-      throw new SafeError("Email account not found");
+      throw new SafeError("未找到邮箱账号");
     }
 
     const emailProvider = await createEmailProvider({
@@ -491,7 +488,7 @@ export const adminWatchEmailsAction = adminActionClient
     });
 
     if (!emailAccount) {
-      throw new SafeError("Email account not found");
+      throw new SafeError("未找到邮箱账号");
     }
 
     const results = await ensureEmailAccountsWatched({
@@ -508,7 +505,7 @@ export const adminGetUserInfoAction = adminActionClient
   .action(async ({ parsedInput: { email } }) => {
     const lowerEmail = email.toLowerCase();
 
-    // Try finding by User.email first, then fall back to EmailAccount.email
+    // 先尝试按 User.email 查找，再回退到 EmailAccount.email
     let user = await findUserWithDetails(lowerEmail);
 
     if (!user) {
@@ -523,10 +520,10 @@ export const adminGetUserInfoAction = adminActionClient
     }
 
     if (!user) {
-      throw new SafeError("User not found");
+      throw new SafeError("未找到用户");
     }
 
-    // Get last executed rule date per email account
+    // 获取每个邮箱账号上次执行规则的日期
     const emailAccountIds = user.emailAccounts.map((ea) => ea.id);
     const lastExecutedRules =
       emailAccountIds.length > 0
@@ -595,7 +592,7 @@ export const adminLoadResponseTimeDataAction = adminActionClient
       });
 
       if (!emailAccount) {
-        throw new SafeError("Email account not found");
+        throw new SafeError("未找到邮箱账号");
       }
 
       const emailProvider = await createEmailProvider({
@@ -604,7 +601,7 @@ export const adminLoadResponseTimeDataAction = adminActionClient
         logger,
       });
 
-      logger.info("Starting admin response time data load", {
+      logger.info("开始加载管理员响应时间数据", {
         emailAccountId: emailAccount.id,
         maxSentMessages,
       });
@@ -617,7 +614,7 @@ export const adminLoadResponseTimeDataAction = adminActionClient
         providerRequestDelayMs: getAdminResponseTimeProviderDelayMs(),
       });
 
-      logger.info("Finished admin response time data load", {
+      logger.info("管理员响应时间数据加载完成", {
         emailAccountId: emailAccount.id,
         emailsAnalyzed: result.emailsAnalyzed,
         maxSentMessages,
@@ -647,7 +644,7 @@ export const adminDisableAllRulesAction = adminActionClient
     });
 
     if (emailAccounts.length === 0) {
-      throw new SafeError("No email accounts found");
+      throw new SafeError("未找到邮箱账号");
     }
 
     const emailAccountIds = emailAccounts.map((ea) => ea.id);
@@ -666,7 +663,7 @@ export const adminDisableAllRulesAction = adminActionClient
       }),
     ]);
 
-    logger.info("Disabled all rules and follow-up for email accounts", {
+    logger.info("已禁用邮箱账号的所有规则和跟进", {
       emailAccountCount: emailAccounts.length,
     });
 
@@ -694,7 +691,7 @@ export const adminCleanupDraftsAction = adminActionClient
     });
 
     if (emailAccounts.length === 0) {
-      throw new SafeError("No email accounts found");
+      throw new SafeError("未找到邮箱账号");
     }
 
     let totalDeleted = 0;

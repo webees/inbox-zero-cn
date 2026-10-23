@@ -22,7 +22,7 @@ export async function executeDurableEmailSend({
 }: {
   emailAccountId: string;
   getEmailProvider: () => Promise<EmailProvider>;
-  // A scheduled new message has no thread until the provider accepts the send.
+  // 计划发送的新邮件在服务商接受发送之前没有会话。
   input: Omit<DurableEmailSendBody, "threadId"> & { threadId: string | null };
   logger: Logger;
   provider: string;
@@ -42,7 +42,7 @@ export async function executeDurableEmailSend({
   if (!found && input.queuedAt < Date.now() - MAIL_MUTATION_RETRY_WINDOW_MS) {
     return {
       status: "rejected" as const,
-      error: "Queued email is too old to send safely",
+      error: "排队的邮件过于陈旧，无法安全发送",
     };
   }
   const existing = found
@@ -53,7 +53,7 @@ export async function executeDurableEmailSend({
         payloadHash,
       });
   if (existing.payloadHash !== payloadHash) {
-    return { status: "rejected" as const, error: "Mutation ID was reused" };
+    return { status: "rejected" as const, error: "变更 ID 已被重复使用" };
   }
   if (existing.status === EmailSendOperationStatus.SENT) {
     return { status: "already_applied" as const, result: existing.result };
@@ -71,7 +71,7 @@ export async function executeDurableEmailSend({
       },
       data: { status: EmailSendOperationStatus.UNCERTAIN },
     });
-    if (stale.count) logger.warn("Email send processing lease expired");
+    if (stale.count) logger.warn("邮件发送处理租约已过期");
     return stale.count
       ? { status: "uncertain" as const }
       : { status: "retry" as const };
@@ -95,7 +95,7 @@ export async function executeDurableEmailSend({
     });
     return { status: "applied" as const, result };
   } catch (error) {
-    logger.error("Email send operation failed", { error, stage });
+    logger.error("邮件发送操作失败", { error, stage });
     if (
       stage !== "persist_result" &&
       isEmailProviderRateLimitError({ error, provider })
@@ -117,8 +117,8 @@ export async function executeDurableEmailSend({
       });
       return { status: "blocked_auth" as const };
     }
-    // Providers throw SafeError for checks that run before anything is sent,
-    // so the outcome is known and the operation can be retried later.
+    // 服务商会在任何内容发送之前运行的检查中抛出 SafeError，
+    // 因此结果已知，且该操作可在之后重试。
     if (
       stage === "provider_setup" ||
       (stage === "send" && error instanceof SafeError)
@@ -131,7 +131,7 @@ export async function executeDurableEmailSend({
         error:
           error instanceof SafeError
             ? (error.safeMessage ?? error.message)
-            : "Could not prepare the email account. Please try again.",
+            : "无法准备邮箱账号。请重试。",
       };
     }
     await prisma.emailSendOperation.updateMany({

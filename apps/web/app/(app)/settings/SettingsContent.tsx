@@ -69,7 +69,7 @@ export function SettingsContent() {
   const organizationMembership = user?.members?.find(
     (member) => member.emailAccountId === activeEmailAccountId,
   );
-  // No membership means no organization yet — the invite modal then creates one.
+  // 没有成员身份表示还没有组织——邀请弹窗随后会创建一个。
   const canInviteMembers =
     !!user &&
     !!activeEmailAccountId &&
@@ -101,10 +101,7 @@ export function SettingsContent() {
 
   return (
     <div className="space-y-10">
-      <SettingsGroup
-        icon={<MailIcon className="size-5" />}
-        title="Email Accounts"
-      >
+      <SettingsGroup icon={<MailIcon className="size-5" />} title="邮箱账号">
         <LoadingContent loading={isLoading} error={error}>
           {emailAccounts.length > 0 && (
             <div className="space-y-4">
@@ -125,7 +122,7 @@ export function SettingsContent() {
               <Button asChild variant="outline">
                 <Link href="/accounts">
                   <MailIcon className="mr-2 size-4" />
-                  Add Account
+                  添加账号
                 </Link>
               </Button>
             </div>
@@ -136,7 +133,7 @@ export function SettingsContent() {
       {!env.NEXT_PUBLIC_BYPASS_PREMIUM_CHECKS && canManageBilling && (
         <SettingsGroup
           icon={<CreditCardIcon className="size-5" />}
-          title="Billing"
+          title="账单"
         >
           <ItemCard>
             <BillingSection />
@@ -145,7 +142,7 @@ export function SettingsContent() {
       )}
 
       {canInviteMembers && (
-        <SettingsGroup icon={<UsersIcon className="size-5" />} title="Team">
+        <SettingsGroup icon={<UsersIcon className="size-5" />} title="团队">
           <ItemCard>
             <TeamSection
               organizationId={organizationMembership?.organizationId}
@@ -157,7 +154,7 @@ export function SettingsContent() {
       {!env.NEXT_PUBLIC_AI_MODEL_SETTINGS_DISABLED && (
         <SettingsGroup
           icon={<SparklesIcon className="size-5" />}
-          title="AI Model"
+          title="AI 模型"
         >
           <ItemCard className="p-4">
             <ModelSection />
@@ -170,7 +167,7 @@ export function SettingsContent() {
         </SettingsGroup>
       )}
 
-      <SettingsGroup icon={<UserIcon className="size-5" />} title="Account">
+      <SettingsGroup icon={<UserIcon className="size-5" />} title="账号">
         <ItemCard>
           {env.NEXT_PUBLIC_EXTERNAL_API_ENABLED && <McpSection />}
           <EmailOtpSection hasMultipleAccounts={emailAccounts.length > 1} />
@@ -179,11 +176,11 @@ export function SettingsContent() {
           <ItemSeparator />
           <Item size="sm">
             <ItemContent>
-              <ItemTitle>Beta Features</ItemTitle>
+              <ItemTitle>测试版功能</ItemTitle>
             </ItemContent>
             <ItemActions>
               <Button asChild size="sm" variant="outline">
-                <Link href="/early-access">Open</Link>
+                <Link href="/early-access">打开</Link>
               </Button>
             </ItemActions>
           </Item>
@@ -195,10 +192,7 @@ export function SettingsContent() {
 
       {(env.NEXT_PUBLIC_WEBHOOK_ACTION_ENABLED !== false ||
         env.NEXT_PUBLIC_EXTERNAL_API_ENABLED) && (
-        <SettingsGroup
-          icon={<WebhookIcon className="size-5" />}
-          title="Developer"
-        >
+        <SettingsGroup icon={<WebhookIcon className="size-5" />} title="开发者">
           <ItemCard>
             {env.NEXT_PUBLIC_WEBHOOK_ACTION_ENABLED !== false && (
               <WebhookSection />
@@ -281,7 +275,7 @@ function EmailAccountSettingsCard({
               className="gap-1 text-xs font-normal cursor-pointer hover:bg-muted"
             >
               <PlugIcon className="size-3" />
-              Connect Apps
+              连接应用
             </Badge>
           </Link>
         )}

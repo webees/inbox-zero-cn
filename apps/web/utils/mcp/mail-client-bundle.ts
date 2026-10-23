@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-// The mail client UI is built separately and is absent from most deployments.
+// 邮件客户端 UI 是单独构建的，在大多数部署中不存在。
 const bundleDirectory = path.join(process.cwd(), "generated/mcp-app");
 const manifestPath = path.join(bundleDirectory, "manifest.json");
 

@@ -24,7 +24,7 @@ describe("trimStaleToolResults", () => {
     expect(firstSearch).toMatchObject({
       queryUsed: "query 0",
       exactCount: 47,
-      countError: "Exact message count unavailable",
+      countError: "无法获取精确的邮件计数",
       nextPageToken: "page-token-0",
       messages: [
         {
@@ -171,7 +171,7 @@ function searchRound(
               queryUsed: `query ${index}`,
               totalReturned: 1,
               exactCount: 47,
-              countError: "Exact message count unavailable",
+              countError: "无法获取精确的邮件计数",
               nextPageToken: `page-token-${index}`,
               hasMore: true,
               summary: { total: 1 },

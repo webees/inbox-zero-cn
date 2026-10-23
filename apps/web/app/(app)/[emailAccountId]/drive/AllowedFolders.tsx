@@ -118,16 +118,16 @@ function AllowedFoldersContent({
   return (
     <Card size="sm">
       <CardHeader>
-        <CardTitle>Allowed folders</CardTitle>
-        <CardDescription>AI can only file to these folders</CardDescription>
+        <CardTitle>允许的文件夹</CardTitle>
+        <CardDescription>AI 只能归档到这些文件夹</CardDescription>
       </CardHeader>
       <CardContent>
         {staleFolderCount > 0 && (
           <AlertBasic
             className="mb-4"
             variant="blue"
-            title="Deleted folders detected"
-            description={`Removed ${staleFolderCount} deleted folder${staleFolderCount === 1 ? "" : "s"} from your saved list.`}
+            title="检测到已删除的文件夹"
+            description={`已从保存列表中移除 ${staleFolderCount} 个已删除的文件夹。`}
           />
         )}
         {hasFolders ? (
@@ -161,7 +161,7 @@ function AllowedFoldersContent({
                 emailAccountId={emailAccountId}
                 driveConnectionId={driveConnectionId}
                 onFolderCreated={mutateFolders}
-                triggerLabel="Add folder"
+                triggerLabel="添加文件夹"
                 triggerVariant="ghost"
                 triggerSize="xs-2"
                 triggerIcon={PlusIcon}
@@ -293,7 +293,7 @@ export function FolderNode({
             className="py-1 text-xs text-muted-foreground italic"
             style={{ paddingLeft: (level + 1) * 16 + 28 }}
           >
-            No subfolders
+            没有子文件夹
           </div>
         ) : null}
       </TreeNodeContent>
@@ -317,9 +317,9 @@ export function NoFoldersFound({
           <EmptyMedia variant="icon">
             <FolderIcon />
           </EmptyMedia>
-          <EmptyTitle>No folders found</EmptyTitle>
+          <EmptyTitle>未找到文件夹</EmptyTitle>
           <EmptyDescription>
-            Create a folder in your drive to get started.
+            在你的云端硬盘中创建一个文件夹即可开始。
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
@@ -327,7 +327,7 @@ export function NoFoldersFound({
             emailAccountId={emailAccountId}
             driveConnectionId={driveConnectionId}
             onFolderCreated={onFolderCreated}
-            triggerLabel="Create folder"
+            triggerLabel="创建文件夹"
           />
         </EmptyContent>
       </Empty>
@@ -370,8 +370,8 @@ export function CreateFolderDialog({
     async (data) => {
       if (!driveConnectionId) {
         toastError({
-          title: "Error creating folder",
-          description: "No drive connection found",
+          title: "创建文件夹时出错",
+          description: "未找到云端硬盘连接",
         });
         return;
       }
@@ -383,11 +383,11 @@ export function CreateFolderDialog({
 
       if (result?.serverError) {
         toastError({
-          title: "Error creating folder",
+          title: "创建文件夹时出错",
           description: result.serverError,
         });
       } else {
-        toastSuccess({ description: "Folder created!" });
+        toastSuccess({ description: "文件夹已创建！" });
         reset();
         onClose();
         onFolderCreated?.();
@@ -411,22 +411,22 @@ export function CreateFolderDialog({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create folder</DialogTitle>
+          <DialogTitle>创建文件夹</DialogTitle>
           <DialogDescription>
-            Create a new folder in your drive to organize your files.
+            在你的云端硬盘中创建新文件夹来整理文件。
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <Input
             type="text"
             name="folderName"
-            label="Folder name"
-            placeholder="e.g. Receipts"
+            label="文件夹名称"
+            placeholder="例如：收据"
             registerProps={register("folderName")}
             error={errors.folderName}
           />
           <Button type="submit" loading={isSubmitting}>
-            Create folder
+            创建文件夹
           </Button>
         </form>
       </DialogContent>

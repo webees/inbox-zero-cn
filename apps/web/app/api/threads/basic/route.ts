@@ -29,14 +29,12 @@ export const GET = withEmailProvider("threads/basic", async (request) => {
       labelId: true,
       limit: true,
       nextPageToken: true,
-      type: true,
     })
     .parse({
       fromEmail: searchParams.get("fromEmail"),
       labelId: searchParams.get("labelId"),
       limit: searchParams.get("limit"),
       nextPageToken: searchParams.get("nextPageToken"),
-      type: searchParams.get("type"),
     });
 
   try {

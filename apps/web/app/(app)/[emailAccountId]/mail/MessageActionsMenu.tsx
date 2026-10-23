@@ -61,7 +61,7 @@ export function MessageActionsMenu({
       );
     } catch (error) {
       captureException(error);
-      toastError({ description: "Unable to download this message" });
+      toastError({ description: "无法下载此邮件" });
     }
   };
 
@@ -70,7 +70,7 @@ export function MessageActionsMenu({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            aria-label="More message actions"
+            aria-label="更多邮件操作"
             size="iconXs"
             variant="ghostMuted"
             onClick={(event) => event.stopPropagation()}
@@ -87,7 +87,7 @@ export function MessageActionsMenu({
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
               <SparklesIcon className="mr-2 size-4" />
-              Matched reason
+              匹配原因
             </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
               <DropdownMenuSubContent
@@ -106,7 +106,7 @@ export function MessageActionsMenu({
                   ))
                 ) : (
                   <p className="p-3 text-muted-foreground text-xs">
-                    No matched rules for this message.
+                    此邮件没有匹配的规则。
                   </p>
                 )}
               </DropdownMenuSubContent>
@@ -119,17 +119,17 @@ export function MessageActionsMenu({
             onSelect={() => printMessages({ subject, messages: [message] })}
           >
             <PrinterIcon className="mr-2 size-4" />
-            Print
+            打印
           </DropdownMenuItem>
 
           <DropdownMenuItem onSelect={downloadMessage}>
             <DownloadIcon className="mr-2 size-4" />
-            Download message
+            下载邮件
           </DropdownMenuItem>
 
           <DropdownMenuItem onSelect={() => setIsSourceOpen(true)}>
             <CodeIcon className="mr-2 size-4" />
-            Show original
+            显示原文
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

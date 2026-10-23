@@ -36,7 +36,7 @@ ${cleanedPromptFile}
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Prompt to rules",
+    label: "提示词转规则",
     modelOptions,
     promptHardening: { trust: "trusted" },
   });
@@ -59,8 +59,8 @@ ${cleanedPromptFile}
   });
 
   if (!aiResponse.object) {
-    logger.error("No rules found in AI response", { aiResponse });
-    throw new Error("No rules found in AI response");
+    logger.error("未在 AI 响应中找到规则", { aiResponse });
+    throw new Error("未在 AI 响应中找到规则");
   }
 
   const rules = aiResponse.object.rules;

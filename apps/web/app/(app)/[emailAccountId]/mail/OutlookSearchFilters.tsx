@@ -47,12 +47,8 @@ export function OutlookSearchFiltersForm({
   }
 
   return (
-    <form
-      aria-label="Search options"
-      className="grid gap-3"
-      onSubmit={handleSubmit}
-    >
-      <FilterField id="outlook-search-from" label="From">
+    <form aria-label="搜索选项" className="grid gap-3" onSubmit={handleSubmit}>
+      <FilterField id="outlook-search-from" label="发件人">
         <Input
           id="outlook-search-from"
           value={fields.from}
@@ -61,7 +57,7 @@ export function OutlookSearchFiltersForm({
         />
       </FilterField>
 
-      <FilterField id="outlook-search-to" label="To">
+      <FilterField id="outlook-search-to" label="收件人">
         <Input
           id="outlook-search-to"
           value={fields.to}
@@ -70,7 +66,7 @@ export function OutlookSearchFiltersForm({
         />
       </FilterField>
 
-      <FilterField id="outlook-search-subject" label="Subject">
+      <FilterField id="outlook-search-subject" label="主题">
         <Input
           id="outlook-search-subject"
           value={fields.subject}
@@ -79,7 +75,7 @@ export function OutlookSearchFiltersForm({
         />
       </FilterField>
 
-      <FilterField id="outlook-search-keywords" label="Keywords">
+      <FilterField id="outlook-search-keywords" label="关键词">
         <Input
           id="outlook-search-keywords"
           value={fields.keywords}
@@ -88,7 +84,7 @@ export function OutlookSearchFiltersForm({
         />
       </FilterField>
 
-      <FilterField id="outlook-search-doesnt-have" label="Doesn't have">
+      <FilterField id="outlook-search-doesnt-have" label="不包含">
         <Input
           id="outlook-search-doesnt-have"
           value={fields.doesntHave}
@@ -97,7 +93,7 @@ export function OutlookSearchFiltersForm({
         />
       </FilterField>
 
-      <FilterField id="outlook-search-size" label="Size">
+      <FilterField id="outlook-search-size" label="大小">
         <div className="grid grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)_auto] items-center gap-2">
           <Select
             value={fields.sizeComparison}
@@ -108,14 +104,14 @@ export function OutlookSearchFiltersForm({
             <SelectTrigger
               id="outlook-search-size"
               type="button"
-              aria-label="Size comparison"
+              aria-label="大小比较"
               className={mailSelectTriggerClassName}
             >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="greater">greater than</SelectItem>
-              <SelectItem value="less">less than</SelectItem>
+              <SelectItem value="greater">大于</SelectItem>
+              <SelectItem value="less">小于</SelectItem>
             </SelectContent>
           </Select>
           <Input
@@ -123,7 +119,7 @@ export function OutlookSearchFiltersForm({
             min="0"
             step="any"
             inputMode="decimal"
-            aria-label="Size amount"
+            aria-label="大小数值"
             value={fields.sizeValue}
             onChange={(event) => update("sizeValue", event.target.value)}
             className={mailControlClassName}
@@ -136,7 +132,7 @@ export function OutlookSearchFiltersForm({
           >
             <SelectTrigger
               type="button"
-              aria-label="Size unit"
+              aria-label="大小单位"
               className={`${mailSelectTriggerClassName} w-20`}
             >
               <SelectValue />
@@ -149,7 +145,7 @@ export function OutlookSearchFiltersForm({
         </div>
       </FilterField>
 
-      <FilterField id="outlook-search-received" label="Received">
+      <FilterField id="outlook-search-received" label="接收时间">
         <div className="grid grid-cols-[10rem_minmax(0,1fr)] items-center gap-2">
           <Select
             value={fields.dateWithin}
@@ -163,7 +159,7 @@ export function OutlookSearchFiltersForm({
             <SelectTrigger
               id="outlook-search-received"
               type="button"
-              aria-label="Date range"
+              aria-label="日期范围"
               className={mailSelectTriggerClassName}
             >
               <SelectValue />
@@ -178,7 +174,7 @@ export function OutlookSearchFiltersForm({
           </Select>
           <Input
             type="date"
-            aria-label="Date"
+            aria-label="日期"
             value={fields.date}
             onChange={(event) => update("date", event.target.value)}
             className={mailControlClassName}
@@ -186,7 +182,7 @@ export function OutlookSearchFiltersForm({
         </div>
       </FilterField>
 
-      <FilterField id="outlook-search-in" label="Search">
+      <FilterField id="outlook-search-in" label="搜索">
         <Select
           value={fields.searchIn}
           onValueChange={(value) => update("searchIn", value)}
@@ -206,7 +202,7 @@ export function OutlookSearchFiltersForm({
             ))}
             {folders.length ? (
               <SelectGroup>
-                <SelectLabel>Folders</SelectLabel>
+                <SelectLabel>文件夹</SelectLabel>
                 {folders.map((folder) => (
                   <SelectItem
                     key={`folder:${folder.name}`}
@@ -219,7 +215,7 @@ export function OutlookSearchFiltersForm({
             ) : null}
             {categories.length ? (
               <SelectGroup>
-                <SelectLabel>Categories</SelectLabel>
+                <SelectLabel>分类</SelectLabel>
                 {categories.map((category) => (
                   <SelectItem
                     key={`category:${category.name}`}
@@ -247,14 +243,14 @@ export function OutlookSearchFiltersForm({
             htmlFor="outlook-search-has-attachment"
             className="font-normal text-sm"
           >
-            Has attachment
+            含附件
           </Label>
         </div>
       </div>
 
       <div className="flex justify-end pt-1">
         <Button type="submit" variant="gradient" size="sm">
-          Search
+          搜索
         </Button>
       </div>
     </form>

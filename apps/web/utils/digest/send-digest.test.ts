@@ -113,7 +113,7 @@ describe("sendDigest", () => {
     (sendDigestToSlack as any).mockRejectedValue(new Error("slack broke"));
 
     await expect(sendDigest(baseArgs)).rejects.toThrow(
-      /All digest delivery channels failed/,
+      /所有邮件摘要投递渠道都失败了/,
     );
   });
 
@@ -137,7 +137,7 @@ describe("sendDigest", () => {
     ] as any);
 
     await expect(sendDigest(baseArgs)).rejects.toThrow(
-      /No deliverable digest channels/,
+      /没有可投递的邮件摘要渠道/,
     );
     expect(sendDigestToSlack).not.toHaveBeenCalled();
   });

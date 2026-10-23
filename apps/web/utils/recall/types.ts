@@ -28,8 +28,8 @@ export const recallTranscriptSchema = z.object({
   data: z.object({ download_url: z.string().nullish() }).nullish(),
 });
 
-// The downloaded transcript JSON: one entry per participant turn, each holding
-// individually timed words.
+// 下载的转录 JSON：每位参与者的发言对应一条记录，每条记录包含
+// 逐词计时。
 export const recallTranscriptDownloadSchema = z.array(
   z.object({
     participant: z.object({

@@ -36,27 +36,26 @@ export default function ToolsPage() {
   return (
     <Container>
       <div className="space-y-10 py-8">
-        <PageHeading>Assistant Tools</PageHeading>
+        <PageHeading>助手工具</PageHeading>
 
-        {/* Rule Cards */}
+        {/* 规则卡片 */}
         <section className="space-y-4">
-          <SectionHeader>Rule Cards</SectionHeader>
+          <SectionHeader>规则卡片</SectionHeader>
 
-          <MutedText>Created rules:</MutedText>
+          <MutedText>已创建的规则：</MutedText>
           <CreatedRuleToolCard
             preview
             status="created"
             args={{
-              name: "Hiring",
+              name: "招聘",
               condition: {
-                aiInstructions:
-                  "Emails related to hiring, job applications, or candidate communication",
+                aiInstructions: "与招聘、求职申请或候选人沟通相关的邮件",
                 static: null,
                 conditionalOperator: null,
               },
               actions: [
                 ruleAction(ActionType.FORWARD, { to: "jim@company.com" }),
-                ruleAction(ActionType.LABEL, { label: "Recruiting" }),
+                ruleAction(ActionType.LABEL, { label: "招聘" }),
               ],
             }}
           />
@@ -64,9 +63,9 @@ export default function ToolsPage() {
             preview
             status="created"
             args={{
-              name: "Newsletter Archive",
+              name: "邮件简报归档",
               condition: {
-                aiInstructions: "Newsletter and marketing emails",
+                aiInstructions: "邮件简报和营销邮件",
                 static: {
                   from: "newsletter@example.com",
                   to: null,
@@ -76,7 +75,7 @@ export default function ToolsPage() {
               },
               actions: [
                 ruleAction(ActionType.ARCHIVE),
-                ruleAction(ActionType.LABEL, { label: "Newsletter" }),
+                ruleAction(ActionType.LABEL, { label: "邮件简报" }),
                 ruleAction(ActionType.MARK_READ),
               ],
             }}
@@ -85,18 +84,18 @@ export default function ToolsPage() {
             preview
             status="created"
             args={{
-              name: "Billing Alerts",
+              name: "账单提醒",
               condition: {
                 aiInstructions: null,
                 static: {
                   from: "billing@stripe.com",
                   to: null,
-                  subject: "invoice",
+                  subject: "账单",
                 },
                 conditionalOperator: null,
               },
               actions: [
-                ruleAction(ActionType.LABEL, { label: "Billing" }),
+                ruleAction(ActionType.LABEL, { label: "账单" }),
                 ruleAction(ActionType.FORWARD, {
                   to: "finance@company.com",
                 }),
@@ -104,10 +103,10 @@ export default function ToolsPage() {
             }}
           />
 
-          <MutedText>Pending confirmation:</MutedText>
+          <MutedText>等待确认：</MutedText>
           <PendingCreateRulePreviewCard
             args={{
-              name: "AutoReply VIP",
+              name: "VIP 自动回复",
               condition: {
                 aiInstructions: null,
                 static: {
@@ -119,78 +118,74 @@ export default function ToolsPage() {
               },
               actions: [
                 ruleAction(ActionType.REPLY, {
-                  content:
-                    "{{Draft a short reply that answers the sender and proposes a next step}}",
+                  content: "{{起草一封简短的回复，回答发件人并提出下一步}}",
                 }),
               ],
             }}
             riskMessages={[
-              "High Risk: The AI can automatically generate and send any email content. A malicious actor could potentially trick the AI into generating unwanted or inappropriate content.",
+              "高风险：AI 可以自动生成并发送任何邮件内容。恶意行为者可能会诱骗 AI 生成不想要或不恰当的内容。",
             ]}
           />
 
-          <MutedText>Updated conditions (no diff):</MutedText>
+          <MutedText>已更新的条件（无差异）：</MutedText>
           <UpdatedRuleConditions
             preview
             ruleId="demo-rule"
             args={{
-              ruleName: "Hiring",
+              ruleName: "招聘",
               condition: {
-                aiInstructions:
-                  "Emails related to hiring, job applications, or candidate communication",
+                aiInstructions: "与招聘、求职申请或候选人沟通相关的邮件",
                 static: { from: "hr@company.com", to: null, subject: null },
                 conditionalOperator: "AND",
               },
             }}
             actions={[
               ruleAction(ActionType.FORWARD, { to: "jim@company.com" }),
-              ruleAction(ActionType.LABEL, { label: "Recruiting" }),
+              ruleAction(ActionType.LABEL, { label: "招聘" }),
             ]}
           />
 
-          <MutedText>Updated conditions (with diff):</MutedText>
+          <MutedText>已更新的条件（有差异）：</MutedText>
           <UpdatedRuleConditions
             preview
             ruleId="demo-rule"
             args={{
-              ruleName: "Newsletter",
+              ruleName: "邮件简报",
               condition: {
-                aiInstructions:
-                  "Emails that are newsletters, marketing, or promotional content",
+                aiInstructions: "属于邮件简报、营销或推广内容的邮件",
                 static: null,
                 conditionalOperator: null,
               },
             }}
             actions={[
               ruleAction(ActionType.ARCHIVE),
-              ruleAction(ActionType.LABEL, { label: "Newsletter" }),
+              ruleAction(ActionType.LABEL, { label: "邮件简报" }),
               ruleAction(ActionType.MARK_READ),
             ]}
             originalConditions={{
-              aiInstructions: "Emails that look like newsletters or marketing",
+              aiInstructions: "看起来像邮件简报或营销邮件的邮件",
               conditionalOperator: null,
             }}
             updatedConditions={{
-              aiInstructions:
-                "Emails that are newsletters, marketing, or promotional content",
+              aiInstructions: "属于邮件简报、营销或推广内容的邮件",
               conditionalOperator: null,
             }}
           />
 
-          <MutedText>Updated actions:</MutedText>
+          <MutedText>已更新的操作：</MutedText>
           <UpdatedRuleActions
             preview
             ruleId="demo-rule"
             args={{
-              ruleName: "Newsletter Archive",
+              ruleName: "邮件简报归档",
               actions: [
                 ruleAction(ActionType.ARCHIVE),
-                ruleAction(ActionType.LABEL, { label: "Newsletter" }),
+                ruleAction(ActionType.LABEL, { label: "邮件简报" }),
                 ruleAction(ActionType.MARK_READ),
               ],
             }}
             condition={{
-              aiInstructions: "Newsletter and marketing emails",
+              aiInstructions: "邮件简报和营销邮件",
               static: {
                 from: "newsletter@example.com",
               },
@@ -201,20 +196,19 @@ export default function ToolsPage() {
             preview
             ruleId="demo-rule"
             args={{
-              ruleName: "Hiring",
+              ruleName: "招聘",
               actions: [
                 ruleAction(ActionType.FORWARD, { to: "jim@company.com" }),
-                ruleAction(ActionType.LABEL, { label: "Recruiting" }),
+                ruleAction(ActionType.LABEL, { label: "招聘" }),
               ],
             }}
             condition={{
-              aiInstructions:
-                "Emails related to hiring, job applications, or candidate communication",
+              aiInstructions: "与招聘、求职申请或候选人沟通相关的邮件",
             }}
             originalActions={[
               {
                 type: ActionType.LABEL,
-                fields: buildRuleActionFields({ label: "Recruiting" }),
+                fields: buildRuleActionFields({ label: "招聘" }),
               },
             ]}
             updatedActions={[
@@ -225,17 +219,17 @@ export default function ToolsPage() {
               },
               {
                 type: ActionType.LABEL,
-                fields: buildRuleActionFields({ label: "Recruiting" }),
+                fields: buildRuleActionFields({ label: "招聘" }),
                 delayInMinutes: null,
               },
             ]}
           />
 
-          <MutedText>Updated rule status:</MutedText>
+          <MutedText>已更新的规则状态：</MutedText>
           <UpdatedRule
             preview
             args={{
-              ruleName: "Newsletter Archive",
+              ruleName: "邮件简报归档",
               updates: {
                 enabled: false,
               },
@@ -243,8 +237,8 @@ export default function ToolsPage() {
             output={{
               success: true,
               ruleId: "demo-rule",
-              originalName: "Newsletter Archive",
-              updatedName: "Newsletter Archive",
+              originalName: "邮件简报归档",
+              updatedName: "邮件简报归档",
               originalEnabled: true,
               updatedEnabled: false,
             }}
@@ -252,7 +246,7 @@ export default function ToolsPage() {
           <UpdatedRule
             preview
             args={{
-              ruleName: "Billing Alerts",
+              ruleName: "账单提醒",
               updates: {
                 enabled: true,
               },
@@ -260,17 +254,17 @@ export default function ToolsPage() {
             output={{
               success: true,
               ruleId: "demo-rule",
-              originalName: "Billing Alerts",
-              updatedName: "Billing Alerts",
+              originalName: "账单提醒",
+              updatedName: "账单提醒",
               originalEnabled: false,
               updatedEnabled: true,
             }}
           />
 
-          <MutedText>Pending delete confirmation:</MutedText>
+          <MutedText>等待删除确认：</MutedText>
           <PendingDeleteRulePreviewCard
             args={{
-              ruleName: "Old Vendor Alerts",
+              ruleName: "旧的供应商提醒",
             }}
             output={{
               success: true,
@@ -278,17 +272,17 @@ export default function ToolsPage() {
               requiresConfirmation: true,
               confirmationState: "pending",
               ruleId: "demo-rule",
-              ruleName: "Old Vendor Alerts",
+              ruleName: "旧的供应商提醒",
               wasEnabled: true,
             }}
           />
 
-          <MutedText>Updated learned patterns:</MutedText>
+          <MutedText>已更新的学习模式：</MutedText>
           <UpdatedLearnedPatterns
             preview
             ruleId="demo-rule"
             args={{
-              ruleName: "Newsletter",
+              ruleName: "邮件简报",
               learnedPatterns: [
                 {
                   include: {
@@ -309,12 +303,10 @@ export default function ToolsPage() {
           />
         </section>
 
-        {/* Email Actions */}
+        {/* 邮件操作 */}
         <section className="space-y-4">
-          <SectionHeader>Email Actions</SectionHeader>
-          <Suspense
-            fallback={<BasicToolInfo text="Loading email action states..." />}
-          >
+          <SectionHeader>邮件操作</SectionHeader>
+          <Suspense fallback={<BasicToolInfo text="正在加载邮件操作状态…" />}>
             <EmailAccountPreviewProvider>
               <ChatProvider>
                 <AssistantEmailActionStates />
@@ -323,15 +315,15 @@ export default function ToolsPage() {
           </Suspense>
         </section>
 
-        {/* Search & Read Results */}
+        {/* 搜索和读取结果 */}
         <section className="space-y-4">
-          <SectionHeader>Search & Read Results</SectionHeader>
+          <SectionHeader>搜索和读取结果</SectionHeader>
           <SearchInboxResult output={getAssistantSearchInboxOutput()} />
           <ReadEmailResult output={getAssistantReadEmailOutput()} />
         </section>
 
         <section className="space-y-4">
-          <SectionHeader>Inline Email Views</SectionHeader>
+          <SectionHeader>内联邮件视图</SectionHeader>
 
           <EmailLookupProvider value={assistantToolThreadLookup}>
             <SWRConfig
@@ -345,12 +337,12 @@ export default function ToolsPage() {
                 revalidateOnMount: false,
               }}
             >
-              <MutedText>Inline email list:</MutedText>
+              <MutedText>内联邮件列表：</MutedText>
               <AssistantInlineEmailResponse>
                 {getAssistantInlineEmailListMarkup()}
               </AssistantInlineEmailResponse>
 
-              <MutedText>Inline email detail:</MutedText>
+              <MutedText>内联邮件详情：</MutedText>
               <AssistantInlineEmailResponse>
                 {getAssistantInlineEmailDetailMarkup()}
               </AssistantInlineEmailResponse>
@@ -358,30 +350,26 @@ export default function ToolsPage() {
           </EmailLookupProvider>
         </section>
 
-        {/* Error States */}
+        {/* 错误状态 */}
         <section className="space-y-4">
-          <SectionHeader>Error States</SectionHeader>
+          <SectionHeader>错误状态</SectionHeader>
 
-          <MutedText>
-            Search error (inline in the search result card):
-          </MutedText>
+          <MutedText>搜索错误（内联显示在搜索结果卡片中）：</MutedText>
           <SearchInboxResult output={getAssistantSearchInboxErrorOutput()} />
 
-          <MutedText>
-            Generic tool errors (used by most other failed tools):
-          </MutedText>
+          <MutedText>通用工具错误（用于大多数其他失败的工具）：</MutedText>
           <div className="grid gap-2 md:grid-cols-2">
-            <ToolErrorCardPreview error="Failed to read email" />
-            <ToolErrorCardPreview error="Failed to update rule conditions" />
-            <ToolErrorCardPreview error="Failed to update rule state" />
-            <ToolErrorCardPreview error="Missing rule ID in response" />
-            <ToolErrorCardPreview error="Failed to load rule execution for message" />
+            <ToolErrorCardPreview error="无法读取邮件" />
+            <ToolErrorCardPreview error="无法更新规则条件" />
+            <ToolErrorCardPreview error="无法更新规则状态" />
+            <ToolErrorCardPreview error="响应中缺少规则 ID" />
+            <ToolErrorCardPreview error="无法加载邮件的规则执行记录" />
           </div>
         </section>
 
-        {/* Manage Inbox Results */}
+        {/* 管理收件箱结果 */}
         <section className="space-y-4">
-          <SectionHeader>Manage Inbox Results</SectionHeader>
+          <SectionHeader>管理收件箱结果</SectionHeader>
           <ManageInboxResult
             input={{
               action: "archive_threads",
@@ -400,7 +388,7 @@ export default function ToolsPage() {
             input={{
               action: "archive_threads",
               threadIds: ["thread-1", "thread-2", "thread-3"],
-              label: "Newsletter",
+              label: "邮件简报",
             }}
             output={{
               action: "archive_threads",
@@ -470,16 +458,16 @@ export default function ToolsPage() {
           />
         </section>
 
-        {/* Sender Category Results */}
+        {/* 发件人分类结果 */}
         <section className="space-y-4">
-          <SectionHeader>Sender Category Results</SectionHeader>
+          <SectionHeader>发件人分类结果</SectionHeader>
 
-          <MutedText>Archived a small category:</MutedText>
+          <MutedText>已归档一个小分类：</MutedText>
           <ManageSenderCategoryResult
             output={{
               success: true,
               action: "archive_category",
-              category: { id: "cat-1", name: "Newsletters" },
+              category: { id: "cat-1", name: "邮件简报" },
               sendersCount: 4,
               senders: [
                 "updates@example.com",
@@ -487,44 +475,40 @@ export default function ToolsPage() {
                 "digest@example.com",
                 "weekly@example.com",
               ],
-              message: 'Archived mail from 4 senders in "Newsletters".',
+              message: "已归档“邮件简报”中 4 个发件人的邮件。",
             }}
           />
 
-          <MutedText>
-            Archived a large category (scrollable list inside the card):
-          </MutedText>
+          <MutedText>已归档一个大分类（卡片内为可滚动列表）：</MutedText>
           <ManageSenderCategoryResult
             output={{
               success: true,
               action: "archive_category",
-              category: { id: "cat-2", name: "Promotions" },
+              category: { id: "cat-2", name: "推广邮件" },
               sendersCount: 60,
               senders: buildFakeSenderList(60, "promo"),
-              message: 'Archived mail from 60 senders in "Promotions".',
+              message: "已归档“推广邮件”中 60 个发件人的邮件。",
             }}
           />
 
-          <MutedText>
-            Archived with server-side cap hit ("+ N more not shown"):
-          </MutedText>
+          <MutedText>达到服务端上限时归档（未显示“+ N 更多”）：</MutedText>
           <ManageSenderCategoryResult
             output={{
               success: true,
               action: "archive_category",
-              category: { id: "cat-4", name: "Marketing" },
+              category: { id: "cat-4", name: "营销" },
               sendersCount: 237,
               senders: buildFakeSenderList(100, "marketing"),
-              message: 'Archived mail from 237 senders in "Marketing".',
+              message: "已归档“营销”中 237 个发件人的邮件。",
             }}
           />
 
-          <MutedText>Uncategorized senders:</MutedText>
+          <MutedText>未分类的发件人：</MutedText>
           <ManageSenderCategoryResult
             output={{
               success: true,
               action: "archive_category",
-              category: { id: null, name: "Uncategorized" },
+              category: { id: null, name: "未分类" },
               sendersCount: 8,
               senders: [
                 "random@example.com",
@@ -536,99 +520,98 @@ export default function ToolsPage() {
                 "team@example.com",
                 "support@example.com",
               ],
-              message: 'Archived mail from 8 senders in "Uncategorized".',
+              message: "已归档“未分类”中 8 个发件人的邮件。",
             }}
           />
 
-          <MutedText>Empty category (no senders):</MutedText>
+          <MutedText>空分类（无发件人）：</MutedText>
           <ManageSenderCategoryResult
             output={{
               success: true,
               action: "archive_category",
-              category: { id: "cat-3", name: "Receipts" },
+              category: { id: "cat-3", name: "收据" },
               sendersCount: 0,
               senders: [],
-              message: 'No senders are currently assigned to "Receipts".',
+              message: "“收据”当前没有分配任何发件人。",
             }}
           />
         </section>
 
-        {/* Settings & Knowledge */}
+        {/* 设置和知识库 */}
         <section className="space-y-4">
-          <SectionHeader>Settings & Knowledge</SectionHeader>
+          <SectionHeader>设置和知识库</SectionHeader>
           <UpdatePersonalInstructions
             args={{
               personalInstructions:
-                "I prefer concise responses and want newsletters archived by default.",
+                "我更喜欢简洁的回复，并希望默认归档邮件简报。",
               mode: "replace",
             }}
           />
           <Suspense>
             <AddToKnowledgeBase
               args={{
-                title: "Escalation preference",
-                content:
-                  "Escalate billing emails quickly and keep status updates short.",
+                title: "升级偏好",
+                content: "快速升级账单邮件，并保持状态更新简短。",
               }}
             />
           </Suspense>
         </section>
 
-        {/* Basic Tool Info States */}
+        {/* 基础工具信息状态 */}
         <section className="space-y-4">
-          <SectionHeader>Basic Tool Info States</SectionHeader>
-          <MutedText>Input states (loading indicators):</MutedText>
+          <SectionHeader>基础工具信息状态</SectionHeader>
+          <MutedText>输入状态（加载指示器）：</MutedText>
           <div className="grid gap-2 md:grid-cols-2">
-            <BasicToolInfo text="Loading account overview..." />
-            <BasicToolInfo text="Loading assistant capabilities..." />
-            <BasicToolInfo text="Updating settings..." />
-            <BasicToolInfo text="Searching inbox..." />
-            <BasicToolInfo text="Reading email..." />
-            <BasicToolInfo text="Archiving emails..." />
-            <BasicToolInfo text="Archiving and labeling emails..." />
-            <BasicToolInfo text="Marking emails as read..." />
-            <BasicToolInfo text="Marking emails as unread..." />
-            <BasicToolInfo text="Bulk archiving by sender..." />
-            <BasicToolInfo text="Unsubscribing senders..." />
-            <BasicToolInfo text="Updating inbox features..." />
-            <BasicToolInfo text="Preparing email..." />
-            <BasicToolInfo text="Preparing reply..." />
-            <BasicToolInfo text="Preparing forward..." />
-            <BasicToolInfo text="Reading rules and settings..." />
-            <BasicToolInfo text="Reading learned patterns..." />
-            <BasicToolInfo text='Creating rule "Newsletters"...' />
-            <BasicToolInfo text='Updating rule "Newsletters" conditions...' />
-            <BasicToolInfo text='Updating rule "Newsletters" actions...' />
-            <BasicToolInfo text='Disabling rule "Newsletters"...' />
-            <BasicToolInfo text='Enabling rule "Newsletters"...' />
-            <BasicToolInfo text='Preparing to delete rule "Newsletters"...' />
-            <BasicToolInfo text='Updating learned patterns for rule "Newsletters"...' />
-            <BasicToolInfo text="Updating about..." />
-            <BasicToolInfo text="Adding to knowledge base..." />
-            <BasicToolInfo text="Saving memory..." />
-            <BasicToolInfo text="Searching memories..." />
-            <BasicToolInfo text="Checking sender categories..." />
-            <BasicToolInfo text="Starting sender categorization..." />
-            <BasicToolInfo text="Checking categorization progress..." />
-            <BasicToolInfo text='Archiving "Newsletters" category...' />
+            <BasicToolInfo text="正在加载账号概览…" />
+            <BasicToolInfo text="正在加载助手功能…" />
+            <BasicToolInfo text="正在更新设置…" />
+            <BasicToolInfo text="正在搜索收件箱…" />
+            <BasicToolInfo text="正在读取邮件…" />
+            <BasicToolInfo text="正在归档邮件…" />
+            <BasicToolInfo text="正在归档并给邮件打标签…" />
+            <BasicToolInfo text="正在将邮件标记为已读…" />
+            <BasicToolInfo text="正在将邮件标记为未读…" />
+            <BasicToolInfo text="正在按发件人批量归档…" />
+            <BasicToolInfo text="正在退订发件人…" />
+            <BasicToolInfo text="正在更新收件箱功能…" />
+            <BasicToolInfo text="正在准备邮件…" />
+            <BasicToolInfo text="正在准备回复…" />
+            <BasicToolInfo text="正在准备转发…" />
+            <BasicToolInfo text="正在读取规则和设置…" />
+            <BasicToolInfo text="正在读取学习模式…" />
+            <BasicToolInfo text="正在创建规则“邮件简报”…" />
+            <BasicToolInfo text="正在更新规则“邮件简报”的条件…" />
+            <BasicToolInfo text="正在更新规则“邮件简报”的操作…" />
+            <BasicToolInfo text="正在停用规则“邮件简报”…" />
+            <BasicToolInfo text="正在启用规则“邮件简报”…" />
+            <BasicToolInfo text="正在准备删除规则“邮件简报”…" />
+            <BasicToolInfo text="正在更新规则“邮件简报”的学习模式…" />
+            <BasicToolInfo text="正在更新个人简介…" />
+            <BasicToolInfo text="正在添加到知识库…" />
+            <BasicToolInfo text="正在保存记忆…" />
+            <BasicToolInfo text="正在搜索记忆…" />
+            <BasicToolInfo text="正在检查发件人分类…" />
+            <BasicToolInfo text="正在开始发件人分类…" />
+            <BasicToolInfo text="正在检查分类进度…" />
+            <BasicToolInfo text="正在归档“邮件简报”分类…" />
           </div>
 
-          <MutedText>Output states (completion messages):</MutedText>
+          <MutedText>输出状态（完成消息）：</MutedText>
           <div className="grid gap-2 md:grid-cols-2">
-            <BasicToolInfo text="Loaded account overview" />
-            <BasicToolInfo text="Loaded assistant capabilities" />
-            <BasicToolInfo text="Updated settings (2 changes)" />
-            <BasicToolInfo text="Updated inbox features" />
-            <BasicToolInfo text="Read rules and settings" />
-            <BasicToolInfo text="Read learned patterns" />
-            <BasicToolInfo text="Memory saved" />
-            <BasicToolInfo text="Found 2 memories" />
-            <BasicToolInfo text="Found 5 categories, 12 uncategorized senders" />
-            <BasicToolInfo text="Categorizing 43 senders" />
-            <BasicToolInfo text="Sender categorization already in progress" />
-            <BasicToolInfo text="Categorizing senders (12 of 43)" />
-            <BasicToolInfo text="Categorization complete" />
-            <BasicToolInfo text="Categorization hasn't started" />
+            <BasicToolInfo text="已加载账号概览" />
+            <BasicToolInfo text="已加载助手功能" />
+            <BasicToolInfo text="设置已更新（2 处变更）" />
+            <BasicToolInfo text="收件箱功能已更新" />
+            <BasicToolInfo text="已读取规则和设置" />
+            <BasicToolInfo text="已读取学习模式" />
+            <BasicToolInfo text="记忆已保存" />
+            <BasicToolInfo text="找到 2 条记忆" />
+            <BasicToolInfo text="找到 5 个分类、12 个未分类的发件人" />
+            <BasicToolInfo text="正在分类 43 个发件人" />
+            <BasicToolInfo text="发件人分类已在进行中" />
+            <BasicToolInfo text="正在分类发件人（43 个中的第 12 个）" />
+            <BasicToolInfo text="分类完成" />
+            <BasicToolInfo text="分类尚未开始" />
           </div>
         </section>
       </div>
@@ -640,7 +623,7 @@ function AssistantEmailActionStates() {
   return (
     <div className="space-y-4">
       <div className="space-y-3">
-        <MutedText>Send — pending</MutedText>
+        <MutedText>发送 — 等待中</MutedText>
         <SendEmailResult
           output={getAssistantSendEmailOutput("pending")}
           chatMessageId="assistant-demo-send-pending"
@@ -650,7 +633,7 @@ function AssistantEmailActionStates() {
       </div>
 
       <div className="space-y-3">
-        <MutedText>Send — processing</MutedText>
+        <MutedText>发送 — 处理中</MutedText>
         <SendEmailResult
           output={getAssistantSendEmailOutput("processing")}
           chatMessageId="assistant-demo-send-processing"
@@ -660,7 +643,7 @@ function AssistantEmailActionStates() {
       </div>
 
       <div className="space-y-3">
-        <MutedText>Send — confirmed</MutedText>
+        <MutedText>发送 — 已确认</MutedText>
         <SendEmailResult
           output={getAssistantSendEmailOutput("confirmed")}
           chatMessageId="assistant-demo-send-confirmed"
@@ -670,7 +653,7 @@ function AssistantEmailActionStates() {
       </div>
 
       <div className="space-y-3">
-        <MutedText>Reply — pending</MutedText>
+        <MutedText>回复 — 等待中</MutedText>
         <ReplyEmailResult
           output={getAssistantReplyEmailOutput("pending")}
           chatMessageId="assistant-demo-reply-pending"
@@ -680,7 +663,7 @@ function AssistantEmailActionStates() {
       </div>
 
       <div className="space-y-3">
-        <MutedText>Reply — confirmed</MutedText>
+        <MutedText>回复 — 已确认</MutedText>
         <ReplyEmailResult
           output={getAssistantReplyEmailOutput("confirmed")}
           chatMessageId="assistant-demo-reply-confirmed"
@@ -690,7 +673,7 @@ function AssistantEmailActionStates() {
       </div>
 
       <div className="space-y-3">
-        <MutedText>Forward — pending</MutedText>
+        <MutedText>转发 — 等待中</MutedText>
         <ForwardEmailResult
           output={getAssistantForwardEmailOutput("pending")}
           chatMessageId="assistant-demo-forward-pending"
@@ -700,7 +683,7 @@ function AssistantEmailActionStates() {
       </div>
 
       <div className="space-y-3">
-        <MutedText>Forward — confirmed</MutedText>
+        <MutedText>转发 — 已确认</MutedText>
         <ForwardEmailResult
           output={getAssistantForwardEmailOutput("confirmed")}
           chatMessageId="assistant-demo-forward-confirmed"
@@ -720,9 +703,9 @@ function getAssistantToolThreadLookup(): ThreadLookup {
       "thread-1",
       {
         messageId: "msg-1",
-        from: "Daily Updates <updates@example.com>",
-        subject: "Daily summary",
-        snippet: "Your summary is ready",
+        from: "每日更新 <updates@example.com>",
+        subject: "每日摘要",
+        snippet: "你的摘要已就绪",
         date: "2026-03-09T10:00:00Z",
         isUnread: true,
       },
@@ -731,9 +714,9 @@ function getAssistantToolThreadLookup(): ThreadLookup {
       "thread-2",
       {
         messageId: "msg-2",
-        from: "Product Team <product@example.com>",
-        subject: "Release notes",
-        snippet: "New changes shipped today",
+        from: "产品团队 <product@example.com>",
+        subject: "发布说明",
+        snippet: "今天发布了新变更",
         date: "2026-03-09T09:00:00Z",
         isUnread: false,
       },
@@ -742,9 +725,9 @@ function getAssistantToolThreadLookup(): ThreadLookup {
       "thread-3",
       {
         messageId: "msg-3",
-        from: "Support <support@example.com>",
-        subject: "Ticket follow-up",
-        snippet: "Checking in on your request",
+        from: "支持团队 <support@example.com>",
+        subject: "工单跟进",
+        snippet: "询问你的请求进展",
         date: "2026-03-08T15:00:00Z",
         isUnread: true,
       },
@@ -760,20 +743,20 @@ function getAssistantInlineEmailDetailThread() {
         {
           id: "message-3",
           threadId: "thread-3",
-          subject: "Ticket follow-up",
-          snippet: "Checking in on your request",
+          subject: "工单跟进",
+          snippet: "询问你的请求进展",
           date: "2026-01-10T15:20:00.000Z",
           internalDate: `${Date.parse("2026-01-10T15:20:00.000Z")}`,
           historyId: "history-3",
           inline: [],
           headers: {
-            from: "Support <support@example.com>",
+            from: "支持团队 <support@example.com>",
             to: "you@example.com",
             date: "2026-01-10T15:20:00.000Z",
-            subject: "Ticket follow-up",
+            subject: "工单跟进",
           },
           textPlain:
-            "Hi there,\n\nChecking in on your request. The action item is to confirm whether the issue is resolved.\n\nBest,\nSupport Team",
+            "你好，\n\n询问一下你的请求进展。待办事项是确认问题是否已解决。\n\n祝好，\n支持团队",
         },
       ],
     },
@@ -783,16 +766,16 @@ function getAssistantInlineEmailDetailThread() {
 function getAssistantInlineEmailListMarkup() {
   return `
 <emails>
-  <email threadid="thread-1">Daily summary</email>
-  <email threadid="thread-2">Release notes</email>
-  <email threadid="thread-3">Ticket follow-up</email>
+  <email threadid="thread-1">每日摘要</email>
+  <email threadid="thread-2">发布说明</email>
+  <email threadid="thread-3">工单跟进</email>
 </emails>
 `.trim();
 }
 
 function getAssistantInlineEmailDetailMarkup() {
   return `
-<email-detail threadid="thread-3">Focus on the action item and current status.</email-detail>
+<email-detail threadid="thread-3">关注待办事项和当前状态。</email-detail>
 `.trim();
 }
 
@@ -813,27 +796,27 @@ function getAssistantSearchInboxOutput() {
       {
         messageId: "message-1",
         threadId: "thread-1",
-        subject: "Daily summary",
-        from: "Daily Updates <updates@example.com>",
-        snippet: "Your summary is ready",
+        subject: "每日摘要",
+        from: "每日更新 <updates@example.com>",
+        snippet: "你的摘要已就绪",
         date: "2026-01-12T09:00:00.000Z",
         isUnread: true,
       },
       {
         messageId: "message-2",
         threadId: "thread-2",
-        subject: "Release notes",
-        from: "Product Team <product@example.com>",
-        snippet: "New changes shipped today",
+        subject: "发布说明",
+        from: "产品团队 <product@example.com>",
+        snippet: "今天发布了新变更",
         date: "2026-01-11T18:30:00.000Z",
         isUnread: false,
       },
       {
         messageId: "message-3",
         threadId: "thread-3",
-        subject: "Ticket follow-up",
-        from: "Support <support@example.com>",
-        snippet: "Checking in on your request",
+        subject: "工单跟进",
+        from: "支持团队 <support@example.com>",
+        snippet: "询问你的请求进展",
         date: "2026-01-10T15:20:00.000Z",
         isUnread: true,
       },
@@ -844,7 +827,7 @@ function getAssistantSearchInboxOutput() {
 function getAssistantSearchInboxErrorOutput() {
   return {
     queryUsed: "from:updates@example.com received>=2026-01-10",
-    error: "Failed to search inbox",
+    error: "无法搜索收件箱",
   };
 }
 
@@ -852,11 +835,11 @@ function getAssistantReadEmailOutput() {
   return {
     messageId: "message-3",
     threadId: "thread-3",
-    from: "Support <support@example.com>",
+    from: "支持团队 <support@example.com>",
     to: "you@example.com",
-    subject: "Ticket follow-up",
+    subject: "工单跟进",
     content:
-      "Hi there,\n\nChecking in on your request. Let us know if you need anything else.\n\nBest,\nSupport Team",
+      "你好，\n\n询问一下你的请求进展。如果需要其他帮助，请告诉我们。\n\n祝好，\n支持团队",
     date: "2026-01-10T15:20:00.000Z",
     attachments: [{ filename: "follow-up.pdf" }],
   };
@@ -867,7 +850,7 @@ function getThreadDetailFallbackKey(threadId: string) {
 }
 
 function ToolErrorCardPreview({ error }: { error: string }) {
-  return <div className="text-xs text-muted-foreground">Error: {error}</div>;
+  return <div className="text-xs text-muted-foreground">错误：{error}</div>;
 }
 
 function getAssistantSendEmailOutput(state: EmailActionState) {
@@ -880,8 +863,8 @@ function getAssistantSendEmailOutput(state: EmailActionState) {
       to: "user@example.com",
       cc: "ops@example.com",
       bcc: null,
-      subject: "Weekly update",
-      messageHtml: "<p>Hi team,<br/>Here is this week's update.</p>",
+      subject: "每周更新",
+      messageHtml: "<p>大家好，<br/>这是本周的更新。</p>",
       from: "Inbox Zero <assistant@example.com>",
     },
     ...(state === "confirmed"
@@ -892,7 +875,7 @@ function getAssistantSendEmailOutput(state: EmailActionState) {
             messageId: "message-send-confirmed",
             threadId: "thread-send-confirmed",
             to: "user@example.com",
-            subject: "Weekly update",
+            subject: "每周更新",
           },
         }
       : {}),
@@ -907,13 +890,13 @@ function getAssistantReplyEmailOutput(state: EmailActionState) {
     confirmationState: state,
     pendingAction: {
       messageId: "message-3",
-      content: "Thanks for the follow-up. This is resolved now.",
+      content: "谢谢跟进。这个问题现在已经解决了。",
     },
     reference: {
       messageId: "message-3",
       threadId: "thread-3",
-      from: "Support <support@example.com>",
-      subject: "Ticket follow-up",
+      from: "支持团队 <support@example.com>",
+      subject: "工单跟进",
     },
     ...(state === "confirmed"
       ? {
@@ -922,7 +905,7 @@ function getAssistantReplyEmailOutput(state: EmailActionState) {
             confirmedAt: "2026-01-12T11:05:00.000Z",
             messageId: "message-reply-confirmed",
             threadId: "thread-3",
-            subject: "Re: Ticket follow-up",
+            subject: "回复：工单跟进",
           },
         }
       : {}),
@@ -940,13 +923,13 @@ function getAssistantForwardEmailOutput(state: EmailActionState) {
       to: "finance@example.com",
       cc: null,
       bcc: null,
-      content: "Forwarding this for visibility.",
+      content: "转发此邮件供参考。",
     },
     reference: {
       messageId: "message-2",
       threadId: "thread-2",
-      from: "Product Team <product@example.com>",
-      subject: "Release notes",
+      from: "产品团队 <product@example.com>",
+      subject: "发布说明",
     },
     ...(state === "confirmed"
       ? {
@@ -956,7 +939,7 @@ function getAssistantForwardEmailOutput(state: EmailActionState) {
             messageId: "message-forward-confirmed",
             threadId: "thread-forward-confirmed",
             to: "finance@example.com",
-            subject: "Fwd: Release notes",
+            subject: "转发：发布说明",
           },
         }
       : {}),

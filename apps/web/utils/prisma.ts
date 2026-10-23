@@ -8,7 +8,7 @@ declare global {
   var prisma: PrismaClient | undefined;
 }
 
-// Create the Prisma client with extensions, but cast it back to PrismaClient for type compatibility
+// 创建带扩展的 Prisma 客户端，但为类型兼容性将其转换回 PrismaClient
 const _prisma =
   global.prisma ||
   (new PrismaClient({

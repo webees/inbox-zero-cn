@@ -10,7 +10,7 @@ export async function handleSlackAppUninstalled({
   teamId: string;
   logger: Logger;
 }): Promise<void> {
-  logger.info("Handling Slack app uninstall", { teamId });
+  logger.info("正在处理 Slack 应用卸载", { teamId });
 
   const disconnectedChannels = await prisma.messagingChannel.findMany({
     where: {
@@ -41,7 +41,7 @@ export async function handleSlackAppUninstalled({
     }),
   ]);
 
-  logger.info("Disconnected Slack channels", {
+  logger.info("已断开 Slack 渠道", {
     teamId,
     count: result.count,
   });
@@ -53,7 +53,7 @@ export async function handleSlackAppUninstalled({
       await adapters.slack.deleteInstallation(teamId);
     }
   } catch (error) {
-    logger.warn("Failed to remove Chat SDK Slack installation", {
+    logger.warn("移除 Chat SDK Slack 安装失败", {
       teamId,
       error,
     });

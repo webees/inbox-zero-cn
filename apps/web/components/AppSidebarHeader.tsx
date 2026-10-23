@@ -14,19 +14,19 @@ import { prefixPath } from "@/utils/path";
 type AppSection = "mail" | "assistant";
 
 const SECTIONS = [
-  { id: "mail", name: "Mail", path: "/mail", icon: MailIcon },
+  { id: "mail", name: "邮件", label: "邮件", path: "/mail", icon: MailIcon },
   {
     id: "assistant",
-    name: "Assistant",
+    name: "助手",
+    label: "助手",
     path: "/automation",
     icon: SparklesIcon,
   },
 ] as const;
 
 /**
- * The top of both the app and mail sidebars: the sidebar toggle plus the
- * switch between the mail client and the AI assistant. Shared so the two
- * sidebars line up identically, including below the mac traffic lights.
+ * 应用侧栏和邮件侧栏的顶部：侧栏切换按钮，以及邮件客户端和 AI 助手之间的切换。
+ * 两侧栏共享此组件，以便完全对齐，包括在 mac 窗口控制按钮下方。
  */
 export function AppSidebarHeader({
   active,
@@ -37,12 +37,12 @@ export function AppSidebarHeader({
   active: AppSection;
   emailAccountId: string;
   collapsed: boolean;
-  /** For sheets, which close on their own rather than collapsing. */
+  /** 用于覆层，它们会自行关闭而不是折叠。 */
   hideToggle?: boolean;
 }) {
-  // On mac desktop the toggle is lifted beside the traffic lights in both
-  // states, so the header only needs to clear the lights' drag region, which
-  // swallows clicks. The sidebars sit 0.5rem below the window top.
+  // 在 mac 桌面上，两种状态下切换按钮都会被移到窗口控制按钮旁边，
+  // 因此页眉只需避开会吞掉点击的控制按钮拖拽区域。
+  // 侧栏位于窗口顶部下方 0.5rem。
   if (collapsed) {
     return (
       <div className="flex flex-col items-start pt-[max(0px,calc(var(--desktop-traffic-lights-height,0px)-0.5rem))]">
@@ -85,7 +85,7 @@ function AppSectionSwitcher({
 }) {
   if (collapsed) {
     return (
-      <nav aria-label="App sections" className="flex flex-col gap-1 pb-2">
+      <nav aria-label="应用分区" className="flex flex-col gap-1 pb-2">
         {SECTIONS.map((section) => {
           const isActive = section.id === active;
           return (
@@ -101,10 +101,10 @@ function AppSectionSwitcher({
                   )}
                 >
                   <section.icon className="size-4" />
-                  <span className="sr-only">{section.name}</span>
+                  <span className="sr-only">{section.label}</span>
                 </Link>
               </TooltipTrigger>
-              <TooltipContent side="right">{section.name}</TooltipContent>
+              <TooltipContent side="right">{section.label}</TooltipContent>
             </Tooltip>
           );
         })}
@@ -114,7 +114,7 @@ function AppSectionSwitcher({
 
   return (
     <nav
-      aria-label="App sections"
+      aria-label="应用分区"
       className="grid flex-1 grid-cols-2 gap-0.5 rounded-lg bg-sidebar-accent p-0.5"
     >
       {SECTIONS.map((section) => {
@@ -131,7 +131,7 @@ function AppSectionSwitcher({
                 : "text-muted-foreground hover:text-foreground",
             )}
           >
-            {section.name}
+            {section.label}
           </Link>
         );
       })}

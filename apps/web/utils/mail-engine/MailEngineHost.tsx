@@ -95,8 +95,8 @@ export function MailEngineHost({ children }: { children: ReactNode }) {
 
 export function MailCoverageGate({ children }: { children: ReactNode }) {
   const status = useContext(MailEngineRuntimeStatusContext);
-  // SSR has no OPFS; checking capabilities before hydration paints the
-  // storage-error shell instead of the shared loading state.
+  // SSR 没有 OPFS；在水合之前检查能力会渲染出
+  // 存储错误的外壳，而不是共享的加载状态。
   const isClient = useSyncExternalStore(
     subscribeNever,
     () => true,
@@ -118,19 +118,17 @@ export function MailCoverageGate({ children }: { children: ReactNode }) {
             <AlertCircle className="text-destructive" />
           </EmptyMedia>
           <EmptyTitle>
-            {status.failed
-              ? "Mail couldn’t start"
-              : "This browser doesn’t support Mail"}
+            {status.failed ? "邮件无法启动" : "此浏览器不支持邮件"}
           </EmptyTitle>
           <EmptyDescription>
             {status.failed
-              ? "Try again. If this continues, use a non-private window and an up-to-date browser."
-              : "Mail requires a browser with persistent file storage (OPFS) and web workers. Use an up-to-date browser in a non-private window."}
+              ? "请重试。如果问题持续出现，请使用非隐私窗口和最新版浏览器。"
+              : "邮件功能需要支持持久化文件存储（OPFS）和 Web Worker 的浏览器。请使用非隐私窗口中的最新版浏览器。"}
           </EmptyDescription>
         </EmptyHeader>
         {status.failed && (
           <Button variant="outline" onClick={status.retry}>
-            Retry
+            重试
           </Button>
         )}
       </Empty>
@@ -171,7 +169,7 @@ function MailEngineRuntimeInner({ children }: { children: ReactNode }) {
       setFailed(false);
       return;
     }
-    // Keep queued sends and undo working after the initiating page or composer closes.
+    // 在发起页面或写信窗口关闭后，保持排队中的发送和撤销继续工作。
     if (!desktopIpc) requestBrowserEngine();
     setFailed(false);
     const capabilities = browserMailEngineCapabilities();
@@ -344,9 +342,9 @@ function MailEngineRuntimeInner({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!client || !emailAccountId) return;
     let cancelled = false;
-    // Accounts deleted on another device stay in this device's local store
-    // and keep syncing until the server's list says they are gone. The open
-    // account stays too, since an org admin may be viewing a member's mail.
+    // 在其他设备上删除的账号会保留在此设备的本地存储中，
+    // 并持续同步，直到服务器列表显示它们已消失。当前打开的
+    // 账号也会保留，因为组织管理员可能正在查看成员的邮件。
     fetchEmailAccounts()
       .then(({ emailAccounts }) => {
         if (cancelled || emailAccounts.length === 0) return;
@@ -362,7 +360,7 @@ function MailEngineRuntimeInner({ children }: { children: ReactNode }) {
   }, [client, emailAccountId]);
 
   useEffect(() => {
-    // The desktop engine follows mailbox changes itself.
+    // 桌面引擎会自行跟踪邮箱变化。
     if (!client || !emailAccountId || hasDesktopMailEngineIpc()) return;
     return followMailboxChanges({
       accountId: emailAccountId,

@@ -55,7 +55,7 @@ describe("confirmAssistantEmailAction", () => {
         provider: "microsoft",
         logger: createTestLogger(),
       }),
-    ).rejects.toThrow("Prepare the draft again");
+    ).rejects.toThrow("重新准备草稿");
     expect(createEmailProvider).not.toHaveBeenCalled();
     expect(prisma.chatMessage.updateMany).not.toHaveBeenCalled();
   });
@@ -87,7 +87,7 @@ describe("confirmAssistantEmailAction", () => {
         provider: "microsoft",
         logger: createTestLogger(),
       }),
-    ).rejects.toThrow("Prepare the draft again");
+    ).rejects.toThrow("重新准备草稿");
     expect(createEmailProvider).not.toHaveBeenCalled();
   });
 
@@ -650,9 +650,7 @@ describe("confirmAssistantEmailAction", () => {
       } as any,
     );
 
-    expect(result?.serverError).toBe(
-      "Email action confirmation already in progress",
-    );
+    expect(result?.serverError).toBe("邮件操作确认已在进行中");
     expect(createEmailProvider).not.toHaveBeenCalled();
     expect(prisma.chatMessage.updateMany).not.toHaveBeenCalled();
   });
@@ -734,9 +732,7 @@ describe("confirmAssistantEmailAction", () => {
       } as any,
     );
 
-    expect(result?.serverError).toBe(
-      "Email action confirmation already in progress",
-    );
+    expect(result?.serverError).toBe("邮件操作确认已在进行中");
     expect(createEmailProvider).not.toHaveBeenCalled();
   });
 
@@ -1203,7 +1199,7 @@ describe("confirmAssistantEmailAction", () => {
       } as any,
     );
 
-    expect(result?.serverError).toBe("Chat message not found");
+    expect(result?.serverError).toBe("未找到聊天消息");
     expect(prisma.chatMessage.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
@@ -1224,7 +1220,7 @@ describe("confirmAssistantEmailAction", () => {
 
     const result = await confirmPendingSendEmail();
 
-    expect(result?.serverError).toBe("Failed to send email");
+    expect(result?.serverError).toBe("发送邮件失败");
     expect(prisma.chatMessage.updateMany).toHaveBeenCalledTimes(2);
     const revertedParts = (
       prisma.chatMessage.updateMany.mock.calls[1][0] as any
@@ -1249,7 +1245,7 @@ describe("confirmAssistantEmailAction", () => {
     const result = await confirmPendingSendEmail();
 
     expect(result?.serverError).toBe(
-      "Failed to send email: The user does not have permission to send as [email].",
+      "发送邮件失败: The user does not have permission to send as [email].",
     );
   });
 
@@ -1264,7 +1260,7 @@ describe("confirmAssistantEmailAction", () => {
     const result = await confirmPendingSendEmail();
 
     expect(result?.serverError).toBe(
-      "Failed to send email: Mailbox disabled for [email]. Try again later.",
+      "发送邮件失败: Mailbox disabled for [email]. Try again later.",
     );
   });
 
@@ -1628,9 +1624,7 @@ describe("confirmAssistantSaveMemory", () => {
       } as any,
     );
 
-    expect(result?.serverError).toBe(
-      "Memory save confirmation already in progress",
-    );
+    expect(result?.serverError).toBe("记忆保存确认已在进行中");
     expect(prisma.chatMessage.updateMany).not.toHaveBeenCalled();
     expect(prisma.chatMemory.create).not.toHaveBeenCalled();
   });

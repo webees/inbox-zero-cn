@@ -1,40 +1,31 @@
-The Inbox Zero Commercial License (the “Commercial License”)
-Copyright (c) 2025-present Inbox Zero, Inc.
+Inbox Zero 商业许可证（以下简称“商业许可证”）
+版权所有 (c) 2025 至今 Inbox Zero, Inc.
 
-With regard to the Inbox Zero Software:
+关于 Inbox Zero 软件：
 
-This software and associated documentation files (the "Software") may only be
-used in production, if you (and any entity that you represent) have agreed to,
-and are in compliance with, an agreement governing
-the use of the Software, as mutually agreed by you and Inbox Zero, Inc. ("Inbox Zero"),
-and otherwise have a valid Inbox Zero Enterprise Edition subscription ("Commercial Subscription").
-Subject to the foregoing sentence, you are free to modify this Software and publish patches to the Software.
-You agree that Inbox Zero and/or its licensors (as applicable) retain all right, title and interest in
-and to all such modifications and/or patches, and all such modifications and/or
-patches may only be used, copied, modified, displayed, distributed, or otherwise
-exploited with a valid Commercial Subscription for the correct number of hosts.
-Notwithstanding the foregoing, you may copy and modify the Software for development
-and testing purposes, without requiring a subscription. You agree that Inbox Zero and/or
-its licensors (as applicable) retain all right, title and interest in and to all such
-modifications. You are not granted any other rights beyond what is expressly stated herein.
-Subject to the foregoing, it is forbidden to copy, merge, publish, distribute, sublicense,
-and/or sell the Software.
+本软件及其相关文档文件（以下简称“软件”）仅可在以下情况下用于生产环境：
+你（以及你所代表的任何实体）已同意并遵守一项管辖本软件使用的协议
+（该协议由你与 Inbox Zero, Inc.（以下简称“Inbox Zero”）共同商定），
+并且你持有有效的 Inbox Zero 企业版订阅（以下简称“商业订阅”）。
+在前述句子的前提下，你可以自由修改本软件并发布本软件的补丁。
+你同意 Inbox Zero 和/或其许可方（如适用）保留对所有这些修改和/或
+补丁的全部权利、所有权和权益，并且所有这些修改和/或补丁只能凭有效的
+商业订阅、按照正确的主机数量进行使用、复制、修改、展示、分发或以其他方式
+利用。尽管有前述规定，你仍可为开发和测试目的复制和修改本软件，而无需订阅。
+你同意 Inbox Zero 和/或其许可方（如适用）保留对所有这些修改的全部权利、
+所有权和权益。除本协议明确规定的权利外，你未被授予任何其他权利。
+在前述规定的前提下，禁止复制、合并、发布、分发、再许可和/或出售本软件。
 
-This Commercial License applies only to the part of this Software that is not distributed under
-the AGPLv3 license. Any part of this Software distributed under the MIT license or which
-is served client-side as an image, font, cascading stylesheet (CSS), file which produces
-or is compiled, arranged, augmented, or combined into client-side JavaScript, in whole or
-in part, is copyrighted under the AGPLv3 license. The full text of this Commercial License shall
-be included in all copies or substantial portions of the Software.
+本商业许可证仅适用于本软件中未按 AGPLv3 许可证分发的部分。本软件中按
+MIT 许可证分发的任何部分，或以图片、字体、层叠样式表（CSS）形式在客户端
+提供、或被生产、编译、编排、扩充或整体或部分组合进客户端 JavaScript 的
+文件，均按 AGPLv3 许可证享有版权。本商业许可证的完整文本应包含在本软件的
+所有副本或实质性部分中。
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+本软件按“原样”提供，不附带任何形式的明示或默示担保，包括但不限于对
+适销性、特定用途适用性和非侵权性的担保。在任何情况下，作者或版权持有人
+均不对任何索赔、损害或其他责任承担责任，无论是在合同诉讼、侵权诉讼还是
+其他诉讼中，由本软件或本软件的使用或其他交易引起、从中产生或与之相关。
 
-For all third party components incorporated into the Inbox Zero Software, those
-components are licensed under the original license provided by the owner of the
-applicable component.
+对于并入 Inbox Zero 软件的所有第三方组件，这些组件均按其适用组件的
+所有者提供的原始许可证进行许可。

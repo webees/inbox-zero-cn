@@ -36,11 +36,11 @@ export const markNotColdEmailAction = actionClient
       ]);
 
       if (!coldEmailRule) {
-        throw new SafeError("Cold email rule not found");
+        throw new SafeError("未找到冷邮件规则");
       }
 
       await Promise.all([
-        // Mark as excluded so AI doesn't match it again
+        // 标记为排除，这样 AI 不会再次匹配它
         saveLearnedPattern({
           emailAccountId,
           from: sender,
@@ -59,8 +59,8 @@ export const markNotColdEmailAction = actionClient
     },
   );
 
-// Each thread costs a fetch plus a label update, so very large senders are
-// capped to keep the action responsive.
+// 每个会话都需要一次获取加一次标签更新，因此对发件人数量设置上限，
+// 以保持操作响应迅速。
 const MAX_THREADS_TO_UNLABEL = 500;
 const THREAD_PAGE_SIZE = 100;
 const UNLABEL_CONCURRENCY = 10;
@@ -84,23 +84,23 @@ async function removeColdEmailLabelFromSender({
     ),
   ];
 
-  // A label deleted in the mailbox can't be filtered on, and some providers
-  // fall back to every thread from the sender rather than none.
+  // 已从邮箱中删除的标签无法用于过滤，而某些服务商会回退为返回该发件人的
+  // 所有会话，而不是返回空。
   const labels = await Promise.all(
     ruleLabelIds.map((labelId) => emailProvider.getLabelById(labelId)),
   );
   const labelIds = ruleLabelIds.filter((_, index) => labels[index]);
   const skippedLabelIds = ruleLabelIds.filter((_, index) => !labels[index]);
   if (skippedLabelIds.length > 0) {
-    logger.warn("Skipping Cold Email labels that could not be found", {
+    logger.warn("跳过未找到的冷邮件标签", {
       skippedLabelIds,
     });
   }
 
   if (labelIds.length === 0) return;
 
-  // Collect ids before mutating so removing labels can't shift later pages.
-  // Filtering by label covers archived mail, not just the inbox.
+  // 在修改前先收集 id，这样移除标签不会导致后续页面偏移。
+  // 按标签过滤会覆盖已归档的邮件，而不仅仅是收件箱。
   const threadIds = new Set<string>();
   for (const labelId of labelIds) {
     let pageToken: string | undefined;
@@ -119,7 +119,7 @@ async function removeColdEmailLabelFromSender({
     } while (pageToken && threadIds.size < MAX_THREADS_TO_UNLABEL);
   }
 
-  // One failing thread shouldn't leave the rest of the sender's mail labeled.
+  // 单个会话失败不应导致该发件人的其余邮件仍保留标签。
   const failures: unknown[] = [];
   for (const batch of chunk([...threadIds], UNLABEL_CONCURRENCY)) {
     const results = await Promise.allSettled(
@@ -133,7 +133,7 @@ async function removeColdEmailLabelFromSender({
   }
 
   if (failures.length > 0) {
-    logger.warn("Failed to remove Cold Email label from some threads", {
+    logger.warn("从部分会话移除冷邮件标签失败", {
       failedCount: failures.length,
       threadCount: threadIds.size,
       error: failures[0],
@@ -166,11 +166,11 @@ export const testColdEmailAction = actionClient
         },
       });
 
-      if (!emailAccount) throw new SafeError("Email account not found");
+      if (!emailAccount) throw new SafeError("未找到邮箱账号");
 
       const coldEmailRule = await getColdEmailRule(emailAccountId);
 
-      if (!coldEmailRule) throw new SafeError("Cold email rule not found");
+      if (!coldEmailRule) throw new SafeError("未找到冷邮件规则");
 
       const emailProvider = await createEmailProvider({
         emailAccountId,

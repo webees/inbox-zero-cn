@@ -38,17 +38,13 @@ export const cleanInboxAction = actionClient
       parsedInput: { action, instructions, daysOld, skips, maxEmails },
     }) => {
       if (!isGoogleProvider(provider)) {
-        throw new SafeError(
-          "Clean inbox is only supported for Google accounts",
-        );
+        throw new SafeError("清理收件箱仅支持 Google 账号");
       }
 
       const premium = await getUserPremium({ userId });
-      if (!premium) throw new SafeError("User not premium");
+      if (!premium) throw new SafeError("用户不是高级版");
       if (!isActivePremium(premium)) {
-        throw new SafeError(
-          "Deep Clean requires an active paid subscription. It isn't available during the free trial.",
-        );
+        throw new SafeError("深度清理需要有效的付费订阅。免费试用期间不可用。");
       }
 
       const emailProvider = await createEmailProvider({
@@ -65,14 +61,12 @@ export const cleanInboxAction = actionClient
       ]);
 
       const markedDoneLabelId = markedDoneLabel?.id;
-      if (!markedDoneLabelId)
-        throw new SafeError("Failed to create archived label");
+      if (!markedDoneLabelId) throw new SafeError("创建已归档标签失败");
 
       const processedLabelId = processedLabel?.id;
-      if (!processedLabelId)
-        throw new SafeError("Failed to create processed label");
+      if (!processedLabelId) throw new SafeError("创建已处理标签失败");
 
-      // create a cleanup job
+      // 创建清理任务
       const job = await prisma.cleanupJob.create({
         data: {
           emailAccountId,
@@ -96,7 +90,7 @@ export const cleanInboxAction = actionClient
         let totalEmailsProcessed = 0;
 
         do {
-          // fetch all emails from the user's inbox
+          // 获取用户收件箱中的所有邮件
           const { threads, nextPageToken: pageToken } =
             await emailProvider.getThreadsWithQuery({
               query: {
@@ -110,19 +104,18 @@ export const cleanInboxAction = actionClient
                 excludeLabelNames: [inboxZeroLabels.processed.name],
               },
               maxResults: Math.min(maxEmails || 100, 100),
-              pageToken: nextPageToken ?? undefined,
             });
 
-          nextPageToken = pageToken;
-
-          logger.info("Fetched threads", {
+          logger.info("已获取会话", {
             threadCount: threads.length,
             nextPageToken,
           });
 
+          nextPageToken = pageToken;
+
           if (threads.length === 0) break;
 
-          logger.info("Pushing to Qstash", {
+          logger.info("正在推送到 Qstash", {
             threadCount: threads.length,
             nextPageToken,
           });
@@ -142,9 +135,9 @@ export const cleanInboxAction = actionClient
                   instructions,
                   skips,
                 } satisfies CleanThreadBody,
-                // give every user their own queue for ai processing. if we get too many parallel users we may need more
-                // api keys or a global queue
-                // problem with a global queue is that if there's a backlog users will have to wait for others to finish first
+                // 为每个用户分配独立的 AI 处理队列。如果并行用户过多，我们可能需要更多
+                // API 密钥，或使用全局队列
+                // 全局队列的问题是，如果出现积压，用户必须等待其他人先完成
                 flowControl: {
                   key: `ai-clean-${emailAccountId}`,
                   parallelism: 3,
@@ -183,10 +176,10 @@ export const undoCleanInboxAction = actionClient
     }) => {
       const gmail = await getGmailClientForEmail({ emailAccountId, logger });
 
-      // nothing to do atm if wasn't marked done
+      // 如果未标记为已完成，则目前无需处理
       if (!markedDone) return { success: true };
 
-      // get the label to remove
+      // 获取要移除的标签
       const markedDoneLabel = await getLabel({
         name:
           action === CleanAction.ARCHIVE
@@ -198,18 +191,18 @@ export const undoCleanInboxAction = actionClient
       await labelThread({
         gmail,
         threadId,
-        // undo core action
+        // 撤销核心操作
         addLabelIds:
           action === CleanAction.ARCHIVE
             ? [GmailLabel.INBOX]
             : [GmailLabel.UNREAD],
-        // undo our own labelling
+        // 撤销我们自己的标记
         removeLabelIds: markedDoneLabel?.id ? [markedDoneLabel.id] : undefined,
       });
 
-      // Update Redis to mark this thread as undone
+      // 更新 Redis 以将该会话标记为未完成
       try {
-        // We need to get the thread first to get the jobId
+        // 我们需要先获取会话才能拿到 jobId
         const thread = await prisma.cleanupThread.findFirst({
           where: { emailAccountId, threadId },
           orderBy: { createdAt: "desc" },
@@ -222,16 +215,16 @@ export const undoCleanInboxAction = actionClient
             threadId,
             update: {
               undone: true,
-              archive: false, // Reset the archive status since we've undone it
+              archive: false, // 由于已撤销，重置归档状态
             },
           });
         }
       } catch (error) {
-        logger.error("Failed to update Redis for undone thread", {
+        logger.error("为未完成的会话更新 Redis 失败", {
           error,
           threadId,
         });
-        // Continue even if Redis update fails
+        // 即使 Redis 更新失败也继续
       }
 
       return { success: true };
@@ -248,7 +241,7 @@ export const changeKeepToDoneAction = actionClient
     }) => {
       const gmail = await getGmailClientForEmail({ emailAccountId, logger });
 
-      // Get the label to add (archived or marked_read)
+      // 获取要添加的标签（archived 或 marked_read）
       const actionLabel = await getOrCreateInboxZeroLabel({
         key: action === CleanAction.ARCHIVE ? "archived" : "marked_read",
         gmail,
@@ -257,7 +250,7 @@ export const changeKeepToDoneAction = actionClient
       await labelThread({
         gmail,
         threadId,
-        // Apply the action (archive or mark as read)
+        // 应用操作（归档或标记为已读）
         removeLabelIds: [
           ...(action === CleanAction.ARCHIVE ? [GmailLabel.INBOX] : []),
           ...(action === CleanAction.MARK_READ ? [GmailLabel.UNREAD] : []),
@@ -265,9 +258,9 @@ export const changeKeepToDoneAction = actionClient
         addLabelIds: [...(actionLabel?.id ? [actionLabel.id] : [])],
       });
 
-      // Update Redis to mark this thread with the new status
+      // 更新 Redis 以将该会话标记为新状态
       try {
-        // We need to get the thread first to get the jobId
+        // 我们需要先获取会话才能拿到 jobId
         const thread = await prisma.cleanupThread.findFirst({
           where: { emailAccountId, threadId },
           orderBy: { createdAt: "desc" },
@@ -286,11 +279,11 @@ export const changeKeepToDoneAction = actionClient
           });
         }
       } catch (error) {
-        logger.error("Failed to update Redis for changed thread:", {
+        logger.error("为已更改的会话更新 Redis 失败：", {
           error,
           threadId,
         });
-        // Continue even if Redis update fails
+        // 即使 Redis 更新失败也继续
       }
 
       return { success: true };

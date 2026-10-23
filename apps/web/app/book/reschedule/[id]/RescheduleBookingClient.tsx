@@ -151,15 +151,15 @@ export function RescheduleBookingClient({
     <BookingShell>
       <div className="border-b bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-200 sm:px-6">
         <div>
-          Rescheduling your{" "}
+          正在重新安排你的{" "}
           <strong>{formatLongDateTime(booking.startTime, timezone)}</strong>{" "}
-          booking — pick a new time below.
+          预约 — 请在下方选择新时间。
         </div>
         <a
           href={cancelHref}
           className="mt-1 inline-block font-medium underline"
         >
-          Cancel this booking instead
+          改为取消此预约
         </a>
       </div>
       <PickTimeStep
@@ -232,7 +232,7 @@ function ConfirmRescheduleStep({
             className="mb-4 inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="size-3" />
-            Back
+            返回
           </button>
         }
       />
@@ -241,16 +241,14 @@ function ConfirmRescheduleStep({
         className="min-w-0 border-t p-4 sm:p-6 md:border-l md:border-t-0 md:p-7"
       >
         <h2 className="text-xl font-medium tracking-tight text-foreground">
-          Confirm new time
+          确认新时间
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Your meeting will move to:
-        </p>
+        <p className="mt-1 text-sm text-muted-foreground">你的会议将改到：</p>
         <p className="mt-2 text-base font-medium text-foreground">
           {formatLongDateTime(slot.startTime, timezone)}
         </p>
         <p className="mt-3 text-xs text-muted-foreground">
-          Previously: {formatLongDateTime(previousStartTime, timezone)}
+          原时间：{formatLongDateTime(previousStartTime, timezone)}
         </p>
 
         {error ? <p className="mt-4 text-sm text-red-500">{error}</p> : null}
@@ -260,7 +258,7 @@ function ConfirmRescheduleStep({
             href={cancelHref}
             className="text-center text-sm font-medium text-muted-foreground underline hover:text-foreground"
           >
-            Cancel instead
+            改为取消
           </a>
           <Button
             type="submit"
@@ -268,7 +266,7 @@ function ConfirmRescheduleStep({
             variant="primaryBlack"
             className="w-full shrink-0 sm:w-auto"
           >
-            Confirm reschedule
+            确认改期
             <ArrowRight className="ml-2 size-3.5" />
           </Button>
         </div>
@@ -296,11 +294,10 @@ function RescheduleSuccessCard({
       <div className="min-w-0 border-t p-4 sm:p-6 md:border-l md:border-t-0 md:p-7">
         <div className="flex items-start gap-2.5 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-900 dark:bg-green-950 dark:text-green-300">
           <Check className="mt-0.5 size-4 shrink-0" />
-          Your booking has been rescheduled. An updated calendar invite is on
-          its way.
+          你的预约已重新安排。 更新的日历邀请即将发送。
         </div>
         <h2 className="mt-6 text-xl font-medium tracking-tight text-foreground">
-          {bookingLink.title} rescheduled
+          {bookingLink.title} 已改期
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
           {formatLongDateTime(success.startTime, timezone)}

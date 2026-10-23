@@ -177,9 +177,9 @@ function TimezonePicker({
         align="start"
       >
         <Command>
-          <CommandInput placeholder="Search timezone..." />
+          <CommandInput placeholder="搜索时区..." />
           <CommandList>
-            <CommandEmpty>No timezone found.</CommandEmpty>
+            <CommandEmpty>未找到时区</CommandEmpty>
             <CommandGroup>
               {timezones.map(({ zone, offsetLabel }) => (
                 <CommandItem

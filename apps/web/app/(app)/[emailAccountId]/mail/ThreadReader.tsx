@@ -155,13 +155,13 @@ export function ThreadReader({
           errorComponent={<ThreadReaderError error={error} onRetry={refetch} />}
           loadingComponent={
             <Loader2Icon
-              aria-label="Loading email"
+              aria-label="正在加载邮件"
               className="size-6 animate-spin text-muted-foreground"
             />
           }
         >
           <MailIcon className="size-6 text-muted-foreground" />
-          <div className="text-foreground text-sm">Nothing selected</div>
+          <div className="text-foreground text-sm">未选择任何内容</div>
           <div className="text-muted-foreground text-xs">
             Pick another view, or head back to the inbox.
           </div>
@@ -303,7 +303,7 @@ function ThreadReaderError({
         {getSWRFetchErrorMessage(error?.info)}
       </div>
       <Button className="mt-2" onClick={onRetry} size="sm" variant="outline">
-        Try again
+        重试
       </Button>
     </>
   );

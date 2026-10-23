@@ -24,7 +24,7 @@ describe("getActionRiskLevel", () => {
         instructions: "AI generated response",
       },
       expectedLevel: "very-high",
-      expectedMessageContains: "Very High Risk",
+      expectedMessageContains: "极高风险",
     },
     {
       name: "returns high risk for fully dynamic recipient with non-AI rule",
@@ -38,7 +38,7 @@ describe("getActionRiskLevel", () => {
       },
       rule: {},
       expectedLevel: "high",
-      expectedMessageContains: "High Risk",
+      expectedMessageContains: "高风险",
     },
     {
       name: "returns medium risk for partially dynamic content",
@@ -52,7 +52,7 @@ describe("getActionRiskLevel", () => {
       },
       rule: {},
       expectedLevel: "medium",
-      expectedMessageContains: "Medium Risk",
+      expectedMessageContains: "中风险",
     },
     {
       name: "returns low risk for static content and recipient",
@@ -66,7 +66,7 @@ describe("getActionRiskLevel", () => {
       },
       rule: {},
       expectedLevel: "low",
-      expectedMessageContains: "Low Risk",
+      expectedMessageContains: "低风险",
     },
     {
       name: "returns high risk for dynamic recipient (all actions are automated)",
@@ -80,7 +80,7 @@ describe("getActionRiskLevel", () => {
       },
       rule: {},
       expectedLevel: "high",
-      expectedMessageContains: "High Risk",
+      expectedMessageContains: "高风险",
     },
     {
       name: "returns high risk for fully dynamic cc/bcc",
@@ -94,7 +94,7 @@ describe("getActionRiskLevel", () => {
       },
       rule: {},
       expectedLevel: "high",
-      expectedMessageContains: "High Risk",
+      expectedMessageContains: "高风险",
     },
     {
       name: "returns medium risk for partially dynamic cc/bcc",
@@ -108,7 +108,7 @@ describe("getActionRiskLevel", () => {
       },
       rule: {},
       expectedLevel: "medium",
-      expectedMessageContains: "Medium Risk",
+      expectedMessageContains: "中风险",
     },
     {
       name: "returns high risk for integration action with fully dynamic args",
@@ -130,11 +130,11 @@ describe("getActionRiskLevel", () => {
       },
       rule: {},
       expectedLevel: "high",
-      expectedMessageContains: "High Risk",
+      expectedMessageContains: "高风险",
     },
     {
-      // Empty args are AI-filled at execution, so they must stay high risk
-      // even though nothing in the stored args looks dynamic.
+      // 空参数会在执行时由 AI 填充，因此它们必须保持高风险，
+      // 即使存储的参数中没有任何看起来动态的内容。
       name: "returns high risk for integration action whose args the AI fills",
       action: {
         subject: "",
@@ -154,7 +154,7 @@ describe("getActionRiskLevel", () => {
       },
       rule: {},
       expectedLevel: "high",
-      expectedMessageContains: "High Risk",
+      expectedMessageContains: "高风险",
     },
     {
       name: "returns high risk for an unrecognised integration tool",
@@ -171,7 +171,7 @@ describe("getActionRiskLevel", () => {
       },
       rule: {},
       expectedLevel: "high",
-      expectedMessageContains: "High Risk",
+      expectedMessageContains: "高风险",
     },
     {
       name: "returns low risk for integration action with static args",
@@ -193,7 +193,7 @@ describe("getActionRiskLevel", () => {
       },
       rule: {},
       expectedLevel: "low",
-      expectedMessageContains: "Low Risk",
+      expectedMessageContains: "低风险",
     },
   ];
 
@@ -234,7 +234,7 @@ describe("getRiskLevel", () => {
         instructions: "String",
       } as RulesResponse[number],
       expectedLevel: "high",
-      expectedMessageContains: "High Risk",
+      expectedMessageContains: "高风险",
     },
     {
       name: "returns high risk when one action is high and another is low",
@@ -260,7 +260,7 @@ describe("getRiskLevel", () => {
         instructions: "String",
       } as RulesResponse[number],
       expectedLevel: "high",
-      expectedMessageContains: "High Risk",
+      expectedMessageContains: "高风险",
     },
     {
       name: "returns low risk when all actions are low risk",
@@ -285,7 +285,7 @@ describe("getRiskLevel", () => {
         ],
       } as RulesResponse[number],
       expectedLevel: "low",
-      expectedMessageContains: "Low Risk",
+      expectedMessageContains: "低风险",
     },
   ];
 

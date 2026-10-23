@@ -33,25 +33,25 @@ async function runMcpAgent(
 ): Promise<McpAgentResponse> {
   const { emailAccount, messages } = options;
 
-  const system = `You are a research assistant. Use your tools to search for relevant information about the email sender and topic.
+  const system = `你是一名研究助手。使用你的工具搜索与邮件发件人和主题相关的信息。
 
-SEARCH FOR:
-- Sender's name, email, company in CRM/customer databases  
-- Technical documentation if it's a technical question
-- Billing information if it's about payments/subscriptions
-- Product information if about features/services
+搜索内容：
+- 在 CRM/客户数据库中查找发件人的姓名、邮箱和公司
+- 如果是技术问题，查找技术文档
+- 如果涉及付款/订阅，查找账单信息
+- 如果涉及功能/服务，查找产品信息
 
-OUTPUT RULES:
-- If you find useful information: Summarize the key findings concisely
-- If you find no useful information: You may briefly explain what you searched for, then end with exactly "${NO_RELEVANT_INFO_FOUND}"
-- Do not ask for more tools or capabilities
-- Be concise and factual
+输出规则：
+- 如果找到有用信息：简明扼要地总结主要发现
+- 如果没有找到有用信息：可以简要说明你搜索了什么，然后以 "${NO_RELEVANT_INFO_FOUND}" 恰好结尾
+- 不要请求更多工具或能力
+- 保持简洁和事实性
 
-Start searching immediately.`;
+立即开始搜索。`;
 
   const prompt = `${getUserInfoPrompt({ emailAccount })}
 
-The last emails in the thread are:
+会话中最近的邮件如下：
 
 <thread>
 ${getEmailListPrompt({ messages, messageMaxLength: 1000, maxMessages: 5 })}
@@ -76,14 +76,14 @@ ${getEmailListPrompt({ messages, messageMaxLength: 1000, maxMessages: 5 })}
     prompt,
     stopWhen: isStepCount(10),
     onStepEnd: async ({ text, toolCalls }) => {
-      logger.trace("Step finished", { text, toolCalls });
+      logger.trace("步骤完成", { text, toolCalls });
     },
   });
 
   const hasNoRelevantInfo = result.text.includes(NO_RELEVANT_INFO_FOUND);
 
   if (hasNoRelevantInfo) {
-    logger.trace("No relevant information found", {
+    logger.trace("未找到相关信息", {
       explanation: result.text.replace(NO_RELEVANT_INFO_FOUND, "").trim(),
     });
   }
@@ -91,7 +91,7 @@ ${getEmailListPrompt({ messages, messageMaxLength: 1000, maxMessages: 5 })}
   return {
     response: hasNoRelevantInfo ? null : result.text,
     getToolCalls: () => {
-      // Extract tool calls and results from all steps
+      // 从所有步骤中提取工具调用和结果
       const allToolCallsWithResults = result.steps.flatMap((step) =>
         step.toolCalls.map((call) => {
           const toolResult = step.toolResults?.find(

@@ -53,7 +53,7 @@ export function buildEmulateSeed(baseUrl = DEFAULT_BASE_URL) {
         {
           id: "drv_root_child",
           user_email: GOOGLE_EMAIL,
-          name: "Smoke Docs",
+          name: "冒烟测试文档",
           mime_type: "application/vnd.google-apps.folder",
           parent_ids: ["root"],
         },

@@ -31,7 +31,7 @@ export async function resolveSetupPorts(options: {
   const webPort = await reserveAvailablePort(
     {
       key: "WEB_PORT",
-      label: "Web app",
+      label: "Web 应用",
       defaultPort: DEFAULT_PORTS.web,
     },
     reservedPorts,
@@ -92,7 +92,7 @@ export function formatPortConfigNote(
 ): string | null {
   if (changedPorts.length === 0) return null;
   return [
-    "Detected busy local ports. Setup will use these host port overrides:",
+    "检测到本地端口被占用。安装程序将使用以下主机端口覆盖：",
     ...changedPorts.map(
       (port) => `- ${port.label}: ${port.defaultPort} -> ${port.port}`,
     ),
@@ -115,7 +115,7 @@ async function reserveAvailablePort(
     return { ...port, port: candidatePort };
   }
 
-  throw new Error(`Could not find an available port for ${port.label}.`);
+  throw new Error(`无法为 ${port.label} 找到可用端口。`);
 }
 
 function isPortAvailable(port: number): Promise<boolean> {

@@ -19,7 +19,7 @@ import { PageWrapper } from "@/components/PageWrapper";
 import { PageHeader } from "@/components/PageHeader";
 import { AdminTopSpenders } from "@/app/(app)/admin/AdminTopSpenders";
 
-// NOTE: Turn on Fluid Compute on Vercel to allow for 800 seconds max duration
+// 注意：在 Vercel 上开启 Fluid Compute，以允许最长 800 秒的执行时长
 export const maxDuration = 800;
 
 export default async function AdminPage() {
@@ -27,16 +27,13 @@ export default async function AdminPage() {
 
   if (!isAdmin({ email: session?.user.email })) {
     return (
-      <ErrorPage
-        title="No Access"
-        description="You do not have permission to access this page."
-      />
+      <ErrorPage title="无权访问" description="你没有访问此页面的权限。" />
     );
   }
 
   return (
     <PageWrapper>
-      <PageHeader title="Admin" />
+      <PageHeader title="管理后台" />
 
       <div className="space-y-8 mt-4 mb-20">
         <AdminUpgradeUserForm />

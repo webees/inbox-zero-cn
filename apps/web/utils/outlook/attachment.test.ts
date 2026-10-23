@@ -61,7 +61,7 @@ it.each([
   } as unknown as OutlookClient;
 
   await expect(getOutlookAttachment(client, "message", "file")).rejects.toThrow(
-    "Attachment size mismatch",
+    "附件大小不匹配",
   );
 });
 

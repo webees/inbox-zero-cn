@@ -31,9 +31,9 @@ export const bulkArchiveThreadsAction = actionClient
         threadCount: threads.length,
       };
       if (result.failedThreadIds.length) {
-        logger.warn("Bulk thread archive completed with failures", context);
+        logger.warn("批量会话归档完成，但有失败项", context);
       } else {
-        logger.info("Completed bulk thread archive", context);
+        logger.info("批量会话归档完成", context);
       }
 
       return result;

@@ -200,9 +200,9 @@ export function ComposeModalProvider(props: { children: React.ReactNode }) {
               </Button>
               <DialogClose asChild>
                 <Button
-                  aria-label="Close compose"
+                  aria-label="关闭撰写"
                   size="iconSm"
-                  title="Close compose"
+                  title="关闭撰写"
                   variant="ghost"
                 >
                   <XIcon className="size-4" />
