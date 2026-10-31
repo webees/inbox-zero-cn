@@ -52,8 +52,8 @@ export function MeetingListItem({
       <ItemContent className="min-w-0">
         <ItemTitle className="w-full min-w-0">
           {onClick ? (
-            // Stretched hit area: keeps one real button for keyboard and
-            // screen readers while the whole row stays clickable.
+            // 拉伸的点击区域：为键盘和屏幕阅读器保留一个真正的按钮，
+            // 同时整行仍可点击。
             <button
               type="button"
               onClick={onClick}

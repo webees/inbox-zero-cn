@@ -1,20 +1,20 @@
 ---
-title: "Telegram Integration Setup"
-description: "Set up the Telegram bot for Inbox Zero assistant chat."
+title: "Telegram 集成设置"
+description: "为 Inbox Zero 助手聊天设置 Telegram 机器人。"
 ---
 
-This guide is for self-hosted deployments that want to enable Telegram chat with the Inbox Zero assistant.
+本指南面向希望启用与 Inbox Zero 助手进行 Telegram 聊天的自托管部署。
 
-## 1. Create a Telegram bot with BotFather
+## 1. 使用 BotFather 创建 Telegram 机器人
 
-1. Open Telegram and start a chat with [@BotFather](https://t.me/BotFather)
-2. Send `/newbot`
-3. Choose a display name and bot username (must end with `bot`)
-4. Copy the bot token BotFather returns — this is your `TELEGRAM_BOT_TOKEN`
+1. 打开 Telegram，与 [@BotFather](https://t.me/BotFather) 开始聊天
+2. 发送 `/newbot`
+3. 选择显示名称和机器人用户名（必须以 `bot` 结尾）
+4. 复制 BotFather 返回的机器人令牌 —— 这就是你的 `TELEGRAM_BOT_TOKEN`
 
-## 2. Configure the webhook
+## 2. 配置 webhook
 
-Set your bot's webhook to Inbox Zero:
+把你的机器人 webhook 设置为 Inbox Zero：
 
 ```bash
 curl -X POST "https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/setWebhook" \
@@ -22,68 +22,68 @@ curl -X POST "https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/setWebhook" \
   -d "secret_token=<TELEGRAM_BOT_SECRET_TOKEN>"
 ```
 
-You can verify webhook status with:
+你可以用以下命令验证 webhook 状态：
 
 ```bash
 curl "https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/getWebhookInfo"
 ```
 
-## 3. Set environment variables
+## 3. 设置环境变量
 
-Set these in `apps/web/.env` (or your deployment env):
+在 `apps/web/.env`（或你的部署环境）中设置这些内容：
 
 ```bash
 TELEGRAM_BOT_TOKEN=
 TELEGRAM_BOT_SECRET_TOKEN=
 ```
 
-If `TELEGRAM_BOT_TOKEN` is missing, the Telegram connect option is hidden in the UI and `/api/telegram/events` returns `503`.
+如果缺少 `TELEGRAM_BOT_TOKEN`，UI 中会隐藏 Telegram 连接选项，且 `/api/telegram/events` 会返回 `503`。
 
-`TELEGRAM_BOT_SECRET_TOKEN` is required whenever `TELEGRAM_BOT_TOKEN` is set. The deployment fails startup validation if it is missing. Telegram sends the value in `x-telegram-bot-api-secret-token`; requests with a missing or mismatched value are rejected.
+只要设置了 `TELEGRAM_BOT_TOKEN`，就必须设置 `TELEGRAM_BOT_SECRET_TOKEN`。如果缺少它，部署会在启动校验时失败。Telegram 会在 `x-telegram-bot-api-secret-token` 中发送该值；缺少或不匹配该值的请求会被拒绝。
 
-## 4. Configure bot commands and optional profile photo (one-time)
+## 4. 配置机器人命令和可选的个人资料照片（一次性）
 
-Run the setup script once after configuring your environment:
+配置好环境后，运行一次设置脚本：
 
 ```bash
 pnpm --filter inbox-zero-ai exec tsx scripts/setup-telegram-bot.ts
 ```
 
-Local shortcut:
+本地快捷方式：
 
 ```bash
 pnpm --filter inbox-zero-ai telegram:setup
 ```
 
-To also set a bot profile photo:
+若要同时设置机器人个人资料照片：
 
 ```bash
 pnpm --filter inbox-zero-ai exec tsx scripts/setup-telegram-bot.ts \
   --profile-photo-url https://<your-domain>/telegram-bot.png
 ```
 
-This command registers Telegram slash commands (`/connect`, `/switch`, `/help`, `/cleanup`, `/summary`, `/draftreply`, `/followups`) and sets a profile photo only if the bot does not already have one.
+此命令会注册 Telegram 斜杠命令（`/connect`、`/switch`、`/help`、`/cleanup`、`/summary`、`/draftreply`、`/followups`），并且仅在机器人还没有个人资料照片时才设置一张。
 
-## 5. Connect a user account from Inbox Zero
+## 5. 从 Inbox Zero 连接用户账号
 
-Each Inbox Zero email account links to a Telegram user via a connect code:
+每个 Inbox Zero 邮箱账号都通过一个连接码关联到一个 Telegram 用户：
 
-1. In Inbox Zero, go to **Settings** → **Connected Apps**
-2. Click **Connect Telegram**
-3. Copy the generated command: `/connect <code>`
-4. Open a direct message with your bot in Telegram
-5. Send the command
+1. 在 Inbox Zero 中，前往**设置** → **已连接的应用**
+2. 点击**连接 Telegram**
+3. 复制生成的命令：`/connect <code>`
+4. 在 Telegram 中打开与你的机器人的私信
+5. 发送该命令
 
-After linking, the user can chat with the assistant in that DM.
+关联后，该用户就可以在该私信中与助手聊天。
 
-## 6. Validate end-to-end
+## 6. 端到端验证
 
-Check:
+检查：
 
-1. `POST /api/telegram/events` returns `200` for valid Telegram updates
-2. Sending `/connect <code>` in bot DM links the account
-3. A normal DM message gets an assistant response
+1. 对于有效的 Telegram 更新，`POST /api/telegram/events` 返回 `200`
+2. 在机器人私信中发送 `/connect <code>` 能关联账号
+3. 一条普通的私信消息能得到助手回复
 
-If linking fails, generate a new code — codes are one-time and expire after 10 minutes.
+如果关联失败，请生成一个新验证码 —— 验证码是一次性的，并在 10 分钟后过期。
 
-For local development, Telegram must reach a public HTTPS URL (for example, via ngrok); `localhost` is not reachable from Telegram.
+对于本地开发，Telegram 必须能访问一个公开的 HTTPS URL（例如通过 ngrok）；Telegram 无法访问 `localhost`。

@@ -19,7 +19,7 @@ export function AdminUserInfo() {
   const { execute, isExecuting, result } = useAction(adminGetUserInfoAction, {
     onError: (error) => {
       toastError({
-        title: "Error looking up user",
+        title: "查找用户时出错",
         description: getActionErrorMessage(error.error),
       });
     },
@@ -45,87 +45,78 @@ export function AdminUserInfo() {
   return (
     <Card className="max-w-xl">
       <CardHeader>
-        <CardTitle>User Info</CardTitle>
+        <CardTitle>用户信息</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <Input
             type="email"
             name="email"
-            label="Email"
+            label="邮箱"
             placeholder="user@example.com"
             registerProps={register("email")}
             error={errors.email}
           />
           <Button type="submit" loading={isExecuting}>
-            Look Up
+            查找
           </Button>
         </form>
 
         {data && (
           <div className="space-y-3 text-sm">
-            <InfoRow label="User ID" value={data.id} />
-            <InfoRow label="Created" value={formatDate(data.createdAt)} />
+            <InfoRow label="用户 ID" value={data.id} />
+            <InfoRow label="创建时间" value={formatDate(data.createdAt)} />
             <InfoRow
-              label="Last Login"
-              value={data.lastLogin ? formatDate(data.lastLogin) : "Never"}
+              label="最后登录"
+              value={data.lastLogin ? formatDate(data.lastLogin) : "从未"}
+            />
+            <InfoRow label="邮箱账号" value={String(data.emailAccountCount)} />
+            <InfoRow label="高级版套餐" value={data.premium?.tier || "无"} />
+            <InfoRow
+              label="管理员授予套餐"
+              value={data.premium?.adminGrantTier || "无"}
             />
             <InfoRow
-              label="Email Accounts"
-              value={String(data.emailAccountCount)}
-            />
-            <InfoRow
-              label="Premium Tier"
-              value={data.premium?.tier || "None"}
-            />
-            <InfoRow
-              label="Admin Grant Tier"
-              value={data.premium?.adminGrantTier || "None"}
-            />
-            <InfoRow
-              label="Admin Grant Expires"
+              label="管理员授予到期时间"
               value={
                 data.premium?.adminGrantExpiresAt
                   ? formatDate(data.premium.adminGrantExpiresAt)
-                  : "N/A"
+                  : "不适用"
               }
             />
             <InfoRow
-              label="Subscription Status"
-              value={data.premium?.subscriptionStatus || "N/A"}
+              label="订阅状态"
+              value={data.premium?.subscriptionStatus || "不适用"}
             />
             <InfoRow
-              label="Renews At"
+              label="续订时间"
               value={
                 data.premium?.renewsAt
                   ? formatDate(data.premium.renewsAt)
-                  : "N/A"
+                  : "不适用"
               }
             />
 
             {data.emailAccounts.map((ea) => (
               <div key={ea.email} className="space-y-1 rounded-md border p-3">
                 <p className="font-medium">{ea.email}</p>
-                <InfoRow label="Provider" value={ea.provider} />
+                <InfoRow label="提供商" value={ea.provider} />
+                <InfoRow label="已断开" value={ea.disconnected ? "是" : "否"} />
+                <InfoRow label="规则" value={String(ea.ruleCount)} />
                 <InfoRow
-                  label="Disconnected"
-                  value={ea.disconnected ? "Yes" : "No"}
-                />
-                <InfoRow label="Rules" value={String(ea.ruleCount)} />
-                <InfoRow
-                  label="Last Rule Executed"
+                  label="上次执行规则时间"
                   value={
                     ea.lastExecutedRuleAt
                       ? formatDate(ea.lastExecutedRuleAt)
-                      : "Never"
+                      : "从未"
                   }
                 />
                 <InfoRow
-                  label="Watch Expires"
+                  label="监听过期时间"
                   value={
                     ea.watchExpirationDate
                       ? formatDate(ea.watchExpirationDate)
-                      : "Not watching"
+                      : "未监听"
                   }
                 />
               </div>

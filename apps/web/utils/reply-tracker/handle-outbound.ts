@@ -62,7 +62,7 @@ export async function handleOutboundMessage({
       logger,
     });
   } catch (error) {
-    logger.error("Error excluding replied sender from cold email blocker", {
+    logger.error("从冷邮件拦截中排除已回复发件人时出错", {
       error,
     });
     captureException(error, { emailAccountId: emailAccount.id });
@@ -93,7 +93,7 @@ export async function handleOutboundMessage({
         logger,
         emailAccountId: emailAccount.id,
         scope: "handle-outbound",
-        message: "Error tracking sent draft status",
+        message: "跟踪已发送草稿状态时出错",
         operation: "track-sent-draft-status",
         error: trackSentDraftStatusResult.reason,
         capture: true,
@@ -105,15 +105,15 @@ export async function handleOutboundMessage({
         logger,
         emailAccountId: emailAccount.id,
         scope: "handle-outbound",
-        message: "Error handling outbound reply",
+        message: "处理外发回复时出错",
         operation: "handle-outbound-reply",
         error: handleOutboundReplyResult.reason,
         capture: true,
       });
     }
 
-    // Persist the processed marker once the expensive reply-tracking work
-    // completes so follow-up cleanup failures do not trigger duplicate replays.
+    // 在耗时的回复跟踪工作完成后才持久化已处理标记，
+    // 以免后续清理失败触发重复重放。
     processedSuccessfully = results.every(
       (result) => result.status === "fulfilled",
     );
@@ -126,11 +126,11 @@ export async function handleOutboundMessage({
       excludeMessageId: message.id,
     });
   } catch (error) {
-    logger.error("Error during thread draft cleanup", { error });
+    logger.error("清理会话草稿时出错", { error });
     captureException(error, { emailAccountId: emailAccount.id });
   }
 
-  // Remove follow-up label if present (user replied, so follow-up no longer needed)
+  // 如果存在跟进标签则移除（用户已回复，因此不再需要跟进）
   try {
     await clearFollowUpLabel({
       emailAccountId: emailAccount.id,

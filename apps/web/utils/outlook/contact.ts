@@ -30,10 +30,9 @@ export async function searchContacts(
   const trimmedQuery = query.trim();
 
   // Neither source alone covers a mailbox: /me/contacts reads only the default
-  // saved-contacts folder, while /me/people adds the directory and recent
-  // correspondents. Their scopes are optional and were requested at different
-  // times, so an account may hold only one of them — a denial on one source
-  // must not suppress the other.
+  // 已保存联系人文件夹，而 /me/people 还会加入目录和近期通信人。它们的
+  // 权限范围是可选的，且是在不同时间请求的，因此账号可能只拥有其中一种权限——
+  // 一个来源被拒绝不能抑制另一个来源。
   const [saved, people] = await Promise.all([
     loadContactSource(
       () => listSavedContacts(client, trimmedQuery, logger),
@@ -51,8 +50,7 @@ export async function searchContacts(
     throw new ContactsAccessDeniedError({ cause: saved.deniedError });
   }
 
-  // Saved contacts lead because they are the address book the user curated;
-  // relevance-ranked people then fill the remaining slots.
+  // 已保存联系人排在前面，因为它们是用户整理的通讯录；随后由按相关度排序的人员填充剩余位置。
   return normalizeContactCandidates([
     ...(saved.contacts ?? []),
     ...(people.contacts ?? []),
@@ -69,14 +67,14 @@ async function loadContactSource(
   } catch (error) {
     if (!isContactSourceDenied(error)) throw error;
 
-    logger.info("Outlook contact source not permitted", { source });
+    logger.info("不允许访问 Outlook 联系人来源", { source });
     return { contacts: undefined, deniedError: error };
   }
 }
 
-// Graph reports a missing delegated scope as a 403 whose code varies by
-// resource (ErrorAccessDenied for Outlook, Authorization_RequestDenied for
-// People), so fall back to the status when the code is unfamiliar.
+// Graph 会把缺失的委派权限报告为 403，其代码因资源而异
+// （Outlook 为 ErrorAccessDenied，People 为 Authorization_RequestDenied），
+// 因此当代码不熟悉时回退到状态码判断。
 function isContactSourceDenied(error: unknown) {
   return (
     isOutlookAccessDeniedError(error) ||

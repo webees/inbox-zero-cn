@@ -10,8 +10,8 @@ export default function SettingsPage() {
   return (
     <div className="content-container pb-12">
       <div className="mx-auto max-w-5xl space-y-10 pt-4">
-        <PageHeader title="Settings" />
-        {/* The dialog renders the same content, so only mount one of them. */}
+        <PageHeader title="设置" />
+        {/* 弹窗渲染相同的内容，因此只挂载其中一个。 */}
         {!isSettingsOpen && <SettingsContent />}
       </div>
     </div>

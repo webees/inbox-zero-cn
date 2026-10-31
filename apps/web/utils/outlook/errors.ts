@@ -1,7 +1,7 @@
-// Helper functions for checking Microsoft Graph API errors
+// 用于检查 Microsoft Graph API 错误的辅助函数
 
 /**
- * Check if an error indicates that a resource already exists
+ * 检查错误是否表示资源已经存在
  * (e.g., filter, category, etc.)
  */
 export function isAlreadyExistsError(error: unknown): boolean {
@@ -15,17 +15,17 @@ export function isAlreadyExistsError(error: unknown): boolean {
 }
 
 /**
- * Check if a Microsoft Graph API error indicates a resource was not found.
- * GraphError from the SDK has `statusCode: number` as the canonical HTTP status.
- * Microsoft Graph also nests errors under `error` property with code like "itemNotFound".
+ * 检查 Microsoft Graph API 错误是否表示未找到资源。
+ * SDK 的 GraphError 以 `statusCode: number` 作为规范的 HTTP 状态。
+ * Microsoft Graph 还会将错误嵌套在 `error` 属性下，代码类似 "itemNotFound"。
  */
 export function isNotFoundError(error: unknown): boolean {
   if (error && typeof error === "object") {
-    // Check top-level statusCode (GraphError)
+    // 检查顶层 statusCode（GraphError）
     if ("statusCode" in error) {
       return (error as { statusCode: number }).statusCode === 404;
     }
-    // Check nested error.code (Microsoft Graph API response format)
+    // 检查嵌套的 error.code（Microsoft Graph API 响应格式）
     if (
       "error" in error &&
       typeof (error as { error: unknown }).error === "object"

@@ -114,7 +114,7 @@ describe("actionsNeedChatRiskConfirmation", () => {
 
     expect(result.needsConfirmation).toBe(true);
     expect(result.riskMessages).toEqual([
-      expect.stringContaining("creating unwanted or misleading tasks"),
+      expect.stringContaining("创建不需要或具有误导性的任务"),
     ]);
   });
 

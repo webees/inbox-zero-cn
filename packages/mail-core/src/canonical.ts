@@ -16,7 +16,7 @@ export async function hashCanonical(
 export async function webCryptoSha256(bytes: Uint8Array): Promise<Uint8Array> {
   const subtle = globalThis.crypto?.subtle;
   if (typeof subtle?.digest !== "function") {
-    throw new Error("crypto.subtle.digest is required for SHA-256 hashing");
+    throw new Error("SHA-256 哈希需要 crypto.subtle.digest");
   }
   const copy = new ArrayBuffer(bytes.byteLength);
   new Uint8Array(copy).set(bytes);

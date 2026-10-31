@@ -7,10 +7,10 @@ export function TestErrorButton() {
     <Button
       variant="destructive"
       onClick={() => {
-        throw new Error("Sentry Frontend Error");
+        throw new Error("Sentry 前端错误");
       }}
     >
-      Throw error
+      抛出错误
     </Button>
   );
 }

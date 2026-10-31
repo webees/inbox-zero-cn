@@ -76,7 +76,7 @@ async function main() {
   await writeFile(OUTPUT_FILE, fileContents, "utf8");
 
   console.log(
-    `Generated ${Object.keys(pricingByModel).length} pricing entries at ${fileURLToPath(OUTPUT_FILE)}`,
+    `已在 ${fileURLToPath(OUTPUT_FILE)} 生成 ${Object.keys(pricingByModel).length} 条定价记录`,
   );
 }
 
@@ -166,7 +166,7 @@ function buildPricingMap(payload: OpenRouterModelsResponse) {
 
   if (unresolvedSupportedModels.length) {
     console.log(
-      `No OpenRouter pricing match for ${unresolvedSupportedModels.length} supported models`,
+      `没有找到匹配 ${unresolvedSupportedModels.length} 个受支持模型的 OpenRouter 定价`,
     );
   }
 

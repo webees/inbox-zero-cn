@@ -112,7 +112,7 @@ describe("swr-persistence", () => {
       }),
     );
 
-    // A page that only fetched labels persists; settings must survive.
+    // 只获取过标签的页面也会持久化；设置必须保留下来。
     persistSwrEntries(
       ACCOUNT_A,
       cacheWith({ "/api/labels": { labels: ["new"] } }),
@@ -168,7 +168,7 @@ describe("swr-persistence", () => {
     persistSwrEntries(ACCOUNT_A, cacheWith({ "/api/labels": { labels: [] } }));
 
     clearPersistedSwrCache();
-    // The logout redirect fires pagehide, which persists from the warm cache.
+    // 登出重定向会触发 pagehide，此时会从热缓存中持久化。
     persistSwrEntries(ACCOUNT_A, cacheWith({ "/api/labels": { labels: [] } }));
 
     expect(readPersistedSwrEntries(ACCOUNT_A).size).toBe(0);

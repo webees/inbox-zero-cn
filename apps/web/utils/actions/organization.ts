@@ -42,9 +42,7 @@ export const createOrganizationAction = actionClient
     });
 
     if (existingMembership) {
-      throw new SafeError(
-        "You are already a member of an organization. You can only be part of one organization at a time.",
-      );
+      throw new SafeError("你已经是某个组织的成员。你一次只能属于一个组织。");
     }
 
     const existingOrganization = await prisma.organization.findUnique({
@@ -53,9 +51,7 @@ export const createOrganizationAction = actionClient
     });
 
     if (existingOrganization) {
-      throw new SafeError(
-        "An organization with this slug already exists. Please choose a different slug.",
-      );
+      throw new SafeError("已存在使用此 slug 的组织。请选择其他 slug。");
     }
 
     const organization = await prisma.organization.create({
@@ -86,8 +82,7 @@ export const inviteMembersAction = actionClientUser
       const inviterMember = await getAuthorizedOrganizationAdminMembership({
         organizationId,
         userId,
-        unauthorizedMessage:
-          "Only organization owners or admins can invite members.",
+        unauthorizedMessage: "只有组织所有者或管理员可以邀请成员。",
       });
 
       const [inviterEmailAccount, org] = await Promise.all([
@@ -102,11 +97,11 @@ export const inviteMembersAction = actionClientUser
       ]);
 
       if (!inviterEmailAccount) {
-        throw new SafeError("Email account not found.");
+        throw new SafeError("未找到邮箱账号。");
       }
 
       const inviterName = inviterEmailAccount.name || inviterEmailAccount.email;
-      const organizationName = org?.name || "Your organization";
+      const organizationName = org?.name || "你的组织";
 
       const pendingInvitations = await prisma.invitation.findMany({
         where: {
@@ -117,8 +112,8 @@ export const inviteMembersAction = actionClientUser
         select: { id: true, email: true, expiresAt: true },
       });
 
-      // Expired invitations are hidden from the members list, so they can't be
-      // cancelled there. Clear them so the admin can send a fresh one.
+      // 已过期的邀请不会显示在成员列表中，因此无法在那里
+      // 取消。清除它们，以便管理员重新发送一份。
       const now = new Date();
       const expiredInvitationIds = pendingInvitations
         .filter((i) => i.expiresAt <= now)
@@ -138,7 +133,7 @@ export const inviteMembersAction = actionClientUser
 
       for (const { email, role } of invitations) {
         if (seen.has(email)) {
-          results.push({ email, success: false, error: "Duplicate email" });
+          results.push({ email, success: false, error: "邮箱重复" });
           continue;
         }
         seen.add(email);
@@ -147,13 +142,13 @@ export const inviteMembersAction = actionClientUser
           results.push({
             email,
             success: false,
-            error: "Only owners can assign the owner role.",
+            error: "只有所有者可以分配所有者角色。",
           });
           continue;
         }
 
         if (alreadyInvited.has(email)) {
-          results.push({ email, success: false, error: "Already invited" });
+          results.push({ email, success: false, error: "已邀请" });
           continue;
         }
 
@@ -182,7 +177,7 @@ export const inviteMembersAction = actionClientUser
           results.push({
             email,
             success: false,
-            error: "Failed to send email",
+            error: "邮件发送失败",
           });
         }
       }
@@ -200,7 +195,7 @@ export const handleInvitationAction = actionClientUser
     });
 
     if (!invitation) {
-      throw new SafeError("Invitation not found", 404);
+      throw new SafeError("未找到邀请", 404);
     }
 
     assertInvitationCanBeAccepted(invitation);
@@ -214,7 +209,7 @@ export const handleInvitationAction = actionClientUser
     });
 
     if (!emailAccount) {
-      throw new SafeError("You are not the recipient of the invitation", 400);
+      throw new SafeError("你不是该邀请的接收者", 400);
     }
 
     const emailAccountId = emailAccount.id;
@@ -256,7 +251,7 @@ async function getInvitation({
   });
 
   if (!invitation) {
-    throw new SafeError("Invitation not found", 404);
+    throw new SafeError("未找到邀请", 404);
   }
 
   assertInvitationCanBeAccepted(invitation);
@@ -272,7 +267,7 @@ async function getInvitation({
   });
 
   if (!hasMatchingEmail) {
-    throw new SafeError("You are not the recipient of the invitation", 400);
+    throw new SafeError("你不是该邀请的接收者", 400);
   }
 
   return invitation;
@@ -303,9 +298,7 @@ async function acceptInvitation({
         memberId: existingMembership.id,
       };
     }
-    throw new SafeError(
-      "You are already a member of an organization. You can only be part of one organization at a time.",
-    );
+    throw new SafeError("你已经是某个组织的成员。你一次只能属于一个组织。");
   }
 
   const createdMember = await prisma.member.create({
@@ -323,8 +316,8 @@ async function acceptInvitation({
     data: { status: "accepted" },
   });
 
-  // A sync failure must not block joining the organization, but it is surfaced
-  // (logged + captured) so the team can recover the member's missing rule copies.
+  // 同步失败不得阻止加入组织，但会被暴露出来
+  // （记录并捕获），以便团队恢复该成员缺失的规则副本。
   const syncLogger = createScopedLogger("organizations/rules").with({
     emailAccountId,
     organizationId: invitation.organizationId,
@@ -336,7 +329,7 @@ async function acceptInvitation({
       logger: syncLogger,
     });
   } catch (error) {
-    syncLogger.error("Failed to materialize org rules for new member", {
+    syncLogger.error("为新成员生成组织规则失败", {
       error,
     });
     captureException(error, {
@@ -381,9 +374,7 @@ export const removeMemberAction = actionClientUser
         where: { organizationId: targetMember.organizationId, role: "owner" },
       });
       if (ownerCount === 1) {
-        throw new SafeError(
-          "Cannot remove the last remaining owner from the organization.",
-        );
+        throw new SafeError("无法从组织中移除最后一名所有者。");
       }
     }
 
@@ -450,7 +441,7 @@ export const transferOwnershipAction = actionClientUser
       });
 
       if (!targetMember || targetMember.organizationId !== organizationId) {
-        throw new SafeError("Member not found.");
+        throw new SafeError("未找到成员。");
       }
 
       const callerMembership = await prisma.member.findFirst({
@@ -463,11 +454,11 @@ export const transferOwnershipAction = actionClientUser
       });
 
       if (!callerMembership) {
-        throw new SafeError("Only organization owners can transfer ownership.");
+        throw new SafeError("只有组织所有者可以转移所有权。");
       }
 
       if (targetMember.emailAccountId === callerMembership.emailAccountId) {
-        throw new SafeError("You already own this organization.");
+        throw new SafeError("你已经拥有此组织。");
       }
 
       if (targetMember.role === "owner") {
@@ -504,21 +495,20 @@ export const cancelInvitationAction = actionClientUser
     });
 
     if (!invitation) {
-      throw new SafeError("Invitation not found.");
+      throw new SafeError("未找到邀请。");
     }
 
     if (invitation.status !== "pending") {
-      throw new SafeError("Only pending invitations can be cancelled.");
+      throw new SafeError("只能取消待处理的邀请。");
     }
 
     await getAuthorizedOrganizationAdminMembership({
       organizationId: invitation.organizationId,
       userId,
-      unauthorizedMessage:
-        "Only organization owners or admins can cancel invitations.",
+      unauthorizedMessage: "只有组织所有者或管理员可以取消邀请。",
     });
 
-    // Remove from premium pending invites
+    // 从高级版待处理邀请中移除
     const premium = await getOrganizationPremium(invitation.organizationId);
     if (premium) {
       await removeFromPendingInvites({
@@ -531,7 +521,7 @@ export const cancelInvitationAction = actionClientUser
       where: { id: invitationId, status: "pending" },
     });
     if (result.count === 0) {
-      throw new SafeError("Invitation no longer pending.");
+      throw new SafeError("邀请不再是待处理状态。");
     }
   });
 
@@ -581,7 +571,7 @@ export const updateAnalyticsConsentAction = actionClient
       });
 
       if (!member) {
-        throw new SafeError("You are not a member of any organization");
+        throw new SafeError("你不属于任何组织");
       }
 
       await prisma.member.update({
@@ -604,7 +594,7 @@ export const createOrganizationAndInviteAction = actionClient
       });
 
       if (!emailAccount) {
-        throw new SafeError("Email account not found");
+        throw new SafeError("未找到邮箱账号");
       }
 
       const existingMembership = await prisma.member.findFirst({
@@ -613,9 +603,7 @@ export const createOrganizationAndInviteAction = actionClient
       });
 
       if (existingMembership) {
-        throw new SafeError(
-          "You are already a member of an organization. Use the standard invite flow.",
-        );
+        throw new SafeError("你已经是某个组织的成员。请使用标准邀请流程。");
       }
 
       const firstName = (userName ?? emailAccount.name)?.split(" ")[0] || "My";
@@ -649,7 +637,7 @@ export const createOrganizationAndInviteAction = actionClient
         });
 
         if (existing) {
-          results.push({ email, success: false, error: "Already invited" });
+          results.push({ email, success: false, error: "已邀请" });
           continue;
         }
 
@@ -677,7 +665,7 @@ export const createOrganizationAndInviteAction = actionClient
           results.push({
             email,
             success: false,
-            error: "Failed to send email",
+            error: "邮件发送失败",
           });
         }
       }
@@ -708,7 +696,7 @@ async function generateUniqueSlug(baseSlug: string): Promise<string> {
   }
 
   if (existingOrg) {
-    throw new Error("Failed to generate unique organization slug");
+    throw new Error("无法生成唯一的组织 slug");
   }
 
   return baseSlug + randomSuffix;
@@ -734,7 +722,7 @@ async function authorizeMemberManagement({
   });
 
   if (!targetMember) {
-    throw new SafeError("Member not found.");
+    throw new SafeError("未找到成员。");
   }
 
   const callerMembership = await getAuthorizedOrganizationAdminMembership({
@@ -749,11 +737,11 @@ async function authorizeMemberManagement({
 
   if (targetMember.role === "owner") {
     if (action === "updateRole") {
-      throw new SafeError("Organization owners cannot be reassigned.");
+      throw new SafeError("组织所有者无法被重新分配。");
     }
 
     if (callerMembership.role !== "owner") {
-      throw new SafeError("Only owners can remove other owners.");
+      throw new SafeError("只有所有者可以移除其他所有者。");
     }
   }
 
@@ -766,16 +754,16 @@ const memberManagementUnauthorizedMessages: Record<
   MemberManagementAction,
   string
 > = {
-  remove: "Only organization owners or admins can remove members.",
-  updateRole: "Only organization owners or admins can update member roles.",
+  remove: "只有组织所有者或管理员可以移除成员。",
+  updateRole: "只有组织所有者或管理员可以更新成员角色。",
 };
 
 const memberManagementSelfActionMessages: Record<
   MemberManagementAction,
   string
 > = {
-  remove: "You cannot remove yourself from the organization.",
-  updateRole: "You cannot change your own role.",
+  remove: "你不能将自己从组织中移除。",
+  updateRole: "你不能更改自己的角色。",
 };
 
 function assertInvitationCanBeAccepted(invitation: {
@@ -783,13 +771,10 @@ function assertInvitationCanBeAccepted(invitation: {
   expiresAt: Date;
 }) {
   if (invitation.status !== "pending") {
-    throw new SafeError("This invitation is no longer valid.", 400);
+    throw new SafeError("此邀请不再有效。", 400);
   }
 
   if (invitation.expiresAt < new Date()) {
-    throw new SafeError(
-      "This invitation has expired. Ask your organization admin to send a new one.",
-      400,
-    );
+    throw new SafeError("此邀请已过期。请让你的组织管理员重新发送一份。", 400);
   }
 }

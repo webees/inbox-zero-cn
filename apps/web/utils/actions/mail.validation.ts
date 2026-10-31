@@ -6,8 +6,8 @@ const mailboxItemKind = z.enum(["label", "folder"]);
 const mailboxItemName = z
   .string()
   .trim()
-  .min(1, "Mailbox item name is required")
-  .max(255, "Mailbox item name must be 255 characters or fewer");
+  .min(1, "邮箱项目名称为必填项")
+  .max(255, "邮箱项目名称最多 255 个字符");
 
 export const unarchiveThreadBody = z.object({ threadId: z.string() });
 export type UnarchiveThreadBody = z.infer<typeof unarchiveThreadBody>;
@@ -18,15 +18,15 @@ export type UntrashThreadBody = z.infer<typeof untrashThreadBody>;
 export const updateMailboxItemBody = z
   .object({
     kind: mailboxItemKind,
-    id: z.string().min(1, "Mailbox item ID is required"),
+    id: z.string().min(1, "邮箱项目 ID 为必填项"),
     name: mailboxItemName.optional(),
     color: z
       .object({
         backgroundColor: z.string().regex(/^#[0-9a-f]{6}$/i, {
-          error: "Background color must be a six-digit hex color",
+          error: "背景颜色必须是六位十六进制颜色值",
         }),
         textColor: z.string().regex(/^#[0-9a-f]{6}$/i, {
-          error: "Text color must be a six-digit hex color",
+          error: "文字颜色必须是六位十六进制颜色值",
         }),
       })
       .optional(),
@@ -40,34 +40,34 @@ export const updateMailboxItemBody = z
     if (kind === "folder" && hasVisibility) {
       context.addIssue({
         code: "custom",
-        message: "Folders do not support visibility settings",
+        message: "文件夹不支持可见性设置",
       });
     }
     if (kind === "folder" && !name) {
       context.addIssue({
         code: "custom",
         path: ["name"],
-        message: "Folder name is required",
+        message: "文件夹名称为必填项",
       });
     }
     if (kind === "folder" && color) {
       context.addIssue({
         code: "custom",
         path: ["color"],
-        message: "Folders do not support colors",
+        message: "文件夹不支持颜色",
       });
     }
     if (kind === "label" && !name && !color && !hasVisibility) {
       context.addIssue({
         code: "custom",
-        message: "A label name, color, or visibility setting is required",
+        message: "标签名称、颜色或可见性设置至少需要提供一项",
       });
     }
   });
 
 export const deleteMailboxItemBody = z.object({
   kind: mailboxItemKind,
-  id: z.string().min(1, "Mailbox item ID is required"),
+  id: z.string().min(1, "邮箱项目 ID 为必填项"),
 });
 
 export const updateDraftBody = z.object({

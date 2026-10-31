@@ -17,7 +17,7 @@ export async function cleanupStaleDrafts({
 }): Promise<void> {
   const staleThreshold = subDays(new Date(), STALE_DRAFT_DAYS);
 
-  logger.info("Cleaning up stale follow-up drafts", {
+  logger.info("正在清理过期的跟进草稿", {
     thresholdDays: STALE_DRAFT_DAYS,
     before: staleThreshold.toISOString(),
   });
@@ -36,10 +36,10 @@ export async function cleanupStaleDrafts({
     },
   });
 
-  logger.info("Found stale trackers", { count: staleTrackers.length });
+  logger.info("找到过期追踪项", { count: staleTrackers.length });
 
   if (staleTrackers.length === 0) {
-    logger.info("Finished cleaning up stale drafts");
+    logger.info("完成过期草稿清理");
     return;
   }
 
@@ -47,7 +47,7 @@ export async function cleanupStaleDrafts({
     staleTrackers.map((t) => t.followUpDraftId).filter(Boolean),
   );
 
-  logger.info("Found tracked drafts in database", {
+  logger.info("在数据库中找到已追踪的草稿", {
     count: trackedDraftIds.size,
   });
 
@@ -67,11 +67,11 @@ export async function cleanupStaleDrafts({
       });
 
       if (!hasLabel) {
-        trackerLogger.info("Thread no longer has follow-up label, skipping");
+        trackerLogger.info("会话已没有跟进标签，跳过");
         continue;
       }
 
-      // Only delete drafts that are tracked in our database (AI-generated)
+      // 只删除我们数据库中已追踪的草稿（AI 生成）
       const threadDrafts = allDrafts.filter(
         (draft) => draft.threadId === tracker.threadId,
       );
@@ -82,7 +82,7 @@ export async function cleanupStaleDrafts({
 
       const skippedCount = threadDrafts.length - trackedThreadDrafts.length;
       if (skippedCount > 0) {
-        trackerLogger.info("Skipping untracked drafts (user-created)", {
+        trackerLogger.info("跳过未追踪的草稿（用户创建）", {
           skippedCount,
         });
       }
@@ -90,24 +90,24 @@ export async function cleanupStaleDrafts({
       for (const draft of trackedThreadDrafts) {
         try {
           await provider.deleteDraft(draft.id);
-          trackerLogger.info("Deleted stale draft", { draftId: draft.id });
+          trackerLogger.info("已删除过期草稿", { draftId: draft.id });
         } catch (error) {
-          trackerLogger.warn("Failed to delete stale draft", {
+          trackerLogger.warn("删除过期草稿失败", {
             draftId: draft.id,
             error,
           });
         }
       }
 
-      trackerLogger.info("Cleaned up stale drafts for thread", {
+      trackerLogger.info("已清理该会话的过期草稿", {
         deletedCount: trackedThreadDrafts.length,
       });
     } catch (error) {
-      trackerLogger.error("Failed to cleanup stale drafts for thread", {
+      trackerLogger.error("清理该会话的过期草稿失败", {
         error,
       });
     }
   }
 
-  logger.info("Finished cleaning up stale drafts");
+  logger.info("完成过期草稿清理");
 }

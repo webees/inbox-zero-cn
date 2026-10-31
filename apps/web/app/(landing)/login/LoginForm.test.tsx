@@ -89,7 +89,7 @@ describe("LoginForm", () => {
 
     expect(
       screen.getAllByRole("button").map((button) => button.textContent),
-    ).toEqual(["Sign in with Google", "Sign in with Microsoft"]);
+    ).toEqual(["使用 Google 登录", "使用 Microsoft 登录"]);
   });
 
   it("starts Apple sign-in directly when no primary provider is configured", async () => {
@@ -97,9 +97,7 @@ describe("LoginForm", () => {
 
     render(<LoginForm enabledProviders={["apple"]} useGoogleOauthEmulator />);
 
-    fireEvent.click(
-      screen.getByRole("button", { name: /continue with apple/i }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: /使用 Apple 继续/ }));
 
     await waitFor(() => {
       expect(mockSignInSocial).toHaveBeenCalledWith({
@@ -125,9 +123,7 @@ describe("LoginForm", () => {
       />,
     );
 
-    fireEvent.click(
-      screen.getByRole("button", { name: /continue with apple/i }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: /使用 Apple 继续/ }));
 
     await waitFor(() => {
       expect(mockSignInSocial).toHaveBeenCalledWith({
@@ -147,14 +143,14 @@ describe("LoginForm", () => {
     );
 
     fireEvent.click(
-      screen.getByRole("button", { name: /sign in with microsoft/i }),
+      screen.getByRole("button", { name: /使用 Microsoft 登录/ }),
     );
 
     await waitFor(() => {
       expect(mockToastError).toHaveBeenCalledWith({
-        title: "Error signing in with Microsoft",
+        title: "使用 Microsoft 登录时出错",
         description:
-          "Could not start sign-in. Please check that this app is opened from its configured public URL, then try again.",
+          "无法开始登录。请检查该应用是否从其配置的公开 URL 打开，然后重试。",
       });
     });
   });
@@ -170,9 +166,7 @@ describe("LoginForm", () => {
       />,
     );
 
-    fireEvent.click(
-      screen.getByRole("button", { name: /sign in with google/i }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: /使用 Google 登录/ }));
 
     await waitFor(() => {
       expect(startAuth).toHaveBeenCalledWith("google", {
@@ -189,9 +183,7 @@ describe("LoginForm", () => {
 
     render(<LoginForm enabledProviders={["google"]} useGoogleOauthEmulator />);
 
-    fireEvent.click(
-      screen.getByRole("button", { name: /sign in with google/i }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: /使用 Google 登录/ }));
 
     await waitFor(() => {
       expect(startAuth).toHaveBeenCalledWith("google", {
@@ -213,9 +205,7 @@ describe("LoginForm", () => {
       />,
     );
 
-    fireEvent.click(
-      screen.getByRole("button", { name: /continue with apple/i }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: /使用 Apple 继续/ }));
 
     await waitFor(() => {
       expect(startAuth).toHaveBeenCalledWith("apple", {

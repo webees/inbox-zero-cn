@@ -320,9 +320,9 @@ describe("groupThreadsByDate", () => {
         count: group.threads.length,
       })),
     ).toEqual([
-      { label: "Today", startIndex: 0, count: 2 },
-      { label: "Yesterday", startIndex: 2, count: 1 },
-      { label: "Last 7 days", startIndex: 3, count: 2 },
+      { label: "今天", startIndex: 0, count: 2 },
+      { label: "昨天", startIndex: 2, count: 1 },
+      { label: "最近 7 天", startIndex: 3, count: 2 },
       { label: "August", startIndex: 5, count: 1 },
     ]);
   });
@@ -335,7 +335,7 @@ describe("groupThreadsByDate", () => {
       ],
     };
 
-    expect(groupThreadsByDate([thread], now)[0].label).toBe("Today");
+    expect(groupThreadsByDate([thread], now)[0].label).toBe("今天");
   });
 
   it("gives undated threads no heading instead of dating them now", () => {
@@ -354,7 +354,7 @@ describe("groupThreadsByDate", () => {
         count: group.threads.length,
       })),
     ).toEqual([
-      { label: "Today", count: 1 },
+      { label: "今天", count: 1 },
       { label: null, count: 2 },
     ]);
   });
@@ -370,9 +370,9 @@ describe("groupThreadsByDate", () => {
     );
 
     expect(groups.map((group) => group.label)).toEqual([
-      "Today",
-      "Yesterday",
-      "Today",
+      "今天",
+      "昨天",
+      "今天",
     ]);
   });
 });

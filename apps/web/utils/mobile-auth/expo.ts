@@ -53,7 +53,7 @@ function configuredEmulatorOrigins(values: readonly string[]) {
       }
       origins.add(parsed.origin);
     } catch {
-      // Ignore an unusable emulator base URL.
+      // 忽略不可用的模拟器基础 URL。
     }
   }
   return origins;
@@ -82,7 +82,7 @@ function localExpoAuthorizationProxy() {
       const { authorizationURL } = ctx.query;
       if (authorizationURL.includes("#")) {
         throw new APIError("BAD_REQUEST", {
-          message: "Invalid authorizationURL",
+          message: "无效的 authorizationURL",
         });
       }
       let url: URL;
@@ -90,7 +90,7 @@ function localExpoAuthorizationProxy() {
         url = new URL(authorizationURL);
       } catch {
         throw new APIError("BAD_REQUEST", {
-          message: "Invalid authorizationURL",
+          message: "无效的 authorizationURL",
         });
       }
       if (
@@ -104,7 +104,7 @@ function localExpoAuthorizationProxy() {
         )
       ) {
         throw new APIError("BAD_REQUEST", {
-          message: "Invalid authorizationURL",
+          message: "无效的 authorizationURL",
         });
       }
       const { oauthState } = ctx.query;
@@ -121,7 +121,7 @@ function localExpoAuthorizationProxy() {
       }
       const state = url.searchParams.get("state");
       if (!state) {
-        throw new APIError("BAD_REQUEST", { message: "Unexpected error" });
+        throw new APIError("BAD_REQUEST", { message: "发生意外错误" });
       }
       const stateCookie = ctx.context.createAuthCookie("state", {
         maxAge: 300,

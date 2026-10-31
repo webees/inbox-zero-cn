@@ -42,18 +42,18 @@ export async function processMeetingBriefings({
   minutesBefore: number;
   logger: Logger;
 }): Promise<void> {
-  logger.info("Processing meeting briefings", { minutesBefore });
+  logger.info("正在处理会议简报", { minutesBefore });
 
-  // 1. Fetch upcoming events
+  // 1. 拉取即将到来的事件
   const allEvents = await fetchUpcomingEvents({
     emailAccountId,
     minutesBefore,
     logger,
   });
 
-  logger.info("Fetched upcoming events", { count: allEvents.length });
+  logger.info("已拉取即将到来的事件", { count: allEvents.length });
 
-  // 2. Filter to events with external guests
+  // 2. 筛选出有外部受邀者的事件
   const eventsWithExternalGuests = filterEventsWithExternalGuests(
     allEvents,
     userEmail,
@@ -64,7 +64,7 @@ export async function processMeetingBriefings({
     return;
   }
 
-  // 3. Check which events haven't been briefed yet
+  // 3. 检查哪些事件尚未生成简报
   const existingBriefings = await prisma.meetingBriefing.findMany({
     where: {
       emailAccountId,
@@ -87,7 +87,7 @@ export async function processMeetingBriefings({
     return;
   }
 
-  // Get full email account for AI generation
+  // 获取完整的邮箱账号用于 AI 生成
   const emailAccount = await prisma.emailAccount.findUnique({
     where: { id: emailAccountId },
     select: {
@@ -115,11 +115,11 @@ export async function processMeetingBriefings({
   });
 
   if (!emailAccount) {
-    logger.error("Email account not found");
+    logger.error("未找到邮箱账号");
     return;
   }
 
-  // 4. Process each event
+  // 4. 处理每个事件
   for (const event of eventsToProcess) {
     try {
       await runMeetingBrief({
@@ -130,11 +130,11 @@ export async function processMeetingBriefings({
         logger,
       });
     } catch {
-      // Error already logged and saved by runMeetingBrief
+      // 错误已由 runMeetingBrief 记录并保存
     }
   }
 
-  logger.info("Finished processing meeting briefings");
+  logger.info("已完成会议简报处理");
 }
 
 export async function runMeetingBrief({
@@ -170,7 +170,7 @@ export async function runMeetingBrief({
 
     if (!claimed) {
       eventLog.info("Event already claimed by another process, skipping");
-      return { success: false, message: "Already being processed" };
+      return { success: false, message: "正在处理中" };
     }
   }
 
@@ -185,7 +185,7 @@ export async function runMeetingBrief({
     });
 
     if (briefingData.externalGuests.length === 0) {
-      eventLog.info("No external guests found for event, skipping");
+      eventLog.info("未找到事件的外部受邀者，跳过");
       if (!isTestSend) {
         await upsertMeetingBriefingStatus({
           emailAccountId,
@@ -197,7 +197,7 @@ export async function runMeetingBrief({
           logger: eventLog,
         });
       }
-      return { success: false, message: "No external guests found" };
+      return { success: false, message: "未找到外部受邀者" };
     }
 
     const briefingContent = await aiGenerateMeetingBriefing({
@@ -229,10 +229,10 @@ export async function runMeetingBrief({
       });
     }
 
-    eventLog.info("Meeting briefing sent successfully");
-    return { success: true, message: "Brief sent successfully" };
+    eventLog.info("会议简报已成功发送");
+    return { success: true, message: "简报已成功发送" };
   } catch (error) {
-    eventLog.error("Failed to process meeting briefing", { error });
+    eventLog.error("处理会议简报失败", { error });
 
     if (!isTestSend) {
       await upsertMeetingBriefingStatus({
@@ -319,6 +319,6 @@ async function upsertMeetingBriefingStatus({
       update: { status },
     });
   } catch (error) {
-    logger.error("Failed to upsert meeting briefing status", { error, status });
+    logger.error("写入会议简报状态失败", { error, status });
   }
 }

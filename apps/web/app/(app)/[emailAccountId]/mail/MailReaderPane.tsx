@@ -90,11 +90,11 @@ export const MailReaderPane = memo(function MailReaderPane({
   if (readerKey && !readerEmailAccount) {
     return (
       <div
-        aria-label="Loading"
+        aria-label="正在加载"
         className="flex min-h-0 min-w-0 flex-1 items-center justify-center text-muted-foreground text-sm"
         role="status"
       >
-        Loading…
+        正在加载…
       </div>
     );
   }
@@ -102,9 +102,8 @@ export const MailReaderPane = memo(function MailReaderPane({
   return (
     <MailPanelErrorBoundary
       resetKey={readerKey ?? "empty"}
-      title="Unable to show this conversation"
+      title="无法显示此会话"
       onBack={onClose}
-      onError={() => onReady(readerKey ?? "empty")}
     >
       <EmailAccountScopeProvider emailAccount={readerEmailAccount}>
         <BufferedThreadReader

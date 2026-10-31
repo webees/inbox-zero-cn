@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, useMemo, type Ref } from "react";
-import { CopyIcon, PaperclipIcon } from "lucide-react";
+import { PaperclipIcon } from "lucide-react";
 import { MailThreadRow } from "@inboxzero/mail-ui/MailThreadRow";
 import { isThreadStarred } from "@/app/(app)/[emailAccountId]/mail/star-state";
 import { MailLabelChip } from "@/app/(app)/[emailAccountId]/mail/MailLabelChip";
@@ -13,7 +13,6 @@ import type {
 } from "@/app/(app)/[emailAccountId]/mail/types";
 import { SentMessageOpenStatus } from "@/components/email-list/SentMessageOpenStatus";
 import { getEmailThreadLabels } from "@/components/EmailMessageCellLabels";
-import { toastError, toastSuccess } from "@/components/Toast";
 import { Tooltip } from "@/components/Tooltip";
 import { Checkbox } from "@/components/ui/checkbox";
 import { mailCheckboxClassName } from "@/app/(app)/[emailAccountId]/mail/SelectAllCheckbox";
@@ -28,25 +27,20 @@ import { formatShortDate, internalDateToDate } from "@/utils/date";
 import { decodeSnippet } from "@/utils/gmail/decode";
 import { GmailLabel } from "@/utils/gmail/label";
 import { getConversationSubject } from "@/utils/email/subject";
-import { extractOtpCode, isOtpSubject } from "@/utils/otp";
-import { getRuleLabel } from "@/utils/rule/consts";
-import { SystemType } from "@/generated/prisma/enums";
-
-const OTP_LABEL = getRuleLabel(SystemType.OTP).toLowerCase();
 
 export type ThreadRowProps = {
   thread: ListThread;
-  /** Position in the rendered list — selection and focus are index-addressed. */
+  /** 在渲染列表中的位置——选择和焦点都按索引寻址。 */
   index: number;
   layout: MailLayoutMode;
   userEmail: string;
   userLabels: EmailLabels;
   isFocused: boolean;
   isSelected: boolean;
-  /** Keeps every checkbox visible once the list has a selection. */
+  /** 列表存在选择后保持所有复选框可见。 */
   hasAnySelection: boolean;
   compact?: boolean;
-  /** Wraps the snippet onto its own line so more of it is readable. */
+  /** 将摘要片段换到单独一行，以便阅读更多内容。 */
   expandedPreview?: boolean;
   selectionEnabled?: boolean;
   onOpen: (index: number) => void;
@@ -107,11 +101,6 @@ export const ThreadRow = memo(function ThreadRow({
   const hasAttachment = thread.messages.some(
     (message) => message.hasAttachment,
   );
-  const snippet = decodeSnippet(thread.snippet || message.snippet);
-  const isOtp =
-    labels.some((label) => label.name.toLowerCase() === OTP_LABEL) ||
-    isOtpSubject(message.subject);
-  const otpCode = isOtp ? extractOtpCode([message.subject, snippet]) : null;
 
   return (
     <MailThreadRow
@@ -125,7 +114,7 @@ export const ThreadRow = memo(function ThreadRow({
                 aria-hidden
                 className="size-3.5 shrink-0 text-muted-foreground"
               />
-              <span className="sr-only">Has attachment</span>
+              <span className="sr-only">有附件</span>
             </>
           ) : null}
           {sentMessageOpen ? (
@@ -146,12 +135,9 @@ export const ThreadRow = memo(function ThreadRow({
       isSelected={isSelected}
       isStarred={isThreadStarred(thread.messages)}
       isUnread={isThreadUnread(thread.messages)}
-      labels={[
-        ...chips.map((label) => (
-          <MailLabelChip color={label.color} key={label.id} name={label.name} />
-        )),
-        ...(otpCode ? [<OtpCodeButton code={otpCode} key="otp-code" />] : []),
-      ]}
+      labels={chips.map((label) => (
+        <MailLabelChip color={label.color} key={label.id} name={label.name} />
+      ))}
       layout={layout}
       messageCount={thread.messages.length}
       onOpen={onOpen}
@@ -159,7 +145,7 @@ export const ThreadRow = memo(function ThreadRow({
       onToggleSelect={onToggleSelect}
       participantSummary={participantSummary}
       renderSelectionControl={({ ariaLabel, checked, onClick, visible }) => (
-        // Opening above would cover the select-all checkbox for the first row.
+        // 在下方打开会遮住第一行的全选复选框。
         <Tooltip shortcuts={["select"]} side="right">
           <Checkbox
             aria-label={ariaLabel}
@@ -177,35 +163,11 @@ export const ThreadRow = memo(function ThreadRow({
       )}
       rowRef={rowRef}
       selectionEnabled={selectionEnabled}
-      snippet={snippet}
+      snippet={decodeSnippet(thread.snippet || message.snippet)}
       subject={getConversationSubject(thread.messages)}
     />
   );
 });
-
-function OtpCodeButton({ code }: { code: string }) {
-  return (
-    <button
-      aria-label={`Copy code ${code}`}
-      className="inline-flex shrink-0 items-center gap-1 rounded-md border border-border bg-background px-1.5 py-px font-medium text-foreground text-xs tabular-nums leading-4 hover:bg-muted"
-      onClick={async (event) => {
-        event.stopPropagation();
-        try {
-          await navigator.clipboard.writeText(code);
-          toastSuccess({ description: "Code copied" });
-        } catch {
-          toastError({ description: "Failed to copy code" });
-        }
-      }}
-      // Enter would otherwise bubble to the row and open the thread.
-      onKeyDown={(event) => event.stopPropagation()}
-      type="button"
-    >
-      {code}
-      <CopyIcon aria-hidden className="size-3 text-muted-foreground" />
-    </button>
-  );
-}
 
 function AccountAvatar({
   account,

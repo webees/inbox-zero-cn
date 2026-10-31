@@ -821,7 +821,7 @@ function resolveDeploymentModelEntries({
   getOpenRouterProviderOptions: (
     modelType: ModelType,
     provider: string,
-    // biome-ignore lint/suspicious/noExplicitAny: existing loose external shape
+    // biome-ignore lint/suspicious/noExplicitAny: 既有的宽松外部结构
   ) => Record<string, any> | undefined;
   warningMessages: ModelEntryWarningMessages;
 }): ResolvedModel[] {

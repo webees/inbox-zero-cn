@@ -116,19 +116,19 @@ const NEGATIVE_REACTION_ALIASES = new Set([
   "heavy_multiplication_x",
 ]);
 const UNSUPPORTED_MESSAGING_ATTACHMENT_MESSAGE =
-  "I can process images, but I can't access or email other file types (documents, videos, audio) sent here yet. Share the contents as text if you want me to draft an email about them.";
+  "我可以处理图片，但目前还无法读取或通过邮件发送在这里收到的其他文件类型（文档、视频、音频）。如果你希望我据此起草邮件，请把内容以文字形式发给我。";
 const UNSUPPORTED_MESSAGING_ATTACHMENT_MODEL_CONTEXT =
-  "Hidden context: The latest messaging input included one or more unsupported non-image file attachments. Their contents are unavailable, and they cannot be attached to outgoing emails from chat.";
+  "隐藏上下文：最近一次消息输入中包含一个或多个不受支持的非图片附件。其内容不可用，也无法从聊天中作为附件发送。";
 
 const SLACK_ASSISTANT_SUGGESTED_PROMPTS = [
-  { title: "Inbox summary", message: "Summarize what needs attention today." },
+  { title: "收件箱摘要", message: "总结今天需要关注的事项。" },
   {
-    title: "Draft reply",
-    message: "Draft a response to my most urgent unread email.",
+    title: "起草回复",
+    message: "为我最紧急的未读邮件起草一封回复。",
   },
   {
-    title: "Follow-up list",
-    message: "Which emails should I follow up on this week?",
+    title: "待跟进列表",
+    message: "本周我应该跟进哪些邮件？",
   },
 ];
 
@@ -343,7 +343,7 @@ export async function ensureSlackTeamInstallation(
   });
 
   if (!channel?.accessToken) {
-    logger.warn("No Slack workspace token available for Chat SDK", { teamId });
+    logger.warn("Chat SDK 没有可用的 Slack 工作区令牌", { teamId });
     return;
   }
 
@@ -380,7 +380,7 @@ export async function syncSlackInstallation({
       teamName: teamName ?? undefined,
     });
   } catch (error) {
-    logger.warn("Failed to sync Slack installation to Chat SDK", {
+    logger.warn("同步 Slack 安装到 Chat SDK 失败", {
       teamId,
       error,
     });
@@ -516,10 +516,10 @@ function registerMessagingHandlers({
           channelId,
           threadTs,
           SLACK_ASSISTANT_SUGGESTED_PROMPTS,
-          "Try asking Inbox Zero",
+          "试试这样问 Inbox Zero",
         );
       } catch (error) {
-        logger.warn("Failed to set Slack assistant suggested prompts", {
+        logger.warn("设置 Slack 助手建议提示失败", {
           error,
         });
       }
@@ -537,7 +537,7 @@ async function subscribeMessagingThreadSafely({
   try {
     await thread.subscribe();
   } catch (error) {
-    logger.warn("Failed to subscribe messaging thread", {
+    logger.warn("订阅消息会话失败", {
       provider: thread.adapter.name,
       threadId: thread.id,
       error,
@@ -609,7 +609,7 @@ async function processMessagingAssistantMessage({
           }),
         );
       } catch (error) {
-        logger.warn("Failed to post unsupported attachment guidance", {
+        logger.warn("发布不支持附件的提示失败", {
           provider: context.provider,
           error,
         });
@@ -627,7 +627,7 @@ async function processMessagingAssistantMessage({
     });
 
     if (!emailAccountUser) {
-      logger.error("Email account not found for messaging chat", {
+      logger.error("消息聊天中找不到邮箱账号", {
         emailAccountId: context.emailAccountId,
         provider: context.provider,
       });
@@ -712,10 +712,10 @@ async function processMessagingAssistantMessage({
     try {
       try {
         await thread.startTyping(
-          context.provider === "slack" ? "Thinking..." : undefined,
+          context.provider === "slack" ? "正在思考…" : undefined,
         );
       } catch {
-        // Ignore typing indicator failures
+        // 忽略“正在输入”指示失败
       }
 
       const inboxStats = await inboxStatsPromise;
@@ -751,9 +751,7 @@ async function processMessagingAssistantMessage({
       });
 
       if (!assistantUiMessage) {
-        throw new Error(
-          "Missing assistant message in messaging response stream",
-        );
+        throw new Error("消息响应流中缺少助手消息");
       }
 
       const fullText = prependAccountIndicator({
@@ -778,10 +776,9 @@ async function processMessagingAssistantMessage({
         });
       } catch (error) {
         if (isDuplicateError(error, "id")) {
-          threadLogger.info(
-            "Skipping duplicate messaging assistant response for retried event",
-            { assistantMessageId },
-          );
+          threadLogger.info("重试事件时跳过重复的消息助手响应", {
+            assistantMessageId,
+          });
           return true;
         }
         throw error;
@@ -824,14 +821,12 @@ async function processMessagingAssistantMessage({
 
       return true;
     } catch (error) {
-      threadLogger.error("AI processing failed for messaging chat", { error });
+      threadLogger.error("消息聊天的 AI 处理失败", { error });
 
       try {
-        await thread.post(
-          "Sorry, I ran into an error processing your message. Please try again.",
-        );
+        await thread.post("抱歉，处理你的消息时出错了。请重试。");
       } catch {
-        // Ignore fallback post failures
+        // 忽略回退消息发送失败
       }
 
       return true;
@@ -852,7 +847,7 @@ async function handlePendingEmailConfirmAction({
 }) {
   const thread = event.thread;
   if (!thread) {
-    logger.warn("Missing thread for pending email confirmation action");
+    logger.warn("待确认邮件操作缺少会话");
     return;
   }
 
@@ -868,7 +863,7 @@ async function handlePendingEmailConfirmAction({
     await postPendingEmailActionFeedback({
       event,
       provider,
-      text: "That action is invalid or expired. Ask me to prepare the email again.",
+      text: "该操作已失效或已过期。请让我重新准备这封邮件。",
       logger,
     });
     return;
@@ -878,18 +873,15 @@ async function handlePendingEmailConfirmAction({
     parsedAction?.kind === "legacy" &&
     parsedAction.payload.chatId !== chatId
   ) {
-    logger.warn(
-      "Messaging action chat mismatch for pending email confirmation",
-      {
-        provider,
-        expectedChatId: chatId,
-        payloadChatId: parsedAction.payload.chatId,
-      },
-    );
+    logger.warn("待确认邮件操作与会话不匹配", {
+      provider,
+      expectedChatId: chatId,
+      payloadChatId: parsedAction.payload.chatId,
+    });
     await postPendingEmailActionFeedback({
       event,
       provider,
-      text: "This action no longer matches this thread. Ask me to prepare it again.",
+      text: "该操作已不再匹配此会话。请让我重新准备。",
       logger,
     });
     return;
@@ -903,7 +895,7 @@ async function handlePendingEmailConfirmAction({
     await postPendingEmailActionFeedback({
       event,
       provider,
-      text: "I couldn't find that draft anymore. Ask me to prepare it again.",
+      text: "我找不到那份草稿了。请让我重新准备。",
       logger,
     });
     return;
@@ -924,7 +916,7 @@ async function handlePendingEmailConfirmAction({
     await postPendingEmailActionFeedback({
       event,
       provider,
-      text: "You don't have permission to confirm this draft.",
+      text: "你无权确认这封草稿。",
       logger,
     });
     return;
@@ -941,7 +933,7 @@ async function handlePendingEmailConfirmAction({
     await postPendingEmailActionFeedback({
       event,
       provider,
-      text: "I couldn't access this email account right now. Please try again.",
+      text: "我暂时无法访问该邮箱账号。请重试。",
       logger,
     });
     return;
@@ -964,7 +956,7 @@ async function handlePendingEmailConfirmAction({
     await postPendingEmailActionFeedback({
       event,
       provider,
-      text: "That action is invalid or expired. Ask me to prepare the email again.",
+      text: "该操作已失效或已过期。请让我重新准备这封邮件。",
       logger,
     });
     return;
@@ -1016,7 +1008,7 @@ async function handlePendingEmailConfirmAction({
       logger,
     });
   } catch (error) {
-    logger.warn("Messaging pending email confirmation failed", {
+    logger.warn("消息待确认邮件操作失败", {
       provider,
       actionType: pendingAction.actionType,
       error,
@@ -1024,7 +1016,7 @@ async function handlePendingEmailConfirmAction({
     await postPendingEmailActionFeedback({
       event,
       provider,
-      text: "I couldn't send that draft. Please try again.",
+      text: "无法发送该草稿。请重试。",
       logger,
     });
   }
@@ -1055,7 +1047,7 @@ export async function postPendingEmailCard({
       const summary = card.children[0];
       const actions = card.children[card.children.length - 1];
       const draftSections = card.children.slice(1, -1);
-      // Reserve blocks for the title, summary, and Send action (50 total).
+      // 为标题、摘要和“发送”操作预留区块（共 50 个）。
       for (
         let start = 0;
         start < draftSections.length;
@@ -1071,7 +1063,7 @@ export async function postPendingEmailCard({
     }
     return true;
   } catch (error) {
-    logger.warn("Failed to post messaging pending email confirmation card", {
+    logger.warn("发布消息待确认邮件卡片失败", {
       error,
       provider,
       actionType,
@@ -1136,7 +1128,7 @@ export function buildPendingEmailConfirmationCard({
     Actions([
       Button({
         id: PENDING_EMAIL_CONFIRM_ACTION_ID,
-        label: "Send",
+        label: "发送",
         style: "primary",
         value,
       }),
@@ -1144,7 +1136,7 @@ export function buildPendingEmailConfirmationCard({
   );
 
   return Card({
-    title: "Review draft",
+    title: "审核草稿",
     children: cardChildren,
   });
 }
@@ -1184,7 +1176,7 @@ async function replacePendingEmailConfirmationCard({
     );
     return true;
   } catch (error) {
-    logger.warn("Failed to replace messaging pending email confirmation card", {
+    logger.warn("替换消息待确认邮件卡片失败", {
       error,
     });
     return false;
@@ -1279,34 +1271,34 @@ export function buildPendingEmailSummary({
   referenceSubject?: string;
 }) {
   if (actionType === "send_email") {
-    if (to && subject) return `New email to ${to}: "${subject}".`;
-    if (to) return `New email to ${to}.`;
-    if (subject) return `New email: "${subject}".`;
-    return "Review this email.";
+    if (to && subject) return `新邮件，发送给 ${to}：“${subject}”。`;
+    if (to) return `新邮件，发送给 ${to}。`;
+    if (subject) return `新邮件：“${subject}”。`;
+    return "请审核这封邮件。";
   }
 
   if (actionType === "reply_email") {
     if (referenceFrom && referenceSubject) {
-      return `Reply to ${referenceFrom} about "${referenceSubject}".`;
+      return `回复 ${referenceFrom}，主题为“${referenceSubject}”。`;
     }
-    if (referenceFrom) return `Reply to ${referenceFrom}.`;
-    if (referenceSubject) return `Reply about "${referenceSubject}".`;
-    return "Review this reply.";
+    if (referenceFrom) return `回复 ${referenceFrom}。`;
+    if (referenceSubject) return `回复主题为“${referenceSubject}”的邮件。`;
+    return "请审核这封回复。";
   }
 
   if (to && referenceFrom && referenceSubject) {
-    return `Forward "${referenceSubject}" from ${referenceFrom} to ${to}.`;
+    return `将来自 ${referenceFrom} 的“${referenceSubject}”转发给 ${to}。`;
   }
-  if (to && referenceSubject) return `Forward "${referenceSubject}" to ${to}.`;
+  if (to && referenceSubject) return `将“${referenceSubject}”转发给 ${to}。`;
   if (to && referenceFrom)
-    return `Forward email from ${referenceFrom} to ${to}.`;
-  if (to) return `Forward to ${to}.`;
+    return `将来自 ${referenceFrom} 的邮件转发给 ${to}。`;
+  if (to) return `转发给 ${to}。`;
   if (referenceFrom && referenceSubject) {
-    return `Forward "${referenceSubject}" from ${referenceFrom}.`;
+    return `转发来自 ${referenceFrom} 的“${referenceSubject}”。`;
   }
-  if (referenceSubject) return `Forward "${referenceSubject}".`;
-  if (referenceFrom) return `Forward email from ${referenceFrom}.`;
-  return "Review this forward.";
+  if (referenceSubject) return `转发“${referenceSubject}”。`;
+  if (referenceFrom) return `转发来自 ${referenceFrom} 的邮件。`;
+  return "请审核这封转发邮件。";
 }
 
 function buildPendingEmailSuccessFeedback({
@@ -1409,17 +1401,17 @@ export function buildHandledPendingEmailCard({
 export function getPendingEmailHandledTitle(
   actionType: AssistantPendingEmailActionType,
 ) {
-  if (actionType === "send_email") return "Email sent";
-  if (actionType === "reply_email") return "Reply sent";
-  return "Email forwarded";
+  if (actionType === "send_email") return "邮件已发送";
+  if (actionType === "reply_email") return "回复已发送";
+  return "邮件已转发";
 }
 
 export function getPendingEmailHandledStatus(
   actionType: AssistantPendingEmailActionType,
 ) {
-  if (actionType === "send_email") return "Email sent.";
-  if (actionType === "reply_email") return "Reply sent. ✅";
-  return "Email forwarded.";
+  if (actionType === "send_email") return "邮件已发送。";
+  if (actionType === "reply_email") return "回复已发送。✅";
+  return "邮件已转发。";
 }
 
 export function getPendingEmailHandledOpenText({
@@ -1498,7 +1490,7 @@ async function postPendingEmailActionFeedback({
 }) {
   const thread = event.thread;
   if (!thread) {
-    logger.warn("Missing thread for messaging action feedback", { provider });
+    logger.warn("消息操作反馈缺少会话", { provider });
     return;
   }
 
@@ -1509,14 +1501,14 @@ async function postPendingEmailActionFeedback({
       });
       return;
     } catch (error) {
-      logger.warn("Failed to post Slack ephemeral action feedback", { error });
+      logger.warn("发布 Slack 临时操作反馈失败", { error });
     }
   }
 
   try {
     await thread.post(text);
   } catch (error) {
-    logger.warn("Failed to post messaging action feedback", {
+    logger.warn("发布消息操作反馈失败", {
       provider,
       error,
     });
@@ -1750,7 +1742,7 @@ async function startSlackProcessingReaction({
       try {
         await adapters.slack?.removeReaction(thread.id, message.id, "eyes");
       } catch (error) {
-        logger.warn("Failed to remove Slack processing reaction", {
+        logger.warn("移除 Slack 处理中表情回应失败", {
           error,
           threadId: thread.id,
           messageId: message.id,
@@ -1758,7 +1750,7 @@ async function startSlackProcessingReaction({
       }
     };
   } catch (error) {
-    logger.warn("Failed to add Slack processing reaction", {
+    logger.warn("添加 Slack 处理中表情回应失败", {
       error,
       threadId: thread.id,
       messageId: message.id,
@@ -1768,16 +1760,16 @@ async function startSlackProcessingReaction({
   if (!thread.isDM) return null;
 
   try {
-    const acknowledgementMessage = await thread.post("👀 Working on it...");
+    const acknowledgementMessage = await thread.post("👀 正在处理…");
     return async () => {
       try {
         await acknowledgementMessage.delete();
       } catch {
-        // Best-effort cleanup only.
+        // 仅尽力清理。
       }
     };
   } catch (error) {
-    logger.warn("Failed to post Slack processing acknowledgement", {
+    logger.warn("发布 Slack 处理中提示失败", {
       error,
       threadId: thread.id,
     });
@@ -1811,9 +1803,7 @@ async function handleMessagingLinkCommand({
       : resolveTelegramIdentity({ message });
 
   if (!identity) {
-    await thread.post(
-      "Could not read your messaging identity. Please try again.",
-    );
+    await thread.post("无法读取你的消息身份。请重试。");
     return true;
   }
 
@@ -1825,7 +1815,7 @@ async function handleMessagingLinkCommand({
 
   if (!linkedCode) {
     await thread.post(
-      "That connect code is invalid or expired. Generate a new code in Inbox Zero settings and try again.",
+      "该连接码无效或已过期。请在 Inbox Zero 设置中生成新的连接码，然后重试。",
     );
     return true;
   }
@@ -1837,7 +1827,7 @@ async function handleMessagingLinkCommand({
 
   if (!emailAccount) {
     await thread.post(
-      "This connect code is no longer valid. Generate a new code in Inbox Zero settings and try again.",
+      "该连接码已失效。请在 Inbox Zero 设置中生成新的连接码，然后重试。",
     );
     return true;
   }
@@ -1889,8 +1879,8 @@ async function handleMessagingLinkCommand({
   await postMessagingThreadMessage({
     thread,
     logger,
-    message: `Connected successfully. You can now chat with your Inbox Zero assistant in this ${provider === "teams" ? "Microsoft Teams" : "Telegram"} direct message. Type \`/help\` to see what I can do.`,
-    errorLogMessage: "Failed to send messaging link confirmation",
+    message: `连接成功。现在你可以在本${provider === "teams" ? "Microsoft Teams" : "Telegram"}私信中与 Inbox Zero 助手对话。输入 \`/help\` 查看我能做什么。`,
+    errorLogMessage: "发送消息关联确认失败",
     logMeta: {
       provider,
       emailAccountId: emailAccount.id,
@@ -1939,9 +1929,7 @@ async function handleSwitchCommand({
       : resolveTelegramIdentity({ message });
 
   if (!identity) {
-    await thread.post(
-      "Could not read your messaging identity. Please try again.",
-    );
+    await thread.post("无法读取你的消息身份。请重试。");
     return true;
   }
 
@@ -2004,7 +1992,7 @@ async function handleSwitchCommand({
 
   const index = Number.parseInt(arg, 10) - 1;
   if (Number.isNaN(index) || index < 0 || index >= channels.length) {
-    await thread.post("Invalid number. Use /switch to see your options.");
+    await thread.post("编号无效。使用 /switch 查看可选项。");
     return true;
   }
 
@@ -2053,7 +2041,7 @@ async function handleHelpCommand({
       baseUrl: env.NEXT_PUBLIC_BASE_URL,
       supportEmail: env.NEXT_PUBLIC_SUPPORT_EMAIL,
     }),
-    errorLogMessage: `Failed to send ${provider} help command response`,
+    errorLogMessage: `发送 ${provider} 帮助命令响应失败`,
     logMeta: { provider },
   });
 
@@ -2081,9 +2069,8 @@ async function handleUnsupportedCommand({
   await postMessagingThreadMessage({
     thread,
     logger,
-    message:
-      "Sorry, I don't recognize that command. Type `/help` to see the commands I support.",
-    errorLogMessage: `Failed to send ${provider} unsupported command response`,
+    message: "抱歉，我无法识别该命令。输入 `/help` 查看我支持的命令。",
+    errorLogMessage: `发送 ${provider} 不支持的命令响应失败`,
     logMeta: { provider },
   });
 
@@ -2483,7 +2470,7 @@ async function extractImagePartsFromMessage({
         filename: attachment.name || "image",
       });
     } catch (error) {
-      logger.warn("Failed to fetch messaging image attachment", {
+      logger.warn("获取消息图片附件失败", {
         name: attachment.name,
         error,
       });
@@ -2522,8 +2509,7 @@ async function resolveLinkedProviderCandidate({
     candidates,
     chatId,
     logger,
-    warningMessage:
-      "Multiple linked messaging accounts found; using first match",
+    warningMessage: "找到多个已关联的消息账号；使用第一个匹配项",
     warningMeta: { provider, teamId },
   });
 }
@@ -2553,7 +2539,7 @@ async function resolveSlackMessagingChannel({
 
     await sendUnlinkedChannelMessage({ thread, logger });
 
-    logger.info("No email account assigned to this channel", {
+    logger.info("此渠道未分配邮箱账号", {
       teamId,
       channel,
     });
@@ -2567,7 +2553,7 @@ async function resolveSlackMessagingChannel({
     candidates,
     chatId: getSlackChatId({ channel, threadTs: chatThreadTs }),
     logger,
-    warningMessage: "Multiple accounts in Slack DM, using first match",
+    warningMessage: "Slack 私信中存在多个账号，使用第一个匹配项",
     warningMeta: { teamId },
   });
 }
@@ -2622,12 +2608,12 @@ async function sendUnauthorizedMessage({
     thread,
     logger,
     message:
-      "To use this bot, connect your Inbox Zero account to this workspace from your settings page.",
-    errorLogMessage: "Failed to send unauthorized messaging message",
+      "要使用此机器人，请在你的设置页面将 Inbox Zero 账号连接到此工作区。",
+    errorLogMessage: "发送未授权消息提示失败",
     logMeta: { teamId },
   });
 
-  logger.info("Unauthorized messaging user attempted bot access", {
+  logger.info("未授权的消息用户尝试访问机器人", {
     ...(teamId ? { teamId } : {}),
   });
 }
@@ -2648,17 +2634,17 @@ async function sendLinkRequiredMessage({
     thread,
     logger,
     message: [
-      `Welcome to Inbox Zero for ${providerName}. I can help you summarize, organize, and draft replies to email from this chat.`,
-      "An active Inbox Zero account is required.",
+      `欢迎使用 ${providerName} 版 Inbox Zero。我可以在此聊天中帮你总结邮件、整理邮件并起草回复。`,
+      "需要有一个处于有效状态的 Inbox Zero 账号。",
       "",
-      "To get started:",
-      `1. Sign in or create an account at ${baseUrl}.`,
-      `2. Open ${baseUrl}/channels and choose ${providerName}.`,
-      "3. Generate a connect code and send `/connect <code>` in this direct message.",
+      "开始使用：",
+      `1. 在 ${baseUrl} 登录或创建账号。`,
+      `2. 打开 ${baseUrl}/channels 并选择 ${providerName}。`,
+      "3. 生成连接码，并在本私信中发送 `/connect <code>`。",
       "",
-      `Type \`/help\` for supported commands or contact ${env.NEXT_PUBLIC_SUPPORT_EMAIL} for help.`,
+      `输入 \`/help\` 查看支持的命令，或联系 ${env.NEXT_PUBLIC_SUPPORT_EMAIL} 获取帮助。`,
     ].join("\n"),
-    errorLogMessage: "Failed to send link-required message",
+    errorLogMessage: "发送需关联账号的提示失败",
     logMeta: { provider },
   });
 }
@@ -2677,8 +2663,8 @@ async function sendDmRequiredMessage({
   await postMessagingThreadMessage({
     thread,
     logger,
-    message: `For privacy, ${providerName} support only works in direct messages. Open a DM with the bot and try again.`,
-    errorLogMessage: "Failed to send DM-required message",
+    message: `出于隐私考虑，${providerName} 仅支持在私信中使用。请打开与机器人的私信后重试。`,
+    errorLogMessage: "发送需使用私信的提示失败",
     logMeta: { provider },
   });
 }
@@ -2693,9 +2679,8 @@ async function sendUnlinkedChannelMessage({
   await postMessagingThreadMessage({
     thread,
     logger,
-    message:
-      "This channel isn't linked to an email account. Set one up in your Inbox Zero settings.",
-    errorLogMessage: "Failed to send unlinked channel message",
+    message: "此渠道尚未关联邮箱账号。请在 Inbox Zero 设置中进行关联。",
+    errorLogMessage: "发送渠道未关联提示失败",
   });
 }
 
@@ -2713,13 +2698,7 @@ async function postMessagingThreadMessage({
   logMeta?: Record<string, unknown>;
 }): Promise<void> {
   try {
-    await thread.post(
-      thread.adapter.name === "teams"
-        ? Card({
-            children: [CardText(message)],
-          })
-        : message,
-    );
+    await thread.post(message);
   } catch (error) {
     logger.error(errorLogMessage, {
       ...logMeta,
@@ -2729,9 +2708,9 @@ async function postMessagingThreadMessage({
 }
 
 function createChatStateAdapter() {
-  // Chat SDK state relies on short-lived dedupe keys and distributed locks.
-  // Redis handles this efficiently across replicas; a SQL store would add
-  // latency and lock contention in the webhook path.
+  // Chat SDK 的状态依赖短期去重键和分布式锁。
+  // Redis 能高效地跨副本处理这些内容；改用 SQL 存储会增加
+  // Webhook 路径上的延迟和锁竞争。
   if (env.REDIS_URL) {
     return createIoRedisState({
       url: env.REDIS_URL,
@@ -2770,11 +2749,11 @@ export function normalizeMessagingAssistantText({ text }: { text: string }) {
   normalized = formatRuleSuggestionMarkupForMessaging(normalized);
   normalized = normalized.replace(
     /(?:you can|please)\s+click [^.]*button[^.]*\./gi,
-    "This draft is pending confirmation.",
+    "该草稿待确认。",
   );
   normalized = normalized.replace(
     /click (?:the )?(?:confirmation|approve|send) button[^.]*\./gi,
-    "This draft is pending confirmation.",
+    "该草稿待确认。",
   );
 
   return normalized;
@@ -2825,8 +2804,7 @@ export function normalizeMessagingUserText({
 }
 
 export function buildPendingEmailCardFallbackText(normalizedText: string) {
-  const failureGuidance =
-    "I couldn't show the Send button right now. Ask me to prepare the draft again.";
+  const failureGuidance = "现在无法显示“发送”按钮。请让我重新准备草稿。";
 
   if (
     normalizedText
@@ -2949,7 +2927,7 @@ function getMessagingAssistantPostPayload({
     return { raw: markdownToSlackMrkdwn(text) };
   }
 
-  return Card({ children: [CardText(text)] });
+  return { markdown: text };
 }
 
 export function getMessagingAiGeneratedPostPayload({
@@ -3043,7 +3021,7 @@ function parseRuleSuggestionsMarkup(markup: string): ParsedRuleSuggestion[] {
       const freeFormAction = attrs.do?.trim() ?? "";
 
       return {
-        title: attrs.name?.trim() || "Suggested rule",
+        title: attrs.name?.trim() || "建议规则",
         when: attrs.when?.trim() ?? "",
         actions: [...structuredActions, freeFormAction]
           .filter(Boolean)
@@ -3082,11 +3060,8 @@ function buildStructuredRuleActions(attrs: Record<string, string>) {
 function renderRuleSuggestionsForMessaging(
   suggestions: ParsedRuleSuggestion[],
 ) {
-  const heading =
-    suggestions.length === 1 ? "Suggested rule:" : "Suggested rules:";
-
   return [
-    heading,
+    "建议规则：",
     suggestions.map(renderRuleSuggestionForMessaging).join("\n\n"),
   ].join("\n");
 }
@@ -3102,7 +3077,7 @@ function renderRuleSuggestionForMessaging(suggestion: ParsedRuleSuggestion) {
     .join("\n");
 }
 
-// Tolerates shorthand and JSX-style booleans the model occasionally emits.
+// 兼容模型偶尔输出的简写和 JSX 风格布尔值。
 function normalizeBooleanAttribute(value: string | undefined) {
   return (
     value

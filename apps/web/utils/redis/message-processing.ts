@@ -22,16 +22,15 @@ export async function withMessageProcessingLock(
 
   try {
     await fn();
-    // Keep the lock until its TTL expires to dedupe successful processing.
+    // 保留锁直到 TTL 过期，以对成功处理进行去重。
     return { skipped: false };
   } catch (error) {
     try {
       await clearOwnedLock({ key, lockToken });
     } catch (clearError) {
-      createScopedLogger("message-processing").warn(
-        "Failed to clear message processing lock",
-        { error: clearError },
-      );
+      createScopedLogger("message-processing").warn("清除邮件处理锁失败", {
+        error: clearError,
+      });
     }
     throw error;
   }

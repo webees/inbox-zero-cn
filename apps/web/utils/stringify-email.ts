@@ -5,11 +5,11 @@ import {
 } from "@/utils/string";
 import type { EmailForLLM } from "@/utils/types";
 
-// Email fields are attacker-controlled. Escape them before interpolating into
-// the XML-style delimiters so crafted content (e.g. "</body></email>...") can't
-// break out of its tag and be read by the model as out-of-band instructions.
+// 邮件字段受攻击者控制。在插入 XML 风格分隔符之前对其进行转义，
+// 这样构造的内容（例如 "</body></email>..."）就无法逃出自己的标签
+// 并被模型当作带外指令读取。
 export function stringifyEmail(email: EmailForLLM, maxLength: number) {
-  // not sure we need to do truncate/removeExcessiveWhitespace here as `emailToContent` will do this. but need to make sure it's always called
+  // 不确定这里是否需要做 truncate/removeExcessiveWhitespace，因为 `emailToContent` 会处理。但需要确保它总会被调用
   const emailParts = [
     `<from>${escapeHtml(email.from)}</from>`,
     email.replyTo && `<replyTo>${escapeHtml(email.replyTo)}</replyTo>`,
@@ -17,7 +17,7 @@ export function stringifyEmail(email: EmailForLLM, maxLength: number) {
     email.cc && `<cc>${escapeHtml(email.cc)}</cc>`,
     email.date && `<date>${email.date.toISOString()}</date>`,
     `<subject>${escapeHtml(email.subject)}</subject>`,
-    // Escape last, after truncation, so an entity is never split mid-sequence.
+    // 在截断之后再转义，这样实体永远不会在序列中途被截断。
     `<body>${escapeHtml(truncate(removeExcessiveWhitespace(email.content), maxLength))}</body>`,
   ];
 

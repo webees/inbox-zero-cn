@@ -3,9 +3,9 @@ import type { CalendarEvent } from "@/utils/calendar/event-types";
 import { partitionAttendeesForBriefing } from "@/utils/meeting-briefs/attendees";
 
 /**
- * Single source of truth for whether the notetaker joins a meeting. Both the
- * reconciler and the upcoming-meetings API call this, so the toggle a user sees
- * always matches what the cron will actually do.
+ * 记录助手是否加入会议的唯一事实来源。reconciler 和
+ * upcoming-meetings API 都调用它，因此用户看到的开关
+ * 始终与 cron 实际行为一致。
  */
 export function shouldAutoJoin({
   event,
@@ -18,8 +18,8 @@ export function shouldAutoJoin({
   userEmail: string;
   joinOverride?: boolean | null;
 }): boolean {
-  // A per-meeting override always wins, including turning a meeting on when the
-  // rule is OFF.
+  // 针对单场会议的覆盖始终优先，包括在规则为关闭（OFF）时
+  // 将某场会议开启。
   if (joinOverride != null) return joinOverride;
 
   if (!event.videoConferenceLink) return false;
@@ -38,8 +38,8 @@ export function shouldAutoJoin({
   }
 }
 
-// `isOrganizer` is relative to the connected calendar, which may be a different
-// address than the email account, so fall back to comparing the organizer email.
+// `isOrganizer` 是相对于所连接日历而言的，该地址可能与邮箱账号
+// 不同，因此回退到比较组织者邮箱。
 function isHost({
   event,
   userEmail,

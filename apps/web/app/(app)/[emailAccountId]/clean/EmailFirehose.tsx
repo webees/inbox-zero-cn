@@ -27,40 +27,40 @@ export function EmailFirehose({
   const [isPaused, _setIsPaused] = useState(false);
   const [userHasScrolled, setUserHasScrolled] = useState(false);
   const [tab] = useQueryState("tab", parseAsString.withDefault("archived"));
-  // Track undo state for all threads
+  // 跟踪所有会话的撤销状态
   const [undoStates, setUndoStates] = useState<
     Record<string, "undoing" | "undone">
   >({});
 
   const { emails } = useEmailStream(emailAccountId, isPaused, threads, tab);
 
-  // For virtualization
+  // 用于虚拟化
   const parentRef = useRef<HTMLDivElement>(null);
-  // Track programmatic scrolling
+  // 跟踪程序触发的滚动
   const isProgrammaticScrollRef = useRef(false);
 
   const virtualizer = useVirtualizer({
     count: emails.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 56, // Estimated height of each email item
-    overscan: 10, // Number of items to render outside of the visible area
+    estimateSize: () => 56, // 每封邮件预估的高度
+    overscan: 10, // 在可见区域外渲染的条目数
   });
 
-  // Handle scroll events to detect user interaction
+  // 处理滚动事件以检测用户交互
   const handleScroll = () => {
-    // Only set userHasScrolled if this is not a programmatic scroll
+    // 仅在非程序触发的滚动时设置 userHasScrolled
     if (!userHasScrolled && !isProgrammaticScrollRef.current) {
       setUserHasScrolled(true);
     }
   };
 
-  // Reset userHasScrolled when switching tabs
+  // 切换标签页时重置 userHasScrolled
   // biome-ignore lint/correctness/useExhaustiveDependencies: We want to reset scroll state when tab changes
   useEffect(() => {
     setUserHasScrolled(false);
   }, [tab]);
 
-  // Modified auto-scroll behavior - now scrolls to bottom for new items
+  // 修改后的自动滚动行为——现在会为新条目滚动到底部
   useEffect(() => {
     if (
       !isPaused &&
@@ -69,11 +69,11 @@ export function EmailFirehose({
       emails.length > 0 &&
       !userHasScrolled
     ) {
-      // Set flag to indicate programmatic scrolling
+      // 设置标记以表明是程序触发的滚动
       isProgrammaticScrollRef.current = true;
       virtualizer.scrollToIndex(emails.length - 1, { align: "end" });
 
-      // Clear flag after scrolling is likely complete
+      // 在滚动很可能完成后清除标记
       const scrollTimeout = setTimeout(() => {
         isProgrammaticScrollRef.current = false;
       }, 100);
@@ -90,9 +90,9 @@ export function EmailFirehose({
       <Tabs defaultValue="done" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="done">
-            {action === CleanAction.ARCHIVE ? "Archived" : "Marked read"}
+            {action === CleanAction.ARCHIVE ? "已归档" : "标为已读"}
           </TabsTrigger>
-          <TabsTrigger value="keep">Kept</TabsTrigger>
+          <TabsTrigger value="keep">保留</TabsTrigger>
         </TabsList>
         <div
           ref={parentRef}
@@ -139,11 +139,11 @@ export function EmailFirehose({
             <div className="flex h-full flex-col items-center justify-center py-20 text-muted-foreground">
               {stats.total ? (
                 <span>
-                  {stats.total} emails processed. {stats.done}{" "}
-                  {action === CleanAction.ARCHIVE ? "archived" : "marked read"}.
+                  已处理 {stats.total} 封邮件。其中 {stats.done} 封
+                  {action === CleanAction.ARCHIVE ? "已归档" : "已标为已读"}。
                 </span>
               ) : (
-                <span>No emails yet</span>
+                <span>暂无邮件</span>
               )}
             </div>
           )}
@@ -158,7 +158,7 @@ export function EmailFirehose({
             className={`flex items-center ${filter === "keep" ? "rounded-md bg-blue-100 px-2 py-1 dark:bg-blue-900/30" : "hover:underline"}`}
           >
             <div className="mr-1 size-3 rounded-full bg-blue-500" />
-            <span>Keep</span>
+            <span>保留</span>
             {filter === "keep" && (
               <XCircle className="ml-1 size-3 text-muted-foreground" />
             )}
@@ -170,7 +170,7 @@ export function EmailFirehose({
           >
             <div className="mr-1 size-3 rounded-full bg-green-500" />
             <span>
-              {action === CleanAction.ARCHIVE ? "Archived" : "Marked read"}
+              {action === CleanAction.ARCHIVE ? "已归档" : "标为已读"}
             </span>
             {filter === "archived" && (
               <XCircle className="ml-1 size-3 text-muted-foreground" />

@@ -19,15 +19,13 @@ const QUEUE_ENQUEUE_CONCURRENCY = 10;
 
 export const GET = withError("follow-up-reminders", async (request) => {
   if (!hasCronSecret(request)) {
-    captureException(
-      new Error("Unauthorized request: api/follow-up-reminders"),
-    );
+    captureException(new Error("未授权请求：api/follow-up-reminders"));
     return new Response("Unauthorized", { status: 401 });
   }
 
   if (!env.NEXT_PUBLIC_FOLLOW_UP_REMINDERS_ENABLED) {
-    request.logger.warn("Follow-up reminders feature is disabled");
-    return NextResponse.json({ message: "Follow-up reminders disabled" });
+    request.logger.warn("跟进提醒功能已禁用");
+    return NextResponse.json({ message: "跟进提醒已禁用" });
   }
 
   return triggerFollowUpReminderFanOut(request.logger);
@@ -35,15 +33,13 @@ export const GET = withError("follow-up-reminders", async (request) => {
 
 export const POST = withError("follow-up-reminders", async (request) => {
   if (!(await hasPostCronSecret(request))) {
-    captureException(
-      new Error("Unauthorized cron request: api/follow-up-reminders"),
-    );
+    captureException(new Error("未授权的 cron 请求：api/follow-up-reminders"));
     return new Response("Unauthorized", { status: 401 });
   }
 
   if (!env.NEXT_PUBLIC_FOLLOW_UP_REMINDERS_ENABLED) {
-    request.logger.warn("Follow-up reminders feature is disabled");
-    return NextResponse.json({ message: "Follow-up reminders disabled" });
+    request.logger.warn("跟进提醒功能已禁用");
+    return NextResponse.json({ message: "跟进提醒已禁用" });
   }
 
   return triggerFollowUpReminderFanOut(request.logger);
@@ -53,7 +49,7 @@ async function triggerFollowUpReminderFanOut(logger: Logger) {
   const emailAccountIds = await getEligibleFollowUpReminderEmailAccountIds();
   const eligibleAccounts = emailAccountIds.length;
 
-  logger.info("Dispatching follow-up reminders", { eligibleAccounts });
+  logger.info("正在派发跟进提醒", { eligibleAccounts });
 
   after(() =>
     runWithBackgroundLoggerFlush({

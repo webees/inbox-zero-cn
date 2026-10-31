@@ -1,15 +1,15 @@
 ---
-title: "MCP server"
-description: "Connect ChatGPT, Claude, Cursor, or another assistant to Inbox Zero mail, drafts, rules, and statistics with OAuth."
+title: "MCP 服务器"
+description: "通过 OAuth 将 ChatGPT、Claude、Cursor 或其他助手连接到 Inbox Zero 的邮件、草稿、规则和统计数据。"
 ---
 
-The optional MCP server lets ChatGPT, Claude, Cursor, or another assistant search and read your inbox, create mailbox drafts, manage automation rules, and read email statistics. It uses OAuth instead of API keys. It is separate from the integrations that let Inbox Zero call other services.
+可选的 MCP 服务器让 ChatGPT、Claude、Cursor 或其他助手可以搜索和读取你的收件箱、创建邮箱草稿、管理自动化规则并读取邮件统计数据。它使用 OAuth 而非 API 密钥。它与让 Inbox Zero 调用其他服务的集成是分开的。
 
-The standard tools never send mail: drafts stay in the mailbox until you send them yourself. Sending requires the separate `mcp:send` scope, which you approve per app.
+标准工具从不发送邮件：草稿会一直留在邮箱中，直到你自己发送它们。发送需要单独的 `mcp:send` 权限范围，你需要按应用批准它。
 
-## Enable the server
+## 启用服务器
 
-For a deployment you administer, apply the database migrations and set:
+对于你管理的部署，请应用数据库迁移并设置：
 
 ```bash
 NEXT_PUBLIC_EXTERNAL_API_ENABLED=true
@@ -17,40 +17,40 @@ MCP_SERVER_ENABLED=true
 API_KEY_SALT=<random salt>
 ```
 
-The server is disabled by default. Configure `NEXT_PUBLIC_BASE_URL` to your deployment's canonical public HTTPS origin. Restart the application after changing server configuration; changing the public API flag also requires rebuilding its client assets.
+服务器默认处于禁用状态。将 `NEXT_PUBLIC_BASE_URL` 配置为你部署的规范公开 HTTPS 源。更改服务器配置后请重启应用；更改公开 API 标志还需要重新构建其客户端资源。
 
-## Connect an assistant
+## 连接助手
 
-Add a remote Streamable HTTP MCP connection:
+添加一个远程 Streamable HTTP MCP 连接：
 
 ```text
 https://www.getinboxzero.com/mcp
 ```
 
-Self-hosted deployments use `https://your-inbox-zero-host/mcp`. `/api/mcp-server` still accepts MCP `POST` requests as an alias; the OAuth resource identifier is always `/mcp`.
+自托管部署使用 `https://your-inbox-zero-host/mcp`。`/api/mcp-server` 仍可作为别名接受 MCP `POST` 请求；OAuth 资源标识符始终是 `/mcp`。
 
-The client must support OAuth authorization-code flow with S256 PKCE, dynamic client registration, and resource indicators. Use the MCP endpoint URL as the `resource` when authorizing, exchanging an authorization code, and refreshing a token. Opaque tokens and API keys are not accepted.
+客户端必须支持带 S256 PKCE 的 OAuth 授权码流程、动态客户端注册和资源指示器。在授权、交换授权码和刷新令牌时，请使用 MCP 端点 URL 作为 `resource`。不接受不透明令牌和 API 密钥。
 
-Sign in with your connected provider, then choose **Allow**. Email-code sessions cannot authorize clients or change MCP access.
+使用你已连接的服务商登录，然后选择**允许**。邮箱验证码会话无法授权客户端或更改 MCP 访问权限。
 
-Refresh tokens stay valid after you log out of Inbox Zero in the browser. Disconnect the app or turn off MCP in Settings to revoke them.
+你在浏览器中退出 Inbox Zero 后，刷新令牌仍然有效。要撤销它们，请断开该应用或在设置中关闭 MCP。
 
 <Accordion title="ChatGPT">
-    In ChatGPT, open **Settings → Apps**, turn on **Developer mode**, and create a new app or connector. Paste the MCP URL, scan tools, then sign in to Inbox Zero and choose **Allow**. Enable the app from the tools menu in a new chat.
+    在 ChatGPT 中，打开**设置 → 应用**，开启**开发者模式**，然后创建一个新应用或连接器。粘贴 MCP URL，扫描工具，然后登录 Inbox Zero 并选择**允许**。在新聊天中从工具菜单启用该应用。
   </Accordion>
 
   <Accordion title="Claude">
-    In Claude, open **Customize → Connectors**, choose **Add custom connector**, and paste the MCP URL. Leave OAuth client ID and secret empty unless you registered a client yourself. Connect, choose **Allow**, then enable Inbox Zero from **+ → Connectors** in a chat.
+    在 Claude 中，打开**自定义 → 连接器**，选择**添加自定义连接器**，然后粘贴 MCP URL。除非你自己注册了客户端，否则让 OAuth 客户端 ID 和密钥留空。连接，选择**允许**，然后在聊天中通过 **+ → 连接器**启用 Inbox Zero。
 
     ```bash
     claude mcp add --transport http inbox-zero https://www.getinboxzero.com/mcp
     ```
 
-    Claude Code then runs OAuth against that URL.
+    Claude Code 随后会针对该 URL 运行 OAuth。
   </Accordion>
 
   <Accordion title="Cursor">
-    Add this to `~/.cursor/mcp.json` or `.cursor/mcp.json`:
+    将以下内容添加到 `~/.cursor/mcp.json` 或 `.cursor/mcp.json`：
 
     ```json
     {
@@ -62,50 +62,50 @@ Refresh tokens stay valid after you log out of Inbox Zero in the browser. Discon
     }
     ```
 
-    Cursor then runs OAuth. Self-hosted deployments use their own origin in place of `www.getinboxzero.com`.
+    Cursor 随后会运行 OAuth。自托管部署使用自己的源来代替 `www.getinboxzero.com`。
   </Accordion>
 
-See [Connect MCP](/essentials/mcp) for ChatGPT, Claude, and Cursor steps plus the in-app toggle and per-app disconnect UI.
+有关 ChatGPT、Claude 和 Cursor 的步骤以及应用内开关和按应用断开连接的界面，请参阅[连接 MCP](/essentials/mcp)。
 
-Permissions apply to all inboxes linked to your user, including inboxes linked later:
+权限适用于与你的用户关联的所有收件箱，包括之后关联的收件箱：
 
-| Scope | Access |
+| 权限范围 | 访问权限 |
 | --- | --- |
-| `mcp:read` | List inboxes, search and read email, read automation rules, and read email statistics |
-| `mcp:write` | Create mailbox drafts and create, replace, or delete automation rules. Does not send email. |
-| `mcp:send` | Send email. Granted only when a client requests it. |
-| `offline_access` | Obtain rotating refresh tokens |
+| `mcp:read` | 列出收件箱、搜索和读取邮件、读取自动化规则并读取邮件统计数据 |
+| `mcp:write` | 创建邮箱草稿，以及创建、替换或删除自动化规则。不发送邮件。 |
+| `mcp:send` | 发送邮件。仅在客户端请求时授予。 |
+| `offline_access` | 获取轮换的刷新令牌 |
 
-Clients registered without explicit scopes default to read access and refresh tokens. They must request `mcp:write` to create drafts or manage rules. A write grant does not imply a read grant. Rule writes enforce the same digest-plan restrictions as the public API. On the consent screen you can deselect any requested scope except `mcp:read`.
+未明确指定权限范围而注册的客户端默认获得读取访问和刷新令牌。它们必须请求 `mcp:write` 才能创建草稿或管理规则。授予写入权限并不意味着授予读取权限。规则写入会强制执行与公开 API 相同的邮件摘要套餐限制。在同意屏幕上，除 `mcp:read` 外，你可以取消勾选任何请求的权限范围。
 
-## Available tools
+## 可用的工具
 
 - `list_email_accounts`
 - `search_inbox`, `read_thread`
-- `create_draft` (does not send)
+- `create_draft`（不发送）
 - `list_rules`, `get_rule`, `create_rule`, `update_rule`, `delete_rule`
 - `get_stats_by_period`, `get_response_time_stats`
 
-Search returns metadata and snippets. Use `read_thread` for truncated plain-text bodies. Inbox, rule, and statistics tools accept either `emailAccountId` or `emailAddress`. If neither is supplied, they use the earliest linked account. Use `list_email_accounts` and supply a selector when working with multiple inboxes. Rule updates replace the rule definition.
+搜索会返回元数据和片段。对于被截断的纯文本正文，请使用 `read_thread`。收件箱、规则和统计工具接受 `emailAccountId` 或 `emailAddress`。如果两者都未提供，它们会使用最早关联的账号。在多收件箱场景下工作时，请使用 `list_email_accounts` 并提供选择器。规则更新会替换规则定义。
 
-## Disconnect applications
+## 断开应用
 
-Open **Settings → Account → MCP** and choose **MCP apps** to disconnect one client. That revokes that app's tokens and consent. Other apps stay connected. You can also remove individual permissions from an app there; adding permissions back requires reconnecting from the app.
+打开**设置 → 账号 → MCP**，选择 **MCP 应用**即可断开某个客户端。这会撤销该应用的令牌和同意。其他应用保持连接。你也可以在那里移除某个应用的单独权限；重新添加权限需要从该应用重新连接。
 
-Turn off **MCP** to revoke every MCP consent and refresh grant and invalidate existing access tokens. Turning MCP back on does not restore those tokens; reconnect each application to grant access again.
+关闭 **MCP** 会撤销所有 MCP 同意和刷新授权，并使现有访问令牌失效。重新开启 MCP 不会恢复这些令牌；请重新连接每个应用以再次授予访问权限。
 
-## Discovery
+## 发现
 
-- Protected resource metadata: `/.well-known/oauth-protected-resource` and `/.well-known/oauth-protected-resource/mcp`
-- Authorization server metadata: `/.well-known/oauth-authorization-server/api/auth`
-- Root discovery fallback: `/.well-known/oauth-authorization-server`
+- 受保护资源元数据：`/.well-known/oauth-protected-resource` 和 `/.well-known/oauth-protected-resource/mcp`
+- 授权服务器元数据：`/.well-known/oauth-authorization-server/api/auth`
+- 根发现回退：`/.well-known/oauth-authorization-server`
 
-Unauthenticated MCP requests return `401` with a `WWW-Authenticate` header pointing to the resource metadata. The MCP endpoint is stateless and accepts HTTP `POST`; it does not offer a persistent event stream.
+未经认证的 MCP 请求会返回 `401`，并带有指向资源元数据的 `WWW-Authenticate` 头。MCP 端点是无状态的，接受 HTTP `POST`；它不提供持久的事件流。
 
-Dynamic client registration, token exchange, and MCP `POST` requests are rate-limited. Retry after the `Retry-After` header when you receive `429`.
+动态客户端注册、令牌交换和 MCP `POST` 请求都有速率限制。当你收到 `429` 时，请按照 `Retry-After` 头指定的时间后重试。
 
-## Authentication dependency
+## 认证依赖
 
-The server uses Better Auth 1.7.4, which includes the OAuth resource-binding security fix. It permits exactly its MCP endpoint, requires that resource during token issuance, and rejects access tokens with additional audiences. Existing deployments must follow the [Better Auth upgrade checklist](https://github.com/elie222/inbox-zero/blob/main/docs/better-auth-1.7-upgrade.md) before applying the authentication migration.
+服务器使用 Better Auth 1.7.4，其中包含 OAuth 资源绑定的安全修复。它只允许其 MCP 端点，在令牌颁发时要求该资源，并拒绝带有额外受众的访问令牌。现有部署必须先遵循 [Better Auth 升级清单](https://github.com/elie222/inbox-zero/blob/main/docs/better-auth-1.7-upgrade.md)，再应用认证迁移。
 
-MCP accepts HTTPS base URLs, with HTTP allowed only for local loopback development. Turning off the server flag suspends access; users can still revoke previously enabled access from Settings while the external API settings remain available.
+MCP 接受 HTTPS 基础 URL，仅在本地回环开发时允许 HTTP。关闭服务器标志会暂停访问；用户仍可从设置中撤销此前启用的访问权限，同时外部 API 设置保持可用。

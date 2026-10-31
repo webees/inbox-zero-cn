@@ -270,7 +270,7 @@ describe("validateEmailAttachments", () => {
     });
     expect(validateEmailAttachments([oversized])).toEqual({
       valid: false,
-      error: "Inline images must be 3 MB or smaller.",
+      error: "内联图片必须不超过 3 MB。",
     });
 
     const first = attachment({
@@ -287,14 +287,14 @@ describe("validateEmailAttachments", () => {
     });
     expect(validateEmailAttachments([first, second])).toEqual({
       valid: false,
-      error: "Inline image Content-IDs must be unique.",
+      error: "内联图片的 Content-ID 必须唯一。",
     });
   });
 
   it("rejects attachment sizes that do not match their decoded content", () => {
     expect(validateEmailAttachments([attachment({ size: 8 })])).toEqual({
       valid: false,
-      error: "Attachment sizes do not match their content.",
+      error: "附件大小与其内容不匹配。",
     });
   });
 
@@ -312,7 +312,7 @@ describe("validateEmailAttachments", () => {
       ]),
     ).toEqual({
       valid: false,
-      error: "Inline image content does not match its file type.",
+      error: "内联图片内容与其文件类型不匹配。",
     });
   });
 });

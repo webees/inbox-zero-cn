@@ -139,8 +139,7 @@ export class GoogleCalendarEventProvider implements CalendarEventProvider {
       pageToken = data.nextPageToken ?? undefined;
     } while (pageToken);
     if (!event) return null;
-    if (event.status === "cancelled")
-      throw new SafeError("This event has been cancelled.");
+    if (event.status === "cancelled") throw new SafeError("该事件已被取消。");
     if (
       !event.id ||
       event.organizer?.self ||
@@ -153,9 +152,7 @@ export class GoogleCalendarEventProvider implements CalendarEventProvider {
     );
     if (!attendee) return null;
     if ((event.sequence ?? 0) !== invitation.sequence)
-      throw new SafeError(
-        "This invitation has changed. Please respond to the latest invitation in your calendar.",
-      );
+      throw new SafeError("此邀请已变更。请在你日历中的最新邀请上进行回应。");
     return { id: event.id, response: attendee.responseStatus ?? null };
   }
 

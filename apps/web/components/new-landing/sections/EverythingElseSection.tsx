@@ -17,9 +17,9 @@ import { Link } from "@/components/new-landing/icons/Link";
 export function EverythingElseSection() {
   return (
     <Section>
-      <SectionHeading>Designed around how you actually work</SectionHeading>
+      <SectionHeading>围绕你真实的工作方式设计</SectionHeading>
       <SectionSubtitle>
-        Flexible enough to fit any workflow. Simple enough to set up in minutes.
+        足够灵活，适配任何工作流。足够简单，几分钟就能设置好。
       </SectionSubtitle>
       <SectionContent
         noMarginTop
@@ -28,13 +28,13 @@ export function EverythingElseSection() {
         <CardWrapper className="w-full grid grid-cols-1 lg:grid-cols-3 gap-5">
           <BlurFade inView>
             <DisplayCard
-              title="Email analytics. What gets measured, gets managed"
-              description="See who emails you most and what's clogging your inbox. Get clear insights, then take action."
+              title="邮件分析。能被衡量，才能被管理"
+              description="看看谁给你发邮件最多，以及是什么堵塞了你的收件箱。获得清晰的洞察，然后采取行动。"
               icon={<Analytics />}
             >
               <Image
                 src="/images/new-landing/metrics.svg"
-                alt="metrics"
+                alt="指标"
                 width={1000}
                 height={400}
               />
@@ -42,13 +42,13 @@ export function EverythingElseSection() {
           </BlurFade>
           <BlurFade delay={0.25} inView>
             <DisplayCard
-              title="Drafts that know your schedule and availability"
-              description="Connects to your calendar and CRM to draft emails based on your actual schedule and customer data."
+              title="了解你日程和空闲时间的草稿"
+              description="连接你的日历和 CRM，根据你真实的日程和客户数据起草邮件。"
               icon={<Link />}
             >
               <Image
                 src="/images/new-landing/integrations.png"
-                alt="App integrations"
+                alt="应用集成"
                 width={1000}
                 height={400}
               />
@@ -56,13 +56,13 @@ export function EverythingElseSection() {
           </BlurFade>
           <BlurFade delay={0.25 * 2} inView>
             <DisplayCard
-              title="Built to fit your workflow. Customize in plain English"
-              description="Your inbox, your rules. Configure everything in plain English. Make it work the way you actually work."
+              title="为适配你的工作流而生。用大白话自定义"
+              description="你的收件箱，你的规则。用大白话配置一切。让它按你真实的工作方式运作。"
               icon={<ChatTwo />}
             >
               <Image
                 src="/images/new-landing/create-rules.png"
-                alt="Customize"
+                alt="自定义"
                 width={1000}
                 height={400}
               />

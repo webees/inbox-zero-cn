@@ -5,7 +5,7 @@ import prisma from "@/utils/prisma";
 const EXPIRATION = 60 * 60; // 1 hour
 
 /**
- * Get the Redis key for account validation
+ * 获取用于账号校验的 Redis 键
  */
 function getValidationKey({
   userId,
@@ -18,7 +18,7 @@ function getValidationKey({
 }
 
 /**
- * Validate that an account belongs to a user, using Redis for caching
+ * 校验某个账号是否属于某用户，并使用 Redis 进行缓存
  * @param userId The user ID
  * @param accountId The account ID to validate
  * @returns email address of the account if it belongs to the user, otherwise null
@@ -34,35 +34,35 @@ export async function getEmailAccount({
 
   const key = getValidationKey({ userId, emailAccountId });
 
-  // Check Redis cache first
+  // 先检查 Redis 缓存
   try {
     const cachedResult = await redis.get<string>(key);
     if (cachedResult !== null) {
       return cachedResult;
     }
   } catch {
-    // Redis unavailable — fall through to database
+    // Redis 不可用——回退到数据库
   }
 
-  // Not in cache, check database
+  // 不在缓存中，检查数据库
   const emailAccount = await prisma.emailAccount.findUnique({
     where: { id: emailAccountId, userId },
     select: { email: true },
   });
 
-  // Cache the result (best-effort)
+  // 缓存结果（尽力而为）
   try {
     await redis.set(key, emailAccount?.email ?? null, { ex: EXPIRATION });
   } catch {
-    // Redis unavailable — skip caching
+    // Redis 不可用——跳过缓存
   }
 
   return emailAccount?.email ?? null;
 }
 
 /**
- * Invalidate the cached validation result for a user's account
- * Useful when account ownership changes
+ * 使用户账号的缓存校验结果失效
+ * 在账号归属发生变化时很有用
  */
 export async function invalidateAccountValidation({
   userId,
@@ -75,6 +75,6 @@ export async function invalidateAccountValidation({
   try {
     await redis.del(key);
   } catch {
-    // Redis unavailable — skip invalidation
+    // Redis 不可用——跳过失效处理
   }
 }

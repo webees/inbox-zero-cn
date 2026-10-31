@@ -27,8 +27,8 @@ export async function createMailSplit({
   matchAll: boolean;
   filters: MailSplitFilterDraft[];
 }) {
-  // The id is chosen up front so the split and its conditions can be written in
-  // one transaction without a round trip in between.
+  // id 预先选定，这样分类及其条件可以在
+  // 一个事务中写入，中间无需往返。
   const splitId = randomUUID();
 
   const [, results] = await prisma.$transaction([
@@ -80,8 +80,8 @@ export async function createMailSplit({
       FROM split_state
       LEFT JOIN inserted ON TRUE
     `,
-    // Guarded on the split existing, so a rejected insert above (limit reached,
-    // duplicate name) can't leave conditions pointing at nothing.
+    // 以分类存在为前提，因此上面被拒绝的插入（达到上限、
+    // 名称重复）不会让条件指向不存在的内容。
     prisma.$executeRaw`
       INSERT INTO "MailSplitFilter" ("id", "kind", "value", "order", "mailSplitId")
       SELECT
@@ -145,7 +145,7 @@ export async function removeLabelFromMailSplits({
   ]);
 }
 
-/** Reorder only the selected slots so hidden splits keep their positions. */
+/** 仅重排选中的位置，以便隐藏的分类保持其位置。 */
 export async function reorderMailSplits({
   emailAccountId,
   ids,
@@ -198,20 +198,20 @@ export async function createMailSplitOrThrow({
     });
 
     if (!result) {
-      throw new SafeError("Could not create split. Please try again.");
+      throw new SafeError("无法创建分类，请重试");
     }
     if (result.status !== "created") {
       if (result.status === "duplicate") {
-        throw new SafeError(`You already have a "${name}" split.`);
+        throw new SafeError(`你已经有一个名为 "${name}" 的分类`);
       }
-      throw new SafeError(`You can only have ${MAX_MAIL_SPLITS} splits.`);
+      throw new SafeError(`你最多只能有 ${MAX_MAIL_SPLITS} 个分类`);
     }
 
     const { status: _, ...split } = result;
     return split;
   } catch (error) {
     if (isDuplicateError(error, "name")) {
-      throw new SafeError(`You already have a "${name}" split.`);
+      throw new SafeError(`你已经有一个名为 "${name}" 的分类`);
     }
     throw error;
   }
@@ -225,18 +225,18 @@ export async function updateMailSplit({
   matchAll,
 }: UpdateMailSplitBody & { emailAccountId: string }) {
   try {
-    // One transaction so a split can never end up renamed but still
-    // carrying its old conditions. Filters are replaced wholesale rather
-    // than diffed: the builder hands back the conditions it is showing, so
-    // anything missing from that list was removed.
+    // 使用一个事务，这样分类绝不会出现已重命名但仍
+    // 携带旧条件的情况。筛选器是整体替换而非
+    // 做差异比较：构建器会返回它正在显示的条件，因此
+    // 该列表中缺少的任何内容都已被移除。
     const [, { count }] = await prisma.$transaction([
       lockMailSplits(emailAccountId),
       prisma.mailSplit.updateMany({
         where: { id, emailAccountId },
         data: { name, matchAll },
       }),
-      // Scoped through the split's owner, so another account's id can't
-      // reach these rows even though `id` is caller-supplied.
+      // 通过分类的所有者限定范围，因此另一个账号的 id
+      // 即使 `id` 由调用方提供，也无法触达这些行。
       prisma.mailSplitFilter.deleteMany({
         where: { mailSplitId: id, mailSplit: { emailAccountId } },
       }),
@@ -256,10 +256,10 @@ export async function updateMailSplit({
             )
           `,
     ]);
-    if (!count) throw new SafeError("Split not found");
+    if (!count) throw new SafeError("未找到分类");
   } catch (error) {
     if (isDuplicateError(error, "name")) {
-      throw new SafeError(`You already have a "${name}" split.`);
+      throw new SafeError(`你已经有一个名为 "${name}" 的分类`);
     }
     throw error;
   }
@@ -269,7 +269,7 @@ export async function deleteMailSplit({
   emailAccountId,
   id,
 }: DeleteMailSplitBody & { emailAccountId: string }) {
-  // deleteMany rather than delete so another account's id can never be removed
+  // 使用 deleteMany 而非 delete，这样另一个账号的 id 永远不会被删除
   const [, { count }] = await prisma.$transaction([
     lockMailSplits(emailAccountId),
     prisma.mailSplit.deleteMany({

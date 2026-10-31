@@ -24,12 +24,12 @@ export function DeliveryChannelsSetting() {
     {
       onSuccess: () => {
         analytics.captureAction("meeting_briefs_email_delivery_saved");
-        toastSuccess({ description: "Settings saved" });
+        toastSuccess({ description: "设置已保存" });
         mutateBriefSettings();
       },
       onError: (error) => {
         toastError({
-          description: getActionErrorMessage(error.error) ?? "Failed to update",
+          description: getActionErrorMessage(error.error) ?? "更新失败",
         });
       },
     },
@@ -37,10 +37,10 @@ export function DeliveryChannelsSetting() {
 
   return (
     <SharedDeliveryChannelsSetting
-      title="Delivery Channels"
-      description="Choose where to receive meeting briefings"
+      title="投递渠道"
+      description="选择接收会议简报的位置"
       purpose={MessagingRoutePurpose.MEETING_BRIEFS}
-      featureLabel="meeting briefs"
+      featureLabel="会议简报"
       email={{
         enabled: briefSettings?.meetingBriefsSendEmail ?? true,
         isLoading: isLoadingBriefSettings,
@@ -51,7 +51,7 @@ export function DeliveryChannelsSetting() {
           executeEmailDelivery({ sendEmail });
         },
       }}
-      connectSlackCta="Want to receive briefs in Slack?"
+      connectSlackCta="想在 Slack 中接收简报吗？"
     />
   );
 }

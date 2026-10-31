@@ -32,11 +32,7 @@ const calendar = systemRule(SystemType.CALENDAR);
 const receipt = systemRule(SystemType.RECEIPT);
 const notification = systemRule(SystemType.NOTIFICATION);
 const otp = systemRule(SystemType.OTP);
-const conversations = getRule(
-  CONVERSATION_TRACKING_INSTRUCTIONS,
-  [],
-  "Conversations",
-);
+const conversations = getRule(CONVERSATION_TRACKING_INSTRUCTIONS, [], "会话");
 
 const rules = [
   newsletter,
@@ -57,7 +53,7 @@ const promotionalBoundaryCases = [
       content:
         "Hi, we've finished the landing page and promotional emails for your company's launch. Please review the attached campaign copy and confirm whether we can publish tomorrow. We still need your decision on the introductory offer before we send it to your subscribers.",
     }),
-    expectedRule: "Conversations",
+    expectedRule: "会话",
   },
   {
     name: "agency client requesting campaign changes",
@@ -67,7 +63,7 @@ const promotionalBoundaryCases = [
       content:
         "Hi team, your agency manages our paid campaigns. Please replace the 20% discount with free shipping in this week's ads and send over the revised creative for approval. Can you also explain why conversions dropped yesterday? We need your recommendation before increasing the budget.",
     }),
-    expectedRule: "Conversations",
+    expectedRule: "会话",
   },
   {
     name: "automated alert about the user's advertising campaign",
@@ -522,7 +518,7 @@ const testCases = [
       content:
         "Hi Elie,\n\nI was reviewing the deck you sent over and had a question about your retention numbers. The 85% monthly retention you mentioned — is that for all cohorts or just the most recent one? Also, do you have the data broken out by plan tier?\n\nWould be helpful before our partner meeting on Thursday.\n\nBest,\nJason",
     }),
-    expectedRule: "Conversations",
+    expectedRule: "会话",
   },
   {
     email: getEmail({
@@ -531,7 +527,7 @@ const testCases = [
       content:
         "Hey Elie,\n\nWe'd love to have you speak at Next.js Conf this October. We're thinking a 20-min talk on how you built the AI email assistant — the architecture decisions, what worked, what didn't.\n\nWould you be interested? We can cover travel and hotel.\n\nBest,\nGuillermo",
     }),
-    expectedRule: "Conversations",
+    expectedRule: "会话",
   },
   {
     email: getEmail({
@@ -540,7 +536,7 @@ const testCases = [
       content:
         "Hi sweetie, are you free for dinner this Sunday? Dad wants to try that new Italian place on Main Street. Let us know! Love, Mom",
     }),
-    expectedRule: "Conversations",
+    expectedRule: "会话",
   },
 
   // --- Calendar ---
@@ -560,7 +556,7 @@ const testCases = [
       content:
         "Hi Elie,\n\nI'm writing a piece about the new wave of AI email tools for TechCrunch and would love to include Inbox Zero. Could we schedule a 20-minute call this week or early next week? I'm flexible on timing.\n\nAlternatively, I can send over questions via email if that's easier.\n\nThanks,\nLisa Chen\nSenior Reporter, TechCrunch",
     }),
-    expectedRule: ["Calendar", "Conversations"],
+    expectedRule: ["Calendar", "会话"],
   },
 
   // --- Boundary: newsletter with engagement CTA ---
@@ -750,7 +746,7 @@ Product Research Lead, ToolStack
 Unsubscribe from research invitations
 ToolStack Inc. | 100 Innovation Blvd, Seattle, WA 98101`,
     }),
-    expectedRule: ["Marketing", "Notification", "Conversations"],
+    expectedRule: ["Marketing", "Notification", "会话"],
   },
   {
     email: getEmail({

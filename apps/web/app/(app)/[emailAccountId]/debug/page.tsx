@@ -11,34 +11,32 @@ export default async function DebugPage(props: {
 
   return (
     <PageWrapper>
-      <PageHeading>Debug</PageHeading>
+      <PageHeading>调试</PageHeading>
 
       <div className="mt-4 flex flex-wrap gap-2">
         <Button variant="outline" asChild>
           <Link href={prefixPath(emailAccountId, "/debug/mail-queue")}>
-            Mail queue
+            邮件队列
           </Link>
         </Button>
         <Button variant="outline" asChild>
-          <Link href={prefixPath(emailAccountId, "/debug/rules")}>Rules</Link>
+          <Link href={prefixPath(emailAccountId, "/debug/rules")}>规则</Link>
         </Button>
         {/* <Button variant="outline" asChild>
           <Link href={prefixPath(emailAccountId, "/debug/drafts")}>Drafts</Link>
         </Button> */}
         <Button variant="outline" asChild>
           <Link href={prefixPath(emailAccountId, "/debug/rule-history")}>
-            Rule History
+            规则历史
           </Link>
         </Button>
         <Button variant="outline" asChild>
           <Link href={prefixPath(emailAccountId, "/debug/follow-up")}>
-            Follow-up
+            跟进
           </Link>
         </Button>
         <Button variant="outline" asChild>
-          <Link href={prefixPath(emailAccountId, "/debug/memories")}>
-            Memories
-          </Link>
+          <Link href={prefixPath(emailAccountId, "/debug/memories")}>记忆</Link>
         </Button>
         {/* <Button variant="outline" asChild>
           <Link href={prefixPath(emailAccountId, "/debug/report")}>Report</Link>

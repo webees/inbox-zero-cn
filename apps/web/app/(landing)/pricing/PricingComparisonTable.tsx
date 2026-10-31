@@ -16,97 +16,97 @@ const features: {
   professional: FeatureValue;
 }[] = [
   {
-    name: "Sorts & labels emails",
+    name: "整理并标记邮件",
     starter: true,
     plus: true,
     professional: true,
   },
   {
-    name: "Drafts replies in your voice",
+    name: "以你的口吻起草回复",
     starter: true,
     plus: true,
     professional: true,
   },
   {
-    name: "Blocks cold emails",
+    name: "拦截冷邮件",
     starter: true,
     plus: true,
     professional: true,
   },
   {
-    name: "Bulk unsubscribe",
+    name: "批量退订",
     starter: true,
     plus: true,
     professional: true,
   },
   {
-    name: "Bulk archive",
+    name: "批量归档",
     starter: true,
     plus: true,
     professional: true,
   },
   {
-    name: "Email analytics",
+    name: "邮件分析",
     starter: true,
     plus: true,
     professional: true,
   },
   {
-    name: "Pre-meeting briefings",
+    name: "会前简报",
     starter: true,
     plus: true,
     professional: true,
   },
   {
-    name: "AI meeting notetaker",
+    name: "AI 会议记录者",
     starter: false,
     plus: true,
     professional: true,
   },
   {
-    name: "Email digests",
+    name: "邮件摘要",
     starter: false,
     plus: true,
     professional: true,
   },
   {
-    name: "Slack integration",
+    name: "Slack 集成",
     starter: false,
     plus: true,
     professional: true,
   },
   {
-    name: "App integrations (Notion, Stripe, and more)",
+    name: "应用集成（Notion、Stripe 等）",
     starter: false,
     plus: true,
     professional: true,
   },
   {
-    name: "Auto-file attachments",
+    name: "自动归档附件",
     starter: false,
     plus: true,
     professional: true,
   },
   {
-    name: "Knowledge base",
-    starter: "Limited",
-    plus: "Unlimited",
-    professional: "Unlimited",
+    name: "知识库",
+    starter: "有限",
+    plus: "不限",
+    professional: "不限",
   },
   {
-    name: "Team-wide analytics",
-    starter: false,
-    plus: false,
-    professional: true,
-  },
-  {
-    name: "Priority support",
+    name: "团队级分析",
     starter: false,
     plus: false,
     professional: true,
   },
   {
-    name: "Dedicated onboarding manager",
+    name: "优先支持",
+    starter: false,
+    plus: false,
+    professional: true,
+  },
+  {
+    name: "专属引导流程经理",
     starter: false,
     plus: false,
     professional: true,
@@ -131,7 +131,7 @@ function FeatureCell({ value }: { value: FeatureValue }) {
 export function PricingComparisonTable() {
   return (
     <Section>
-      <SectionHeading>Compare plans</SectionHeading>
+      <SectionHeading>对比套餐</SectionHeading>
       <SectionContent>
         <CardWrapper>
           <div className="overflow-x-auto rounded-[20px] border border-[#E7E7E780] bg-white">
@@ -139,7 +139,7 @@ export function PricingComparisonTable() {
               <thead>
                 <tr className="border-b border-[#E7E7E780]">
                   <th className="py-4 px-6 text-sm font-medium text-gray-500">
-                    Feature
+                    功能
                   </th>
                   {tierHeaders.map((tier) => (
                     <th
@@ -150,7 +150,7 @@ export function PricingComparisonTable() {
                         {tier.name}
                       </div>
                       <div className="text-xs text-gray-500 mt-0.5">
-                        {tier.price}/mo
+                        {tier.price}/月
                       </div>
                     </th>
                   ))}

@@ -1,18 +1,18 @@
 ---
-title: 'AI Personal Assistant'
-description: 'Create rules that automatically manage incoming email.'
+title: 'AI 个人助手'
+description: '创建自动管理收到邮件的规则。'
 icon: 'sparkles'
 ---
 
-The AI Personal Assistant organizes your inbox for you. Describe how you want your email handled in plain English, and it labels, archives, forwards, and drafts replies automatically as mail arrives.
+AI 个人助手为你整理收件箱。用大白话描述你希望如何处理邮件，它就会在邮件到达时自动打标签、归档、转发并起草回复。
 
-Open **Assistant** in the left sidebar or visit [Assistant](https://www.getinboxzero.com/automation). You can also create and manage rules through [AI Chat](/essentials/ai-chat).
+打开左侧边栏中的**助手**，或访问[助手](https://www.getinboxzero.com/automation)。你也可以通过 [AI 聊天](/essentials/ai-chat)创建和管理规则。
 
-## Getting Started
+## 开始使用
 
 <iframe
   src="https://player.mux.com/TYo3SIMdhg008x022H79400CxeRSiB6mLyuwHx8Szc00Rec?metadata-video-title=AI%20Assistant%20walkthrough&accent-color=%233b82f6"
-  title="AI Assistant walkthrough"
+  title="AI 助手演示"
   style={{ width: "100%", border: "none", aspectRatio: "16/9" }}
   loading="lazy"
   allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
@@ -20,93 +20,93 @@ Open **Assistant** in the left sidebar or visit [Assistant](https://www.getinbox
 ></iframe>
 
 <Note>
-The video mostly shows Gmail. Outlook users follow the same Assistant flow; label actions become Outlook categories, and messages can be moved to Outlook folders. See [Using Outlook](/essentials/outlook-guide).
+视频主要以 Gmail 为例。Outlook 用户遵循相同的助手流程；标签操作会变成 Outlook 类别，邮件可以移动到 Outlook 文件夹。参见[使用 Outlook](/essentials/outlook-guide)。
 </Note>
 
-### Create Rules from Instructions
+### 根据说明创建规则
 
-1. Open **Assistant**.
-2. Describe how you want your email handled in the instruction box.
-3. Review the rules generated from your instructions.
-4. Save the rules.
+1. 打开**助手**。
+2. 在说明框中描述你希望如何处理邮件。
+3. 查看根据你的说明生成的规则。
+4. 保存规则。
 
-Use **Add rule manually** when you want to build the condition and actions yourself.
+当你想自己构建条件和操作时，请使用**手动添加规则**。
 
-## How Rules Work
+## 规则如何工作
 
-Each rule has a condition and one or more actions. When an incoming email matches the condition, Inbox Zero performs the configured actions.
+每条规则都有一个条件和一个或多个操作。当收到的邮件匹配条件时，Inbox Zero 会执行配置好的操作。
 
-![AI Rules](/images/ai-rules.png)
+![AI 规则](/images/ai-rules.png)
 
-### Conditions
+### 条件
 
-Conditions can use AI instructions, static fields, or both.
+条件可以使用 AI 说明、静态字段，或两者兼用。
 
-- **AI condition**: Describe the meaning of the emails that should match, such as `Apply this rule if this email is asking me to set up a call.`
-- **Static condition**: Match text in `From`, `To`, or `Subject`, such as `From` contains `@example.com`.
+- **AI 条件**：描述应匹配邮件的含义，例如 `Apply this rule if this email is asking me to set up a call.`
+- **静态条件**：匹配 `From`、`To` 或 `Subject` 中的文本，例如 `From` 包含 `@example.com`。
 
-### Actions
+### 操作
 
-A rule can contain multiple actions. Available actions can vary by email provider and connected apps:
+一条规则可以包含多个操作。可用操作会因邮件服务商和已连接的应用而异：
 
-- Label
-- Move to folder
-- Archive
-- Delete
-- Draft replies
-- Send replies
-- Forward
-- Send email
-- Mark as read
-- Star
-- Mark as spam
-- Add to digest
-- Call webhook
-- Add Todoist task (requires a connected Todoist integration). Leave the task and description blank and the AI writes them from each matching email, or type your own wording to use it as-is.
-- Notify in a connected Slack, Teams, or Telegram account
-- Deliver a draft reply to a connected messaging account for review
-- Notify the sender
+- 打标签
+- 移动到文件夹
+- 归档
+- 删除
+- 起草回复
+- 发送回复
+- 转发
+- 发送邮件
+- 标记为已读
+- 加星标
+- 标记为垃圾邮件
+- 添加到邮件摘要
+- 调用 webhook
+- 添加 Todoist 任务（需要已连接的 Todoist 集成）。把任务和描述留空，AI 会根据每封匹配的邮件撰写它们，或自己输入文字以原样使用。
+- 在已连接的 Slack、Teams 或 Telegram 账号中通知
+- 把草稿回复投递到已连接的消息账号以供审阅
+- 通知发件人
 
-See [Email Digest](/essentials/email-digest), [Call Webhook](/essentials/call-webhook), and [Delayed Actions](/essentials/delayed-actions) for actions that need additional configuration.
+需要额外配置的操作请参阅[邮件摘要](/essentials/email-digest)、[调用 Webhook](/essentials/call-webhook)和[延迟操作](/essentials/delayed-actions)。
 
-### AI-Generated Content
+### AI 生成的内容
 
-For actions with editable content, put an AI instruction inside double curly braces:
+对于内容可编辑的操作，请把 AI 说明放在双花括号内：
 
 ```text
-Hi {{name}},
-{{write a response expressing interest in their proposal and ask about their timeline}}
-Best regards
+你好 {{name}}，
+{{写一段回复，表达对其提案的兴趣，并询问他们的时间安排}}
+此致
 ```
 
-Inbox Zero generates the content inside each `{{...}}` placeholder from the email context. Text outside the placeholders remains as written.
+Inbox Zero 会根据邮件上下文生成每个 `{{...}}` 占位符内的内容。占位符之外的文本按原样保留。
 
-### Delayed Execution
+### 延迟执行
 
-Supported actions can run after a delay instead of immediately. Open the action's **More options** menu and choose **Add delay**. Delays can range from 1 minute to 90 days. See [Delayed Actions](/essentials/delayed-actions).
+受支持的操作可以延迟执行，而不是立即执行。打开该操作的**更多选项**菜单，选择**添加延迟**。延迟范围可从 1 分钟到 90 天。参见[延迟操作](/essentials/delayed-actions)。
 
-### Apply to Threads
+### 应用于会话
 
-When **Apply to Threads** is disabled, the rule runs only on the first message in a conversation and is skipped for later replies. This is useful for standalone mail such as newsletters or receipts.
+当**应用于会话**被禁用时，规则只在会话中的第一封邮件上运行，后续回复会被跳过。这适用于简报或收据等独立邮件。
 
-### When Multiple Rules Can Apply
+### 当多条规则都可能适用时
 
-By default, the assistant chooses one rule per email. Enable multi-rule selection in **Assistant** > **Settings** when you want several rules to match the same message.
+默认情况下，助手每封邮件只选择一条规则。当你想让多条规则匹配同一封邮件时，请在**助手** > **设置**中启用多规则选择。
 
-## Learned Patterns
+## 学习到的模式
 
-The assistant learns from corrections and from how you handle messages.
+助手会从纠正以及你处理邮件的方式中学习。
 
-- Open a rule to review its learned patterns.
-- Add or remove sender and domain patterns when you need explicit control.
-- Use the History tab's **Fix** action to explain an incorrect match and update the rule.
+- 打开一条规则以查看它学习到的模式。
+- 当你需要显式控制时，添加或移除发件人和域名模式。
+- 使用历史标签页的**修复**操作来说明错误的匹配并更新规则。
 
-## Test Rules
+## 测试规则
 
-Open the [Test tab](https://www.getinboxzero.com/automation?tab=test) to run your rules against an email or free-form text. **Test All** evaluates the selected email against all rules without applying the actions.
+打开[测试标签页](https://www.getinboxzero.com/automation?tab=test)，对一封邮件或自由文本运行你的规则。**全部测试**会在不应用操作的情况下，用所选邮件评估所有规则。
 
-![Test Rules](/images/test-rules.png)
+![测试规则](/images/test-rules.png)
 
-## Assistant Settings
+## 助手设置
 
-Open **Assistant** > **Settings** to configure behavior shared across rules, such as auto-drafting, writing style, and the email digest. See [Assistant Settings](/essentials/assistant-settings).
+打开**助手** > **设置**来配置跨规则共享的行为，例如自动起草、写作风格和邮件摘要。参见[助手设置](/essentials/assistant-settings)。

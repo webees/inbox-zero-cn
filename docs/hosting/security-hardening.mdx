@@ -1,71 +1,71 @@
 ---
-title: 'Security Hardening'
-description: 'Recommended steps for locking down a self-hosted Inbox Zero deployment.'
+title: '安全加固'
+description: '锁定自托管 Inbox Zero 部署的推荐步骤。'
 icon: 'lock'
 ---
 
-This page collects the main security controls for a self-hosted deployment in one place. Each section links to the detailed setup guide.
+本页面把自托管部署的主要安全控制集中在一处。每一部分都链接到详细的设置指南。
 
-## Restrict who can sign up
+## 限制谁可以注册
 
-By default, anyone who can reach your deployment can create an account. Restrict sign-up to your organization with either or both of these variables:
+默认情况下，任何能访问你的部署的人都可以创建账号。用以下任一或两个变量把注册限制到你的组织：
 
 ```env
 AUTH_ALLOWED_EMAIL_DOMAINS=company.com,subsidiary.org
 AUTH_ALLOWED_EMAILS=contractor@gmail.com
 ```
 
-These only block the creation of new accounts. Existing users keep access, so set them before you invite anyone. See [Environment Variables](/hosting/environment-variables#notes).
+这些只会阻止创建新账号。现有用户仍保有访问权限，因此请在邀请任何人之前设置它们。参见[环境变量](/hosting/environment-variables#notes)。
 
-You can also enforce this at the identity provider:
+你也可以在身份提供商层面强制这一点：
 
-- **Google:** set the OAuth consent screen to **Internal** so only your Google Workspace users can sign in. See [Google OAuth setup](/hosting/google-oauth).
-- **Microsoft:** register the app as **Single tenant** so only your Microsoft Entra ID tenant can sign in. See [Microsoft OAuth setup](/hosting/microsoft-oauth).
+- **Google：** 把 OAuth 同意屏幕设为**内部**，这样只有你的 Google Workspace 用户可以登录。参见 [Google OAuth 设置](/hosting/google-oauth)。
+- **Microsoft：** 把应用注册为**单租户**，这样只有你的 Microsoft Entra ID 租户可以登录。参见 [Microsoft OAuth 设置](/hosting/microsoft-oauth)。
 
-Inbox Zero also supports SAML SSO and SCIM provisioning. See [Enterprise SSO and SCIM](/hosting/sso).
+Inbox Zero 还支持 SAML SSO 和 SCIM 预配。参见[企业 SSO 和 SCIM](/hosting/sso)。
 
-## Keep the app on a private network
+## 让应用处于私有网络
 
-For the strongest setup, deploy Inbox Zero on a private network so employees can only reach it through your VPN or a zero-trust access proxy (for example Cloudflare Access or Tailscale).
+对于最强的设置，请把 Inbox Zero 部署在私有网络上，让员工只能通过你的 VPN 或零信任访问代理（例如 Cloudflare Access 或 Tailscale）访问它。
 
-Sign-in still works in this setup because OAuth and SAML redirects run in the user's browser, which is already on your network. Some features, however, depend on external services calling into your deployment. Those endpoints must stay publicly reachable, or you need to route them through a relay:
+在这种设置下，登录仍然可用，因为 OAuth 和 SAML 重定向在用户的浏览器中运行，而用户已经在你的网络上。然而，一些功能依赖于外部服务调用你的部署。这些端点必须保持可公开访问，或者你需要通过中继路由它们：
 
-| Endpoint | Needed for |
+| 端点 | 用途 |
 |----------|-----------|
-| `/api/google/webhook` | Gmail new-mail notifications via [Pub/Sub](/hosting/google-pubsub) |
-| `/api/outlook/webhook` | Outlook new-mail notifications from Microsoft Graph |
-| `/api/auth/scim/v2/*` | SCIM provisioning from a cloud identity provider |
-| `/api/slack/events`, `/api/slack/commands` | [Slack](/slack/setup) |
+| `/api/google/webhook` | 通过 [Pub/Sub](/hosting/google-pubsub) 接收 Gmail 新邮件通知 |
+| `/api/outlook/webhook` | 接收来自 Microsoft Graph 的 Outlook 新邮件通知 |
+| `/api/auth/scim/v2/*` | 来自云身份提供商的 SCIM 预配 |
+| `/api/slack/events`、`/api/slack/commands` | [Slack](/slack/setup) |
 | `/api/teams/events` | [Microsoft Teams](/teams/setup) |
 | `/api/telegram/events` | [Telegram](/telegram/setup) |
-| `/api/recall/webhook` | [Meeting Recorder](/essentials/meeting-recorder) |
+| `/api/recall/webhook` | [会议录音](/essentials/meeting-recorder) |
 
-Each of these endpoints verifies that requests come from the expected service, using a shared secret, request signature, or signed token, and rejects anything that fails. The one exception is `GOOGLE_PUBSUB_VERIFICATION_TOKEN`: setting it to an empty string turns off Gmail webhook verification, so only do that when a gateway in front of the app already authenticates those requests. If AI assistants or scripts outside your network use the [MCP server](/api-reference/mcp) or [API](/api-reference/introduction), they also need access.
+这些端点都会验证请求来自预期的服务，使用共享密钥、请求签名或签名令牌，并拒绝任何验证失败的内容。唯一的例外是 `GOOGLE_PUBSUB_VERIFICATION_TOKEN`：把它设为空字符串会关闭 Gmail webhook 验证，因此只有当前置网关已经对这些请求进行认证时才这么做。如果你的网络之外的 AI 助手或脚本使用 [MCP 服务器](/api-reference/mcp)或 [API](/api-reference/introduction)，它们也需要访问权限。
 
-Only expose the endpoints for features you use. Without the mail webhooks, Inbox Zero will not process new email as it arrives.
+只为你使用的功能暴露端点。没有邮件 webhook，Inbox Zero 将无法在新邮件到达时处理它们。
 
-For Gmail on AWS, the [webhook gateway](/hosting/aws-copilot#firewalled-deployments-webhook-gateway) puts a public API Gateway in front of a private load balancer and validates Google's signed tokens before forwarding requests. The same pattern works for the other endpoints with any reverse proxy or API gateway that only forwards the paths listed above.
+对于 AWS 上的 Gmail，[webhook 网关](/hosting/aws-copilot#firewalled-deployments-webhook-gateway)会在一台私有负载均衡器前放置一个公共 API Gateway，并在转发请求前验证 Google 的签名令牌。相同的模式可用于其他端点，只要使用任何仅转发上面所列路径的反向代理或 API 网关。
 
-Outbound traffic is also required: to Google or Microsoft APIs, to your AI provider, and to any integrations you enable.
+还需要出站流量：到 Google 或 Microsoft API、到你的 AI 服务商，以及到任何你启用的集成。
 
-## Protect secrets
+## 保护机密
 
-`EMAIL_ENCRYPT_SECRET` and `EMAIL_ENCRYPT_SALT` encrypt stored OAuth tokens, which grant access to users' mailboxes. Keep them, along with `INTERNAL_API_KEY`, `CRON_SECRET`, database credentials, and OAuth client secrets, in a secret manager, and restrict who can read them. Changing the encryption secrets without a migration forces every user to reconnect their account. See [Production Operations](/hosting/production-operations#secrets).
+`EMAIL_ENCRYPT_SECRET` 和 `EMAIL_ENCRYPT_SALT` 会加密已存储的 OAuth 令牌，这些令牌授予对用户邮箱的访问权限。请把它们以及 `INTERNAL_API_KEY`、`CRON_SECRET`、数据库凭据和 OAuth 客户端密钥保存在密钥管理器中，并限制谁可以读取它们。在没有迁移的情况下更改加密密钥会强制每位用户重新连接其账号。参见[生产运维](/hosting/production-operations#secrets)。
 
-## Limit admin access
+## 限制管理员访问
 
-Users listed in `ADMINS` can open `/admin`, which includes SSO and SCIM configuration. Keep this list short.
+列在 `ADMINS` 中的用户可以打开 `/admin`，其中包括 SSO 和 SCIM 配置。请保持该列表简短。
 
-## Control what reaches the AI provider
+## 控制哪些内容到达 AI 服务商
 
-Email content is sent to your configured AI provider. Choose a provider and account whose data retention terms fit your policy, such as your own AWS Bedrock, Azure, or Google Vertex account, or a self-hosted model. See [LLM Setup](/hosting/llm-setup).
+邮件内容会发送给你配置的 AI 服务商。请选择数据保留条款符合你政策的一个服务商和账号，例如你自己的 AWS Bedrock、Azure 或 Google Vertex 账号，或一个自托管模型。参见 [LLM 设置](/hosting/llm-setup)。
 
-To redact or block credentials and payment card numbers before they reach the provider, set `SENSITIVE_DATA_POLICY_DEFAULT` to `REDACT` or `BLOCK`. Set `NEXT_PUBLIC_SENSITIVE_DATA_POLICY_LOCKED=true` to stop users overriding it. See [Sensitive Data Protection](/hosting/llm-setup#sensitive-data-protection).
+要在凭据和支付卡号到达服务商之前对其打码或阻止，请把 `SENSITIVE_DATA_POLICY_DEFAULT` 设为 `REDACT` 或 `BLOCK`。设置 `NEXT_PUBLIC_SENSITIVE_DATA_POLICY_LOCKED=true` 可阻止用户覆盖它。参见[敏感数据保护](/hosting/llm-setup#sensitive-data-protection)。
 
-## Keep rule webhooks off internal addresses
+## 让规则 webhook 远离内部地址
 
-Rules can call external webhooks. By default, Inbox Zero blocks webhooks to private, loopback, and link-local addresses. Leave `WEBHOOK_ALLOW_PRIVATE_IPS` unset, especially when the app runs inside your internal network, so a rule cannot be used to reach internal services.
+规则可以调用外部 webhook。默认情况下，Inbox Zero 会阻止发往私有、环回和链路本地地址的 webhook。请不要设置 `WEBHOOK_ALLOW_PRIVATE_IPS`，尤其是在应用运行于你的内部网络内时，这样规则就不能被用来访问内部服务。
 
-## Database and backups
+## 数据库与备份
 
-Encrypt the database at rest and in transit, and keep tested backups outside the application host. See [Production Operations](/hosting/production-operations#database-backups).
+在静态和传输中都对数据库加密，并把经过测试的备份保存在应用主机之外。参见[生产运维](/hosting/production-operations#database-backups)。

@@ -1,139 +1,139 @@
 ---
-title: 'Troubleshooting'
-description: 'Solutions for common issues when running Inbox Zero'
+title: '故障排查'
+description: '运行 Inbox Zero 时常见问题的解决方案'
 ---
 
-## Viewing Logs
+## 查看日志
 
-If you installed via the CLI, use the built-in logs command:
+如果你通过 CLI 安装，请使用内置的日志命令：
 ```bash
-inbox-zero logs            # Show last 100 lines
-inbox-zero logs -f         # Follow logs in real-time
-inbox-zero logs -n 500     # Show last 500 lines
+inbox-zero logs            # 显示最后 100 行
+inbox-zero logs -f         # 实时跟踪日志
+inbox-zero logs -n 500     # 显示最后 500 行
 ```
 
-If you're running Docker directly, use:
+如果你直接运行 Docker，请使用：
 ```bash
 docker logs inbox-zero-services-web-1
 docker logs inbox-zero-services-db-1
 docker logs inbox-zero-services-redis-1
 ```
 
-## Container Won't Start
+## 容器无法启动
 
-Check logs for errors using the commands above.
+使用上面的命令检查日志中的错误。
 
-**Common issues:**
-- **Port conflicts**: Another service is using port 3000, 5432, or 6379
-  - Solution: Set custom ports via environment variables before starting: `WEB_PORT=3001 POSTGRES_PORT=5433 REDIS_PORT=6381 inbox-zero start`
-- **Need remote DB/Redis access from another machine**: Postgres/Redis ports bind to localhost by default for security
-  - Solution: set shell environment variables before start, for example: `POSTGRES_BIND_HOST=0.0.0.0 REDIS_BIND_HOST=0.0.0.0 REDIS_HTTP_BIND_HOST=0.0.0.0 docker compose --profile all up -d`
-- **Insufficient memory**: Container is being killed by OOM
-  - Solution: Increase VPS RAM or add swap space
-- **Missing environment variables**: Check `.env` file exists and has required values
-  - Solution: Run `inbox-zero setup` again
-- **Containers start but ignore your settings**: Compose couldn't find your env file and started without it. This usually happens with a named config (for example `.env.production`) or a file outside the default location, started with plain `docker compose up`
-  - Solution: use the Compose command printed by `inbox-zero setup`, or pass the file explicitly: `docker compose --env-file <path-to-your-env-file> --profile all up -d`. Setting `INBOX_ZERO_ENV_FILE` inside the env file only takes effect when that file is passed with `--env-file`
-- **Slow page loads with `validate-email-account` or `Unable to parse response body` Redis warnings**: `docker compose` may have started `serverless-redis-http` without the token from `apps/web/.env`
-  - Solution: make sure repo-root `.env` matches `apps/web/.env` before starting Docker, create a link if no root `.env` exists: `ln -s apps/web/.env .env`. Preserve and review any existing root configuration, then recreate the affected containers with `docker compose --env-file apps/web/.env --profile all up -d`
+**常见问题：**
+- **端口冲突**：另一个服务正在使用 3000、5432 或 6379 端口
+  - 解决方案：启动前通过环境变量设置自定义端口：`WEB_PORT=3001 POSTGRES_PORT=5433 REDIS_PORT=6381 inbox-zero start`
+- **需要从另一台机器远程访问 DB/Redis**：出于安全考虑，Postgres/Redis 端口默认绑定到 localhost
+  - 解决方案：启动前设置 shell 环境变量，例如：`POSTGRES_BIND_HOST=0.0.0.0 REDIS_BIND_HOST=0.0.0.0 REDIS_HTTP_BIND_HOST=0.0.0.0 docker compose --profile all up -d`
+- **内存不足**：容器被 OOM 终止
+  - 解决方案：增加 VPS 内存或添加 swap 空间
+- **缺少环境变量**：检查 `.env` 文件是否存在且包含必需的值
+  - 解决方案：再次运行 `inbox-zero setup`
+- **容器启动了但忽略了你的设置**：Compose 找不到你的 env 文件，于是在没有它的情况下启动。这通常发生在使用命名配置（例如 `.env.production`）或默认位置之外的文件，并用普通 `docker compose up` 启动时
+  - 解决方案：使用 `inbox-zero setup` 打印出的 Compose 命令，或显式传入文件：`docker compose --env-file <path-to-your-env-file> --profile all up -d`。在 env 文件内设置 `INBOX_ZERO_ENV_FILE` 只有在该文件通过 `--env-file` 传入时才会生效
+- **页面加载缓慢并出现 `validate-email-account` 或 `Unable to parse response body` Redis 警告**：`docker compose` 可能在缺少 `apps/web/.env` 中 token 的情况下启动了 `serverless-redis-http`
+  - 解决方案：启动 Docker 前确保仓库根目录的 `.env` 与 `apps/web/.env` 一致，如果根目录没有 `.env` 就创建一个链接：`ln -s apps/web/.env .env`。保留并检查任何现有的根目录配置，然后用 `docker compose --env-file apps/web/.env --profile all up -d` 重建受影响的容器
 
-## Database Connection Errors
+## 数据库连接错误
 
-**Error: "Can't reach database server"**
-- Wait 30-60 seconds for Postgres to fully initialize
-- Check database container is running: `docker ps | grep postgres`
-- Verify `DATABASE_URL` in `.env` matches your setup
+**错误："Can't reach database server"**
+- 等待 30-60 秒，让 Postgres 完全初始化
+- 检查数据库容器正在运行：`docker ps | grep postgres`
+- 验证 `.env` 中的 `DATABASE_URL` 与你的设置一致
 
-**Error: P1000 / "authentication failed"**
-- This happens when the database password in `.env` doesn't match the password stored in the Postgres Docker volume (e.g., you deleted `.env` without removing the volume first, then re-ran setup).
-- Fix: stop containers and remove volumes so Postgres is recreated with the current password:
+**错误：P1000 / "authentication failed"**
+- 当 `.env` 中的数据库密码与 Postgres Docker 卷中存储的密码不一致时会出现这种情况（例如，你先删除了 `.env` 而没有先删除卷，然后重新运行了 setup）。
+- 修复：停止容器并删除卷，以便用当前密码重建 Postgres：
   ```bash
   docker compose --profile all down -v
   inbox-zero start
   ```
 
-**Error: "relation does not exist"**
-- Migrations haven't run yet
-- Wait for web container to complete startup (check logs)
-- Manually run: `docker exec inbox-zero-services-web-1 npm run db:migrate`
+**错误："relation does not exist"**
+- 迁移尚未运行
+- 等待 web 容器完成启动（检查日志）
+- 手动运行：`docker exec inbox-zero-services-web-1 npm run db:migrate`
 
-## OAuth Configuration Issues
+## OAuth 配置问题
 
-**Error: "redirect_uri_mismatch"**
-- Your OAuth redirect URI doesn't match what's configured in Google/Microsoft console
-- Ensure `NEXT_PUBLIC_BASE_URL` is set correctly when running `docker compose up`
-- Add `https://yourdomain.com/api/auth/callback/google` to authorized redirect URIs
+**错误："redirect_uri_mismatch"**
+- 你的 OAuth 重定向 URI 与 Google/Microsoft 控制台中配置的不一致
+- 确保在运行 `docker compose up` 时正确设置了 `NEXT_PUBLIC_BASE_URL`
+- 将 `https://yourdomain.com/api/auth/callback/google` 添加到已授权的重定向 URI 中
 
-**Error: "invalid_client"**
-- `GOOGLE_CLIENT_ID` or `GOOGLE_CLIENT_SECRET` is incorrect
-- Double-check credentials in Google Cloud Console
-- Ensure no extra spaces or quotes in `.env` file
+**错误："invalid_client"**
+- `GOOGLE_CLIENT_ID` 或 `GOOGLE_CLIENT_SECRET` 不正确
+- 在 Google Cloud Console 中仔细核对凭据
+- 确保 `.env` 文件中没有多余的空格或引号
 
-## Application Not Accessible
+## 无法访问应用
 
-**Can't access via domain:**
-- Verify DNS records point to your VPS IP: `dig yourdomain.com`
-- Check firewall allows traffic on port 3000: `sudo ufw status`
-- Set up reverse proxy (Nginx/Caddy) for HTTPS
+**无法通过域名访问：**
+- 验证 DNS 记录指向你的 VPS IP：`dig yourdomain.com`
+- 检查防火墙是否允许 3000 端口的流量：`sudo ufw status`
+- 为 HTTPS 设置反向代理（Nginx/Caddy）
 
-**Can access via IP but not domain:**
-- SSL/TLS certificate issue
-- Use Let's Encrypt with Caddy for automatic HTTPS
-- Or set up Nginx with Certbot
+**可以通过 IP 访问但无法通过域名访问：**
+- SSL/TLS 证书问题
+- 使用 Caddy 搭配 Let's Encrypt 实现自动 HTTPS
+- 或者用 Certbot 设置 Nginx
 
-## Performance Issues
+## 性能问题
 
-**Slow response times:**
-- Check VPS resources: `htop` or `docker stats`
-- Increase VPS RAM if consistently above 80%
-- Consider using external managed database services
+**响应缓慢：**
+- 检查 VPS 资源：`htop` 或 `docker stats`
+- 如果持续高于 80%，请增加 VPS 内存
+- 考虑使用外部托管数据库服务
 
-**High memory usage:**
-- Normal for Next.js applications (expect 500MB-1GB)
-- If exceeding 1.5GB, check for memory leaks in logs
-- Restart containers: `docker compose restart web`
+**内存占用高：**
+- 对 Next.js 应用来说是正常的（预计 500MB-1GB）
+- 如果超过 1.5GB，请检查日志中是否有内存泄漏
+- 重启容器：`docker compose restart web`
 
-## AI Rules and Email Processing Errors
+## AI 规则与邮件处理错误
 
-**AI-powered rules fail but manually created rules work:**
-- This means your AI provider API key is missing, invalid, or out of credits.
-- Verify `LLM_API_KEY` is set in `.env`.
-- Check that your API key has billing credits. A ChatGPT Plus or Claude Pro subscription does **not** include API access — you need a separate API key with credits from the provider's developer platform.
-- You can change your AI provider on the Settings page in the app.
+**AI 驱动的规则失败，但手动创建的规则正常：**
+- 这意味着你的 AI 服务商 API 密钥缺失、无效或额度用尽。
+- 验证 `.env` 中已设置 `LLM_API_KEY`。
+- 检查你的 API 密钥是否有计费额度。ChatGPT Plus 或 Claude Pro 订阅**不**包含 API 访问——你需要从服务商开发者平台获取一个带额度的独立 API 密钥。
+- 你可以在应用的设置页面更改 AI 服务商。
 
-**Can't create rules using AI prompt:**
-- Same cause — the AI provider must be correctly configured with a valid, funded API key.
-- Check logs (`inbox-zero logs -f`) for specific error messages from the AI provider.
+**无法使用 AI 说明创建规则：**
+- 原因相同——AI 服务商必须使用一个有效且有余额的 API 密钥正确配置。
+- 检查日志（`inbox-zero logs -f`）以查看来自 AI 服务商的具体错误消息。
 
-**Emails not processing automatically (Pub/Sub):**
-- Verify your Pub/Sub topic and subscription are configured correctly — see the [Pub/Sub setup guide](/hosting/google-pubsub).
-- The push subscription endpoint must be publicly accessible. For local development, use ngrok.
-- Check that `GOOGLE_PUBSUB_TOPIC_NAME` and `GOOGLE_PUBSUB_VERIFICATION_TOKEN` are set in your `.env`.
-- Verify the Gmail service account (`gmail-api-push@system.gserviceaccount.com`) has the **Pub/Sub Publisher** role on your topic.
+**邮件没有自动处理（Pub/Sub）：**
+- 验证你的 Pub/Sub 主题和订阅配置正确——参见 [Pub/Sub 设置指南](/hosting/google-pubsub)。
+- 推送订阅端点必须可以公开访问。本地开发时请使用 ngrok。
+- 检查 `.env` 中已设置 `GOOGLE_PUBSUB_TOPIC_NAME` 和 `GOOGLE_PUBSUB_VERIFICATION_TOKEN`。
+- 验证 Gmail 服务账号（`gmail-api-push@system.gserviceaccount.com`）在你的主题上具有 **Pub/Sub Publisher** 角色。
 
-## Rate Limiting
+## 速率限制
 
-**Rate limited by email provider (Gmail/Outlook):**
-- This can happen if your email account is connected to another service making requests.
-- For Gmail: Visit https://myaccount.google.com/security and check "Your connections to third-party apps & services"
-- For Outlook: Visit https://account.microsoft.com/privacy/app-access to review connected apps
+**被邮件服务商限制速率（Gmail/Outlook）：**
+- 如果你的邮箱账号同时连接了另一个正在发起请求的服务，就可能发生这种情况。
+- 对于 Gmail：访问 https://myaccount.google.com/security 并查看 "Your connections to third-party apps & services"
+- 对于 Outlook：访问 https://account.microsoft.com/privacy/app-access 查看已连接的应用
 
-**Rate limited by AI provider:**
-- Use a different AI model with higher rate limits.
-- Move to a higher tier with your AI provider.
-- Slow down the rate at which you are making requests.
+**被 AI 服务商限制速率：**
+- 使用速率限制更高的其他 AI 模型。
+- 升级到你 AI 服务商的更高层级。
+- 降低发起请求的速率。
 
-## AWS-Specific Issues
+## AWS 特定问题
 
-For troubleshooting AWS Copilot deployments (service won't start, migration issues, EarlyValidation errors, domain problems), see the [Copilot Deployment troubleshooting section](/hosting/aws-copilot#troubleshooting).
+有关排查 AWS Copilot 部署问题（服务无法启动、迁移问题、EarlyValidation 错误、域名问题），请参阅 [Copilot 部署的故障排查部分](/hosting/aws-copilot#troubleshooting)。
 
-## Uninstalling / Starting Over
+## 卸载 / 重新开始
 
-### Quick reset
+### 快速重置
 
-To re-run setup without removing Google Cloud resources:
+在不删除 Google Cloud 资源的情况下重新运行 setup：
 
-**If you used the CLI (standalone mode):**
+**如果你使用 CLI（独立模式）：**
 ```bash
 inbox-zero stop
 docker compose -f ~/.inbox-zero/docker-compose.yml --profile all down -v
@@ -141,52 +141,52 @@ rm ~/.inbox-zero/.env
 inbox-zero setup
 ```
 
-**If you're running from the cloned repo:**
+**如果你从克隆的仓库运行：**
 ```bash
 docker compose --profile all down -v
 rm apps/web/.env
 inbox-zero setup
 ```
 
-### Full removal
+### 完全移除
 
-<Accordion title="Remove everything including Google Cloud resources">
+<Accordion title="移除所有内容，包括 Google Cloud 资源">
 
-**1. Stop and remove containers and volumes:**
+**1. 停止并移除容器和卷：**
 
-If you used the CLI (standalone mode):
+如果你使用 CLI（独立模式）：
 ```bash
 inbox-zero stop
 docker compose -f ~/.inbox-zero/docker-compose.yml --profile all down -v
 ```
 
-If you're running from the cloned repo:
+如果你从克隆的仓库运行：
 ```bash
 docker compose --profile all down -v
 ```
 
-**2. Remove local configuration:**
+**2. 移除本地配置：**
 
 ```bash
-# Standalone mode
+# 独立模式
 rm -rf ~/.inbox-zero
 
-# If running from the cloned repo
+# 如果从克隆的仓库运行
 rm apps/web/.env
 ```
 
-**3. Clean up Google Cloud resources:**
+**3. 清理 Google Cloud 资源：**
 
-1. **Pub/Sub:** Go to [Subscriptions](https://console.cloud.google.com/cloudpubsub/subscription/list) and delete your subscription, then go to [Topics](https://console.cloud.google.com/cloudpubsub/topic/list) and delete your topic.
-2. **OAuth credentials:** Go to [API Credentials](https://console.cloud.google.com/apis/credentials) and delete the OAuth client.
-3. **Consent screen** (optional): Go to [OAuth consent screen](https://console.cloud.google.com/apis/credentials/consent) and reset or delete it.
-4. **APIs** (optional): Go to [Enabled APIs](https://console.cloud.google.com/apis/dashboard) and disable Gmail, People, Calendar, and Drive APIs if no longer needed.
+1. **Pub/Sub：** 前往[订阅](https://console.cloud.google.com/cloudpubsub/subscription/list)并删除你的订阅，然后前往[主题](https://console.cloud.google.com/cloudpubsub/topic/list)并删除你的主题。
+2. **OAuth 凭据：** 前往 [API 凭据](https://console.cloud.google.com/apis/credentials)并删除 OAuth 客户端。
+3. **同意屏幕**（可选）：前往 [OAuth 同意屏幕](https://console.cloud.google.com/apis/credentials/consent)并重置或删除它。
+4. **API**（可选）：前往[已启用的 API](https://console.cloud.google.com/apis/dashboard)，如果不再需要，请停用 Gmail、People、Calendar 和 Drive API。
 
 </Accordion>
 
-## Getting Help
+## 获取帮助
 
-If you're still stuck:
-1. Check [GitHub Issues](https://github.com/elie222/inbox-zero/issues) for similar problems
-2. Join the [Discord community](https://www.getinboxzero.com/discord)
-3. Include relevant logs and your setup details when asking for help
+如果你仍然卡住：
+1. 查看 [GitHub Issues](https://github.com/elie222/inbox-zero/issues) 是否有类似问题
+2. 加入 [Discord 社区](https://www.getinboxzero.com/discord)
+3. 求助时请附上相关日志和你的设置详情

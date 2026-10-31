@@ -93,11 +93,11 @@ export function ProactiveUpdatesSetting({
       onSuccess: () => {
         mutate();
         onUpdate();
-        toastSuccess({ description: "Scheduled check-ins updated" });
+        toastSuccess({ description: "定时签到已更新" });
       },
       onError: createSettingActionErrorHandler({
         mutate,
-        defaultMessage: "Failed to update setting",
+        defaultMessage: "更新设置失败",
       }),
     },
   );
@@ -109,10 +109,10 @@ export function ProactiveUpdatesSetting({
         mutate();
         onUpdate();
         setOpen(false);
-        toastSuccess({ description: "Scheduled check-in settings saved" });
+        toastSuccess({ description: "定时签到设置已保存" });
       },
       onError: createSettingActionErrorHandler({
-        defaultMessage: "Failed to save settings",
+        defaultMessage: "保存设置失败",
       }),
     },
   );
@@ -121,11 +121,11 @@ export function ProactiveUpdatesSetting({
     triggerTestCheckInAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: "Test check-in sent" });
+        toastSuccess({ description: "测试签到已发送" });
       },
       onError: (error) => {
         const description =
-          getActionErrorMessage(error.error) ?? "Failed to send test check-in";
+          getActionErrorMessage(error.error) ?? "发送测试签到失败";
         toastError({ description });
       },
     },
@@ -162,7 +162,7 @@ export function ProactiveUpdatesSetting({
     [cronExpression],
   );
   const isSlack = channel.provider === MessagingProvider.SLACK;
-  let summaryText = "Get periodic summaries in chat.";
+  let summaryText = "在聊天中获取定期摘要。";
   if (activeForChannel && job) {
     summaryText = describeCronSchedule(
       job.cronExpression ?? DEFAULT_AUTOMATION_JOB_CRON,
@@ -181,11 +181,11 @@ export function ProactiveUpdatesSetting({
     <>
       <Item size="sm">
         <ItemContent>
-          <ItemTitle>Scheduled check-ins</ItemTitle>
+          <ItemTitle>定时签到</ItemTitle>
           <ItemDescription>{summaryText}</ItemDescription>
         </ItemContent>
         <ItemActions>
-          <Tooltip content="Configure">
+          <Tooltip content="配置">
             <Button variant="ghost" size="iconSm" onClick={() => setOpen(true)}>
               <Settings2Icon className="h-4 w-4" />
             </Button>
@@ -216,16 +216,16 @@ export function ProactiveUpdatesSetting({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Scheduled check-ins</DialogTitle>
+            <DialogTitle>定时签到</DialogTitle>
             <DialogDescription>
-              Configure when Inbox Zero sends scheduled summaries to{" "}
-              {getMessagingProviderName(channel.provider)}.
+              配置 Inbox Zero 何时向{" "}
+              {getMessagingProviderName(channel.provider)} 发送定时摘要。
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6">
             <div className="space-y-3">
-              <Label>Schedule</Label>
+              <Label>计划</Label>
               <div className="grid grid-cols-3 gap-2">
                 {AUTOMATION_CRON_PRESETS.map((preset) => (
                   <Button
@@ -253,7 +253,7 @@ export function ProactiveUpdatesSetting({
                   size="xs"
                   onClick={() => setShowCronEditor((value) => !value)}
                 >
-                  {showCronEditor ? "done" : "edit"}
+                  {showCronEditor ? "完成" : "编辑"}
                 </Button>
               </div>
               {showCronEditor && (
@@ -261,11 +261,11 @@ export function ProactiveUpdatesSetting({
                   <Input
                     value={cronExpression}
                     onChange={(event) => setCronExpression(event.target.value)}
-                    placeholder="Cron expression in UTC"
+                    placeholder="UTC 时间的 Cron 表达式"
                   />
                   <p className="text-xs text-muted-foreground">
-                    This is a cron expression (UTC). Ask ChatGPT or Claude to
-                    generate one for your preferred schedule.
+                    这是一个 cron 表达式（UTC）。可以让 ChatGPT 或 Claude
+                    按你偏好的计划生成一个。
                   </p>
                 </>
               )}
@@ -277,12 +277,12 @@ export function ProactiveUpdatesSetting({
                 size="sm"
                 onClick={() => setShowCustomPrompt((value) => !value)}
               >
-                + Add check-in instructions
+                + 添加签到说明
               </Button>
               {showCustomPrompt && (
                 <Textarea
                   id={`scheduled-checkins-prompt-${channel.id}`}
-                  placeholder="Example: Only include emails that need a reply today or have a deadline in the next 2 days. Skip newsletters, receipts, and FYI updates."
+                  placeholder="示例：只包含今天需要回复或在未来 2 天内有截止日期的邮件。跳过新闻邮件、收据和仅供参考的更新。"
                   value={prompt}
                   onChange={(event) => setPrompt(event.target.value)}
                 />
@@ -297,8 +297,8 @@ export function ProactiveUpdatesSetting({
                   onClick={() => executeTestCheckIn({})}
                 >
                   {testCheckInStatus === "executing"
-                    ? "Sending..."
-                    : "Send test check-in"}
+                    ? "发送中…"
+                    : "发送测试签到"}
                 </Button>
               ) : (
                 <div />
@@ -309,13 +309,13 @@ export function ProactiveUpdatesSetting({
                   onClick={() => setOpen(false)}
                   disabled={saveStatus === "executing"}
                 >
-                  Cancel
+                  取消
                 </Button>
                 <Button
                   onClick={handleSave}
                   disabled={saveStatus === "executing"}
                 >
-                  {saveStatus === "executing" ? "Saving..." : "Save"}
+                  {saveStatus === "executing" ? "保存中…" : "保存"}
                 </Button>
               </div>
             </div>

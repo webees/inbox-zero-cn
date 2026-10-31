@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
+  BellIcon,
   CircleHelpIcon,
   ChevronsUpDownIcon,
   LightbulbIcon,
@@ -12,6 +13,7 @@ import {
   CrownIcon,
   GiftIcon,
   GlobeIcon,
+  MessagesSquareIcon,
   SettingsIcon,
 } from "lucide-react";
 import {
@@ -95,7 +97,7 @@ export function NavUser() {
               }}
             >
               <SettingsIcon className="mr-2 size-4" />
-              Settings
+              设置
             </DropdownMenuItem>
             {!hasOrganization && (
               <DropdownMenuItem asChild>
@@ -107,7 +109,7 @@ export function NavUser() {
                   onClick={() => closeMobileSidebar("left-sidebar")}
                 >
                   <Building2Icon className="mr-2 size-4" />
-                  Create organization
+                  创建组织
                 </Link>
               </DropdownMenuItem>
             )}
@@ -118,10 +120,28 @@ export function NavUser() {
                   onClick={() => closeMobileSidebar("left-sidebar")}
                 >
                   <Building2Icon className="mr-2 size-4" />
-                  My Organization
+                  我的组织
                 </Link>
               </DropdownMenuItem>
             )}
+            <DropdownMenuItem asChild>
+              <Link
+                href="/shared"
+                onClick={() => closeMobileSidebar("left-sidebar")}
+              >
+                <MessagesSquareIcon className="mr-2 size-4" />
+                与我共享
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                href="/shared/activity"
+                onClick={() => closeMobileSidebar("left-sidebar")}
+              >
+                <BellIcon className="mr-2 size-4" />
+                活动
+              </Link>
+            </DropdownMenuItem>
             {isGoogleProvider(provider) && (
               <DropdownMenuItem asChild>
                 <Link
@@ -131,7 +151,7 @@ export function NavUser() {
                   onClick={() => closeMobileSidebar("left-sidebar")}
                 >
                   <GlobeIcon className="mr-2 size-4" />
-                  Install extension
+                  安装扩展
                 </Link>
               </DropdownMenuItem>
             )}
@@ -150,7 +170,7 @@ export function NavUser() {
                   onClick={() => closeMobileSidebar("left-sidebar")}
                 >
                   <ShieldCheckIcon className="mr-2 size-4" />
-                  Cold Email Blocker
+                  冷邮件拦截器
                 </Link>
               </DropdownMenuItem>
             )}
@@ -166,7 +186,7 @@ export function NavUser() {
                   onClick={() => closeMobileSidebar("left-sidebar")}
                 >
                   <CrownIcon className="mr-2 size-4" />
-                  Premium
+                  高级版
                 </Link>
               </DropdownMenuItem>
             )}
@@ -178,7 +198,7 @@ export function NavUser() {
                 onClick={() => closeMobileSidebar("left-sidebar")}
               >
                 <CircleHelpIcon className="mr-2 size-4" />
-                Help Center
+                帮助中心
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
@@ -189,7 +209,7 @@ export function NavUser() {
                 onClick={() => closeMobileSidebar("left-sidebar")}
               >
                 <LightbulbIcon className="mr-2 size-4" />
-                Feature Requests
+                功能请求
               </Link>
             </DropdownMenuItem>
             {!env.NEXT_PUBLIC_BYPASS_PREMIUM_CHECKS && (
@@ -200,7 +220,7 @@ export function NavUser() {
                 }}
               >
                 <GiftIcon className="mr-2 size-4" />
-                Refer a Friend
+                推荐好友
               </DropdownMenuItem>
             )}
           </DropdownMenuGroup>
@@ -213,7 +233,7 @@ export function NavUser() {
             }}
           >
             <LogOutIcon className="mr-2 size-4" />
-            Sign out
+            退出登录
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

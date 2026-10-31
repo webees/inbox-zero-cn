@@ -80,10 +80,7 @@ export async function browseMailForMcp(
     else {
       const navigation = await navigationPromise;
       const item = navigation.items.find((item) => item.id === args.folder);
-      if (!item)
-        throw new Error(
-          "Folder is no longer available. Refresh the mailbox navigation.",
-        );
+      if (!item) throw new Error("文件夹已不再可用。请刷新邮箱导航。");
       query =
         item.kind === "folder" ? { folderId: item.id } : { labelId: item.id };
     }
@@ -156,7 +153,7 @@ export async function saveMailDraftForMcp(
   let draftId = args.draftId;
   if (draftId) {
     if (!(await provider.getDraft(draftId)))
-      throw new Error("Draft not found in the selected mailbox.");
+      throw new Error("所选邮箱中未找到草稿。");
     await provider.updateDraft(draftId, {
       to: args.to,
       cc: args.cc,
@@ -172,7 +169,7 @@ export async function saveMailDraftForMcp(
       messageHtml,
       replyToMessageId: args.replyToMessageId,
     });
-    if (!draft.id) throw new Error("Draft could not be saved.");
+    if (!draft.id) throw new Error("草稿保存失败。");
     draftId = draft.id;
   }
   navigationCache.delete(JSON.stringify([userId, emailAccount.id]));
@@ -300,7 +297,7 @@ function validateRecipients(to: string, cc?: string) {
       !addresses.length ||
       addresses.some((address) => !z.email().safeParse(address).success)
     )
-      throw new Error("Enter valid recipient email addresses.");
+      throw new Error("请输入有效的收件人邮箱地址。");
   }
 }
 
@@ -345,7 +342,7 @@ async function fetchMailNavigation(
   const counts = countsResult.status === "fulfilled" ? countsResult.value : [];
   const unavailable =
     labelsResult.status === "rejected" || countsResult.status === "rejected";
-  if (unavailable) logger.warn("Mailbox navigation is partially unavailable");
+  if (unavailable) logger.warn("邮箱导航部分不可用");
   const systemIds = new Set([
     "INBOX",
     "DRAFT",

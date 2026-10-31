@@ -21,7 +21,7 @@ export async function sendSlackOnboardingDirectMessageWithLogging({
       botUserId,
     });
   } catch (error) {
-    logger.warn("Failed to send Slack onboarding direct message", {
+    logger.warn("发送 Slack 引导流程私信失败", {
       teamId,
       userId,
       error,

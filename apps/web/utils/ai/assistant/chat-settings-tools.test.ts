@@ -200,9 +200,9 @@ describe("chat settings tools", () => {
         ],
       },
     });
-    expect(digestCapability?.reason).toContain("not yet exposed");
+    expect(digestCapability?.reason).toContain("尚不支持通过");
     expect(digestCapability?.description).toContain(
-      "sent automatically to delivery.destinationEmail",
+      "摘要会自动发送到 delivery.destinationEmail",
     );
 
     const scheduledCheckInsCapability = result.capabilities.find(
@@ -382,7 +382,7 @@ describe("chat settings tools", () => {
     });
 
     expect(result).toEqual({
-      error: expect.stringContaining("Invalid settings update payload."),
+      error: expect.stringContaining("设置更新载荷无效："),
     });
     expect(prisma.emailAccount.update).not.toHaveBeenCalled();
   });
@@ -450,7 +450,7 @@ describe("chat settings tools", () => {
     });
 
     expect(result).toEqual({
-      error: "Premium is required for scheduled check-ins.",
+      error: "定期检查需要高级版",
     });
     expect(mockGetUserPremium).toHaveBeenCalledWith({ userId: "user-1" });
     expect(prisma.automationJob.update).not.toHaveBeenCalled();
@@ -585,7 +585,7 @@ describe("chat settings tools", () => {
     expect(prisma.automationJob.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         enabled: true,
-        name: "Scheduled check-ins",
+        name: "定时检查",
         cronExpression: "0 9,14 * * 1-5",
         prompt: null,
         messagingChannelId: "c000000000000000000000000",
@@ -767,7 +767,7 @@ describe("chat settings tools", () => {
 
     expect(result).toEqual({
       error:
-        'Draft knowledge item "New note" does not exist. Use addToKnowledgeBase to create a new entry.',
+        "草稿知识条目“New note”不存在，请使用 addToKnowledgeBase 创建新条目",
     });
     expect(prisma.knowledge.update).not.toHaveBeenCalled();
   });
@@ -803,7 +803,7 @@ describe("chat settings tools", () => {
 
     expect(result).toEqual({
       error:
-        'Draft knowledge item "Reply style" does not exist. Use addToKnowledgeBase to create a new entry.',
+        "草稿知识条目“Reply style”不存在，请使用 addToKnowledgeBase 创建新条目",
     });
     expect(prisma.knowledge.deleteMany).not.toHaveBeenCalled();
     expect(prisma.knowledge.update).not.toHaveBeenCalled();
@@ -829,7 +829,7 @@ describe("chat settings tools", () => {
     });
 
     expect(result).toEqual({
-      error: expect.stringContaining("Invalid settings update payload."),
+      error: expect.stringContaining("设置更新载荷无效："),
     });
     expect(prisma.emailAccount.update).not.toHaveBeenCalled();
   });

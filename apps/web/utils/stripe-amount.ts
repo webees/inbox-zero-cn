@@ -1,6 +1,6 @@
-// Stripe amounts are in the currency's smallest unit, which is not always
-// 1/100 of a unit: JPY has no minor unit, BHD has three decimal places.
-// Dividing by 100 unconditionally understates a JPY charge by 100x.
+// Stripe 金额使用货币的最小单位，这并不总是
+// 一个单位的 1/100：JPY 没有小数单位，BHD 有三位小数。
+// 无条件除以 100 会把日元扣款低估 100 倍。
 export function formatStripeAmount(
   amountInMinorUnits: number,
   currency: string,

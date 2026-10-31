@@ -8,17 +8,17 @@ export type Range = { start: string; end: string };
 export type DayState = { enabled: boolean; ranges: Range[] };
 
 export const DAY_LABELS = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
+  "星期日",
+  "星期一",
+  "星期二",
+  "星期三",
+  "星期四",
+  "星期五",
+  "星期六",
 ];
 
-// Monday to Friday, 9:00 to 17:00. Mirrors the default schedule created
-// alongside a booking link so the standalone editor feels usable immediately.
+// 周一到周五，9:00 到 17:00。与创建预约链接时生成的默认时间表保持一致，
+// 让独立编辑器开箱即用。
 export const DEFAULT_WEEKDAY_WINDOWS: AvailabilityWindowInput[] = [
   1, 2, 3, 4, 5,
 ].map((weekday) => ({
@@ -61,7 +61,7 @@ export function collectWindows(
       if (start === null || end === null || end <= start) {
         return {
           windows: null,
-          error: `${DAY_LABELS[weekday]}: end time must be after start time.`,
+          error: `${DAY_LABELS[weekday]}：结束时间必须晚于开始时间。`,
         };
       }
       dayWindows.push({ weekday, startMinutes: start, endMinutes: end });
@@ -71,7 +71,7 @@ export function collectWindows(
       if (dayWindows[i].startMinutes < dayWindows[i - 1].endMinutes) {
         return {
           windows: null,
-          error: `${DAY_LABELS[weekday]}: time ranges overlap.`,
+          error: `${DAY_LABELS[weekday]}：时间段重叠。`,
         };
       }
     }
@@ -79,7 +79,7 @@ export function collectWindows(
   }
 
   if (windows.length === 0) {
-    return { windows: null, error: "Add at least one available time range." };
+    return { windows: null, error: "至少添加一个可用时间段。" };
   }
 
   return { windows, error: null };

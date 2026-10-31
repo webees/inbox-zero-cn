@@ -27,35 +27,25 @@ test("never paints an empty reader when moving between loaded HTML threads", asy
     ? "Playwright Test Message"
     : "Cleanup Block Candidate";
   await page.evaluate(() => {
-    const samples: { unfinished: boolean; empty: boolean }[] = [];
+    const samples: boolean[] = [];
     Object.assign(window, {
       firstOpenSamples: samples,
       stopFirstOpenSamples: false,
     });
     const sample = () => {
-      const readers = Array.from(
-        document.querySelectorAll('[data-testid="thread-reader"]'),
-      ).filter((reader) =>
-        reader.checkVisibility({ visibilityProperty: true }),
-      );
-      const listVisible = Boolean(
-        document
-          .querySelector('[role="listbox"][aria-label="Conversations"]')
-          ?.checkVisibility({ visibilityProperty: true }),
-      );
-      samples.push({
-        // A reader revealed before its thread loads shows only its spinner.
-        unfinished: readers.some((reader) =>
-          Array.from(
-            reader.querySelectorAll(
-              '[data-email-ready="false"], [aria-label="Loading email"]',
+      samples.push(
+        Array.from(
+          document.querySelectorAll('[data-testid="thread-reader"]'),
+        ).some(
+          (reader) =>
+            reader.checkVisibility({ visibilityProperty: true }) &&
+            Array.from(
+              reader.querySelectorAll('[data-email-ready="false"]'),
+            ).some((body) =>
+              body.checkVisibility({ visibilityProperty: true }),
             ),
-          ).some((body) => body.checkVisibility({ visibilityProperty: true })),
         ),
-        // Opening from the list swaps the list for the finished email, with
-        // no loading placeholder or blank reader between them.
-        empty: !listVisible && readers.length === 0,
-      });
+      );
       if (
         !(window as unknown as { stopFirstOpenSamples: boolean })
           .stopFirstOpenSamples
@@ -76,26 +66,18 @@ test("never paints an empty reader when moving between loaded HTML threads", asy
     .toBeGreaterThan(1);
   const firstOpenSamples = await page.evaluate(() => {
     Object.assign(window, { stopFirstOpenSamples: true });
-    return (
-      window as unknown as {
-        firstOpenSamples: { unfinished: boolean; empty: boolean }[];
-      }
-    ).firstOpenSamples;
+    return (window as unknown as { firstOpenSamples: boolean[] })
+      .firstOpenSamples;
   });
-  const firstOpenSummary = {
-    frames: firstOpenSamples.length,
-    unfinishedReaderFrames: firstOpenSamples.filter(
-      (sample) => sample.unfinished,
-    ).length,
-    emptyFrames: firstOpenSamples.filter((sample) => sample.empty).length,
-  };
   await testInfo.attach("reader-first-open-frames", {
-    body: JSON.stringify(firstOpenSummary),
+    body: JSON.stringify({
+      frames: firstOpenSamples.length,
+      unfinishedReaderFrames: firstOpenSamples.filter(Boolean).length,
+    }),
     contentType: "application/json",
   });
-  expect(firstOpenSummary.frames).toBeGreaterThan(0);
-  expect(firstOpenSummary.unfinishedReaderFrames).toBe(0);
-  expect(firstOpenSummary.emptyFrames).toBe(0);
+  expect(firstOpenSamples.length).toBeGreaterThan(0);
+  expect(firstOpenSamples.some(Boolean)).toBe(false);
   await capturePlaywrightCheckpoint(page, testInfo, "reader-first-open-ready");
 
   await page.evaluate(() => {

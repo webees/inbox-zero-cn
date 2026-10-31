@@ -35,7 +35,7 @@ export async function createFilter(options: {
 
     const errorInfo = extractErrorInfo(error);
 
-    logger.error("Failed to create Gmail filter", {
+    logger.error("创建 Gmail 过滤器失败", {
       from,
       addLabelIds,
       removeLabelIds,
@@ -44,8 +44,8 @@ export async function createFilter(options: {
 
     if (isRetryableError(errorInfo).isRateLimit) throw error;
 
-    // Check if it might be a filter limit issue
-    // Documentation says 400/403, but we've seen 500 in production
+    // 检查是否可能是过滤器数量上限问题
+    // 文档说会返回 400/403，但我们在生产环境中见过 500
     if (
       errorInfo.status === 500 ||
       errorInfo.status === 403 ||
@@ -61,8 +61,8 @@ export async function createFilter(options: {
         }
       } catch (limitCheckError) {
         if (limitCheckError instanceof SafeError) throw limitCheckError;
-        // If limit check fails, just log and continue with original error
-        logger.warn("Failed to check filter count", { error: limitCheckError });
+        // 如果上限检查失败，仅记录日志并继续处理原始错误
+        logger.warn("检查过滤器数量失败", { error: limitCheckError });
       }
     }
 

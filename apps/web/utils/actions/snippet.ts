@@ -26,7 +26,7 @@ export const createSnippetAction = actionClient
         return { snippet };
       } catch (error) {
         if (isDuplicateError(error, "shortcut")) {
-          throw new SafeError(`You already have a /${shortcut} snippet.`);
+          throw new SafeError(`你已经有一个 /${shortcut} 片段。`);
         }
         throw error;
       }
@@ -46,10 +46,10 @@ export const updateSnippetAction = actionClient
           where: { emailAccountId, id },
           data: { content, shortcut },
         });
-        if (count === 0) throw new SafeError("Snippet not found");
+        if (count === 0) throw new SafeError("未找到片段");
       } catch (error) {
         if (isDuplicateError(error, "shortcut")) {
-          throw new SafeError(`You already have a /${shortcut} snippet.`);
+          throw new SafeError(`你已经有一个 /${shortcut} 片段。`);
         }
         throw error;
       }
@@ -63,5 +63,5 @@ export const deleteSnippetAction = actionClient
     const { count } = await prisma.snippet.deleteMany({
       where: { emailAccountId, id },
     });
-    if (count === 0) throw new SafeError("Snippet not found");
+    if (count === 0) throw new SafeError("未找到片段");
   });

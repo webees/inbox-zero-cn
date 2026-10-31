@@ -14,17 +14,15 @@ export const Overview = ({
         <MessageCircleIcon size={32} />
       </p>
 
-      <TypographyH3 className="mt-8">
-        Hey, I'm your email assistant!
-      </TypographyH3>
+      <TypographyH3 className="mt-8">你好，我是你的邮件助手！</TypographyH3>
 
       <MessageText className="mt-4 text-base">
-        Teach me how to handle your incoming emails for you
+        教我如何处理你的收件邮件
       </MessageText>
 
       <div className="pt-8">
         <ExamplesDialog setInput={setInput}>
-          <Button>Choose from examples</Button>
+          <Button>从示例中选择</Button>
         </ExamplesDialog>
       </div>
     </div>

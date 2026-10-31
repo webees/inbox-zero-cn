@@ -6,7 +6,7 @@ import { env } from "@/env";
 import { createUnsubscribeToken } from "@/utils/unsubscribe";
 import type { Prisma } from "@/generated/prisma/client";
 
-// Used to store error messages for a user which we display in the UI
+// 用于存储会在界面中展示给用户的错误消息
 
 export const ErrorType = {
   INCORRECT_API_KEY: "Incorrect API key",
@@ -17,7 +17,7 @@ export const ErrorType = {
   TRIAL_AI_LIMIT_REACHED: "Trial AI limit reached",
   ACCOUNT_DISCONNECTED: "Account disconnected",
   EMAIL_WATCH_LAPSED: "Email automation stopped",
-  // Legacy keys kept for clearing old stored errors
+  // 保留的历史键，用于清除旧的已存储错误
   INCORRECT_OPENAI_API_KEY: "Incorrect OpenAI API key",
   OPENAI_API_KEY_DEACTIVATED: "OpenAI API key deactivated",
   ANTHROPIC_INSUFFICIENT_BALANCE: "Anthropic insufficient balance",
@@ -38,8 +38,8 @@ export type PersistedErrorType = Exclude<
   typeof ErrorType.TRIAL_AI_LIMIT_REACHED
 >;
 
-// A user can have several accounts, so EMAIL_WATCH_LAPSED is keyed per account
-// rather than per errorType.
+// 一个用户可能有多个账号，因此 EMAIL_WATCH_LAPSED 按账号作键
+// 而不是按 errorType。
 export function watchLapsedErrorKey(emailAccountId: string): string {
   return `${ErrorType.EMAIL_WATCH_LAPSED}:${emailAccountId}`;
 }
@@ -73,7 +73,7 @@ export async function getUserErrorMessages(
 export function getAccountRecoveryAction(emailAccountId: string) {
   return {
     actionUrl: `/${emailAccountId}/permissions/consent`,
-    actionLabel: "Reconnect account",
+    actionLabel: "重新连接账号",
   };
 }
 
@@ -85,7 +85,7 @@ export async function addUserErrorMessage(
 ): Promise<void> {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) {
-    logger.warn("User not found");
+    logger.warn("未找到用户");
     return;
   }
 
@@ -118,7 +118,7 @@ export async function clearUserErrorMessages({
       data: { errorMessages: {} },
     });
   } catch (error) {
-    logger.error("Error clearing user error messages:", { error });
+    logger.error("清除用户错误消息时出错：", { error });
     captureException(error, { extra: { userId } });
   }
 }
@@ -152,7 +152,7 @@ export async function clearSpecificErrorMessages({
       data: { errorMessages: updatedErrorMessages },
     });
   } catch (error) {
-    logger.error("Error clearing specific error messages:", {
+    logger.error("清除特定错误消息时出错：", {
       userId,
       errorTypes,
       error,
@@ -177,7 +177,7 @@ export async function clearAccountDisconnectedErrorIfResolved({
       },
     });
   } catch (error) {
-    logger.error("Error checking account disconnected errors:", {
+    logger.error("检查账号断开连接错误时出错：", {
       userId,
       error,
     });
@@ -194,7 +194,7 @@ export async function clearAccountDisconnectedErrorIfResolved({
   });
 }
 
-// Callers must confirm the account's watch is healthy before calling this.
+// 调用方必须先确认账号的监听正常，才能调用此方法。
 export async function clearWatchLapsedErrorIfResolved({
   userId,
   emailAccountId,
@@ -216,55 +216,55 @@ const errorTypeConfig: Record<
   { label: string; actionUrl: string; actionLabel: string }
 > = {
   [ErrorType.INCORRECT_API_KEY]: {
-    label: "API Key Issue",
+    label: "API 密钥问题",
     actionUrl: "/settings",
-    actionLabel: "Update API Key",
+    actionLabel: "更新 API 密钥",
   },
   [ErrorType.INVALID_AI_MODEL]: {
-    label: "Invalid AI Model",
+    label: "AI 模型无效",
     actionUrl: "/settings",
-    actionLabel: "Update Settings",
+    actionLabel: "更新设置",
   },
   [ErrorType.API_KEY_DEACTIVATED]: {
-    label: "API Key Deactivated",
+    label: "API 密钥已停用",
     actionUrl: "/settings",
-    actionLabel: "Update API Key",
+    actionLabel: "更新 API 密钥",
   },
   [ErrorType.AI_QUOTA_ERROR]: {
-    label: "AI Rate Limited",
+    label: "AI 速率受限",
     actionUrl: "/settings",
-    actionLabel: "Update Settings",
+    actionLabel: "更新设置",
   },
   [ErrorType.INSUFFICIENT_CREDITS]: {
-    label: "Insufficient Credits",
+    label: "额度不足",
     actionUrl: "/settings",
-    actionLabel: "Update Settings",
+    actionLabel: "更新设置",
   },
   [ErrorType.ACCOUNT_DISCONNECTED]: {
-    label: "Account Disconnected",
+    label: "账号已断开连接",
     actionUrl: "/accounts",
-    actionLabel: "Reconnect Account",
+    actionLabel: "重新连接账号",
   },
   [ErrorType.EMAIL_WATCH_LAPSED]: {
-    label: "Email Automation Stopped",
+    label: "邮件自动化已停止",
     actionUrl: "/accounts",
-    actionLabel: "Reconnect Account",
+    actionLabel: "重新连接账号",
   },
-  // Legacy keys — only needed so old stored errors can still render
+  // 历史键 — 仅为让旧的已存储错误仍能渲染
   [ErrorType.INCORRECT_OPENAI_API_KEY]: {
-    label: "API Key Issue",
+    label: "API 密钥问题",
     actionUrl: "/settings",
-    actionLabel: "Update API Key",
+    actionLabel: "更新 API 密钥",
   },
   [ErrorType.OPENAI_API_KEY_DEACTIVATED]: {
-    label: "API Key Deactivated",
+    label: "API 密钥已停用",
     actionUrl: "/settings",
-    actionLabel: "Update API Key",
+    actionLabel: "更新 API 密钥",
   },
   [ErrorType.ANTHROPIC_INSUFFICIENT_BALANCE]: {
-    label: "Insufficient Credits",
+    label: "额度不足",
     actionUrl: "/settings",
-    actionLabel: "Update Settings",
+    actionLabel: "更新设置",
   },
 };
 
@@ -296,7 +296,7 @@ export async function addUserErrorMessageWithNotification({
     });
 
     if (!user) {
-      logger.warn("User not found");
+      logger.warn("未找到用户");
       return;
     }
 
@@ -313,7 +313,7 @@ export async function addUserErrorMessageWithNotification({
     const resolvedActionUrl = actionUrl ?? defaultAction.actionUrl;
     const resolvedActionLabel = actionLabel ?? defaultAction.actionLabel;
 
-    // Nothing changed since the last write - skip it.
+    // 自上次写入以来没有变化 - 跳过。
     if (
       !shouldSendEmail &&
       existingEntry?.message === errorMessage &&
@@ -352,12 +352,12 @@ export async function addUserErrorMessageWithNotification({
         });
 
         newEntry.emailSentAt = new Date().toISOString();
-        logger.info("Sent action required email", { errorType });
+        logger.info("已发送需要操作的邮件", { errorType });
       } catch (emailError) {
-        logger.error("Failed to send action required email", {
+        logger.error("发送需要操作的邮件失败", {
           error: emailError,
         });
-        // Continue to save the error message even if email fails
+        // 即使邮件发送失败也继续保存错误消息
       }
     }
 
@@ -371,7 +371,7 @@ export async function addUserErrorMessageWithNotification({
       data: { errorMessages: newErrorMessages },
     });
   } catch (error) {
-    logger.error("Error in addUserErrorMessageWithNotification", { error });
+    logger.error("addUserErrorMessageWithNotification 出错", { error });
     captureException(error, { extra: { userId, errorType } });
   }
 }
@@ -397,7 +397,7 @@ async function addLegacyAccountRecoveryAction(
   const action =
     matchingDisconnectedAccounts.length === 1
       ? getAccountRecoveryAction(matchingDisconnectedAccounts[0].id)
-      : { actionUrl: "/accounts", actionLabel: "Manage accounts" };
+      : { actionUrl: "/accounts", actionLabel: "管理账号" };
   const updatedErrorMessages = {
     ...errorMessages,
     [ErrorType.ACCOUNT_DISCONNECTED]: {

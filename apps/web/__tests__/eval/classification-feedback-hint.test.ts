@@ -31,7 +31,7 @@ const rules = [
   systemRule(SystemType.RECEIPT),
   systemRule(SystemType.NOTIFICATION),
   systemRule(SystemType.OTP),
-  getRule(CONVERSATION_TRACKING_INSTRUCTIONS, [], "Conversations"),
+  getRule(CONVERSATION_TRACKING_INSTRUCTIONS, [], "会话"),
 ];
 
 const fb = (
@@ -143,7 +143,7 @@ const testCases = [
       fb("Deployment complete: staging v2.4.1", "Notification"),
       fb("CI pipeline passed for main", "Notification"),
     ],
-    expectedRule: "Conversations",
+    expectedRule: "会话",
   },
 
   // --- No hint baseline: same email without any hint ---

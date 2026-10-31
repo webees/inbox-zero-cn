@@ -8,8 +8,8 @@ type PushOwner = {
 };
 
 /**
- * Lets a window subscribe to engine observations and receive each changed
- * snapshot, instead of polling every query on a timer.
+ * 让窗口订阅引擎观测结果并接收每次变更后的快照，
+ * 而不是按定时器轮询每个查询。
  */
 export function registerMailEnginePushIpc(input: {
   ipcMain: Pick<IpcMain, "handle">;
@@ -32,8 +32,8 @@ export function registerMailEnginePushIpc(input: {
         created.delete(id);
       }
     };
-    // A navigation can be blocked after it starts, so the old page's
-    // subscriptions close only once it commits, and the new page's survive.
+    // 导航开始后可能被阻止，因此旧页面的订阅只在提交后关闭，
+    // 而新页面的订阅则保留。
     let leaving: string[] | null = null;
     contents.once("destroyed", () => close(created.keys()));
     contents.on("did-start-navigation", ({ isMainFrame, isSameDocument }) => {
@@ -54,7 +54,7 @@ export function registerMailEnginePushIpc(input: {
     if (!subscription) return { status: "invalid" };
     const contents = event.sender;
     const { subscriptionId } = subscription;
-    // Registered before awaiting the owner so an early unsubscribe wins.
+    // 在等待所有者之前注册，这样提前退订也能生效。
     const active = subscriptionsFor(contents);
     active.set(subscriptionId, () => {});
     const owner = await input.getOwner();

@@ -134,7 +134,7 @@ describe("rewriteGmailDraft", () => {
     const gmail = gmailClient();
     await expect(
       rewriteGmailDraft({ gmail, draftId: "r-1", removeAttachmentId: "gone" }),
-    ).rejects.toThrow("no longer on the draft");
+    ).rejects.toThrow("已不在草稿中");
     expect(gmail.users.drafts.update).not.toHaveBeenCalled();
   });
 

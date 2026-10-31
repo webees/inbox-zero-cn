@@ -23,14 +23,14 @@ export default function LicensePage(props: {
 
   return (
     <PageWrapper>
-      <PageHeader title="Activate your license" />
+      <PageHeader title="激活你的许可证" />
 
       <div className="max-w-2xl py-4">
         {premium?.lemonLicenseKey && (
           <AlertBasic
             variant="success"
-            title="Your license is activated"
-            description="You have an active license key. To add users to your account visit the settings page."
+            title="你的许可证已激活"
+            description="你有一个有效的许可证密钥。要为你的账号添加用户，请访问设置页面。"
             className="mb-4"
           />
         )}
@@ -46,10 +46,10 @@ function ActivateLicenseForm(props: { licenseKey?: string }) {
     activateLicenseKeyAction,
     {
       onSuccess: () => {
-        toastSuccess({ description: "License activated!" });
+        toastSuccess({ description: "许可证已激活！" });
       },
       onError: () => {
-        toastError({ description: "Error activating license!" });
+        toastError({ description: "激活许可证时出错！" });
       },
     },
   );
@@ -74,12 +74,12 @@ function ActivateLicenseForm(props: { licenseKey?: string }) {
       <Input
         type="text"
         name="licenseKey"
-        label="License Key"
+        label="许可证密钥"
         registerProps={register("licenseKey", { required: true })}
         error={errors.licenseKey}
       />
       <Button type="submit" loading={isExecuting}>
-        Activate
+        激活
       </Button>
     </form>
   );

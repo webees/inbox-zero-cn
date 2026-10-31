@@ -95,7 +95,7 @@ describe("Outlook folder metadata delta", () => {
   it("does not enumerate mail when excluded folder identities are unknown", async () => {
     await expect(
       getOutlookMailFolderChangesPage({ ...input(), folderIds: {} }),
-    ).rejects.toThrow("excluded folder identities are unavailable");
+    ).rejects.toThrow("排除的文件夹标识不可用");
     expect(api).not.toHaveBeenCalled();
   });
 
@@ -113,14 +113,14 @@ describe("Outlook folder metadata delta", () => {
         emailAccountId: "another-account",
         cursor: page.cursor,
       }),
-    ).rejects.toThrow("Invalid Outlook local mail cursor");
+    ).rejects.toThrow("无效的 Outlook 本地邮件游标");
     await expect(
       getOutlookMailFolderChangesPage({
         ...input(),
         folderId: "another-folder",
         cursor: page.cursor,
       }),
-    ).rejects.toThrow("Invalid Outlook local mail cursor");
+    ).rejects.toThrow("无效的 Outlook 本地邮件游标");
     expect(api).not.toHaveBeenCalled();
   });
 
@@ -165,11 +165,11 @@ describe("Outlook folder metadata delta", () => {
       "@odata.deltaLink": link("$deltatoken=done"),
     });
     await expect(getOutlookMailFolderChangesPage(input())).rejects.toThrow(
-      "omitted its records",
+      "省略了其记录",
     );
     request.get.mockResolvedValue({ value: [] });
     await expect(getOutlookMailFolderChangesPage(input())).rejects.toThrow(
-      "cursor",
+      "游标",
     );
   });
 
@@ -264,7 +264,7 @@ describe("Outlook folder metadata delta", () => {
   ])("rejects a continuation outside its exact protocol boundary: %s", async (nextLink) => {
     request.get.mockResolvedValue({ value: [], "@odata.nextLink": nextLink });
     await expect(getOutlookMailFolderChangesPage(input())).rejects.toThrow(
-      "Invalid Outlook local mail cursor",
+      "无效的 Outlook 本地邮件游标",
     );
   });
 
@@ -274,7 +274,7 @@ describe("Outlook folder metadata delta", () => {
       "@odata.deltaLink": link("$deltatoken=done"),
     });
     await expect(getOutlookMailFolderChangesPage(input())).rejects.toThrow(
-      "message ID",
+      "邮件 ID",
     );
   });
 });
@@ -425,7 +425,7 @@ describe("Outlook category identities", () => {
       });
     await expect(
       getOutlookLocalMailMessage({ ...input(), messageId: "message" }),
-    ).rejects.toThrow("Invalid Outlook category cursor");
+    ).rejects.toThrow("无效的 Outlook 类别游标");
     expect(api).toHaveBeenCalledTimes(2);
     expect(redis.set).not.toHaveBeenCalled();
   });
@@ -530,7 +530,7 @@ describe("Outlook separate body backfill", () => {
         after,
         before,
       }),
-    ).rejects.toThrow("outside retained scope");
+    ).rejects.toThrow("超出保留范围");
     expect(api).not.toHaveBeenCalled();
   });
 
@@ -586,7 +586,7 @@ describe("Outlook separate body backfill", () => {
         before,
         cursor: page.nextCursor,
       }),
-    ).rejects.toThrow("Invalid Outlook local mail cursor");
+    ).rejects.toThrow("无效的 Outlook 本地邮件游标");
     expect(api).not.toHaveBeenCalled();
   });
 

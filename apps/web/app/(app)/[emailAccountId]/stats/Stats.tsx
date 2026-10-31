@@ -23,11 +23,11 @@ import { CardBasic } from "@/components/ui/card";
 import { useProductAnalytics } from "@/hooks/useProductAnalytics";
 
 const selectOptions = [
-  { label: "Last week", value: "7" },
-  { label: "Last month", value: "30" },
-  { label: "Last 3 months", value: "90" },
-  { label: "Last year", value: "365" },
-  { label: "All", value: "0" },
+  { label: "上周", value: "7" },
+  { label: "上个月", value: "30" },
+  { label: "近 3 个月", value: "90" },
+  { label: "去年", value: "365" },
+  { label: "全部", value: "0" },
 ];
 const defaultSelected = selectOptions[1];
 
@@ -80,8 +80,8 @@ export function Stats() {
 
   const title =
     !isAccountOwner && accountInfo?.name
-      ? `Analytics for ${accountInfo.name}`
-      : "Analytics";
+      ? `${accountInfo.name} 的分析`
+      : "分析";
 
   return (
     <PageWrapper>
@@ -95,11 +95,11 @@ export function Stats() {
           onSetDateDropdown={onSetDateDropdown}
         />
         <DetailedStatsFilter
-          label={`Group by ${period}`}
+          label={`按${period}分组`}
           icon={<LayoutGrid className="mr-2 h-4 w-4" />}
           columns={[
             {
-              label: "Day",
+              label: "日",
               checked: period === "day",
               setChecked: () => {
                 analytics.captureAction("analytics_grouping_changed", {
@@ -109,7 +109,7 @@ export function Stats() {
               },
             },
             {
-              label: "Week",
+              label: "周",
               checked: period === "week",
               setChecked: () => {
                 analytics.captureAction("analytics_grouping_changed", {
@@ -119,7 +119,7 @@ export function Stats() {
               },
             },
             {
-              label: "Month",
+              label: "月",
               checked: period === "month",
               setChecked: () => {
                 analytics.captureAction("analytics_grouping_changed", {
@@ -129,7 +129,7 @@ export function Stats() {
               },
             },
             {
-              label: "Year",
+              label: "年",
               checked: period === "year",
               setChecked: () => {
                 analytics.captureAction("analytics_grouping_changed", {
@@ -142,33 +142,30 @@ export function Stats() {
         />
       </ActionBar>
       <div className="grid gap-2 sm:gap-4 mt-2 sm:mt-4">
-        <ErrorBoundary fallback={<SectionError title="Summary" />}>
+        <ErrorBoundary fallback={<SectionError title="摘要" />}>
           <StatsSummary
             dateRange={dateRange}
             refreshInterval={refreshInterval}
             period={period}
           />
         </ErrorBoundary>
-        <ErrorBoundary fallback={<SectionError title="Email Analytics" />}>
+        <ErrorBoundary fallback={<SectionError title="邮件分析" />}>
           <EmailAnalytics
             dateRange={dateRange}
             refreshInterval={refreshInterval}
           />
         </ErrorBoundary>
-        <ErrorBoundary fallback={<SectionError title="Response Time" />}>
+        <ErrorBoundary fallback={<SectionError title="响应时间" />}>
           <ResponseTimeAnalytics
             dateRange={dateRange}
             refreshInterval={refreshInterval}
           />
         </ErrorBoundary>
-        <ErrorBoundary fallback={<SectionError title="Rule Stats" />}>
-          <RuleStatsChart
-            dateRange={dateRange}
-            title="Assistant processed emails"
-          />
+        <ErrorBoundary fallback={<SectionError title="规则统计" />}>
+          <RuleStatsChart dateRange={dateRange} title="助手处理的邮件" />
         </ErrorBoundary>
         {isAccountOwner && (
-          <ErrorBoundary fallback={<SectionError title="Email Actions" />}>
+          <ErrorBoundary fallback={<SectionError title="邮件操作" />}>
             <EmailActionsAnalytics />
           </ErrorBoundary>
         )}
@@ -181,9 +178,7 @@ export function Stats() {
 function SectionError({ title }: { title: string }) {
   return (
     <CardBasic>
-      <p className="text-muted-foreground">
-        Unable to load {title}. Please try refreshing the page.
-      </p>
+      <p className="text-muted-foreground">无法加载{title}，请尝试刷新页面</p>
     </CardBasic>
   );
 }

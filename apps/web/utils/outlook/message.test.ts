@@ -604,7 +604,7 @@ describe("queryBatchMessages", () => {
         { pageToken: "http://169.254.169.254/latest/meta-data" },
         createTestLogger(),
       ),
-    ).rejects.toThrow("Invalid Outlook page token");
+    ).rejects.toThrow("无效的 Outlook 页面令牌");
 
     expect(api).not.toHaveBeenCalled();
   });
@@ -944,7 +944,7 @@ describe("queryMessagesWithFilters", () => {
         { pageToken: "http://169.254.169.254/latest/meta-data" },
         createTestLogger(),
       ),
-    ).rejects.toThrow("Invalid Outlook page token");
+    ).rejects.toThrow("无效的 Outlook 页面令牌");
 
     expect(api).not.toHaveBeenCalled();
   });
@@ -961,7 +961,7 @@ describe("queryMessagesWithAttachments", () => {
         { pageToken: "http://169.254.169.254/latest/meta-data" },
         createTestLogger(),
       ),
-    ).rejects.toThrow("Invalid Outlook page token");
+    ).rejects.toThrow("无效的 Outlook 页面令牌");
 
     expect(api).not.toHaveBeenCalled();
   });

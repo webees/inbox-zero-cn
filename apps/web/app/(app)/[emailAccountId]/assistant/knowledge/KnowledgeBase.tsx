@@ -59,14 +59,12 @@ export function KnowledgeBase() {
         <DialogTrigger asChild>
           <Button size="sm">
             <Plus className="mr-2 h-4 w-4" />
-            Add
+            添加
           </Button>
         </DialogTrigger>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>
-              {editingItem ? "Edit Knowledge" : "Add Knowledge"}
-            </DialogTitle>
+            <DialogTitle>{editingItem ? "编辑知识" : "添加知识"}</DialogTitle>
           </DialogHeader>
           <KnowledgeForm
             closeDialog={handleClose}
@@ -82,8 +80,8 @@ export function KnowledgeBase() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Last Updated</TableHead>
+                <TableHead>标题</TableHead>
+                <TableHead>上次更新</TableHead>
                 <TableHead />
               </TableRow>
             </TableHeader>
@@ -93,11 +91,9 @@ export function KnowledgeBase() {
                   <TableCell colSpan={3}>
                     <Empty className="border-0">
                       <EmptyHeader>
-                        <EmptyTitle>No knowledge entries yet</EmptyTitle>
+                        <EmptyTitle>尚无知识条目</EmptyTitle>
                         <EmptyDescription>
-                          Add information about your work, projects, or
-                          preferences. The assistant uses this when drafting
-                          replies.
+                          添加关于你的工作、项目或偏好的信息。助手在起草回复时会使用这些内容。
                         </EmptyDescription>
                       </EmptyHeader>
                     </Empty>
@@ -142,7 +138,7 @@ function KnowledgeTableRow({
       <TableCell className="text-right">
         <div className="flex items-center justify-end gap-2">
           <Button variant="outline" size="sm" onClick={onEdit}>
-            Edit
+            编辑
           </Button>
           <ConfirmDialog
             trigger={
@@ -150,9 +146,9 @@ function KnowledgeTableRow({
                 <Trash2 className="h-4 w-4" />
               </Button>
             }
-            title="Delete Knowledge Base Entry"
-            description={`Are you sure you want to delete "${item.title}"? This action cannot be undone.`}
-            confirmText="Delete"
+            title="删除知识库条目"
+            description={`你确定要删除“${item.title}”吗？此操作无法撤销。`}
+            confirmText="删除"
             onConfirm={async () => {
               try {
                 setIsDeleting(true);
@@ -161,13 +157,13 @@ function KnowledgeTableRow({
                 });
                 if (result?.serverError) {
                   toastError({
-                    title: "Error deleting knowledge base entry",
+                    title: "删除知识库条目时出错",
                     description: result.serverError || "",
                   });
                   return;
                 }
                 toastSuccess({
-                  description: "Knowledge base entry deleted successfully",
+                  description: "知识库条目已成功删除",
                 });
                 onDelete();
               } finally {

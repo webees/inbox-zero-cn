@@ -33,26 +33,26 @@ export const runRulesAction = actionClient
     }): Promise<RunRulesResult[]> => {
       const logger = ctxLogger.with({ messageId, threadId });
 
-      logger.info("runRulesAction started", { isTest, rerun });
+      logger.info("runRulesAction 已开始", { isTest, rerun });
 
-      // Re-running discards the existing result and pays for a fresh LLM call,
-      // so it's limited to the top tier.
+      // 重新运行会丢弃现有结果并产生一次新的 LLM 调用费用，
+      // 因此仅限最高档位使用。
       if (rerun && !isTest) {
         const hasAccess = await checkHasAccess({
           userId,
           minimumTier: RERUN_MINIMUM_TIER,
         });
         if (!hasAccess) {
-          logger.warn("Blocked rerun without Professional access");
+          logger.warn("没有专业版权限，已阻止重新运行");
           throw new SafeError(RERUN_UPGRADE_MESSAGE);
         }
       }
 
-      logger.info("Loading email account for rule execution");
+      logger.info("正在加载用于规则执行的邮箱账号");
       const emailAccount = await getEmailAccountForRuleExecution({
         emailAccountId,
       }).catch((error) => {
-        logger.error("Failed to load email account for rule execution", {
+        logger.error("加载用于规则执行的邮箱账号失败", {
           error,
         });
         return flushAndRethrowRunRulesActionError({
@@ -62,20 +62,20 @@ export const runRulesAction = actionClient
           stage: "load-email-account",
         });
       });
-      logger.info("Loaded email account for rule execution", {
+      logger.info("已加载用于规则执行的邮箱账号", {
         emailAccountFound: Boolean(emailAccount),
       });
 
-      if (!emailAccount) throw new SafeError("Email account not found");
-      if (!provider) throw new SafeError("Provider not found");
+      if (!emailAccount) throw new SafeError("未找到邮箱账号");
+      if (!provider) throw new SafeError("未找到服务商");
 
-      logger.info("Creating email provider");
+      logger.info("正在创建邮件服务商");
       const emailProvider = await createEmailProvider({
         emailAccountId,
         provider,
         logger,
       }).catch((error) => {
-        logger.warn("Failed to create email provider", { error });
+        logger.warn("创建邮件服务商失败", { error });
         return flushAndRethrowRunRulesActionError({
           logger,
           error,
@@ -83,13 +83,13 @@ export const runRulesAction = actionClient
           stage: "create-email-provider",
         });
       });
-      logger.info("Created email provider");
+      logger.info("已创建邮件服务商");
 
-      logger.info("Fetching message for rule execution");
+      logger.info("正在获取用于规则执行的邮件");
       const message = await emailProvider
         .getMessage(messageId)
         .catch((error) => {
-          logger.warn("Failed to fetch message for rule execution", { error });
+          logger.warn("获取用于规则执行的邮件失败", { error });
           return flushAndRethrowRunRulesActionError({
             logger,
             error,
@@ -97,13 +97,13 @@ export const runRulesAction = actionClient
             stage: "fetch-message",
           });
         });
-      logger.info("Fetched message for rule execution", {
+      logger.info("已获取用于规则执行的邮件", {
         fetchedThreadId: message.threadId,
       });
 
       const fetchExecutedRule = !isTest && !rerun;
 
-      logger.info("Loading existing executed rules", { fetchExecutedRule });
+      logger.info("正在加载现有已执行规则", { fetchExecutedRule });
       const executedRules = await (fetchExecutedRule
         ? prisma.executedRule.findMany({
             where: {
@@ -122,7 +122,7 @@ export const runRulesAction = actionClient
           })
         : Promise.resolve([])
       ).catch((error) => {
-        logger.error("Failed to load existing executed rules", { error });
+        logger.error("加载现有已执行规则失败", { error });
         return flushAndRethrowRunRulesActionError({
           logger,
           error,
@@ -130,12 +130,12 @@ export const runRulesAction = actionClient
           stage: "load-existing-executed-rules",
         });
       });
-      logger.info("Loaded existing executed rules", {
+      logger.info("已加载现有已执行规则", {
         executedRuleCount: executedRules.length,
       });
 
       if (executedRules.length > 0) {
-        logger.info("Skipping. Rule already exists.");
+        logger.info("跳过。规则已存在。");
 
         return executedRules.map((executedRule) => ({
           rule: executedRule.rule,
@@ -147,7 +147,7 @@ export const runRulesAction = actionClient
         }));
       }
 
-      logger.info("Loading enabled rules for execution");
+      logger.info("正在加载已启用规则以执行");
       const rules = await prisma.rule
         .findMany({
           where: {
@@ -159,7 +159,7 @@ export const runRulesAction = actionClient
           },
         })
         .catch((error) => {
-          logger.error("Failed to load enabled rules for execution", { error });
+          logger.error("加载已启用规则以执行失败", { error });
           return flushAndRethrowRunRulesActionError({
             logger,
             error,
@@ -167,11 +167,11 @@ export const runRulesAction = actionClient
             stage: "load-enabled-rules",
           });
         });
-      logger.info("Loaded enabled rules for execution", {
+      logger.info("已加载用于执行的已启用规则", {
         ruleCount: rules.length,
       });
 
-      logger.info("Invoking runRules");
+      logger.info("正在调用 runRules");
       const result = await runRules({
         isTest,
         provider: emailProvider,
@@ -182,7 +182,7 @@ export const runRulesAction = actionClient
         modelType: "chat",
         skipDraftReplies,
       }).catch((error) => {
-        logger.error("runRules failed", { error });
+        logger.error("runRules 失败", { error });
         return flushAndRethrowRunRulesActionError({
           logger,
           error,
@@ -191,7 +191,7 @@ export const runRulesAction = actionClient
         });
       });
 
-      logger.info("runRules completed", {
+      logger.info("runRules 已完成", {
         resultCount: result.length,
         matchedCount: result.filter((item) => !!item.rule).length,
         skippedCount: result.filter((item) => !item.rule).length,
@@ -221,7 +221,7 @@ export const testAiCustomContentAction = actionClient
           emailAccountId,
         });
 
-        if (!emailAccount) throw new SafeError("Email account not found");
+        if (!emailAccount) throw new SafeError("未找到邮箱账号");
 
         const emailProvider = await createEmailProvider({
           emailAccountId,
@@ -248,8 +248,8 @@ export const testAiCustomContentAction = actionClient
           logger,
           message: {
             id: testId,
-            // Match id so Gmail's isReplyInThread (which compares id !== threadId)
-            // treats this synthetic test message as the first message in a thread.
+            // 匹配 id，这样 Gmail 的 isReplyInThread（比较 id !== threadId）
+            // 会将这条合成的测试邮件视为会话中的第一条消息。
             threadId: testId,
             snippet: content,
             textPlain: content,
@@ -270,7 +270,7 @@ export const testAiCustomContentAction = actionClient
           modelType: "chat",
         });
 
-        logger.info("testAiCustomContent completed", {
+        logger.info("testAiCustomContent 已完成", {
           resultCount: result.length,
           matchedCount: result.filter((item) => !!item.rule).length,
           skippedCount: result.filter((item) => !item.rule).length,
@@ -283,7 +283,7 @@ export const testAiCustomContentAction = actionClient
 
         return result;
       } catch (error) {
-        logger.warn("testAiCustomContent failed", { error });
+        logger.warn("testAiCustomContent 失败", { error });
         await flushLoggerSafely(logger, {
           action: "testAiCustomContent",
           flushReason: "test-mode-error",

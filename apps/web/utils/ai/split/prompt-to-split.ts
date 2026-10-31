@@ -17,8 +17,8 @@ export type SplitPromptOption = {
   value: string;
 };
 
-// Flat rather than a discriminated union: model-facing schemas travel better
-// across providers when the root and its rows stay plain objects.
+// 使用扁平结构而不是可辨识联合：当根对象及其行都保持为普通对象时，
+// 面向模型的结构定义在不同服务商之间兼容性更好。
 const promptToSplitSchema = z.object({
   reasoning: z
     .string()
@@ -125,7 +125,7 @@ ${prompt}
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Prompt to split",
+    label: "提示词转拆分",
     modelOptions,
     promptHardening: { trust: "trusted" },
   });
@@ -150,8 +150,8 @@ ${prompt}
 }
 
 /**
- * Resolves the model's rows against the options the client actually sent, so a
- * hallucinated label id drops the condition rather than creating a broken split.
+ * 用客户端实际发送的选项来校验模型返回的行，这样模型幻觉出的标签 id
+ * 会直接丢弃该条件，而不是创建一个损坏的拆分。
  */
 function toFilters(
   conditions: z.infer<typeof promptToSplitSchema>["conditions"],

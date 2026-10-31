@@ -15,7 +15,7 @@ import { sendAutomationMessage } from "@/utils/automation-jobs/messaging";
 import { getMessagingRoute } from "@/utils/messaging/routes";
 
 export const executeAutomationJobBody = z.object({
-  automationJobRunId: z.string().min(1, "Automation job run ID is required"),
+  automationJobRunId: z.string().min(1, "自动化任务运行 ID 为必填项"),
 });
 
 export async function executeAutomationJobRun({
@@ -68,8 +68,8 @@ export async function executeAutomationJobRun({
   });
 
   if (!run) {
-    logger.warn("Automation job run not found", { automationJobRunId });
-    return new Response("Automation job run not found", { status: 404 });
+    logger.warn("未找到自动化任务运行记录", { automationJobRunId });
+    return new Response("未找到自动化任务运行记录", { status: 404 });
   }
 
   const runLogger = logger.with({
@@ -79,16 +79,16 @@ export async function executeAutomationJobRun({
   });
 
   if (run.status === AutomationJobRunStatus.RUNNING) {
-    runLogger.info("Automation job run is already RUNNING", {
+    runLogger.info("自动化任务运行已处于 RUNNING 状态", {
       createdAt: run.createdAt,
     });
-    return new Response("Run currently running", { status: 409 });
+    return new Response("运行当前正在执行", { status: 409 });
   }
   if (run.status !== AutomationJobRunStatus.PENDING) {
-    runLogger.info("Automation job run already processed", {
+    runLogger.info("自动化任务运行已处理", {
       status: run.status,
     });
-    return new Response("Run already processed", { status: 200 });
+    return new Response("运行已处理", { status: 200 });
   }
 
   if (isStaleAutomationJobRun({ scheduledFor: run.scheduledFor })) {
@@ -100,20 +100,20 @@ export async function executeAutomationJobRun({
       data: {
         status: AutomationJobRunStatus.SKIPPED,
         processedAt: new Date(),
-        error: "Skipped stale automation job run",
+        error: "跳过了过期的自动化任务运行",
       },
     });
 
     if (skipped.count === 0) {
-      runLogger.info("Stale automation job run already claimed");
-      return new Response("Run already claimed", { status: 409 });
+      runLogger.info("过期的自动化任务运行已被认领");
+      return new Response("运行已被认领", { status: 409 });
     }
 
-    runLogger.info("Skipped stale automation job run", {
+    runLogger.info("跳过了过期的自动化任务运行", {
       scheduledFor: run.scheduledFor,
       createdAt: run.createdAt,
     });
-    return new Response("Run skipped because stale", { status: 200 });
+    return new Response("运行已跳过，因为运行已过期", { status: 200 });
   }
 
   const claimed = await prisma.automationJobRun.updateMany({
@@ -127,48 +127,44 @@ export async function executeAutomationJobRun({
   });
 
   if (claimed.count === 0) {
-    runLogger.info("Automation job run was claimed by another worker");
-    return new Response("Run already claimed", { status: 409 });
+    runLogger.info("自动化任务运行已被另一个工作进程认领");
+    return new Response("运行已被认领", { status: 409 });
   }
 
   try {
     if (!run.automationJob.enabled) {
-      runLogger.info("Skipping automation job run because job is disabled");
+      runLogger.info("跳过自动化任务运行，因为任务已禁用");
       await markAutomationJobRunSkipped({
         automationJobRunId,
-        error: "Automation job is disabled",
+        error: "自动化任务已禁用",
       });
 
-      return new Response("Automation job disabled", { status: 200 });
+      return new Response("自动化任务已禁用", { status: 200 });
     }
 
     const premium = await getUserPremium({
       userId: run.automationJob.messagingChannel.emailAccount.userId,
     });
     if (!isActivePremium(premium)) {
-      runLogger.info(
-        "Skipping automation job run because owner is not premium",
-      );
+      runLogger.info("跳过自动化任务运行，因为所有者没有高级版");
       await markAutomationJobRunSkipped({
         automationJobRunId,
-        error: "Owner no longer has active premium",
+        error: "所有者不再拥有有效的高级版",
       });
 
-      return new Response("Owner no longer has active premium", {
+      return new Response("所有者不再拥有有效的高级版", {
         status: 200,
       });
     }
 
     if (!run.automationJob.messagingChannel.isConnected) {
-      runLogger.info(
-        "Skipping automation job run because messaging channel is disconnected",
-      );
+      runLogger.info("跳过自动化任务运行，因为消息渠道已断开");
       await markAutomationJobRunSkipped({
         automationJobRunId,
-        error: "Messaging channel is disconnected",
+        error: "消息渠道未连接",
       });
 
-      return new Response("Messaging channel disconnected", { status: 200 });
+      return new Response("消息渠道已断开", { status: 200 });
     }
 
     const route = getMessagingRoute(
@@ -176,17 +172,13 @@ export async function executeAutomationJobRun({
       MessagingRoutePurpose.SCHEDULED_CHECK_INS,
     );
     if (!route) {
-      throw new AutomationJobConfigurationError(
-        "Scheduled check-in destination is not configured",
-      );
+      throw new AutomationJobConfigurationError("未配置定时签到目标");
     }
 
     const provider =
       run.automationJob.messagingChannel.emailAccount.account.provider;
     if (!provider) {
-      throw new AutomationJobConfigurationError(
-        "Email provider is not connected",
-      );
+      throw new AutomationJobConfigurationError("邮箱服务商未连接");
     }
 
     const emailProvider = await createEmailProvider({
@@ -220,16 +212,14 @@ export async function executeAutomationJobRun({
       },
     });
 
-    return new Response("Automation job executed", { status: 200 });
+    return new Response("自动化任务已执行", { status: 200 });
   } catch (error) {
     const errorMessage =
-      error instanceof Error
-        ? error.message
-        : "Failed to execute automation job";
+      error instanceof Error ? error.message : "执行自动化任务失败";
     const isConfigurationError =
       error instanceof AutomationJobConfigurationError;
 
-    runLogger.error("Automation job execution failed", { error });
+    runLogger.error("自动化任务执行失败", { error });
 
     await prisma.automationJobRun.update({
       where: { id: automationJobRunId },
@@ -244,8 +234,8 @@ export async function executeAutomationJobRun({
 
     return new Response(
       isConfigurationError
-        ? "Automation job skipped due to configuration"
-        : "Automation job execution failed",
+        ? "自动化任务因配置问题被跳过"
+        : "自动化任务执行失败",
       { status: isConfigurationError ? 200 : 500 },
     );
   }

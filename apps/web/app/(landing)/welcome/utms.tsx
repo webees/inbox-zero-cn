@@ -38,10 +38,10 @@ export function registerUtmTracking({
   return utmValues;
 }
 
-// Extract UTM values from cookies before passing to after() callback
-// This is required because request APIs (cookies/headers) cannot be used
-// inside after() in Server Components - only in Server Actions and Route Handlers
-// See: https://nextjs.org/docs/app/api-reference/functions/after
+// 在传给 after() 回调之前从 cookie 中提取 UTM 值
+// 这是必需的，因为请求 API（cookies/headers）无法
+// 在服务器组件的 after() 内使用——只能在服务器操作和路由处理器中使用
+// 参见：https://nextjs.org/docs/app/api-reference/functions/after
 export function extractUtmValues(cookies: ReadonlyRequestCookies): UtmValues {
   return {
     utmCampaign: decodeCookieValue(cookies.get("utm_campaign")?.value),
@@ -79,7 +79,7 @@ export async function fetchUserAndStoreUtms(
       select: { utms: true },
     })
     .catch((error) => {
-      logger.error("Failed to fetch user", { error, userId });
+      logger.error("获取用户失败", { error, userId });
       return null;
     });
 
@@ -93,7 +93,7 @@ function hasAttributionValue(utmValues: UtmValues) {
 }
 
 async function storeUtms(userId: string, utmValues: UtmValues) {
-  logger.info("Storing utms", { userId });
+  logger.info("正在存储 utms", { userId });
 
   const utms = {
     utmCampaign: utmValues.utmCampaign,
@@ -115,8 +115,8 @@ async function storeUtms(userId: string, utmValues: UtmValues) {
       data: { utms },
     });
 
-    logger.info("Stored utms", { utms, userId });
+    logger.info("已存储 utms", { utms, userId });
   } catch (error) {
-    logger.error("Failed to store utms", { error, userId });
+    logger.error("存储 utms 失败", { error, userId });
   }
 }

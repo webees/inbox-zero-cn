@@ -230,7 +230,7 @@ function DetailsStep({
             className="mb-4 inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="size-3" />
-            Back
+            返回
           </button>
         }
       />
@@ -239,14 +239,14 @@ function DetailsStep({
         className="min-w-0 border-t p-4 sm:p-6 md:border-l md:border-t-0 md:p-7"
       >
         <h2 className="text-xl font-medium tracking-tight text-foreground">
-          Enter your details
+          填写你的信息
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          We'll send a calendar invite to your email.
+          我们会向你的邮箱发送日历邀请。
         </p>
 
         <div className="mt-6 flex flex-col gap-4">
-          <FormField label="Your name" required>
+          <FormField label="你的姓名" required>
             <Input
               type="text"
               value={name}
@@ -254,7 +254,7 @@ function DetailsStep({
               required
             />
           </FormField>
-          <FormField label="Email" required>
+          <FormField label="邮箱" required>
             <Input
               type="email"
               value={email}
@@ -262,7 +262,7 @@ function DetailsStep({
               required
             />
           </FormField>
-          <FormField label="What would you like to discuss?" optional>
+          <FormField label="你想讨论什么？" optional>
             <Textarea
               value={note}
               onChange={(event) => setNote(event.target.value)}
@@ -275,7 +275,7 @@ function DetailsStep({
 
         <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <p className="text-xs text-muted-foreground sm:min-w-0 sm:flex-1 sm:pr-2">
-            By confirming, you agree to receive a calendar invite and reminders.
+            确认即表示你同意接收日历邀请和提醒。
           </p>
           <Button
             type="submit"
@@ -283,7 +283,7 @@ function DetailsStep({
             variant="primaryBlack"
             className="w-full shrink-0 sm:w-auto"
           >
-            Confirm booking
+            确认预约
             <ArrowRight className="ml-2 size-3.5" />
           </Button>
         </div>

@@ -2,18 +2,18 @@ import { EMAIL_ATTACHMENT_LIMITS } from "@inboxzero/email-editor/core";
 import { SafeError } from "@/utils/error";
 
 /**
- * Shared by the browser and the server: how composer attachments travel to a
- * mailbox draft without either side keeping the bytes.
+ * 由浏览器和服务器共享：写信器附件如何传输到
+ * 邮箱草稿，而双方都不保留字节。
  *
- * Every request to our server must stay under the 4.5 MB function payload cap,
- * so files at or above the direct limit go through a provider upload session.
+ * 发送到我们服务器的每个请求都必须保持在 4.5 MB 的函数负载上限之下，
+ * 因此达到或超过直接上限的文件会经过服务商上传会话。
  */
 export const DRAFT_ATTACHMENT_DIRECT_UPLOAD_LIMIT_BYTES = 3 * 1024 * 1024;
 
 const GMAIL_UPLOAD_GRANULARITY_BYTES = 256 * 1024;
 export const GMAIL_UPLOAD_CHUNK_BYTES = 16 * GMAIL_UPLOAD_GRANULARITY_BYTES;
 
-// Graph takes each upload session range under 4 MB.
+// Graph 要求每个上传会话范围小于 4 MB。
 export const GRAPH_UPLOAD_CHUNK_BYTES = 10 * 320 * 1024;
 
 const MIME_BASE64_LINE_LENGTH = 76;
@@ -25,11 +25,11 @@ export type DraftMessageUploadPart =
       type: "attachment";
       attachmentId: string;
       size: number;
-      /** Where to read an attachment the draft already holds. */
+      /** 草稿已持有的附件从哪里读取。 */
       source?: { messageId: string; providerAttachmentId: string };
     };
 
-/** The composer's file count and total size limits, enforced on the draft. */
+/** 撰写器的文件数量与总大小限制，在草稿上强制执行。 */
 export function assertDraftAttachmentLimits(
   existing: { size: number }[],
   size: number,
@@ -37,17 +37,17 @@ export function assertDraftAttachmentLimits(
   const totalBytes = existing.reduce((total, file) => total + file.size, size);
   if (existing.length + 1 > EMAIL_ATTACHMENT_LIMITS.maxFiles)
     throw new SafeError(
-      `Attach at most ${EMAIL_ATTACHMENT_LIMITS.maxFiles} files.`,
+      `最多只能附加 ${EMAIL_ATTACHMENT_LIMITS.maxFiles} 个文件。`,
     );
   if (totalBytes > EMAIL_ATTACHMENT_LIMITS.maxTotalBytes)
-    throw new SafeError("Attachments must total 15 MB or less.");
+    throw new SafeError("附件合计不得超过 15 MB。");
 }
 
 export function usesDirectDraftAttachmentUpload(size: number) {
   return size < DRAFT_ATTACHMENT_DIRECT_UPLOAD_LIMIT_BYTES;
 }
 
-/** The length of `byteLength` bytes as MIME base64 with CRLF-wrapped lines. */
+/** `byteLength` 字节按 CRLF 换行封装成 MIME base64 后的长度。 */
 export function mimeBase64Length(byteLength: number) {
   const encodedLength = Math.ceil(byteLength / 3) * 4;
   if (encodedLength === 0) return 0;
@@ -64,7 +64,7 @@ export function encodeMimeBase64(bytes: Uint8Array) {
   return lines.join(MIME_LINE_BREAK);
 }
 
-// Clients upload the assembled message as UTF-8, so text counts in bytes.
+// 客户端以 UTF-8 上传组装好的邮件，因此文本按字节计数。
 const utf8Encoder = new TextEncoder();
 
 export function getDraftMessageUploadLength(parts: DraftMessageUploadPart[]) {
@@ -79,8 +79,8 @@ export function getDraftMessageUploadLength(parts: DraftMessageUploadPart[]) {
 }
 
 /**
- * Gmail accepts resumable chunks in 256 KiB multiples (except the last), and
- * each one passes through our server, so it must also fit one request.
+ * Gmail 接受 256 KiB 倍数（最后一块除外）的可续传分块，且
+ * 每一块都会经过我们的服务器，因此它也必须能放入单个请求。
  */
 export function validateGmailUploadChunk({
   start,
@@ -94,14 +94,14 @@ export function validateGmailUploadChunk({
   expectedStart: number;
 }): { valid: true } | { valid: false; error: string } {
   if (start !== expectedStart)
-    return { valid: false, error: "Upload chunk is out of order." };
+    return { valid: false, error: "上传分块顺序错误。" };
   if (length <= 0 || length > GMAIL_UPLOAD_CHUNK_BYTES)
-    return { valid: false, error: "Upload chunk size is invalid." };
+    return { valid: false, error: "上传分块大小无效。" };
   const end = start + length;
   if (end > totalBytes)
-    return { valid: false, error: "Upload chunk runs past the message." };
+    return { valid: false, error: "上传分块超出了消息范围。" };
   if (end < totalBytes && length % GMAIL_UPLOAD_GRANULARITY_BYTES !== 0)
-    return { valid: false, error: "Upload chunk size is invalid." };
+    return { valid: false, error: "上传分块大小无效。" };
   return { valid: true };
 }
 

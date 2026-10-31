@@ -58,7 +58,7 @@ describe("booking actions", () => {
           destinationCalendar: { connect: { id: "calendar-id" } },
           availabilitySchedule: {
             create: expect.objectContaining({
-              name: "Default availability",
+              name: "默认可用时间",
               isDefault: true,
               windows: {
                 create: [
@@ -208,9 +208,7 @@ describe("booking actions", () => {
       durationMinutes: 30,
     });
 
-    expect(result?.serverError).toBe(
-      "Connect your calendar to create a booking link",
-    );
+    expect(result?.serverError).toBe("连接你的日历以创建预约链接");
     expect(prisma.bookingLink.create).not.toHaveBeenCalled();
   });
 
@@ -225,7 +223,7 @@ describe("booking actions", () => {
       destinationCalendarId: "disabled-calendar-id",
     });
 
-    expect(result?.serverError).toBe("Destination calendar not found");
+    expect(result?.serverError).toBe("未找到目标日历");
     expect(prisma.calendar.findFirst).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
@@ -248,7 +246,7 @@ describe("booking actions", () => {
       durationMinutes: 30,
     });
 
-    expect(result?.serverError).toBe("Booking link already exists");
+    expect(result?.serverError).toBe("预约链接已存在");
     expect(prisma.bookingLink.create).not.toHaveBeenCalled();
   });
 
@@ -262,7 +260,7 @@ describe("booking actions", () => {
       slug: "other-link",
     });
 
-    expect(result?.serverError).toBe("Booking link slug is already in use");
+    expect(result?.serverError).toBe("预约链接 Slug 已被使用");
     expect(prisma.bookingLink.update).not.toHaveBeenCalled();
   });
 
@@ -277,7 +275,7 @@ describe("booking actions", () => {
       destinationCalendarId: "other-calendar-id",
     });
 
-    expect(result?.serverError).toBe("Destination calendar not found");
+    expect(result?.serverError).toBe("未找到目标日历");
     expect(prisma.bookingLink.update).not.toHaveBeenCalled();
   });
 
@@ -292,7 +290,7 @@ describe("booking actions", () => {
       destinationCalendarId: "disabled-calendar-id",
     });
 
-    expect(result?.serverError).toBe("Destination calendar not found");
+    expect(result?.serverError).toBe("未找到目标日历");
     expect(prisma.calendar.findFirst).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
@@ -479,7 +477,7 @@ describe("booking actions", () => {
       windows: [{ weekday: 1, startMinutes: 9 * 60, endMinutes: 12 * 60 }],
     });
 
-    expect(result?.serverError).toBe("Booking link not found");
+    expect(result?.serverError).toBe("未找到预约链接");
     expect(prisma.bookingLink.update).not.toHaveBeenCalled();
   });
 
@@ -509,7 +507,7 @@ describe("booking actions", () => {
     expect(result?.serverError).toBeUndefined();
     expect(prisma.availabilitySchedule.create).toHaveBeenCalledWith({
       data: {
-        name: "Default availability",
+        name: "默认可用时间",
         isDefault: true,
         emailAccount: { connect: { id: "email-account-id" } },
         windows: { create: windows },

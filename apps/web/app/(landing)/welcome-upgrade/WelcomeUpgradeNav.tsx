@@ -14,7 +14,7 @@ export function WelcomeUpgradeNav() {
           variant="ghostMuted"
           size="sm"
         >
-          Log out
+          退出登录
         </Button>
       </div>
     </nav>

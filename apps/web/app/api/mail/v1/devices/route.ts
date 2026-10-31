@@ -4,58 +4,24 @@ import {
   MobilePushPlatform,
   MobilePushTokenType,
 } from "@/generated/prisma/enums";
-import { FCM_REGISTRATION_TOKEN } from "@/utils/fcm";
 import { withAuth } from "@/utils/middleware";
 import prisma from "@/utils/prisma";
 
 const APNS_DEVICE_TOKEN = /^[A-Fa-f0-9]{64,200}$/;
 
-const DEVICE_PLATFORMS = {
-  ios: {
-    platform: MobilePushPlatform.IOS,
-    tokenType: MobilePushTokenType.APNS,
-  },
-  android: {
-    platform: MobilePushPlatform.ANDROID,
-    tokenType: MobilePushTokenType.FCM,
-  },
-} as const;
-
-const registerDeviceSchema = z
-  .object({
-    token: z.string().trim().min(1).max(4096),
-    platform: z.enum(["ios", "android"]).default("ios"),
-    appVersion: z.string().trim().min(1).max(64).optional(),
-  })
-  .superRefine((value, ctx) => {
-    if (value.platform === "ios" && !APNS_DEVICE_TOKEN.test(value.token)) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Expected a hex APNs device token",
-        path: ["token"],
-      });
-    }
-    if (
-      value.platform === "android" &&
-      !FCM_REGISTRATION_TOKEN.test(value.token)
-    ) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Expected an FCM registration token",
-        path: ["token"],
-      });
-    }
-  });
+const registerDeviceSchema = z.object({
+  token: z
+    .string()
+    .trim()
+    .regex(APNS_DEVICE_TOKEN, "Expected a hex APNs device token"),
+  appVersion: z.string().trim().min(1).max(64).optional(),
+});
 
 const unregisterDeviceSchema = z.object({
   token: z
     .string()
     .trim()
-    .refine(
-      (token) =>
-        APNS_DEVICE_TOKEN.test(token) || FCM_REGISTRATION_TOKEN.test(token),
-      "Expected an APNs device token or FCM registration token",
-    ),
+    .regex(APNS_DEVICE_TOKEN, "Expected a hex APNs device token"),
 });
 
 export const POST = withAuth("mail/v1/devices/register", async (request) => {
@@ -63,20 +29,18 @@ export const POST = withAuth("mail/v1/devices/register", async (request) => {
   if (!json.ok) return json.response;
   const device = registerDeviceSchema.parse(json.value);
 
-  const { platform, tokenType } = DEVICE_PLATFORMS[device.platform];
-
   await prisma.mobilePushToken.upsert({
     where: { token: device.token },
     create: {
       token: device.token,
-      platform,
-      tokenType,
+      platform: MobilePushPlatform.IOS,
+      tokenType: MobilePushTokenType.APNS,
       appVersion: device.appVersion ?? null,
       userId: request.auth.userId,
     },
     update: {
-      platform,
-      tokenType,
+      platform: MobilePushPlatform.IOS,
+      tokenType: MobilePushTokenType.APNS,
       appVersion: device.appVersion ?? null,
       userId: request.auth.userId,
     },

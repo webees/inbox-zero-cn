@@ -1,0 +1,521 @@
+#!/usr/bin/env bash
+# 汉化流水线的离线仿真：在临时仓库里反复跑「上游更新 → 同步合并 → 机械扫描 →
+# 账本排队 → 翻译 → 记账 → 收尾压缩」，逐轮断言下面这些不变量：
+#
+#   1. 未被上游改动过的文件，合并后仍是中文（上游更新不会把已有翻译整体冲掉）
+#   2. 入队文件只包含上游这一轮改过的文件（不会重复翻译已完成的文件）
+#   3. 翻译后机械扫描不再命中英文（该轮确实翻干净了）
+#   4. 压缩后快照恰好领先上游 1 个提交、落后 0 个（单提交不变量）
+#   5. 每 9 轮注入一次「pre-commit 失败 → stash 跳过本批」，被跳过的文件必须在
+#      下一轮重新入队（改动不会因为提交失败而永久丢失）
+#   6. 批次推送被拒时，`merge-remote.sh` 合并远端后能推上去且双方改动都在
+#   7. 远端在压缩前已被别人推进时，守卫判定放弃压缩（不强推覆盖）
+#   8. fetch 之后远端又被推进时，`--force-with-lease` 拒绝推送（远端内容不被覆盖）
+#   9. 上游更新/删除 gitlink、删除普通路径时都能正常收敛
+#  10. 上游对普通文件的结构性改动完整落地，工作流文件仍保持本仓库受保护版本
+#  11. 未检出的 gitlink 不会阻断普通文件暂存
+#
+# 覆盖范围说明：本脚本复刻的是「同步/扫描/记账/压缩」这段数据与 Git 逻辑，
+# 不含 Codex 调用、测试步骤与 GHCR 触发；那些靠工作流自身的步骤条件与 CI 结果验证。
+#
+# 用法：
+#   bash .github/scripts/simulate-i18n-pipeline.sh [仓库路径] [轮数]
+# 默认仓库路径为当前目录、轮数 100。
+
+set -uo pipefail
+
+SRC="${1:-$(pwd)}"
+SRC="$(cd "$SRC" && pwd)"
+ROUNDS="${2:-100}"
+WORK="$(mktemp -d)"
+UP="$WORK/upstream"
+FORK="$WORK/fork"
+
+fail=0
+declare -a problems=()
+# 上一轮「pre-commit 失败被 stash 掉」的文件，下一轮必须重新入队（不能永久丢失）
+declare -a stash_pending=()
+
+problem() {
+  problems+=("$1")
+  fail=$((fail + 1))
+  printf '  !! %s\n' "$1"
+}
+
+assert_merge_remote_resolution() {
+  local root="$WORK/merge-remote"
+  local remote="$root/remote.git"
+  local work="$root/work"
+  local other="$root/other"
+  local gitlink="marketing"
+  local base_sha="1111111111111111111111111111111111111111"
+  local local_sha="2222222222222222222222222222222222222222"
+  local remote_sha="3333333333333333333333333333333333333333"
+  local base_workflow head_before ff_tip actual_entry
+
+  mkdir -p "$root"
+  git init -q --bare "$remote"
+  git --git-dir="$remote" symbolic-ref HEAD refs/heads/main
+  git init -q "$work"
+  git -C "$work" symbolic-ref HEAD refs/heads/main
+  git -C "$work" remote add origin "$remote"
+  git -C "$work" config user.email local@example.com
+  git -C "$work" config user.name local
+  mkdir -p "$work/.github/scripts" "$work/.github/workflows"
+  cp "$SRC/.github/scripts/merge-remote.sh" "$work/.github/scripts/"
+  cp "$SRC/.github/scripts/protect-workflows.sh" "$work/.github/scripts/"
+  cp "$SRC/.github/scripts/stage-worktree.sh" "$work/.github/scripts/"
+  printf 'base\r\n' > "$work/conflict.txt"
+  printf 'local workflow\r\n' > "$work/.github/workflows/ci.yml"
+  git -C "$work" add -A
+  git -C "$work" update-index --add --cacheinfo "160000,${base_sha},${gitlink}"
+  git -C "$work" commit -qm base
+  base_workflow="$(git -C "$work" show HEAD:.github/workflows/ci.yml)"
+  git -C "$work" push -q -u origin main
+
+  git clone -q "$remote" "$other" 2>/dev/null || true
+  git -C "$other" config user.email remote@example.com
+  git -C "$other" config user.name remote
+
+  # 本地批次：修改同一文本文件并推进本地 gitlink。
+  printf 'local\r\n' > "$work/conflict.txt"
+  git -C "$work" add conflict.txt
+  git -C "$work" update-index --add --cacheinfo "160000,${local_sha},${gitlink}"
+  git -C "$work" commit -qm local-batch
+
+  # 远端并发：同文件冲突、更新 gitlink、修改/新增工作流，并带入无冲突文件。
+  printf 'remote\r\n' > "$other/conflict.txt"
+  printf 'remote workflow\r\n' > "$other/.github/workflows/ci.yml"
+  printf 'remote workflow added\r\n' > "$other/.github/workflows/new.yml"
+  printf 'remote only\r\n' > "$other/remote-only.txt"
+  git -C "$other" add -A
+  git -C "$other" update-index --add --cacheinfo "160000,${remote_sha},${gitlink}"
+  git -C "$other" commit -qm remote-batch
+  git -C "$other" push -q origin main
+
+  if git -C "$work" push -q origin main 2>/dev/null; then
+    problem "远端合并验证：第一次推送竟然成功了，说明用例没有真的制造分叉"
+    return 1
+  fi
+  if ! (cd "$work" && RUNNER_TEMP="$root" bash "$SRC/.github/scripts/merge-remote.sh" main >/dev/null); then
+    problem "远端合并验证：merge-remote.sh 执行失败"
+    return 1
+  fi
+
+  if [ "$(git -C "$work" show HEAD:conflict.txt | tr -d '\r')" != "local" ]; then
+    problem "远端合并验证：文本冲突没有保留本地批次改动"
+    return 1
+  fi
+  actual_entry="$(git -C "$work" ls-files --stage -- "$gitlink")"
+  if [[ "$actual_entry" != "160000 ${remote_sha} 0"$'\t'"${gitlink}" ]]; then
+    problem "远端合并验证：gitlink 冲突没有采用远端指针（实际：${actual_entry:-<缺失>}）"
+    return 1
+  fi
+  if [ "$(git -C "$work" show HEAD:.github/workflows/ci.yml)" != "$base_workflow" ] ||
+    git -C "$work" cat-file -e HEAD:.github/workflows/new.yml 2>/dev/null; then
+    problem "远端合并验证：工作流文件没有恢复为本地受保护版本"
+    return 1
+  fi
+  git -C "$work" cat-file -e HEAD:remote-only.txt 2>/dev/null ||
+    problem "远端合并验证：无冲突的远端文件没有合并进来"
+  if [ -n "$(git -C "$work" status --porcelain)" ]; then
+    problem "远端合并验证：合并后工作树不干净"
+    return 1
+  fi
+  git -C "$work" push -q origin main || problem "远端合并验证：合并后仍无法推送"
+
+  head_before="$(git -C "$work" rev-parse HEAD)"
+  if ! (cd "$work" && RUNNER_TEMP="$root" bash "$SRC/.github/scripts/merge-remote.sh" main >/dev/null); then
+    problem "远端合并验证：已包含远端时执行失败"
+    return 1
+  fi
+  [ "$(git -C "$work" rev-parse HEAD)" = "$head_before" ] ||
+    problem "远端合并验证：已包含远端时仍创建了多余提交"
+
+  git -C "$other" pull -q --ff-only origin main
+  printf 'fast forward\r\n' > "$other/ff.txt"
+  git -C "$other" add ff.txt
+  git -C "$other" commit -qm fast-forward
+  git -C "$other" push -q origin main
+  ff_tip="$(git -C "$other" rev-parse HEAD)"
+  if ! (cd "$work" && RUNNER_TEMP="$root" bash "$SRC/.github/scripts/merge-remote.sh" main >/dev/null); then
+    problem "远端合并验证：快进合并执行失败"
+    return 1
+  fi
+  [ "$(git -C "$work" rev-parse HEAD)" = "$ff_tip" ] ||
+    problem "远端合并验证：快进后 HEAD 没有指向远端提交"
+  printf '  ✓ merge-remote 覆盖文本/gitlink 冲突、工作流保护、已包含与快进\n'
+}
+
+assert_sync_conflict_resolution() {
+  local repo="$WORK/sync-conflicts"
+  local gitlink="marketing"
+  local deleted="removed.tsx"
+  local local_sha="1111111111111111111111111111111111111111"
+  local upstream_sha="2222222222222222222222222222222222222222"
+  local upstream_commit upstream_delete_commit actual_entry
+  local local_workflow staged
+
+  mkdir -p "$repo/$gitlink"
+  mkdir -p "$repo/.github/scripts" "$repo/.github/workflows" "$repo/src"
+  cd "$repo" || return 1
+  git init -q .
+  git symbolic-ref HEAD refs/heads/main
+  git config user.email sync@example.com
+  git config user.name sync
+  cp "$SRC/.github/scripts/protect-workflows.sh" .github/scripts/
+  cp "$SRC/.github/scripts/stage-worktree.sh" .github/scripts/
+  printf 'base\n' > "$gitlink/page.tsx"
+  printf 'base\n' > "$deleted"
+  printf 'export function Structure() {\n  return <div>旧结构</div>;\n}\n' > src/structure.tsx
+  printf 'export const untouched = "保留中文";\n' > src/unmodified.tsx
+  printf 'local workflow\n' > .github/workflows/ci.yml
+  git add -A
+  git commit -qm base
+  local_workflow="$(git show HEAD:.github/workflows/ci.yml)"
+  git branch upstream
+
+  # 本地：gitlink 指向一个父仓库没有的提交；删除路径被本地修改。
+  printf 'local change\n' > "$deleted"
+  printf 'export function Structure() {\n  return <div>本地结构</div>;\n}\n' > src/structure.tsx
+  git add -A
+  # git add -A 会清除未检出子模块的索引项，因此必须先暂存普通文件，最后写入 gitlink。
+  git rm -r -q -f -- "$gitlink"
+  git update-index --add --cacheinfo "160000,${local_sha},${gitlink}"
+  git commit -qm local-changes
+
+  # 上游：更新 gitlink 指针、替换普通文件结构、修改工作流，同时真正删除一条路径。
+  git switch -q upstream
+  git rm -q -- "$deleted"
+  printf 'import { useTeamNav } from "./team";\n\nexport const TEAM_HREF = "/team";\n\nexport function Structure() {\n  const team = useTeamNav();\n  return <div>上游结构 {team}</div>;\n}\n' > src/structure.tsx
+  printf 'upstream workflow\n' > .github/workflows/ci.yml
+  git add -A
+  git rm -r -q -f -- "$gitlink"
+  git update-index --add --cacheinfo "160000,${upstream_sha},${gitlink}"
+  git commit -qm upstream-changes
+  upstream_commit="$(git rev-parse HEAD)"
+  git switch -q main
+
+  if ! RUNNER_TEMP="$WORK" bash "$SRC/.github/scripts/merge-upstream.sh" "$upstream_commit" >/dev/null; then
+    problem "同步冲突验证：合并脚本执行失败"
+    return 1
+  fi
+
+  actual_entry="$(git ls-files --stage -- "$gitlink")"
+  if [[ "$actual_entry" != "160000 ${upstream_sha} 0"$'\t'"${gitlink}" ]]; then
+    problem "同步冲突验证：gitlink 没有采用上游指针（实际：${actual_entry:-<缺失>}）"
+    return 1
+  fi
+  if [ -e "$deleted" ] || [ -n "$(git ls-files -- "$deleted")" ]; then
+    problem "同步冲突验证：上游删除的路径仍残留"
+    return 1
+  fi
+  if [ -n "$(git status --porcelain)" ]; then
+    problem "同步冲突验证：合并后工作树不干净"
+    return 1
+  fi
+  if ! git diff --quiet "$upstream_commit" -- src/structure.tsx; then
+    problem "同步冲突验证：普通文件没有完整采用上游结构"
+    return 1
+  fi
+  if ! grep -q '保留中文' src/unmodified.tsx; then
+    problem "同步冲突验证：上游未改动的中文文件被覆盖"
+    return 1
+  fi
+  if [ "$(git show HEAD:.github/workflows/ci.yml)" != "$local_workflow" ]; then
+    problem "同步冲突验证：工作流文件没有恢复为本地受保护版本"
+    return 1
+  fi
+
+  # 未检出的 gitlink 不能被 `git add -A` 扫到；普通文件仍应正常暂存。
+  printf 'stage me\n' > src/staged.tsx
+  if ! bash "$SRC/.github/scripts/stage-worktree.sh"; then
+    problem "同步冲突验证：stage-worktree.sh 在未检出的 gitlink 上执行失败"
+    return 1
+  fi
+  staged="$(git diff --cached --name-only)"
+  if [ "$staged" != "src/staged.tsx" ]; then
+    problem "同步冲突验证：stage-worktree.sh 暂存了非预期路径（${staged:-<空>}）"
+    return 1
+  fi
+  git commit -qm stage-check
+
+  # 上游删除 gitlink 时，索引必须收敛，不能留下旧指针。
+  git switch -q upstream
+  git rm -r -q -f -- "$gitlink"
+  git commit -qm upstream-removes-gitlink
+  upstream_delete_commit="$(git rev-parse HEAD)"
+  git switch -q main
+  if ! RUNNER_TEMP="$WORK" bash "$SRC/.github/scripts/merge-upstream.sh" "$upstream_delete_commit" >/dev/null; then
+    problem "同步冲突验证：删除 gitlink 的同步脚本执行失败"
+    return 1
+  fi
+  if git ls-files --error-unmatch "$gitlink" >/dev/null 2>&1; then
+    problem "同步冲突验证：上游删除的 gitlink 仍残留在索引"
+    return 1
+  fi
+  printf '  ✓ gitlink 更新/删除、普通文件结构、工作流保护与暂存排除都能收敛\n'
+}
+
+assert_merge_remote_resolution
+assert_sync_conflict_resolution
+
+# ---------- 造一个「上游」仓库：40 个带英文 JSX 文案的文件 ----------
+mkdir -p "$UP/src"
+cd "$UP" || exit 1
+git init -q .
+git config user.email upstream@example.com
+git config user.name upstream
+git symbolic-ref HEAD refs/heads/main
+for i in $(seq 1 40); do
+  printf 'export function C%s() {\n  return <div>Save changes item %s</div>;\n}\n' "$i" "$i" > "src/f$i.tsx"
+done
+git add -A
+git commit -qm init
+
+# ---------- fork：已全部汉化，并使用仓库里真实的扫描器与账本 ----------
+cd "$WORK" || exit 1
+git clone -q "$UP" "$FORK"
+cd "$FORK" || exit 1
+git config user.email fork@example.com
+git config user.name fork
+mkdir -p .github/scripts
+cp "$SRC/.github/scripts/i18n-candidates.sh" "$SRC/.github/scripts/i18n-ledger.mjs" .github/scripts/
+for f in src/*.tsx; do
+  perl -pi -e 's/>Save changes item ([^<]*)</>保存更改条目 $1</' "$f"
+done
+git add -A
+git commit -qm "translate all"
+
+candidates() { bash .github/scripts/i18n-candidates.sh .; }
+candidate_lines() { bash .github/scripts/i18n-candidates.sh --lines .; }
+queue_ledger() {
+  node .github/scripts/i18n-ledger.mjs queue \
+    --candidates "$WORK/cand.txt" --hits "$WORK/lines.txt" --out "$WORK/queue.txt"
+}
+
+# 初始记账：全部 clean，模拟「已经翻完并记账」的现状
+candidates > "$WORK/cand.txt"
+candidate_lines > "$WORK/lines.txt"
+cp "$WORK/cand.txt" "$WORK/queue.txt"
+if [ -s "$WORK/queue.txt" ]; then
+  node .github/scripts/i18n-ledger.mjs record --status clean \
+    --files "$WORK/queue.txt" --hits "$WORK/lines.txt" >/dev/null || true
+fi
+git add -A
+git commit -qm "record ledger"
+
+printf '=== 初始：%s 个文件全部汉化并记账 ===\n\n' "$(wc -l < "$WORK/cand.txt" | tr -d ' ')"
+
+for r in $(seq 1 "$ROUNDS"); do
+  # ---------- 上游改动：改 2 个文件，每 5 轮加一个新文件，每 7 轮删一个 ----------
+  cd "$UP" || exit 1
+  changed=()
+  for _ in 1 2; do
+    n=$(( (RANDOM % 40) + 1 ))
+    printf 'export function C%s() {\n  return <div>Save changes item %s rev %s</div>;\n}\n' "$n" "$n" "$r" > "src/f$n.tsx"
+    changed+=("src/f$n.tsx")
+  done
+  if [ $(( r % 5 )) -eq 0 ]; then
+    printf 'export function New%s() {\n  return <div>Save changes brand new %s</div>;\n}\n' "$r" "$r" > "src/new$r.tsx"
+    changed+=("src/new$r.tsx")
+  fi
+  if [ $(( r % 7 )) -eq 0 ]; then
+    d=$(( (RANDOM % 40) + 1 ))
+    git rm -q -f --ignore-unmatch "src/f$d.tsx"
+    changed+=("src/f$d.tsx")
+  fi
+  git add -A
+  git commit -qm "upstream round $r"
+
+  # 允许「本轮上游改动」+「上一轮被 stash 掉、本来就要重译」这两类文件暂时是英文
+  allowed=("${changed[@]}" ${stash_pending[@]+"${stash_pending[@]}"})
+
+  # ---------- fork 同步：与 localize-zh.yml 共用 merge-upstream.sh ----------
+  cd "$FORK" || exit 1
+  git remote remove upstream >/dev/null 2>&1 || true
+  git remote add upstream "$UP"
+  git fetch --no-tags upstream main >/dev/null 2>&1
+  RUNNER_TEMP="$WORK" bash "$SRC/.github/scripts/merge-upstream.sh" FETCH_HEAD >/dev/null
+
+  # 不变量 1：未被上游碰过的文件必须还是中文
+  lost=0
+  for f in src/*.tsx; do
+    case " ${allowed[*]} " in
+      *" $f "*) continue ;;
+    esac
+    if grep -q "Save changes" "$f" 2>/dev/null; then
+      lost=$((lost + 1))
+    fi
+  done
+  [ "$lost" -eq 0 ] || problem "第 $r 轮：合并后 $lost 个未被上游改动过的文件退回了英文"
+
+  # ---------- 扫描 + 账本排队 ----------
+  candidates > "$WORK/cand.txt"
+  candidate_lines > "$WORK/lines.txt"
+  queue_ledger > "$WORK/stats.json" 2>/dev/null
+  queued=$(wc -l < "$WORK/queue.txt" | tr -d ' ')
+
+  # 不变量 2：队列里不应出现未被上游改动的文件
+  extra=0
+  while IFS= read -r q; do
+    [ -n "$q" ] || continue
+    case " ${allowed[*]} " in
+      *" $q "*) ;;
+      *) extra=$((extra + 1)) ;;
+    esac
+  done < "$WORK/queue.txt"
+  [ "$extra" -eq 0 ] || problem "第 $r 轮：队列里有 $extra 个未被上游改动的文件（重复翻译）"
+
+  # 不变量 2b：上一轮因 pre-commit 失败被 stash 掉的文件，这一轮必须重新入队
+  for pending in ${stash_pending[@]+"${stash_pending[@]}"}; do
+    grep -qxF "$pending" "$WORK/queue.txt" ||
+      problem "第 $r 轮：上一轮未提交的 $pending 没有重新入队（改动被永久丢弃）"
+  done
+  stash_pending=()
+
+  # ---------- 翻译并记账 ----------
+  while IFS= read -r f; do
+    [ -n "$f" ] || continue
+    perl -pi -e 's/>Save changes ([^<]*)</>保存更改 $1</' "$f" 2>/dev/null || true
+  done < "$WORK/queue.txt"
+  if [ -s "$WORK/queue.txt" ]; then
+    node .github/scripts/i18n-ledger.mjs record --status clean \
+      --files "$WORK/queue.txt" --hits "$WORK/lines.txt" >/dev/null || true
+  fi
+  if [ $(( r % 9 )) -eq 0 ]; then
+    # 注入扰动：模拟 pre-commit 校验失败。工作流的做法是 stash 掉本批改动后跳过，
+    # 这里照做，并记录下这批文件，下一轮断言它们会重新入队。
+    while IFS= read -r f; do
+      [ -n "$f" ] || continue
+      stash_pending+=("$f")
+    done < "$WORK/queue.txt"
+    git stash push --include-untracked -m "bad-batch-r$r" >/dev/null 2>&1 || true
+    printf '轮 %3s: 注入 pre-commit 失败 → stash 跳过（待下一轮重新入队 %s 个）\n' \
+      "$r" "${#stash_pending[@]}"
+  else
+    git add -A
+    git diff --cached --quiet || git commit -qm "translate round $r"
+  fi
+
+  # 不变量 3：翻译后不应再有英文候选（对应工作流的 remaining=0 → 收尾打镜像）。
+  # 注入了 pre-commit 失败的那一轮除外：改动被 stash 掉，本来就该还留在队列里。
+  if [ "${#stash_pending[@]}" -eq 0 ]; then
+    left=$(candidates | wc -l | tr -d ' ')
+    [ "$left" -eq 0 ] || problem "第 $r 轮：翻译后仍有 $left 个文件命中英文扫描"
+  fi
+
+  # ---------- 收尾压缩：与「压缩为单个提交并强推」同一套逻辑 ----------
+  git fetch --no-tags upstream main >/dev/null 2>&1
+  tip="$(git rev-parse FETCH_HEAD)"
+  git add -A
+  tree="$(git write-tree)"
+  sq="$(git commit-tree "$tree" -p "$tip" -m "snapshot round $r")"
+  git update-ref refs/heads/main "$sq"
+
+  # 不变量 4：快照恰好领先上游 1 个提交、落后 0 个
+  ahead=$(git rev-list --count "$tip"..main)
+  behind=$(git rev-list --count main.."$tip")
+  [ "$ahead" = "1" ] || problem "第 $r 轮：快照不是领先上游 1 个提交（ahead=$ahead）"
+  [ "$behind" = "0" ] || problem "第 $r 轮：落后上游 $behind 个提交"
+
+  total=$(find src -name '*.tsx' | wc -l | tr -d ' ')
+  printf '轮 %3s: 上游改动 %s | 入队 %s | 译文丢失 %s | 文件 %s | ahead=%s behind=%s\n' \
+    "$r" "${#changed[@]}" "$queued" "$lost" "$total" "$ahead" "$behind"
+done
+
+# ---------- 附加验证：推送冲突与强推保护（与工作流里那几段逻辑一一对应） ----------
+printf '\n--- 推送/强推保护验证 ---\n'
+SAFE="$WORK/safety"
+git init -q --bare "$SAFE/remote.git"
+git clone -q "$SAFE/remote.git" "$SAFE/work" 2>/dev/null || true
+cd "$SAFE/work" || exit 1
+git config user.email a@example.com
+git config user.name a
+printf 'base\n' > base.txt
+git add -A
+git commit -qm base
+git push -q origin HEAD:main
+git clone -q "$SAFE/remote.git" "$SAFE/other" 2>/dev/null || true
+cd "$SAFE/other" || exit 1
+git config user.email b@example.com
+git config user.name b
+
+# A) 批次推送被拒 → merge-remote → 重试（localize-zh.yml）
+mkdir -p "$SAFE/work/.github/scripts"
+cp "$SRC/.github/scripts/merge-remote.sh" "$SRC/.github/scripts/protect-workflows.sh" \
+  "$SRC/.github/scripts/stage-worktree.sh" "$SAFE/work/.github/scripts/"
+git -C "$SAFE/work" add .github/scripts
+git -C "$SAFE/work" commit -qm helpers
+git -C "$SAFE/work" push -q origin main
+git -C "$SAFE/other" pull -q --ff-only origin main
+printf 'ours\n' > ours.txt
+git add -A
+git commit -qm ours
+cd "$SAFE/work" || exit 1
+printf 'theirs\n' > theirs.txt
+git add -A
+git commit -qm theirs
+cd "$SAFE/other" || exit 1
+git push -q origin HEAD:main
+cd "$SAFE/work" || exit 1
+if git push -q origin HEAD:main 2>/dev/null; then
+  problem "推送冲突验证：第一次推送竟然成功了，说明用例没有真的制造冲突"
+fi
+if ! (cd "$SAFE/work" && RUNNER_TEMP="$SAFE" bash "$SRC/.github/scripts/merge-remote.sh" main >/dev/null); then
+  problem "推送冲突验证：merge-remote 执行失败"
+fi
+git push -q origin HEAD:main >/dev/null 2>&1 ||
+  problem "推送冲突验证：merge-remote 之后仍然推不上去"
+for f in ours.txt theirs.txt; do
+  git cat-file -e "HEAD:$f" 2>/dev/null ||
+    problem "推送冲突验证：merge-remote 之后 $f 丢了"
+done
+printf '  ✓ 推送被拒 → merge-remote → 重试成功，双方文件都在\n'
+
+# B) 远端在压缩前已被别人推进 → 守卫必须放弃压缩（localize-zh.yml:870-876）
+cd "$SAFE/other" || exit 1
+git pull -q --rebase origin main >/dev/null 2>&1
+printf 'foreign\n' > foreign.txt
+git add -A
+git commit -qm foreign
+git push -q origin HEAD:main || problem "强推保护验证：B 的并发提交没能推上去（用例自身有问题）"
+cd "$SAFE/work" || exit 1
+git fetch -q origin main
+remote_tip="$(git rev-parse FETCH_HEAD)"
+head_sha="$(git rev-parse HEAD)"
+if [ "$remote_tip" != "$head_sha" ] && ! git merge-base --is-ancestor "$remote_tip" HEAD; then
+  printf '  ✓ 远端已变化 → 守卫判定放弃压缩（不强推覆盖）\n'
+else
+  problem "强推保护验证：远端已被别人推进，守卫却没有判定放弃（remote_tip=${remote_tip:0:7} HEAD=${head_sha:0:7}）"
+fi
+
+# C) fetch 之后远端又被推进 → force-with-lease 必须拒绝（localize-zh.yml:878-888）
+cd "$SAFE/other" || exit 1
+git pull -q --rebase origin main >/dev/null 2>&1
+printf 'race\n' > race.txt
+git add -A
+git commit -qm race
+git push -q origin HEAD:main || problem "强推保护验证：C 的并发提交没能推上去（用例自身有问题）"
+cd "$SAFE/work" || exit 1
+lease_out="$(git push --force-with-lease origin HEAD:main 2>&1 || true)"
+if printf '%s' "$lease_out" | grep -q "rejected\|stale info"; then
+  printf '  ✓ fetch 之后的并发推送被 force-with-lease 拒绝\n'
+else
+  problem "强推保护验证：fetch 之后的并发推送没有被租约挡住（输出：$(printf '%s' "$lease_out" | head -1)）"
+fi
+remote_intact=1
+for f in foreign.txt race.txt; do
+  git -C "$SAFE/remote.git" cat-file -e "main:$f" 2>/dev/null ||
+    { problem "强推保护验证：远端上的 $f 被覆盖掉了"; remote_intact=0; }
+done
+[ "$remote_intact" = "1" ] && printf '  ✓ 远端内容未被覆盖\n'
+
+printf '\n==============================================\n'
+printf '轮数：%s    问题数：%s\n' "$ROUNDS" "$fail"
+if [ "$fail" -gt 0 ]; then
+  printf ' - %s\n' "${problems[@]}" | head -20
+  exit 1
+fi
+printf '全部检查通过：无翻译丢失、无重复翻译、无残留英文、单提交快照稳定，\n'
+printf '提交失败会重新入队，推送冲突与强推保护行为符合预期。\n'

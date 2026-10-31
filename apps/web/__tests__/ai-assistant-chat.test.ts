@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ModelMessage } from "ai";
 import {
   createTestLogger,
@@ -9,7 +9,9 @@ import {
   ActionType,
   DraftEmailStatus,
   GroupItemType,
+  SystemType,
 } from "@/generated/prisma/enums";
+import { getRuleLabel } from "@/utils/rule/consts";
 
 const {
   envState,
@@ -114,6 +116,7 @@ vi.mock("@/utils/prisma", () => ({
 
 vi.mock("@/env", () => ({
   env: {
+    NEXT_PUBLIC_BRAND_NAME: "Inbox Zero",
     get NEXT_PUBLIC_EMAIL_SEND_ENABLED() {
       return envState.sendEmailEnabled;
     },
@@ -123,7 +126,6 @@ vi.mock("@/env", () => ({
     get NEXT_PUBLIC_WEBHOOK_ACTION_ENABLED() {
       return envState.webhookActionsEnabled;
     },
-    NEXT_PUBLIC_BRAND_NAME: "Inbox Zero",
   },
 }));
 
@@ -202,12 +204,6 @@ async function captureCalendarChat(
 }
 
 describe("aiProcessAssistantChat", () => {
-  // Each test re-imports the chat module after resetting modules; transforming
-  // its import graph once here keeps that cost out of the first test's timeout.
-  beforeAll(async () => {
-    await import("@/utils/ai/assistant/chat");
-  }, 60_000);
-
   beforeEach(() => {
     vi.clearAllMocks();
     envState.sendEmailEnabled = true;
@@ -2110,7 +2106,7 @@ describe("aiProcessAssistantChat", () => {
     } as any);
 
     expect(result).toEqual({
-      error: `Invalid sendEmail input: unsupported field "${field}"`,
+      error: `sendEmail 的输入无效：不支持的字段“${field}”`,
     });
     expect(mockCreateEmailProvider).toHaveBeenCalledTimes(providerCallsBefore);
   });
@@ -2129,7 +2125,7 @@ describe("aiProcessAssistantChat", () => {
     });
 
     expect(result).toEqual({
-      error: "Invalid sendEmail input: to must include valid email address(es)",
+      error: "sendEmail 的输入无效：to must include valid email address(es)",
     });
     expect(mockCreateEmailProvider).toHaveBeenCalledTimes(providerCallsBefore);
   });
@@ -2233,7 +2229,7 @@ describe("aiProcessAssistantChat", () => {
     } as any);
 
     expect(result).toEqual({
-      error: 'Invalid forwardEmail input: unsupported field "from"',
+      error: "forwardEmail 的输入无效：不支持的字段“from”",
     });
     expect(mockCreateEmailProvider).toHaveBeenCalledTimes(providerCallsBefore);
     expect(getMessage).not.toHaveBeenCalled();
@@ -2757,7 +2753,7 @@ describe("aiProcessAssistantChat", () => {
         {
           id: "message-2",
           threadId: "thread-2",
-          labelIds: ["inbox", "to reply", "unread"],
+          labelIds: ["inbox", getRuleLabel(SystemType.TO_REPLY), "unread"],
           snippet: "Needs reply",
           historyId: "hist-2",
           inline: [],

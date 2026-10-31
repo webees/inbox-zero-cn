@@ -22,7 +22,7 @@ export function OrganizedInbox({ title, subtitle }: OrganizedInboxProps) {
         <Image
           className="hidden h-auto w-full md:block"
           src="/images/new-landing/an-organized-inbox.png"
-          alt="an organized inbox"
+          alt="整理有序的收件箱"
           width={2120}
           height={1294}
           sizes="(min-width: 1280px) 1152px, (min-width: 1024px) calc(100vw - 64px), calc(100vw - 48px)"
@@ -30,7 +30,7 @@ export function OrganizedInbox({ title, subtitle }: OrganizedInboxProps) {
         <Image
           className="block h-auto w-full md:hidden"
           src="/images/new-landing/an-organized-inbox-mobile.png"
-          alt="an organized inbox"
+          alt="整理有序的收件箱"
           width={1431}
           height={3301}
           sizes="calc(100vw - 48px)"

@@ -740,12 +740,12 @@ describe("clearFollowUpLabel", () => {
     expect(messagingMocks.teamsEditMessage).toHaveBeenCalledWith(
       "teams-thread-1",
       "teams-message-1",
-      expect.stringMatching(/follow-up/i),
+      expect.stringMatching(/不再需要跟进/),
     );
     expect(messagingMocks.telegramEditMessage).toHaveBeenCalledWith(
       "telegram-thread-1",
       "telegram-message-1",
-      expect.stringMatching(/follow-up/i),
+      expect.stringMatching(/不再需要跟进/),
     );
   });
 

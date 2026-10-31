@@ -30,13 +30,13 @@ export function CleanHistory() {
                     {formatDateSimple(new Date(job.createdAt))}
                   </h4>
                 </div>
-                <MutedText>{job._count.threads} emails processed</MutedText>
+                <MutedText>{job._count.threads} 封邮件已处理</MutedText>
               </div>
             </Link>
           ))}
         </div>
       ) : (
-        <MutedText className="p-4 text-center">No history yet</MutedText>
+        <MutedText className="p-4 text-center">暂无历史记录</MutedText>
       )}
     </LoadingContent>
   );

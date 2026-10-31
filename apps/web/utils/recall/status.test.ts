@@ -89,7 +89,7 @@ describe("interpretRecallWebhook", () => {
       status: MeetingRecordingStatus.FAILED,
     });
     if (interpretation.type !== "statusChange") throw new Error("unreachable");
-    expect(interpretation.failureReason).toMatch(/declined/i);
+    expect(interpretation.failureReason).toMatch(/拒绝/i);
     // A fatal event after the bot recorded must not fail a recording whose
     // media may still be recoverable.
     expect(interpretation.fromStatuses).not.toContain(

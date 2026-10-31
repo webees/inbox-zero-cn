@@ -320,7 +320,7 @@ describe("Middleware", () => {
         extra: { url: "/api/slack/callback" },
       });
       expect(response.status).toBe(500);
-      expect(responseBody).toEqual({ error: "An unexpected error occurred" });
+      expect(responseBody).toEqual({ error: "发生了意外错误" });
     });
   });
 
@@ -379,7 +379,7 @@ describe("Middleware", () => {
       expect(handler).not.toHaveBeenCalled();
       expect(response.status).toBe(401);
       expect(responseBody).toEqual({
-        error: "Unauthorized",
+        error: "未授权",
         isKnownError: true,
       });
     });
@@ -400,7 +400,7 @@ describe("Middleware", () => {
       });
       expect(response.status).toBe(500);
       expect(responseBody).toEqual({
-        error: "An unexpected error occurred",
+        error: "发生了意外错误",
       });
     });
   });
@@ -471,7 +471,7 @@ describe("Middleware", () => {
       expect(handler).not.toHaveBeenCalled();
       expect(response.status).toBe(401);
       expect(responseBody).toEqual({
-        error: "Unauthorized",
+        error: "未授权",
         isKnownError: true,
       });
     });

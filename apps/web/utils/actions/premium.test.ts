@@ -80,7 +80,7 @@ describe("updateStripeInvoiceEmailsAction", () => {
 
     const result = await updateStripeInvoiceEmailsAction({ enabled: true });
 
-    expect(result?.serverError).toBe("Not admin");
+    expect(result?.serverError).toBe("不是管理员");
     expect(prisma.premium.update).not.toHaveBeenCalled();
   });
 
@@ -96,7 +96,7 @@ describe("updateStripeInvoiceEmailsAction", () => {
 
     const result = await updateStripeInvoiceEmailsAction({ enabled: true });
 
-    expect(result?.serverError).toBe("Stripe billing account not found");
+    expect(result?.serverError).toBe("未找到 Stripe 账单账号");
     expect(prisma.premium.update).not.toHaveBeenCalled();
   });
 });
@@ -135,7 +135,7 @@ describe("getBillingPortalUrlAction", () => {
 
     const result = await getBillingPortalUrlAction({});
 
-    expect(result?.serverError).toBe("Not admin");
+    expect(result?.serverError).toBe("不是管理员");
     expect(mocks.createBillingPortalSession).not.toHaveBeenCalled();
   });
 
@@ -190,7 +190,7 @@ describe("getBillingPortalUrlAction", () => {
 
     const result = await getBillingPortalUrlAction({ tier: "BASIC_MONTHLY" });
 
-    expect(result?.serverError).toBe("Not admin");
+    expect(result?.serverError).toBe("不是管理员");
     expect(mocks.retrieveSubscription).not.toHaveBeenCalled();
     expect(mocks.createBillingPortalSession).not.toHaveBeenCalled();
   });
@@ -236,7 +236,7 @@ describe("getBillingPortalUrlAction", () => {
 
     const result = await getBillingPortalUrlAction({});
 
-    expect(result?.serverError).toBe("Not admin");
+    expect(result?.serverError).toBe("不是管理员");
     expect(mocks.createBillingPortalSession).not.toHaveBeenCalled();
   });
 
@@ -357,7 +357,7 @@ describe("getBillingPortalUrlAction", () => {
       tier: "BASIC_ANNUALLY",
     });
 
-    expect(result?.serverError).toBe("An unknown error occurred.");
+    expect(result?.serverError).toBe("发生未知错误。");
     expect(mocks.updateSubscription).not.toHaveBeenCalled();
   });
 
@@ -384,7 +384,7 @@ describe("getBillingPortalUrlAction", () => {
     });
 
     expect(result?.serverError).toBe(
-      "We couldn't change your plan. Your subscription has not been changed.",
+      "我们无法更改你的套餐。你的订阅尚未更改。",
     );
     expect(mocks.createBillingPortalSession).not.toHaveBeenCalled();
     expect(mocks.updateSubscription).not.toHaveBeenCalled();
@@ -409,7 +409,7 @@ describe("endStripeTrialAction", () => {
 
     const result = await endStripeTrialAction();
 
-    expect(result?.serverError).toBe("Not admin");
+    expect(result?.serverError).toBe("不是管理员");
     expect(mocks.updateSubscription).not.toHaveBeenCalled();
   });
 });
@@ -439,7 +439,7 @@ describe("generateCheckoutSessionAction", () => {
       tier: "BASIC_MONTHLY",
     });
 
-    expect(result?.serverError).toBe("Not admin");
+    expect(result?.serverError).toBe("不是管理员");
     expect(mocks.createCheckoutSession).not.toHaveBeenCalled();
   });
 
@@ -470,7 +470,7 @@ describe("generateCheckoutSessionAction", () => {
     });
 
     expect(result?.serverError).toBe(
-      "You already have an existing subscription. Change your plan instead of starting a new subscription.",
+      "你已有订阅。请更改套餐，而不是开始新订阅。",
     );
     expect(mocks.createCheckoutSession).not.toHaveBeenCalled();
   });
@@ -678,6 +678,6 @@ describe("adminChangePremiumStatusAction", () => {
       upgrade: false,
     });
 
-    expect(result?.serverError).toBe("User not found");
+    expect(result?.serverError).toBe("未找到用户");
   });
 });

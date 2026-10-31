@@ -243,7 +243,7 @@ describe("executeAct", () => {
         executedAt: expect.any(Date),
         executionError: {
           code: "RESEND_NOT_CONFIGURED",
-          message: "Action reported failure",
+          message: "操作报告失败",
           stack: null,
           statusCode: null,
           requestId: null,

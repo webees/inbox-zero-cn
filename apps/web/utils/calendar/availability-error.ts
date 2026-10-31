@@ -21,7 +21,7 @@ export class CalendarAvailabilityError extends Error {
     calendarErrors: CalendarAvailabilityErrorDetail[];
   }) {
     const providerLabel = provider === "google" ? "Google" : "Microsoft";
-    super(`Failed to fetch ${providerLabel} calendar availability`);
+    super(`无法获取 ${providerLabel} 日历可用性`);
     this.name = "CalendarAvailabilityError";
     this.provider = provider;
     this.calendarErrors = calendarErrors;

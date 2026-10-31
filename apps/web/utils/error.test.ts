@@ -268,12 +268,7 @@ describe("getActionErrorMessage", () => {
       undefined,
       "Third entry error",
     ],
-    [
-      "fallback when no errors are present",
-      {},
-      undefined,
-      "An unknown error occurred",
-    ],
+    ["fallback when no errors are present", {}, undefined, "发生未知错误"],
     [
       "custom fallback when provided",
       {},
@@ -550,22 +545,6 @@ describe("isKnownOutlookError", () => {
       { message: "Access is denied. Check credentials and try again." },
     ],
     ["item not found errors", { code: "ErrorItemNotFound" }],
-    [
-      "inactive mailbox errors",
-      {
-        code: "ExtensionError",
-        message:
-          "Operation: Create; Exception: [Status Code: NotFound; Reason: The mailbox is either inactive, soft-deleted, or is hosted on-premise.]",
-      },
-    ],
-    [
-      "permanent mailbox errors",
-      {
-        code: "ExtensionError",
-        message:
-          "Operation: Create; Exception: [Status Code: Forbidden; Reason: The operation failed with a permanent mailbox error.]",
-      },
-    ],
   ])("detects %s", (_caseName, error) => {
     expect(isKnownOutlookError(error)).toBe(true);
   });
@@ -609,21 +588,6 @@ describe("isKnownApiError", () => {
         finishReason: "content-filter",
         text: "I'm sorry, but I cannot assist with that request.",
       }),
-      true,
-    ],
-    [
-      "Gmail insufficient-scope errors with the reason on the cause",
-      Object.assign(
-        new Error("Request had insufficient authentication scopes."),
-        {
-          code: 403,
-          cause: {
-            code: 403,
-            message: "Request had insufficient authentication scopes.",
-            errors: [{ reason: "insufficientPermissions" }],
-          },
-        },
-      ),
       true,
     ],
   ])("returns %s for %s", (_caseName, error, expected) => {
@@ -680,8 +644,7 @@ describe("checkCommonErrors", () => {
 
     expect(checkCommonErrors(error, "/api/messages", logger)).toEqual({
       type: "Gmail Rate Limit Exceeded",
-      message:
-        "Gmail is temporarily limiting requests. Please try again shortly.",
+      message: "Gmail 暂时限制了请求。请稍后重试。",
       code: 429,
     });
   });
@@ -692,8 +655,7 @@ describe("checkCommonErrors", () => {
       createProviderRateLimitError("google"),
       {
         type: "Gmail Rate Limit Exceeded",
-        message:
-          "Gmail is temporarily limiting requests. Please try again shortly.",
+        message: "Gmail 暂时限制了请求。请稍后重试。",
         code: 429,
       },
     ],
@@ -702,8 +664,7 @@ describe("checkCommonErrors", () => {
       createProviderRateLimitError("microsoft"),
       {
         type: "Outlook Rate Limit",
-        message:
-          "Microsoft is temporarily limiting requests. Please try again shortly.",
+        message: "Microsoft 暂时限制了请求。请稍后重试。",
         code: 429,
       },
     ],

@@ -15,6 +15,7 @@ import {
 type Platform = {
   name: string;
   icon: React.ReactNode;
+  comingSoon?: boolean;
 };
 
 const defaultPlatforms: Platform[] = [
@@ -31,20 +32,21 @@ const defaultPlatforms: Platform[] = [
   {
     name: "Teams",
     icon: <Image src="/images/teams.png" alt="Teams" width={56} height={56} />,
+    comingSoon: true,
   },
   {
-    name: "iOS & Android",
+    name: "iOS 和 Android",
     icon: <Smartphone className="size-10 text-gray-600" strokeWidth={1.5} />,
   },
   {
-    name: "Web",
+    name: "网页端",
     icon: <Globe className="size-10 text-gray-600" strokeWidth={1.5} />,
   },
 ];
 
 export function ManageFromAnywhere({
-  title = "Your inbox, wherever you work",
-  subtitle = "Read emails, draft replies, and manage your inbox from Slack, Telegram, Microsoft Teams, mobile, or the web, without switching apps.",
+  title = "无论你在哪里工作，收件箱都触手可及",
+  subtitle = "从 Slack、Telegram、移动端或网页端阅读邮件、起草回复并管理你的收件箱，无需切换应用。",
   platforms = defaultPlatforms,
 }: {
   platforms?: Platform[];
@@ -68,7 +70,15 @@ export function ManageFromAnywhere({
   );
 }
 
-function PlatformIcon({ name, icon }: { name: string; icon: React.ReactNode }) {
+function PlatformIcon({
+  name,
+  icon,
+  comingSoon,
+}: {
+  name: string;
+  icon: React.ReactNode;
+  comingSoon?: boolean;
+}) {
   return (
     <div className="flex flex-col items-center gap-3">
       <CardWrapper padding="xs-2" rounded="full">
@@ -77,6 +87,11 @@ function PlatformIcon({ name, icon }: { name: string; icon: React.ReactNode }) {
         </Card>
       </CardWrapper>
       <span className="text-sm font-medium text-gray-500">{name}</span>
+      {comingSoon && (
+        <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-400">
+          即将推出
+        </span>
+      )}
     </div>
   );
 }

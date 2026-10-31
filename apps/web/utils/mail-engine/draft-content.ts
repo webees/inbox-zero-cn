@@ -24,7 +24,7 @@ export function sendEmailToDraftContent(
     ...(providerDraftMessageIds.length
       ? { providerDraftMessageIds: providerDraftMessageIds.slice(-50) }
       : {}),
-    // Restoring the send for editing lists these without asking the mailbox.
+    // 为编辑而恢复发送时会列出这些，而无需询问邮箱。
     ...(attachments.length
       ? { clientState: JSON.stringify({ attachments }) }
       : {}),

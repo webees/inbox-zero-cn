@@ -114,21 +114,19 @@ export async function cleanupAIDraftsForAccount({
         continue;
       }
 
-      const wasDeleted = await provider.deleteDraft(action.draftId);
+      await provider.deleteDraft(action.draftId);
       const statusData = getDraftCleanupStatusData({
         draftStatus: action.draftStatus,
         wasDraftSent: action.wasDraftSent,
         status: DraftEmailStatus.CLEANED_UP_UNUSED,
       });
-      // A refused delete leaves a draft the user may still send, and sent-draft
-      // tracking skips cleaned-up drafts.
-      if (wasDeleted && statusData) {
+      if (statusData) {
         await prisma.executedAction.update({
           where: { id: action.id },
           data: statusData,
         });
       }
-      if (wasDeleted) deleted++;
+      deleted++;
     } catch (error) {
       logger.error("Error cleaning up draft", {
         executedActionId: action.id,

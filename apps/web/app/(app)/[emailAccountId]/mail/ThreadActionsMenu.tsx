@@ -108,7 +108,7 @@ export function ThreadActionsMenu({
       <DropdownMenu onOpenChange={onOpenChange} open={open}>
         <Tooltip shortcuts={["moreActions"]}>
           <DropdownMenuTrigger asChild>
-            <Button aria-label="More actions" size="iconXs" variant="ghost">
+            <Button aria-label="更多操作" size="iconXs" variant="ghost">
               <MoreHorizontalIcon className="size-3.5" />
             </Button>
           </DropdownMenuTrigger>
@@ -122,7 +122,7 @@ export function ThreadActionsMenu({
           {onLabel && (
             <DropdownMenuItem onSelect={onLabel}>
               <TagIcon className="mr-2 size-4" />
-              Label
+              标签
               <MenuShortcut id="label" />
             </DropdownMenuItem>
           )}
@@ -130,7 +130,7 @@ export function ThreadActionsMenu({
           {onMove && (
             <DropdownMenuItem onSelect={onMove}>
               <FolderInputIcon className="mr-2 size-4" />
-              Move
+              移动
               <MenuShortcut id="move" />
             </DropdownMenuItem>
           )}
@@ -141,7 +141,7 @@ export function ThreadActionsMenu({
             ) : (
               <StarIcon className="mr-2 size-4" />
             )}
-            {isStarred ? "Unstar" : "Star"}
+            {isStarred ? "取消星标" : "加星标"}
             <MenuShortcut id="star" />
           </DropdownMenuItem>
 
@@ -149,13 +149,13 @@ export function ThreadActionsMenu({
 
           <DropdownMenuItem onSelect={onDelete}>
             <Trash2Icon aria-hidden className="mr-2 size-4" />
-            Delete
+            删除
             <MenuShortcut id="delete" />
           </DropdownMenuItem>
 
           <DropdownMenuItem onSelect={onMarkSpam}>
             <ShieldAlertIcon className="mr-2 size-4" />
-            Mark as spam
+            标记为垃圾邮件
             <MenuShortcut id="markSpam" />
           </DropdownMenuItem>
 
@@ -179,7 +179,7 @@ export function ThreadActionsMenu({
           {onComment && (
             <DropdownMenuItem onSelect={onComment}>
               <MessageSquareIcon className="mr-2 size-4" />
-              Comment
+              评论
               <MenuShortcut id="openTeamComments" />
             </DropdownMenuItem>
           )}
@@ -194,9 +194,7 @@ export function ThreadActionsMenu({
               ) : (
                 <ArchiveIcon className="mr-2 size-4" />
               )}
-              {isAutoArchived
-                ? "Disable auto archive"
-                : "Auto archive future emails"}
+              {isAutoArchived ? "关闭自动归档" : "自动归档未来的邮件"}
               <MenuShortcut id="toggleAutoArchive" />
             </DropdownMenuItem>
           ) : null}
@@ -204,14 +202,14 @@ export function ThreadActionsMenu({
           {senderEmail ? (
             <DropdownMenuItem onSelect={() => setIsRuleDialogOpen(true)}>
               <WandSparklesIcon className="mr-2 size-4" />
-              Create rule for sender
+              为发件人创建规则
             </DropdownMenuItem>
           ) : null}
 
           {onTranslate && (
             <DropdownMenuItem onSelect={onTranslate}>
               <LanguagesIcon className="mr-2 size-4" />
-              Translate
+              翻译
               <MenuShortcut id="translate" />
             </DropdownMenuItem>
           )}
@@ -219,7 +217,7 @@ export function ThreadActionsMenu({
           {onPrint && (
             <DropdownMenuItem onSelect={onPrint}>
               <PrinterIcon className="mr-2 size-4" />
-              Print
+              打印
             </DropdownMenuItem>
           )}
 

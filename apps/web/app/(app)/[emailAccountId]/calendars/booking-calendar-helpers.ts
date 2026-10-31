@@ -76,7 +76,7 @@ export function getDefaultDestinationCalendarId(
 
 export function getCalendarOptions(data: BookingLinkCalendarData | undefined) {
   return getCalendars(data).map((calendar) => ({
-    label: `${calendar.name}${calendar.primary ? " (Primary)" : ""}`,
+    label: `${calendar.name}${calendar.primary ? "（主日历）" : ""}`,
     value: calendar.id,
   }));
 }

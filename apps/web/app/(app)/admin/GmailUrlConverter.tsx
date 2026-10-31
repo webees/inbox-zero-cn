@@ -28,12 +28,12 @@ export function GmailUrlConverter() {
     result,
   } = useAction(adminConvertGmailUrlAction, {
     onSuccess: () => {
-      toastSuccess({ description: "Message found!" });
+      toastSuccess({ description: "找到邮件！" });
     },
     onError: ({ error }) => {
       toastError({
-        title: "Error looking up message",
-        description: error.serverError || "An error occurred",
+        title: "查找邮件时出错",
+        description: error.serverError || "发生错误",
       });
     },
   });
@@ -56,9 +56,9 @@ export function GmailUrlConverter() {
   return (
     <Card className="max-w-xl">
       <CardHeader>
-        <CardTitle>Email message lookup</CardTitle>
+        <CardTitle>邮件查找</CardTitle>
         <CardDescription>
-          Find thread/message IDs using RFC822 Message-ID from email headers
+          使用邮件头中的 RFC822 Message-ID 查找会话/消息 ID
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -74,24 +74,24 @@ export function GmailUrlConverter() {
           <Input
             type="email"
             name="email"
-            label="Email Address"
+            label="邮箱地址"
             placeholder="user@example.com"
             registerProps={register("email")}
             error={errors.email}
           />
           <Button type="submit" loading={isExecuting}>
-            Lookup
+            查找
           </Button>
         </form>
 
         {result.data && (
           <div className="space-y-2">
             <div>
-              <span className="text-sm font-medium">Thread ID: </span>
+              <span className="text-sm font-medium">会话 ID： </span>
               <code className="text-sm">{result.data.threadId}</code>
             </div>
             <div>
-              <span className="text-sm font-medium">Messages: </span>
+              <span className="text-sm font-medium">消息： </span>
               <div className="space-y-1">
                 {result.data.messages.map((msg) => (
                   <div key={msg.id} className="text-sm">

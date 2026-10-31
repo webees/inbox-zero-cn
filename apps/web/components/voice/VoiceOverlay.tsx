@@ -40,7 +40,7 @@ export function VoiceOverlay({
         </p>
         {onDismiss ? (
           <Button
-            aria-label="Cancel voice"
+            aria-label="取消语音"
             className="rounded-full text-white/70 hover:bg-white/10 hover:text-white"
             onClick={onDismiss}
             size="iconSm"
@@ -51,7 +51,7 @@ export function VoiceOverlay({
           </Button>
         ) : null}
         <Button
-          aria-label={mode === "live" ? "End conversation" : "Stop recording"}
+          aria-label={mode === "live" ? "结束对话" : "停止录音"}
           className="size-9 rounded-full bg-violet-500 text-white hover:bg-violet-400"
           disabled={busy}
           onClick={onStop}
@@ -65,7 +65,7 @@ export function VoiceOverlay({
           )}
         </Button>
         <Button
-          aria-label={mode === "live" ? "Send to chat" : "Send"}
+          aria-label={mode === "live" ? "发送到聊天" : "发送"}
           className="size-9 rounded-full bg-violet-500 text-white hover:bg-violet-400"
           disabled={busy}
           onClick={onSend}
@@ -92,6 +92,6 @@ function overlayLabel({
 }) {
   if (transcript) return transcript;
   if (assistantTranscript) return assistantTranscript;
-  if (busy && mode === "dictation") return "Transcribing…";
-  return "Listening…";
+  if (busy && mode === "dictation") return "转录中…";
+  return "聆听中…";
 }

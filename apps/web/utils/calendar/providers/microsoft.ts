@@ -20,10 +20,10 @@ export function createMicrosoftCalendarProvider(
 
     async exchangeCodeForTokens(code: string): Promise<CalendarTokens> {
       if (!env.MICROSOFT_CLIENT_ID || !env.MICROSOFT_CLIENT_SECRET) {
-        throw new Error("Microsoft credentials not configured");
+        throw new Error("Microsoft 凭证未配置");
       }
 
-      // Exchange code for tokens
+      // 用 code 交换令牌
       const tokenResponse = await requestMicrosoftToken({
         client_id: env.MICROSOFT_CLIENT_ID,
         client_secret: env.MICROSOFT_CLIENT_SECRET,
@@ -35,9 +35,7 @@ export function createMicrosoftCalendarProvider(
       const tokens = await tokenResponse.json();
 
       if (!tokenResponse.ok) {
-        throw new Error(
-          tokens.error_description || "Failed to exchange code for tokens",
-        );
+        throw new Error(tokens.error_description || "用 code 换取令牌失败");
       }
 
       const { email: microsoftEmail } = await fetchMicrosoftUserProfile(
@@ -46,7 +44,7 @@ export function createMicrosoftCalendarProvider(
 
       if (!tokens.refresh_token) {
         throw new Error(
-          "No refresh_token returned from Microsoft (ensure offline_access scope and correct app type)",
+          "Microsoft 未返回 refresh_token（请确认 offline_access 权限范围和正确的应用类型）",
         );
       }
 
@@ -92,7 +90,7 @@ export function createMicrosoftCalendarProvider(
               },
             },
             update: {
-              name: microsoftCalendar.name || "Untitled Calendar",
+              name: microsoftCalendar.name || "未命名日历",
               description: microsoftCalendar.description,
               timezone: null,
               primary: microsoftCalendar.isDefaultCalendar ?? false,
@@ -100,7 +98,7 @@ export function createMicrosoftCalendarProvider(
             create: {
               connectionId,
               calendarId: microsoftCalendar.id,
-              name: microsoftCalendar.name || "Untitled Calendar",
+              name: microsoftCalendar.name || "未命名日历",
               description: microsoftCalendar.description,
               timezone: null,
               primary: microsoftCalendar.isDefaultCalendar ?? false,
@@ -111,7 +109,7 @@ export function createMicrosoftCalendarProvider(
 
         await autoPopulateTimezone(emailAccountId, microsoftCalendars, logger);
       } catch (error) {
-        logger.error("Error syncing calendars", { error, connectionId });
+        logger.error("同步日历出错", { error, connectionId });
         await prisma.calendarConnection.update({
           where: { id: connectionId },
           data: { isConnected: false },

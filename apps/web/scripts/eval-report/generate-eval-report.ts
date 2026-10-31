@@ -42,19 +42,19 @@ async function main() {
   fs.writeFileSync(outPath, renderDashboardHtml(data));
 
   if (entries.length === 0) {
-    console.log(`No eval history found in ${historyDir}.`);
+    console.log(`未在 ${historyDir} 中找到 eval 历史记录。`);
     console.log(
-      "Run evals first, e.g.: EVAL_RESULT_CACHE=readwrite pnpm test-ai eval/your-feature",
+      "请先运行 eval，例如：EVAL_RESULT_CACHE=readwrite pnpm test-ai eval/your-feature",
     );
   }
   for (const warning of warnings) {
-    console.warn(`Warning: ${warning}`);
+    console.warn(`警告：${warning}`);
   }
   const defaultView =
     data.views.find((view) => view.key === data.defaultViewKey) ??
     data.views[0];
   console.log(
-    `Eval dashboard written to ${outPath} (${entries.length} runs, ${defaultView?.suites.length ?? 0} suites, ${defaultView?.models.length ?? 0} models on ${defaultView?.label ?? "unknown"}).`,
+    `Eval 仪表盘已写入 ${outPath}（${entries.length} 次运行，${defaultView?.suites.length ?? 0} 个测试套件，${defaultView?.models.length ?? 0} 个模型，基于 ${defaultView?.label ?? "未知"}）。`,
   );
 
   if (values.open) {

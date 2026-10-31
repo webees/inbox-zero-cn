@@ -67,7 +67,7 @@ export const createMockEmailProvider = (
     subject: "Test",
     date: new Date().toISOString(),
     textPlain: "Test content",
-    textHtml: "<p>Test content</p>",
+    textHtml: "<p>测试内容</p>",
     attachments: [],
     inline: [],
     labelIds: [],
@@ -119,12 +119,12 @@ export const createMockEmailProvider = (
   updateDraft: vi.fn().mockResolvedValue(undefined),
   createLabel: vi
     .fn()
-    .mockResolvedValue({ id: "label1", name: "Test Label", type: "user" }),
+    .mockResolvedValue({ id: "label1", name: "测试标签", type: "user" }),
   deleteLabel: vi.fn().mockResolvedValue(undefined),
   updateLabel: vi.fn().mockResolvedValue(undefined),
   getOrCreateInboxZeroLabel: vi
     .fn()
-    .mockResolvedValue({ id: "label1", name: "Test Label", type: "user" }),
+    .mockResolvedValue({ id: "label1", name: "测试标签", type: "user" }),
   getOriginalMessage: vi.fn().mockResolvedValue(null),
   getFiltersList: vi.fn().mockResolvedValue([]),
   getForwardingAddresses: vi.fn().mockResolvedValue([]),

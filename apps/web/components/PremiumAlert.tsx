@@ -34,8 +34,8 @@ export function PremiumAiAssistantAlert({
       <div className={className}>
         <ActionCard
           icon={<CrownIcon className="h-5 w-5" />}
-          title="Active Subscription Required"
-          description="This feature is not available during the free trial. Start your paid plan to use it."
+          title="需要有效订阅"
+          description="此功能在免费试用期间不可用。请开始付费套餐后使用。"
           action={<EndTrialButton variant="primaryBlack" />}
         />
       </div>
@@ -47,33 +47,33 @@ export function PremiumAiAssistantAlert({
       {isBasicPlan ? (
         <ActionCard
           icon={<CrownIcon className="h-5 w-5" />}
-          title={`${starterTierName} Plan Required`}
-          description={`Switch to the ${starterTierName} plan to use this feature.`}
+          title={`需要 ${starterTierName} 套餐`}
+          description={`切换到 ${starterTierName} 套餐以使用此功能。`}
           action={
             <Button variant="primaryBlack" onClick={openModal}>
-              Switch Plan
+              切换套餐
             </Button>
           }
         />
       ) : showSetApiKey ? (
         <ActionCard
           icon={<CrownIcon className="h-5 w-5" />}
-          title="API Key Required"
-          description="You need to set an AI API key to use this feature."
+          title="需要 API 密钥"
+          description="你需要设置 AI API 密钥才能使用此功能。"
           action={
             <Button variant="primaryBlack" asChild>
-              <Link href="/settings">Set API Key</Link>
+              <Link href="/settings">设置 API 密钥</Link>
             </Button>
           }
         />
       ) : (
         <ActionCard
           icon={<CrownIcon className="h-5 w-5" />}
-          title="Premium Feature"
-          description={`This is a premium feature. Upgrade to the ${starterTierName} plan.`}
+          title="高级版功能"
+          description={`这是高级版功能。请升级到 ${starterTierName} 套餐。`}
           action={
             <Button variant="primaryBlack" onClick={openModal}>
-              Upgrade
+              升级
             </Button>
           }
         />
@@ -138,10 +138,10 @@ export function PremiumTooltipContent({
 }) {
   return (
     <div className="text-center">
-      <p>You{"'"}ve hit the free tier limit 🥺</p>
-      <p>Upgrade to unlock full access.</p>
+      <p>你已达到免费版上限 🥺</p>
+      <p>升级以解锁完整访问权限。</p>
       <Button className="mt-1" onClick={openModal} size="xs">
-        Upgrade
+        升级
       </Button>
     </div>
   );

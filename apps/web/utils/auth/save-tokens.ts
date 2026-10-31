@@ -35,8 +35,8 @@ export async function saveTokens({
   const refreshToken = tokens.refresh_token ?? accountRefreshToken;
 
   if (!refreshToken) {
-    logger.error("Attempted to save null refresh token", { providerAccountId });
-    captureException("Cannot save null refresh token", {
+    logger.error("尝试保存空的 refresh token", { providerAccountId });
+    captureException("无法保存空的 refresh token", {
       extra: { providerAccountId },
     });
     return;
@@ -66,7 +66,7 @@ export async function saveTokens({
       });
 
       if (result.count === 0) {
-        logger.info("Skipped stale OAuth token update", {
+        logger.info("已跳过过期的 OAuth 令牌更新", {
           emailAccountId,
           provider,
         });
@@ -100,10 +100,10 @@ export async function saveTokens({
     });
   } else {
     if (!providerAccountId) {
-      logger.error("No providerAccountId found in database", {
+      logger.error("数据库中未找到 providerAccountId", {
         emailAccountId,
       });
-      captureException("No providerAccountId found in database", {
+      captureException("数据库中未找到 providerAccountId", {
         extra: { emailAccountId },
       });
       return;

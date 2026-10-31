@@ -69,11 +69,11 @@ export function AccountSwitcherInternal({
       try {
         await setLastEmailAccountAction({ emailAccountId });
       } catch {
-        // Ignore cookie update failures and continue navigation.
+        // 忽略 cookie 更新失败并继续导航。
       }
 
-      // Force a hard page reload to refresh all data.
-      // I tried to fix with resetting the SWR cache but it didn't seem to work. This is much more reliable anyway.
+      // 强制硬刷新页面以刷新所有数据。
+      // 我试过通过重置 SWR 缓存来修复，但似乎不起作用。这样可靠得多。
       redirectToSafeUrl(getHref(emailAccountId));
     },
     [getHref],
@@ -113,7 +113,7 @@ export function AccountSwitcherInternal({
                   </div>
                 </>
               ) : (
-                <div>Choose account</div>
+                <div>选择账号</div>
               )}
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
@@ -125,7 +125,7 @@ export function AccountSwitcherInternal({
             sideOffset={4}
           >
             <DropdownMenuLabel className="text-xs text-muted-foreground">
-              Accounts
+              账号
             </DropdownMenuLabel>
             {emailAccounts.map((emailAccount) => (
               <DropdownMenuItem
@@ -158,7 +158,7 @@ export function AccountSwitcherInternal({
                   <Plus className="size-4" />
                 </div>
                 <div className="font-medium text-muted-foreground">
-                  Add or manage accounts
+                  添加或管理账号
                 </div>
               </DropdownMenuItem>
             </Link>

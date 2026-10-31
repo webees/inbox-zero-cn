@@ -15,8 +15,8 @@ const logger = createScopedLogger("redis/thread-page-buffer");
 const BUFFER_TTL_SECONDS = 5 * 60;
 const MAX_BUFFER_BYTES = 1024 * 1024;
 
-// The deletion marker and write must be checked atomically so in-flight loads
-// cannot recreate buffers while account deletion scans them.
+// 删除标记和写入必须原子检查，以免账号删除扫描缓冲区时，
+// 进行中的加载重新创建缓冲区。
 const WRITE_BUFFER_SCRIPT = `
 if redis.call("EXISTS", KEYS[1]) == 1 then return 0 end
 redis.call("SET", KEYS[2], ARGV[1], "EX", ARGV[2])
@@ -67,7 +67,7 @@ export function createPageBuffer<TItem, TMeta = unknown>(
         const encoded = await redis.get<string>(key);
         if (typeof encoded !== "string" || encoded.length > MAX_BUFFER_BYTES)
           return;
-        // Only accept encrypted values; decryptToken also supports legacy plaintext.
+        // 仅接受加密值；decryptToken 也支持旧版明文。
         if (!/^v\d+:[a-f0-9]+$/i.test(encoded)) return;
         const decoded = decryptToken(encoded);
         if (!decoded) return;
@@ -90,16 +90,14 @@ export function createPageBuffer<TItem, TMeta = unknown>(
           return;
         return page as PaginatedPage<TItem, TMeta>;
       } catch {
-        logger.warn(
-          "Could not read buffered thread page; fetching from provider",
-        );
+        logger.warn("无法读取已缓冲的会话分页；正在从服务商获取");
       }
     },
     async write({ sourceId, page }) {
       try {
-        // Outlive neither the page TTL nor a deletion marker for this account.
+        // 存活时间不得超过分页 TTL，也不得超过该账号的删除标记。
         if (Date.now() - createdAt >= BUFFER_TTL_SECONDS * 1000) return;
-        // Preserve dates and undefined fields in enriched account rows.
+        // 保留增强后的账号行中的日期和未定义字段。
         const id = randomUUID();
         const key = keyFor(sourceId, id);
         const serialized = serialize({ key, page }).toString("base64");
@@ -113,8 +111,8 @@ export function createPageBuffer<TItem, TMeta = unknown>(
         );
         return stored === 1 ? id : undefined;
       } catch {
-        // Redis errors can contain the command payload, so don't log the error.
-        logger.warn("Could not buffer thread page; pagination will refetch it");
+        // Redis 错误可能包含命令载荷，因此不要记录该错误。
+        logger.warn("无法缓冲会话分页；分页时将重新获取");
       }
     },
   };
@@ -132,7 +130,7 @@ export async function withThreadPageBufferDeletion<T>(
       const prefix = getAccountPrefix(emailAccountId);
       const marker = `${prefix}:deleted`;
       const token = randomUUID();
-      // Record ownership before awaiting: Redis may succeed but lose its response.
+      // 在等待前记录归属：Redis 可能执行成功但丢失响应。
       markers.push({ key: marker, token });
       await redis.eval(
         `
@@ -158,7 +156,7 @@ export async function withThreadPageBufferDeletion<T>(
   } finally {
     for (const { key, token } of markers) {
       try {
-        // Keep blocking factories created during deletion until they age out.
+        // 保留删除期间创建的分页缓冲，直到其过期。
         await redis.eval(
           `
           redis.call("SREM", KEYS[1], ARGV[1])
@@ -173,8 +171,8 @@ export async function withThreadPageBufferDeletion<T>(
           [token, BUFFER_TTL_SECONDS],
         );
       } catch {
-        // A persistent marker safely disables buffering if cleanup is interrupted.
-        logger.warn("Could not expire thread page deletion marker");
+        // 如果清理过程被中断，持久标记会安全地禁用缓冲。
+        logger.warn("无法使会话分页删除标记过期");
       }
     }
   }

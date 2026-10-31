@@ -356,8 +356,8 @@ export async function moveMessagesForSenders({
 }): Promise<number> {
   if (senders.length === 0) return 0;
 
-  // Resolve the actual inbox folder ID for archive filtering
-  // parentFolderId on messages is the real folder ID (a GUID), not the well-known name
+  // 解析用于归档筛选的实际收件箱文件夹 ID
+  // 邮件上的 parentFolderId 是真实文件夹 ID（GUID），而不是众所周知的名称
   let inboxFolderId: string | undefined;
   if (action === "archive") {
     const folderIds = await getFolderIds(client, logger, {
@@ -366,10 +366,10 @@ export async function moveMessagesForSenders({
     inboxFolderId = folderIds.inbox;
     if (!inboxFolderId) {
       logger.error(
-        "Could not resolve inbox folder ID — aborting bulk archive to avoid archiving from all folders",
+        "无法解析收件箱文件夹 ID——中止批量归档，以避免从所有文件夹中归档",
       );
       if (!continueOnError) {
-        throw new Error("Could not resolve inbox folder ID for bulk archive");
+        throw new Error("无法解析批量归档的收件箱文件夹 ID");
       }
       return 0;
     }
@@ -385,10 +385,10 @@ export async function moveMessagesForSenders({
       ? `${fromFilter} and parentFolderId eq '${escapeODataString(inboxFolderId)}'`
       : fromFilter;
 
-    // Graph's nextLink for /me/messages is offset-based ($skip). Archiving
-    // removes messages from the inbox-filtered set, so moving while paging
-    // shifts every later page and skips a page for every page moved.
-    // Finish enumeration first, then move.
+    // Graph 的 /me/messages nextLink 基于偏移量（$skip）。归档会把邮件
+    // 从收件箱筛选结果中移除，因此边分页边移动会导致后续每一页
+    // 都发生偏移，每移动一页就会跳过一页。
+    // 先完成枚举，再执行移动。
     const messages = await listSenderMessages({
       client,
       filterExpression,

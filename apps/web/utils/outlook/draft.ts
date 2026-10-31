@@ -52,7 +52,7 @@ export async function getDraftReference({
   });
   if (!draft) return null;
   if (!draft.folderIds.drafts) {
-    logger.warn("Could not verify the Outlook Drafts folder");
+    logger.warn("无法验证 Outlook 草稿文件夹");
     return null;
   }
 
@@ -76,10 +76,10 @@ export async function sendDraft({
   draftId: string;
   logger: Logger;
 }): Promise<{ messageId: string; threadId: string }> {
-  logger.info("Sending draft", { draftId });
+  logger.info("正在发送草稿", { draftId });
 
-  // Graph may return 404 while moving a sent draft to Sent Items. Capture the
-  // conversation ID before sending so that metadata reads cannot fail a send.
+  // Graph 在将已发送草稿移动到已发送邮件时可能返回 404。在发送前
+  // 捕获会话 ID，以便元数据读取不会导致发送失败。
   const draft = await withMicrosoftGraphRetry(
     () =>
       client
@@ -92,7 +92,7 @@ export async function sendDraft({
 
   const threadId = draft.conversationId;
   if (!threadId) {
-    throw new Error("Failed to get threadId from draft");
+    throw new Error("未能从草稿获取 threadId");
   }
 
   await withMicrosoftGraphWriteRetry(
@@ -100,7 +100,7 @@ export async function sendDraft({
     logger,
   );
 
-  logger.info("Draft sent successfully", {
+  logger.info("草稿发送成功", {
     draftId,
     messageId: draftId,
     threadId,
@@ -121,7 +121,7 @@ export async function deleteDraft({
   logger: Logger;
 }): Promise<boolean> {
   try {
-    logger.info("Deleting draft", { draftId });
+    logger.info("正在删除草稿", { draftId });
 
     const request = client
       .getClient()
@@ -130,15 +130,15 @@ export async function deleteDraft({
 
     await withMicrosoftGraphWriteRetry(() => request.delete(), logger);
 
-    logger.info("Draft deleted successfully", { draftId });
+    logger.info("草稿删除成功", { draftId });
     return true;
   } catch (error) {
     if (isNotFoundError(error) || isPreconditionFailedError(error)) {
-      logger.info("Draft no longer matches the deletable version", { draftId });
+      logger.info("草稿不再匹配可删除的版本", { draftId });
       return false;
     }
 
-    logger.error("Failed to delete draft", { draftId, error });
+    logger.error("删除草稿失败", { draftId, error });
     throw error;
   }
 }
@@ -165,7 +165,7 @@ async function getDraftMessage({
     ]);
 
     if (folderIds.drafts && message.parentFolderId !== folderIds.drafts) {
-      logger.info("Draft is no longer in Drafts folder, treating as deleted.", {
+      logger.info("草稿不再位于草稿文件夹中，视为已删除。", {
         draftId,
       });
       return null;
@@ -174,7 +174,7 @@ async function getDraftMessage({
     return { message, folderIds };
   } catch (error) {
     if (isNotFoundError(error)) {
-      logger.info("Draft not found, returning null.", { draftId });
+      logger.info("未找到草稿，返回 null。", { draftId });
       return null;
     }
 

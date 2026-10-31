@@ -11,7 +11,7 @@ import { isGoogleProvider } from "@/utils/email/provider-types";
 import { redirectToSafeUrl } from "@/utils/redirect";
 
 export function AddAccount({
-  helperText = "You will be billed for each account.",
+  helperText = "每个账号都会单独计费。",
 }: {
   helperText?: ReactNode;
 }) {
@@ -28,13 +28,11 @@ export function AddAccount({
       const url = await getAccountLinkingUrl(provider);
       redirectToSafeUrl(url, { allowExternal: true });
     } catch (error) {
-      console.error(`Error initiating ${provider} link:`, error);
+      console.error(`发起 ${provider} 关联时出错：`, error);
       toastError({
-        title: `Error initiating ${isGoogleProvider(provider) ? "Google" : "Microsoft"} link`,
+        title: `发起 ${isGoogleProvider(provider) ? "Google" : "Microsoft"} 关联时出错`,
         description:
-          error instanceof Error
-            ? error.message
-            : "Please try again or contact support",
+          error instanceof Error ? error.message : "请重试或联系支持人员",
       });
       setLoading(false);
     }
@@ -57,7 +55,7 @@ export function AddAccount({
             height={24}
             unoptimized
           />
-          <span className="ml-2">Add Google</span>
+          <span className="ml-2">添加 Google</span>
         </Button>
         <Button
           variant="outline"
@@ -73,7 +71,7 @@ export function AddAccount({
             height={24}
             unoptimized
           />
-          <span className="ml-2">Add Microsoft</span>
+          <span className="ml-2">添加 Microsoft</span>
         </Button>
       </div>
 

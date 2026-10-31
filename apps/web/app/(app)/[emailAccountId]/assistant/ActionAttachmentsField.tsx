@@ -97,7 +97,7 @@ export function ActionAttachmentsField({
   return (
     <div className="border-t pt-3">
       <div className="flex items-center gap-2">
-        <span className="text-sm font-medium">Attachments</span>
+        <span className="text-sm font-medium">附件</span>
         {isConnected && totalCount > 0 && (
           <Badge variant="secondary" className="tabular-nums">
             {formatAttachmentSourceCount(
@@ -112,7 +112,7 @@ export function ActionAttachmentsField({
           <HardDriveIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
           <div className="min-w-0">
             <p className="text-sm text-muted-foreground">
-              Connect your cloud storage to attach files to your emails.
+              连接你的云存储，即可将文件附加到邮件中。
             </p>
             <Button
               asChild
@@ -120,7 +120,7 @@ export function ActionAttachmentsField({
               size="sm"
               className="mt-1 h-auto p-0 text-sm"
             >
-              <Link href={`/${emailAccountId}/drive`}>Connect Drive</Link>
+              <Link href={`/${emailAccountId}/drive`}>连接 Drive</Link>
             </Button>
           </div>
         </div>
@@ -133,7 +133,7 @@ export function ActionAttachmentsField({
             className="flex items-center gap-1.5 text-xs text-muted-foreground"
             onClick={() => hasAttachments && setIsExpanded(!isExpanded)}
           >
-            <span className="font-medium">Always attach</span>
+            <span className="font-medium">始终附加</span>
             {hasAttachments && (
               <>
                 <Badge variant="outline" className="text-[10px] px-1 py-0">
@@ -155,9 +155,9 @@ export function ActionAttachmentsField({
           <AttachmentSourcePickerDialog
             value={value}
             onChange={onChange}
-            triggerLabel="Select files"
-            title="Select files to always attach"
-            description="Choose files that this rule should always attach after you save."
+            triggerLabel="选择文件"
+            title="选择要始终附加的文件"
+            description="选择此规则在保存后应始终附加的文件。"
             allowFolderSelection={false}
           />
         </div>
@@ -172,7 +172,7 @@ export function ActionAttachmentsField({
               hasAiSources && setIsSourcesExpanded(!isSourcesExpanded)
             }
           >
-            <span className="font-medium">AI-selected sources</span>
+            <span className="font-medium">AI 选择的来源</span>
             {hasAiSources && (
               <>
                 <Badge variant="outline" className="text-[10px] px-1 py-0">
@@ -194,9 +194,9 @@ export function ActionAttachmentsField({
           <AttachmentSourcePickerDialog
             value={attachmentSources}
             onChange={onAttachmentSourcesChange}
-            triggerLabel="Select sources for AI"
-            title="Select sources for AI to search"
-            description="Choose files or folders the AI can search after you save."
+            triggerLabel="为 AI 选择来源"
+            title="选择供 AI 搜索的来源"
+            description="选择保存后 AI 可以搜索的文件或文件夹。"
             allowFolderSelection
           />
         </div>
@@ -268,10 +268,10 @@ function AttachmentSourcePickerDialog({
         />
         <DialogFooter>
           <Button type="button" variant="outline" onClick={cancelPicker}>
-            Cancel
+            取消
           </Button>
           <Button type="button" onClick={savePicker}>
-            Save
+            保存
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -337,9 +337,9 @@ function AttachmentPicker({
       {rootItems.length === 0 ? (
         <Empty className="rounded-md border p-6">
           <EmptyHeader>
-            <EmptyTitle>No Drive files found</EmptyTitle>
+            <EmptyTitle>未找到 Drive 文件</EmptyTitle>
             <EmptyDescription>
-              Make sure your Drive connection contains PDF files or folders.
+              请确保你的 Drive 连接中包含 PDF 文件或文件夹。
             </EmptyDescription>
           </EmptyHeader>
         </Empty>
@@ -495,7 +495,7 @@ function AttachmentSourceNode({
             className="py-1 text-xs italic text-muted-foreground"
             style={{ paddingLeft: (level + 1) * 16 + 28 }}
           >
-            No PDFs found
+            未找到 PDF 文件
           </div>
         ) : null}
       </TreeNodeContent>
@@ -539,7 +539,7 @@ function SourceList({
             className="ml-2 shrink-0"
             onClick={() => onRemove(source)}
           >
-            Remove
+            移除
           </Button>
         </div>
       ))}

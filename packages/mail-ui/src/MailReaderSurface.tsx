@@ -61,10 +61,10 @@ export function MailReaderToolbar({
     ? "collapse_all"
     : "expand_all";
   const expansionLabel = messageExpansion?.allExpanded
-    ? "Collapse all messages"
-    : "Expand all messages";
+    ? "折叠所有邮件"
+    : "展开所有邮件";
   const readAction = isUnread ? "mark_read" : "mark_unread";
-  const readLabel = isUnread ? "Mark as read" : "Mark as unread";
+  const readLabel = isUnread ? "标记为已读" : "标记为未读";
 
   const actionButton = (button: MailReaderToolbarButton) =>
     renderActionTooltip(button, renderButton(button));
@@ -74,8 +74,8 @@ export function MailReaderToolbar({
       <div className="flex items-center gap-1">
         {renderButton({
           action: "back",
-          ariaLabel: "Back to inbox",
-          title: "Back to inbox",
+          ariaLabel: "返回收件箱",
+          title: "返回收件箱",
           icon: icons?.back,
           onClick: onBackToInbox,
         })}
@@ -86,10 +86,10 @@ export function MailReaderToolbar({
           <div className="flex min-w-0 items-center gap-2">
             {isStarred && (
               <span
-                aria-label="Starred conversation"
+                aria-label="已加星标的会话"
                 className="size-1.5 shrink-0 rounded-full bg-yellow-400"
                 role="img"
-                title="Starred conversation"
+                title="已加星标的会话"
               />
             )}
             <h1 className="font-title font-medium text-2xl text-foreground leading-tight tracking-tight">
@@ -101,7 +101,7 @@ export function MailReaderToolbar({
       </div>
 
       <div
-        aria-label="Thread actions"
+        aria-label="会话操作"
         className="ml-auto flex flex-wrap items-center gap-1.5"
         role="group"
       >
@@ -118,13 +118,13 @@ export function MailReaderToolbar({
           onMoveToInbox
             ? {
                 action: "move_to_inbox",
-                ariaLabel: "Move to inbox",
+                ariaLabel: "移至收件箱",
                 icon: icons?.move_to_inbox,
                 onClick: onMoveToInbox,
               }
             : {
                 action: "archive",
-                ariaLabel: "Archive",
+                ariaLabel: "归档",
                 icon: icons?.archive,
                 onClick: onArchive,
               },

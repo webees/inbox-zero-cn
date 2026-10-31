@@ -51,7 +51,7 @@ export async function getOutlookMailboxSyncPage({
   limit: number;
 }): Promise<MailboxSyncPage> {
   if (!cursor) {
-    if (!after) throw new Error("after is required for initial mailbox sync");
+    if (!after) throw new Error("初始邮箱同步需要 after");
     return getInitialPage({ client, logger, after, folderId, limit });
   }
 
@@ -127,7 +127,7 @@ export function buildOutlookMailboxSyncPage({
   const deltaLink = response["@odata.deltaLink"];
   const continuationLink = nextLink ?? deltaLink;
   if (!continuationLink) {
-    throw new Error("Microsoft Graph delta response omitted its cursor");
+    throw new Error("Microsoft Graph delta 响应省略了其游标");
   }
 
   const deletedMessageIds: string[] = [];
@@ -222,8 +222,8 @@ async function getInitialPage({
   });
 }
 
-// Graph delta can return a message without its conversation, which the sync
-// protocol requires, so fetch those individually instead of failing the page.
+// Graph delta 可能返回不带会话的邮件，而同步协议需要它，
+// 因此单独获取这些邮件，而不是让整页失败。
 async function withPartialMessagesRefetched({
   client,
   logger,
@@ -251,7 +251,7 @@ async function withPartialMessagesRefetched({
   const unresolvedCount = messages.length - completeMessages.length;
 
   if (unresolvedCount > 0) {
-    logger.warn("Skipped delta messages without a conversation", {
+    logger.warn("跳过了没有会话的 delta 邮件", {
       unresolvedCount,
     });
   }

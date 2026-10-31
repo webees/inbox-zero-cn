@@ -8,12 +8,12 @@ export enum CleanStep {
 }
 
 export const timeRangeOptions = [
-  { value: "0", label: "All emails" },
-  { value: "1", label: "Older than 1 day" },
-  { value: "3", label: "Older than 3 days" },
-  { value: "7", label: "Older than 1 week", recommended: true },
-  { value: "14", label: "Older than 2 weeks" },
-  { value: "30", label: "Older than 1 month" },
-  { value: "90", label: "Older than 3 months" },
-  { value: "365", label: "Older than 1 year" },
+  { value: "0", label: "所有邮件" },
+  { value: "1", label: "超过 1 天" },
+  { value: "3", label: "超过 3 天" },
+  { value: "7", label: "超过 1 周", recommended: true },
+  { value: "14", label: "超过 2 周" },
+  { value: "30", label: "超过 1 个月" },
+  { value: "90", label: "超过 3 个月" },
+  { value: "365", label: "超过 1 年" },
 ];

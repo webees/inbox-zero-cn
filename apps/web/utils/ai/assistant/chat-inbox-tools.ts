@@ -365,13 +365,13 @@ export const startSenderCategorizationTool = ({
         });
       } catch (error) {
         if (error instanceof SafeError) {
-          logger.warn("Unable to start sender categorization", { error });
+          logger.warn("无法启动发件人分类", { error });
           return { error: error.message };
         }
 
-        logger.error("Failed to start sender categorization", { error });
+        logger.error("启动发件人分类失败", { error });
         return {
-          error: "Failed to start sender categorization",
+          error: "启动发件人分类失败",
         };
       }
     },
@@ -391,7 +391,7 @@ export const getSenderCategorizationStatusTool = ({
   logger: Logger;
 }) =>
   tool({
-    description: `Check sender categorization progress. Use this after startSenderCategorization to show progress in chat or to poll briefly before deciding whether category cleanup can continue. Keep polling bounded to short waits only, with at most 3 polls and waitMs no higher than ${MAX_SENDER_CATEGORIZATION_WAIT_MS} per poll. If categorization is still running after that bounded polling, stop and report the progress instead of falling back to manual searchInbox pagination. waitMs optionally delays the read server-side. This does not change inbox state.`,
+    description: `检查发件人分类进度。在 startSenderCategorization 之后使用此工具，以便在聊天中显示进度，或在决定分类清理能否继续之前短暂轮询。请将轮询限制为短暂等待，最多轮询 3 次，且每次的 waitMs 不得超过 ${MAX_SENDER_CATEGORIZATION_WAIT_MS}。如果在此有限轮询后分类仍在运行，请停止并报告进度，不要退回到手动 searchInbox 分页。waitMs 可选地在服务端延迟读取。此操作不会更改收件箱状态。`,
     inputSchema: getSenderCategorizationStatusInputSchema,
     execute: async ({ waitMs }) => {
       trackToolCall({
@@ -413,9 +413,9 @@ export const getSenderCategorizationStatusTool = ({
         const progress = await getCategorizationProgress({ emailAccountId });
         return getCategorizationStatusSnapshot(progress);
       } catch (error) {
-        logger.error("Failed to load sender categorization status", { error });
+        logger.error("加载发件人分类状态失败", { error });
         return {
-          error: "Failed to load sender categorization status",
+          error: "加载发件人分类状态失败",
         };
       }
     },
@@ -862,7 +862,7 @@ export const readAttachmentTool = ({
             mimeType: resolvedMimeType,
             size: attachment.size,
             contentAvailable: false,
-            message: "Failed to extract text from this attachment.",
+            message: "无法从此附件提取文本",
           };
         }
 
@@ -875,8 +875,8 @@ export const readAttachmentTool = ({
           truncated: extracted.truncated,
         };
       } catch (error) {
-        logger.error("Failed to read attachment", { error });
-        return { error: "Failed to read attachment" };
+        logger.error("读取附件失败", { error });
+        return { error: "读取附件失败" };
       }
     },
   });
@@ -1640,8 +1640,8 @@ function createLabelLookupMap(labels: Array<{ id: string; name: string }>) {
     ["awaiting_reply", awaitingReplyLabel],
     ["fyi", fyiLabel],
     ["actioned", actionedLabel],
-    ["inbox", "Inbox"],
-    ["unread", "Unread"],
+    ["inbox", "收件箱"],
+    ["unread", "未读"],
   ] as const);
 }
 
@@ -1697,7 +1697,7 @@ async function applyLabelToThread({
   ).length;
 
   if (failedCount > 0) {
-    throw new Error(`Failed to label ${failedCount} messages in thread`);
+    throw new Error(`无法为会话中的 ${failedCount} 封邮件添加标签`);
   }
 }
 
@@ -1940,20 +1940,20 @@ const THREAD_ACTION_CONCURRENCY = 3;
 
 function getValidationErrorMessage(toolName: string, error: z.ZodError) {
   const firstIssue = error.issues[0];
-  if (!firstIssue) return `Invalid ${toolName} input`;
+  if (!firstIssue) return `${toolName} 的输入无效`;
 
   if (firstIssue.code === "unrecognized_keys") {
     const firstKey = firstIssue.keys[0];
     if (firstKey) {
-      return `Invalid ${toolName} input: unsupported field "${firstKey}"`;
+      return `${toolName} 的输入无效：不支持的字段“${firstKey}”`;
     }
-    return `Invalid ${toolName} input: unsupported fields`;
+    return `${toolName} 的输入无效：包含不支持的字段`;
   }
 
   const field = firstIssue.path.map(String).join(".");
-  if (!field) return `Invalid ${toolName} input: ${firstIssue.message}`;
+  if (!field) return `${toolName} 的输入无效：${firstIssue.message}`;
 
-  return `Invalid ${toolName} input: ${field} ${firstIssue.message}`;
+  return `${toolName} 的输入无效：${field} ${firstIssue.message}`;
 }
 
 const MAX_ATTACHMENT_TEXT_LENGTH = 8000;

@@ -246,7 +246,7 @@ export async function resolveDraftAttachments({
         contentType: downloaded.file.mimeType,
       });
     } catch (error) {
-      logger.warn("Failed to download draft attachment", {
+      logger.warn("下载草稿附件失败", {
         driveConnectionId: selectedAttachment.driveConnectionId,
         fileId: selectedAttachment.fileId,
         error,
@@ -275,9 +275,9 @@ async function syncAttachmentSource({
 
   const discoveredFileIds = discoveredFiles.map((file) => file.file.id);
 
-  // Only prune stale documents when we have a complete picture of what's in
-  // the source. If discovery was capped (file count or depth limit), skipping
-  // the deleteMany prevents valid attachments from being purged.
+  // 只有在完整掌握来源内容时才清理过期文档。
+  // 如果发现过程被限制（文件数量或深度限制），跳过
+  // deleteMany 可防止有效的附件被清除。
   if (!capped) {
     if (discoveredFileIds.length > 0) {
       await prisma.attachmentDocument.deleteMany({
@@ -501,7 +501,7 @@ async function indexAttachmentDocument({
         where: { id: documentId },
         data: {
           indexedAt: new Date(),
-          error: "File no longer available",
+          error: "文件不再可用",
           content: null,
           summary: null,
           metadata: {
@@ -539,7 +539,7 @@ async function indexAttachmentDocument({
       },
     });
   } catch (error) {
-    logger.warn("Failed to index attachment document", {
+    logger.warn("为附件文档建立索引失败", {
       documentId,
       error,
     });
@@ -548,7 +548,7 @@ async function indexAttachmentDocument({
       where: { id: documentId },
       data: {
         indexedAt: new Date(),
-        error: "Failed to index document",
+        error: "为文档建立索引失败",
       },
     });
   }
@@ -569,14 +569,14 @@ async function aiSelectRelevantAttachments({
     emailAccount.user,
     LlmUseCase.DraftAttachmentSelection,
   );
-  logger.info("Selecting draft attachments", {
+  logger.info("正在选择草稿附件", {
     candidateCount: candidates.length,
     emailAccountId: emailAccount.id,
   });
 
   try {
-    // createGenerateObject already wraps model retries/fallbacks; keep
-    // attachment selection non-fatal if the LLM still fails after that.
+    // createGenerateObject 已经封装了模型重试/回退；因此即使 LLM 在
+    // 之后仍然失败，也让附件选择保持非致命。
     const generateObject = createGenerateObject({
       emailAccount,
       label: "Draft attachment selection",
@@ -640,7 +640,7 @@ preview: ${candidate.preview || "No preview available"}
       })
       .slice(0, MAX_ATTACHMENTS);
 
-    logger.info("Selected draft attachments", {
+    logger.info("已选择草稿附件", {
       candidateCount: candidates.length,
       emailAccountId: emailAccount.id,
       selectedCount: selectedAttachments.length,
@@ -648,7 +648,7 @@ preview: ${candidate.preview || "No preview available"}
 
     return selectedAttachments;
   } catch (error) {
-    logger.warn("Failed to select draft attachments", {
+    logger.warn("选择草稿附件失败", {
       candidateCount: candidates.length,
       emailAccountId: emailAccount.id,
       error,
@@ -716,7 +716,7 @@ async function getDriveProvider({
     providers.set(driveConnection.id, provider);
     return provider;
   } catch (error) {
-    logger.warn("Failed to access drive connection for attachments", {
+    logger.warn("访问附件所需的云盘连接失败", {
       driveConnectionId: driveConnection.id,
       error,
     });

@@ -82,7 +82,7 @@ export async function handleMcpServerRequest(
     { name: `${BRAND_NAME} MCP`, version: "1.0.0" },
     {
       instructions:
-        "Use list_email_accounts when targeting a specific inbox. Search and read tools return mail; create_draft saves a mailbox draft and never sends. Rule and stats tools accept emailAccountId or emailAddress and default to the first linked account.",
+        "针对特定收件箱时使用 list_email_accounts。搜索和读取工具返回邮件；create_draft 只保存邮箱草稿，绝不发送。规则和统计工具接受 emailAccountId 或 emailAddress，默认使用第一个已关联的账号。",
     },
   );
 
@@ -96,13 +96,13 @@ export async function handleMcpServerRequest(
       try {
         assertMcpScope(session.scopes, required);
         const data = await handler(args);
-        toolLogger.info("MCP tool call", {
+        toolLogger.info("MCP 工具调用", {
           tool: name,
           ...emailAccountLogFields(data),
         });
         return createToolResult(data);
       } catch (error) {
-        toolLogger.warn("MCP tool failed", {
+        toolLogger.warn("MCP 工具执行失败", {
           tool: name,
           error: error instanceof Error ? error.message : error,
         });
@@ -113,9 +113,9 @@ export async function handleMcpServerRequest(
   server.registerTool(
     "list_email_accounts",
     {
-      title: "List email accounts",
-      description: "List the inbox accounts linked to the authenticated user.",
-      annotations: { ...readOnlyAnnotations, title: "List email accounts" },
+      title: "列出邮箱账号",
+      description: "列出与已认证用户关联的收件箱账号。",
+      annotations: { ...readOnlyAnnotations, title: "列出邮箱账号" },
     },
     runTool("list_email_accounts", "mcp:read", async () => ({
       accounts: await listMcpEmailAccounts(userId),
@@ -126,11 +126,11 @@ export async function handleMcpServerRequest(
   server.registerTool(
     "search_inbox",
     {
-      title: "Search inbox",
+      title: "搜索收件箱",
       description:
-        "Search one inbox and return message metadata and snippets. Does not return full message bodies, send email, or change mail.",
+        "搜索一个收件箱并返回邮件元数据和片段。不返回完整邮件正文、不发送邮件、不更改邮件。",
       inputSchema: searchInboxInputShape,
-      annotations: { ...mailboxReadAnnotations, title: "Search inbox" },
+      annotations: { ...mailboxReadAnnotations, title: "搜索收件箱" },
     },
     runTool("search_inbox", "mcp:read", async (args) =>
       searchInboxForMcp({
@@ -154,11 +154,11 @@ export async function handleMcpServerRequest(
   server.registerTool(
     "read_thread",
     {
-      title: "Read thread",
+      title: "读取会话",
       description:
-        "Read messages from one inbox thread by thread ID. Returns plain-text bodies truncated per message.",
+        "按会话 ID 读取某个收件箱会话中的邮件。返回按邮件截断的纯文本正文。",
       inputSchema: readThreadInputShape,
-      annotations: { ...mailboxReadAnnotations, title: "Read thread" },
+      annotations: { ...mailboxReadAnnotations, title: "读取会话" },
     },
     runTool("read_thread", "mcp:read", async (args) =>
       readThreadForMcp({
@@ -180,11 +180,11 @@ export async function handleMcpServerRequest(
   server.registerTool(
     "create_draft",
     {
-      title: "Create draft",
+      title: "创建草稿",
       description:
-        "Create a mailbox draft with a recipient, subject, and body. Saves the draft for review without sending email.",
+        "创建包含收件人、主题和正文的邮箱草稿。保存草稿以供审核，不发送邮件。",
       inputSchema: createDraftInputShape,
-      annotations: { ...mailboxWriteAnnotations, title: "Create draft" },
+      annotations: { ...mailboxWriteAnnotations, title: "创建草稿" },
     },
     runTool("create_draft", "mcp:write", async (args) =>
       createDraftForMcp({
@@ -206,10 +206,10 @@ export async function handleMcpServerRequest(
   server.registerTool(
     "list_rules",
     {
-      title: "List rules",
-      description: "List automation rules for one inbox account.",
+      title: "列出规则",
+      description: "列出某个收件箱账号的自动化规则。",
       inputSchema: mcpAccountSelectorShape,
-      annotations: { ...readOnlyAnnotations, title: "List rules" },
+      annotations: { ...readOnlyAnnotations, title: "列出规则" },
     },
     runTool("list_rules", "mcp:read", async (args) => {
       const emailAccount = await resolveMcpEmailAccount({
@@ -232,13 +232,13 @@ export async function handleMcpServerRequest(
   server.registerTool(
     "get_rule",
     {
-      title: "Get rule",
-      description: "Get one automation rule by ID for one inbox account.",
+      title: "获取规则",
+      description: "按 ID 获取某个收件箱账号的一条自动化规则。",
       inputSchema: {
         ...mcpAccountSelectorShape,
         id: z.string(),
       },
-      annotations: { ...readOnlyAnnotations, title: "Get rule" },
+      annotations: { ...readOnlyAnnotations, title: "获取规则" },
     },
     runTool("get_rule", "mcp:read", async (args) => {
       const emailAccount = await resolveMcpEmailAccount({
@@ -251,7 +251,7 @@ export async function handleMcpServerRequest(
       });
 
       if (!rule) {
-        throw new Error("Rule not found for the selected email account.");
+        throw new Error("所选邮箱账号中未找到该规则。");
       }
 
       return {
@@ -264,13 +264,13 @@ export async function handleMcpServerRequest(
   server.registerTool(
     "create_rule",
     {
-      title: "Create rule",
-      description: "Create an automation rule for one inbox account.",
+      title: "创建规则",
+      description: "为某个收件箱账号创建一条自动化规则。",
       inputSchema: {
         ...mcpAccountSelectorShape,
         rule: ruleRequestBodySchema,
       },
-      annotations: { ...ruleWriteAnnotations, title: "Create rule" },
+      annotations: { ...ruleWriteAnnotations, title: "创建规则" },
     },
     runTool("create_rule", "mcp:write", async (args) => {
       const emailAccount = await resolveMcpEmailAccount({
@@ -304,7 +304,7 @@ export async function handleMcpServerRequest(
       });
 
       if (!storedRule) {
-        throw new Error("Created rule could not be loaded.");
+        throw new Error("无法加载已创建的规则。");
       }
 
       return {
@@ -317,14 +317,14 @@ export async function handleMcpServerRequest(
   server.registerTool(
     "update_rule",
     {
-      title: "Update rule",
-      description: "Replace an automation rule for one inbox account.",
+      title: "更新规则",
+      description: "替换某个收件箱账号的一条自动化规则。",
       inputSchema: {
         ...mcpAccountSelectorShape,
         id: z.string(),
         rule: ruleRequestBodySchema,
       },
-      annotations: { ...ruleWriteAnnotations, title: "Update rule" },
+      annotations: { ...ruleWriteAnnotations, title: "更新规则" },
     },
     runTool("update_rule", "mcp:write", async (args) => {
       const emailAccount = await resolveMcpEmailAccount({
@@ -337,7 +337,7 @@ export async function handleMcpServerRequest(
       });
 
       if (!existingRule) {
-        throw new Error("Rule not found for the selected email account.");
+        throw new Error("所选邮箱账号中未找到该规则。");
       }
 
       const ruleInput = toRuleWriteInput(
@@ -373,7 +373,7 @@ export async function handleMcpServerRequest(
       });
 
       if (!updatedRule) {
-        throw new Error("Updated rule could not be loaded.");
+        throw new Error("无法加载已更新的规则。");
       }
 
       return {
@@ -386,13 +386,13 @@ export async function handleMcpServerRequest(
   server.registerTool(
     "delete_rule",
     {
-      title: "Delete rule",
-      description: "Delete an automation rule for one inbox account.",
+      title: "删除规则",
+      description: "删除某个收件箱账号的一条自动化规则。",
       inputSchema: {
         ...mcpAccountSelectorShape,
         id: z.string(),
       },
-      annotations: { ...destructiveAnnotations, title: "Delete rule" },
+      annotations: { ...destructiveAnnotations, title: "删除规则" },
     },
     runTool("delete_rule", "mcp:write", async (args) => {
       const emailAccount = await resolveMcpEmailAccount({
@@ -405,7 +405,7 @@ export async function handleMcpServerRequest(
       });
 
       if (!existingRule) {
-        throw new Error("Rule not found for the selected email account.");
+        throw new Error("所选邮箱账号中未找到该规则。");
       }
 
       await deleteRule({
@@ -425,15 +425,15 @@ export async function handleMcpServerRequest(
   server.registerTool(
     "get_stats_by_period",
     {
-      title: "Get stats by period",
-      description: "Get email statistics grouped by day, week, month, or year.",
+      title: "按周期获取统计",
+      description: "获取按日、周、月或年分组的邮件统计。",
       inputSchema: {
         ...mcpAccountSelectorShape,
         period: z.enum(["day", "week", "month", "year"]).optional(),
         fromDate: z.number().int().optional(),
         toDate: z.number().int().optional(),
       },
-      annotations: { ...readOnlyAnnotations, title: "Get stats by period" },
+      annotations: { ...readOnlyAnnotations, title: "按周期获取统计" },
     },
     runTool("get_stats_by_period", "mcp:read", async (args) => {
       const emailAccount = await resolveMcpEmailAccount({
@@ -463,14 +463,14 @@ export async function handleMcpServerRequest(
   server.registerTool(
     "get_response_time_stats",
     {
-      title: "Get response time stats",
-      description: "Get response time analytics for one inbox account.",
+      title: "获取响应时间统计",
+      description: "获取某个收件箱账号的响应时间分析。",
       inputSchema: {
         ...mcpAccountSelectorShape,
         fromDate: z.number().int().optional(),
         toDate: z.number().int().optional(),
       },
-      annotations: { ...readOnlyAnnotations, title: "Get response time stats" },
+      annotations: { ...readOnlyAnnotations, title: "获取响应时间统计" },
     },
     runTool("get_response_time_stats", "mcp:read", async (args) => {
       const emailAccount = await resolveMcpEmailAccount({

@@ -30,8 +30,8 @@ export function createOtherSplitFilter(
         now,
       ),
     );
-  // Gmail matches all AND conditions on the same message. Inspect the full
-  // conversation so mixed-label threads cannot also leak into Other.
+  // Gmail 会在同一封邮件上匹配所有 AND 条件。检查完整的
+  // 会话，这样标签混杂的会话就不会也漏进 Other。
   return (thread: { messages: SplitMessage[] }): boolean =>
     !queries.some((query) =>
       thread.messages.some(

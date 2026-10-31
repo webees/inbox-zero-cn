@@ -138,7 +138,7 @@ export function buildVercelEnvValues(config: {
 export async function runVercelSetup(
   options: SetupVercelOptions,
 ): Promise<void> {
-  p.intro("Inbox Zero Vercel Setup");
+  p.intro("Inbox Zero Vercel 设置");
 
   requireVercelCli();
   requireVercelLogin(options.scope);
@@ -160,10 +160,10 @@ export async function runVercelSetup(
     await runVercelCommand(["link", "--yes", "--project", projectName], {
       cwd: projectDir,
       scope: options.scope,
-      label: "Linking Vercel project",
+      label: "关联 Vercel 项目",
     });
   } else {
-    p.log.info(`Using existing Vercel link in ${projectDir}`);
+    p.log.info(`使用 ${projectDir} 中现有的 Vercel 关联`);
   }
 
   if (!options.skipNeon) {
@@ -181,7 +181,7 @@ export async function runVercelSetup(
       {
         cwd: projectDir,
         scope: options.scope,
-        label: "Provisioning Neon",
+        label: "正在配置 Neon",
       },
     );
   }
@@ -201,7 +201,7 @@ export async function runVercelSetup(
       {
         cwd: projectDir,
         scope: options.scope,
-        label: "Provisioning Upstash Redis",
+        label: "配置 Upstash Redis",
       },
     );
   }
@@ -214,7 +214,7 @@ export async function runVercelSetup(
   });
 
   const envSpinner = p.spinner();
-  envSpinner.start("Setting Vercel environment variables");
+  envSpinner.start("正在设置 Vercel 环境变量");
   let skippedEnvCount = 0;
   for (const envValue of envValues) {
     const inputValue = resolveEnvValue(envValue);
@@ -243,7 +243,7 @@ export async function runVercelSetup(
       }
 
       const overwrite = await p.confirm({
-        message: `${envValue.key} already exists for ${envValue.environment}. Overwrite it?`,
+        message: `${envValue.key} 在 ${envValue.environment} 中已存在。是否覆盖？`,
         initialValue: false,
       });
       if (p.isCancel(overwrite)) cancelSetup();
@@ -271,55 +271,47 @@ export async function runVercelSetup(
 
       if (updateResult.status === 0) continue;
 
-      envSpinner.stop("Failed to set Vercel environment variables");
+      envSpinner.stop("设置 Vercel 环境变量失败");
       p.log.error(
-        updateResult.stderr ||
-          updateResult.stdout ||
-          "Unknown Vercel CLI error",
+        updateResult.stderr || updateResult.stdout || "未知的 Vercel CLI 错误",
       );
       process.exit(1);
     }
 
-    envSpinner.stop("Failed to set Vercel environment variables");
-    p.log.error(result.stderr || result.stdout || "Unknown Vercel CLI error");
+    envSpinner.stop("设置 Vercel 环境变量失败");
+    p.log.error(result.stderr || result.stdout || "未知的 Vercel CLI 错误");
     process.exit(1);
   }
-  envSpinner.stop("Vercel environment variables configured");
+  envSpinner.stop("Vercel 环境变量已配置");
   if (skippedEnvCount > 0) {
-    p.log.info(
-      `Skipped ${skippedEnvCount} existing environment variable${skippedEnvCount === 1 ? "" : "s"}.`,
-    );
+    p.log.info(`已跳过 ${skippedEnvCount} 个现有的环境变量。`);
   }
 
   if (deployNow) {
     await runVercelCommand(["deploy", "--prod"], {
       cwd: projectDir,
       scope: options.scope,
-      label: "Deploying to production",
+      label: "正在部署到生产环境",
     });
   }
 
   const nextSteps = [
-    `Base URL configured: ${baseUrl}`,
-    !options.skipNeon ? "Neon connected to the Vercel project" : null,
-    !options.skipUpstash
-      ? "Upstash Redis connected to the Vercel project"
-      : null,
+    `已配置的基础 URL：${baseUrl}`,
+    !options.skipNeon ? "Neon 已连接到 Vercel 项目" : null,
+    !options.skipUpstash ? "Upstash Redis 已连接到 Vercel 项目" : null,
     google.clientId
-      ? `Google OAuth redirect URI: ${baseUrl}/api/auth/callback/google`
-      : "Google env vars were seeded with placeholders and still need real values",
+      ? `Google OAuth 重定向 URI：${baseUrl}/api/auth/callback/google`
+      : "Google 环境变量已用占位符填充，仍需要真实值",
     microsoft.clientId
-      ? `Microsoft OAuth redirect URI: ${baseUrl}/api/auth/callback/microsoft`
-      : "Microsoft OAuth is optional and can be added later",
-    deployNow
-      ? "Production deploy requested"
-      : "Run `vercel deploy --prod` when you are ready",
+      ? `Microsoft OAuth 重定向 URI：${baseUrl}/api/auth/callback/microsoft`
+      : "Microsoft OAuth 是可选的，可以稍后添加",
+    deployNow ? "已请求生产环境部署" : "准备好后运行 `vercel deploy --prod`",
   ]
     .filter(Boolean)
     .join("\n");
 
-  p.note(nextSteps, "Next Steps");
-  p.outro("Vercel setup complete.");
+  p.note(nextSteps, "后续步骤");
+  p.outro("Vercel 配置完成。");
 }
 
 function checkVercelCli(): boolean {
@@ -330,9 +322,7 @@ function checkVercelCli(): boolean {
 function requireVercelCli() {
   if (checkVercelCli()) return;
 
-  p.log.error(
-    "Vercel CLI is not installed.\nInstall it first with `pnpm i -g vercel@latest`.",
-  );
+  p.log.error("未安装 Vercel CLI。\n请先运行 `pnpm i -g vercel@latest` 安装。");
   process.exit(1);
 }
 
@@ -341,9 +331,7 @@ function requireVercelLogin(scope?: string) {
   const result = spawnSync("vercel", args, { stdio: "pipe" });
   if (result.status === 0) return;
 
-  p.log.error(
-    "Vercel CLI is not authenticated.\nRun `vercel login` and try again.",
-  );
+  p.log.error("Vercel CLI 未认证。\n请运行 `vercel login` 后重试。");
   process.exit(1);
 }
 
@@ -372,10 +360,10 @@ async function resolveProjectName(
   if (options.yes) return defaultProjectName;
 
   const projectName = await p.text({
-    message: "Vercel project name",
+    message: "Vercel 项目名称",
     placeholder: "inbox-zero",
     initialValue: defaultProjectName,
-    validate: (value) => (value ? undefined : "Project name is required"),
+    validate: (value) => (value ? undefined : "项目名称为必填项"),
   });
 
   if (p.isCancel(projectName)) cancelSetup();
@@ -387,7 +375,7 @@ async function resolveRegion(options: SetupVercelOptions) {
   if (options.yes) return DEFAULT_VERCEL_REGION;
 
   const region = await p.select({
-    message: "Shared region for Neon and Upstash",
+    message: "Neon 与 Upstash 共用的区域",
     initialValue: DEFAULT_VERCEL_REGION,
     options: SHARED_VERCEL_REGIONS.map((value) => ({
       value,
@@ -409,16 +397,16 @@ async function resolveBaseUrl(
   if (options.yes) return defaultBaseUrl;
 
   const baseUrl = await p.text({
-    message: "Production base URL",
+    message: "生产环境基础 URL",
     placeholder: defaultBaseUrl,
     initialValue: defaultBaseUrl,
     validate: (value) => {
-      if (!value) return "Base URL is required";
+      if (!value) return "基础 URL 为必填项";
       try {
         new URL(value);
         return;
       } catch {
-        return "Enter a full URL like https://your-app.vercel.app";
+        return "请输入完整 URL，例如 https://your-app.vercel.app";
       }
     },
   });
@@ -432,7 +420,7 @@ async function resolveDeployPreference(options: SetupVercelOptions) {
   if (options.yes) return false;
 
   const deployNow = await p.confirm({
-    message: "Deploy to production after setup?",
+    message: "配置完成后部署到生产环境？",
     initialValue: true,
   });
 
@@ -449,12 +437,12 @@ async function promptEmailProviders(
   }
 
   p.note(
-    "You can leave providers unconfigured for now. The CLI will seed safe placeholders so the project can deploy, and you can replace them later in Vercel.",
-    "Email Providers",
+    "你可以暂时不配置服务商。CLI 会填充安全的占位符以便项目能够部署，你之后可以在 Vercel 中替换它们。",
+    "邮箱服务商",
   );
 
   const providers = await p.multiselect({
-    message: "Which email providers do you want to configure now?",
+    message: "你现在想配置哪些邮箱服务商？",
     options: [
       { value: "google", label: "Google (Gmail)" },
       { value: "microsoft", label: "Microsoft (Outlook)" },
@@ -476,11 +464,11 @@ async function promptEmailProviders(
 async function promptGoogleConfig(baseUrl: string): Promise<GoogleConfig> {
   p.note(
     [
-      "Use these Google OAuth redirect URIs:",
+      "使用以下 Google OAuth 重定向 URI：",
       `${baseUrl}/api/auth/callback/google`,
       `${baseUrl}/api/google/linking/callback`,
       "",
-      "Paste the values now, or press Ctrl+C and come back later if you need to finish Google Cloud setup first.",
+      "现在粘贴这些值，或者如果你需要先完成 Google Cloud 配置，按 Ctrl+C 稍后再来。",
     ].join("\n"),
     "Google OAuth",
   );
@@ -489,24 +477,23 @@ async function promptGoogleConfig(baseUrl: string): Promise<GoogleConfig> {
     {
       clientId: () =>
         p.text({
-          message: "Google Client ID",
-          placeholder: "paste your Client ID here",
-          validate: (value) => (!value ? "Client ID is required" : undefined),
+          message: "Google 客户端 ID",
+          placeholder: "在此粘贴你的客户端 ID",
+          validate: (value) => (!value ? "客户端 ID 为必填项" : undefined),
         }),
       clientSecret: () =>
         p.text({
-          message: "Google Client Secret",
-          placeholder: "paste your Client Secret here",
-          validate: (value) =>
-            !value ? "Client secret is required" : undefined,
+          message: "Google 客户端密钥",
+          placeholder: "在此粘贴你的客户端密钥",
+          validate: (value) => (!value ? "客户端密钥为必填项" : undefined),
         }),
       pubsubTopicName: () =>
         p.text({
-          message: "Google Pub/Sub topic name",
+          message: "Google Pub/Sub 主题名称",
           placeholder: DEFAULT_GOOGLE_PUBSUB_TOPIC,
           initialValue: DEFAULT_GOOGLE_PUBSUB_TOPIC,
           validate: (value) =>
-            !value ? "Pub/Sub topic name is required" : undefined,
+            !value ? "Pub/Sub 主题名称为必填项" : undefined,
         }),
     },
     { onCancel: cancelSetup },
@@ -520,7 +507,7 @@ async function promptMicrosoftConfig(
 ): Promise<MicrosoftConfig> {
   p.note(
     [
-      "Use these Microsoft redirect URIs:",
+      "使用以下 Microsoft 重定向 URI：",
       `${baseUrl}/api/auth/callback/microsoft`,
       `${baseUrl}/api/outlook/linking/callback`,
       `${baseUrl}/api/outlook/calendar/callback`,
@@ -532,20 +519,19 @@ async function promptMicrosoftConfig(
     {
       clientId: () =>
         p.text({
-          message: "Microsoft Client ID",
-          placeholder: "paste your Client ID here",
-          validate: (value) => (!value ? "Client ID is required" : undefined),
+          message: "Microsoft 客户端 ID",
+          placeholder: "在此粘贴你的客户端 ID",
+          validate: (value) => (!value ? "客户端 ID 为必填项" : undefined),
         }),
       clientSecret: () =>
         p.text({
-          message: "Microsoft Client Secret",
-          placeholder: "paste your Client Secret here",
-          validate: (value) =>
-            !value ? "Client secret is required" : undefined,
+          message: "Microsoft 客户端密钥",
+          placeholder: "在此粘贴你的客户端密钥",
+          validate: (value) => (!value ? "客户端密钥为必填项" : undefined),
         }),
       tenantId: () =>
         p.text({
-          message: "Microsoft Tenant ID",
+          message: "Microsoft 租户 ID",
           placeholder: "common",
           initialValue: "common",
         }),
@@ -571,7 +557,7 @@ async function promptVercelLlmConfig(
   }
 
   const llmProvider = await p.select({
-    message: "Default AI provider",
+    message: "默认 AI 服务提供商",
     options: [...LLM_PROVIDER_OPTIONS],
   });
 
@@ -579,7 +565,7 @@ async function promptVercelLlmConfig(
   const selectedLlmProvider = String(llmProvider);
 
   const configureRealKey = await p.confirm({
-    message: "Add real AI credentials now?",
+    message: "现在添加真实的 AI 凭据？",
     initialValue: true,
   });
 
@@ -611,8 +597,8 @@ async function runVercelCommand(
   });
 
   if (result.status !== 0) {
-    spinner.stop(`${config.label} failed`);
-    p.log.error(result.stderr || result.stdout || "Unknown Vercel CLI error");
+    spinner.stop(`${config.label} 失败`);
+    p.log.error(result.stderr || result.stdout || "未知的 Vercel CLI 错误");
     process.exit(1);
   }
 
@@ -731,6 +717,6 @@ function readLinkedProjectName(projectDir: string) {
 }
 
 function cancelSetup(): never {
-  p.cancel("Setup cancelled.");
+  p.cancel("设置已取消。");
   process.exit(0);
 }

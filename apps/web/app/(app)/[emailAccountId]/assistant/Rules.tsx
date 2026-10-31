@@ -124,7 +124,7 @@ export function Rules({
 
     if (result?.serverError) {
       toastError({
-        description: `There was an error ${enabled ? "enabling" : "disabling"} the rule. ${result.serverError || ""}`,
+        description: `${enabled ? "启用" : "禁用"}规则时出错。${result.serverError || ""}`,
       });
     }
 
@@ -192,12 +192,14 @@ export function Rules({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-16 px-2 sm:px-4">Enabled</TableHead>
-                  <TableHead className="px-2 sm:px-4">Name</TableHead>
-                  <TableHead className="hidden sm:table-cell px-2 sm:px-4">
-                    Prompt
+                  <TableHead className="w-16 whitespace-nowrap px-2 sm:px-4">
+                    启用
                   </TableHead>
-                  <TableHead className="px-2 sm:px-4">Action</TableHead>
+                  <TableHead className="px-2 sm:px-4">名称</TableHead>
+                  <TableHead className="hidden sm:table-cell px-2 sm:px-4">
+                    提示词
+                  </TableHead>
+                  <TableHead className="px-2 sm:px-4">操作</TableHead>
                   <TableHead className="w-fit whitespace-nowrap px-1">
                     {showAddRuleButton && (
                       <div className="flex justify-end">
@@ -237,7 +239,7 @@ export function Rules({
                         className="text-center p-2 sm:p-4"
                       >
                         <Tooltip
-                          content="Disabled by your organization"
+                          content="已被你的组织禁用"
                           hide={!isDisabledByOrg}
                         >
                           <span>
@@ -256,8 +258,8 @@ export function Rules({
                         <div className="flex items-center gap-2">
                           {rule.name}
                           {isOrgManaged && (
-                            <Tooltip content="Managed by Organization">
-                              <Badge color="blue">Org</Badge>
+                            <Tooltip content="由组织管理">
+                              <Badge color="blue">组织</Badge>
                             </Tooltip>
                           )}
                         </div>
@@ -287,7 +289,7 @@ export function Rules({
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 <MoreHorizontalIcon className="size-4" />
-                                <span className="sr-only">Toggle menu</span>
+                                <span className="sr-only">切换菜单</span>
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
@@ -305,12 +307,12 @@ export function Rules({
                                     }}
                                   >
                                     <PenIcon className="mr-2 size-4" />
-                                    Edit manually
+                                    手动编辑
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={() => {
                                       setInput(
-                                        `I'd like to edit the "${rule.name}" rule:\n`,
+                                        `我想编辑“${rule.name}”规则：\n`,
                                       );
                                       setOpen((arr) => [
                                         ...arr,
@@ -319,7 +321,7 @@ export function Rules({
                                     }}
                                   >
                                     <SparklesIcon className="mr-2 size-4" />
-                                    Edit via AI
+                                    通过 AI 编辑
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={() => {
@@ -329,7 +331,7 @@ export function Rules({
                                     }}
                                   >
                                     <CopyIcon className="mr-2 size-4" />
-                                    Duplicate
+                                    复制
                                   </DropdownMenuItem>
                                 </>
                               )}
@@ -341,7 +343,7 @@ export function Rules({
                                   )}
                                 >
                                   <HistoryIcon className="mr-2 size-4" />
-                                  History
+                                  历史记录
                                 </Link>
                               </DropdownMenuItem>
                               {!rule.systemType && !isOrgManaged && (
@@ -351,7 +353,7 @@ export function Rules({
                                   <DropdownMenuItem
                                     onClick={async () => {
                                       const yes = confirm(
-                                        `Are you sure you want to delete the rule "${rule.name}"?`,
+                                        `你确定要删除规则“${rule.name}”吗？`,
                                       );
                                       if (yes) {
                                         toast.promise(
@@ -367,7 +369,7 @@ export function Rules({
                                             ) {
                                               throw new Error(
                                                 res?.serverError ||
-                                                  "There was an error deleting your rule",
+                                                  "删除你的规则时出错",
                                               );
                                             }
 
@@ -382,13 +384,13 @@ export function Rules({
                                             mutate();
                                           },
                                           {
-                                            loading: "Deleting rule...",
-                                            success: "Rule deleted",
+                                            loading: "正在删除规则…",
+                                            success: "规则已删除",
                                             error: (error: unknown) =>
-                                              `Error deleting rule. ${
+                                              `删除规则时出错。${
                                                 error instanceof Error
                                                   ? error.message
-                                                  : "There was an error deleting your rule"
+                                                  : "删除你的规则时出错"
                                               }`,
                                             finally: () => {
                                               mutate();
@@ -399,7 +401,7 @@ export function Rules({
                                     }}
                                   >
                                     <Trash2Icon className="mr-2 size-4" />
-                                    Delete
+                                    删除
                                   </DropdownMenuItem>
                                 </>
                               )}
@@ -479,13 +481,13 @@ function NoRules() {
   return (
     <CardHeader>
       <CardDescription className="flex flex-col items-center gap-4 py-20">
-        You don't have any rules yet.
+        你还没有任何规则。
         <div>
           <Button asChild size="sm">
             <Link
               href={getOnboardingStepHref(emailAccountId, STEP_KEYS.LABELS)}
             >
-              Set up default rules
+              设置默认规则
             </Link>
           </Button>
         </div>

@@ -31,7 +31,7 @@ describe("buildMailCommandPalette", () => {
 
     expect(
       commands.find((command) => command.id === "mail-archive"),
-    ).toMatchObject({ label: "Archive conversation" });
+    ).toMatchObject({ label: "归档会话" });
     expect(commands.map((command) => command.id)).toEqual(
       expect.arrayContaining(["mail-mark-read", "mail-snooze"]),
     );
@@ -52,7 +52,7 @@ describe("buildMailCommandPalette", () => {
     expect(commands.map((command) => command.id)).not.toContain("mail-archive");
     expect(
       commands.find((command) => command.id === "mail-move-to-inbox"),
-    ).toMatchObject({ label: "Move 2 conversations to inbox" });
+    ).toMatchObject({ label: "将 2 个会话移至收件箱" });
   });
 
   it("labels commands for the full multi-selection", () => {
@@ -65,7 +65,7 @@ describe("buildMailCommandPalette", () => {
 
     expect(
       commands.find((command) => command.id === "mail-archive"),
-    ).toMatchObject({ label: "Archive 3 conversations" });
+    ).toMatchObject({ label: "归档 3 个会话" });
     expect(commands.map((command) => command.id)).toEqual(
       expect.arrayContaining([
         "mail-mark-read",
@@ -76,7 +76,7 @@ describe("buildMailCommandPalette", () => {
 
     const snooze = commands.find((command) => command.id === "mail-snooze");
     expect(snooze).toMatchObject({
-      label: "Snooze 3 conversations",
+      label: "推迟 3 个会话",
       shortcut: "H",
       closeOnSelect: false,
     });
@@ -147,7 +147,7 @@ describe("buildMailCommandPalette", () => {
       disabled: true,
     });
     expect(commands.find(({ id }) => id === "mail-auto-archive")).toMatchObject(
-      { label: "Auto archive future emails", disabled: false },
+      { label: "自动归档以后的邮件", disabled: false },
     );
     expect(
       commands.find(({ id }) => id === "mail-open-external"),
@@ -164,7 +164,7 @@ describe("buildMailCommandPalette", () => {
     });
 
     expect(commands.find(({ id }) => id === "mail-auto-archive")).toMatchObject(
-      { label: "Disable auto archive" },
+      { label: "关闭自动归档" },
     );
   });
 });

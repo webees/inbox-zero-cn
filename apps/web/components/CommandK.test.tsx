@@ -144,7 +144,7 @@ describe("CommandK side-panel actions", () => {
 
     expect(displayedEmail.showEmail).not.toHaveBeenCalled();
     expect(notifications.error).toHaveBeenCalledWith({
-      description: "Couldn't queue archiving this email",
+      description: "无法将此邮件加入归档队列",
     });
   });
 
@@ -170,7 +170,7 @@ describe("CommandK side-panel actions", () => {
     await act(async () => shortcuts.handlers?.star?.());
     expect(mail.client.submitConversations).not.toHaveBeenCalled();
     expect(notifications.error).toHaveBeenCalledWith({
-      description: "Email is still loading",
+      description: "邮件仍在加载",
     });
   });
 

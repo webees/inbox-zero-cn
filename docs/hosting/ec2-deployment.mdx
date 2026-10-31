@@ -75,7 +75,7 @@ curl -fsSL https://rpm.nodesource.com/setup_lts.x | sudo bash -
 sudo dnf install -y nodejs
 ```
 
-#### 3. Install Docker Compose
+#### 3. 安装 Docker Compose
 
 ```bash
 mkdir -p ~/.docker/cli-plugins
@@ -85,8 +85,8 @@ chmod +x ~/.docker/cli-plugins/docker-compose
 docker compose version
 ```
 
-#### 4. Setup Swap Memory (CRITICAL for Micro Instances)
-If you are using a `t2.micro` or `t3.micro` (1GB RAM), you MUST add swap or the build/runtime will crash.
+#### 4. 设置交换内存（微型实例的关键步骤）
+如果你使用的是 `t2.micro` 或 `t3.micro`（1GB 内存），则必须添加交换内存，否则构建或运行时将会崩溃。
 
 ```bash
 # Create a 4GB swap file
@@ -97,41 +97,41 @@ sudo swapon /swapfile
 echo '/swapfile swap swap defaults 0 0' | sudo tee -a /etc/fstab
 ```
 
-## 3. SSL/HTTPS Setup
+## 3. SSL/HTTPS 设置
 
-### Application Load Balancer (ALB)
+### 应用负载均衡器（ALB）
 
-You can also use nginx or any approach of your choice.
+你也可以使用 nginx 或任何你选择的方式。
 
-1.  **Request SSL Certificate (AWS Certificate Manager):**
-    *   Go to **AWS Certificate Manager** console
-    *   Click **Request certificate** → **Request a public certificate**
-    *   Enter your domain name (e.g., `app.yourdomain.com`)
-    *   Choose **DNS validation** (easier) or **Email validation**
-    *   Follow validation steps: AWS will provide a CNAME record to add to your DNS. Once added, the certificate will be issued in 5-10 minutes.
-    *   Wait for certificate status to show **Issued**
+1.  **申请 SSL 证书（AWS Certificate Manager）：**
+    *   前往 **AWS Certificate Manager** 控制台
+    *   点击 **申请证书** → **申请公有证书**
+    *   输入你的域名（例如 `app.yourdomain.com`）
+    *   选择 **DNS 验证**（更简单）或 **电子邮件验证**
+    *   按验证步骤操作：AWS 会提供一个 CNAME 记录，你需要将其添加到 DNS 中。添加后，证书将在 5-10 分钟内签发。
+    *   等待证书状态显示为 **已签发**
 
-2.  **Create Target Group:**
-    *   Go to **EC2 Console** → **Target Groups** → **Create target group**
-    *   Name: e.g., `inbox-zero-web`
-    *   Target type: **Instances**
-    *   Protocol: **HTTP**, Port: **3000**
-    *   Health check path: `/api/health`
-    *   Click **Next**, select your EC2 instance, click **Include as pending below**, then **Next**, then **Create target group**
+2.  **创建目标组：**
+    *   前往 **EC2 控制台** → **目标组** → **创建目标组**
+    *   名称：例如 `inbox-zero-web`
+    *   目标类型：**实例**
+    *   协议：**HTTP**，端口：**3000**
+    *   运行状况检查路径：`/api/health`
+    *   点击 **下一步**，选择你的 EC2 实例，点击 **在下方包含为待处理项**，然后点击 **下一步**，再点击 **创建目标组**
 
-3.  **Create Application Load Balancer:**
-    *   Go to **EC2 Console** → **Load Balancers** → **Create load balancer**
-    *   Choose **Application Load Balancer**
-    *   Name: `inbox-zero-alb`
-    *   Scheme: **Internet-facing**
-    *   IP address type: **IPv4**
-    *   Network mapping: Select at least 2 availability zones
-    *   Security groups: Create/select one that allows HTTP (80) and HTTPS (443) from anywhere
-    *   **Listeners:**
-        *   Add listener: **HTTPS (443)** → Forward to your target group
-        *   (Optional) Add listener: **HTTP (80)** → Redirect to HTTPS
-    *   **Secure listener settings**: Select your ACM certificate
-    *   Click **Create load balancer**
+3.  **创建应用负载均衡器：**
+    *   前往 **EC2 控制台** → **负载均衡器** → **创建负载均衡器**
+    *   选择 **应用负载均衡器**
+    *   名称：`inbox-zero-alb`
+    *   方案：**面向互联网**
+    *   IP 地址类型：**IPv4**
+    *   网络映射：至少选择 2 个可用区
+    *   安全组：创建或选择一个允许从任意位置访问 HTTP (80) 和 HTTPS (443) 的安全组
+    *   **侦听器：**
+        *   添加侦听器：**HTTPS (443)** → 转发到你的目标组
+        *   （可选）添加侦听器：**HTTP (80)** → 重定向到 HTTPS
+    *   **安全侦听器设置**：选择你的 ACM 证书
+    *   点击 **创建负载均衡器**
 
 4.  **Update DNS:**
     *   Wait for the ALB to finish provisioning (status: **Active**, takes 2-5 minutes)

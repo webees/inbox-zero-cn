@@ -71,12 +71,12 @@ export function getMessagingChannelReconnectMessage(
   provider: MessagingProvider,
 ) {
   if (provider === MessagingProvider.SLACK) {
-    return "Please reconnect Slack before configuring notifications.";
+    return "请先重新连接 Slack，再配置通知。";
   }
 
   if (provider === MessagingProvider.TEAMS) {
-    return "Please reconnect Teams before configuring notifications.";
+    return "请先重新连接 Teams，再配置通知。";
   }
 
-  return "Please reconnect the messaging provider before configuring notifications.";
+  return "请先重新连接消息推送服务商，再配置通知。";
 }

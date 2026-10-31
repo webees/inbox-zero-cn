@@ -6,6 +6,7 @@ import {
 } from "@/generated/prisma/enums";
 import { getDefaultMailSplitDrafts } from "@/utils/split-inbox/default-splits";
 import {
+  getRuleLabel,
   isOptInSystemType,
   STANDARD_CATEGORY_SYSTEM_TYPES,
 } from "@/utils/rule/consts";
@@ -32,24 +33,24 @@ describe("getDefaultMailSplitDrafts", () => {
 
     expect(getDefaultMailSplitDrafts(rules)).toEqual([
       {
-        name: "To Reply",
+        name: getRuleLabel(SystemType.TO_REPLY),
         labelId: "reply-label",
         filters: [{ kind: MailSplitFilterKind.LABEL, value: "reply-label" }],
       },
       {
-        name: "Newsletter",
+        name: getRuleLabel(SystemType.NEWSLETTER),
         labelId: "newsletter-label",
         filters: [
           { kind: MailSplitFilterKind.LABEL, value: "newsletter-label" },
         ],
       },
       {
-        name: "Receipt",
+        name: getRuleLabel(SystemType.RECEIPT),
         labelId: "receipt-label",
         filters: [{ kind: MailSplitFilterKind.LABEL, value: "receipt-label" }],
       },
       {
-        name: "OTP",
+        name: getRuleLabel(SystemType.OTP),
         labelId: "otp-label",
         filters: [{ kind: MailSplitFilterKind.LABEL, value: "otp-label" }],
       },
@@ -72,7 +73,7 @@ describe("getDefaultMailSplitDrafts", () => {
 
     expect(getDefaultMailSplitDrafts(rules)).toEqual([
       {
-        name: "Notification",
+        name: getRuleLabel(SystemType.NOTIFICATION),
         labelId: "notification-label",
         filters: [
           { kind: MailSplitFilterKind.LABEL, value: "notification-label" },

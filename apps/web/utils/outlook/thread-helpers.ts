@@ -35,12 +35,11 @@ export class OutlookThreadPaginationError extends Error {
 }
 
 /**
- * Lists every message in a conversation, optionally limited to one folder.
+ * 列出会话中的每封邮件，可限制为单个文件夹。
  *
- * Graph pages /me/messages at 10 results by default, so reading only the first
- * page leaves the rest of a long thread untouched. Enumeration finishes before
- * callers mutate anything, because moving messages changes the paged result
- * set.
+ * Graph 默认将 /me/messages 按每页 10 条结果分页，因此只读取第一页会遗漏
+ * 长会话中的其余邮件。枚举会在调用方执行任何修改前完成，因为移动邮件会改变
+ * 分页结果集。
  */
 export async function listThreadMessages<TMessage extends { id: string }>({
   client,
@@ -149,8 +148,8 @@ export async function runThreadMessageMutation({
 }
 
 /**
- * Fetches messages by conversationId and applies an operation to each.
- * Used as a fallback when the OData $filter approach fails.
+ * 按 conversationId 获取邮件并对每封邮件执行操作。
+ * 在 OData $filter 方式失败时作为备用流程。
  */
 export async function processThreadMessagesFallback({
   client,
@@ -184,7 +183,7 @@ export async function processThreadMessagesFallback({
       threadId,
       logger,
       messageHandler,
-      failureMessage: "Failed to process message in thread fallback",
+      failureMessage: "备用流程处理会话中的邮件失败",
       continueOnError: true,
       throwIfAllFail,
     });

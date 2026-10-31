@@ -24,11 +24,10 @@ export type ApiErrorType = {
   code: number;
 };
 
-const RATE_LIMIT_MESSAGE_TEMPLATE =
-  "{provider} is temporarily limiting requests. Please try again shortly.";
+const RATE_LIMIT_MESSAGE_TEMPLATE = "{provider} 暂时限制了请求。请稍后重试。";
 export const EMAIL_PROVIDER_RATE_LIMIT_MESSAGE =
-  "Your email provider is temporarily limiting requests. Please try again shortly.";
-export const UNEXPECTED_ACTION_ERROR_MESSAGE = "An unknown error occurred.";
+  "你的邮箱服务商暂时限制了请求。请稍后重试。";
+export const UNEXPECTED_ACTION_ERROR_MESSAGE = "发生未知错误。";
 
 export function getEmailProviderRateLimitMessage(
   provider: EmailProviderRateLimitProvider,
@@ -58,11 +57,11 @@ export function isGmailError(
 }
 
 export type CaptureExceptionContext = {
-  // emailAccountId is set automatically via:
-  // - Frontend: SentryIdentify component
-  // - API routes: emailAccountMiddleware
-  // - Server actions: actionClient
-  // Only pass explicitly for code outside these contexts (e.g., cron jobs).
+  // emailAccountId 会通过以下方式自动设置：
+  // - 前端：SentryIdentify 组件
+  // - API 路由：emailAccountMiddleware
+  // - Server actions：actionClient
+  // 仅在这些上下文之外（例如定时任务）才需要显式传入。
   emailAccountId?: string | null;
   userId?: string | null;
   userEmail?: string;
@@ -98,8 +97,8 @@ export function attachLlmRepairMetadata(
 
   const target = error as Record<string, unknown>;
 
-  // Diagnostic metadata must never turn the original model error into a
-  // webhook-processing failure for frozen or otherwise immutable errors.
+  // 诊断元数据绝不能让原始模型错误变成
+  // webhook 处理失败，尤其是对于冻结或不可变错误。
   if (!Object.isExtensible(target)) return;
 
   try {
@@ -115,7 +114,7 @@ export function captureException(
 ) {
   if (isKnownApiError(error) || isHandledUserKeyError(error)) {
     const logger = createScopedLogger("captureException");
-    logger.warn("Known API error", { error, context });
+    logger.warn("已知的 API 错误", { error, context });
     return;
   }
 
@@ -161,7 +160,7 @@ export type ServerActionResponse<
   E extends object = Record<string, unknown>,
 > = ActionError<E> | T;
 
-// This class is used to throw error messages that are safe to expose to the client.
+// 该类用于抛出可以安全暴露给客户端的错误信息。
 export class SafeError extends Error {
   safeMessage?: string;
   statusCode?: number;
@@ -198,7 +197,8 @@ export function isInvalidGrantError(error: unknown): boolean {
 }
 
 export function isGmailInsufficientPermissionsError(error: unknown): boolean {
-  return extractErrorInfo(error).reason === "insufficientPermissions";
+  // biome-ignore lint/suspicious/noExplicitAny: existing loose external shape
+  return (error as any)?.errors?.[0]?.reason === "insufficientPermissions";
 }
 
 export function isGmailRateLimitExceededError(error: unknown): boolean {
@@ -224,21 +224,21 @@ export function isIncorrectAPIKeyError(error: APICallError): boolean {
 export function isInvalidAIModelError(error: APICallError): boolean {
   const message = error.message.toLowerCase();
 
-  // OpenAI: "The model `xyz` does not exist or you do not have access to it"
+  // OpenAI：模型不存在，或你没有访问权限
   if (
     error.message.includes("does not exist or you do not have access to it")
   ) {
     return true;
   }
-  // Anthropic: 404 with "not_found_error"
+  // Anthropic：404 且带有 "not_found_error"
   if (error.statusCode === 404 && error.message.includes("not_found_error")) {
     return true;
   }
-  // Bedrock: error message is just the model ID (e.g., "model: anthropic.claude-...")
+  // Bedrock：错误消息就是模型 ID（例如 "model: anthropic.claude-..."）
   if (/^model:\s*\S+$/.test(error.message.trim())) {
     return true;
   }
-  // OpenRouter: model deprecated or unavailable
+  // OpenRouter：模型已弃用或不可用
   if (
     message.includes("testing period") ||
     message.includes("is deprecated") ||
@@ -247,11 +247,11 @@ export function isInvalidAIModelError(error: APICallError): boolean {
   ) {
     return true;
   }
-  // Google: retired model, e.g. "This model models/xyz is no longer available"
+  // Google：已停用的模型，例如 "This model models/xyz is no longer available"
   if (/\bmodel\b.*\bis no longer available\b/.test(message)) {
     return true;
   }
-  // Generic model-not-found patterns
+  // 通用的模型未找到模式
   if (
     error.message.includes("model is not available") ||
     error.message.includes("model not found")
@@ -274,14 +274,14 @@ export function isAnthropicInsufficientBalanceError(
 }
 
 export function isInsufficientCreditsError(error: APICallError): boolean {
-  // OpenAI reports an exhausted balance as a 429 with this error type.
+  // OpenAI 会用 429 及此错误类型来表示余额耗尽。
   return (
     error.statusCode === 402 ||
     getProviderErrorType(error) === "insufficient_quota"
   );
 }
 
-// Retries wrap the provider's error, which carries the status and body.
+// 重试会包裹服务商的错误，其中携带状态码和响应体。
 export function getAIApiCallError(error: unknown): APICallError | null {
   if (APICallError.isInstance(error)) return error;
   if (RetryError.isInstance(error) && APICallError.isInstance(error.lastError))
@@ -300,7 +300,7 @@ export function isHandledUserKeyError(error: unknown): boolean {
   return (error as Record<string, unknown>)?.[HANDLED_USER_KEY_ERROR] === true;
 }
 
-// Handling AI quota/retry errors. This can be related to the user's own API quota or the system's quota.
+// 处理 AI 配额/重试错误。这可能与用户自己的 API 配额或系统配额有关。
 export function isAiQuotaExceededError(error: RetryError): boolean {
   if (
     APICallError.isInstance(error.lastError) &&
@@ -365,29 +365,17 @@ export function isOutlookItemNotFoundError(error: unknown): boolean {
   );
 }
 
-// The mailbox itself can't be used (unlicensed, soft-deleted, on-premise, or
-// full), so retrying or reporting won't help until the user fixes it.
-function isOutlookMailboxUnavailableError(error: unknown): boolean {
-  const message = (error as Record<string, unknown>)?.message;
-  return (
-    typeof message === "string" &&
-    (message.includes("The mailbox is either inactive, soft-deleted") ||
-      message.includes("failed with a permanent mailbox error"))
-  );
-}
-
 export function isKnownOutlookError(error: unknown): boolean {
   return (
     isOutlookThrottlingError(error) ||
     isOutlookAccessDeniedError(error) ||
-    isOutlookItemNotFoundError(error) ||
-    isOutlookMailboxUnavailableError(error)
+    isOutlookItemNotFoundError(error)
   );
 }
 
-// Provider content moderation refused to produce structured output. Retrying
-// the same model is futile; a fallback model may succeed. Handles p-retry
-// context wrappers that expose the real error on an `error` property.
+// 服务商的内容审核拒绝生成结构化输出。重试同一个模型毫无意义；
+// 备用模型可能会成功。此处处理 p-retry 的上下文包装器，
+// 它们会通过 `error` 属性暴露真正的错误。
 export function isContentFilterRefusal(error: unknown): boolean {
   const unwrapped = (error as { error?: unknown })?.error ?? error;
   return (
@@ -396,7 +384,7 @@ export function isContentFilterRefusal(error: unknown): boolean {
   );
 }
 
-// we don't want to capture these errors in Sentry
+// 我们不希望在 Sentry 中捕获这些错误
 export function isKnownApiError(error: unknown): boolean {
   return (
     isProviderRateLimitModeError(error) ||
@@ -422,7 +410,7 @@ export function checkCommonErrors(
 ): ApiErrorType | null {
   if (isProviderRateLimitModeError(error)) {
     const apiErrorType = getProviderRateLimitApiErrorType(error.provider);
-    logger.warn("Provider rate-limit mode active for url", {
+    logger.warn("服务商限流模式已对 URL 生效", {
       url,
       provider: error.provider,
       retryAt: error.retryAt,
@@ -435,17 +423,17 @@ export function checkCommonErrors(
   }
 
   if (isGmailInsufficientPermissionsError(error)) {
-    logger.warn("Gmail insufficient permissions error for url", { url });
+    logger.warn("Gmail 权限不足错误，URL", { url });
     return {
       type: "Gmail Insufficient Permissions",
       message:
-        "You must grant all Gmail permissions to use the app. Please log out and log in again to grant permissions.",
+        "你必须授予所有 Gmail 权限才能使用本应用。请退出登录后重新登录以授予权限。",
       code: 403,
     };
   }
 
   if (isGmailRateLimitExceededError(error)) {
-    logger.warn("Gmail rate limit exceeded for url", { url });
+    logger.warn("Gmail 超出速率限制，URL", { url });
     return {
       type: getProviderRateLimitApiErrorType("google"),
       message: getEmailProviderRateLimitMessage("google"),
@@ -454,16 +442,16 @@ export function checkCommonErrors(
   }
 
   if (isGmailQuotaExceededError(error)) {
-    logger.warn("Gmail quota exceeded for url", { url });
+    logger.warn("Gmail 超出配额，URL", { url });
     return {
       type: "Gmail Quota Exceeded",
-      message: "You have exceeded the Gmail quota. Please try again later.",
+      message: "你已超出 Gmail 配额。请稍后重试。",
       code: 429,
     };
   }
 
   if (isOutlookThrottlingError(error)) {
-    logger.warn("Outlook throttling error for url", { url });
+    logger.warn("Outlook 限流错误，URL", { url });
     return {
       type: getProviderRateLimitApiErrorType("microsoft"),
       message: getEmailProviderRateLimitMessage("microsoft"),
@@ -472,29 +460,28 @@ export function checkCommonErrors(
   }
 
   if (isOutlookAccessDeniedError(error)) {
-    logger.warn("Outlook access denied error for url", { url });
+    logger.warn("Outlook 访问被拒绝错误，URL", { url });
     return {
       type: "Outlook Access Denied",
-      message:
-        "Access to the mailbox was denied. The account may need to be reconnected.",
+      message: "对邮箱的访问被拒绝。可能需要重新连接该账号。",
       code: 403,
     };
   }
 
   if (isOutlookItemNotFoundError(error)) {
-    logger.warn("Outlook item not found for url", { url });
+    logger.warn("Outlook 未找到项目，URL", { url });
     return {
       type: "Outlook Item Not Found",
-      message: "The requested email was not found. It may have been deleted.",
+      message: "未找到请求的邮件。它可能已被删除。",
       code: 404,
     };
   }
 
   if (RetryError.isInstance(error) && isAiQuotaExceededError(error)) {
-    logger.warn("AI quota exceeded for url", { url });
+    logger.warn("AI 超出配额，URL", { url });
     return {
       type: "AI Quota Exceeded",
-      message: `AI error: ${error.message}`,
+      message: `AI 错误：${error.message}`,
       code: 429,
     };
   }
@@ -520,7 +507,7 @@ export function getErrorMessage(error: unknown): string | undefined {
 
 export function getUserFacingErrorMessage(
   error: unknown,
-  fallback = "An unexpected error occurred. Please try again.",
+  fallback = "发生了意外错误。请重试。",
 ): string {
   const message = getErrorMessage(error);
   if (!message) return fallback;
@@ -569,31 +556,29 @@ type ActionErrorMessageOptions = {
 };
 
 /**
- * Extracts a user-friendly error message from a safe-action error result.
- * Expects flattened validation errors (defaultValidationErrorsShape: "flattened").
+ * 从 safe-action 的错误结果中提取对用户友好的错误信息。
+ * 期望展平的校验错误（defaultValidationErrorsShape: "flattened"）。
  *
- * @param error - The error object from safe-action
- * @param fallbackOrOptions - Either a fallback string, or options object with fallback/prefix
+ * @param error - 来自 safe-action 的错误对象
+ * @param fallbackOrOptions - 回退字符串，或包含 fallback/prefix 的选项对象
  *
  * @example
- * // Simple usage
+ * // 简单用法
  * getActionErrorMessage(error.error)
  *
  * @example
- * // With prefix (shows "Failed to save. <error>" or just "Failed to save" if no error)
- * getActionErrorMessage(error.error, { prefix: "Failed to save" })
+ * // 带前缀（显示「保存失败。<error>」，如果没有错误则仅显示「保存失败」）
+ * getActionErrorMessage(error.error, { prefix: "保存失败" })
  */
 export function getActionErrorMessage(
   error: SafeActionError,
-  fallbackOrOptions:
-    | string
-    | ActionErrorMessageOptions = "An unknown error occurred",
+  fallbackOrOptions: string | ActionErrorMessageOptions = "发生未知错误",
 ): string {
   const { fallback, prefix } =
     typeof fallbackOrOptions === "string"
       ? { fallback: fallbackOrOptions, prefix: undefined }
       : {
-          fallback: fallbackOrOptions.fallback ?? "An unknown error occurred",
+          fallback: fallbackOrOptions.fallback ?? "发生未知错误",
           prefix: fallbackOrOptions.prefix,
         };
 
@@ -647,8 +632,8 @@ function getValidationMessages(
   return all.length > 0 ? all.join(". ") : null;
 }
 
-// Message-based fallback for AI errors that may lose their APICallError type
-// (e.g., when wrapped by middleware like PostHog AI)
+// 针对可能丢失 APICallError 类型的 AI 错误的基于消息的回退
+// （例如被 PostHog AI 之类的中间件包装时）
 function isKnownAIErrorMessage(message: string): boolean {
   const patterns = [
     "Incorrect API key provided",

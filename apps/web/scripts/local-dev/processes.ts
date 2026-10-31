@@ -25,7 +25,7 @@ export function createProcessManager(cwd: string, env: NodeJS.ProcessEnv) {
       child.once("exit", (code, signal) => {
         if (!persistent) children.delete(child);
         if (!persistent && code === 0) resolve();
-        else reject(new Error(`${name} exited (${signal ?? code})`));
+        else reject(new Error(`${name} 已退出（${signal ?? code}）`));
       });
     });
     exited.catch((error) => {
@@ -46,9 +46,7 @@ export function createProcessManager(cwd: string, env: NodeJS.ProcessEnv) {
     ) {
       const { child, exited } = start(name, command, args, false);
       const timer = setTimeout(() => {
-        controller.abort(
-          new Error(`${name} timed out after ${timeout / 1000}s`),
-        );
+        controller.abort(new Error(`${name} 在 ${timeout / 1000} 秒后超时`));
         signalChild(child, "SIGTERM");
       }, timeout);
       let onAbort: () => void;
@@ -75,7 +73,7 @@ export function createProcessManager(cwd: string, env: NodeJS.ProcessEnv) {
         controller.signal.throwIfAborted();
         try {
           await probe();
-          console.log(`[local] ${name} ready`);
+          console.log(`[local] ${name} 已就绪`);
           return;
         } catch (error) {
           lastError = error;
@@ -87,7 +85,7 @@ export function createProcessManager(cwd: string, env: NodeJS.ProcessEnv) {
           throw error;
         }
       }
-      throw new Error(`${name} did not become ready: ${String(lastError)}`);
+      throw new Error(`${name} 未能就绪：${String(lastError)}`);
     },
     async stop() {
       const pending = [...children];

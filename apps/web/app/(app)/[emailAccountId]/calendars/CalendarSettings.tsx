@@ -51,7 +51,7 @@ export function CalendarSettings() {
         analytics.captureAction("calendar_timezone_saved", {
           had_existing_timezone: Boolean(timezone),
         });
-        toastSuccess({ description: "Timezone updated!" });
+        toastSuccess({ description: "时区已更新！" });
         try {
           await mutate();
         } finally {
@@ -69,8 +69,8 @@ export function CalendarSettings() {
 
   return (
     <SettingCard
-      title="Timezone"
-      description="Used for meeting briefs, AI scheduling, and your availability hours."
+      title="时区"
+      description="用于会议简报、AI 日程安排和你的空闲时间设置。"
       collapseOnMobile
       right={
         <LoadingContent
@@ -82,8 +82,8 @@ export function CalendarSettings() {
             <div className="w-full sm:w-64">
               <Combobox
                 options={timezoneOptions}
-                placeholder="Select timezone"
-                emptyText="No timezone found."
+                placeholder="选择时区"
+                emptyText="未找到时区。"
                 value={timezoneValue}
                 onChangeValue={(value) => {
                   if (value) setSelectedTimezone(value);
@@ -97,7 +97,7 @@ export function CalendarSettings() {
               className="w-full sm:w-auto"
               onClick={handleSaveTimezone}
             >
-              Save
+              保存
             </Button>
           </div>
         </LoadingContent>

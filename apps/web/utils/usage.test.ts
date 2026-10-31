@@ -130,7 +130,7 @@ describe("calculateUsageCost", () => {
       totalTokens: 150,
     });
 
-    // Fallback map values in supported-model-pricing.ts for gpt-4o
+    // supported-model-pricing.ts 中 gpt-4o 的回退映射值
     const expected =
       usage.inputTokens! * (5 / 1_000_000) +
       usage.outputTokens! * (15 / 1_000_000);

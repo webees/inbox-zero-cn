@@ -19,9 +19,7 @@ let onDownloadProgress:
 export type DesktopDownloadProgress = { version: string; percent: number };
 
 export function logDesktopUpdateError(error: unknown) {
-  console.error(
-    error instanceof Error ? error.message : "Desktop update check failed",
-  );
+  console.error(error instanceof Error ? error.message : "桌面端更新检查失败");
   if (!isTransientNetworkError(error)) {
     captureDesktopError(error, { area: "auto-update" });
   }
@@ -82,8 +80,8 @@ export async function checkForDesktopUpdatesManually(
   if (!isPackaged) {
     await dialog.showMessageBox({
       type: "info",
-      message: "Updates are unavailable in development builds",
-      detail: "Install a released version of Inbox Zero to receive updates.",
+      message: "开发版本中无法使用更新",
+      detail: "请安装 Inbox Zero 正式发行版以接收更新。",
     });
     return false;
   }
@@ -96,7 +94,7 @@ export async function checkForDesktopUpdatesManually(
 
     reportDownloadProgress = true;
     const result = await autoUpdater.checkForUpdates();
-    if (!result) throw new Error("Desktop updater is unavailable");
+    if (!result) throw new Error("桌面端更新程序不可用");
     observeDownload(result, stopReportingDownloadProgress);
 
     if (downloadedVersion) {
@@ -108,8 +106,8 @@ export async function checkForDesktopUpdatesManually(
       stopReportingDownloadProgress();
       await dialog.showMessageBox({
         type: "info",
-        message: "You're up to date",
-        detail: `Inbox Zero ${app.getVersion()} is the latest version.`,
+        message: "已是最新版本",
+        detail: `Inbox Zero ${app.getVersion()} 是当前最新版本。`,
       });
       return true;
     }
@@ -124,9 +122,9 @@ export async function checkForDesktopUpdatesManually(
 
     await dialog.showMessageBox({
       type: "info",
-      message: `Downloading Inbox Zero ${result.updateInfo.version}`,
+      message: `正在下载 Inbox Zero ${result.updateInfo.version}`,
       detail:
-        "You can keep using Inbox Zero. Restart to Update will appear in the app menu when it's ready.",
+        "您可以继续使用 Inbox Zero。更新准备好后，应用菜单中会出现“重启以更新”。",
     });
     return true;
   } catch (error) {
@@ -134,8 +132,8 @@ export async function checkForDesktopUpdatesManually(
     logDesktopUpdateError(error);
     await dialog.showMessageBox({
       type: "error",
-      message: "Couldn't check for updates",
-      detail: "Please try again later.",
+      message: "无法检查更新",
+      detail: "请稍后重试。",
     });
     return false;
   }
@@ -198,8 +196,8 @@ function notifyUpdateReady(version: string) {
   try {
     if (!Notification.isSupported()) return;
     new Notification({
-      title: "Update ready to install",
-      body: `Restart Inbox Zero to finish updating to ${version}.`,
+      title: "更新已准备好安装",
+      body: `重启 Inbox Zero 以完成更新到 ${version}。`,
     }).show();
   } catch (error) {
     logDesktopUpdateError(error);
@@ -212,11 +210,11 @@ async function promptToInstallDownloadedUpdate(
 ) {
   const { response } = await dialog.showMessageBox({
     type: "info",
-    buttons: ["Restart to Update", "Later"],
+    buttons: ["重启以更新", "稍后"],
     defaultId: 0,
     cancelId: 1,
-    message: "An update is ready to install",
-    detail: `Inbox Zero ${downloadedVersion} has been downloaded. Restart now to finish updating.`,
+    message: "更新已准备好安装",
+    detail: `Inbox Zero ${downloadedVersion} 已下载完成。立即重启以完成更新。`,
   });
   if (response === 0) {
     prepareToQuit();

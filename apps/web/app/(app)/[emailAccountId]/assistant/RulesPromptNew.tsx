@@ -95,14 +95,14 @@ function RulesPromptForm({
     const prompt = convertMentionsToLabels(markdown).trim();
     if (prompt === "") {
       toastError({
-        description: "Please enter a prompt to create rules",
+        description: "请输入提示词以创建规则",
       });
       return;
     }
 
     if (chat.status !== "ready") {
       toastError({
-        description: "Please wait for the current chat response to finish.",
+        description: "请等待当前聊天回复完成。",
       });
       return;
     }
@@ -116,7 +116,7 @@ function RulesPromptForm({
       submitted = true;
       onSubmitted?.();
     } catch {
-      toastError({ description: "Could not send this prompt to chat." });
+      toastError({ description: "无法将此提示词发送到聊天。" });
     } finally {
       if (!submitted || !onSubmitted) setIsSubmitting(false);
     }
@@ -143,9 +143,7 @@ function RulesPromptForm({
               await onSubmit();
             }}
           >
-            <Label className="font-title text-xl leading-7">
-              Add new rules
-            </Label>
+            <Label className="font-title text-xl leading-7">添加新规则</Label>
 
             <div className="mt-1.5 space-y-2">
               <LoadingContent
@@ -157,14 +155,14 @@ function RulesPromptForm({
                   defaultValue={undefined}
                   minHeight={180}
                   userLabels={userLabels}
-                  placeholder={`* Label urgent emails as "Urgent"
-* Forward receipts to jane@accounting.com`}
+                  placeholder={`* 将紧急邮件标记为 "紧急"
+* 将收据转发到 jane@accounting.com`}
                 />
               </LoadingContent>
 
               <div className="flex flex-col sm:flex-row flex-wrap gap-2">
                 <Button type="submit" size="sm" loading={isSubmitting}>
-                  Create rules
+                  创建规则
                 </Button>
 
                 <Button
@@ -174,7 +172,7 @@ function RulesPromptForm({
                   onClick={examples ? onHideExamples : onOpenPersonaDialog}
                 >
                   <UserPenIcon className="mr-2 size-4" />
-                  {examples ? "Hide examples" : "Choose from examples"}
+                  {examples ? "隐藏示例" : "从示例中选择"}
                 </Button>
 
                 <Button
@@ -185,7 +183,7 @@ function RulesPromptForm({
                   onClick={() => ruleDialog.onOpen()}
                   Icon={PlusIcon}
                 >
-                  Add rule manually
+                  手动添加规则
                 </Button>
               </div>
             </div>
@@ -199,7 +197,7 @@ function RulesPromptForm({
 
       {examples && (
         <div className="mt-2">
-          <Label className="font-title text-xl leading-7">Examples</Label>
+          <Label className="font-title text-xl leading-7">示例</Label>
           <div className="mt-1.5">
             <ExamplesGrid
               examples={examples}

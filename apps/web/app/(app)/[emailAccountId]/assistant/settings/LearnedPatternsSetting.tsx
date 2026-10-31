@@ -20,26 +20,25 @@ import { LoadingContent } from "@/components/LoadingContent";
 export function LearnedPatternsSetting() {
   return (
     <SettingCard
-      title="Learned patterns"
-      description="View the patterns the assistant has learned from your email history."
+      title="学习模式"
+      description="查看助手从你的邮件历史中学习到的模式。"
       right={
         <Dialog>
           <DialogTrigger asChild>
             <Button variant="outline" size="sm">
-              View
+              查看
             </Button>
           </DialogTrigger>
-          {/* Scroll inside the content row (not DialogContent itself) so the close button stays visible */}
+          {/* 在内容行内滚动（而非 DialogContent 本身），以便关闭按钮保持可见 */}
           <DialogContent className="max-w-4xl grid-rows-[auto_minmax(0,1fr)] overflow-hidden">
             <DialogHeader>
-              <DialogTitle>Learned patterns</DialogTitle>
+              <DialogTitle>学习模式</DialogTitle>
               <DialogDescription>
-                When the AI processes your emails, it learns which senders or
-                email types consistently match the same rules. For example, it
-                might learn that emails from newsletter@example.com always match
-                your "Newsletter" rule. These learned patterns help the AI make
-                faster, more accurate decisions over time. You can view, edit,
-                or remove patterns that have been learned.
+                当 AI
+                处理你的邮件时，它会学习哪些发件人或邮件类型总是匹配相同的规则。例如，它可能学习到来自
+                newsletter@example.com
+                的邮件总是匹配你的“Newsletter”规则。这些学习模式帮助 AI
+                随着时间推移做出更快、更准确的决策。你可以查看、编辑或删除已学习到的模式。
               </DialogDescription>
             </DialogHeader>
             <div className="min-w-0 overflow-y-auto">
@@ -60,7 +59,7 @@ function Content() {
       {data?.groups.length === 0 ? (
         <Card>
           <CardContent className="flex items-center justify-center p-6">
-            <TypographyP>No learned patterns found yet.</TypographyP>
+            <TypographyP>尚未找到学习模式。</TypographyP>
           </CardContent>
         </Card>
       ) : (
@@ -68,7 +67,7 @@ function Content() {
           {data?.groups.map((group) => (
             <Card key={group.id}>
               <CardHeader>
-                <CardTitle>{group.rule?.name || "No rule"}</CardTitle>
+                <CardTitle>{group.rule?.name || "无规则"}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ViewLearnedPatterns groupId={group.id} />

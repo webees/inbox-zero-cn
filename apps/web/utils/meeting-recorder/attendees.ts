@@ -1,8 +1,8 @@
 import { z } from "zod";
 import type { CalendarEventAttendee } from "@/utils/calendar/event-types";
 
-// Attendees are snapshotted onto the Meeting row because the calendar event may
-// be edited or deleted before we finish processing the recording.
+// 参会者会被快照到 Meeting 行上，因为在我们完成录制处理之前，
+// 该日历事件可能已被编辑或删除。
 const meetingAttendeeSchema = z.object({
   email: z.string(),
   name: z.string().optional(),

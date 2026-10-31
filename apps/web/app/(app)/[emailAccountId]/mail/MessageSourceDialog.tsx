@@ -47,7 +47,7 @@ export function MessageSourceDialog({
         onKeyDown={(event) => event.stopPropagation()}
       >
         <DialogHeader>
-          <DialogTitle>Original message</DialogTitle>
+          <DialogTitle>原始邮件</DialogTitle>
         </DialogHeader>
         <LoadingContent loading={isLoading} error={error}>
           {data && (
@@ -60,12 +60,12 @@ export function MessageSourceDialog({
                     navigator.clipboard
                       .writeText(data.text)
                       .then(() =>
-                        toastSuccess({ description: "Copied to clipboard" }),
+                        toastSuccess({ description: "已复制到剪贴板" }),
                       )
                   }
                 >
                   <CopyIcon className="mr-2 size-4" />
-                  Copy
+                  复制
                 </Button>
                 <Button
                   size="sm"
@@ -73,7 +73,7 @@ export function MessageSourceDialog({
                   onClick={() => saveMessageSource(data.source, subject)}
                 >
                   <DownloadIcon className="mr-2 size-4" />
-                  Download
+                  下载
                 </Button>
               </div>
               <pre className="min-h-0 flex-1 overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted/50 p-3 font-mono text-xs">

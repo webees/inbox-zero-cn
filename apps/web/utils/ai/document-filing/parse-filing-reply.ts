@@ -59,7 +59,7 @@ export async function aiParseFilingReply({
   }
 
   const formattedMessages = messages
-    .map((m) => `${m.role === "user" ? "User" : "Assistant"}: ${m.content}`)
+    .map((m) => `${m.role === "user" ? "用户" : "助手"}: ${m.content}`)
     .join("\n\n");
 
   const prompt = `<filings>

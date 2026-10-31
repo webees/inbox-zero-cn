@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MobilePushTokenType } from "@/generated/prisma/enums";
 import { deliverApnsNotifications } from "@/utils/apns";
-import { deliverFcmNotifications } from "@/utils/fcm";
 import type { Logger } from "@/utils/logger";
 import prisma from "@/utils/__mocks__/prisma";
 import { publishLocalMailHint } from "@/utils/redis/local-mail-hints";
@@ -14,7 +13,6 @@ const { envMock } = vi.hoisted(() => ({
     APNS_TEAM_ID: undefined as string | undefined,
     APNS_PRIVATE_KEY: undefined as string | undefined,
     APNS_TOPIC: undefined as string | undefined,
-    FCM_TRANSPORT: undefined as string | undefined,
   },
 }));
 
@@ -36,13 +34,6 @@ vi.mock("@/utils/apns", () => ({
     envMock.APNS_TRANSPORT === "fake" ||
     Boolean(envMock.APNS_KEY_ID && envMock.APNS_PRIVATE_KEY),
 }));
-vi.mock("@/utils/fcm", () => ({
-  deliverFcmNotifications: vi.fn(async () => ({
-    unregisteredTokens: [],
-    retryTokens: [],
-  })),
-  isFcmConfigured: () => envMock.FCM_TRANSPORT === "fake",
-}));
 
 import { notifyMailboxChanged } from "./mailbox-push";
 
@@ -62,13 +53,12 @@ describe("notifyMailboxChanged", () => {
     envMock.APNS_TEAM_ID = "TEAMID1234";
     envMock.APNS_PRIVATE_KEY = "private-key";
     envMock.APNS_TOPIC = "com.getinboxzero.app";
-    envMock.FCM_TRANSPORT = undefined;
     vi.mocked(redis.set).mockResolvedValue("OK");
     vi.mocked(prisma.emailAccount.findUnique).mockResolvedValue({
       user: {
         mobilePushTokens: [
-          { token: "a".repeat(64), tokenType: MobilePushTokenType.APNS },
-          { token: "b".repeat(64), tokenType: MobilePushTokenType.APNS },
+          { token: "a".repeat(64) },
+          { token: "b".repeat(64) },
         ],
       },
     } as never);
@@ -84,8 +74,8 @@ describe("notifyMailboxChanged", () => {
         user: {
           select: {
             mobilePushTokens: {
-              where: { tokenType: { in: [MobilePushTokenType.APNS] } },
-              select: { token: true, tokenType: true },
+              where: { tokenType: MobilePushTokenType.APNS },
+              select: { token: true },
             },
           },
         },
@@ -109,11 +99,7 @@ describe("notifyMailboxChanged", () => {
 
   it("coalesces a second push for the same account inside the window", async () => {
     vi.mocked(prisma.emailAccount.findUnique).mockResolvedValue({
-      user: {
-        mobilePushTokens: [
-          { token: "a".repeat(64), tokenType: MobilePushTokenType.APNS },
-        ],
-      },
+      user: { mobilePushTokens: [{ token: "a".repeat(64) }] },
     } as never);
     vi.mocked(redis.set).mockImplementation(async () => {
       const calls = vi.mocked(redis.set).mock.calls.length;
@@ -125,75 +111,6 @@ describe("notifyMailboxChanged", () => {
 
     expect(deliverApnsNotifications).toHaveBeenCalledOnce();
     expect(publishLocalMailHint).toHaveBeenCalledTimes(2);
-  });
-
-  it("sends the same silent hint to Android devices over FCM", async () => {
-    envMock.FCM_TRANSPORT = "fake";
-    vi.mocked(prisma.emailAccount.findUnique).mockResolvedValue({
-      user: {
-        mobilePushTokens: [
-          { token: "a".repeat(64), tokenType: MobilePushTokenType.APNS },
-          { token: "fcm-1", tokenType: MobilePushTokenType.FCM },
-        ],
-      },
-    } as never);
-    vi.mocked(deliverFcmNotifications).mockResolvedValueOnce({
-      unregisteredTokens: ["fcm-1"],
-      retryTokens: [],
-    });
-
-    await notifyMailboxChanged({ emailAccountId: "account-1", logger });
-
-    expect(prisma.emailAccount.findUnique).toHaveBeenCalledWith(
-      expect.objectContaining({
-        select: {
-          user: {
-            select: {
-              mobilePushTokens: {
-                where: {
-                  tokenType: {
-                    in: [MobilePushTokenType.APNS, MobilePushTokenType.FCM],
-                  },
-                },
-                select: { token: true, tokenType: true },
-              },
-            },
-          },
-        },
-      }),
-    );
-    expect(deliverApnsNotifications).toHaveBeenCalledWith(
-      expect.objectContaining({ tokens: ["a".repeat(64)] }),
-    );
-    expect(deliverFcmNotifications).toHaveBeenCalledWith({
-      tokens: ["fcm-1"],
-      notification: {
-        pushType: "background",
-        data: { emailAccountId: "account-1", hint: "mailbox" },
-      },
-      logger,
-    });
-    expect(prisma.mobilePushToken.deleteMany).toHaveBeenCalledWith({
-      where: { token: { in: ["fcm-1"] } },
-    });
-  });
-
-  it("sends to Android when only FCM is configured", async () => {
-    envMock.APNS_PRIVATE_KEY = undefined;
-    envMock.FCM_TRANSPORT = "fake";
-    vi.mocked(prisma.emailAccount.findUnique).mockResolvedValue({
-      user: {
-        mobilePushTokens: [
-          { token: "fcm-1", tokenType: MobilePushTokenType.FCM },
-        ],
-      },
-    } as never);
-
-    await notifyMailboxChanged({ emailAccountId: "account-1", logger });
-
-    expect(deliverFcmNotifications).toHaveBeenCalledWith(
-      expect.objectContaining({ tokens: ["fcm-1"] }),
-    );
   });
 
   it("does not send when APNs credentials are missing", async () => {

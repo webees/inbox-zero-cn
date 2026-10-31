@@ -12,7 +12,7 @@ export async function getMailSettings({
       mailLayout: true,
       mailExpandedPreview: true,
       mailSplits: {
-        // createdAt breaks ties so tab order can't shuffle between requests
+        // createdAt 用于打破平局，这样标签页顺序不会在请求之间发生变动
         orderBy: [{ order: "asc" }, { createdAt: "asc" }],
         select: {
           id: true,

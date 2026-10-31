@@ -12,20 +12,18 @@ import { useCategorizeProgress } from "@/app/(app)/[emailAccountId]/smart-catego
 const features = [
   {
     icon: <TagsIcon className="size-4 text-blue-500" />,
-    title: "Sorted automatically",
-    description:
-      "We group senders into categories like Newsletters, Receipts, and Marketing",
+    title: "自动归类",
+    description: "我们会将发件人归类，例如简报、收据和营销邮件",
   },
   {
     icon: <ArchiveIcon className="size-4 text-blue-500" />,
-    title: "Archive by category",
-    description:
-      "Clean up an entire category at once instead of one email at a time",
+    title: "按类别归档",
+    description: "一次清理整个类别，而不是一封封处理",
   },
   {
     icon: <RotateCcwIcon className="size-4 text-blue-500" />,
-    title: "Always reversible",
-    description: "Emails are archived, not deleted — you can find them anytime",
+    title: "始终可撤销",
+    description: "邮件会被归档而非删除——你随时都能找到它们",
   },
 ];
 
@@ -54,24 +52,24 @@ export function AutoCategorizationSetup({
 
       if (!result?.data) {
         toastSuccess({
-          description: "Categorization started.",
+          description: "归类已开始。",
         });
         onOpenChange?.(false);
       } else if (result.data.totalUncategorizedSenders) {
         toastSuccess({
-          description: `Categorizing ${result.data.totalUncategorizedSenders} senders... This may take a few minutes.`,
+          description: `正在归类 ${result.data.totalUncategorizedSenders} 个发件人…这可能需要几分钟。`,
         });
         onOpenChange?.(false);
       } else {
         toastSuccess({
-          description: "No more senders to categorize right now.",
+          description: "目前没有需要归类的发件人了。",
         });
         setIsBulkCategorizing(false);
         onOpenChange?.(false);
       }
     } catch (error) {
       toastError({
-        description: `Failed to enable feature: ${error instanceof Error ? error.message : "Unknown error"}`,
+        description: `启用功能失败：${error instanceof Error ? error.message : "未知错误"}`,
       });
       setIsBulkCategorizing(false);
 
@@ -93,13 +91,13 @@ export function AutoCategorizationSetup({
         onEscapeKeyDown: (event) => event.preventDefault(),
       }}
       imageSrc="/images/illustrations/working-vacation.svg"
-      imageAlt="Bulk Archive"
-      title="Bulk Archive"
-      description="Archive thousands of emails in a few clicks."
+      imageAlt="批量归档"
+      title="批量归档"
+      description="只需点击几下即可归档数千封邮件。"
       features={features}
     >
       <Button onClick={enableFeature} loading={isEnabling}>
-        Get Started
+        开始使用
       </Button>
     </SetupDialog>
   );

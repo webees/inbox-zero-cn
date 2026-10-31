@@ -117,7 +117,7 @@ export async function getSenderEmailStats(
     Prisma.sql`"emailAccountId" = ${options.emailAccountId}`,
     Prisma.sql`sent = false`,
     Prisma.sql`draft = false`,
-    // Sent mail can lose the SENT label (e.g. moved out of Outlook's Sent Items)
+    // 已发送邮件可能丢失“已发送”标签（例如被移出 Outlook 的“已发送邮件”）
     Prisma.sql`LOWER("from") <> (SELECT LOWER(email) FROM "EmailAccount" WHERE id = ${options.emailAccountId})`,
   );
 
@@ -135,7 +135,7 @@ export async function getSenderEmailStats(
 
   const orderByClause = getOrderByClause(orderBy, orderDirection);
   const cursorClause = cursor ? senderStatsCursorClause(cursor) : Prisma.empty;
-  // Fetch one extra row to decide whether another page exists.
+  // 多取一行，用于判断是否还有下一页。
   const fetchLimit = pageSize ? pageSize + 1 : null;
   const limitClause =
     fetchLimit === null ? Prisma.empty : Prisma.raw(`LIMIT ${fetchLimit}`);

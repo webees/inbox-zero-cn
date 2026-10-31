@@ -32,7 +32,7 @@ export function CalendarList({
                   {calendar.primary && (
                     <Badge variant="outline" className="text-xs flex-shrink-0">
                       <Star className="h-3 w-3 mr-1" />
-                      Primary
+                      主日历
                     </Badge>
                   )}
                 </div>

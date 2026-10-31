@@ -1,7 +1,7 @@
 /**
- * Escapes a string value for safe use in OData filter expressions.
- * Single quotes in OData string literals must be escaped by doubling them.
- * Additionally handles special characters that may cause issues in filters.
+ * 转义字符串值以安全用于 OData 过滤表达式。
+ * OData 字符串字面量中的单引号必须通过加倍来转义。
+ * 此外还处理可能导致过滤器问题的特殊字符。
  *
  * @param value The string value to escape
  * @returns The escaped string safe for OData filter interpolation
@@ -14,7 +14,7 @@ export function escapeODataString(value: string): string {
   if (typeof value !== "string") {
     return "";
   }
-  // Replace single quotes with doubled single quotes
-  // Note: equals signs and other special chars are valid in OData string literals
+  // 将单引号替换为双写的单引号
+  // 注意：等号和其他特殊字符在 OData 字符串字面量中是有效的
   return value.replace(/'/g, "''");
 }

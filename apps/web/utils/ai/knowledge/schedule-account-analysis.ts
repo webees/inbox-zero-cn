@@ -28,7 +28,7 @@ export async function scheduleAccountAnalysis({
     return { status: await getAccountAnalysisStatus(emailAccountId, kind) };
 
   try {
-    // Provider reads must not hold Next.js's per-client Server Action queue.
+    // 服务商读取操作不得占用 Next.js 的每客户端 Server Action 队列。
     after(async () => {
       let status = "cooldown";
       try {
@@ -37,7 +37,7 @@ export async function scheduleAccountAnalysis({
         );
         if (completed) status = "completed";
       } catch (error) {
-        logger.warn("Background account analysis did not complete", {
+        logger.warn("后台账号分析未完成", {
           kind,
           error,
         });

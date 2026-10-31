@@ -15,7 +15,7 @@ export const forwardEmailHtml = ({
   const messageContent =
     message.textHtml || textToHtmlParagraphs(message.textPlain);
 
-  // Escape content and subject to prevent prompt injection attacks
+  // 转义内容和主题以防止提示注入攻击
   return `<div dir="ltr">${escapeHtml(content)}<br><br>
 <div class="gmail_quote gmail_quote_container">
   <div dir="ltr" class="gmail_attr">---------- Forwarded message ----------<br>

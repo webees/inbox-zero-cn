@@ -108,7 +108,7 @@ export function isDirectMessageRoute(route: MessagingRouteLike | null) {
 
 export function formatRouteTargetLabel(route: MessagingRouteLike | null) {
   if (!route) return null;
-  if (isDirectMessageRoute(route)) return "Direct message";
+  if (isDirectMessageRoute(route)) return "私信";
   return `#${route.targetId}`;
 }
 
@@ -117,9 +117,8 @@ export function formatRouteTargetLabelWithNames(
   targetNamesById?: Record<string, string>,
 ) {
   if (!route) return null;
-  if (isDirectMessageRoute(route)) return "Direct message";
-  if (targetNamesById)
-    return targetNamesById[route.targetId] ?? "Channel unavailable";
+  if (isDirectMessageRoute(route)) return "私信";
+  if (targetNamesById) return targetNamesById[route.targetId] ?? "渠道不可用";
   return formatRouteTargetLabel(route);
 }
 

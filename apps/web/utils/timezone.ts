@@ -85,7 +85,7 @@ function getTimezoneGenericName(zone: string, date: Date): string | null {
     })
       .formatToParts(date)
       .find((part) => part.type === "timeZoneName")?.value;
-    // Zones without a name fall back to a bare offset like "GMT+03:00".
+    // 没有名称的时区回退为 "GMT+03:00" 这样的裸偏移量。
     return name && !name.startsWith("GMT") ? name : null;
   } catch {
     return null;

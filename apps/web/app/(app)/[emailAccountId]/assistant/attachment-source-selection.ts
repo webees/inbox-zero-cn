@@ -3,7 +3,6 @@ import {
   getAttachmentSourceKey,
   type AttachmentSourceInput,
 } from "@/utils/attachments/source-schema";
-import { pluralize } from "@/utils/string";
 import type { DriveSourceItem } from "@/utils/drive/source-items";
 import {
   createTreeSelection,
@@ -19,8 +18,8 @@ export const driveSourceSelection = createTreeSelection<DriveSourceItem>({
   getSelectionKey: (item) => getAttachmentSourceKey(toAttachmentSource(item)),
 });
 
-// The API returns bare file names as paths for nested items, so compute full
-// paths from the parent chain while grouping children by parent.
+// API 会把嵌套项的路径返回为纯文件名，因此在按父项分组子项时，
+// 需要根据父项链计算出完整路径。
 export function buildDriveSourceChildrenMap(
   items: DriveSourceItem[],
 ): DriveSourceChildrenMap {
@@ -111,10 +110,10 @@ export function formatAttachmentSourceCount(sources: AttachmentSourceInput[]) {
   const files = sources.length - folders;
   const parts = [];
 
-  if (folders > 0) parts.push(`${folders} ${pluralize(folders, "folder")}`);
-  if (files > 0) parts.push(`${files} ${pluralize(files, "file")}`);
+  if (folders > 0) parts.push(`${folders} 个文件夹`);
+  if (files > 0) parts.push(`${files} 个文件`);
 
-  return parts.join(", ");
+  return parts.join("，");
 }
 
 function toAttachmentSource(item: DriveSourceItem): AttachmentSourceInput {

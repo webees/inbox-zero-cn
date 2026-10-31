@@ -18,7 +18,7 @@ export type MicrosoftAdminConsentState = {
 export function getMicrosoftAdminConsentUrl(state: string) {
   const clientId = env.MICROSOFT_CLIENT_ID?.trim();
   if (!clientId) {
-    throw new Error("Microsoft login not enabled - missing client ID");
+    throw new Error("Microsoft 登录未启用 - 缺少客户端 ID");
   }
 
   const url = new URL(

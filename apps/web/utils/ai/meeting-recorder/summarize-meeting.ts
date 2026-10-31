@@ -25,10 +25,9 @@ Rules:
 
 Return your response in JSON format.`;
 
-// Strict structured-output providers require every declared property to be
-// required, so optional fields are required-but-nullable via strictOptional.
-// Its `value ?? null` preprocess also keeps previously stored summaries
-// parseable: fields absent in old rows come back as null.
+// 严格结构化输出服务商要求所有声明的属性都必填，因此可选字段通过
+// strictOptional 设为必填但可为 null。它的 `value ?? null` 预处理还能让之前
+// 存储的摘要保持可解析：旧记录中缺失的字段会返回 null。
 const summarySchema = z.object({
   overview: z
     .string()
@@ -64,9 +63,8 @@ export type MeetingSummaryInput = {
 };
 
 /**
- * Reads back a summary we stored as JSON. Parsed rather than cast so a row
- * written before a schema change is re-summarized instead of rendered with
- * fields the UI no longer expects.
+ * 读取以 JSON 存储的摘要。这里选择解析而不是强制类型转换，这样在 schema 变更前
+ * 写入的记录会被重新生成摘要，而不是用 UI 已不再期望的字段进行渲染。
  */
 export function parseMeetingSummary(value: unknown): MeetingSummary | null {
   const parsed = summarySchema.safeParse(value);
@@ -79,18 +77,17 @@ export async function aiSummarizeMeeting({
   attendees,
   transcript,
 }: MeetingSummaryInput): Promise<MeetingSummary> {
-  logger.info("Summarizing meeting", { utterances: transcript.length });
+  logger.info("正在生成会议摘要", { utterances: transcript.length });
 
   const modelOptions = getModelForUseCase(
     emailAccount.user,
     LlmUseCase.MeetingSummary,
   );
 
-  // The transcript is third-party speech, so anything in it that looks like an
-  // instruction is data, not a command.
+  // 转写内容是第三方的发言，因此其中任何看似指令的内容都只是数据，而不是命令。
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Summarize meeting",
+    label: "生成会议摘要",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "full" },
   });

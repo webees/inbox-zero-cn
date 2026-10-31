@@ -24,7 +24,7 @@ export function SidebarRight({
 }: {
   name: string;
   className?: string;
-  /** Applies a width while the panel's edge is dragged. */
+  /** 拖动面板边缘时应用宽度。 */
   onResize: (width: number) => void;
 }) {
   const { isOpen, close } = useSidebarPanel(name);
@@ -47,7 +47,7 @@ export function SidebarRight({
       </div>
       {isOpen ? (
         <PanelResizeHandle
-          label="Resize assistant"
+          label="调整助手大小"
           edge="left"
           bounds={CHAT_SIDEBAR_WIDTH_BOUNDS}
           onResize={onResize}

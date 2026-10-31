@@ -37,7 +37,7 @@ export const MCP_INTEGRATIONS: Record<
     authType: "oauth",
     scopes: ["read"],
     allowedTools: ["notion-search", "notion-fetch"],
-    // OAuth endpoints auto-discovered via RFC 8414/9728
+    // OAuth 端点通过 RFC 8414 自动发现/9728
   },
   stripe: {
     name: "stripe",
@@ -56,7 +56,7 @@ export const MCP_INTEGRATIONS: Record<
       "list_subscriptions",
       // "search_stripe_resources",
     ],
-    // OAuth endpoints auto-discovered via RFC 8414/9728
+    // OAuth 端点通过 RFC 8414 自动发现/9728
   },
   linear: {
     name: "linear",
@@ -66,7 +66,7 @@ export const MCP_INTEGRATIONS: Record<
     serverUrl: "https://mcp.linear.app/mcp/readonly",
     authType: "oauth",
     scopes: ["read"],
-    // OAuth endpoints auto-discovered via RFC 8414/9728
+    // OAuth 端点通过 RFC 8414 自动发现/9728
   },
   attio: {
     name: "attio",
@@ -75,7 +75,7 @@ export const MCP_INTEGRATIONS: Record<
     serverUrl: "https://mcp.attio.com/mcp",
     authType: "oauth",
     // offline_access is required for a refresh token; without it the
-    // connection dies when the access token expires
+    // 当访问令牌过期时连接会断开
     scopes: ["openid", "offline_access", "mcp"],
     allowedTools: [
       "search-records",
@@ -90,10 +90,10 @@ export const MCP_INTEGRATIONS: Record<
       "get-note-body",
       "list-tasks",
       "search-meetings",
-      // Write tools intentionally excluded: create-record, upsert-record,
-      // update-record, merge-records, add-record-to-list, create-note, ...
+      // 有意排除的写入工具：create-record、upsert-record、
+      // update-record、merge-records、add-record-to-list、create-note 等
     ],
-    // OAuth endpoints auto-discovered via RFC 8414/9728
+    // OAuth 端点通过 RFC 8414 自动发现/9728
   },
   intercom: {
     name: "intercom",
@@ -115,9 +115,9 @@ export const MCP_INTEGRATIONS: Record<
       "list_articles",
       "search_articles",
       "get_article",
-      // Write tools intentionally excluded: create_article, update_article
+      // 有意排除的写入工具：create_article、update_article
     ],
-    // OAuth endpoints auto-discovered via RFC 8414/9728
+    // OAuth 端点通过 RFC 8414 自动发现/9728
   },
   monday: {
     name: "monday",
@@ -157,7 +157,7 @@ export const MCP_INTEGRATIONS: Record<
       // "all_widgets_schema",
       // "create_widget",
     ],
-    // OAuth endpoints auto-discovered via RFC 8414
+    // OAuth 端点通过 RFC 8414 自动发现
   },
   todoist: {
     name: "todoist",
@@ -335,15 +335,15 @@ export const MCP_INTEGRATIONS: Record<
     name: "pipedream",
     displayName: "HubSpot, Slack, Airtable, Todoist, and more (via Pipedream)",
     shortName: "Pipedream",
-    description: "Hundreds more apps",
+    description: "还有数百款应用",
     url: "pipedream.com",
     serverUrl: "https://mcp.pipedream.net/v2",
     authType: "oauth",
     scopes: ["mcp", "offline_access"],
-    skipResourceParam: true, // Pipedream doesn't support RFC 8707 resource parameter
+    skipResourceParam: true, // Pipedream 不支持 RFC 8707 的 resource 参数
     filterWriteTools: true,
-    // No fixed allowlist because Pipedream's catalog is dynamic
-    // OAuth endpoints auto-discovered via RFC 8414
+    // 没有固定允许列表，因为 Pipedream 的目录是动态的
+    // OAuth 端点通过 RFC 8414 自动发现
   },
 };
 
@@ -359,7 +359,7 @@ export function getIntegration(
   return integration;
 }
 
-// For untrusted names (URL params, stored connection names). getIntegration throws instead.
+// 用于不可信名称（URL 参数、已存储的连接名）。getIntegration 则会抛出异常。
 export function findIntegration(
   name: string,
 ): (typeof MCP_INTEGRATIONS)[IntegrationKey] | undefined {

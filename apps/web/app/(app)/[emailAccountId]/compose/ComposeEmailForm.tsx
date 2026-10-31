@@ -529,8 +529,8 @@ function ComposeEmailFormContent({
     await discard(onDiscard);
   }, [discard, isSubmitting, onDiscard]);
 
-  // The popped-out composer reopens from the local draft, so keep writing
-  // here if the latest edits could not be saved.
+  // 弹出后的撰写框会从本地草稿重新打开，因此如果最新修改未能保存，
+  // 就继续在这里撰写。
   const handlePopOut = async () => {
     if (!onPopOut || isSubmitting) return;
     if (await flushDraft()) onPopOut();
@@ -538,7 +538,7 @@ function ComposeEmailFormContent({
   const popOutButton = onPopOut && (
     <Tooltip shortcuts={["popOutDraft"]}>
       <Button
-        aria-label="Pop out draft"
+        aria-label="弹出草稿"
         className="ml-auto size-7 shrink-0 hover:bg-transparent"
         disabled={isSubmitting}
         onClick={handlePopOut}
@@ -623,8 +623,7 @@ function ComposeEmailFormContent({
         pendingRecipientsRef={pendingRecipientsRef}
         onPendingRecipientChange={updatePendingRecipient}
         focusRecipientField={focusRecipientField}
-        // Inline replies hide the subject, so a required one would block send
-        // with no visible error when the thread or draft has none.
+        // 内联回复会隐藏主题，因此当会话或草稿没有主题时，必填主题会在不可见的情况下阻止发送。
         subjectRegisterProps={register("subject", { required: !isInlineReply })}
         subjectError={errors.subject}
         popOutButton={popOutButton}
@@ -642,7 +641,7 @@ function ComposeEmailFormContent({
         onStateChange={handleEditorStateChange}
         onImageFiles={(files) => {
           addFiles(files, "inline").catch(() =>
-            toastError({ description: "The image could not be read." }),
+            toastError({ description: "无法读取此图片。" }),
           );
         }}
         preservedBlocks={preservedBlocks}
@@ -685,7 +684,7 @@ function ComposeEmailFormContent({
           >
             <Button disabled={isSubmitting} type="submit" variant="gradient">
               {isSubmitting && <ButtonLoader />}
-              Send
+              发送
             </Button>
           </Tooltip>
           <button
@@ -732,7 +731,7 @@ function ComposeEmailFormContent({
           />
           <Tooltip shortcuts={["attachFiles"]}>
             <Button
-              aria-label="Attach files"
+              aria-label="添加附件"
               className="hover:bg-transparent"
               disabled={isSubmitting}
               onClick={() => attachmentInputRef.current?.click()}
@@ -753,7 +752,7 @@ function ComposeEmailFormContent({
             type="file"
           />
           <Button
-            aria-label="Insert inline images"
+            aria-label="插入内嵌图片"
             className="hover:bg-transparent"
             disabled={isSubmitting}
             onClick={() => inlineImageInputRef.current?.click()}
@@ -766,7 +765,7 @@ function ComposeEmailFormContent({
           {onDiscard && (
             <Tooltip shortcuts={["discardDraft"]}>
               <Button
-                aria-label="Discard draft"
+                aria-label="丢弃草稿"
                 className="hover:bg-transparent"
                 disabled={isSubmitting || isDiscarding}
                 onClick={handleDiscard}

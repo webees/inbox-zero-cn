@@ -100,7 +100,7 @@ describe("AutoCategorizationSetup", () => {
 
     render(<AutoCategorizationSetup open onOpenChange={onOpenChange} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Get Started" }));
+    fireEvent.click(screen.getByRole("button", { name: "开始使用" }));
 
     await waitFor(() => {
       expect(onOpenChange).toHaveBeenCalledWith(false);
@@ -120,7 +120,7 @@ describe("AutoCategorizationSetup", () => {
 
     render(<AutoCategorizationSetup open onOpenChange={onOpenChange} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Get Started" }));
+    fireEvent.click(screen.getByRole("button", { name: "开始使用" }));
 
     await waitFor(() => {
       expect(onOpenChange).toHaveBeenCalledWith(false);
@@ -140,7 +140,7 @@ describe("AutoCategorizationSetup", () => {
 
     render(<AutoCategorizationSetup open onOpenChange={onOpenChange} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Get Started" }));
+    fireEvent.click(screen.getByRole("button", { name: "开始使用" }));
 
     await waitFor(() => {
       expect(onOpenChange).toHaveBeenCalledWith(false);
@@ -158,7 +158,7 @@ describe("AutoCategorizationSetup", () => {
 
     render(<AutoCategorizationSetup open onOpenChange={onOpenChange} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Get Started" }));
+    fireEvent.click(screen.getByRole("button", { name: "开始使用" }));
 
     await waitFor(() => {
       expect(onOpenChange).toHaveBeenCalledWith(false);

@@ -62,11 +62,11 @@ export function ConversionQueryParamEvents() {
       rememberTrackedConversion(storageKey);
       removeConversionParams();
     } catch (error) {
-      console.error("Failed to track conversion event:", error);
+      console.error("跟踪转化事件失败：", error);
       try {
         removeConversionParams();
       } catch (removeError) {
-        console.error("Failed to remove conversion params:", removeError);
+        console.error("移除转化参数失败：", removeError);
       }
     }
   }, [eventName, eventId, pathname]);

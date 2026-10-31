@@ -30,13 +30,13 @@ export function SettingsTab() {
       )}
 
       <div className="space-y-2">
-        <SectionHeader>Updates</SectionHeader>
+        <SectionHeader>更新</SectionHeader>
         <FollowUpRemindersSetting />
         {env.NEXT_PUBLIC_DIGEST_ENABLED && <DigestSetting />}
       </div>
 
       <div className="space-y-2">
-        <SectionHeader>Your voice</SectionHeader>
+        <SectionHeader>你的语气</SectionHeader>
         <WritingStyleSetting />
         <AboutSetting />
         <PersonalSignatureSetting />
@@ -46,14 +46,14 @@ export function SettingsTab() {
 
       {!autoDraftDisabled && (
         <div className="space-y-2">
-          <SectionHeader>Knowledge</SectionHeader>
+          <SectionHeader>知识库</SectionHeader>
           <DraftKnowledgeSetting />
           <LearnedPatternsSetting />
         </div>
       )}
 
       <div className="space-y-2">
-        <SectionHeader>Advanced</SectionHeader>
+        <SectionHeader>高级</SectionHeader>
         <SyncToExtensionSetting />
         <MultiRuleSetting />
         <ReferralSignatureSetting />

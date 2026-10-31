@@ -122,16 +122,16 @@ export function getDesktopDownloadCtas(
     options.push({
       href: downloads.macArm64Dmg,
       kind: "mac",
-      label: "Download for Mac",
+      label: "下载 Mac 版",
       match: platform.os === "mac" && platform.arch !== "x64",
-      shortLabel: "Mac (Apple Silicon)",
+      shortLabel: "Mac（Apple 芯片）",
     });
   }
   if (downloads.macX64Dmg) {
     options.push({
       href: downloads.macX64Dmg,
       kind: "mac",
-      label: "Download for Mac",
+      label: "下载 Mac 版",
       match: platform.os === "mac" && platform.arch === "x64",
       shortLabel: "Mac Intel",
     });
@@ -140,7 +140,7 @@ export function getDesktopDownloadCtas(
     options.push({
       href: downloads.winX64Exe,
       kind: "windows",
-      label: "Download for Windows",
+      label: "下载 Windows 版",
       match: platform.os === "windows" && platform.arch !== "arm",
       shortLabel: "Windows",
     });
@@ -149,7 +149,7 @@ export function getDesktopDownloadCtas(
     options.push({
       href: downloads.winArm64Exe,
       kind: "windows",
-      label: "Download for Windows",
+      label: "下载 Windows 版",
       match: platform.os === "windows" && platform.arch === "arm",
       shortLabel: "Windows ARM",
     });

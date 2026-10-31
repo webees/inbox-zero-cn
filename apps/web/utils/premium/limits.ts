@@ -17,13 +17,13 @@ export async function assertHasAiAccess({
   const premium = await getUserPremiumForLimits({ userId });
 
   if (!isPremiumRecord(premium)) {
-    throw new SafeError("Please upgrade for AI access", 403);
+    throw new SafeError("请升级以使用 AI", 403);
   }
 
   const userHasAiAccess = hasAiAccess(getUserTier(premium), !!hasUserApiKey);
 
   if (!userHasAiAccess) {
-    throw new SafeError("Please upgrade for AI access", 403);
+    throw new SafeError("请升级以使用 AI", 403);
   }
 }
 
@@ -37,7 +37,7 @@ async function getUserPremiumForLimits({ userId }: { userId: string }) {
     },
   });
 
-  if (!user) throw new SafeError("User not found", 404);
+  if (!user) throw new SafeError("未找到用户", 404);
 
   return user.premium;
 }

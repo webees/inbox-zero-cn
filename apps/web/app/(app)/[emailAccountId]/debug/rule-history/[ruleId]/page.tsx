@@ -15,13 +15,13 @@ import { getEmailTerminology } from "@/utils/terminology";
 import type { RuleHistoryTrigger } from "@/utils/rule/rule-history";
 
 const triggerTypeLabels: Record<RuleHistoryTrigger, string> = {
-  created: "Created",
-  updated: "Updated",
-  actions_updated: "Actions Updated",
-  conditions_updated: "Conditions Updated",
-  instructions_updated: "Instructions Updated",
-  enabled_updated: "Enabled Toggled",
-  run_on_threads_updated: "Thread Mode Updated",
+  created: "已创建",
+  updated: "已更新",
+  actions_updated: "操作已更新",
+  conditions_updated: "条件已更新",
+  instructions_updated: "指令已更新",
+  enabled_updated: "启用状态已切换",
+  run_on_threads_updated: "会话模式已更新",
 };
 
 export default async function RuleHistoryPage(props: {
@@ -34,7 +34,7 @@ export default async function RuleHistoryPage(props: {
   const rule = await prisma.rule.findFirst({
     where: {
       id: ruleId,
-      // Verify the user has access to this email account
+      // 验证用户是否有权访问此邮箱账号
       emailAccount: {
         id: emailAccountId,
         userId: session.user.id,
@@ -63,11 +63,9 @@ export default async function RuleHistoryPage(props: {
 
   return (
     <div className="container mx-auto p-4">
-      <PageHeading>Rule History: {rule.name}</PageHeading>
+      <PageHeading>规则历史：{rule.name}</PageHeading>
       {ruleHistory.length === 0 ? (
-        <p className="mt-4 text-muted-foreground">
-          No history found for this rule.
-        </p>
+        <p className="mt-4 text-muted-foreground">未找到此规则的历史记录。</p>
       ) : (
         <div className="mt-6 space-y-4">
           {ruleHistory.map((history) => (
@@ -75,7 +73,7 @@ export default async function RuleHistoryPage(props: {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">
-                    Version {history.version}
+                    版本 {history.version}
                   </CardTitle>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">
@@ -92,36 +90,36 @@ export default async function RuleHistoryPage(props: {
                 </div>
                 {history.promptText && (
                   <CardDescription className="mt-2">
-                    <strong>Prompt:</strong> {history.promptText}
+                    <strong>提示词：</strong> {history.promptText}
                   </CardDescription>
                 )}
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div>
-                    <h4 className="mb-1 font-semibold">Rule Details</h4>
+                    <h4 className="mb-1 font-semibold">规则详情</h4>
                     <dl className="grid grid-cols-1 gap-1 text-sm">
                       <div className="flex gap-2">
-                        <dt className="font-medium">Name:</dt>
+                        <dt className="font-medium">名称：</dt>
                         <dd>{history.name}</dd>
                       </div>
                       {history.instructions && (
                         <div className="flex gap-2">
-                          <dt className="font-medium">Instructions:</dt>
+                          <dt className="font-medium">指令：</dt>
                           <dd>{history.instructions}</dd>
                         </div>
                       )}
                       <div className="flex gap-2">
-                        <dt className="font-medium">Status:</dt>
+                        <dt className="font-medium">状态：</dt>
                         <dd>
-                          {history.enabled ? "Enabled" : "Disabled"}
-                          {history.automate && " • Automated"}
-                          {history.runOnThreads && " • Runs on threads"}
+                          {history.enabled ? "已启用" : "已禁用"}
+                          {history.automate && " • 自动化"}
+                          {history.runOnThreads && " • 在会话中运行"}
                         </dd>
                       </div>
                       {history.conditionalOperator && (
                         <div className="flex gap-2">
-                          <dt className="font-medium">Operator:</dt>
+                          <dt className="font-medium">运算符：</dt>
                           <dd>{history.conditionalOperator}</dd>
                         </div>
                       )}
@@ -133,29 +131,29 @@ export default async function RuleHistoryPage(props: {
                     history.subject ||
                     history.body) && (
                     <div>
-                      <h4 className="mb-1 font-semibold">Static Conditions</h4>
+                      <h4 className="mb-1 font-semibold">静态条件</h4>
                       <dl className="grid grid-cols-1 gap-1 text-sm">
                         {history.from && (
                           <div className="flex gap-2">
-                            <dt className="font-medium">From:</dt>
+                            <dt className="font-medium">发件人：</dt>
                             <dd className="font-mono">{history.from}</dd>
                           </div>
                         )}
                         {history.to && (
                           <div className="flex gap-2">
-                            <dt className="font-medium">To:</dt>
+                            <dt className="font-medium">收件人：</dt>
                             <dd className="font-mono">{history.to}</dd>
                           </div>
                         )}
                         {history.subject && (
                           <div className="flex gap-2">
-                            <dt className="font-medium">Subject:</dt>
+                            <dt className="font-medium">主题：</dt>
                             <dd className="font-mono">{history.subject}</dd>
                           </div>
                         )}
                         {history.body && (
                           <div className="flex gap-2">
-                            <dt className="font-medium">Body:</dt>
+                            <dt className="font-medium">正文：</dt>
                             <dd className="font-mono">{history.body}</dd>
                           </div>
                         )}
@@ -165,14 +163,14 @@ export default async function RuleHistoryPage(props: {
 
                   {history.systemType && (
                     <div>
-                      <h4 className="mb-1 font-semibold">System Type</h4>
+                      <h4 className="mb-1 font-semibold">系统类型</h4>
                       <p className="text-sm">{history.systemType}</p>
                     </div>
                   )}
 
                   {history.actions && (
                     <div>
-                      <h4 className="mb-1 font-semibold">Actions</h4>
+                      <h4 className="mb-1 font-semibold">操作</h4>
                       <div className="space-y-1">
                         {(
                           history.actions as Array<
@@ -194,14 +192,14 @@ export default async function RuleHistoryPage(props: {
                               </span>
                             )}
                             {action.subject && (
-                              <span>Subject: {action.subject}</span>
+                              <span>主题：{action.subject}</span>
                             )}
                             {action.content && (
                               <span>
-                                Content: {action.content.slice(0, 50)}...
+                                内容：{action.content.slice(0, 50)}...
                               </span>
                             )}
-                            {action.to && <span>To: {action.to}</span>}
+                            {action.to && <span>收件人：{action.to}</span>}
                           </div>
                         ))}
                       </div>

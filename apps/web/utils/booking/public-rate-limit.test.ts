@@ -141,7 +141,7 @@ describe("enforcePublicBookingRateLimit", () => {
       }),
     ).rejects.toMatchObject({
       name: "SafeError",
-      safeMessage: "Too many reschedule attempts. Please try again later.",
+      safeMessage: "改期尝试过于频繁。请稍后再试。",
       statusCode: 429,
     } satisfies Partial<SafeError>);
   });

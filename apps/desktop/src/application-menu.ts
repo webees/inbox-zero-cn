@@ -35,12 +35,12 @@ export function configureDesktopApplicationMenu({
     click: checkForUpdates,
   };
   const settingsItem: MenuItemConstructorOptions = {
-    label: "Settings…",
+    label: "设置…",
     accelerator: "CommandOrControl+,",
     click: openSettings,
   };
   const recordDiagnosticsItem: MenuItemConstructorOptions = {
-    label: "Record Diagnostics…",
+    label: "记录诊断信息…",
     click: recordDiagnostics,
   };
   const helpSubmenu: MenuItemConstructorOptions[] =
@@ -51,7 +51,7 @@ export function configureDesktopApplicationMenu({
           recordDiagnosticsItem,
           { type: "separator" },
           {
-            label: `About ${PRODUCT_NAME}`,
+            label: `关于 ${PRODUCT_NAME}`,
             click: () => app.showAboutPanel(),
           },
         ];
@@ -61,7 +61,7 @@ export function configureDesktopApplicationMenu({
           {
             label: PRODUCT_NAME,
             submenu: [
-              { label: `About ${PRODUCT_NAME}`, role: "about" },
+              { label: `关于 ${PRODUCT_NAME}`, role: "about" },
               { type: "separator" },
               checkForUpdatesItem,
               { type: "separator" },
@@ -69,20 +69,20 @@ export function configureDesktopApplicationMenu({
               { type: "separator" },
               { role: "services" },
               { type: "separator" },
-              { label: `Hide ${PRODUCT_NAME}`, role: "hide" },
+              { label: `隐藏 ${PRODUCT_NAME}`, role: "hide" },
               { role: "hideOthers" },
               { role: "unhide" },
               { type: "separator" },
-              { label: `Quit ${PRODUCT_NAME}`, role: "quit" },
+              { label: `退出 ${PRODUCT_NAME}`, role: "quit" },
             ],
           } satisfies MenuItemConstructorOptions,
         ]
       : []),
     {
-      label: "File",
+      label: "文件",
       submenu: [
         {
-          label: "New Window",
+          label: "新建窗口",
           accelerator: "CommandOrControl+N",
           click: createWindow,
         },
@@ -99,15 +99,15 @@ export function configureDesktopApplicationMenu({
     },
     platform === "darwin" ? macEditMenu : { role: "editMenu" },
     {
-      label: "View",
+      label: "视图",
       submenu: [
         {
-          label: "Back",
+          label: "后退",
           accelerator: "CommandOrControl+[",
           click: (_item, window) => navigationHistory(window)?.goBack(),
         },
         {
-          label: "Forward",
+          label: "前进",
           accelerator: "CommandOrControl+]",
           click: (_item, window) => navigationHistory(window)?.goForward(),
         },
@@ -133,7 +133,7 @@ export function configureDesktopApplicationMenu({
 // Electron's macOS Edit menu, except Paste and Match Style: Electron binds it
 // to ⌘⌥⇧V, but browsers use ⌘⇧V.
 const macEditMenu: MenuItemConstructorOptions = {
-  label: "Edit",
+  label: "编辑",
   submenu: [
     { role: "undo" },
     { role: "redo" },
@@ -146,7 +146,7 @@ const macEditMenu: MenuItemConstructorOptions = {
     { role: "selectAll" },
     { type: "separator" },
     {
-      label: "Substitutions",
+      label: "替换",
       submenu: [
         { role: "showSubstitutions" },
         { type: "separator" },
@@ -156,16 +156,16 @@ const macEditMenu: MenuItemConstructorOptions = {
       ],
     },
     {
-      label: "Speech",
+      label: "语音",
       submenu: [{ role: "startSpeaking" }, { role: "stopSpeaking" }],
     },
   ],
 };
 
 function updateMenuLabel(updateReady: boolean, downloadPercent: number | null) {
-  if (updateReady) return "Restart to Update";
-  if (downloadPercent === null) return "Check for Updates…";
-  return `Downloading update… ${downloadPercent}%`;
+  if (updateReady) return "重启以更新";
+  if (downloadPercent === null) return "检查更新…";
+  return `正在下载更新… ${downloadPercent}%`;
 }
 
 function navigationHistory(window: BaseWindow | undefined) {

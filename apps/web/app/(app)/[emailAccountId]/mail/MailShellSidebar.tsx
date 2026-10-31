@@ -66,9 +66,8 @@ const NO_FOLDERS: OutlookFolder[] = [];
 const NO_CATEGORIES: MailCategory[] = [];
 
 /**
- * The mail screen's left column. It owns the label counts and mailbox editing
- * so their updates stay here, and is memoized so thread navigation and list
- * snapshots don't re-render it.
+ * 邮件界面的左侧栏。它负责标签计数和邮箱编辑，使相关更新留在此处，
+ * 并通过 memo 缓存，避免会话导航和列表快照触发重新渲染。
  */
 export const MailShellSidebar = memo(function MailShellSidebar({
   activeType,
@@ -90,7 +89,7 @@ export const MailShellSidebar = memo(function MailShellSidebar({
   isDesktopApp: boolean;
   onSelectAccount: (accountId: string) => void;
   onSelectAllAccounts: () => void;
-  /** Leaves a view or split that the deleted label or folder defined. */
+  /** 离开由被删除的标签或文件夹定义的视图或分类。 */
   onMailboxItemDeleted: (item: MailboxItem) => Promise<unknown>;
   onNavigate: () => void;
   isMobileNavOpen: boolean;
@@ -113,8 +112,8 @@ export const MailShellSidebar = memo(function MailShellSidebar({
   const { state: openSidebars } = useSidebar();
   const isMailSidebarOpen = openSidebars.includes("left-sidebar");
 
-  // Dragging writes straight to the CSS variable: re-rendering on every
-  // pointer move would make the sidebar edge lag behind the cursor.
+  // 拖动时直接写入 CSS 变量：如果每次指针移动都重新渲染，
+  // 侧栏边缘会跟不上光标。
   const sidebarScopeRef = useRef<HTMLDivElement>(null);
   const setSidebarWidth = useCallback((width: number) => {
     sidebarScopeRef.current?.style.setProperty("--sidebar-width", `${width}px`);
@@ -140,9 +139,7 @@ export const MailShellSidebar = memo(function MailShellSidebar({
       // Without this the label the user just typed doesn't appear until an
       // unrelated revalidation happens to run.
       await mutateLabels();
-      toast.success(
-        `${terminology.label.singularCapitalized} "${name}" created`,
-      );
+      toast.success(`${terminology.label.singularCapitalized}“${name}”已创建`);
     },
     [emailAccountId, mutateLabels, terminology.label.singularCapitalized],
   );
@@ -161,7 +158,7 @@ export const MailShellSidebar = memo(function MailShellSidebar({
         mutateCounts(),
       ]);
       toast.success(
-        `${edit.kind === "folder" ? "Folder" : terminology.label.singularCapitalized} updated`,
+        `${edit.kind === "folder" ? "文件夹" : terminology.label.singularCapitalized}已更新`,
       );
       return true;
     },
@@ -191,7 +188,7 @@ export const MailShellSidebar = memo(function MailShellSidebar({
         mutateCounts(),
       ]);
       toast.success(
-        `${item.kind === "folder" ? "Folder" : terminology.label.singularCapitalized} deleted`,
+        `${item.kind === "folder" ? "文件夹" : terminology.label.singularCapitalized}已删除`,
       );
       return true;
     },
@@ -205,8 +202,7 @@ export const MailShellSidebar = memo(function MailShellSidebar({
     ],
   );
 
-  // The panel's overlay isn't covered by lg:hidden, so close the panel once
-  // the window is wide enough for the rail.
+  // 面板遮罩不受 lg:hidden 控制，因此窗口宽度足以显示侧栏后会关闭面板。
   useEffect(() => {
     if (!isMobileNavOpen) return;
     const wide = window.matchMedia("(min-width: 1024px)");
@@ -313,7 +309,7 @@ export const MailShellSidebar = memo(function MailShellSidebar({
           {renderMailSidebar({ collapsed: !isMailSidebarOpen, inSheet: false })}
           {isMailSidebarOpen ? (
             <PanelResizeHandle
-              label="Resize sidebar"
+              label="调整侧栏大小"
               edge="right"
               bounds={MAIL_SIDEBAR_WIDTH_BOUNDS}
               onResize={setSidebarWidth}
@@ -323,13 +319,11 @@ export const MailShellSidebar = memo(function MailShellSidebar({
           ) : null}
         </Sidebar>
       </div>
-      {/* Below lg the rail is hidden, so phones and tablets reach the
-        mailboxes and the app sections through this panel instead. */}
+      {/* 低于 lg 时侧栏会隐藏，因此手机和平板通过此面板访问邮箱和应用的各个部分。 */}
       <Sheet open={isMobileNavOpen} onOpenChange={onMobileNavOpenChange}>
         <SheetContent
           side="left"
-          // Focusing the first control would pop the Compose tooltip over
-          // the rows beneath it, so focus the panel itself.
+          // 聚焦第一个控件会让撰写提示浮现在下方行之上，因此直接聚焦面板本身。
           onOpenAutoFocus={(event) => {
             event.preventDefault();
             (event.currentTarget as HTMLElement).focus();
@@ -341,7 +335,7 @@ export const MailShellSidebar = memo(function MailShellSidebar({
             } as CSSProperties
           }
         >
-          <SheetTitle className="sr-only">Mail navigation</SheetTitle>
+          <SheetTitle className="sr-only">邮件导航</SheetTitle>
           {renderMailSidebar({ collapsed: false, inSheet: true })}
         </SheetContent>
       </Sheet>

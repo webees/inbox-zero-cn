@@ -28,10 +28,10 @@ export const registerSSOProviderAction = adminActionClient
       const session = await auth();
       const userId = session?.user?.id;
 
-      if (!userId) throw new SafeError("Unauthorized");
+      if (!userId) throw new SafeError("未授权");
 
       if (!validateIdpMetadata(idpMetadata))
-        throw new SafeError("Invalid IDP metadata XML.");
+        throw new SafeError("IDP 元数据 XML 无效。");
 
       const ssoConfig = extractSSOProviderConfigFromXML(
         idpMetadata,
@@ -45,12 +45,10 @@ export const registerSSOProviderAction = adminActionClient
       });
 
       if (existingSSOProvider) {
-        throw new SafeError(
-          `SSO provider with ID "${providerId}" already exists`,
-        );
+        throw new SafeError(`ID 为 "${providerId}" 的 SSO 服务商已存在`);
       }
 
-      // Create organization
+      // 创建组织
       const organizationSlug = slugify(organizationName);
 
       const existingOrganization = await prisma.organization.findUnique({
@@ -70,18 +68,16 @@ export const registerSSOProviderAction = adminActionClient
       if (existingOrganization) {
         if (existingOrganization.id !== organizationId) {
           throw new SafeError(
-            "An organization with this name already exists. Enter its exact organization ID to attach SSO.",
+            "已存在同名组织。请输入其准确的组织 ID 以附加 SSO。",
           );
         }
 
         if (existingOrganization.SsoProvider) {
-          throw new SafeError(
-            "This organization already has an SSO provider configured.",
-          );
+          throw new SafeError("此组织已配置 SSO 服务商。");
         }
 
-        // Guard against slug squatting: only attach SSO to an existing
-        // organization if one of its owners/admins belongs to the SSO domain.
+        // 防止抢占 slug：只有当现有组织的某位所有者/管理员属于该 SSO 域名时，
+        // 才将 SSO 附加到该组织。
         const domainSuffix = `@${domain.toLowerCase()}`;
         const hasAdminOnDomain = existingOrganization.members.some((member) =>
           member.emailAccount.email.toLowerCase().endsWith(domainSuffix),
@@ -89,13 +85,11 @@ export const registerSSOProviderAction = adminActionClient
 
         if (!hasAdminOnDomain) {
           throw new SafeError(
-            `An organization with this name already exists, but none of its owners or admins have an email on "${domain}". Verify the organization before attaching SSO, or choose a different name.`,
+            `已存在同名组织，但其所有者或管理员都没有使用 "${domain}" 域名的邮箱。请在附加 SSO 前核实该组织，或选择其他名称。`,
           );
         }
       } else if (organizationId) {
-        throw new SafeError(
-          "The organization name does not match the supplied organization ID.",
-        );
+        throw new SafeError("组织名称与提供的组织 ID 不匹配。");
       }
 
       const organization =
@@ -154,15 +148,11 @@ export const registerSSOProviderAction = adminActionClient
         })
         .catch((error: unknown) => {
           if (isDuplicateError(error, "organizationId")) {
-            throw new SafeError(
-              "This organization already has an SSO provider configured.",
-            );
+            throw new SafeError("此组织已配置 SSO 服务商。");
           }
 
           if (isDuplicateError(error, "providerId")) {
-            throw new SafeError(
-              `SSO provider with ID "${providerId}" already exists`,
-            );
+            throw new SafeError(`ID 为 "${providerId}" 的 SSO 服务商已存在`);
           }
 
           throw error;

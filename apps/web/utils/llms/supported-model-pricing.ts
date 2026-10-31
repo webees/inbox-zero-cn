@@ -60,8 +60,8 @@ const gemini3_0pro = {
 
 // Introductory rates through 2026-12-31; they double on 2027-01-01 to
 // $1.50/$7.50/$0.15. Static pricing wins over the generated OpenRouter table
-// for non-OpenRouter providers, so regenerating that file will not correct
-// Google-provider costs. Update these values before the switchover date.
+// 针对非 OpenRouter 服务商，因此重新生成该文件不会修正
+// Google 服务商的成本。请在切换日期前更新这些值。
 const gemini3_8flash = {
   input: 0.75 / 1_000_000,
   output: 3.75 / 1_000_000,
@@ -264,15 +264,15 @@ export const STATIC_MODEL_PRICING: Record<string, ModelPricing> = {
     input: 0.35 / 1_000_000,
     output: 0.75 / 1_000_000,
   },
-  // TypeSafe decision model: $42 per billion input tokens, output free
+  // TypeSafe 决策模型：每十亿输入 token 收费 $42，输出免费
   "jev-latest": {
     input: 42 / 1_000_000_000,
     output: 0,
   },
 };
 
-// Source model ids to use when fetching OpenRouter pricing for our supported models.
-// Keys are our internal model ids from STATIC_MODEL_PRICING.
+// 获取受支持模型的 OpenRouter 价格时使用的源模型 id。
+// 键是 STATIC_MODEL_PRICING 中的内部模型 id。
 export const OPENROUTER_MODEL_ID_BY_SUPPORTED_MODEL: Partial<
   Record<string, string>
 > = {

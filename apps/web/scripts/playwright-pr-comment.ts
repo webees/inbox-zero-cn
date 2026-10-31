@@ -56,8 +56,6 @@ export function selectPlaywrightPrFrames(input: {
   const checkpoints = input.screenshots.filter(
     (screenshot) => screenshot.captureType === "checkpoint",
   );
-  const inChangedSpec = (screenshot: PlaywrightPrCommentScreenshot) =>
-    changedTargets.has(targetNameFromSource(screenshot.source));
   const changed = checkpoints.filter(
     (screenshot) => screenshot.comparison === "changed",
   );
@@ -72,18 +70,17 @@ export function selectPlaywrightPrFrames(input: {
     ...failures
       .filter((failure) => !flakyFailures.includes(failure))
       .map((screenshot) => ({ ...screenshot, reason: "failed" as const })),
-    // The main baseline can trail main, so checkpoints added by other merged
-    // PRs also look new. Only new captures from specs this PR touched are its own.
     ...checkpoints
-      .filter(
-        (screenshot) =>
-          screenshot.comparison === "new" && inChangedSpec(screenshot),
-      )
+      .filter((screenshot) => screenshot.comparison === "new")
       .map((screenshot) => ({ ...screenshot, reason: "new" as const })),
-    ...changed.filter(inChangedSpec).map((screenshot) => ({
-      ...screenshot,
-      reason: "spec changed" as const,
-    })),
+    ...changed
+      .filter((screenshot) =>
+        changedTargets.has(targetNameFromSource(screenshot.source)),
+      )
+      .map((screenshot) => ({
+        ...screenshot,
+        reason: "spec changed" as const,
+      })),
   ];
 
   const seen = new Set<string>();
@@ -276,21 +273,12 @@ function retryAttempt(source: string): number {
   return attempt === undefined ? 0 : Number(attempt);
 }
 
-// Sources are `[provider/]<target>/<test>/<file>`; the provider folder is
-// present when the suite runs once per mail provider.
 function targetNameFromSource(source: string): string {
-  const segments = source.split(/[\\/]/);
-  return (
-    segments.find((segment) => segment.endsWith(".spec.ts")) ?? segments[0]
-  );
+  return source.split(/[\\/]/)[0] ?? source;
 }
 
 function specPathFromSource(source: string): string {
-  const specPath = getPlaywrightSpecPathFromTargetName(
-    targetNameFromSource(source),
-  );
-  const [first] = source.split(/[\\/]/);
-  return first.endsWith(".spec.ts") ? specPath : `${specPath} (${first})`;
+  return getPlaywrightSpecPathFromTargetName(targetNameFromSource(source));
 }
 
 function escapeMarkdown(value: string): string {

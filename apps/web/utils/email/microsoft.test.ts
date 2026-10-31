@@ -413,7 +413,7 @@ describe("OutlookProvider.searchMessages", () => {
         emailProvider: provider,
         folderName: "Missing",
       }),
-    ).rejects.toThrow("not found");
+    ).rejects.toThrow("未找到 Outlook 文件夹。请使用 listFolders 中的文件夹。");
     expect(query).not.toHaveBeenCalled();
     query.mockRestore();
   });
@@ -577,7 +577,7 @@ describe("OutlookProvider.sendEmail", () => {
         subject: "Subject",
         messageText: "Message",
       }),
-    ).rejects.toThrow("Provider did not return a sent message ID");
+    ).rejects.toThrow("服务商未返回已发送邮件的 ID");
   });
 });
 

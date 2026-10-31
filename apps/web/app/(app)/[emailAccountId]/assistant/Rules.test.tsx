@@ -159,12 +159,12 @@ describe("Rules", () => {
 
     fireEvent.pointerDown(
       within(newsletterRow as HTMLElement).getByRole("button", {
-        name: "Toggle menu",
+        name: "切换菜单",
       }),
       { button: 0, ctrlKey: false },
     );
 
-    expect(screen.queryByText("Delete")).toBeNull();
+    expect(screen.queryByText("删除")).toBeNull();
   });
 
   it("still shows delete for custom rules", () => {
@@ -175,11 +175,11 @@ describe("Rules", () => {
 
     fireEvent.pointerDown(
       within(customRuleRow as HTMLElement).getByRole("button", {
-        name: "Toggle menu",
+        name: "切换菜单",
       }),
       { button: 0, ctrlKey: false },
     );
 
-    expect(screen.getByText("Delete")).toBeTruthy();
+    expect(screen.getByText("删除")).toBeTruthy();
   });
 });

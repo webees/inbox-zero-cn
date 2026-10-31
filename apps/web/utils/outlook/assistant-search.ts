@@ -100,7 +100,7 @@ export async function runOutlookSearch({
 
       if (i === searchQueries.length - 1) break;
 
-      logger.warn("Search query failed; retrying with Outlook fallback", {
+      logger.warn("搜索查询失败；使用 Outlook 回退重试", {
         query: candidateQuery,
         fallbackQuery: searchQueries[i + 1],
         error,
@@ -144,8 +144,8 @@ export async function runOutlookSearch({
         }),
       };
     } catch {
-      // A count failure should not discard usable search results.
-      countResult = { countError: "Exact message count unavailable" };
+      // 计数失败不应丢弃可用的搜索结果。
+      countResult = { countError: "无法获取精确的邮件计数" };
     }
   }
 
@@ -223,7 +223,7 @@ export function normalizeOutlookSearchInput({
     queryFromEmail &&
     explicitFromEmail.toLowerCase() !== queryFromEmail.toLowerCase()
   ) {
-    throw new Error("Sender filters conflict. Use one exact sender address.");
+    throw new Error("发件人过滤器冲突。请使用一个确切的发件人地址。");
   }
   const effectiveFromEmail = explicitFromEmail ?? queryFromEmail;
   const scopeCandidate = getOutlookFieldScopeCandidate(queryWithoutState);
@@ -231,9 +231,7 @@ export function normalizeOutlookSearchInput({
     const explicitScope =
       scopeCandidate.field === "folder" ? folderName : categoryName;
     if (explicitScope && explicitScope !== scopeCandidate.name) {
-      throw new Error(
-        "Search scopes conflict. Use one folder and one category filter.",
-      );
+      throw new Error("搜索范围冲突。请使用一个文件夹和一个分类筛选。");
     }
   }
 
@@ -305,19 +303,18 @@ function stripWrappingQuotes(value: string) {
 
 const MICROSOFT_SEARCH_FAILURE_MESSAGES = {
   rate_limited: {
-    summary: "Outlook rate-limited the search request.",
+    summary: "Outlook 对搜索请求进行了限流。",
     suggestedNextStep:
-      "Wait briefly, then retry once with a simpler Outlook query if needed.",
+      "稍作等待，然后如有需要用一个更简单的 Outlook 查询重试一次。",
   },
   provider_unavailable: {
-    summary: "Outlook search failed before returning results.",
-    suggestedNextStep:
-      "Retry once after the provider recovers instead of reusing the same query immediately.",
+    summary: "Outlook 搜索在返回结果前失败。",
+    suggestedNextStep: "等服务商恢复后重试一次，不要立即复用同一查询。",
   },
   query_failed: {
-    summary: "Outlook did not return results for the attempted search query.",
+    summary: "Outlook 未为所尝试的搜索查询返回结果。",
     suggestedNextStep:
-      "Retry with a simpler Outlook query such as one bare sender email, one keyword, or one simple subject: term.",
+      "改用更简单的 Outlook 查询重试，例如一个纯发件人邮箱、一个关键词或一个简单的 subject：词项。",
   },
 } as const;
 
@@ -340,7 +337,7 @@ export function buildMicrosoftSearchErrorResult({
     query,
     status: errorInfos[i].status,
     code: errorInfos[i].code,
-    message: errorInfos[i].errorMessage || "Microsoft search request failed",
+    message: errorInfos[i].errorMessage || "Microsoft 搜索请求失败",
   }));
 
   const failureType = getMicrosoftSearchFailureType(errorInfos);
@@ -352,7 +349,7 @@ export function buildMicrosoftSearchErrorResult({
 
   return {
     queryUsed: query,
-    error: "Failed to search inbox",
+    error: "搜索收件箱失败",
     provider: "microsoft" as const,
     microsoftSearchFeedback: {
       failureType,
@@ -490,25 +487,25 @@ function getMicrosoftSearchLikelyCause({
   subjectTerms: string[];
 }) {
   if (comparisonTerms.length > 0) {
-    return "The failed query used comparison filters, which Outlook search often rejects.";
+    return "失败的查询使用了比较筛选，Outlook 搜索通常会拒绝这种写法。";
   }
 
   if (
     stateTerms.length > 0 &&
     (senderEmails.length > 0 || subjectTerms.length > 0)
   ) {
-    return "The failed query mixed a read-state term with other filters. Retry with one simpler clause.";
+    return "失败的查询把已读状态词项与其他筛选混在一起。请用一个更简单的子句重试。";
   }
 
   if (senderEmails.length > 0 && subjectTerms.length > 0) {
-    return "The failed query mixed sender and subject filters. Retry with one simpler clause.";
+    return "失败的查询把发件人和主题筛选混在一起。请用一个更简单的子句重试。";
   }
 
   if (query.trim().split(/\s+/).length > 3) {
-    return "The failed query was too complex for Outlook search. Retry with one simpler clause.";
+    return "失败的查询对 Outlook 搜索而言过于复杂。请用一个更简单的子句重试。";
   }
 
-  return "Retry with one simpler Outlook clause at a time.";
+  return "每次使用一个更简单的 Outlook 子句重试。";
 }
 
 function extractMicrosoftSubjectTerms(query: string) {

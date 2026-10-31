@@ -113,7 +113,7 @@ export async function getPublicContactContext({
     };
     const generateText = createGenerateText({
       emailAccount,
-      label: "Public contact research",
+      label: "公开联系人研究",
       modelOptions: searchModelOptions,
       promptHardening: { trust: "untrusted", level: "full" },
     });
@@ -145,7 +145,7 @@ Return JSON matching the provided schema, including direct public source URLs.`,
     const context = result.output.context;
     if (!context || !isSafeForSharedCache(context)) {
       if (context) {
-        logger.warn("Generated contact context was not safe to share");
+        logger.warn("生成的联系人上下文不适合共享");
       }
       const storedNotFound = await storePublicContactContextNotFound({
         email: identity.data.email,
@@ -167,8 +167,8 @@ Return JSON matching the provided schema, including direct public source URLs.`,
     }
     return { status: "found", context };
   } catch (error) {
-    logger.error("Public contact research failed");
-    logger.trace("Public contact research failure details", { error });
+    logger.error("公开联系人研究失败");
+    logger.trace("公开联系人研究失败详情", { error });
     return { status: "unavailable", reason: "research_failed" };
   } finally {
     await releasePublicContactResearchLock(

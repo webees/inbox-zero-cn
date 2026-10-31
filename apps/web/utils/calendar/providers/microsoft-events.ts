@@ -173,8 +173,7 @@ export class MicrosoftCalendarEventProvider implements CalendarEventProvider {
       ? await this.getMailboxEvent(client, mailboxEventId)
       : await this.findEventByUid(client, invitation.uid);
     if (!event) return null;
-    if (event.isCancelled)
-      throw new SafeError("This event has been cancelled.");
+    if (event.isCancelled) throw new SafeError("该事件已被取消。");
     if (
       !event.id ||
       event.isOrganizer ||
@@ -196,9 +195,7 @@ export class MicrosoftCalendarEventProvider implements CalendarEventProvider {
     )?.value;
     if (!revision || !/^\d+$/.test(revision)) return null;
     if (Number(revision) !== invitation.sequence)
-      throw new SafeError(
-        "This invitation has changed. Please respond to the latest invitation in your calendar.",
-      );
+      throw new SafeError("此邀请已变更。请在你日历中的最新邀请上进行回应。");
     const response = event.responseStatus?.response;
     return {
       id: event.id,

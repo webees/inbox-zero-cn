@@ -120,7 +120,7 @@ describe("processSlackSlashCommand", () => {
     expect(fetch).toHaveBeenCalledWith(
       "https://hooks.slack.com/commands/response",
       expect.objectContaining({
-        body: expect.stringContaining("Something went wrong"),
+        body: expect.stringContaining("处理你的请求时出现问题"),
       }),
     );
   });

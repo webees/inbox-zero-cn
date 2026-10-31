@@ -36,8 +36,8 @@ describe("ArchiveProgress", () => {
     });
     render(<ArchiveProgress />);
 
-    expect(screen.getByText("Archiving senders...")).toBeTruthy();
-    expect(screen.getByText("1 of 3 senders processed")).toBeTruthy();
+    expect(screen.getByText("正在归档发件人…")).toBeTruthy();
+    expect(screen.getByText("1 of 3 发件人 processed")).toBeTruthy();
   });
 
   it("settles failed work without presenting it as successful", () => {
@@ -50,10 +50,8 @@ describe("ArchiveProgress", () => {
     });
     render(<ArchiveProgress />);
 
-    expect(
-      screen.getByText("Archiving finished: 2 succeeded, 1 failed."),
-    ).toBeTruthy();
-    expect(screen.getByText("3 of 3 senders processed")).toBeTruthy();
+    expect(screen.getByText("归档完成：2 个成功，1 个失败。")).toBeTruthy();
+    expect(screen.getByText("3 of 3 发件人 processed")).toBeTruthy();
   });
 
   it("clears completed account progress after it has been shown", async () => {

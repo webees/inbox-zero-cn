@@ -456,8 +456,7 @@ function createAppWindow(options?: {
     },
   });
 
-  // `closed` fires after the window is destroyed, when its webContents can no
-  // longer be read.
+  // `closed` 在窗口销毁后触发，此时已无法读取其 webContents。
   const contentsId = window.webContents.id;
   windows.push(window);
   lastFocused = window;
@@ -838,8 +837,8 @@ function reportSignInError(error: unknown) {
 
 function showSignInError(error: unknown) {
   dialog.showErrorBox(
-    "Sign in failed",
-    error instanceof Error ? error.message : "Could not finish signing in",
+    "登录失败",
+    error instanceof Error ? error.message : "无法完成登录",
   );
 }
 

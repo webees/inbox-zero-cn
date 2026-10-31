@@ -58,20 +58,6 @@ export async function trackSentDraftStatus({
       type: ActionType.DRAFT_EMAIL,
       draftId: { not: null },
       draftSendLog: null,
-      // A draft Inbox Zero deleted can't be what the user sent. Its missing
-      // draft would otherwise read as "likely sent", recording the user's own
-      // reply as the AI draft and learning reply memory from it. Drafts saved
-      // before statuses existed have no status, and legacy wasDraftSent=false
-      // rows were migrated to CLEANED_UP_UNUSED without being deleted, so both
-      // are still tracked.
-      OR: [
-        { draftStatus: null },
-        { draftStatus: { not: DraftEmailStatus.CLEANED_UP_UNUSED } },
-        {
-          draftStatus: DraftEmailStatus.CLEANED_UP_UNUSED,
-          wasDraftSent: false,
-        },
-      ],
     },
     orderBy: {
       createdAt: "desc",
@@ -386,27 +372,20 @@ export async function cleanupThreadAIDrafts({
               draftStatus: action.draftStatus,
               status: DraftEmailStatus.CLEANED_UP_UNUSED,
             });
-            // Only a draft that is really gone can be recorded as cleaned up:
-            // sent-draft tracking skips cleaned-up drafts, and a delete the
-            // provider refused (e.g. the user edited it meanwhile) leaves a
-            // draft the user may still send.
-            const deleted = await provider.deleteDraft(action.draftId);
-            if (deleted && statusData) {
-              await withPrismaRetry(
-                () =>
-                  prisma.executedAction.update({
-                    where: { id: action.id },
-                    // Clear the legacy flag so the deleted draft isn't taken
-                    // for an unmigrated legacy row by sent-draft tracking.
-                    data: { ...statusData, wasDraftSent: null },
-                  }),
-                { logger },
-              );
-            }
-            logger.info(
-              deleted ? "Deleted unmodified draft." : "Draft was not deleted.",
-              actionLoggerOptions,
-            );
+            await Promise.all([
+              provider.deleteDraft(action.draftId),
+              statusData
+                ? withPrismaRetry(
+                    () =>
+                      prisma.executedAction.update({
+                        where: { id: action.id },
+                        data: statusData,
+                      }),
+                    { logger },
+                  )
+                : Promise.resolve(),
+            ]);
+            logger.info("Deleted unmodified draft.", actionLoggerOptions);
           } else {
             logger.info(
               "Draft has been modified, skipping deletion.",
@@ -414,10 +393,7 @@ export async function cleanupThreadAIDrafts({
             );
           }
         } else {
-          logger.info(
-            "Draft no longer exists, tracking cleanup status.",
-            actionLoggerOptions,
-          );
+          logger.info("草稿已不存在，正在跟踪清理状态。", actionLoggerOptions);
           const statusData = getDraftCleanupStatusData({
             draftStatus: action.draftStatus,
             status: DraftEmailStatus.MISSING_FROM_PROVIDER,
@@ -438,7 +414,7 @@ export async function cleanupThreadAIDrafts({
           logger,
           emailAccountId,
           scope: "draft-tracking",
-          message: "Error checking draft for cleanup",
+          message: "检查待清理草稿时出错",
           operation: "check-draft-for-cleanup",
           context: actionLoggerOptions,
           error,
@@ -446,9 +422,9 @@ export async function cleanupThreadAIDrafts({
       }
     }
 
-    // Also clean up follow-up drafts for this thread (safety net).
-    // clearFollowUpLabel already handles this synchronously, so this will
-    // typically find nothing. Kept as a fallback for non-standard code paths.
+    // 同时清理此会话的跟进草稿（兜底措施）。
+    // clearFollowUpLabel 已同步处理此操作，因此这里通常
+    // 不会找到任何内容。保留它作为非标准代码路径的兜底。
     const followUpTrackers = await prisma.threadTracker.findMany({
       where: {
         emailAccountId,
@@ -462,7 +438,7 @@ export async function cleanupThreadAIDrafts({
     });
 
     if (followUpTrackers.length > 0) {
-      logger.info("Found follow-up drafts to cleanup", {
+      logger.info("发现待清理的跟进草稿", {
         count: followUpTrackers.length,
       });
 

@@ -73,7 +73,7 @@ type FolderInput = BaseInput & {
 type MetadataPatch = Pick<Message, (typeof metadataFields)[number]> & {
   id: string;
   internalDate?: string | null;
-  // Uses the ordinary provider name fallback only after a complete catalog lookup.
+  // 仅在完成目录查询后才使用普通服务商名称回退。
   categoryIds?: string[];
 };
 type DeltaMessage = Message & { "@removed"?: { reason?: string } };
@@ -86,8 +86,7 @@ type Page<T> = {
 export async function resolveOutlookLocalMailFolderIds(
   input: Pick<BaseInput, "client" | "emailAccountId">,
 ) {
-  if (!input.emailAccountId)
-    throw new Error("Outlook local mail identity is required");
+  if (!input.emailAccountId) throw new Error("需要 Outlook 本地邮件标识");
   const folderIds: Record<string, string> = {};
   for (const name of Object.keys(WELL_KNOWN_FOLDERS)) {
     const key = `local-mail-folder-id:${input.emailAccountId}:${name}`;
@@ -116,8 +115,7 @@ export async function resolveOutlookLocalMailFolderIds(
               .middlewareOptions([new RetryHandlerOptions(0, 0)])
               .get() as Promise<MailFolder>,
         );
-        if (!folder.id)
-          throw new Error("Outlook returned a folder without an ID");
+        if (!folder.id) throw new Error("Outlook 返回了没有 ID 的文件夹");
         cached = { id: folder.id };
       } catch (error) {
         if (
@@ -127,7 +125,7 @@ export async function resolveOutlookLocalMailFolderIds(
           throw error;
         cached = { id: null };
       }
-      // Persist each completed lookup so throttled setup resumes without replay.
+      // 持久化每次完成的查询，使被限流的初始化能恢复而无需重放。
       try {
         await redis.set(key, cached, { ex: 86_400 });
       } catch {
@@ -137,7 +135,7 @@ export async function resolveOutlookLocalMailFolderIds(
     if (typeof cached.id === "string" && cached.id) folderIds[name] = cached.id;
   }
   if (!["drafts", "deleteditems", "junkemail"].every((name) => folderIds[name]))
-    throw new Error("Outlook excluded folder identities are unavailable");
+    throw new Error("Outlook 排除的文件夹标识不可用");
   return folderIds;
 }
 
@@ -186,7 +184,7 @@ export async function getOutlookMailFoldersPage(
   );
   validatePage(response);
   const folders = response.value.map((folder) => {
-    if (!folder.id) throw new Error("Outlook returned a folder without an ID");
+    if (!folder.id) throw new Error("Outlook 返回了没有 ID 的文件夹");
     return {
       id: folder.id,
       parentFolderId: folder.parentFolderId,
@@ -238,7 +236,7 @@ export async function getOutlookMailFolderChangesPage(input: FolderInput) {
             "Prefer",
             `IdType="ImmutableId", odata.maxpagesize=${input.limit}`,
           );
-        // A date-filtered delta silently caps coverage at 5,000 messages.
+        // 带日期筛选的增量会静默地将覆盖范围上限设为 5,000 封邮件。
         if (!link) request.select(metadataFields.join(",")).top(input.limit);
         return request
           .options({ signal })
@@ -254,7 +252,7 @@ export async function getOutlookMailFolderChangesPage(input: FolderInput) {
   const nextLink = response["@odata.nextLink"];
   const deltaLink = response["@odata.deltaLink"];
   if ((!nextLink && !deltaLink) || (nextLink && deltaLink))
-    throw new Error("Outlook delta response omitted an unambiguous cursor");
+    throw new Error("Outlook delta 响应省略了明确的游标");
   const cursor = encodeCursor({
     ...checkpoint,
     link: (nextLink ?? deltaLink)!,
@@ -266,8 +264,7 @@ export async function getOutlookMailFolderChangesPage(input: FolderInput) {
   const messages: MetadataPatch[] = [];
   const removed = new Set<string>();
   for (const message of response.value) {
-    if (!message.id)
-      throw new Error("Outlook returned a sync row without a message ID");
+    if (!message.id) throw new Error("Outlook 返回了没有邮件 ID 的同步行");
     if (message["@removed"]) removed.add(message.id);
     else messages.push(metadataPatch(message, categoryMap));
   }
@@ -275,7 +272,7 @@ export async function getOutlookMailFolderChangesPage(input: FolderInput) {
     resetRequired: false as const,
     messages,
     removedMessageIds: [...removed],
-    // A folder removal can be a move; the caller must resolve conflicting events.
+    // 文件夹移除可能是移动；调用方必须解决冲突事件。
     requiresReconciliationMessageIds: [
       ...new Set(
         messages
@@ -297,7 +294,7 @@ export async function getOutlookMailBackfillPage(
   const after = input.after.getTime();
   const before = input.before.getTime();
   if (!Number.isFinite(after) || !Number.isFinite(before) || before <= after)
-    throw new Error("Invalid Outlook local mail bounds");
+    throw new Error("无效的 Outlook 本地邮件边界");
   const checkpoint = {
     version: 1 as const,
     provider: "microsoft" as const,
@@ -378,7 +375,7 @@ export async function getOutlookLocalMailMessage(
   },
 ) {
   if (!input.emailAccountId || !input.messageId)
-    throw new Error("Outlook local mail identity is required");
+    throw new Error("需要 Outlook 本地邮件标识");
   let message: Message;
   try {
     message = await withLocalMailSyncBudget<Message>(
@@ -403,9 +400,9 @@ export async function getOutlookLocalMailMessage(
     return { status: "notFound" as const };
   }
   if (message.id !== input.messageId)
-    throw new Error("Outlook returned an unexpected message ID");
-  // Backfill retains neither drafts nor the excluded folders, so a message that
-  // moved into one is gone as far as local mail is concerned.
+    throw new Error("Outlook 返回了意外的邮件 ID");
+  // 回填既不保留草稿也不保留被排除的文件夹，因此只要邮件移动进其中，
+  // 对本地邮件而言它就已经消失。
   if (
     message.isDraft ||
     isExcludedFolder(message.parentFolderId, input.folderIds)
@@ -440,7 +437,7 @@ async function resolveLocalMailCategories(
   let categoryMap = new Map(cached?.entries);
   if (cached && !cached.nextLink) {
     if ([...names].every((name) => categoryMap.has(name))) return categoryMap;
-    // Newly assigned categories can precede the shared catalog cache expiry.
+    // 新分配的类别可能早于共享目录缓存过期。
     cached = null;
     categoryMap = new Map();
   }
@@ -476,14 +473,14 @@ async function resolveLocalMailCategories(
       (categoryMap.has(category.displayName) &&
         categoryMap.get(category.displayName) !== category.id)
     )
-      throw new Error("Outlook category identities are unavailable");
+      throw new Error("Outlook 类别标识不可用");
     categoryMap.set(category.displayName, category.id);
   }
   const nextLink = response["@odata.nextLink"];
   if (nextLink) validateCategoryLink(nextLink);
   else {
-    // Match ordinary provider reads for categories absent from a complete catalog.
-    // Cache misses until expiry so an orphaned name cannot refetch every page.
+    // 对完整目录中缺失的类别，与普通服务商读取行为保持一致。
+    // 将未命中结果缓存至过期，避免孤立名称在每页都重新获取。
     for (const name of names)
       if (!categoryMap.has(name)) categoryMap.set(name, name);
   }
@@ -496,7 +493,7 @@ async function resolveLocalMailCategories(
   } catch {
     throw new LocalMailSyncPausedError();
   }
-  // One catalog page per operation preserves quota admission and resumability.
+  // 每次操作只取一页目录，以保留配额准入与可恢复性。
   if (nextLink) throw new LocalMailSyncPausedError(1000);
   return categoryMap;
 }
@@ -510,7 +507,7 @@ function validateCategoryLink(link: string) {
     url.hash ||
     url.pathname.toLowerCase() !== "/v1.0/me/outlook/mastercategories"
   )
-    throw new Error("Invalid Outlook category cursor");
+    throw new Error("无效的 Outlook 类别游标");
   for (const [key, value] of url.searchParams) {
     if (["$skiptoken", "$skip"].includes(key) && value) continue;
     if (
@@ -525,18 +522,17 @@ function validateCategoryLink(link: string) {
       value.split(",").sort().join(",") === "displayName,id"
     )
       continue;
-    throw new Error("Invalid Outlook category cursor");
+    throw new Error("无效的 Outlook 类别游标");
   }
   if (!url.searchParams.has("$skiptoken") && !url.searchParams.has("$skip"))
-    throw new Error("Invalid Outlook category cursor");
+    throw new Error("无效的 Outlook 类别游标");
 }
 
 function metadataPatch(
   message: Message,
   categoryMap: Map<string, string>,
 ): MetadataPatch {
-  if (!message.id)
-    throw new Error("Outlook returned a sync row without a message ID");
+  if (!message.id) throw new Error("Outlook 返回了没有邮件 ID 的同步行");
   const patch = Object.fromEntries(
     metadataFields.flatMap((field) =>
       message[field] === undefined ? [] : [[field, message[field]]],
@@ -546,7 +542,7 @@ function metadataPatch(
   if (message.categories !== undefined)
     result.categoryIds = (message.categories ?? []).map((name) => {
       const id = categoryMap.get(name);
-      if (!id) throw new Error("Outlook category identities are unavailable");
+      if (!id) throw new Error("Outlook 类别标识不可用");
       return id;
     });
   if (message.receivedDateTime === null) result.internalDate = null;
@@ -561,8 +557,7 @@ function bodyMessage(
     categoryMap?: Map<string, string>;
   },
 ) {
-  if (!message.id)
-    throw new Error("Outlook returned a sync row without a message ID");
+  if (!message.id) throw new Error("Outlook 返回了没有邮件 ID 的同步行");
   const converted = convertMessage(message, input.folderIds, input.categoryMap);
   const content = message.body?.content ?? undefined;
   const type = message.body?.contentType?.toLowerCase();
@@ -585,7 +580,7 @@ function messageTimestamp(message: Message) {
     ? Date.parse(message.receivedDateTime)
     : Number.NaN;
   if (!Number.isFinite(timestamp))
-    throw new Error("Outlook returned an invalid sync message date");
+    throw new Error("Outlook 返回了无效的同步邮件日期");
   return timestamp;
 }
 function validateInput(input: BaseInput) {
@@ -596,7 +591,7 @@ function validateInput(input: BaseInput) {
     input.limit > 100
   )
     throw new Error(
-      "Outlook local mail requires account identity and a limit between 1 and 100",
+      "Outlook 本地邮件需要账号身份，且 limit 必须介于 1 与 100 之间",
     );
 }
 function validateFolder(input: FolderInput) {
@@ -605,9 +600,9 @@ function validateFolder(input: FolderInput) {
       (name) => !input.folderIds[name],
     )
   )
-    throw new Error("Outlook excluded folder identities are unavailable");
+    throw new Error("Outlook 排除的文件夹标识不可用");
   if (!input.folderId || isExcludedFolder(input.folderId, input.folderIds))
-    throw new Error("Outlook local mail folder is outside retained scope");
+    throw new Error("Outlook 本地邮件文件夹超出保留范围");
 }
 function isExcludedFolder(
   folderId: string | null | undefined,
@@ -650,17 +645,17 @@ function decodeCursor(value: string, expected: Omit<Cursor, "link">) {
       cursor.after !== expected.after ||
       cursor.before !== expected.before
     )
-      throw new Error("scope mismatch");
+      throw new Error("范围不匹配");
     validateLink(cursor);
     return cursor;
   } catch {
-    throw new Error("Invalid Outlook local mail cursor");
+    throw new Error("无效的 Outlook 本地邮件游标");
   }
 }
 function validateLink(cursor: Cursor) {
   const url = new URL(cursor.link);
   const invalid = () => {
-    throw new Error("Invalid Outlook local mail cursor");
+    throw new Error("无效的 Outlook 本地邮件游标");
   };
   if (
     url.origin !== "https://graph.microsoft.com" ||
@@ -726,5 +721,5 @@ function validateLink(cursor: Cursor) {
 }
 function validatePage<T>(response: Page<T>) {
   if (!Array.isArray(response.value))
-    throw new Error("Outlook local mail response omitted its records");
+    throw new Error("Outlook 本地邮件响应省略了其记录");
 }

@@ -39,7 +39,7 @@ export function ChatHistoryItem({
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            aria-label="Chat options"
+            aria-label="聊天选项"
             className={
               "absolute right-1 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded-sm text-muted-foreground transition-opacity hover:bg-accent hover:text-foreground focus:opacity-100 focus:outline-none " +
               (menuOpen
@@ -69,7 +69,7 @@ export function ChatHistoryItem({
             }}
           >
             <PencilIcon className="mr-2 size-4" />
-            Rename
+            重命名
           </DropdownMenuItem>
           <DropdownMenuItem
             onSelect={(e) => {
@@ -80,7 +80,7 @@ export function ChatHistoryItem({
             className="text-destructive focus:text-destructive"
           >
             <Trash2Icon className="mr-2 size-4" />
-            Delete
+            删除
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -3,7 +3,7 @@ import { createScopedLogger } from "@/utils/logger";
 
 const logger = createScopedLogger("braintrust");
 
-// Used for evals. Not used in production.
+// 用于 eval。生产环境不使用。
 export class Braintrust {
   private readonly dataset: Dataset | null = null;
 
@@ -19,7 +19,7 @@ export class Braintrust {
     try {
       this.dataset.insert(data);
     } catch (error) {
-      logger.error("Error inserting to Braintrust dataset", { error });
+      logger.error("写入 Braintrust 数据集失败", { error });
     }
   }
 }

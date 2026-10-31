@@ -89,7 +89,7 @@ it("fails honestly when the full conversation exceeds its message cap", async ()
   ]);
   await expect(
     getThread("thread", client, logger, { complete: true }),
-  ).rejects.toThrow("message limit");
+  ).rejects.toThrow("会话超过了离线快照的消息上限");
 });
 it("does not infer an empty attachment inventory from a missing expansion", async () => {
   const { client, api } = fixture([
@@ -136,7 +136,7 @@ it("rejects repeated attachment metadata continuation", async () => {
   ]);
   await expect(
     getThread("thread", client, logger, { complete: true }),
-  ).rejects.toThrow("repeated");
+  ).rejects.toThrow("重复");
 });
 
 it("cancels folder and category decoration with the explicit snapshot signal", async () => {

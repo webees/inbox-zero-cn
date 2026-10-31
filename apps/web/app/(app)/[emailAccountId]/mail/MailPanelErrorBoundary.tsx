@@ -8,7 +8,6 @@ type Props = {
   resetKey: string;
   title: string;
   onBack?: () => void;
-  onError?: () => void;
 };
 
 export class MailPanelErrorBoundary extends Component<
@@ -19,10 +18,6 @@ export class MailPanelErrorBoundary extends Component<
 
   static getDerivedStateFromError(error: Error) {
     return { error };
-  }
-
-  componentDidCatch() {
-    this.props.onError?.();
   }
 
   componentDidUpdate(previousProps: Props) {
@@ -41,7 +36,7 @@ export class MailPanelErrorBoundary extends Component<
             error={this.state.error}
             reset={this.reset}
             title={this.props.title}
-            description="Try again, or select another folder or conversation. If the problem continues, contact support with the reference below."
+            description="请重试，或选择其他文件夹或会话。如果问题仍然存在，请使用下方的参考信息联系支持人员。"
             onBack={this.props.onBack}
           />
         </div>

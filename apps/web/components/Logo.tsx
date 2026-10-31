@@ -10,7 +10,7 @@ export function Logo({ className }: LogoProps) {
     return (
       <Image
         src={BRAND_LOGO_URL}
-        alt={`${BRAND_NAME} logo`}
+        alt={`${BRAND_NAME} 标志`}
         width={209}
         height={25}
         className={className}

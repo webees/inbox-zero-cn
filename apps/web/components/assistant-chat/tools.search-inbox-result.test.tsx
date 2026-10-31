@@ -48,16 +48,12 @@ describe("SearchInboxResult", () => {
     );
 
     expect(screen.queryByText("Error: Failed to search inbox")).toBeNull();
-    expect(screen.getByText("Search Inbox")).toBeTruthy();
-    expect(
-      screen.queryByText("Search results were unavailable for that request."),
-    ).toBeNull();
+    expect(screen.getByText("搜索收件箱")).toBeTruthy();
+    expect(screen.queryByText("无法获取该请求的搜索结果")).toBeNull();
 
-    fireEvent.click(screen.getByText("Search Inbox"));
+    fireEvent.click(screen.getByText("搜索收件箱"));
 
-    expect(
-      screen.getByText("Search results were unavailable for that request."),
-    ).toBeTruthy();
+    expect(screen.getByText("无法获取该请求的搜索结果")).toBeTruthy();
     expect(screen.getByText("Failed to search inbox")).toBeTruthy();
     expect(screen.getByText("from:sender@example.com")).toBeTruthy();
   });

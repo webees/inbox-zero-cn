@@ -48,9 +48,7 @@ describe("desktop update footer", () => {
   ])("hides without both bridge methods (%s)", (bridge) => {
     window.inboxZeroDesktop = bridge as InboxZeroDesktopApi | undefined;
     render(<DesktopUpdateMenuItem />);
-    expect(
-      screen.queryByRole("button", { name: "Restart to update" }),
-    ).toBeNull();
+    expect(screen.queryByRole("button", { name: "重启以更新" })).toBeNull();
   });
 
   it("shares status with the toast, shows only ready, and installs on click", () => {
@@ -73,19 +71,15 @@ describe("desktop update footer", () => {
         <DesktopUpdateToast />
       </>,
     );
-    expect(
-      screen.queryByRole("button", { name: "Restart to update" }),
-    ).toBeNull();
+    expect(screen.queryByRole("button", { name: "重启以更新" })).toBeNull();
     act(() => push({ state: "downloading", version: "1.2", percent: 42 }));
-    expect(
-      screen.queryByRole("button", { name: "Restart to update" }),
-    ).toBeNull();
+    expect(screen.queryByRole("button", { name: "重启以更新" })).toBeNull();
     expect(toast).toHaveBeenCalled();
     vi.mocked(toast).mockClear();
     act(() => push({ state: "ready", version: "1.2" }));
     expect(toast).not.toHaveBeenCalled();
     expect(toast.dismiss).toHaveBeenCalledWith("desktop-app-update");
-    fireEvent.click(screen.getByRole("button", { name: "Restart to update" }));
+    fireEvent.click(screen.getByRole("button", { name: "重启以更新" }));
     expect(installUpdate).toHaveBeenCalledTimes(1);
     expect(onUpdateStatus).toHaveBeenCalledTimes(1);
     view.unmount();
@@ -102,8 +96,6 @@ describe("desktop update footer", () => {
       installUpdate: vi.fn(),
     };
     render(<DesktopUpdateMenuItem />);
-    expect(
-      screen.getByRole("button", { name: "Restart to update" }),
-    ).toBeDefined();
+    expect(screen.getByRole("button", { name: "重启以更新" })).toBeDefined();
   });
 });

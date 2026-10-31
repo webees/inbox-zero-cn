@@ -20,15 +20,15 @@ import { addDisabledRuleActionIssue } from "@/utils/rule-action-feature-gates";
 
 export const delayInMinutesSchema = z
   .number()
-  .min(1, "Minimum supported delay is 1 minute")
-  .max(NINETY_DAYS_MINUTES, "Maximum supported delay is 90 days")
+  .min(1, "支持的最短延迟为 1 分钟")
+  .max(NINETY_DAYS_MINUTES, "支持的最长延迟为 90 天")
   .nullish()
   .describe(
     "Minutes to wait before executing this action. Only add when the user asks for a delay.",
   );
 
-// LLM-safe version: no .min()/.max() (Anthropic structured output rejects them).
-// Constraints are conveyed via .describe() instead.
+// 适配 LLM 的版本：不使用 .min()/.max()（Anthropic 的结构化输出会拒绝它们）。
+// 约束改为通过 .describe() 传达。
 export const delayInMinutesLlmSchema = z
   .number()
   .nullish()
@@ -56,7 +56,7 @@ const zodActionType = z.enum([
   ActionType.INTEGRATION,
 ]);
 
-// Arg keys are owned and validated by the selected tool spec below.
+// 参数键由下方选定的工具规范负责并校验。
 const zodIntegrationArgs = z.record(z.string(), z.string().nullish()).nullish();
 export type IntegrationActionArgs = z.infer<typeof zodIntegrationArgs>;
 
@@ -98,9 +98,9 @@ const zodField = z
   .object({
     value: z.string().nullish(),
     ai: z.boolean().nullish(),
-    // only needed for frontend
+    // 仅前端需要
     setManually: z.boolean().nullish(),
-    // label name for backup if no labelId exists (only for label field)
+    // 用于在没有 labelId 时作为备份的标签名称（仅用于标签字段）
     name: z.string().nullish(),
   })
   .nullish();
@@ -141,7 +141,7 @@ const zodAction = z
       if (!labelValue) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Please enter a label name for the Label action",
+          message: "请为标签操作输入标签名称",
           path: ["labelId"],
         });
         return;
@@ -162,28 +162,27 @@ const zodAction = z
       recipient: data.to?.value,
       ctx,
       path: ["to"],
-      forwardMessage: "Please enter an email address to forward to",
-      sendEmailMessage:
-        "Please enter an email address to send to. Use Reply for auto-responses.",
+      forwardMessage: "请输入要转发到的邮箱地址",
+      sendEmailMessage: "请输入要发送到的邮箱地址。自动回复请使用“回复”。",
     });
 
     if (data.type === ActionType.CALL_WEBHOOK && !data.url?.value?.trim()) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Please enter a webhook URL",
+        message: "请输入 Webhook URL",
         path: ["url"],
       });
     }
 
     if (
       data.type === ActionType.DRAFT_MESSAGING_CHANNEL &&
-      // Persisted legacy rows can be channel-less; keep them editable.
+      // 已持久化的历史记录可能没有渠道；保持其可编辑。
       !data.messagingChannelId &&
       !data.id
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Please choose a chat destination",
+        message: "请选择聊天目标",
         path: ["messagingChannelId"],
       });
     }
@@ -194,19 +193,19 @@ const zodAction = z
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Please choose a chat destination",
+        message: "请选择聊天目标",
         path: ["messagingChannelId"],
       });
     }
-    // folderId is optional: name-only input (from AI-generated rules) is
-    // resolved to a folder id before the rule is saved.
+    // folderId 是可选的：仅提供名称的输入（来自 AI 生成的规则）
+    // 会在规则保存前解析为文件夹 id。
     if (
       data.type === ActionType.MOVE_FOLDER &&
       !data.folderName?.value?.trim()
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Please select a folder from the list",
+        message: "请从列表中选择一个文件夹",
         path: ["folderName"],
       });
     }
@@ -222,20 +221,20 @@ const zodAction = z
 
 export const createRuleBody = z.object({
   id: z.string().optional(),
-  name: z.string().trim().min(1, "Please enter a name"),
+  name: z.string().trim().min(1, "请输入名称"),
   instructions: z.string().nullish(),
   groupId: z.string().nullish(),
   runOnThreads: z.boolean().nullish(),
   digest: z.boolean().nullish(),
   notifyMessagingChannelId: z.string().nullish(),
-  actions: z.array(zodAction).min(1, "You must have at least one action"),
+  actions: z.array(zodAction).min(1, "至少需要一项操作"),
   conditions: z
     .array(zodCondition)
-    .min(1, "You must have at least one condition")
+    .min(1, "至少需要一个条件")
     .refine(
       (conditions) => {
-        // Allow multiple STATIC conditions if they have different fields populated
-        // But only allow one AI condition
+        // 如果多个 STATIC 条件填充了不同的字段，则允许它们共存
+        // 但只允许一个 AI 条件
         const aiConditions = conditions.filter(
           (c) => c.type === ConditionType.AI,
         );
@@ -243,12 +242,12 @@ export const createRuleBody = z.object({
           return false;
         }
 
-        // For STATIC conditions, check if they have different fields
+        // 对于 STATIC 条件，检查它们是否具有不同的字段
         const staticConditions = conditions.filter(
           (c) => c.type === ConditionType.STATIC,
         );
 
-        // Filter out empty static conditions (where the active field has no value)
+        // 过滤掉空的静态条件（即生效字段没有值的条件）
         const nonEmptyStaticConditions = staticConditions.filter(
           (c) =>
             c.from?.trim() ||
@@ -258,10 +257,10 @@ export const createRuleBody = z.object({
         );
 
         if (nonEmptyStaticConditions.length <= 1) {
-          return true; // No duplicates possible
+          return true; // 不可能有重复项
         }
 
-        // Create a signature for each non-empty static condition based on which fields are populated
+        // 根据填充了哪些字段，为每个非空静态条件创建一个签名
         const staticSignatures = nonEmptyStaticConditions.map((c) => {
           const fields = [];
           if (c.from) fields.push("from");
@@ -271,12 +270,12 @@ export const createRuleBody = z.object({
           return fields.sort().join(",");
         });
 
-        // Check for duplicates
+        // 检查重复项
         const uniqueSignatures = new Set(staticSignatures);
         return uniqueSignatures.size === staticSignatures.length;
       },
       {
-        message: "You can't have duplicate conditions.",
+        message: "不能有重复的条件。",
       },
     ),
   conditionalOperator: z
@@ -322,8 +321,8 @@ const categoryConfig = z.object({
   name: z
     .string()
     .trim()
-    .min(1, "Please enter a name")
-    .max(40, "Please keep names under 40 characters"),
+    .min(1, "请输入名称")
+    .max(40, "名称请控制在 40 个字符以内"),
   description: z.string(),
   key: zodSystemRule.nullable(),
 });
@@ -341,7 +340,7 @@ export const toggleRuleBody = z
     enabled: z.boolean(),
   })
   .refine((data) => data.ruleId || data.systemType, {
-    message: "Either ruleId or systemType must be provided",
+    message: "必须提供 ruleId 或 systemType",
   });
 
 export const toggleAllRulesBody = z.object({
@@ -350,13 +349,13 @@ export const toggleAllRulesBody = z.object({
 export type ToggleAllRulesBody = z.infer<typeof toggleAllRulesBody>;
 
 export const copyRulesFromAccountBody = z.object({
-  sourceEmailAccountId: z.string().min(1, "Source account is required"),
-  targetEmailAccountId: z.string().min(1, "Target account is required"),
-  ruleIds: z.array(z.string()).min(1, "Select at least one rule to copy"),
+  sourceEmailAccountId: z.string().min(1, "源账号为必填项"),
+  targetEmailAccountId: z.string().min(1, "目标账号为必填项"),
+  ruleIds: z.array(z.string()).min(1, "请至少选择一条要复制的规则"),
 });
 export type CopyRulesFromAccountBody = z.infer<typeof copyRulesFromAccountBody>;
 
-// Schema for importing rules from JSON export
+// 从 JSON 导出导入规则的 schema
 const importedAction = z
   .object({
     type: zodActionType,
@@ -382,7 +381,7 @@ const importedAction = z
       if (!labelValue) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Label action requires a label name",
+          message: "标签操作需要标签名称",
           path: ["label"],
         });
         return;
@@ -403,15 +402,15 @@ const importedAction = z
       recipient: data.to,
       ctx,
       path: ["to"],
-      forwardMessage: "Forward action requires a recipient email address",
+      forwardMessage: "转发操作需要收件人邮箱地址",
       sendEmailMessage:
-        "Send email action requires a recipient email address. Use Reply for auto-responses.",
+        "发送邮件操作需要收件人邮箱地址。自动回复请使用“回复”。",
     });
 
     if (data.type === ActionType.CALL_WEBHOOK && !data.url?.trim()) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Webhook action requires a URL",
+        message: "Webhook 操作需要 URL",
         path: ["url"],
       });
     }
@@ -419,7 +418,7 @@ const importedAction = z
     if (data.type === ActionType.MOVE_FOLDER && !data.folderName?.trim()) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Move folder action requires a folder name",
+        message: "移动文件夹操作需要文件夹名称",
         path: ["folderName"],
       });
     }
@@ -464,13 +463,12 @@ const importedRule = z
       data.body?.trim() ||
       data.instructions?.trim(),
     {
-      message:
-        "At least one condition (from, to, subject, body, or instructions) must be provided",
+      message: "至少需要提供一个条件（发件人、收件人、主题、正文或指令）",
     },
   );
 
 export const importRulesBody = z.object({
-  rules: z.array(importedRule).min(1, "No rules to import"),
+  rules: z.array(importedRule).min(1, "没有可导入的规则"),
 });
 export type ImportRulesBody = z.infer<typeof importRulesBody>;
 export type ImportedRule = z.infer<typeof importedRule>;
@@ -496,7 +494,7 @@ function addIntegrationActionIssues({
   if (!integration) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: "Unknown integration",
+      message: "未知集成",
       path: ["integrationName"],
     });
     return;
@@ -510,7 +508,7 @@ function addIntegrationActionIssues({
   ) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: "Unsupported integration tool",
+      message: "不支持的集成工具",
       path: ["integrationToolName"],
     });
     return;
@@ -522,7 +520,7 @@ function addIntegrationActionIssues({
     if (args[key] == null || knownKeys.has(key)) continue;
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: `Unknown argument for this integration tool: ${key}`,
+      message: `此集成工具有未知参数：${key}`,
       path: ["integrationArgs", key],
     });
   }
@@ -531,12 +529,12 @@ function addIntegrationActionIssues({
     if (!arg.required) continue;
     const value =
       typeof args[arg.key] === "string" ? (args[arg.key] as string) : "";
-    // Empty is valid when the AI fills the value at execution time.
+    // 当 AI 在执行时填充该值时，允许为空。
     if (value.trim() || arg.aiPrompt) continue;
 
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: `Please enter a value for ${arg.label.toLowerCase()}`,
+      message: `请输入 ${arg.label.toLowerCase()} 的值`,
       path: ["integrationArgs", arg.key],
     });
   }

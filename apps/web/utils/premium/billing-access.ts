@@ -71,8 +71,8 @@ export function canManageBilling(userId: string, user: BillingAccessUser) {
     return isOrganizationAdmin(organizationMemberships);
   }
 
-  // Invited seats share a premium, so billing access must stay anchored to a
-  // recorded plan admin or the legacy owner whose user ID was the premium ID.
+  // 受邀席位共享一个高级版套餐，因此账单访问权限必须锚定到
+  // 已记录的套餐管理员，或用户 ID 即为高级版 ID 的历史所有者。
   const premiumAdminIds = new Set(premium.admins.map((admin) => admin.id));
   const isPurchaser = premiumAdminIds.has(userId) || premium.id === userId;
 
@@ -99,6 +99,6 @@ export function assertCanManageBilling(
   user: BillingAccessUser,
 ) {
   if (!canManageBilling(userId, user)) {
-    throw new SafeError("Not admin");
+    throw new SafeError("不是管理员");
   }
 }

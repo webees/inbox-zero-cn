@@ -19,7 +19,7 @@ export const createGroupAction = actionClient
       select: { name: true, groupId: true },
     });
     if (rule?.groupId) return { groupId: rule.groupId };
-    if (!rule) throw new SafeError("Rule not found");
+    if (!rule) throw new SafeError("未找到规则");
 
     const group = await prisma.group.create({
       data: {
@@ -45,11 +45,9 @@ export const addGroupItemAction = actionClient
       const group = await prisma.group.findUnique({
         where: { id: groupId },
       });
-      if (!group) throw new SafeError("Learned patterns group not found");
+      if (!group) throw new SafeError("未找到已学习模式分组");
       if (group.emailAccountId !== emailAccountId)
-        throw new SafeError(
-          "You don't have permission to add this learned pattern",
-        );
+        throw new SafeError("你没有权限添加此已学习模式");
 
       await addGroupItem({ groupId, type, value, exclude });
     },

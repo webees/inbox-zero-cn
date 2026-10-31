@@ -4,9 +4,9 @@ import { getActionDisplay } from "@/utils/action-display";
 
 describe("getActionDisplay", () => {
   it.each([
-    [MessagingProvider.SLACK, "Notify on Slack"],
-    [MessagingProvider.TEAMS, "Notify on Teams"],
-    [MessagingProvider.TELEGRAM, "Notify on Telegram"],
+    [MessagingProvider.SLACK, "通知 Slack"],
+    [MessagingProvider.TEAMS, "通知 Teams"],
+    [MessagingProvider.TELEGRAM, "通知 Telegram"],
   ])("shows the notification provider for %s", (provider, expected) => {
     expect(
       getActionDisplay(
@@ -27,6 +27,6 @@ describe("getActionDisplay", () => {
         "gmail",
         [],
       ),
-    ).toBe("Notify");
+    ).toBe("通知");
   });
 });

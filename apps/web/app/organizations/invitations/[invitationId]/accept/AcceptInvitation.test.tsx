@@ -24,7 +24,7 @@ describe("AcceptInvitation", () => {
       reactStrictMode: true,
     });
 
-    expect(await screen.findByText("Welcome!")).toBeTruthy();
+    expect(await screen.findByText("欢迎！")).toBeTruthy();
     expect(handleInvitationAction).toHaveBeenCalledOnce();
     expect(handleInvitationAction).toHaveBeenCalledWith({
       invitationId: "invite-1",
@@ -33,12 +33,14 @@ describe("AcceptInvitation", () => {
 
   it("shows the server's reason when the invitation cannot be accepted", async () => {
     vi.mocked(handleInvitationAction).mockResolvedValue({
-      serverError: "Invitation has expired",
+      serverError: "此邀请已过期。请让你的组织管理员重新发送一份。",
     } as never);
 
     render(<AcceptInvitation invitationId="invite-1" />);
 
-    expect(await screen.findByText("Invitation has expired")).toBeTruthy();
-    expect(screen.queryByText("Welcome!")).toBeNull();
+    expect(
+      await screen.findByText("此邀请已过期。请让你的组织管理员重新发送一份。"),
+    ).toBeTruthy();
+    expect(screen.queryByText("欢迎！")).toBeNull();
   });
 });

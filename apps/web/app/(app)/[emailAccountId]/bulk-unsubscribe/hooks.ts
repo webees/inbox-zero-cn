@@ -60,10 +60,6 @@ type BulkOperationResult = {
   failureCount: number;
 };
 
-function pluralize(count: number, singular: string): string {
-  return count === 1 ? singular : `${singular}s`;
-}
-
 function formatSenderNames<T extends Row>(items: T[]): string {
   const names = items.map((item) => item.name);
   return names.length > 3
@@ -91,7 +87,7 @@ function itemMatchesFilter(
   }
 }
 
-// Generic bulk operation handler to reduce duplication
+// 通用批量操作处理器，减少重复代码
 async function executeBulkOperation<T extends Row>({
   items,
   mutate,
@@ -122,10 +118,9 @@ async function executeBulkOperation<T extends Row>({
   onSuccess?: () => void;
 }): Promise<BulkOperationResult> {
   const total = items.length;
-  const toastId = toast.loading(
-    `${loadingMessage} ${total} ${pluralize(total, "sender")}...`,
-    { description: `0 of ${total} completed` },
-  );
+  const toastId = toast.loading(`${loadingMessage} ${total} 位发件人...`, {
+    description: `已完成 0 / ${total}`,
+  });
 
   let completed = 0;
   let failureCount = 0;
@@ -167,13 +162,10 @@ async function executeBulkOperation<T extends Row>({
       }
     } finally {
       completed++;
-      toast.loading(
-        `${loadingMessage} ${total} ${pluralize(total, "sender")}...`,
-        {
-          id: toastId,
-          description: `${completed} of ${total} completed`,
-        },
-      );
+      toast.loading(`${loadingMessage} ${total} 位发件人...`, {
+        id: toastId,
+        description: `已完成 ${completed} / ${total}`,
+      });
     }
 
     if (rateLimitError) break;
@@ -194,7 +186,7 @@ async function executeBulkOperation<T extends Row>({
     const successful = completed - failureCount;
     toast.error(rateLimitError.message, {
       id: toastId,
-      description: `${successful} of ${total} completed; stopped to avoid more requests`,
+      description: `已完成 ${successful} / ${total}，为避免更多请求已停止`,
     });
     return {
       stoppedByRateLimit: true,
@@ -206,15 +198,12 @@ async function executeBulkOperation<T extends Row>({
 
   if (failureCount > 0) {
     await mutate();
-    toast.error(
-      `${errorMessage} ${failureCount} ${pluralize(failureCount, "sender")}`,
-      {
-        id: toastId,
-        description: `${total - failureCount} of ${total} succeeded`,
-      },
-    );
+    toast.error(`${errorMessage} ${failureCount} 位发件人`, {
+      id: toastId,
+      description: `成功 ${total - failureCount} / ${total}`,
+    });
   } else {
-    toast.success(`${total} ${pluralize(total, "sender")} ${successMessage}`, {
+    toast.success(`${total} 位发件人${successMessage}`, {
       id: toastId,
       description: undefined,
     });
@@ -325,11 +314,10 @@ export function useUnsubscribe<T extends Row>({
 
     setUnsubscribeLoading(true);
 
-    // However the attempt fails, the sender's own page stays available, so the
-    // reader is never left without a way to finish.
+    // 无论尝试是否失败，发件人自己的页面都保持可用，因此用户始终有办法完成操作
     const openPageAction = userFacingUnsubscribeLink
       ? {
-          label: "Open page",
+          label: "打开页面",
           onClick: () =>
             window.open(
               userFacingUnsubscribeLink,
@@ -365,7 +353,7 @@ export function useUnsubscribe<T extends Row>({
             outcome: "blocked_sender",
           });
           toastSuccess({
-            description: "Sender blocked. Future emails will be archived.",
+            description: "已阻止发件人，后续邮件将被归档",
           });
           await mutate();
           await refreshPremium(refetchPremium);
@@ -387,7 +375,7 @@ export function useUnsubscribe<T extends Row>({
           analytics.captureAction("unsubscribe_sender_failed", {
             reason: "automatic_unsubscribe_failed",
           });
-          toast.error(`Could not unsubscribe from ${item.name}`, {
+          toast.error(`无法退订 ${item.name}`, {
             action: openPageAction,
           });
         } else {
@@ -403,7 +391,7 @@ export function useUnsubscribe<T extends Row>({
         toast.error(error.message, { action: openPageAction });
       } else {
         captureException(error);
-        toast.error(`Could not unsubscribe from ${item.name}`, {
+        toast.error(`无法退订 ${item.name}`, {
           action: openPageAction,
         });
       }
@@ -429,8 +417,7 @@ export function useUnsubscribe<T extends Row>({
   return {
     unsubscribeLoading,
     onUnsubscribe,
-    // Only meaningful without an automatic link: the caller navigates to it
-    // instead of unsubscribing in place.
+    // 仅在没有自动链接时有意义：调用方会跳转到该链接，而不是就地退订
     hasAutomaticUnsubscribe: Boolean(
       hasUnsubscribeAccess && automaticUnsubscribeLink,
     ),
@@ -577,7 +564,7 @@ async function autoArchive({
     labelName,
     queueArchiveSenders,
   });
-  toastSuccess({ description: "Auto archive enabled!" });
+  toastSuccess({ description: "已启用自动归档" });
   await mutate();
   await refreshPremium(refetchPremium);
 }
@@ -619,7 +606,7 @@ export function useAutoArchive<T extends Row>({
       posthog.capture("Clicked Auto Archive");
     } catch (error) {
       captureException(error);
-      toast.error("Failed to enable auto archive");
+      toast.error("启用自动归档失败");
     } finally {
       setAutoArchiveLoading(false);
     }
@@ -642,11 +629,11 @@ export function useAutoArchive<T extends Row>({
         status: null,
       });
       assertActionSucceeded(statusResult);
-      toastSuccess({ description: "Auto archive disabled!" });
+      toastSuccess({ description: "已禁用自动归档" });
       await mutate();
     } catch (error) {
       captureException(error);
-      toast.error("Failed to disable auto archive");
+      toast.error("禁用自动归档失败");
     } finally {
       setAutoArchiveLoading(false);
     }
@@ -721,9 +708,9 @@ export function useBulkAutoArchive<T extends Row>({
         filter,
         onDeselectItem,
         newStatus: NewsletterStatus.AUTO_ARCHIVED,
-        loadingMessage: "Setting auto archive for",
-        successMessage: "set to auto archive",
-        errorMessage: "Failed to set auto archive for",
+        loadingMessage: "正在为以下发件人设置自动归档：",
+        successMessage: "已设为自动归档",
+        errorMessage: "设置自动归档失败，涉及",
         processItem: async (item) => {
           await blockSender({
             sender: item.name,
@@ -870,7 +857,7 @@ export function useBulkApprove<T extends Row>({
     );
 
     const newStatus = unapprove ? null : NewsletterStatus.APPROVED;
-    const actionPast = unapprove ? "moved to review" : "kept";
+    const actionPast = unapprove ? "已移至待审核" : "已保留";
 
     await executeBulkOperation({
       items,
@@ -878,9 +865,9 @@ export function useBulkApprove<T extends Row>({
       filter,
       onDeselectItem,
       newStatus,
-      loadingMessage: unapprove ? "Moving to review" : "Keeping",
+      loadingMessage: unapprove ? "正在移至待审核" : "正在保留",
       successMessage: actionPast,
-      errorMessage: `Failed to ${unapprove ? "move to review" : "keep"}`,
+      errorMessage: unapprove ? "移至待审核失败，涉及" : "保留失败，涉及",
       processItem: async (item) => {
         const result = await setSenderStatusAction(emailAccountId, {
           senderEmail: item.name,
@@ -923,13 +910,10 @@ export function useBulkArchive<T extends Row>({
     const displayNames = formatSenderNames(items);
 
     toast.promise(promise, {
-      loading: `Archiving emails from ${displayNames}...`,
-      success: () => `Archived emails from ${displayNames}`,
+      loading: `正在归档来自 ${displayNames} 的邮件...`,
+      success: () => `已归档来自 ${displayNames} 的邮件`,
       error: (error: unknown) =>
-        getBulkActionErrorMessage(
-          error,
-          "There was an error archiving the emails",
-        ),
+        getBulkActionErrorMessage(error, "归档邮件时出错"),
     });
   };
 
@@ -948,7 +932,6 @@ async function deleteAllFromSender({
   const deletion = (async () => {
     const { threads } = await fetchAllSenderThreads({
       sender: name,
-      scope: "all",
       emailAccountId,
     });
     if (threads.length) {
@@ -962,12 +945,12 @@ async function deleteAllFromSender({
   })();
 
   toast.promise(deletion, {
-    loading: `Deleting all emails from ${name}`,
+    loading: `正在删除来自 ${name} 的所有邮件`,
     success: (count: number) =>
       count
-        ? `Queued ${count} emails from ${name} for deletion`
-        : `No emails to delete from ${name}`,
-    error: `There was an error deleting the emails from ${name} :(`,
+        ? `已将来自 ${name} 的 ${count} 封邮件加入删除队列`
+        : `没有来自 ${name} 的邮件可删除`,
+    error: `删除来自 ${name} 的邮件时出错 :(`,
   });
 
   try {
@@ -1036,13 +1019,10 @@ export function useBulkDelete<T extends Row>({
     const displayNames = formatSenderNames(items);
 
     toast.promise(promise, {
-      loading: `Deleting emails from ${displayNames}...`,
-      success: `Deleted emails from ${displayNames}`,
+      loading: `正在删除来自 ${displayNames} 的邮件...`,
+      success: `已删除来自 ${displayNames} 的邮件`,
       error: (error: unknown) =>
-        getBulkActionErrorMessage(
-          error,
-          "There was an error trashing the emails",
-        ),
+        getBulkActionErrorMessage(error, "删除邮件时出错"),
     });
   };
 
@@ -1074,15 +1054,15 @@ export function useBulkUnsubscribeShortcuts<T extends Row>({
   const { queueArchiveSenders } = useArchiveSenderQueueActions(emailAccountId);
   const [archiveOnUnsubscribe] = useArchiveOnUnsubscribe();
 
-  // perform actions using keyboard shortcuts
-  // TODO make this available to command-K dialog too
+  // 使用键盘快捷键执行操作
+  // TODO 也让 command-K 对话框使用这些操作
   useEffect(() => {
     const down = async (e: KeyboardEvent) => {
       try {
         const item = selectedRow;
         if (!item) return;
 
-        // to prevent when typing in an input such as Crisp support
+        // 防止在 Crisp 支持等输入框中输入时触发
         if (document?.activeElement?.tagName !== "BODY") return;
 
         if (e.key === "ArrowDown" || e.key === "ArrowUp") {
@@ -1096,7 +1076,7 @@ export function useBulkUnsubscribeShortcuts<T extends Row>({
           return;
         }
         if (e.key === "Enter") {
-          // open modal
+          // 打开弹窗
           e.preventDefault();
           onOpenNewsletter(item);
           return;
@@ -1105,21 +1085,21 @@ export function useBulkUnsubscribeShortcuts<T extends Row>({
         if (!hasUnsubscribeAccess) return;
 
         if (e.key === "e") {
-          // auto archive
+          // 自动归档
           e.preventDefault();
           const statusResult = await setSenderStatusAction(emailAccountId, {
             senderEmail: item.name,
             status: NewsletterStatus.AUTO_ARCHIVED,
           });
           assertActionSucceeded(statusResult);
-          toastSuccess({ description: "Auto archive enabled!" });
+          toastSuccess({ description: "已启用自动归档" });
           await mutate();
           await decrementUnsubscribeCreditAction();
           await refreshPremium(refetchPremium);
           return;
         }
         if (e.key === "u") {
-          // unsubscribe
+          // 退订
           e.preventDefault();
           const automaticUnsubscribeLink = getAutomaticUnsubscribeLink(
             item.unsubscribeLink,
@@ -1135,7 +1115,7 @@ export function useBulkUnsubscribeShortcuts<T extends Row>({
               queueArchiveSenders,
             });
             toastSuccess({
-              description: "Sender blocked. Future emails will be archived.",
+              description: "已阻止发件人，后续邮件将被归档",
             });
             await mutate();
             await refreshPremium(refetchPremium);
@@ -1164,7 +1144,7 @@ export function useBulkUnsubscribeShortcuts<T extends Row>({
           return;
         }
         if (e.key === "a") {
-          // approve
+          // 批准
           e.preventDefault();
           const statusResult = await setSenderStatusAction(emailAccountId, {
             senderEmail: item.name,
@@ -1195,7 +1175,7 @@ export function useBulkUnsubscribeShortcuts<T extends Row>({
 }
 
 export function useArchiveOnUnsubscribe() {
-  // Read after mount so a saved `false` doesn't mismatch the server render.
+  // 挂载后再读取，避免已保存的 `false` 与服务端渲染不一致
   return useLocalStorage("bulk-unsubscribe-archive-on-unsubscribe", true, {
     initializeWithValue: false,
   });
@@ -1271,28 +1251,28 @@ function getBulkUnsubscribeMessages<T extends Row>(items: T[]) {
 
   if (hasAutomatic && hasBlock) {
     return {
-      loadingMessage: "Processing",
-      successMessage: "processed",
-      errorMessage: "Failed to process",
+      loadingMessage: "正在处理",
+      successMessage: "已处理",
+      errorMessage: "处理失败。失败",
     };
   }
   if (hasBlock) {
     return {
-      loadingMessage: "Blocking",
-      successMessage: "blocked",
-      errorMessage: "Failed to block",
+      loadingMessage: "正在阻止",
+      successMessage: "已阻止",
+      errorMessage: "阻止失败。失败",
     };
   }
   return {
-    loadingMessage: "Unsubscribing from",
-    successMessage: "unsubscribed",
-    errorMessage: "Failed to unsubscribe from",
+    loadingMessage: "正在退订",
+    successMessage: "已退订",
+    errorMessage: "退订失败。失败",
   };
 }
 
 /**
- * A stale premium count is cosmetic, so refreshing it must never turn an
- * operation that already succeeded into a failure toast.
+ * 高级版额度计数陈旧只是显示问题，因此刷新失败不能让
+ * 已成功的操作变成失败提示。
  */
 async function refreshPremium(
   refetchPremium: () => Promise<UserResponse | null | undefined>,
@@ -1322,22 +1302,21 @@ function getBulkActionErrorMessage(error: unknown, fallback: string) {
   return fallback;
 }
 
-// An expected outcome (the sender's endpoint rejected or needs a person), not
-// a bug: the server logs the reason and the toast reports the failure count.
+// 这是预期结果（发件人端点拒绝或需要人工处理），而不是程序缺陷：服务端记录原因，toast 报告失败数量
 class AutomaticUnsubscribeFailedError extends Error {
   constructor() {
-    super("Automatic unsubscribe did not succeed");
+    super("自动退订未成功");
     this.name = "AutomaticUnsubscribeFailedError";
   }
 }
 
-// Bulk runs outlive navigation, and SWR's bound mutate throws once its
-// SWRConfig cache provider has unmounted. The cache refetches on next mount.
+// 批量任务会在页面导航后继续运行，而 SWR 的绑定 mutate 在其 SWRConfig 缓存
+// 提供者卸载后会抛出错误。缓存会在下次挂载时重新获取。
 function useMountedMutate(mutate: MutateFn): MutateFn {
   const isMountedRef = useRef(true);
 
-  // Layout effect: SWRConfig drops its provider in a layout-effect cleanup, and
-  // passive cleanups can run after pending awaits have already resumed.
+  // 使用 layout effect：SWRConfig 会在 layout effect 清理时移除提供者，
+  // 而被动清理可能已在等待中的 await 恢复之后才运行。
   useLayoutEffect(() => {
     isMountedRef.current = true;
     return () => {
@@ -1345,7 +1324,7 @@ function useMountedMutate(mutate: MutateFn): MutateFn {
     };
   }, []);
 
-  // Forward args as-is: SWR treats `mutate()` and `mutate(undefined)` differently.
+  // 原样转发参数：SWR 对 `mutate()` 和 `mutate(undefined)` 的处理不同。
   return useCallback(
     async (...args: Parameters<MutateFn>) => {
       if (isMountedRef.current) return mutate(...args);

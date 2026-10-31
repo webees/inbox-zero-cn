@@ -30,7 +30,7 @@ export async function publishBulkActionToTinybird(options: {
         ({ result }) => result.status === "rejected",
       );
       if (failures.length > 0) {
-        logger.error("Failed to publish some events to Tinybird", {
+        logger.error("向 Tinybird 发布部分事件失败", {
           failureCount: failures.length,
           totalCount: results.length,
         });
@@ -57,7 +57,7 @@ export async function updateEmailMessagesForSender(options: {
         },
       });
 
-      logger.info("Deleted EmailMessage records", {
+      logger.info("已删除 EmailMessage 记录", {
         sender,
         emailAccountId,
         action,
@@ -76,7 +76,7 @@ export async function updateEmailMessagesForSender(options: {
         },
       });
 
-      logger.info("Updated EmailMessage records", {
+      logger.info("已更新 EmailMessage 记录", {
         sender,
         emailAccountId,
         action,
@@ -85,12 +85,12 @@ export async function updateEmailMessagesForSender(options: {
       });
     }
   } catch (error) {
-    logger.error("Failed to update/delete EmailMessage records", {
+    logger.error("更新/删除 EmailMessage 记录失败", {
       sender,
       emailAccountId,
       action,
       error,
     });
-    // Don't throw - this is analytics, shouldn't break the main flow
+    // 不要抛出——这只是分析，不应破坏主流程
   }
 }

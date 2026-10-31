@@ -16,7 +16,7 @@ import {
 } from "@/utils/organizations/rule-action-types";
 
 export const RULE_MANAGED_BY_ORGANIZATION_ERROR =
-  "This rule is managed by your organization and can't be edited here. Ask an organization admin to change it.";
+  "此规则由你的组织管理，无法在此编辑。请联系组织管理员进行更改。";
 
 // Only fields safe to materialize for every member; account-specific ids are resolved at execution.
 export const ORGANIZATION_RULE_ACTION_COPY_FIELDS = [
@@ -77,7 +77,7 @@ export function assertOrganizationRuleActionsSupported(
   );
   if (messagingAction) {
     throw new SafeError(
-      "Messaging channel actions can't be used in organization rules because each member needs their own channel.",
+      "消息渠道操作不能用于组织规则，因为每个成员都需要自己的渠道。",
     );
   }
 
@@ -87,14 +87,12 @@ export function assertOrganizationRuleActionsSupported(
     (action) => !supportedActionTypes.includes(action.type),
   );
   if (unsupportedAction) {
-    throw new SafeError(
-      "This action type can't be used in organization rules.",
-    );
+    throw new SafeError("此操作类型不能用于组织规则。");
   }
 
   const actionIds = actions.flatMap((action) => (action.id ? [action.id] : []));
   if (new Set(actionIds).size !== actionIds.length) {
-    throw new SafeError("Organization rule action specified more than once.");
+    throw new SafeError("组织规则操作被指定了多次。");
   }
 
   const unknownAction = actions.find(
@@ -103,7 +101,7 @@ export function assertOrganizationRuleActionsSupported(
       !existingActions.some((existing) => existing.id === action.id),
   );
   if (unknownAction) {
-    throw new SafeError("Organization rule action not found.");
+    throw new SafeError("未找到组织规则操作。");
   }
 
   const disabledAction = actions.find(
@@ -191,7 +189,7 @@ export async function updateOrganizationRule({
     where: { id: organizationRuleId, organizationId },
     select: { id: true, actions: { select: { id: true, type: true } } },
   });
-  if (!existing) throw new SafeError("Organization rule not found");
+  if (!existing) throw new SafeError("未找到组织规则");
 
   assertOrganizationRuleActionsSupported(actions, existing.actions);
   const actionsCreateData = actions.map(withoutOrganizationRuleActionId);
@@ -230,8 +228,8 @@ export async function deleteOrganizationRuleAndMemberCopies({
   });
 }
 
-// Removes the materialized org-rule copies for a member leaving an organization.
-// Personal rules (organizationRuleId null) never match the relation filter.
+// 移除某成员离开组织时已实体化的组织规则副本。
+// 个人规则（organizationRuleId 为 null）永远不会匹配该关系筛选。
 export async function deleteMemberOrganizationRuleCopies({
   emailAccountId,
   organizationId,
@@ -257,9 +255,9 @@ export async function setOrganizationRuleEnabled({
     where: { id: organizationRuleId, organizationId },
     data: { enabled },
   });
-  if (updated.count === 0) throw new SafeError("Organization rule not found");
+  if (updated.count === 0) throw new SafeError("未找到组织规则");
 
-  // Re-derive each copy's enabled from the new org state and the member's opt-in.
+  // 根据新的组织状态和成员的加入选择重新推导每个副本的启用状态。
   if (enabled) {
     await prisma.rule.updateMany({
       where: {
@@ -298,7 +296,7 @@ export async function setMemberOrganizationRuleEnabled({
   });
 
   if (!rule?.organizationRuleId || !rule.organizationRule) {
-    throw new SafeError("This rule is not managed by your organization.");
+    throw new SafeError("此规则不由你的组织管理。");
   }
 
   await prisma.rule.update({
@@ -324,7 +322,7 @@ export async function syncOrganizationRuleToMembers({
     where: { id: organizationRuleId },
     include: { actions: true },
   });
-  if (!organizationRule) throw new SafeError("Organization rule not found");
+  if (!organizationRule) throw new SafeError("未找到组织规则");
 
   const members = await prisma.member.findMany({
     where: { organizationId: organizationRule.organizationId },
@@ -371,7 +369,7 @@ export async function syncOrganizationRulesForNewMember({
 
 function rethrowDuplicateNameError(error: unknown): never {
   if (isDuplicateError(error, "name")) {
-    throw new SafeError("An organization rule with this name already exists.");
+    throw new SafeError("同名组织规则已存在。");
   }
   throw error;
 }
@@ -467,7 +465,7 @@ async function materializeMemberRuleCopy({
       await writeCopy(name);
       return;
     } catch (error) {
-      // A concurrent sync already materialized this copy.
+      // 并发同步已实体化此副本。
       if (isDuplicateError(error, ["emailAccountId", "organizationRuleId"])) {
         return;
       }
@@ -476,14 +474,11 @@ async function materializeMemberRuleCopy({
     }
   }
 
-  // Use a stable suffix as a final fallback after repeated concurrent conflicts.
-  logger.warn(
-    "Using fallback name for org rule copy after repeated conflicts",
-    {
-      organizationRuleId: organizationRule.id,
-      emailAccountId,
-    },
-  );
+  // 在多次并发冲突后，使用稳定的后缀作为最终回退。
+  logger.warn("多次冲突后为组织规则副本使用回退名称", {
+    organizationRuleId: organizationRule.id,
+    emailAccountId,
+  });
   try {
     await writeCopy(
       await availableRuleName({

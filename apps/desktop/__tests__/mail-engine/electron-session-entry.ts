@@ -82,6 +82,7 @@ async function runSmoke() {
   const health = await owner.health();
 
   const pushedBeforeCrash = pushed.length;
+  const errorsBeforeCrash = engineErrors.length;
   child?.kill();
   await waitFor(
     () => pushed.length > pushedBeforeCrash,
@@ -103,9 +104,9 @@ async function runSmoke() {
       duplicate,
       diagnostics,
       health,
-      restarted: engineErrors.some((message) =>
-        message.includes("exited unexpectedly"),
-      ),
+      // 崩溃上报只看「是否新增了一条引擎错误」，不能匹配错误文案：
+      // 文案会被汉化流程翻译，按文案断言会让这个测试随翻译随机变红。
+      restarted: engineErrors.length > errorsBeforeCrash,
       wiped: !existsSync(databasePath),
     })}\n`,
   );

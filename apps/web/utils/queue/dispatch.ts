@@ -19,7 +19,7 @@ export async function enqueueBackgroundJob<T>({
   topic: string;
   body: T;
   vercel?: {
-    // Vercel Queues has no per-topic parallelism cap, so large fan-outs spread delivery out instead.
+    // Vercel Queues 没有按主题的并行度上限，因此大规模扇出会分散投递。
     delaySeconds?: number;
   };
   qstash: {
@@ -36,7 +36,7 @@ export async function enqueueBackgroundJob<T>({
       await send(topic, body, { delaySeconds: vercel?.delaySeconds });
       return "vercel";
     } catch (error) {
-      logger.error("Failed to enqueue Vercel queue message", {
+      logger.error("将消息加入 Vercel 队列失败", {
         topic,
         error,
       });

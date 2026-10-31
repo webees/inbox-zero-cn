@@ -14,15 +14,15 @@ interface ErrorInfo {
   status?: number;
 }
 
-// Intentionally lower than Microsoft's common 30s throttle backoff so serverless
-// requests fail fast instead of sleeping into function timeout budgets.
-// Non-serverless callers can pass a higher maxBlockingDelayMs when needed.
+// 有意低于 Microsoft 常见的 30 秒限流退避，以便无服务器
+// 请求快速失败，而不是睡到函数超时预算耗尽。
+// 非无服务器的调用方在需要时可传入更高的 maxBlockingDelayMs。
 export const MAX_MICROSOFT_GRAPH_BLOCKING_RETRY_DELAY_MS = 10_000;
 
 /**
- * Retries a Microsoft Graph API operation when rate limits or temporary server errors are encountered
- * - Rate limits: 429, "TooManyRequests", "ApplicationThrottled", "MailboxConcurrency"
- * - Server errors: 502, 503, 504, "ServiceNotAvailable", "ServerBusy"
+ * 在遇到限流或临时服务器错误时重试 Microsoft Graph API 操作
+ * - 限流：429、"TooManyRequests"、"ApplicationThrottled"、"MailboxConcurrency"
+ * - 服务器错误：502、503、504、"ServiceNotAvailable"、"ServerBusy"
  */
 export async function withMicrosoftGraphRetry<T>(
   operation: () => Promise<T>,
@@ -40,9 +40,9 @@ export async function withMicrosoftGraphRetry<T>(
 }
 
 /**
- * Retries a non-idempotent Microsoft Graph write only when Graph explicitly
- * rejects it because of throttling. Network, server, and conflict failures are
- * ambiguous because the write may already have succeeded.
+ * 仅当 Graph 明确因限流而拒绝时，才重试非幂等的
+ * Microsoft Graph 写入。网络、服务器和冲突失败具有
+ * 歧义，因为写入可能已经成功。
  */
 export async function withMicrosoftGraphWriteRetry<T>(
   operation: () => Promise<T>,
@@ -60,7 +60,7 @@ export async function withMicrosoftGraphWriteRetry<T>(
 }
 
 /**
- * Extracts error information from Microsoft Graph API errors
+ * 从 Microsoft Graph API 错误中提取错误信息
  */
 export function extractErrorInfo(error: unknown): ErrorInfo {
   const err = error as Record<string, unknown>;
@@ -93,7 +93,7 @@ export function extractErrorInfo(error: unknown): ErrorInfo {
 }
 
 /**
- * Determines if an error is retryable (rate limit, server error, conflict, or network error)
+ * 判断错误是否可重试（限流、服务器错误、冲突或网络错误）
  */
 export function isRetryableError(errorInfo: ErrorInfo): {
   retryable: boolean;
@@ -103,7 +103,7 @@ export function isRetryableError(errorInfo: ErrorInfo): {
 } {
   const { status, code, errorMessage } = errorInfo;
 
-  // Rate limit detection: 429 status, throttling codes, or rate limit messages
+  // 限流检测：429 状态、节流代码或限流消息
   const isRateLimit =
     status === 429 ||
     code === "TooManyRequests" ||
@@ -111,7 +111,7 @@ export function isRetryableError(errorInfo: ErrorInfo): {
     /rate limit/i.test(errorMessage) ||
     /MailboxConcurrency/i.test(errorMessage);
 
-  // Temporary server errors that should be retried (502, 503, 504)
+  // 应重试的临时服务器错误（502、503、504）
   const isServerError =
     status === 502 ||
     status === 503 ||
@@ -122,13 +122,13 @@ export function isRetryableError(errorInfo: ErrorInfo): {
       errorMessage,
     );
 
-  // Conflict errors from stale change keys (412)
+  // 来自过期 change key 的冲突错误（412）
   const isConflictError =
     status === 412 ||
     code === "ErrorIrresolvableConflict" ||
     /change key/i.test(errorMessage);
 
-  // Graph sometimes ends a 200 response mid-body; the same read succeeds on retry.
+  // Graph 有时会在响应体中途结束 200 响应；重试时同样的读取会成功。
   const isTruncatedResponse = status === 200 && code === "SyntaxError";
 
   return {
@@ -145,7 +145,7 @@ export function isRetryableError(errorInfo: ErrorInfo): {
 }
 
 /**
- * Calculates retry delay based on error type and attempt number
+ * 根据错误类型和尝试次数计算重试延迟
  */
 export function calculateRetryDelay(
   isRateLimit: boolean,
@@ -157,24 +157,24 @@ export function calculateRetryDelay(
   const retryAfterDelayMs = getRetryAfterDelayMs(retryAfterHeader);
   if (retryAfterDelayMs !== undefined) return retryAfterDelayMs;
 
-  // Use different fallback delays based on error type
+  // 根据错误类型使用不同的回退延迟
   if (isConflictError) {
-    // Fast exponential backoff for conflict errors: 500ms, 1s, 2s, 4s, 8s
-    // Conflicts resolve quickly once the stale operation completes
+    // 冲突错误的快速指数退避：500ms、1s、2s、4s、8s
+    // 一旦过期操作完成，冲突会很快解决
     return Math.min(500 * 2 ** (attemptNumber - 1), 8000);
   }
 
   if (isServerError) {
-    // Exponential backoff for server errors: 5s, 10s, 20s, 40s, 80s
+    // 服务器错误的指数退避：5s、10s、20s、40s、80s
     return Math.min(5000 * 2 ** (attemptNumber - 1), 80_000);
   }
 
   if (isRateLimit) {
-    // Fixed delay for rate limits (30 seconds as per Microsoft Graph recommendations)
+    // 限流的固定延迟（按 Microsoft Graph 建议为 30 秒）
     return 30_000;
   }
 
-  // Default exponential backoff for other retryable errors: 1s, 2s, 4s, 8s, 16s
+  // 其他可重试错误的默认指数退避：1s、2s、4s、8s、16s
   return Math.min(1000 * 2 ** (attemptNumber - 1), 16_000);
 }
 

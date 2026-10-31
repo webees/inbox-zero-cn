@@ -29,7 +29,7 @@ describe("fetchAllSenderThreads", () => {
     await expect(
       fetchAllSenderThreads({
         sender: "sender@example.com",
-        scope: "inbox",
+        labelId: "INBOX",
         emailAccountId: "account-1",
       }),
     ).resolves.toEqual({
@@ -45,23 +45,6 @@ describe("fetchAllSenderThreads", () => {
     });
   });
 
-  it("requests every folder, not the default inbox, for all-mail scope", async () => {
-    vi.mocked(fetchWithAccount).mockResolvedValue(
-      Response.json({ threads: [] }),
-    );
-
-    await fetchAllSenderThreads({
-      sender: "sender@example.com",
-      scope: "all",
-      emailAccountId: "account-1",
-    });
-
-    expect(fetchWithAccount).toHaveBeenCalledWith({
-      url: "/api/threads/basic?fromEmail=sender%40example.com&limit=100&type=all",
-      emailAccountId: "account-1",
-    });
-  });
-
   it("surfaces rate-limit responses as a typed error", async () => {
     vi.mocked(fetchWithAccount).mockResolvedValue(
       new Response(null, { status: 429 }),
@@ -70,7 +53,6 @@ describe("fetchAllSenderThreads", () => {
     await expect(
       fetchAllSenderThreads({
         sender: "sender@example.com",
-        scope: "inbox",
         emailAccountId: "account-1",
       }),
     ).rejects.toThrow(EmailProviderRateLimitError);
@@ -84,7 +66,6 @@ describe("fetchAllSenderThreads", () => {
     await expect(
       fetchAllSenderThreads({
         sender: "sender@example.com",
-        scope: "inbox",
         emailAccountId: "account-1",
       }),
     ).rejects.toThrow("Failed to fetch threads");

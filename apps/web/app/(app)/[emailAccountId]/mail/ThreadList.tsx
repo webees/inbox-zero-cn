@@ -57,7 +57,7 @@ export type ThreadListProps = {
 
 export const ThreadList = memo(function ThreadList({
   threads,
-  emptyMessage = "No emails in this view",
+  emptyMessage = "此视图中没有邮件",
   layout,
   expandedPreview,
   userEmail,
@@ -120,13 +120,13 @@ export const ThreadList = memo(function ThreadList({
       listKey={listKey}
       loadMoreButton={
         <Button onClick={onLoadMore} size="sm" variant="outline">
-          Load more
+          加载更多
         </Button>
       }
       loadingMoreIndicator={
         <div className="flex items-center gap-2 text-muted-foreground text-xs">
           <LoadingMiniSpinner />
-          Loading more
+          正在加载更多
         </div>
       }
       onLoadMore={onLoadMore}

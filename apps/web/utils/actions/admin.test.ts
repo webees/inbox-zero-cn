@@ -147,7 +147,7 @@ describe("adminSyncStripeForUserAction", () => {
       email: "user@example.com",
     });
 
-    expect(result?.serverError).toBe("Premium record not found");
+    expect(result?.serverError).toBe("未找到高级版记录");
     expect(mockSyncStripeDataToDb).not.toHaveBeenCalled();
     expect(prisma.premium.findUnique).not.toHaveBeenCalled();
   });
@@ -165,7 +165,7 @@ describe("adminSyncStripeForUserAction", () => {
       email: "user@example.com",
     });
 
-    expect(result?.serverError).toBe("Stripe customer ID not found");
+    expect(result?.serverError).toBe("未找到 Stripe 客户 ID");
     expect(mockSyncStripeDataToDb).not.toHaveBeenCalled();
     expect(prisma.premium.findUnique).not.toHaveBeenCalled();
   });
@@ -179,7 +179,7 @@ describe("adminSyncStripeForUserAction", () => {
       email: "user@example.com",
     });
 
-    expect(result?.serverError).toBe("Unauthorized");
+    expect(result?.serverError).toBe("未授权");
     expect(prisma.user.findUnique).not.toHaveBeenCalled();
     expect(mockSyncStripeDataToDb).not.toHaveBeenCalled();
   });
@@ -298,7 +298,7 @@ describe("adminSyncAppleSubscriptionForUserAction", () => {
       transactionId: "200000000000000",
     });
 
-    expect(result?.serverError).toBe("User not found");
+    expect(result?.serverError).toBe("未找到用户");
     expect(mockSyncAppleSubscriptionToDb).not.toHaveBeenCalled();
   });
 });

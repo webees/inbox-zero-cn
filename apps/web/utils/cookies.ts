@@ -19,8 +19,8 @@ export function parseLastEmailAccountCookieValue({
 }): string | null {
   if (!cookieValue) return null;
 
-  // Handle backward compatibility: old cookies stored just the emailAccountId as a plain string
-  // New cookies store JSON with { userId, emailAccountId }
+  // 处理向后兼容：旧 cookie 仅以纯字符串形式存储 emailAccountId
+  // 新 cookie 存储包含 { userId, emailAccountId } 的 JSON
   try {
     const parsed = JSON.parse(cookieValue) as LastEmailAccountCookieValue;
     if (parsed.userId !== userId) return null;

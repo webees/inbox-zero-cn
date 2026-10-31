@@ -82,7 +82,7 @@ describe("resolveMicrosoftGraphNextLink", () => {
   it("rejects relative-looking links that contain an embedded external URL", () => {
     expect(() =>
       resolveMicrosoftGraphNextLink("/v1.0/https://169.254.169.254/latest"),
-    ).toThrow("Invalid Outlook page token");
+    ).toThrow("无效的 Outlook 页面令牌");
   });
 
   it("returns null for opaque tokens", () => {
@@ -97,6 +97,6 @@ describe("resolveMicrosoftGraphNextLink", () => {
   it("throws for absolute URLs outside Microsoft Graph", () => {
     expect(() =>
       resolveMicrosoftGraphNextLink("http://169.254.169.254/latest/meta-data"),
-    ).toThrow("Invalid Outlook page token");
+    ).toThrow("无效的 Outlook 页面令牌");
   });
 });

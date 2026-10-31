@@ -84,11 +84,11 @@ export default function DrivePage() {
 
         if (result?.serverError) {
           toastError({
-            title: "Error saving preferences",
+            title: "保存偏好设置时出错",
             description: result.serverError,
           });
         } else {
-          toastSuccess({ description: "Preferences saved" });
+          toastSuccess({ description: "偏好设置已保存" });
           mutateEmail();
         }
       } finally {
@@ -109,7 +109,7 @@ export default function DrivePage() {
         {view === "settings" && (
           <>
             <div className="flex items-center justify-between">
-              <PageHeader title="Auto-file attachments" />
+              <PageHeader title="自动归档附件" />
               <div className="flex items-center gap-3">
                 <DeliveryPopover
                   emailAccountId={emailAccountId}
@@ -118,7 +118,7 @@ export default function DrivePage() {
                   }
                   onEmailDeliveryUpdated={mutateEmail}
                 />
-                {!filingEnabled && <Badge variant="destructive">Paused</Badge>}
+                {!filingEnabled && <Badge variant="destructive">已暂停</Badge>}
                 <Switch
                   checked={filingEnabled}
                   onCheckedChange={handleToggle}
@@ -172,12 +172,12 @@ function DeliveryPopover({
     updateFilingConfirmationEmailAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: "Settings saved" });
+        toastSuccess({ description: "设置已保存" });
         onEmailDeliveryUpdated();
       },
       onError: (error) => {
         toastError({
-          description: getActionErrorMessage(error.error) ?? "Failed to update",
+          description: getActionErrorMessage(error.error) ?? "更新失败",
         });
       },
     },
@@ -198,23 +198,21 @@ function DeliveryPopover({
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm">
-          Delivery
+          送达方式
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-80">
         <div className="space-y-3">
           <div>
-            <h4 className="text-sm font-medium">Delivery</h4>
-            <MutedText className="text-xs">
-              Choose how filing updates should reach you
-            </MutedText>
+            <h4 className="text-sm font-medium">送达方式</h4>
+            <MutedText className="text-xs">选择归档更新如何送达给你</MutedText>
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <MailIcon className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">Email confirmations</span>
+                <span className="text-sm">邮件确认</span>
               </div>
               <Toggle
                 name="filing-email-delivery"
@@ -224,14 +222,14 @@ function DeliveryPopover({
               />
             </div>
             <MutedText className="text-xs">
-              Questions that need your input still arrive by email.
+              需要你输入的问题仍会通过邮件送达。
             </MutedText>
           </div>
 
           {!isLoading &&
             (configurableChannels.length > 0 || slackAvailable) && (
               <div className="space-y-2 border-t pt-3">
-                <MutedText className="text-xs">Connected apps</MutedText>
+                <MutedText className="text-xs">已连接的应用</MutedText>
                 {configurableChannels.length > 0 ? (
                   <div className="space-y-2">
                     {configurableChannels.map((channel) => (
@@ -245,21 +243,21 @@ function DeliveryPopover({
                   </div>
                 ) : (
                   <MutedText className="text-xs">
-                    Select a destination in{" "}
+                    在{" "}
                     <Link
                       href={prefixPath(emailAccountId, "/channels")}
                       className="underline text-foreground"
                     >
-                      Channels
+                      频道
                     </Link>{" "}
-                    to enable app notifications.
+                    中选择一个目标位置以启用应用通知。
                   </MutedText>
                 )}
               </div>
             )}
 
           {isLoading && (
-            <MutedText className="text-xs">Loading connected apps...</MutedText>
+            <MutedText className="text-xs">正在加载已连接的应用…</MutedText>
           )}
         </div>
       </PopoverContent>
@@ -293,12 +291,12 @@ function DeliveryChannelRow({
     updateMessagingFeatureRouteAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: "Settings saved" });
+        toastSuccess({ description: "设置已保存" });
         onUpdate();
       },
       onError: (error) => {
         toastError({
-          description: getActionErrorMessage(error.error) ?? "Failed to update",
+          description: getActionErrorMessage(error.error) ?? "更新失败",
         });
       },
     },
@@ -322,13 +320,12 @@ function DeliveryChannelRow({
               isDm={destination.isDm}
               canSendAsDm={channel.canSendAsDm}
               onUpdate={onUpdate}
-              placeholder="Select destination"
+              placeholder="选择目标位置"
               className="h-8 w-44 text-xs"
             />
           ) : (
             <MutedText className="text-xs">
-              Filing updates use this connected app&apos;s direct message
-              destination.
+              归档更新使用此已连接应用的私信目标位置。
             </MutedText>
           )}
         </div>

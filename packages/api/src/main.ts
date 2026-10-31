@@ -56,53 +56,51 @@ async function main() {
 }
 
 function addConfigCommands() {
-  const config = program
-    .command("config")
-    .description("Manage local CLI config");
+  const config = program.command("config").description("管理本地 CLI 配置");
 
   config
     .command("list")
-    .description("Show the stored config path and values")
+    .description("显示已存储的配置路径与值")
     .action(() => {
       const current = loadConfig();
       printJson({
         configPath: CONFIG_PATH,
         values: {
-          apiKey: current.apiKey ? "(configured)" : "(not configured)",
-          baseUrl: current.baseUrl || `${DEFAULT_BASE_URL} (default)`,
+          apiKey: current.apiKey ? "(已配置)" : "(未配置)",
+          baseUrl: current.baseUrl || `${DEFAULT_BASE_URL}（默认）`,
         },
       });
     });
 
   config
     .command("get <key>")
-    .description("Get a stored config value")
+    .description("获取已存储的配置值")
     .action((key: string) => {
       const current = loadConfig();
       const value = getConfigValue(current, key);
       if (key === "api-key") {
-        process.stdout.write(value ? "(configured)\n" : "(not configured)\n");
+        process.stdout.write(value ? "(已配置)\n" : "(未配置)\n");
         return;
       }
 
-      process.stdout.write(`${value || "(not configured)"}\n`);
+      process.stdout.write(`${value || "(未配置)"}\n`);
     });
 
   config
     .command("set <key> <value>")
-    .description("Set a stored config value")
+    .description("设置已存储的配置值")
     .action((key: string, value: string) => {
       const partial = toConfigUpdate(key, value);
       updateConfig(partial);
-      process.stdout.write(`Updated ${key} in ${CONFIG_PATH}\n`);
+      process.stdout.write(`已更新 ${key}（${CONFIG_PATH}）\n`);
     });
 }
 
 function addOpenApiCommand() {
   program
     .command("openapi")
-    .description("Fetch the live OpenAPI document")
-    .option("--json", "Print JSON output")
+    .description("获取实时 OpenAPI 文档")
+    .option("--json", "输出 JSON")
     .action(async (options) => {
       const response = await getOpenApiDocument(
         program.optsWithGlobals() as ProgramOptions,
@@ -177,14 +175,14 @@ function addRuleCommands() {
         return;
       }
 
-      process.stdout.write(`Created rule ${response.rule.id}\n`);
+      process.stdout.write(`已创建规则 ${response.rule.id}\n`);
     });
 
   rules
     .command("update <id>")
-    .description("Replace a rule from a JSON file or stdin")
-    .requiredOption("-f, --file <path>", "Path to JSON file, or - for stdin")
-    .option("--json", "Print JSON output")
+    .description("从 JSON 文件或标准输入替换规则")
+    .requiredOption("-f, --file <path>", "JSON 文件路径，或使用 - 表示标准输入")
+    .option("--json", "输出 JSON")
     .action(async (id: string, options) => {
       const client = createClient(program.optsWithGlobals() as ProgramOptions);
       const body = await readJsonInput(options.file);
@@ -199,32 +197,32 @@ function addRuleCommands() {
       }
 
       if (!response.rule) {
-        throw new Error(`Updated rule ${id} could not be reloaded`);
+        throw new Error(`无法重新加载已更新的规则 ${id}`);
       }
 
-      process.stdout.write(`Updated rule ${response.rule.id}\n`);
+      process.stdout.write(`已更新规则 ${response.rule.id}\n`);
     });
 
   rules
     .command("delete <id>")
-    .description("Delete a rule by ID")
+    .description("按 ID 删除规则")
     .action(async (id: string) => {
       const client = createClient(program.optsWithGlobals() as ProgramOptions);
       await client.delete(`/rules/${id}`);
-      process.stdout.write(`Deleted rule ${id}\n`);
+      process.stdout.write(`已删除规则 ${id}\n`);
     });
 }
 
 function addStatsCommands() {
-  const stats = program.command("stats").description("Read account analytics");
+  const stats = program.command("stats").description("读取账号分析数据");
 
   stats
     .command("by-period")
-    .description("Get email statistics grouped by period")
-    .option("--period <period>", "Time bucket: day, week, month, or year")
-    .option("--from-date <timestamp>", "Unix timestamp in milliseconds")
-    .option("--to-date <timestamp>", "Unix timestamp in milliseconds")
-    .option("--json", "Print JSON output")
+    .description("获取按周期分组的邮件统计")
+    .option("--period <period>", "时间桶：day、week、month 或 year")
+    .option("--from-date <timestamp>", "Unix 时间戳（毫秒）")
+    .option("--to-date <timestamp>", "Unix 时间戳（毫秒）")
+    .option("--json", "输出 JSON")
     .action(async (options) => {
       const client = createClient(program.optsWithGlobals() as ProgramOptions);
       const response = await client.get<StatsByPeriodResponse>(

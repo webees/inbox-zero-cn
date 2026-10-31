@@ -58,14 +58,14 @@ export const MailSplitTabs = memo(function MailSplitTabs({
   activeSplitId: string | null;
   onSelectSplit: (splitId: string | null) => void;
   isAllAccounts: boolean;
-  /** Senders the user corresponds with, read when a split is described. */
+  /** 与用户有往来邮件的发件人，在描述分区时读取。 */
   getSenders: () => string[];
-  /** Accounts whose conversations each split's count covers. */
+  /** 每个分区的会话计数所涵盖的账号。 */
   countAccountIds: string[];
   portableLabelSplits?: PortableLabelSplit[];
   labelsByAccount?: Record<string, EmailLabels>;
   leading?: ReactNode;
-  /** Shown once the list scrolls under the tabs. */
+  /** 列表滚动到标签页下方时显示。 */
   showDivider: boolean;
 }) {
   const { emailAccountId, provider } = useAccount();
@@ -87,7 +87,7 @@ export const MailSplitTabs = memo(function MailSplitTabs({
     () =>
       [
         ...allLabels,
-        ...(isGoogle ? [{ id: GmailLabel.IMPORTANT, name: "Important" }] : []),
+        ...(isGoogle ? [{ id: GmailLabel.IMPORTANT, name: "重要" }] : []),
       ].map((label) => ({
         id: `label:${label.id}`,
         name: label.name,

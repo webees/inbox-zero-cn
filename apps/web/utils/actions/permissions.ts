@@ -52,7 +52,7 @@ export const checkPermissionsAction = actionClient
 
       return { hasRefreshToken: true, hasAllPermissions };
     } catch (error) {
-      logger.error("Failed to check permissions", { error });
+      logger.error("检查权限失败", { error });
       return { hasRefreshToken: false, hasAllPermissions: false };
     }
   });
@@ -66,7 +66,7 @@ export const adminCheckPermissionsAction = adminActionClient
         where: { email },
         select: { id: true, account: { select: { provider: true } } },
       });
-      if (!emailAccount) throw new SafeError("Email account not found");
+      if (!emailAccount) throw new SafeError("未找到邮箱账号");
       const emailAccountId = emailAccount.id;
 
       if (isMicrosoftProvider(emailAccount.account.provider)) {
@@ -74,14 +74,14 @@ export const adminCheckPermissionsAction = adminActionClient
       }
 
       if (!isGoogleProvider(emailAccount.account.provider)) {
-        throw new SafeError("Unsupported provider");
+        throw new SafeError("不支持的服务商");
       }
 
       const { accessToken, tokens } = await getGmailAndAccessTokenForEmail({
         emailAccountId,
         logger,
       });
-      if (!accessToken) throw new SafeError("No Gmail access token");
+      if (!accessToken) throw new SafeError("没有 Gmail 访问令牌");
 
       const { hasAllPermissions, error } = await handleGmailPermissionsCheck({
         accessToken,
@@ -92,8 +92,8 @@ export const adminCheckPermissionsAction = adminActionClient
       if (error) throw new SafeError(error);
       return { hasAllPermissions };
     } catch (error) {
-      logger.error("Admin failed to check permissions", { error });
-      throw new SafeError("Failed to check permissions");
+      logger.error("管理员检查权限失败", { error });
+      throw new SafeError("检查权限失败");
     }
   });
 
@@ -109,7 +109,7 @@ async function checkOutlookPermissions({
     await client.getUserProfile();
     return { hasAllPermissions: true, hasRefreshToken: true };
   } catch (error) {
-    logger.error("Outlook permissions check failed", { error });
+    logger.error("Outlook 权限检查失败", { error });
     return { hasAllPermissions: false, hasRefreshToken: false };
   }
 }

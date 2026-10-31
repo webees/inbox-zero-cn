@@ -12,6 +12,13 @@ import { POST } from "./route";
 import { PATCH, DELETE } from "./[splitId]/route";
 import { POST as reorder } from "./reorder/route";
 import { GET as presets } from "./presets/route";
+import { SystemType } from "@/generated/prisma/enums";
+import { getRuleLabel } from "@/utils/rule/consts";
+
+// presetId 就是 split 库条目的名称，本地化后是中文，这里从规则配置里取。
+const RECEIPT_PRESET = getRuleLabel(SystemType.RECEIPT);
+const TO_REPLY_PRESET = getRuleLabel(SystemType.TO_REPLY);
+const OTP_PRESET = getRuleLabel(SystemType.OTP);
 
 vi.mock("@/utils/prisma");
 vi.mock("@/utils/auth", () => ({ auth: vi.fn() }));
@@ -46,7 +53,7 @@ describe("mail v1 split routes", () => {
       getLabels: vi
         .fn()
         .mockResolvedValue([
-          { id: "receipt-1", name: "Receipt", type: "user" },
+          { id: "receipt-1", name: RECEIPT_PRESET, type: "user" },
         ]),
     } as never);
     prisma.$transaction.mockResolvedValue([[], { count: 1 }] as never);
@@ -241,7 +248,7 @@ describe("mail v1 split routes", () => {
     );
     expect(response.status).toBe(400);
     expect(await response.json()).toMatchObject({
-      error: { message: "Split not found" },
+      error: { message: "未找到分类" },
     });
     expect(prisma.mailSplit.updateMany).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -251,8 +258,8 @@ describe("mail v1 split routes", () => {
   });
 
   it.each([
-    ["duplicate", 'You already have a "Unread" split.'],
-    ["limit", "You can only have 14 splits."],
+    ["duplicate", '你已经有一个名为 "Unread" 的分类'],
+    ["limit", "你最多只能有 14 个分类"],
   ])("preserves the web create error for %s", async (status, message) => {
     prisma.$transaction.mockResolvedValue([[], [{ status }], 0] as never);
     const response = await POST(request("POST", draft), context());
@@ -267,7 +274,7 @@ describe("mail v1 split routes", () => {
       new SafeError("Failed to create rule"),
     );
     const response = await POST(
-      request("POST", { presetId: "OTP" }),
+      request("POST", { presetId: OTP_PRESET }),
       context(),
     );
     expect(response.status).toBe(400);
@@ -284,13 +291,13 @@ describe("mail v1 split routes", () => {
       1,
     ] as never);
     const response = await POST(
-      request("POST", { presetId: "Receipts" }),
+      request("POST", { presetId: RECEIPT_PRESET }),
       context(),
     );
     expect(response.status).toBe(200);
     expect(createSplit).toHaveBeenCalledWith({
       emailAccountId: "acc-1",
-      name: "Receipts",
+      name: RECEIPT_PRESET,
       matchAll: true,
       filters: [{ kind: "LABEL", value: "receipt-1" }],
     });
@@ -299,7 +306,7 @@ describe("mail v1 split routes", () => {
 
   it("enables OTP through the same shared rule toggle as web", async () => {
     const response = await POST(
-      request("POST", { presetId: "OTP" }),
+      request("POST", { presetId: OTP_PRESET }),
       context(),
     );
     expect(response.status).toBe(200);
@@ -322,7 +329,7 @@ describe("mail v1 split routes", () => {
       mailSplits: [
         {
           ...saved,
-          name: "rEcEiPtS",
+          name: RECEIPT_PRESET,
           filters: [{ kind: "LABEL", value: "receipt-1" }],
         },
       ],
@@ -332,7 +339,7 @@ describe("mail v1 split routes", () => {
     expect(response.status).toBe(200);
     expect(result.presets).toContainEqual(
       expect.objectContaining({
-        presetId: "Receipts",
+        presetId: RECEIPT_PRESET,
         filters: [{ kind: "LABEL", value: "receipt-1" }],
         added: true,
         splitId: "split-1",
@@ -346,14 +353,14 @@ describe("mail v1 split routes", () => {
     );
     expect(result.presets).toContainEqual(
       expect.objectContaining({
-        presetId: "OTP",
+        presetId: OTP_PRESET,
         filters: [],
         createsSystemType: "OTP",
       }),
     );
     expect(
       result.presets.some(
-        (entry: { presetId: string }) => entry.presetId === "To Reply",
+        (entry: { presetId: string }) => entry.presetId === TO_REPLY_PRESET,
       ),
     ).toBe(false);
   });
@@ -375,7 +382,7 @@ describe("mail v1 split routes", () => {
         {
           ...saved,
           id: "otp-split",
-          name: "otp",
+          name: OTP_PRESET,
           filters: [{ kind: "LABEL", value: "account-otp-label" }],
         },
       ],
@@ -391,7 +398,7 @@ describe("mail v1 split routes", () => {
     );
     expect(result.presets).toContainEqual(
       expect.objectContaining({
-        presetId: "OTP",
+        presetId: OTP_PRESET,
         added: true,
         splitId: "otp-split",
       }),
@@ -404,7 +411,7 @@ describe("mail v1 split routes", () => {
       mailSplits: [
         {
           ...saved,
-          name: "Receipts",
+          name: RECEIPT_PRESET,
           matchAll: false,
           filters: [{ kind: "LABEL", value: "receipt-1" }],
         },
@@ -414,7 +421,7 @@ describe("mail v1 split routes", () => {
     const result = await response.json();
     expect(result.presets).toContainEqual(
       expect.objectContaining({
-        presetId: "Receipts",
+        presetId: RECEIPT_PRESET,
         added: false,
         splitId: null,
       }),
@@ -427,24 +434,24 @@ describe("mail v1 split routes", () => {
       getLabels: vi.fn().mockResolvedValue([
         {
           id: "hidden-receipt",
-          name: "Receipt",
+          name: RECEIPT_PRESET,
           type: "user",
           labelListVisibility: "labelHide",
         },
-        { id: "system-to-reply", name: "To Reply", type: "system" },
+        { id: "system-to-reply", name: TO_REPLY_PRESET, type: "system" },
       ]),
     } as never);
     const response = await presets(request("GET"), context());
     const result = await response.json();
     expect(result.presets).toContainEqual(
       expect.objectContaining({
-        presetId: "Receipts",
+        presetId: RECEIPT_PRESET,
         filters: [{ kind: "LABEL", value: "hidden-receipt" }],
       }),
     );
     expect(
       result.presets.some(
-        (entry: { presetId: string }) => entry.presetId === "To Reply",
+        (entry: { presetId: string }) => entry.presetId === TO_REPLY_PRESET,
       ),
     ).toBe(false);
   });
@@ -465,7 +472,7 @@ describe("mail v1 split routes", () => {
 
   it("rejects unavailable presets instead of creating empty splits", async () => {
     const response = await POST(
-      request("POST", { presetId: "To Reply" }),
+      request("POST", { presetId: TO_REPLY_PRESET }),
       context(),
     );
     expect(response.status).toBe(400);

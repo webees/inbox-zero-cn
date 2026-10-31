@@ -29,10 +29,8 @@ import {
 } from "@/utils/ai/assistant/tools/rules/shared";
 import { createRule } from "@/utils/rule/rule";
 
-const CONFIRMATION_IN_PROGRESS_ERROR =
-  "Email action confirmation already in progress";
-const SAVE_MEMORY_CONFIRMATION_IN_PROGRESS_ERROR =
-  "Memory save confirmation already in progress";
+const CONFIRMATION_IN_PROGRESS_ERROR = "邮件操作确认已在进行中";
+const SAVE_MEMORY_CONFIRMATION_IN_PROGRESS_ERROR = "记忆保存确认已在进行中";
 const CONFIRMATION_PROCESSING_LEASE_MS = 5 * 60 * 1000;
 const CONFIRMATION_PERSIST_MAX_ATTEMPTS = 3;
 const PENDING_ACTION_PERSIST_WAIT_MS = 2000;
@@ -52,17 +50,17 @@ const ASSISTANT_EMAIL_ACTION_METADATA: Record<
 > = {
   send_email: {
     toolType: "tool-sendEmail",
-    errorMessage: "Failed to send email",
+    errorMessage: "发送邮件失败",
     parseOutput: parsePendingSendEmailOutput,
   },
   reply_email: {
     toolType: "tool-replyEmail",
-    errorMessage: "Failed to send reply",
+    errorMessage: "发送回复失败",
     parseOutput: parsePendingReplyEmailOutput,
   },
   forward_email: {
     toolType: "tool-forwardEmail",
-    errorMessage: "Failed to forward email",
+    errorMessage: "转发邮件失败",
     parseOutput: parsePendingForwardEmailOutput,
   },
 };
@@ -131,13 +129,13 @@ export async function confirmAssistantEmailActionForAccount({
       findPart: (parts) =>
         findPendingAssistantEmailPart({ parts, toolCallId, actionType }),
     }).catch((processingError) => {
-      logger.error("Failed to clear processing state for email action", {
+      logger.error("清除邮件操作的处理状态失败", {
         error: processingError,
         actionType,
       });
     });
 
-    logger.error("Failed to confirm assistant email action", {
+    logger.error("确认助手邮件操作失败", {
       error,
       actionType,
     });
@@ -147,19 +145,19 @@ export async function confirmAssistantEmailActionForAccount({
   if (provider === "microsoft" && confirmationResult.messageId) {
     let linkTimeout: ReturnType<typeof setTimeout> | undefined;
     try {
-      // This optional lookup must not hold up persistence past the processing lease.
+      // 此可选查询不得让持久化超过处理租约的时限。
       const sentMessage = await Promise.race([
         emailProvider.getMessage(confirmationResult.messageId),
         new Promise<never>((_, reject) => {
           linkTimeout = setTimeout(
-            () => reject(new Error("Timed out resolving sent email link")),
+            () => reject(new Error("解析已发送邮件链接超时")),
             SENT_MESSAGE_LINK_TIMEOUT_MS,
           );
         }),
       ]);
       confirmationResult.externalUrl = sentMessage.externalUrl;
     } catch (error) {
-      logger.warn("Failed to resolve sent email link", { error });
+      logger.warn("解析已发送邮件链接失败", { error });
     } finally {
       clearTimeout(linkTimeout);
     }
@@ -176,13 +174,11 @@ export async function confirmAssistantEmailActionForAccount({
       logger,
     });
   } catch (error) {
-    logger.error("Failed to persist confirmed assistant email action", {
+    logger.error("持久化已确认的助手邮件操作失败", {
       error,
       actionType,
     });
-    throw new SafeError(
-      "Email was sent but confirmation state could not be saved. Please refresh and try again.",
-    );
+    throw new SafeError("邮件已发送，但确认状态无法保存。请刷新后重试。");
   }
 
   return {
@@ -229,7 +225,7 @@ export async function confirmAssistantCreateRuleForAccount({
 
   const toolInput = reservation.toolInput;
   if (!isRecord(toolInput)) {
-    throw new SafeError("Invalid create-rule tool input");
+    throw new SafeError("创建规则工具输入无效");
   }
 
   let rule: Awaited<ReturnType<typeof createRule>>;
@@ -267,13 +263,11 @@ export async function confirmAssistantCreateRuleForAccount({
             logger,
           });
         } catch (persistError) {
-          logger.error("Failed to persist confirmed assistant create rule", {
+          logger.error("持久化已确认的助手创建规则失败", {
             error: persistError,
             ruleId: existingRule.id,
           });
-          throw new SafeError(
-            "Rule was created but confirmation state could not be saved. Please refresh and try again.",
-          );
+          throw new SafeError("规则已创建，但确认状态无法保存。请刷新后重试。");
         }
 
         return {
@@ -291,13 +285,13 @@ export async function confirmAssistantCreateRuleForAccount({
       findPart: (parts) =>
         findPendingAssistantCreateRulePart({ parts, toolCallId }),
     }).catch((processingError) => {
-      logger.error("Failed to clear processing state for create rule", {
+      logger.error("清除创建规则的处理状态失败", {
         error: processingError,
       });
     });
-    logger.error("Failed to confirm assistant create rule", { error });
+    logger.error("确认助手创建规则失败", { error });
     throw new SafeError(
-      error instanceof Error ? error.message : "Failed to create rule",
+      error instanceof Error ? error.message : "创建规则失败",
     );
   }
 
@@ -313,13 +307,11 @@ export async function confirmAssistantCreateRuleForAccount({
       logger,
     });
   } catch (persistError) {
-    logger.error("Failed to persist confirmed assistant create rule", {
+    logger.error("持久化已确认的助手创建规则失败", {
       error: persistError,
       ruleId: rule.id,
     });
-    throw new SafeError(
-      "Rule was created but confirmation state could not be saved. Please refresh and try again.",
-    );
+    throw new SafeError("规则已创建，但确认状态无法保存。请刷新后重试。");
   }
 
   return {
@@ -388,12 +380,12 @@ export async function confirmAssistantSaveMemoryForAccount({
       findPart: (parts) =>
         findPendingAssistantSaveMemoryPart({ parts, toolCallId }),
     }).catch((processingError) => {
-      logger.error("Failed to clear processing state for save memory", {
+      logger.error("清除保存记忆的处理状态失败", {
         error: processingError,
       });
     });
-    logger.error("Failed to confirm assistant save memory", { error, content });
-    throw new SafeError("Failed to save memory");
+    logger.error("确认助手保存记忆失败", { error, content });
+    throw new SafeError("保存记忆失败");
   }
 
   const confirmationResult = {
@@ -413,13 +405,11 @@ export async function confirmAssistantSaveMemoryForAccount({
       logger,
     });
   } catch (persistError) {
-    logger.error("Failed to persist confirmed assistant save memory", {
+    logger.error("持久化已确认的助手保存记忆失败", {
       error: persistError,
       content,
     });
-    throw new SafeError(
-      "Memory was saved but confirmation state could not be saved. Please refresh and try again.",
-    );
+    throw new SafeError("记忆已保存，但确认状态无法保存。请刷新后重试。");
   }
 
   return {
@@ -726,7 +716,7 @@ async function findChatMessageForPendingAction({
 
     if (hintedChatMessage && matchParts(hintedChatMessage.parts)) {
       if (attemptCount > 1) {
-        logger.info(`${logPrefix} resolved after persistence wait`, {
+        logger.info(`${logPrefix} 持久化等待后已解析`, {
           chatId,
           requestedChatMessageId: chatMessageId,
           resolvedChatMessageId: hintedChatMessage.id,
@@ -757,7 +747,7 @@ async function findChatMessageForPendingAction({
 
     if (matchingMessages.length === 1) {
       if (attemptCount > 1) {
-        logger.info(`${logPrefix} resolved after persistence wait`, {
+        logger.info(`${logPrefix} 持久化等待后已解析`, {
           chatId,
           requestedChatMessageId: chatMessageId,
           resolvedChatMessageId: matchingMessages[0].id,
@@ -765,7 +755,7 @@ async function findChatMessageForPendingAction({
           lookupAttempts: attemptCount,
         });
       } else if (chatMessageId && matchingMessages[0].id !== chatMessageId) {
-        logger.warn(`${logPrefix} resolved pending action by tool lookup`, {
+        logger.warn(`${logPrefix} 通过工具查找解析到待处理操作`, {
           chatId,
           requestedChatMessageId: chatMessageId,
           resolvedChatMessageId: matchingMessages[0].id,
@@ -775,7 +765,7 @@ async function findChatMessageForPendingAction({
     }
 
     if (matchingMessages.length > 1) {
-      logger.warn(`${logPrefix} found multiple pending action matches`, {
+      logger.warn(`${logPrefix} 找到多个待处理操作匹配`, {
         chatId,
         requestedChatMessageId: chatMessageId,
         matchedChatMessageIds: matchingMessages.map((message) => message.id),
@@ -794,7 +784,7 @@ async function findChatMessageForPendingAction({
       continue;
     }
 
-    logger.warn(`${logPrefix} pending action not found`, {
+    logger.warn(`${logPrefix} 未找到待处理操作`, {
       chatId,
       requestedChatMessageId: chatMessageId,
       hintedMessageFound: Boolean(hintedChatMessage),
@@ -945,19 +935,18 @@ async function reservePendingAssistantEmailAction({
     validateLookup: (lookup) => {
       if (lookup.output.emailAccountId !== emailAccountId) {
         throw new SafeError(
-          "The sending mailbox for this draft could not be verified. Prepare the draft again in the account you want to send from.",
+          "无法验证此草稿的发件邮箱。请在你要用于发送的账号中重新准备草稿。",
         );
       }
     },
-    logPrefix: "Assistant email confirmation",
+    logPrefix: "助手邮件确认",
     waitForPersistenceMs,
     inProgressError: CONFIRMATION_IN_PROGRESS_ERROR,
     onMessageNotFound: () =>
       warnAndThrowAssistantEmailConfirmationError({
         logger,
-        logMessage:
-          "Assistant email confirmation failed: chat message not found",
-        safeMessage: "Chat message not found",
+        logMessage: "助手邮件确认失败：未找到聊天消息",
+        safeMessage: "未找到聊天消息",
         chatMessageId,
         toolCallId,
         actionType,
@@ -965,9 +954,8 @@ async function reservePendingAssistantEmailAction({
     onPartNotFound: (resolvedChatMessageId) =>
       warnAndThrowAssistantEmailConfirmationError({
         logger,
-        logMessage:
-          "Assistant email confirmation failed: pending assistant action not found",
-        safeMessage: "Pending assistant action not found",
+        logMessage: "助手邮件确认失败：未找到待处理的助手操作",
+        safeMessage: "未找到待处理的助手操作",
         chatMessageId: resolvedChatMessageId,
         toolCallId,
         actionType,
@@ -975,9 +963,8 @@ async function reservePendingAssistantEmailAction({
     onRaceMessageNotFound: (resolvedChatMessageId) =>
       warnAndThrowAssistantEmailConfirmationError({
         logger,
-        logMessage:
-          "Assistant email confirmation failed after reservation race: chat message not found",
-        safeMessage: "Chat message not found",
+        logMessage: "保留竞争后助手邮件确认失败：未找到聊天消息",
+        safeMessage: "未找到聊天消息",
         chatMessageId: resolvedChatMessageId,
         toolCallId,
         actionType,
@@ -1301,28 +1288,25 @@ async function reservePendingAssistantSaveMemory({
       lookup.output.confirmationResult
         ? lookup.output.confirmationResult
         : null,
-    logPrefix: "Assistant save memory confirmation",
+    logPrefix: "助手保存记忆确认",
     waitForPersistenceMs,
     inProgressError: SAVE_MEMORY_CONFIRMATION_IN_PROGRESS_ERROR,
     onMessageNotFound: () => {
-      logger.warn(
-        "Assistant save memory confirmation: chat message not found",
-        {
-          chatMessageId,
-          toolCallId,
-        },
-      );
-      throw new SafeError("Chat message not found");
+      logger.warn("助手保存记忆确认：未找到聊天消息", {
+        chatMessageId,
+        toolCallId,
+      });
+      throw new SafeError("未找到聊天消息");
     },
     onPartNotFound: (resolvedChatMessageId) => {
-      logger.warn("Assistant save memory confirmation: pending not found", {
+      logger.warn("助手保存记忆确认：未找到待处理项", {
         chatMessageId: resolvedChatMessageId,
         toolCallId,
       });
-      throw new SafeError("Pending memory save not found");
+      throw new SafeError("未找到待处理的记忆保存");
     },
     onRaceMessageNotFound: () => {
-      throw new SafeError("Chat message not found");
+      throw new SafeError("未找到聊天消息");
     },
   });
 
@@ -1372,28 +1356,25 @@ async function reservePendingAssistantCreateRule({
       lookup.output.confirmationState === "confirmed" && lookup.output.ruleId
         ? lookup.output.ruleId
         : null,
-    logPrefix: "Assistant create rule confirmation",
+    logPrefix: "助手创建规则确认",
     waitForPersistenceMs,
     inProgressError: CONFIRMATION_IN_PROGRESS_ERROR,
     onMessageNotFound: () => {
-      logger.warn(
-        "Assistant create rule confirmation: chat message not found",
-        {
-          chatMessageId,
-          toolCallId,
-        },
-      );
-      throw new SafeError("Chat message not found");
+      logger.warn("助手创建规则确认：未找到聊天消息", {
+        chatMessageId,
+        toolCallId,
+      });
+      throw new SafeError("未找到聊天消息");
     },
     onPartNotFound: (resolvedChatMessageId) => {
-      logger.warn("Assistant create rule confirmation: pending not found", {
+      logger.warn("助手创建规则确认：未找到待处理项", {
         chatMessageId: resolvedChatMessageId,
         toolCallId,
       });
-      throw new SafeError("Pending rule creation not found");
+      throw new SafeError("未找到待处理的规则创建");
     },
     onRaceMessageNotFound: () => {
-      throw new SafeError("Chat message not found");
+      throw new SafeError("未找到聊天消息");
     },
   });
 
@@ -1643,13 +1624,13 @@ async function persistConfirmedAssistantPart<
       });
 
       if (!chatMessage) {
-        throw new Error("Chat message not found");
+        throw new Error("未找到聊天消息");
       }
 
       const lookup = findPart(chatMessage.parts);
 
       if (!lookup) {
-        throw new Error("Pending assistant action not found");
+        throw new Error("未找到待处理的助手操作");
       }
 
       if (isConfirmed?.(lookup)) {
@@ -1674,19 +1655,19 @@ async function persistConfirmedAssistantPart<
         return;
       }
 
-      logger.warn("Assistant confirmation persistence lost update race", {
+      logger.warn("助手确认持久化出现更新竞争", {
         attempt,
       });
     } catch (error) {
       lastError = error;
-      logger.warn("Assistant confirmation persistence attempt failed", {
+      logger.warn("助手确认持久化尝试失败", {
         attempt,
         error,
       });
     }
   }
 
-  throw lastError ?? new Error("Failed to persist confirmed assistant action");
+  throw lastError ?? new Error("持久化已确认的助手操作失败");
 }
 
 function buildConfirmedAssistantSaveMemoryParts({

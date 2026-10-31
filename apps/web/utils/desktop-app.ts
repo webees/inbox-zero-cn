@@ -3,7 +3,7 @@ export type DesktopAuthProvider = "apple" | "google" | "microsoft";
 
 export const DESKTOP_WEB_UPDATE_CHECK_INTERVAL_MS = 15 * 60 * 1000;
 export type InboxZeroDesktopApi = {
-  /** Tells the shell this page hydrated; without it the shell reloads the page. */
+  /** 告知外壳此页面已完成水合；否则外壳会重新加载页面。 */
   signalReady?: () => void;
   setUnreadCount?: (count: number) => void;
   openWindow?: (path: string) => Promise<void>;
@@ -38,7 +38,7 @@ type DesktopDurationSummary = {
   maxMs: number;
 };
 
-/** Aggregated since the previous call from any window. */
+/** 自任一窗口上次调用以来聚合的数据。 */
 export type DesktopHealth = {
   version: string;
   intervalMs: number;

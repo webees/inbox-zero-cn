@@ -20,13 +20,13 @@ export function OrgAnalyticsConsentBanner() {
     updateAnalyticsConsentAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: "Analytics access granted to admins!" });
+        toastSuccess({ description: "已授予管理员分析访问权限！" });
         mutate();
       },
       onError: (error) => {
         toastError({
           description: getActionErrorMessage(error.error, {
-            prefix: "Failed to update settings",
+            prefix: "更新设置失败",
           }),
         });
       },
@@ -44,10 +44,10 @@ export function OrgAnalyticsConsentBanner() {
   const isAdmin = hasOrganizationAdminRole(data.role ?? "");
 
   const title = isAdmin
-    ? "Include your analytics in organization stats"
-    : "Allow organization admins to view your analytics";
+    ? "将你的分析数据纳入组织统计"
+    : "允许组织管理员查看你的分析数据";
 
-  const description = `Your email analytics are currently private. Enable access to let${isAdmin ? " other " : " "}organization admins view your inbox statistics and usage data. This helps your team understand productivity and collaborate more effectively.`;
+  const description = `你的邮件分析数据目前是私密的。启用访问后，可让${isAdmin ? "其他 " : ""}组织管理员查看你的收件箱统计和使用数据。这有助于你的团队了解生产力并更高效地协作。`;
 
   return (
     <ActionCard
@@ -58,7 +58,7 @@ export function OrgAnalyticsConsentBanner() {
       description={description}
       action={
         <Button onClick={handleAllow} loading={isPending}>
-          Allow Access
+          允许访问
         </Button>
       }
     />

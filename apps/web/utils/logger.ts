@@ -22,10 +22,10 @@ const NORMALIZED_SENSITIVE_FIELD_NAMES = normalizeFieldNames(
 );
 
 const colors = {
-  info: "\x1b[0m", // white
-  error: "\x1b[31m", // red
-  warn: "\x1b[33m", // yellow
-  trace: "\x1b[36m", // cyan
+  info: "\x1b[0m", // 白色
+  error: "\x1b[31m", // 红色
+  warn: "\x1b[33m", // 黄色
+  trace: "\x1b[36m", // 青色
   reset: "\x1b[0m",
 } as const;
 
@@ -52,7 +52,7 @@ export function createScopedLogger(scope: string) {
             return arg.message;
           }
           if (typeof arg === "object" && arg !== null) {
-            // Handle objects that may contain Error instances
+            // 处理可能包含 Error 实例的对象
             const processedArg = processErrorsInObject(arg);
             return JSON.stringify(processedArg, null, 2);
           }
@@ -63,7 +63,7 @@ export function createScopedLogger(scope: string) {
       const msg = `[${scope}]: ${message} ${formattedArgs}`;
 
       if (env.NODE_ENV === "development") {
-        // Replace literal \n with actual newlines for development logs
+        // 在开发日志中将字面量 \n 替换为实际换行
         const formattedMsg = msg.replace(/\\n/g, "\n");
         return `${colors[level]}${formattedMsg}${colors.reset}`;
       }
@@ -89,7 +89,7 @@ export function createScopedLogger(scope: string) {
       },
       with: (newFields: Record<string, unknown>) =>
         createLogger({ ...fields, ...newFields }),
-      flush: () => Promise.resolve(), // No-op for console logger
+      flush: () => Promise.resolve(), // 控制台 logger 的空实现
     };
   };
 
@@ -153,7 +153,7 @@ function formatError(args?: Record<string, unknown>) {
   return {
     ...argsWithoutError,
     error,
-    errorMessage: getSimpleErrorMessage(error) ?? "Unknown error",
+    errorMessage: getSimpleErrorMessage(error) ?? "未知错误",
   };
 }
 
@@ -203,15 +203,15 @@ function getSimpleErrorMessage(error: unknown): string | undefined {
 }
 
 /**
- * Recursively processes an object to protect sensitive data:
- * - REDACTED_FIELD_NAMES: Replaced with boolean (never logged)
- * - CONTENT_FIELD_NAMES: Replaced with boolean in production (unless debug logs enabled)
- * - SENSITIVE_FIELD_NAMES: Hashed in production (raw in dev/test)
+ * 递归处理对象以保护敏感数据：
+ * - REDACTED_FIELD_NAMES：替换为布尔值（绝不记录）
+ * - CONTENT_FIELD_NAMES：在生产环境中替换为布尔值（除非启用了调试日志）
+ * - SENSITIVE_FIELD_NAMES：在生产环境中哈希（开发/测试环境中保留原值）
  *
- * Only works server-side - client-side logs are visible in browser anyway.
+ * 仅在服务端生效 - 客户端日志无论如何在浏览器中都是可见的。
  */
 function hashSensitiveFields<T>(obj: T, depth = 0): T {
-  // Prevent infinite recursion and excessive processing
+  // 防止无限递归和过度处理
   const MAX_DEPTH = 10;
   if (depth > MAX_DEPTH) return obj;
 
@@ -223,17 +223,17 @@ function hashSensitiveFields<T>(obj: T, depth = 0): T {
     return obj.map((item) => hashSensitiveFields(item, depth + 1)) as T;
   }
 
-  // Only process plain objects - skip class instances, Error, Date, etc.
+  // 仅处理普通对象 - 跳过类实例、Error、Date 等
   if (isPlainObject(obj)) {
     const processed: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(obj)) {
       const normalizedKey = normalizeRedactionFieldName(key);
 
-      // Always redact tokens - never log them
+      // 始终对令牌脱敏 - 绝不记录它们
       if (NORMALIZED_REDACTED_FIELD_NAMES.has(normalizedKey)) {
         processed[key] = !!value;
       }
-      // Redact content fields in production (unless debug logs enabled)
+      // 在生产环境中对内容字段脱敏（除非启用了调试日志）
       else if (
         NORMALIZED_CONTENT_FIELD_NAMES.has(normalizedKey) &&
         env.NODE_ENV === "production" &&
@@ -241,22 +241,22 @@ function hashSensitiveFields<T>(obj: T, depth = 0): T {
       ) {
         processed[key] = !!value;
       }
-      // Hash emails in production only (server-side only)
+      // 仅在生产环境中对邮箱进行哈希（仅服务端）
       else if (
         NORMALIZED_SENSITIVE_FIELD_NAMES.has(normalizedKey) &&
         typeof value === "string" &&
         env.NODE_ENV === "production" &&
-        typeof window === "undefined" // Server-side check
+        typeof window === "undefined" // 服务端检查
       ) {
-        // Dynamic import to avoid bundling crypto on client
+        // 动态导入以避免在客户端打包 crypto
         const { hash } = require("@/utils/hash");
         processed[key] = hash(value);
       }
-      // Recursively process nested objects
+      // 递归处理嵌套对象
       else if (typeof value === "object") {
         processed[key] = hashSensitiveFields(value, depth + 1);
       }
-      // Pass through everything else
+      // 其余内容原样传递
       else {
         processed[key] = value;
       }

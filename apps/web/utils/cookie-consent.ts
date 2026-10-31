@@ -10,12 +10,11 @@ export type CookieConsentState =
 const STORAGE_KEY = "cookie-consent";
 const CHANGE_EVENT = "cookie-consent-change";
 
-// Keeps the choice for this page when storage is unavailable.
+// 当存储不可用时，在内存中保留本次页面的选择。
 let memoryChoice: CookieConsentChoice | null = null;
 let settingsReopened = false;
 
-// Cookies and storage written by the trackers gated on consent, removed when a
-// visitor withdraws it.
+// 由受同意约束的跟踪器写入的 cookie 和存储，在访客撤回同意时移除。
 const TRACKING_COOKIE_PREFIXES = [
   "ph_",
   "_ga",
@@ -31,12 +30,11 @@ const TRACKING_COOKIE_PREFIXES = [
 ];
 const TRACKING_STORAGE_PREFIXES = ["ph_", "__ph"];
 
-// Location is read from the device time zone so no request is needed and the
-// check works on self-hosted deployments. Covers the EU (including its
-// outermost regions), the rest of the EEA, the UK and Switzerland, which share
-// the same cookie consent rules.
+// 位置信息从设备时区读取，因此无需发起请求，该检查在自托管部署上也能
+// 正常工作。涵盖欧盟（包括其最外围地区）、欧洲经济区其余地区、英国和
+// 瑞士，这些地区采用相同的 cookie 同意规则。
 const CONSENT_TIME_ZONES = new Set([
-  // EU
+  // 欧盟
   "Europe/Amsterdam",
   "Europe/Athens",
   "Europe/Berlin",
@@ -77,11 +75,11 @@ const CONSENT_TIME_ZONES = new Set([
   "Atlantic/Madeira",
   "Indian/Mayotte",
   "Indian/Reunion",
-  // Rest of the EEA
+  // 欧洲经济区其余地区
   "Atlantic/Reykjavik",
   "Europe/Oslo",
   "Europe/Vaduz",
-  // UK and Switzerland
+  // 英国和瑞士
   "Europe/London",
   "Europe/Zurich",
 ]);
@@ -116,11 +114,11 @@ export function setCookieConsent(choice: CookieConsentChoice) {
   if (choice === "denied" && previous === "granted") {
     clearTrackingStorage();
 
-    // Reloading into a grant still left in storage would resume tracking, so
-    // only reload once that grant is gone. Otherwise the in-memory denial
-    // holds for this page.
+    // 若重新加载时存储中仍留有同意授权，跟踪就会恢复，
+    // 因此仅在授权已被移除后才重新加载。否则本次页面的
+    // 内存中拒绝状态将继续生效。
     if (persisted || removeStoredChoice()) {
-      // Scripts that already loaded keep running until the page is reloaded.
+      // 已加载的脚本会继续运行，直到页面重新加载。
       window.location.reload();
       return;
     }
@@ -138,7 +136,7 @@ export function subscribeToCookieConsent(onChange: () => void) {
   const onStorage = (event: StorageEvent) => {
     if (event.key !== STORAGE_KEY) return;
 
-    // Consent withdrawn in another tab must also stop the scripts loaded here.
+    // 在其他标签页撤回同意也必须停止在此处加载的脚本。
     if (event.oldValue === "granted" && event.newValue !== "granted") {
       window.location.reload();
       return;
@@ -199,8 +197,8 @@ function clearTrackingStorage() {
       TRACKING_COOKIE_PREFIXES.some((prefix) => name.startsWith(prefix)),
     );
 
-  // Analytics cookies are often set on the parent domain, so expire each one
-  // on every domain level it could live on.
+  // 分析 cookie 通常设置在父域名上，因此在它可能存在的每个
+  // 域名层级上都将其置为过期。
   const hostParts = window.location.hostname.split(".");
   const domains = hostParts.map((_, index) => hostParts.slice(index).join("."));
 

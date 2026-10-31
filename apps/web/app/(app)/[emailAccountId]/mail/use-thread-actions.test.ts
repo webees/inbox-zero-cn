@@ -149,9 +149,7 @@ describe("useThreadActions", () => {
     const { result } = renderActions({ threads: [] });
     await act(() => result.current.archive(["missing-thread"]));
     expect(mail.client.submitConversations).not.toHaveBeenCalled();
-    expect(notifications.error).toHaveBeenCalledWith(
-      "Couldn't queue archiving",
-    );
+    expect(notifications.error).toHaveBeenCalledWith("无法排队归档");
   });
 
   it("explains a full command queue instead of a generic archive failure", async () => {

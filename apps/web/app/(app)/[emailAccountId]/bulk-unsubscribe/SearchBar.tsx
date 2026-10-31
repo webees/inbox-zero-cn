@@ -25,7 +25,7 @@ export function SearchBar({
       <SearchIcon className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
       <Input
         type="text"
-        placeholder="Search..."
+        placeholder="搜索…"
         className="pl-9"
         onChange={(e) => throttledSearch(e.target.value)}
       />

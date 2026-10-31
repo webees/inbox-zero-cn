@@ -29,88 +29,87 @@ export type SplitLibraryEntry = {
 export const SPLIT_LIBRARY: SplitLibraryEntry[] = [
   {
     name: "Important",
-    category: "General",
-    description: "Based on Gmail’s importance markers.",
+    category: "通用",
+    description: "基于 Gmail 的重要性标记。",
     conditions: [{ kind: "LABEL", labelName: "Important" }],
   },
   {
-    name: "To Reply",
-    category: "General",
-    description:
-      "Conversations waiting on your answer, labelled by Reply Zero.",
-    conditions: [{ kind: "LABEL", labelName: "To Reply" }],
+    name: "待回复",
+    category: "通用",
+    description: "等待你答复的会话，由 Reply Zero 打上标签。",
+    conditions: [{ kind: "LABEL", labelName: "待回复" }],
   },
   {
     name: "Starred",
-    category: "General",
-    description: "Everything you have starred, in one place.",
+    category: "通用",
+    description: "你加星标的所有邮件，集中在一处。",
     conditions: [{ kind: "STARRED" }],
   },
   {
-    name: "Awaiting Reply",
-    category: "General",
-    description: "You answered — they have not. Nudge-worthy threads.",
-    conditions: [{ kind: "LABEL", labelName: "Awaiting Reply" }],
+    name: "等待回复",
+    category: "通用",
+    description: "你已经回复，对方还没有。值得跟进提醒的会话。",
+    conditions: [{ kind: "LABEL", labelName: "等待回复" }],
   },
   {
-    name: "FYI",
-    category: "General",
-    description: "Worth knowing about, with nothing for you to answer.",
-    conditions: [{ kind: "LABEL", labelName: "FYI" }],
+    name: "知悉",
+    category: "通用",
+    description: "值得了解，但无需你回复。",
+    conditions: [{ kind: "LABEL", labelName: "知悉" }],
   },
   {
-    name: "Actioned",
-    category: "General",
-    description: "Conversations that are done, with nobody waiting on anyone.",
-    conditions: [{ kind: "LABEL", labelName: "Actioned" }],
+    name: "已处理",
+    category: "通用",
+    description: "已经结束、没有任何人等待的会话。",
+    conditions: [{ kind: "LABEL", labelName: "已处理" }],
   },
   {
-    name: "Calendar",
-    category: "General",
-    description: "Invitations, reschedules and meeting notifications.",
-    conditions: [{ kind: "LABEL", labelName: "Calendar" }],
+    name: "日历",
+    category: "通用",
+    description: "邀请、改期与会议通知。",
+    conditions: [{ kind: "LABEL", labelName: "日历" }],
   },
   {
-    name: "Receipts",
-    category: "General",
-    description: "Payments, payouts and invoices.",
-    conditions: [{ kind: "LABEL", labelName: "Receipt" }],
+    name: "收据",
+    category: "通用",
+    description: "付款、结算与发票。",
+    conditions: [{ kind: "LABEL", labelName: "收据" }],
   },
   {
-    name: "Newsletters",
-    category: "General",
-    description: "Bulk mail you subscribed to — read when you have time.",
-    conditions: [{ kind: "LABEL", labelName: "Newsletter" }],
+    name: "订阅简报",
+    category: "通用",
+    description: "你订阅的批量邮件，有空时再读。",
+    conditions: [{ kind: "LABEL", labelName: "订阅简报" }],
   },
   {
-    name: "Notifications",
-    category: "General",
-    description: "Tool alerts and digests, out of the main inbox.",
-    conditions: [{ kind: "LABEL", labelName: "Notification" }],
+    name: "通知",
+    category: "通用",
+    description: "工具提醒与摘要，移出主收件箱。",
+    conditions: [{ kind: "LABEL", labelName: "通知" }],
   },
   {
-    name: "OTP",
-    category: "General",
-    description: "One-time passwords, 2FA codes, and sign-in links.",
-    conditions: [{ kind: "LABEL", labelName: "OTP" }],
+    name: "验证码",
+    category: "通用",
+    description: "一次性密码、两步验证码与登录链接。",
+    conditions: [{ kind: "LABEL", labelName: "验证码" }],
     createsSystemType: SystemType.OTP,
   },
   {
-    name: "Cold email",
-    category: "General",
-    description: "Unsolicited outreach from senders you have no history with.",
-    conditions: [{ kind: "LABEL", labelName: "Cold email" }],
+    name: "冷邮件",
+    category: "通用",
+    description: "来自无往来发件人的陌生推销。",
+    conditions: [{ kind: "LABEL", labelName: "冷邮件" }],
   },
   {
     name: "Unread",
-    category: "General",
-    description: "Everything you have not opened yet.",
+    category: "通用",
+    description: "你还没有打开过的所有邮件。",
     conditions: [{ kind: "UNREAD" }],
   },
   {
     name: "GitHub",
-    category: "Apps",
-    description: "Pull requests, reviews and issue activity.",
+    category: "应用",
+    description: "拉取请求、评审与议题动态。",
     conditions: [
       { kind: "FROM", sender: "mentions@noreply.github.com" },
       { kind: "FROM", sender: "notifications@github.com" },
@@ -119,14 +118,14 @@ export const SPLIT_LIBRARY: SplitLibraryEntry[] = [
   },
   {
     name: "Stripe",
-    category: "Apps",
-    description: "Payouts, disputes and invoice receipts from Stripe.",
+    category: "应用",
+    description: "来自 Stripe 的结算、争议与发票收据。",
     conditions: [{ kind: "FROM", sender: "receipts@stripe.com" }],
   },
   {
     name: "Linear",
-    category: "Apps",
-    description: "Issue assignments, comments and mentions from Linear.",
+    category: "应用",
+    description: "来自 Linear 的议题指派、评论与提及。",
     conditions: [
       { kind: "FROM", sender: "notifications@linear.app" },
       { kind: "FROM", sender: "notifications@mail.linear.app" },
@@ -135,32 +134,32 @@ export const SPLIT_LIBRARY: SplitLibraryEntry[] = [
   },
   {
     name: "Figma",
-    category: "Apps",
-    description: "Comments and file updates from your team.",
+    category: "应用",
+    description: "来自你团队的评论与文件更新。",
     conditions: [{ kind: "FROM", sender: "no-reply@figma.com" }],
   },
   {
     name: "Notion",
-    category: "Apps",
-    description: "Comments, mentions, and updates to your documents.",
+    category: "应用",
+    description: "文档的评论、提及与更新。",
     conditions: [{ kind: "FROM", sender: "notify@mail.notion.so" }],
   },
   {
     name: "Asana",
-    category: "Apps",
-    description: "Task assignments, deadlines, and project updates.",
+    category: "应用",
+    description: "任务指派、截止日期与项目更新。",
     conditions: [{ kind: "FROM", sender: "no-reply@asana.com" }],
   },
   {
     name: "Trello",
-    category: "Apps",
-    description: "Board invitations and task notifications.",
+    category: "应用",
+    description: "看板邀请与任务通知。",
     conditions: [{ kind: "FROM", sender: "do-not-reply@trello.com" }],
   },
   {
     name: "HubSpot",
-    category: "Apps",
-    description: "Lead activity, form submissions, and CRM notifications.",
+    category: "应用",
+    description: "线索动态、表单提交与 CRM 通知。",
     conditions: [
       { kind: "FROM", sender: "noreply@notifications.hubspot.com" },
       { kind: "FROM", sender: "no-reply@hubspot.com" },
@@ -170,8 +169,8 @@ export const SPLIT_LIBRARY: SplitLibraryEntry[] = [
   },
   {
     name: "Salesforce",
-    category: "Apps",
-    description: "Opportunity updates and sales activity.",
+    category: "应用",
+    description: "商机更新与销售动态。",
     conditions: [
       { kind: "FROM", sender: "info@salesforce.com" },
       { kind: "FROM", sender: "support@salesforce.com" },
@@ -184,8 +183,8 @@ export const SPLIT_LIBRARY: SplitLibraryEntry[] = [
   },
   {
     name: "Pipedrive",
-    category: "Apps",
-    description: "Deal updates, follow-ups, and pipeline activity.",
+    category: "应用",
+    description: "交易更新、跟进与销售管道动态。",
     conditions: [
       { kind: "FROM", sender: "notifications@pipedrive.com" },
       { kind: "FROM", sender: "info@pipedrive.com" },
@@ -274,15 +273,15 @@ export function libraryDefinition(entry: SplitLibraryEntry) {
   return entry.conditions.map((condition) => {
     switch (condition.kind) {
       case "UNREAD":
-        return { key: "Is", value: "unread" };
+        return { key: "是", value: "未读" };
       case "STARRED":
-        return { key: "Is", value: "starred" };
+        return { key: "是", value: "已加星标" };
       case "FROM":
-        return { key: "From", value: condition.sender };
+        return { key: "来自", value: condition.sender };
       case "LABEL":
-        return { key: "Label", value: condition.labelName };
+        return { key: "标签", value: condition.labelName };
       case "CATEGORY":
-        return { key: "Category", value: condition.categoryName };
+        return { key: "分类", value: condition.categoryName };
     }
   });
 }

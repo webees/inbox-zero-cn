@@ -3,16 +3,16 @@ import useSWR from "swr";
 import { EMAIL_ACCOUNT_ID_REQUIRED_ERROR } from "@/utils/config";
 import { useAccount } from "@/providers/EmailAccountProvider";
 
-// Makes sure that we have an email account id before fetching
-// Otherwise the backend will return an error
+// 确保在请求之前我们已有邮箱账号 id
+// 否则后端会返回错误
 // biome-ignore lint/suspicious/noExplicitAny: existing loose external shape
 export function useSWRWithEmailAccount<Data = any, Error = any>(url: string) {
   const { emailAccountId } = useAccount();
   return useSWR<Data, Error>(emailAccountId ? url : null);
 }
 
-// Routes scoped by the authenticated email account need the account in the
-// cache key, or an account switch would serve another account's data.
+// 按已认证邮箱账号隔离的路由需要将账号纳入缓存键，
+// 否则切换账号时会提供另一个账号的数据。
 export function getAccountScopedKey(
   path: string,
   emailAccountId?: string | null,
@@ -31,8 +31,8 @@ export function shouldResetSwrCacheForAccountId(
   return previousEmailAccountId !== emailAccountId;
 }
 
-// Empty → id must revalidate the live scoped cache, including keys that are
-// not persisted (for example a first-paint 403 on /api/user/email-account).
+// 为空 → id 必须重新校验实时的作用域缓存，包括未被持久化的键
+// （例如 /api/user/email-account 首次渲染时的 403）。
 export function shouldRevalidateAllLiveSwrKeysForAccountId(
   previousEmailAccountId: string | null,
   emailAccountId: string,
@@ -45,8 +45,8 @@ export function getDevSWRErrorRetryMs(
   retryCount: number,
 ) {
   if (error.status === 404) return 500;
-  // pnpm dev skips other 4xx retries; production still retries, so a missing
-  // account header only sticks on the emulator/local settings page.
+  // pnpm dev 会跳过其他 4xx 重试；生产环境仍会重试，因此缺失的
+  // 账号请求头只会卡在模拟器/本地设置页面上。
   if (
     error.status === 403 &&
     error.message === EMAIL_ACCOUNT_ID_REQUIRED_ERROR
@@ -60,23 +60,23 @@ export function getDevSWRErrorRetryMs(
 type NormalizedError = { error: string };
 
 /**
- * Processes the result of an SWR hook, normalizing errors.
- * Assumes the API might return an object like { error: string } instead of data on failure.
+ * 处理 SWR hook 的结果，规范化错误。
+ * 假定 API 在失败时可能返回 { error: string } 这样的对象，而不是数据。
  *
  * @param swrResult The raw result from the useSWR hook.
  * @returns SWRResponse with data as TData | null and error as NormalizedError | undefined.
  */
 export function processSWRResponse<
   TData,
-  TApiError extends { error: string } = { error: string }, // Assume API error shape
-  TSWRError = Error, // Assume SWR error type
+  TApiError extends { error: string } = { error: string }, // 假定为 API 错误结构
+  TSWRError = Error, // 假定为 SWR 错误类型
 >(
   swrResult: SWRResponse<TData | TApiError, TSWRError>,
 ): SWRResponse<TData | null, NormalizedError> {
-  const swrError = swrResult.error as TSWRError | undefined; // Cast for type checking
-  const data = swrResult.data as TData | TApiError | undefined; // Cast for type checking
+  const swrError = swrResult.error as TSWRError | undefined; // 为类型检查进行类型断言
+  const data = swrResult.data as TData | TApiError | undefined; // 为类型检查进行类型断言
 
-  // Handle SWR hook error
+  // 处理 SWR hook 错误
   if (swrError instanceof Error) {
     return {
       ...swrResult,
@@ -84,16 +84,16 @@ export function processSWRResponse<
       error: { error: swrError.message },
     } as SWRResponse<TData | null, NormalizedError>;
   }
-  // Handle potential non-Error SWR errors (less common)
+  // 处理可能的非 Error 类型 SWR 错误（较少见）
   if (swrError) {
     return {
       ...swrResult,
       data: null,
-      error: { error: String(swrError) }, // Convert non-Error to string
+      error: { error: String(swrError) }, // 将非 Error 转换为字符串
     } as SWRResponse<TData | null, NormalizedError>;
   }
 
-  // Handle API error returned within data
+  // 处理在数据中返回的 API 错误
   if (
     data &&
     typeof data === "object" &&
@@ -107,11 +107,11 @@ export function processSWRResponse<
     } as SWRResponse<TData | null, NormalizedError>;
   }
 
-  // No error found, return the data (might be null/undefined during loading)
-  // Cast data to expected type, filtering out the TApiError possibility
+  // 未发现错误，返回数据（加载期间可能为 null/undefined）
+  // 将数据转换为预期类型，排除 TApiError 的可能
   return {
     ...swrResult,
-    data: data as TData | null, // SWR handles undefined during load
+    data: data as TData | null, // SWR 在加载期间处理 undefined
     error: undefined,
   } as SWRResponse<TData | null, NormalizedError>;
 }

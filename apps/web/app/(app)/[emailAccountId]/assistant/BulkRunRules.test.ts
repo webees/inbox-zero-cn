@@ -135,7 +135,7 @@ describe("onRun", () => {
       expect(onComplete).toHaveBeenCalledWith("error", 0);
     });
     expect(toastError).toHaveBeenCalledWith({
-      title: "Failed to process emails",
+      title: "处理邮件失败",
       description: "AI automation is unavailable.",
     });
   });

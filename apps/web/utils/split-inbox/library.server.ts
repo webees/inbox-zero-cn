@@ -36,7 +36,7 @@ export async function getMailSplitPresets({
     labelsByName: new Map(
       choices.map((label) => [label.name.toLowerCase(), label.id]),
     ),
-    // The current library has no native-category presets.
+    // 当前库没有原生分类预设。
     categoriesByName: new Map<string, string>(),
   };
   return SPLIT_LIBRARY.flatMap((entry) => {
@@ -77,7 +77,7 @@ export async function createMailSplitFromPreset({
 }) {
   const presets = await getMailSplitPresets({ emailAccountId, emailProvider });
   const preset = presets.find((entry) => entry.presetId === presetId);
-  if (!preset) throw new SafeError("Split preset not available");
+  if (!preset) throw new SafeError("收件箱分类预设不可用");
   if (preset.createsSystemType) {
     await toggleRule({
       emailAccountId,

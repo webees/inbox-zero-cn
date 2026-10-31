@@ -261,9 +261,7 @@ export function MailShell() {
           rollbackOnError: true,
         },
       ).catch((error) => {
-        toast.error(
-          error instanceof Error ? error.message : "Couldn't save that",
-        );
+        toast.error(error instanceof Error ? error.message : "无法保存该设置");
       });
     },
     [emailAccountId, mutateSettings, settings],
@@ -351,14 +349,14 @@ export function MailShell() {
           ...split,
           name:
             isGoogle && split.name.trim().toLowerCase() === "other"
-              ? `${split.name} (custom)`
+              ? `${split.name}（自定义）`
               : split.name,
         })),
         ...(isGoogle && !isAllAccounts
           ? [
               {
                 id: OTHER_SPLIT_ID,
-                name: "Other",
+                name: "其他",
                 matchAll: true,
                 filters: [],
               },
@@ -1653,12 +1651,12 @@ export function MailShell() {
                 {scopeTitle ? (
                   <div className="flex items-center gap-1 px-1.5 py-1">
                     <Tooltip
-                      shortcuts={[{ id: "backToList", label: "Go to inbox" }]}
+                      shortcuts={[{ id: "backToList", label: "前往收件箱" }]}
                     >
                       <button
                         type="button"
                         onClick={goToInbox}
-                        aria-label="Go to inbox"
+                        aria-label="前往收件箱"
                         className="flex size-7 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         <ChevronLeftIcon className="size-4" />
@@ -1672,8 +1670,7 @@ export function MailShell() {
                 {isAllAccounts &&
                 combinedThreadState.failedAccountIds.length ? (
                   <div className="border-border border-b bg-amber-50 px-3 py-2 text-amber-900 text-xs dark:bg-amber-950/30 dark:text-amber-200">
-                    Some inboxes couldn&apos;t be loaded. Try again shortly or
-                    check their connections.
+                    部分收件箱无法加载。请稍后重试或检查它们的连接。
                   </div>
                 ) : null}
                 <MailPanelErrorBoundary
@@ -1684,7 +1681,7 @@ export function MailShell() {
                     displayedActiveSplitId,
                     searchQuery,
                   ])}
-                  title="Unable to show your mail list"
+                  title="无法显示邮件列表"
                 >
                   {isScheduledView ? (
                     <ScheduledEmailList />

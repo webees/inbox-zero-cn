@@ -38,11 +38,11 @@ export function StepBulkUnsubscribe({ onNext }: { onNext: () => void }) {
   const posthog = usePostHog();
   const { hasUnsubscribeAccess, mutate: refetchPremium } = usePremium();
 
-  // Day-boundary date range keeps the SWR key stable across mounts, so
-  // revisiting this step (back/forward) reuses the cached result.
+  // 以天为边界的日期范围可让 SWR key 在多次挂载间保持稳定，
+  // 因此重新访问此步骤（前进/后退）时会复用缓存结果。
   const fromDate = useMemo(() => +subDays(startOfDay(new Date()), 90), []);
-  // Mirrors the bulk unsubscribe page defaults: last 3 months, unhandled
-  // senders, all email types, ordered by email count.
+  // 与批量退订页面的默认值保持一致：最近 3 个月、未处理的发件人、
+  // 所有邮件类型，按邮件数量排序。
   const params: NewsletterStatsQuery = {
     types: [],
     filters: ["unhandled"],
@@ -84,8 +84,8 @@ export function StepBulkUnsubscribe({ onNext }: { onNext: () => void }) {
     [lowReadSuggestions],
   );
 
-  // Track which previewed senders the user opted out of, so selection needs no
-  // effect to mirror the async data load (all previewed start selected).
+  // 记录用户取消勾选了哪些预览发件人，这样选择状态无需 effect 来同步
+  // 异步数据加载（所有预览项初始都为已选中）。
   const [deselected, setDeselected] = useState<Set<string>>(new Set());
   const [submitting, setSubmitting] = useState(false);
 
@@ -102,8 +102,7 @@ export function StepBulkUnsubscribe({ onNext }: { onNext: () => void }) {
     (item) => !deselected.has(item.name),
   );
 
-  // Record (once) when the user is actually shown the suggestion list, so we
-  // can measure how often the data was ready in time.
+  // 记录（一次）用户实际看到建议列表的时机，以便衡量数据及时就绪的频率。
   const suggestionsShownRef = useRef(false);
   useEffect(() => {
     if (suggestionsShownRef.current) return;
@@ -128,12 +127,11 @@ export function StepBulkUnsubscribe({ onNext }: { onNext: () => void }) {
 
   if (!emailAccountId) return null;
 
-  // The shape of the list, not the static content, so the screen doesn't swap
-  // out from under the user once the personalized version arrives.
+  // 保持列表的形状而非静态内容，这样当个性化版本到达时，屏幕不会在用户眼前突然切换。
   if (isLoading && !data) return <LoadingBulkUnsubscribeStep />;
 
-  // On error or with nothing to suggest, fall back to the static marketing
-  // content — onboarding must never feel broken.
+  // 出错或没有可建议内容时，回退到静态营销内容——
+  // 引导流程绝不能让用户觉得出了问题。
   if (!suggestions.length) {
     return <StaticBulkUnsubscribeStep onNext={onNext} />;
   }
@@ -188,17 +186,15 @@ export function StepBulkUnsubscribe({ onNext }: { onNext: () => void }) {
       <div className="w-full max-w-xl">
         <div className="mb-6 text-center">
           <PageHeading className="mb-3">
-            We found {suggestions.length}{" "}
-            {suggestions.length === 1 ? "sender" : "senders"} you rarely read
+            我们发现你很少阅读的 {suggestions.length} 个发件人
           </PageHeading>
           <TypographyP className="text-muted-foreground">
-            We'll unsubscribe and archive these for you. Uncheck any you want to
-            keep.
+            我们会为你退订并归档这些发件人。取消勾选任何你想保留的项。
           </TypographyP>
         </div>
 
         <section
-          aria-label="Senders you rarely read"
+          aria-label="你很少阅读的发件人"
           className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
         >
           <ul className="divide-y divide-slate-100 dark:divide-border py-1.5">
@@ -217,8 +213,8 @@ export function StepBulkUnsubscribe({ onNext }: { onNext: () => void }) {
         <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-sm text-muted-foreground">
           <SparklesIcon className="size-3.5 text-amber-500" />
           {hasMore
-            ? `Showing your top ${previewSenders.length}. We'll keep spotting more as you use Inbox Zero.`
-            : "We'll keep spotting more as you use Inbox Zero."}
+            ? `显示你的前 ${previewSenders.length} 个。随着你使用 Inbox Zero，我们会继续发现更多。`
+            : "随着你使用 Inbox Zero，我们会继续发现更多。"}
         </p>
 
         <div className="mt-7 flex flex-col items-center gap-3">
@@ -232,11 +228,11 @@ export function StepBulkUnsubscribe({ onNext }: { onNext: () => void }) {
             {selectedSenders.length > 0 ? (
               <>
                 <MailXIcon className="size-4 mr-2" />
-                Unsubscribe from {selectedSenders.length}
+                退订 {selectedSenders.length} 个
               </>
             ) : (
               <>
-                Continue
+                继续
                 <ArrowRightIcon className="size-4 ml-2" />
               </>
             )}
@@ -248,7 +244,7 @@ export function StepBulkUnsubscribe({ onNext }: { onNext: () => void }) {
               onClick={onSkip}
               disabled={submitting}
             >
-              Skip for now
+              暂时跳过
             </Button>
           )}
         </div>
@@ -260,7 +256,7 @@ export function StepBulkUnsubscribe({ onNext }: { onNext: () => void }) {
 function LoadingBulkUnsubscribeStep() {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center bg-slate-50 dark:bg-background px-4 py-10">
-      <output className="w-full max-w-xl" aria-label="Loading senders">
+      <output className="w-full max-w-xl" aria-label="正在加载发件人">
         <div className="mb-6 flex flex-col items-center">
           <Skeleton className="mb-3 h-8 w-80 max-w-full" />
           <Skeleton className="h-5 w-96 max-w-full" />
@@ -298,16 +294,15 @@ function StaticBulkUnsubscribeStep({ onNext }: { onNext: () => void }) {
           <BulkUnsubscribeIllustration />
         </div>
 
-        <PageHeading className="mb-3">Bulk unsubscribe and archive</PageHeading>
+        <PageHeading className="mb-3">批量退订并归档</PageHeading>
 
         <TypographyP className="text-muted-foreground mb-8">
-          See which emails you never read. One-click unsubscribe and archive
-          them in bulk.
+          查看你从未阅读的邮件。一键批量退订并归档。
         </TypographyP>
 
         <div className="flex flex-col gap-2 w-full max-w-xs">
           <Button className="w-full" onClick={onNext}>
-            Continue
+            继续
             <ArrowRightIcon className="size-4 ml-2" />
           </Button>
         </div>

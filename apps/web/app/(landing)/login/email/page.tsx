@@ -7,7 +7,7 @@ import { WELCOME_PATH } from "@/utils/config";
 import { normalizeInternalPath } from "@/utils/path";
 
 export const metadata: Metadata = {
-  title: getBrandTitle("Sign in with email"),
+  title: getBrandTitle("使用邮箱登录"),
 };
 
 export default async function EmailLoginPage({

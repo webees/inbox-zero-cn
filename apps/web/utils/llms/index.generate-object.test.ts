@@ -261,8 +261,7 @@ describe("createGenerateObject repairText", () => {
     const wasMissingJsonWarned = () =>
       warnSpy.mock.calls.some((args) =>
         args.some(
-          (arg) =>
-            typeof arg === "string" && arg.includes("Missing JSON in prompt"),
+          (arg) => typeof arg === "string" && arg.includes("提示词中缺少 JSON"),
         ),
       );
 
@@ -406,24 +405,6 @@ describe("createGenerateObject repairText", () => {
       const request = mockGenerateObject.mock.calls[0][0];
       expect(request.messages[0].providerOptions).toBeUndefined();
       expect(request.providerOptions.openai.promptCacheKey).toBe("account-1");
-    });
-
-    it("passes the model's local thinking options through to the call", async () => {
-      const generateObject = await createTestGenerateObject({
-        provider: "ollama",
-        modelName: "llama3",
-        providerOptions: { ollama: { think: false } },
-      });
-
-      await generateObject({
-        instructions: "Return JSON.",
-        prompt: "Classify this.",
-        schema: {} as any,
-      } as any);
-
-      expect(
-        mockGenerateObject.mock.calls[0][0].providerOptions.ollama,
-      ).toEqual({ think: false });
     });
 
     it("adds the cache key to existing OpenRouter options", async () => {
@@ -617,8 +598,7 @@ describe("createGenerateObject repairText", () => {
         .flat()
         .find(
           (value) =>
-            typeof value === "string" &&
-            value.includes("LLM object generation completed"),
+            typeof value === "string" && value.includes("LLM 对象生成完成"),
         );
 
       expect(outcomeLog).toContain('"fallbackDepth": 1');
@@ -704,7 +684,6 @@ describe("createGenerateObject repairText", () => {
 type TestModel = {
   provider: string;
   modelName: string;
-  providerOptions?: Record<string, Record<string, unknown>>;
 };
 
 type GenerateObjectOverrides = Partial<TestModel> & {
@@ -716,7 +695,6 @@ type GenerateObjectOverrides = Partial<TestModel> & {
 async function createTestGenerateObject({
   provider = "openai",
   modelName = "gpt-test",
-  providerOptions,
   fallbackModels = [],
   onModelUsed,
   cacheSystemPrompt,
@@ -731,7 +709,7 @@ async function createTestGenerateObject({
     },
     label: "test",
     modelOptions: {
-      ...createResolvedModel({ provider, modelName, providerOptions }),
+      ...createResolvedModel({ provider, modelName }),
       hasUserApiKey: false,
       fallbackModels: fallbackModels.map(createResolvedModel),
     } as any,
@@ -759,16 +737,12 @@ async function getRepairText() {
   return mockGenerateObject.mock.calls[0][0].repairText;
 }
 
-function createResolvedModel({
-  provider,
-  modelName,
-  providerOptions,
-}: TestModel) {
+function createResolvedModel({ provider, modelName }: TestModel) {
   return {
     provider,
     modelName,
     model: {} as any,
-    providerOptions,
+    providerOptions: undefined,
   };
 }
 

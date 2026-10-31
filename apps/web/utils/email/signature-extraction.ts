@@ -1,8 +1,8 @@
 import * as cheerio from "cheerio";
 
 /**
- * Extracts email signature from HTML content for Outlook emails
- * Used to extract signatures from sent emails since Outlook API doesn't support fetching signatures
+ * 从 Outlook 邮件的 HTML 内容中提取邮件签名
+ * 用于从已发送邮件中提取签名，因为 Outlook API 不支持获取签名
  * @param htmlContent The HTML content of the email
  * @returns The extracted signature or null if no signature is found
  */
@@ -26,7 +26,7 @@ export function extractSignatureFromHtml(htmlContent: string): string | null {
     }
   } catch (error) {
     // biome-ignore lint/suspicious/noConsole: helpful for debugging
-    console.error("Error parsing signature HTML:", error);
+    console.error("解析签名 HTML 出错：", error);
   }
 
   return null;

@@ -26,6 +26,6 @@ export async function closeActiveMailEngine() {
   try {
     await client.close?.();
   } catch {
-    // Logout still proceeds if the worker is already gone.
+    // 即使 worker 已经不存在，登出仍会继续。
   }
 }

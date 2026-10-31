@@ -24,7 +24,7 @@ const calendarOAuthStateSchema = z.object({
 });
 
 /**
- * Validate OAuth callback parameters and setup redirect
+ * 校验 OAuth 回调参数并设置重定向
  */
 export async function validateOAuthCallback(
   request: NextRequest,
@@ -105,7 +105,7 @@ export async function validateOAuthCallback(
 }
 
 /**
- * Parse and validate the OAuth state
+ * 解析并校验 OAuth state
  */
 export function parseAndValidateCalendarState(
   rawState: unknown,
@@ -126,8 +126,8 @@ export function parseAndValidateCalendarState(
 }
 
 /**
- * Build redirect URL with emailAccountId, optionally using the onboarding
- * return path if it belongs to the same account.
+ * 构建带 emailAccountId 的重定向 URL，如果引导流程的返回
+ * 路径属于同一账号则可选用它。
  */
 export function buildCalendarRedirectUrl(
   emailAccountId: string,
@@ -156,11 +156,11 @@ export function getCalendarRedirectPath(
   const internalPath = normalizeInternalPath(decodedPath);
   if (!internalPath) return defaultPath;
 
-  // Normalize to prevent path traversal (e.g. /acc_123/../acc_456/briefs)
+  // 规范化以防止路径穿越（例如 /acc_123/../acc_456/briefs）
   const normalizedUrl = new URL(internalPath, env.NEXT_PUBLIC_BASE_URL);
   const normalizedPath = normalizedUrl.pathname;
 
-  // Only allow return paths scoped to the same email account
+  // 仅允许范围限定在同一邮箱账号的返回路径
   if (
     normalizedPath !== `/${emailAccountId}` &&
     !normalizedPath.startsWith(`/${emailAccountId}/`)
@@ -172,7 +172,7 @@ export function getCalendarRedirectPath(
 }
 
 /**
- * Check if calendar connection already exists
+ * 检查日历连接是否已存在
  */
 export async function checkExistingConnection(
   emailAccountId: string,
@@ -189,7 +189,7 @@ export async function checkExistingConnection(
 }
 
 /**
- * Create a calendar connection record
+ * 创建日历连接记录
  */
 export async function createCalendarConnection(params: {
   provider: "google" | "microsoft";
