@@ -46,7 +46,7 @@ export async function decideColdEmail({
         },
       },
     },
-    label: "Cold email check",
+    label: "冷邮件检查",
     logger,
   });
   const answer = response.answers[COLD_EMAIL_KEY];

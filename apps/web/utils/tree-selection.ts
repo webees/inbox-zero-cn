@@ -8,7 +8,7 @@ export function createTreeSelection<TItem>({
 }: {
   getId: (item: TItem) => string;
   getParentId: (item: TItem) => string | null | undefined;
-  // Selection keys can differ from tree node ids (e.g. persisted source keys).
+  // 选择键可能与树节点 id 不同（例如持久化的来源键）。
   getSelectionKey?: (item: TItem) => string;
 }) {
   function buildChildrenMap(items: TItem[]): TreeChildrenMap<TItem> {

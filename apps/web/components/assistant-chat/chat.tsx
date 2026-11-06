@@ -229,7 +229,7 @@ export function Chat({
       <PromptInputTextarea
         data-testid="chat-input"
         value={input}
-        placeholder="Ask me anything"
+        placeholder="问我任何问题"
         onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
           setInput(e.currentTarget.value)
         }
@@ -265,12 +265,12 @@ export function Chat({
             submitTextMessage(text).catch(() => undefined);
           }}
         />
-        <Tooltip content="Attach images">
+        <Tooltip content="添加图片">
           <Button
             type="button"
             variant="ghostMuted"
             size="icon"
-            aria-label="Attach images"
+            aria-label="添加图片"
             className="size-9 rounded-full"
             onClick={() => {
               analytics.captureAction("chat_attach_button_clicked", {
@@ -465,13 +465,13 @@ function NewChatButton() {
 
 function CloseChatButton({ onClose }: { onClose: () => void }) {
   return (
-    <Tooltip content="Close assistant">
+    <Tooltip content="关闭助手">
       <Button
         type="button"
         variant="ghost"
         size="icon"
         onClick={onClose}
-        aria-label="Close assistant"
+        aria-label="关闭助手"
       >
         <XIcon className="size-5" aria-hidden="true" />
       </Button>
@@ -526,11 +526,11 @@ function ChatHistoryDropdown() {
                 className="flex items-center justify-center"
               >
                 <Loader2 className="mr-2 size-4 animate-spin" />
-                Loading chats...
+                正在加载对话...
               </DropdownMenuItem>
             }
             errorComponent={
-              <DropdownMenuItem disabled>Error loading chats</DropdownMenuItem>
+              <DropdownMenuItem disabled>加载对话出错</DropdownMenuItem>
             }
           >
             {data && data.chats.length > 0 ? (
@@ -553,9 +553,7 @@ function ChatHistoryDropdown() {
                 />
               ))
             ) : (
-              <DropdownMenuItem disabled>
-                No previous chats found
-              </DropdownMenuItem>
+              <DropdownMenuItem disabled>未找到历史对话</DropdownMenuItem>
             )}
           </LoadingContent>
         </DropdownMenuContent>
@@ -616,7 +614,7 @@ function ChatContextChip({
           type="button"
           variant="ghost"
           size="iconXs"
-          aria-label="Remove email from chat"
+          aria-label="从对话中移除邮件"
           className="shrink-0 text-muted-foreground"
           onClick={onRemove}
         >

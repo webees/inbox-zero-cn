@@ -33,17 +33,17 @@ const OTHER_VALUE = "other";
 const SOURCES = [
   {
     value: "search",
-    label: "Search",
+    label: "搜索",
     icon: <Search className="size-4" />,
   },
   {
     value: "llm",
-    label: "ChatGPT, Claude, or other AI",
+    label: "ChatGPT、Claude 或其他 AI",
     icon: <Sparkles className="size-4" />,
   },
   {
     value: "friend",
-    label: "Friend or colleague",
+    label: "朋友或同事",
     icon: <Users className="size-4" />,
   },
   {
@@ -78,7 +78,7 @@ const SOURCES = [
   },
   {
     value: OTHER_VALUE,
-    label: "Other",
+    label: "其他",
     icon: <MoreHorizontal className="size-4" />,
   },
 ];
@@ -99,7 +99,7 @@ export function StepHowYouHeard({ onNext }: { onNext: () => void }) {
       })
         .then((result) => {
           if (result?.serverError || result?.validationErrors) {
-            captureException(new Error("Failed to save onboarding source"), {
+            captureException(new Error("保存引导流程的来源失败"), {
               extra: {
                 context: "onboarding",
                 step: "source",
@@ -114,8 +114,7 @@ export function StepHowYouHeard({ onNext }: { onNext: () => void }) {
                   validationErrors: result?.validationErrors,
                 },
                 {
-                  prefix:
-                    "We couldn't save that answer, but you can keep going",
+                  prefix: "无法保存该答案，但你可以继续",
                 },
               ),
             });
@@ -126,8 +125,7 @@ export function StepHowYouHeard({ onNext }: { onNext: () => void }) {
             extra: { context: "onboarding", step: "source" },
           });
           toastError({
-            description:
-              "We couldn't save that answer, but you can keep going.",
+            description: "无法保存该答案，但你可以继续。",
           });
         });
     },
@@ -152,9 +150,9 @@ export function StepHowYouHeard({ onNext }: { onNext: () => void }) {
       </IconCircle>
 
       <div className="text-center mt-4">
-        <PageHeading>How did you hear about Inbox Zero?</PageHeading>
+        <PageHeading>你是如何听说 Inbox Zero 的？</PageHeading>
         <TypographyP className="mt-2 max-w-lg mx-auto">
-          We'd love to know how you found us.
+          我们很想知道你是怎么发现我们的。
         </TypographyP>
       </div>
 
@@ -180,7 +178,7 @@ export function StepHowYouHeard({ onNext }: { onNext: () => void }) {
           <Input
             name="customSource"
             type="text"
-            placeholder="Where did you hear about us?"
+            placeholder="你是从哪里听说我们的？"
             registerProps={{
               value: customSource,
               onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
@@ -194,7 +192,7 @@ export function StepHowYouHeard({ onNext }: { onNext: () => void }) {
               className="w-full"
               disabled={!customSource.trim()}
             >
-              Continue
+              继续
               <ArrowRightIcon className="size-4 ml-2" />
             </Button>
           </div>

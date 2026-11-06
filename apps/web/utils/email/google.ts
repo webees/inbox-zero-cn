@@ -634,7 +634,7 @@ export class GmailProvider implements EmailProvider {
     }
   }
 
-  // We don't have permissions for Gmail bulkDelete, so we have to do it one thread at a time
+  // 我们没有 Gmail bulkDelete 权限，因此只能逐个会话处理
   private async archiveMessagesFromSenders(
     senders: string[],
     ownerEmail: string,
@@ -656,9 +656,8 @@ export class GmailProvider implements EmailProvider {
     for (const sender of senders) {
       if (!sender) continue;
 
-      // Archiving removes messages from the `in:inbox` result set, so
-      // archiving while paging shifts later pages and skips messages.
-      // Finish listing first, then archive.
+      // 归档会把邮件移出 `in:inbox` 结果集，因此分页时归档会
+      // 导致后续分页偏移并跳过邮件。先完成列表获取，再执行归档。
       const messages: { id: string; threadId: string }[] = [];
       let nextPageToken: string | undefined;
       try {
@@ -672,9 +671,9 @@ export class GmailProvider implements EmailProvider {
           nextPageToken = page.nextPageToken;
         } while (nextPageToken);
       } catch (error) {
-        log.error("Failed to list messages from sender", { sender, error });
+        log.error("获取发件人的邮件列表失败", { sender, error });
         if (!continueOnError) throw error;
-        // archive whatever was listed before the failure
+        // 归档失败前已列出的邮件
       }
 
       const publishedThreadIds = new Set<string>();
@@ -1014,8 +1013,8 @@ export class GmailProvider implements EmailProvider {
       }
     }
 
-    // A forward draft holds the forwarded files itself, the same way a sent
-    // forward would, so sending the draft carries them.
+    // 转发草稿自身包含被转发的文件，就像已发送的转发邮件一样，
+    // 因此发送该草稿时会一并带上这些文件。
     let forwardedAttachments: MailAttachment[] = [];
     if (params.forwardedMessageId) {
       const forwarded = await getForwardedMessage(
@@ -1048,7 +1047,7 @@ export class GmailProvider implements EmailProvider {
       message,
     );
 
-    this.logger.info("Gmail draft created", { draftId: result.id });
+    this.logger.info("Gmail 草稿已创建", { draftId: result.id });
     return { id: result.id || "" };
   }
 
@@ -1063,9 +1062,9 @@ export class GmailProvider implements EmailProvider {
       bcc?: string;
     },
   ): Promise<void> {
-    this.logger.info("Updating Gmail draft", { draftId });
+    this.logger.info("正在更新 Gmail 草稿", { draftId });
     await rewriteGmailDraft({ gmail: this.client, draftId, text: params });
-    this.logger.info("Gmail draft updated", { draftId });
+    this.logger.info("Gmail 草稿已更新", { draftId });
   }
 
   async getDraftAttachments(draftId: string) {
@@ -1788,13 +1787,13 @@ export class GmailProvider implements EmailProvider {
         maxResults: 1,
       });
       const sent = (response.messages?.length ?? 0) > 0;
-      log.info("Checked for sent reply", { sent });
+      log.info("已检查是否发送过回复", { sent });
       return sent;
     } catch (error) {
-      log.error("Error checking if reply was sent", {
+      log.error("检查是否发送过回复时出错", {
         error,
       });
-      return true; // Default to true on error (safer for TO_REPLY filtering)
+      return true; // 出错时默认视为 true（对 TO_REPLY 筛选更安全）
     }
   }
 
@@ -1810,9 +1809,9 @@ export class GmailProvider implements EmailProvider {
 
     try {
       const query = `from:${senderEmail}`;
-      log.info("Checking received message count");
+      log.info("正在检查收到的邮件数量");
 
-      // Fetch up to the threshold number of message IDs.
+      // 最多获取阈值数量的邮件 ID。
       const response = await getMessages(this.client, {
         query,
         maxResults: threshold,
@@ -2222,13 +2221,13 @@ export class GmailProvider implements EmailProvider {
         ...sendAs.map((address) => address.email),
       ]);
     } catch (error) {
-      this.logger.warn("Failed to fetch Gmail send-as addresses", { error });
+      this.logger.warn("获取 Gmail 发件地址（send-as）失败", { error });
       return extractUniqueEmailAddresses([userEmail]);
     }
   }
 
-  // Mail the user received at an alias is answered from that alias. Without
-  // a From header Gmail would use the default address instead.
+  // 用户通过别名收到的邮件应使用该别名回复。如果没有 From 头，
+  // Gmail 会改用默认地址。
   private async getReplyFromAddress(email: ParsedMessage) {
     try {
       const sendAs = await this.getSendAsAddresses();

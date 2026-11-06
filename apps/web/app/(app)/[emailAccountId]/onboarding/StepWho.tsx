@@ -35,7 +35,7 @@ export function StepWho({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [customRole, setCustomRole] = useState("");
 
-  // Check if the initial role is not in our list (custom role)
+  // 检查初始角色是否不在我们的列表中（自定义角色）
   const isCustomRole =
     initialRole && !USER_ROLES.some((role) => role.value === initialRole);
   const defaultRole = isCustomRole ? "Other" : initialRole || "";
@@ -58,18 +58,18 @@ export function StepWho({
     [displayedRoles],
   );
 
-  // Initialize custom role if it's a custom value
+  // 如果是自定义值，则初始化自定义角色
   useEffect(() => {
     if (isCustomRole && initialRole) {
       setCustomRole(initialRole);
     }
   }, [isCustomRole, initialRole]);
 
-  // Scroll to selected role on mount
+  // 挂载时滚动到已选角色
   useEffect(() => {
     if (!defaultRole || !scrollContainerRef.current) return;
 
-    // Find the button with the selected role
+    // 找到带有已选角色的按钮
     // biome-ignore lint/complexity/useIndexOf: indexOf requires exact type match but defaultRole is `string` while array has a narrower union type
     const selectedIndex = displayedRoleValues.findIndex(
       (role) => role === defaultRole,
@@ -82,7 +82,7 @@ export function StepWho({
     const selectedButton = buttons[selectedIndex];
     if (!selectedButton) return;
 
-    // Use setTimeout to ensure the DOM is ready
+    // 使用 setTimeout 确保 DOM 已就绪
     const scrollTimeout = setTimeout(() => {
       selectedButton.scrollIntoView({
         behavior: "smooth",
@@ -102,9 +102,9 @@ export function StepWho({
       </div>
 
       <div className="text-center">
-        <PageHeading className="mt-4">What do you do?</PageHeading>
+        <PageHeading className="mt-4">你是做什么的？</PageHeading>
         <TypographyP className="mt-2">
-          This helps us set up your inbox the way you actually need it.
+          这有助于我们按照你真正需要的方式设置你的收件箱。
         </TypographyP>
       </div>
 
@@ -121,17 +121,14 @@ export function StepWho({
             })
               .then((result) => {
                 if (result?.serverError || result?.validationErrors) {
-                  captureException(
-                    new Error("Failed to save onboarding role"),
-                    {
-                      extra: {
-                        context: "onboarding",
-                        step: "role",
-                        serverError: result?.serverError,
-                        validationErrors: result?.validationErrors,
-                      },
+                  captureException(new Error("保存引导流程的角色失败"), {
+                    extra: {
+                      context: "onboarding",
+                      step: "role",
+                      serverError: result?.serverError,
+                      validationErrors: result?.validationErrors,
                     },
-                  );
+                  });
                   toastError({
                     description: getActionErrorMessage(
                       {
@@ -139,8 +136,7 @@ export function StepWho({
                         validationErrors: result?.validationErrors,
                       },
                       {
-                        prefix:
-                          "We couldn't save that answer, but you can keep going",
+                        prefix: "无法保存该答案，但你可以继续",
                       },
                     ),
                   });
@@ -165,8 +161,7 @@ export function StepWho({
                     : {};
                 toastError({
                   description: getActionErrorMessage(actionError, {
-                    prefix:
-                      "We couldn't save that answer, but you can keep going",
+                    prefix: "无法保存该答案，但你可以继续",
                   }),
                 });
               });
@@ -217,7 +212,7 @@ export function StepWho({
               <Input
                 name="customRole"
                 type="text"
-                placeholder="Enter your role..."
+                placeholder="输入你的角色…"
                 registerProps={{
                   value: customRole,
                   onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -238,7 +233,7 @@ export function StepWho({
                 !watchedRole || (watchedRole === "Other" && !customRole.trim())
               }
             >
-              Continue
+              继续
               <ArrowRightIcon className="size-4 ml-2" />
             </Button>
           </div>

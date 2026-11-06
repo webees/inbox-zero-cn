@@ -70,17 +70,17 @@ export function createPublicOpenApiDocument() {
       title: `${BRAND_NAME} API`,
       version: "1.0.0",
       description: [
-        `Programmatic access to ${BRAND_NAME} inbox stats, automation rules, and sender unsubscribe.`,
-        `Docs: ${PUBLIC_API_DOCS_URL}`,
-        `Machine-readable schema: ${PUBLIC_API_OPENAPI_PATH}`,
-        "Authenticate with an account-scoped API key via the API-Key header.",
-        "Errors return JSON with error.code, error.message, and error.hint.",
+        `以编程方式访问 ${BRAND_NAME} 收件箱统计、自动化规则和发件人退订。`,
+        `文档：${PUBLIC_API_DOCS_URL}`,
+        `机器可读 schema：${PUBLIC_API_OPENAPI_PATH}`,
+        "使用账号级 API 密钥通过 API-Key 请求头进行认证。",
+        "错误会返回包含 error.code、error.message 和 error.hint 的 JSON。",
       ].join(" "),
     },
     servers: [
       {
         url: `${env.NEXT_PUBLIC_BASE_URL.replace(/\/$/, "")}/api/v1`,
-        description: "Primary server",
+        description: "主服务器",
       },
     ],
     security: [{ ApiKeyAuth: [] }],
@@ -92,8 +92,8 @@ export function getPublicOpenApiResponse(options?: { contentType?: string }) {
     return NextResponse.json(
       createPublicApiErrorBody({
         code: "NOT_FOUND",
-        message: "External API is not enabled",
-        hint: "Enable NEXT_PUBLIC_EXTERNAL_API_ENABLED to expose the public API schema.",
+        message: "外部 API 未启用",
+        hint: "启用 NEXT_PUBLIC_EXTERNAL_API_ENABLED 以公开公共 API schema。",
       }),
       { status: 404 },
     );
@@ -118,9 +118,9 @@ function createRegistry() {
     in: "header",
     name: API_KEY_HEADER,
     description: [
-      "Account-scoped API key created in Settings.",
-      "Operations declare the scopes they require.",
-      "Available scopes:",
+      "在设置中创建的账号级 API 密钥。",
+      "各操作会声明其所需的权限范围。",
+      "可用范围：",
       ...Object.entries(API_KEY_SCOPE_DESCRIPTIONS).map(
         ([scope, description]) => `- ${scope}: ${description}`,
       ),
@@ -133,7 +133,7 @@ function createRegistry() {
     path: "/stats/by-period",
     operationId: "getStatsByPeriod",
     description:
-      "Get email statistics grouped by time period. Returns counts of emails by status (all, sent, read, unread, archived, unarchived) for each period.",
+      "获取按时间段分组的邮件统计。返回每个时间段内按状态（全部、已发送、已读、未读、已归档、未归档）统计的邮件数量。",
     security: apiKeySecurity(["STATS_READ"]),
     "x-required-scopes": ["STATS_READ"],
     request: {
@@ -141,7 +141,7 @@ function createRegistry() {
     },
     responses: {
       200: {
-        description: "Successful response",
+        description: "成功响应",
         content: {
           "application/json": {
             schema: statsByPeriodResponseSchema,
@@ -157,7 +157,7 @@ function createRegistry() {
     path: "/stats/response-time",
     operationId: "getStatsResponseTime",
     description:
-      "Get email response time statistics. Returns summary stats, distribution, and trend data showing how quickly you respond to emails.",
+      "获取邮件回复时间统计。返回摘要统计、分布和趋势数据，展示你回复邮件的速度。",
     security: apiKeySecurity(["STATS_READ"]),
     "x-required-scopes": ["STATS_READ"],
     request: {
@@ -165,7 +165,7 @@ function createRegistry() {
     },
     responses: {
       200: {
-        description: "Successful response",
+        description: "成功响应",
         content: {
           "application/json": {
             schema: responseTimeResponseSchema,
@@ -180,12 +180,12 @@ function createRegistry() {
     method: "get",
     path: "/rules",
     operationId: "listRules",
-    description: "List automation rules for the scoped inbox account.",
+    description: "列出指定收件箱账号的自动化规则。",
     security: apiKeySecurity(["RULES_READ"]),
     "x-required-scopes": ["RULES_READ"],
     responses: {
       200: {
-        description: "Successful response",
+        description: "成功响应",
         content: {
           "application/json": {
             schema: rulesResponseSchema,
@@ -200,7 +200,7 @@ function createRegistry() {
     method: "post",
     path: "/rules",
     operationId: "createRule",
-    description: "Create an automation rule for the scoped inbox account.",
+    description: "为指定收件箱账号创建一条自动化规则。",
     security: apiKeySecurity(["RULES_WRITE"]),
     "x-required-scopes": ["RULES_WRITE"],
     request: {
@@ -214,7 +214,7 @@ function createRegistry() {
     },
     responses: {
       201: {
-        description: "Successful response",
+        description: "成功响应",
         content: {
           "application/json": {
             schema: ruleResponseSchema,
@@ -229,7 +229,7 @@ function createRegistry() {
     method: "get",
     path: "/rules/{id}",
     operationId: "getRule",
-    description: "Get a single automation rule for the scoped inbox account.",
+    description: "获取指定收件箱账号的某条自动化规则。",
     security: apiKeySecurity(["RULES_READ"]),
     "x-required-scopes": ["RULES_READ"],
     request: {
@@ -237,7 +237,7 @@ function createRegistry() {
     },
     responses: {
       200: {
-        description: "Successful response",
+        description: "成功响应",
         content: {
           "application/json": {
             schema: ruleResponseSchema,
@@ -252,7 +252,7 @@ function createRegistry() {
     method: "put",
     path: "/rules/{id}",
     operationId: "replaceRule",
-    description: "Replace an automation rule for the scoped inbox account.",
+    description: "替换指定收件箱账号的一条自动化规则。",
     security: apiKeySecurity(["RULES_WRITE"]),
     "x-required-scopes": ["RULES_WRITE"],
     request: {
@@ -267,7 +267,7 @@ function createRegistry() {
     },
     responses: {
       200: {
-        description: "Successful response",
+        description: "成功响应",
         content: {
           "application/json": {
             schema: ruleResponseSchema,
@@ -282,7 +282,7 @@ function createRegistry() {
     method: "delete",
     path: "/rules/{id}",
     operationId: "deleteRule",
-    description: "Delete an automation rule for the scoped inbox account.",
+    description: "删除指定收件箱账号的一条自动化规则。",
     security: apiKeySecurity(["RULES_WRITE"]),
     "x-required-scopes": ["RULES_WRITE"],
     request: {
@@ -290,7 +290,7 @@ function createRegistry() {
     },
     responses: {
       204: {
-        description: "Rule deleted",
+        description: "规则已删除",
       },
       ...errorResponses([400, 401, 403, 404, 405, 429, 500]),
     },
@@ -301,7 +301,7 @@ function createRegistry() {
     path: "/senders/unsubscribe",
     operationId: "unsubscribeSender",
     description:
-      "Unsubscribe from a sender for the scoped inbox. Looks up List-Unsubscribe from that sender's mail when a link is not provided. Check unsubscribe.success: when it is false the sender was left unchanged.",
+      "为指定收件箱的某个发件人退订。未提供链接时，会从该发件人的邮件中查找 List-Unsubscribe。请检查 unsubscribe.success：当其为 false 时，该发件人未被更改。",
     security: apiKeySecurity(["SENDERS_UNSUBSCRIBE"]),
     "x-required-scopes": ["SENDERS_UNSUBSCRIBE"],
     request: {
@@ -316,7 +316,7 @@ function createRegistry() {
     },
     responses: {
       200: {
-        description: "Unsubscribe attempt completed",
+        description: "退订尝试已完成",
         content: {
           "application/json": {
             schema: unsubscribeSenderResponseSchema,

@@ -40,7 +40,7 @@ export function DigestSetting() {
       onError: (error) => {
         mutate();
         toastError({
-          description: error.error?.serverError ?? "Failed to update settings",
+          description: error.error?.serverError ?? "更新设置失败",
         });
       },
     },
@@ -70,7 +70,7 @@ export function DigestSetting() {
 
     if (!hasDigestAccess) {
       return (
-        <UpgradeToPlusButton tooltip="Upgrade to the Plus plan to enable daily digest emails." />
+        <UpgradeToPlusButton tooltip="升级到 Plus 套餐以启用每日摘要邮件。" />
       );
     }
 
@@ -80,7 +80,7 @@ export function DigestSetting() {
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button variant="outline" size="sm">
-                Configure
+                配置
               </Button>
             </DialogTrigger>
             <DigestSettingsDialogContent onSuccess={() => setOpen(false)} />
@@ -97,8 +97,8 @@ export function DigestSetting() {
 
   return (
     <SettingCard
-      title="Digest"
-      description="Get a summary of emails matched by the rules you pick, on your schedule."
+      title="摘要"
+      description="按你的计划，获取由你所选规则匹配的邮件摘要。"
       right={renderRight()}
     />
   );
@@ -114,10 +114,9 @@ export function DigestSettingsDialogContent({
   return (
     <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
       <DialogHeader>
-        <DialogTitle>Digest settings</DialogTitle>
+        <DialogTitle>摘要设置</DialogTitle>
         <DialogDescription>
-          Configure when your digest emails are sent and which rules are
-          included.
+          配置摘要邮件的发送时间以及包含哪些规则。
         </DialogDescription>
       </DialogHeader>
 

@@ -38,7 +38,7 @@ export function useSentMessageOpensForThreads(threadIds: string[]) {
     key,
     async () => {
       if (!fetcher || !emailAccountId) {
-        throw new Error("SWR fetcher is not configured");
+        throw new Error("SWR 数据获取器未配置");
       }
       const accountFetcher = fetcher as (
         key: string | [string, string],

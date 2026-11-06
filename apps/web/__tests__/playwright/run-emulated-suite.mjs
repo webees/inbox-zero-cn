@@ -14,7 +14,6 @@ import {
   selectChangedPlaywrightTargets,
 } from "../../utils/playwright/emulated-suite-selection.mjs";
 import {
-  assignPlaywrightProviders,
   batchPlaywrightTargets,
   expandPlaywrightTargets,
 } from "../../utils/playwright/emulated-suite-targets.mjs";
@@ -40,7 +39,7 @@ const selectedPaths = requestedPaths.length
     : (changedSelection?.targetFiles ?? []);
 const targets = expandPlaywrightTargets(selectedPaths, process.cwd());
 if (listTargets || listBatches) {
-  const batches = assignPlaywrightProviders(batchPlaywrightTargets(targets));
+  const batches = batchPlaywrightTargets(targets);
   if (listBatches && process.env.GITHUB_STEP_SUMMARY) {
     appendFileSync(
       process.env.GITHUB_STEP_SUMMARY,
@@ -49,11 +48,11 @@ if (listTargets || listBatches) {
         "",
         changedSelection?.reason ?? "Explicitly requested specs.",
         "",
-        "| Job | Provider | Specs |",
-        "| --- | --- | --- |",
+        "| Job | Specs |",
+        "| --- | --- |",
         ...batches.map(
-          ({ name, provider, paths }) =>
-            `| ${name} | ${provider} | ${paths.map((spec) => getRelativeSpecPath(spec)).join(", ")} |`,
+          ({ name, paths }) =>
+            `| ${name} | ${paths.map((spec) => getRelativeSpecPath(spec)).join(", ")} |`,
         ),
         "",
       ].join("\n"),

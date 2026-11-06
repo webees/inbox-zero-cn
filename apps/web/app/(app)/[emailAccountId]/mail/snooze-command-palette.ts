@@ -20,7 +20,7 @@ export function buildSnoozeCommandPalette({
     return [
       {
         id: "mail-snooze-natural-language",
-        label: `Snooze until ${formatSnoozeTime(naturalLanguageDate)}`,
+        label: `暂缓到 ${formatSnoozeTime(naturalLanguageDate)}`,
         section: "actions",
         priority: 0,
         keywords: [query],
@@ -62,22 +62,22 @@ export function getSnoozePresets(now: Date, query = "") {
   const candidates = [
     {
       id: "tomorrow",
-      label: "Tomorrow",
+      label: "明天",
       until: atHour(now, 1, MORNING_HOUR),
     },
     {
       id: "end-of-week",
-      label: "End of week",
+      label: "本周末",
       until: laterThisWeek(now, FRIDAY),
     },
     {
       id: "this-weekend",
-      label: "This weekend",
+      label: "这周末",
       until: now.getDay() === SUNDAY ? null : laterThisWeek(now, SATURDAY),
     },
     {
       id: "next-week",
-      label: "Next week",
+      label: "下周",
       until: atHour(now, daysUntilNextMonday(now), MORNING_HOUR),
     },
   ];

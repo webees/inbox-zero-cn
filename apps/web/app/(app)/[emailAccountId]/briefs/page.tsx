@@ -43,11 +43,11 @@ function MeetingBriefsPageContent() {
     {
       onSuccess: () => {
         analytics.captureAction("meeting_briefs_enabled_saved");
-        toastSuccess({ description: "Settings saved!" });
+        toastSuccess({ description: "设置已保存！" });
         mutate();
       },
       onError: () => {
-        toastError({ description: "Failed to save settings" });
+        toastError({ description: "保存设置失败" });
       },
     },
   );
@@ -80,7 +80,7 @@ function MeetingBriefsPageContent() {
 
   return (
     <PageWrapper>
-      <PageHeader title="Meeting Briefs" />
+      <PageHeader title="会议简报" />
 
       <div className="mt-4 space-y-4 max-w-3xl">
         <PremiumAlertWithData />
@@ -88,8 +88,8 @@ function MeetingBriefsPageContent() {
         <LoadingContent loading={isLoading} error={error}>
           <div className="space-y-2">
             <SettingCard
-              title="Enable Meeting Briefs"
-              description="Receive email briefings before meetings with external guests"
+              title="启用会议简报"
+              description="在与外部嘉宾开会前接收邮件简报"
               right={
                 <Toggle
                   name="enabled"
@@ -108,8 +108,8 @@ function MeetingBriefsPageContent() {
             {!!data?.enabled && (
               <>
                 <SettingCard
-                  title="Send briefing before meeting"
-                  description="How long before the meeting to send the briefing"
+                  title="在会议前发送简报"
+                  description="在会议开始前多久发送简报"
                   collapseOnMobile
                   right={
                     <TimeDurationSetting

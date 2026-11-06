@@ -32,14 +32,11 @@ import { secureCompareBuffers } from "@/utils/crypto-compare";
 
 const MAX_AVAILABILITY_RANGE_MS = 32 * 24 * 60 * 60 * 1000;
 const PENDING_BOOKING_TIMEOUT_MS = 15 * 60 * 1000;
-const CALENDAR_AVAILABILITY_UNAVAILABLE =
-  "Calendar availability is temporarily unavailable";
-const INVALID_CANCELLATION_LINK_MESSAGE = "Invalid cancellation link";
-const INVALID_RESCHEDULE_LINK_MESSAGE = "Invalid reschedule link";
-const BOOKING_CANCELED_RETRY_MESSAGE =
-  "Booking was canceled. Please submit a new booking request.";
-const BOOKING_STILL_PROCESSING_MESSAGE =
-  "Booking request is still being processed";
+const CALENDAR_AVAILABILITY_UNAVAILABLE = "日历可用性暂时不可用";
+const INVALID_CANCELLATION_LINK_MESSAGE = "无效的取消链接";
+const INVALID_RESCHEDULE_LINK_MESSAGE = "无效的改期链接";
+const BOOKING_CANCELED_RETRY_MESSAGE = "预约已取消。请重新提交预约请求。";
+const BOOKING_STILL_PROCESSING_MESSAGE = "预约请求仍在处理中";
 
 export async function getPublicBookingLinkMetadata(slug: string) {
   const link = await prisma.bookingLink.findFirst({
@@ -56,7 +53,7 @@ export async function getPublicBookingLinkMetadata(slug: string) {
     },
   });
 
-  if (!link) throw new SafeError("Booking link not found", 404);
+  if (!link) throw new SafeError("未找到预约链接", 404);
 
   return {
     slug: link.slug,
@@ -122,7 +119,7 @@ export async function createPublicBooking({
 }) {
   const selectedStartTime = new Date(input.startTime);
   if (Number.isNaN(selectedStartTime.getTime())) {
-    throw new SafeError("Invalid start time");
+    throw new SafeError("无效的开始时间");
   }
 
   const config = await loadPublicBookingLink(input.slug);
@@ -166,7 +163,7 @@ export async function createPublicBooking({
       });
       const resolved = await resolveExistingIdempotentBooking(existing);
       if (resolved) return resolved;
-      throw new SafeError("Selected slot is no longer available");
+      throw new SafeError("所选时段不再可用");
     }
     throw error;
   }
@@ -224,30 +221,27 @@ export async function createPublicBooking({
             providerEventId: providerEventToCleanup.id,
             logger,
           }).catch((cleanupError) => {
-            logger.error(
-              "Failed to clean up provider event after booking error",
-              {
-                bookingId: pendingBooking.id,
-                provider: providerEventToCleanup.provider,
-                providerCalendarId: providerEventToCleanup.providerCalendarId,
-                providerEventId: providerEventToCleanup.id,
-                error: cleanupError,
-              },
-            );
+            logger.error("预约出错后清理服务商事件失败", {
+              bookingId: pendingBooking.id,
+              provider: providerEventToCleanup.provider,
+              providerCalendarId: providerEventToCleanup.providerCalendarId,
+              providerEventId: providerEventToCleanup.id,
+              error: cleanupError,
+            });
           })
         : Promise.resolve(),
-      // Status FAILED removes the booking from the partial EXCLUDE constraint,
-      // freeing the slot for re-booking.
+      // FAILED 状态会从部分 EXCLUDE 约束中移除该预约，
+      // 从而释放该时段以便重新预约。
       prisma.booking.update({
         where: { id: pendingBooking.id },
         data: { status: BookingStatus.FAILED },
       }),
     ]);
-    logger.error("Failed to create provider event for booking", {
+    logger.error("为预约创建服务商事件失败", {
       bookingId: pendingBooking.id,
       error,
     });
-    throw new SafeError("Failed to create calendar event");
+    throw new SafeError("创建日历事件失败");
   }
 
   const cancelUrl = getCancelUrl({
@@ -295,17 +289,17 @@ export async function cancelPublicBooking({
     throw new SafeError(INVALID_CANCELLATION_LINK_MESSAGE, 404);
   }
   if (booking.status === BookingStatus.CANCELED) {
-    throw new SafeError("Booking is already canceled");
+    throw new SafeError("预约已取消");
   }
   if (booking.status !== BookingStatus.CONFIRMED) {
-    throw new SafeError("Booking cannot be canceled");
+    throw new SafeError("无法取消预约");
   }
   if (booking.startTime <= new Date()) {
-    throw new SafeError("Bookings that have started cannot be canceled");
+    throw new SafeError("已开始的预约无法取消");
   }
 
-  // Atomic CONFIRMED -> CANCELED transition so concurrent cancel requests
-  // don't both trigger provider cancellation and duplicate host emails.
+  // 以原子的方式完成 CONFIRMED -> CANCELED 状态转换，避免并发的取消请求
+  // 都触发服务商取消并给主机发送重复邮件。
   const transition = await prisma.booking.updateMany({
     where: { id: booking.id, status: BookingStatus.CONFIRMED },
     data: {
@@ -314,7 +308,7 @@ export async function cancelPublicBooking({
     },
   });
   if (transition.count === 0) {
-    throw new SafeError("Booking is already canceled");
+    throw new SafeError("预约已取消");
   }
 
   if (
@@ -322,10 +316,10 @@ export async function cancelPublicBooking({
     booking.providerCalendarId &&
     booking.providerEventId
   ) {
-    // Provider cleanup is best-effort: if the host disconnected their
-    // calendar, deleted the event manually, or the provider is unreachable,
-    // we still mark the booking canceled locally so the guest isn't stuck
-    // with a confirmed booking they can't cancel.
+    // 服务商清理是尽力而为：如果主机断开了其
+    // 日历、手动删除了事件，或服务商无法访问，
+    // 我们仍会在本地将该预约标记为已取消，以免访客卡在
+    // 一个已确认却无法取消的预约上。
     try {
       await cancelCalendarEvent({
         emailAccountId: booking.emailAccountId,
@@ -335,7 +329,7 @@ export async function cancelPublicBooking({
         logger,
       });
     } catch (error) {
-      logger.error("Failed to cancel provider event during booking cancel", {
+      logger.error("取消预约时取消服务商事件失败", {
         bookingId: booking.id,
         error,
       });
@@ -370,7 +364,7 @@ export async function reschedulePublicBooking({
 }) {
   const newStartTime = new Date(startTime);
   if (Number.isNaN(newStartTime.getTime())) {
-    throw new SafeError("Invalid start time");
+    throw new SafeError("无效的开始时间");
   }
 
   const booking = await prisma.booking.findUnique({
@@ -383,17 +377,17 @@ export async function reschedulePublicBooking({
     throw new SafeError(INVALID_RESCHEDULE_LINK_MESSAGE, 404);
   }
   if (booking.status !== BookingStatus.CONFIRMED) {
-    throw new SafeError("Booking cannot be rescheduled");
+    throw new SafeError("无法改期预约");
   }
   if (booking.startTime <= new Date()) {
-    throw new SafeError("Bookings that have started cannot be rescheduled");
+    throw new SafeError("已开始的预约无法改期");
   }
 
   const config = await loadPublicBookingLink(booking.bookingLink.slug);
   const newEndTime = addMinutes(newStartTime, config.link.durationMinutes);
 
   if (newStartTime.getTime() === booking.startTime.getTime()) {
-    throw new SafeError("Pick a different time to reschedule");
+    throw new SafeError("请选择其他时间改期");
   }
 
   await assertSlotAvailable({
@@ -410,9 +404,9 @@ export async function reschedulePublicBooking({
   const previousStartTime = booking.startTime;
   const previousEndTime = booking.endTime;
 
-  // Claim the new slot atomically before touching the provider. The partial
-  // EXCLUDE constraint blocks overlapping CONFIRMED/PENDING bookings, so if
-  // another booking grabbed the slot we surface "no longer available".
+  // 在接触服务商之前先原子地占用新时段。部分
+  // EXCLUDE 约束会阻止重叠的 CONFIRMED/PENDING 预约，因此如果
+  // 另一个预约占用了该时段，我们就提示「不再可用」。
   try {
     const transition = await prisma.booking.updateMany({
       where: {
@@ -424,11 +418,11 @@ export async function reschedulePublicBooking({
       data: { startTime: newStartTime, endTime: newEndTime },
     });
     if (transition.count === 0) {
-      throw new SafeError("Booking cannot be rescheduled");
+      throw new SafeError("无法改期预约");
     }
   } catch (error) {
     if (isSlotConflictError(error)) {
-      throw new SafeError("Selected slot is no longer available");
+      throw new SafeError("所选时段不再可用");
     }
     throw error;
   }
@@ -450,12 +444,12 @@ export async function reschedulePublicBooking({
         logger,
       });
     } catch (error) {
-      logger.error("Failed to update provider event during reschedule", {
+      logger.error("改期时更新服务商事件失败", {
         bookingId: booking.id,
         error,
       });
-      // Roll back the local slot claim so we don't end up with a booking that
-      // disagrees with the host's calendar.
+      // 回滚本地的时段占用，以免出现一个
+      // 与主机日历不一致的预约。
       try {
         const rollback = await prisma.booking.updateMany({
           where: {
@@ -466,18 +460,18 @@ export async function reschedulePublicBooking({
           data: { startTime: previousStartTime, endTime: previousEndTime },
         });
         if (rollback.count === 0) {
-          logger.error("Failed to roll back reschedule slot claim", {
+          logger.error("回滚改期时段占用失败", {
             bookingId: booking.id,
-            reason: "no matching booking state",
+            reason: "没有匹配的预约状态",
           });
         }
       } catch (rollbackError) {
-        logger.error("Failed to roll back reschedule slot claim", {
+        logger.error("回滚改期时段占用失败", {
           bookingId: booking.id,
           error: rollbackError,
         });
       }
-      throw new SafeError("Failed to update calendar event");
+      throw new SafeError("更新日历事件失败");
     }
   }
 
@@ -654,23 +648,23 @@ async function loadPublicBookingLink(slug: string) {
     },
   });
 
-  if (!link) throw new SafeError("Booking link not found", 404);
+  if (!link) throw new SafeError("未找到预约链接", 404);
 
   const enabledCalendarIds = link.emailAccount.calendarConnections.flatMap(
     (connection) => connection.calendars.map((calendar) => calendar.id),
   );
   if (enabledCalendarIds.length === 0) {
-    throw new SafeError("No enabled calendar is available for this host");
+    throw new SafeError("此主机没有可用的已启用日历");
   }
-  // Availability is generated for any enabled calendar, but the booking is
-  // written to the link's destinationCalendarId. If that specific calendar is
-  // disabled or disconnected, fail early so guests don't fill out the form
-  // and then hit a generic "Destination calendar not found" at submit time.
+  // 可用性会为任何已启用的日历生成，但预约会
+  // 写入链接的 destinationCalendarId。如果该特定日历
+  // 被禁用或断开，就提前失败，以免访客填写完表单后
+  // 在提交时又遇到一个笼统的「Destination calendar not found」。
   if (
     link.destinationCalendarId &&
     !enabledCalendarIds.includes(link.destinationCalendarId)
   ) {
-    throw new SafeError("No enabled calendar is available for this host");
+    throw new SafeError("此主机没有可用的已启用日历");
   }
 
   return {
@@ -744,31 +738,17 @@ async function getBusyPeriods({
   excludeBookingId?: string;
   excludeBusyPeriod?: { start: Date; end: Date };
 }): Promise<BusyPeriod[] | null> {
-  // Google freebusy clips busy blocks to the requested window, so the
-  // excluded booking's own event only matches excludeBusyPeriod when the
-  // query covers the whole booking, not just the part inside the new slot.
-  const providerStart =
-    excludeBusyPeriod && excludeBusyPeriod.start < start
-      ? excludeBusyPeriod.start
-      : start;
-  const providerEnd =
-    excludeBusyPeriod && excludeBusyPeriod.end > end
-      ? excludeBusyPeriod.end
-      : end;
-
   const [providerBusyPeriods, existingBookings] = await Promise.all([
     getUnifiedCalendarAvailability({
       emailAccountId: config.link.emailAccountId,
-      startDate: providerStart,
-      endDate: providerEnd,
+      startDate: start,
+      endDate: end,
       timezone: config.timezone,
       logger,
       failClosed: true,
       excludeGoogleVirtualCalendars: true,
-      // These are exact slot (or page) bounds, not calendar days.
-      exactRange: true,
     }).catch((error) => {
-      logger.error("Failed to load provider availability for public booking", {
+      logger.error("加载公开预约的服务商可用性失败", {
         error,
         ...getCalendarAvailabilityErrorLogContext(error),
       });
@@ -777,8 +757,8 @@ async function getBusyPeriods({
 
       throw new SafeError(CALENDAR_AVAILABILITY_UNAVAILABLE);
     }),
-    // In-flight bookings haven't propagated to the calendar yet but already
-    // hold the slot via the partial EXCLUDE constraint, so surface them as busy.
+    // 进行中的预约尚未同步到日历，但已经
+    // 通过部分 EXCLUDE 约束占用了该时段，因此将其显示为忙碌。
     prisma.booking
       .findMany({
         where: {
@@ -797,7 +777,7 @@ async function getBusyPeriods({
         },
       })
       .catch((error) => {
-        logger.error("Failed to load existing bookings for public booking", {
+        logger.error("加载公开预约的现有预约失败", {
           error,
         });
 
@@ -842,8 +822,8 @@ function getPolicy(link: {
 
 function isSlotConflictError(error: unknown) {
   if (isDuplicateError(error)) return true;
-  // Postgres exclusion-constraint violation (SQL state 23P01) is not surfaced
-  // as P2002; Prisma includes the SQL state in the error message.
+  // Postgres 排他约束冲突（SQL 状态 23P01）不会以
+  // P2002 的形式暴露；Prisma 会在错误消息中包含该 SQL 状态。
   return error instanceof Error && error.message.includes("23P01");
 }
 
@@ -931,11 +911,11 @@ function getProviderEventDescription({
   manageUrl: string;
 }) {
   return [
-    `Booked with ${cleanCalendarDescriptionText(guestName)}`,
-    `Guest email: ${cleanCalendarDescriptionText(guestEmail)}`,
-    guestNote ? `Guest note: ${cleanCalendarDescriptionText(guestNote)}` : null,
+    `预订人：${cleanCalendarDescriptionText(guestName)}`,
+    `来宾邮箱：${cleanCalendarDescriptionText(guestEmail)}`,
+    guestNote ? `来宾备注：${cleanCalendarDescriptionText(guestNote)}` : null,
     "",
-    `Need to reschedule or cancel? ${manageUrl}`,
+    `需要改期或取消？${manageUrl}`,
   ]
     .filter((line) => line !== null)
     .join("\n");
@@ -950,12 +930,12 @@ function getProviderEventTitle({
   guestName: string;
   hostName: string | null;
 }) {
-  const title = cleanCalendarTitleText(bookingLinkTitle) || "Meeting";
+  const title = cleanCalendarTitleText(bookingLinkTitle) || "会议";
   const host = hostName ? cleanCalendarTitleText(hostName) : "";
   const guest = cleanCalendarTitleText(guestName);
   const participant = guest || host;
-  const participants = host && guest ? ` between ${host} and ${guest}` : "";
-  const fallbackParticipant = participant ? ` with ${participant}` : "";
+  const participants = host && guest ? `（${host} 与 ${guest}）` : "";
+  const fallbackParticipant = participant ? `（与 ${participant}）` : "";
 
   return `${title}${participants || fallbackParticipant}`;
 }
@@ -1017,11 +997,11 @@ function isStalePendingBooking(booking: {
 
 function assertAvailabilityRange(start: Date, end: Date) {
   if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
-    throw new SafeError("Invalid date range");
+    throw new SafeError("无效的日期范围");
   }
-  if (end <= start) throw new SafeError("Invalid date range");
+  if (end <= start) throw new SafeError("无效的日期范围");
   if (end.getTime() - start.getTime() > MAX_AVAILABILITY_RANGE_MS) {
-    throw new SafeError("Availability range must be 32 days or less");
+    throw new SafeError("可用时间范围不得超过 32 天");
   }
 }
 

@@ -1,4 +1,7 @@
-import { DEFAULT_COLD_EMAIL_PROMPT } from "@/utils/cold-email/prompt";
+import {
+  DEFAULT_COLD_EMAIL_PROMPT,
+  LEGACY_DEFAULT_COLD_EMAIL_PROMPT,
+} from "@/utils/cold-email/prompt";
 import { isMicrosoftProvider } from "@/utils/email/provider-types";
 import { ActionType, SystemType } from "@/generated/prisma/enums";
 import { env } from "@/env";
@@ -43,127 +46,150 @@ const ruleConfig: Record<
   }
 > = {
   [SystemType.TO_REPLY]: {
-    name: "To Reply",
+    name: "待回复",
     instructions:
+      "我需要回复的邮件：有人问我问题或向我提出请求，或者我承诺要发送某些东西但还没有发。",
+    previousInstructions: [
       "Emails I need to respond to: someone asked me a question or requested something from me, or I promised to send something and haven't yet",
-    previousInstructions: ["Emails I need to respond to"],
-    label: "To Reply",
+      "Emails I need to respond to",
+    ],
+    label: "待回复",
     draftReply: true,
     runOnThreads: true,
     categoryAction: "label",
     tooltipText:
-      "Emails you need to reply to and those where you're awaiting a reply. The label will update automatically as the conversation progresses",
+      "你需要回复的邮件，以及你在等待对方回复的邮件。随着对话推进，标签会自动更新",
     shouldLearn: false,
   },
   [SystemType.AWAITING_REPLY]: {
-    name: "Awaiting Reply",
+    name: "等待回复",
     instructions:
-      "Emails where I'm waiting for someone to get back to me: I asked for or requested something and the other person hasn't answered or delivered it yet",
+      "我在等待对方回复的邮件：我询问或请求了某些事情，但对方还没有答复或交付。",
     previousInstructions: [
+      "Emails where I'm waiting for someone to get back to me: I asked for or requested something and the other person hasn't answered or delivered it yet",
       "Emails where I'm waiting for someone to get back to me",
     ],
-    label: "Awaiting Reply",
+    label: "等待回复",
     runOnThreads: true,
     categoryAction: "label",
     tooltipText: "",
     shouldLearn: false,
   },
   [SystemType.FYI]: {
-    name: "FYI",
+    name: "知悉",
     instructions:
-      "Important emails I should know about, but don't need to reply to: information, updates or announcements sent to me, with no question or request anywhere in the thread",
+      "我应该知道但不需要回复的重要邮件：发给我的信息、更新或公告，整个会话里没有任何提问或请求。",
     previousInstructions: [
+      "Important emails I should know about, but don't need to reply to: information, updates or announcements sent to me, with no question or request anywhere in the thread",
       "Important emails I should know about, but don't need to reply to",
     ],
-    label: "FYI",
+    label: "知悉",
     runOnThreads: true,
     categoryAction: "label",
     tooltipText: "",
     shouldLearn: false,
   },
   [SystemType.ACTIONED]: {
-    name: "Actioned",
+    name: "已处理",
     instructions:
+      "已经结束、无事可做的会话：所有问题都已答复，所有请求都已满足或处理，没有任何人在等对方。",
+    previousInstructions: [
       "Conversations that are done, nothing left to do: every question has been answered, every request fulfilled or taken care of, and nobody is waiting on anyone",
-    previousInstructions: ["Conversations that are done, nothing left to do"],
-    label: "Actioned",
+      "Conversations that are done, nothing left to do",
+    ],
+    label: "已处理",
     runOnThreads: true,
     categoryAction: "label",
     tooltipText: "",
     shouldLearn: false,
   },
   [SystemType.NEWSLETTER]: {
-    name: "Newsletter",
-    instructions:
+    name: "订阅简报",
+    instructions: "订阅简报：我订阅的出版物、博客或服务定期发送的内容。",
+    previousInstructions: [
       "Newsletters: Regular content from publications, blogs, or services I've subscribed to",
-    label: "Newsletter",
+    ],
+    label: "订阅简报",
     runOnThreads: false,
     categoryAction: "label",
     categoryActionMicrosoft: "move_folder",
-    tooltipText: "Newsletters, blogs, and publications",
+    tooltipText: "简报、博客与订阅内容",
     shouldLearn: true,
   },
   [SystemType.MARKETING]: {
-    name: "Marketing",
+    name: "营销推广",
     instructions:
+      "营销推广：可以安全归档的促销、打折和优惠邮件。排除主要目的是账号访问、交易或服务更新的邮件，即使它们含有推广内容。",
+    previousInstructions: [
       "Marketing: Promotions, sales, and offers that can be safely archived. Exclude emails whose main purpose is account access, a transaction, or a service update, even if they include promotional content.",
-    label: "Marketing",
+    ],
+    label: "营销推广",
     runOnThreads: false,
     categoryAction: "label_archive",
     categoryActionMicrosoft: "move_folder",
-    tooltipText: "Promotional emails about sales and offers",
+    tooltipText: "促销、优惠与营销邮件",
     shouldLearn: true,
   },
   [SystemType.CALENDAR]: {
-    name: "Calendar",
-    instructions:
+    name: "日历",
+    instructions: "日历：与日程安排、会议邀请或日历通知有关的任何邮件。",
+    previousInstructions: [
       "Calendar: Any email related to scheduling, meeting invites, or calendar notifications",
-    label: "Calendar",
+    ],
+    label: "日历",
     runOnThreads: false,
     categoryAction: "label",
-    tooltipText: "Events, appointments, and reminders",
+    tooltipText: "活动、日程与提醒",
     shouldLearn: true,
   },
   [SystemType.RECEIPT]: {
-    name: "Receipt",
-    instructions:
+    name: "收据",
+    instructions: "收据：购买确认、付款收据、交易记录或发票。",
+    previousInstructions: [
       "Receipts: Purchase confirmations, payment receipts, transaction records or invoices",
-    label: "Receipt",
+    ],
+    label: "收据",
     runOnThreads: false,
     categoryAction: "label",
     categoryActionMicrosoft: "move_folder",
-    tooltipText: "Invoices, receipts, and payments",
+    tooltipText: "发票、收据与付款",
     shouldLearn: true,
   },
   [SystemType.NOTIFICATION]: {
-    name: "Notification",
-    instructions: "Notifications: Alerts, status updates, or system messages",
-    label: "Notification",
+    name: "通知",
+    instructions: "通知：提醒、状态更新或系统消息。",
+    previousInstructions: [
+      "Notifications: Alerts, status updates, or system messages",
+    ],
+    label: "通知",
     runOnThreads: false,
     categoryAction: "label",
     categoryActionMicrosoft: "move_folder",
-    tooltipText: "Alerts, status updates, and system messages",
+    tooltipText: "提醒、状态更新与系统消息",
     shouldLearn: true,
   },
   [SystemType.OTP]: {
-    name: "OTP",
+    name: "验证码",
     instructions:
+      "验证码：一次性密码、两步验证/多因素验证码、邮箱验证码，以及免密登录或重置密码链接。",
+    previousInstructions: [
       "OTP: One-time passwords, 2FA/MFA codes, email verification codes, and magic sign-in or password-reset links.",
-    label: "OTP",
+    ],
+    label: "验证码",
     runOnThreads: false,
     categoryAction: "label",
-    tooltipText: "One-time passwords, 2FA codes, and sign-in links",
+    tooltipText: "一次性密码、两步验证码与登录链接",
     shouldLearn: true,
   },
   [SystemType.COLD_EMAIL]: {
-    name: "Cold Email",
+    name: "冷邮件",
     instructions: DEFAULT_COLD_EMAIL_PROMPT,
-    label: "Cold Email",
+    previousInstructions: [LEGACY_DEFAULT_COLD_EMAIL_PROMPT],
+    label: "冷邮件",
     runOnThreads: false,
     categoryAction: "label_archive",
     categoryActionMicrosoft: "move_folder",
-    tooltipText:
-      "Unsolicited sales pitches and cold emails. We'll never block someone that's emailed you before",
+    tooltipText: "未经请求的推销与冷邮件。我们绝不会屏蔽曾给你发过邮件的人",
     shouldLearn: true,
   },
 };

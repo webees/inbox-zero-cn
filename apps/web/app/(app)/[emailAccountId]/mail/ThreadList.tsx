@@ -150,13 +150,13 @@ export const ThreadList = memo(function ThreadList({
       listKey={listKey}
       loadMoreButton={
         <Button onClick={onLoadMore} size="sm" variant="outline">
-          Load more
+          加载更多
         </Button>
       }
       loadingMoreIndicator={
         <div className="flex items-center gap-2 text-muted-foreground text-xs">
           <LoadingMiniSpinner />
-          Loading more
+          正在加载更多
         </div>
       }
       onLoadMore={onLoadMore}

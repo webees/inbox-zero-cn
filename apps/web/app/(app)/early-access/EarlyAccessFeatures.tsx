@@ -45,17 +45,15 @@ export function EarlyAccessFeatures() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Early access features</CardTitle>
-        <CardDescription>
-          You can enable and disable early access features here.
-        </CardDescription>
+        <CardTitle>抢先体验功能</CardTitle>
+        <CardDescription>你可以在此启用或停用抢先体验功能。</CardDescription>
       </CardHeader>
 
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Feature</TableHead>
-            <TableHead className="w-24">Enabled</TableHead>
+            <TableHead>功能</TableHead>
+            <TableHead className="w-24">已启用</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

@@ -38,51 +38,51 @@ export function CleanInstructionsStep() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="text-center">
-      <TypographyH3>Which emails should stay in your inbox?</TypographyH3>
+      <TypographyH3>哪些邮件应留在收件箱中？</TypographyH3>
 
       <div className="mt-4 grid gap-4">
         <Toggle
           name="reply"
           enabled={skipStates.skipReply}
           onChange={(value) => setSkipStates({ skipReply: value })}
-          labelRight="Emails needing replies"
+          labelRight="需要回复的邮件"
         />
         <Toggle
           name="starred"
           enabled={skipStates.skipStarred}
           onChange={(value) => setSkipStates({ skipStarred: value })}
-          labelRight="Starred emails"
+          labelRight="已加星标的邮件"
         />
         <Toggle
           name="calendar"
           enabled={skipStates.skipCalendar}
           onChange={(value) => setSkipStates({ skipCalendar: value })}
-          labelRight="Future events"
+          labelRight="未来的事件"
         />
         <Toggle
           name="receipt"
           enabled={skipStates.skipReceipt}
           onChange={(value) => setSkipStates({ skipReceipt: value })}
-          labelRight="Payment receipts"
+          labelRight="付款收据"
         />
         {/* <Toggle
           name="attachment"
           enabled={skipStates.skipAttachment}
           onChange={(value) => setSkipStates({ skipAttachment: value })}
-          labelRight="Emails with attachments"
+          labelRight="带附件的邮件"
         /> */}
         <Toggle
           name="conversation"
           enabled={skipStates.skipConversation}
           onChange={(value) => setSkipStates({ skipConversation: value })}
-          labelRight="Conversations"
-          tooltipText="Email threads where you sent a reply"
+          labelRight="会话"
+          tooltipText="你发送过回复的邮件会话"
         />
         <Toggle
           name="custom"
           enabled={showCustom}
           onChange={(value) => setShowCustom(value)}
-          labelRight="Custom"
+          labelRight="自定义"
         />
       </div>
 
@@ -94,17 +94,17 @@ export function CleanInstructionsStep() {
             rows={3}
             name="instructions"
             registerProps={register("instructions")}
-            placeholder={`Example:
+            placeholder={`示例：
 
-I work as a freelance designer. Don't archive emails from clients.
-I'm in the middle of a building project, keep those emails too.`}
+我是一名自由职业设计师。不要归档客户的邮件。
+我正在做一个建筑项目，这些邮件也请保留。`}
             error={errors.instructions}
           />
         </div>
       )}
 
       <div className="mt-6 flex justify-center">
-        <Button type="submit">Continue</Button>
+        <Button type="submit">继续</Button>
       </div>
     </form>
   );

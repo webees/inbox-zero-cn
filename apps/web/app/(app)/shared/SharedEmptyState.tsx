@@ -22,14 +22,14 @@ export function SharedEmptyState() {
         <EmptyMedia>
           <SharedThreadIllustration />
         </EmptyMedia>
-        <EmptyTitle>No discussions yet</EmptyTitle>
+        <EmptyTitle>还没有讨论</EmptyTitle>
         <EmptyDescription>
-          Discuss an email privately by @mentioning a teammate in a comment.
+          在评论中 @提及团队成员，即可私下讨论某封邮件。
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
         <Button asChild variant="outline" size="sm">
-          <Link href={prefixPath(emailAccountId, "/mail")}>Go to inbox</Link>
+          <Link href={prefixPath(emailAccountId, "/mail")}>前往收件箱</Link>
         </Button>
       </EmptyContent>
     </Empty>

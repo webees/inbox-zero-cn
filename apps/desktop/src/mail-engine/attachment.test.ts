@@ -54,7 +54,7 @@ describe("desktop inline attachment transport", () => {
         origin: "https://mail.example.test",
         fetch,
       }),
-    ).rejects.toThrow("download failed");
+    ).rejects.toThrow("内嵌图片下载失败");
   });
 
   it("cancels oversized responses before reading them", async () => {
@@ -68,7 +68,7 @@ describe("desktop inline attachment transport", () => {
         origin: "https://mail.example.test",
         fetch: vi.fn().mockResolvedValue(response),
       }),
-    ).rejects.toThrow("download failed");
+    ).rejects.toThrow("内嵌图片下载失败");
     expect(cancel).toHaveBeenCalledOnce();
   });
 

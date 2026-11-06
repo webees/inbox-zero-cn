@@ -6,7 +6,7 @@ import { MAIL_IPC_PROTOCOL_VERSION } from "./mail-ipc";
 export function createMailIpcClient(
   invoke: (payload: unknown) => Promise<unknown>,
   options: {
-    /** Observations subscribe to snapshots the host pushes when data changes. */
+    /** 观察会订阅宿主在数据变化时推送的快照。 */
     push: MailIpcPushTransport;
     requestId?: () => string;
     provider?: "google" | "microsoft";
@@ -14,7 +14,6 @@ export function createMailIpcClient(
 ): MailClient & { inspect(): Promise<unknown> } {
   const requestId = options.requestId ?? defaultRequestId;
   const handles = new Set<{ close(): void }>();
-  const live = new Set<LiveObservation>();
 
   function envelope(method: string, payload: unknown) {
     return {
@@ -31,7 +30,7 @@ export function createMailIpcClient(
       result?: unknown;
     };
     if (response?.status !== "ok") {
-      throw new Error(`Mail engine ${method} failed`);
+      throw new Error(`邮件引擎 ${method} 调用失败`);
     }
     return response.result as never;
   }
@@ -40,7 +39,6 @@ export function createMailIpcClient(
     envelope,
     requestId,
     handles,
-    live,
     push: createPushRouter(options.push),
   };
 
@@ -99,14 +97,7 @@ type ObservationContext = {
   envelope: (method: string, payload: unknown) => unknown;
   requestId: () => string;
   handles: Set<{ close(): void }>;
-  live: Set<LiveObservation>;
   push: ReturnType<typeof createPushRouter>;
-};
-
-type LiveObservation = {
-  method: string;
-  requestKey: string | null;
-  snapshot: QuerySnapshot<unknown>;
 };
 
 function observeSnapshot<T>(
@@ -114,37 +105,16 @@ function observeSnapshot<T>(
   method: string,
   payload: () => unknown,
 ): RefreshableQueryHandle<T> {
-  // An identical query already being observed, such as a conversation warmed
-  // ahead of opening, has the answer the host is about to send. Starting from
-  // it lets the new observer render without waiting for the round trip.
-  const initialKey = JSON.stringify(payload());
-  const seed = [...context.live].find(
-    (other) =>
-      other.method === method &&
-      other.requestKey === initialKey &&
-      other.snapshot.status === "ready",
-  );
-  const observation: LiveObservation = {
-    method,
-    requestKey: seed ? initialKey : null,
-    snapshot: seed?.snapshot ?? {
-      status: "loading",
-      revision: null,
-      data: null,
-      refreshing: true,
-      error: null,
-    },
+  let snapshot: QuerySnapshot<T> = {
+    status: "loading",
+    revision: null,
+    data: null,
+    refreshing: true,
+    error: null,
   };
-  let snapshot = observation.snapshot as QuerySnapshot<T>;
   const listeners = new Set<() => void>();
   let closed = false;
-  let publishedPayload = observation.requestKey;
-  const publish = (next: QuerySnapshot<T>) => {
-    snapshot = next;
-    observation.snapshot = next;
-    observation.requestKey = publishedPayload;
-    for (const listener of listeners) listener();
-  };
+  let publishedPayload: string | null = null;
 
   // Engine recovery and resubscribes can resend the snapshot already held.
   // Republishing it would re-render every subscriber.
@@ -152,17 +122,19 @@ function observeSnapshot<T>(
     if (closed) return;
     if (requestKey === publishedPayload && sameSnapshot(snapshot, next)) return;
     publishedPayload = requestKey;
-    publish(next);
+    snapshot = next;
+    for (const listener of listeners) listener();
   };
   const fail = () => {
     if (closed) return;
-    publish({
+    snapshot = {
       status: "error",
       revision: snapshot.revision,
       data: snapshot.data,
       refreshing: false,
       error: { code: "unavailable", retryable: true },
-    });
+    };
+    for (const listener of listeners) listener();
   };
 
   const source = pushSource(context, method, payload, accept, fail);
@@ -181,11 +153,9 @@ function observeSnapshot<T>(
       listeners.clear();
       source.close();
       context.handles.delete(handle);
-      context.live.delete(observation);
     },
   };
   context.handles.add(handle);
-  context.live.add(observation);
   return handle;
 }
 

@@ -154,7 +154,7 @@ export const ListToolbar = memo(function ListToolbar({
       <button
         type="button"
         onClick={onOpenMailNav}
-        aria-label="Open navigation"
+        aria-label="打开导航"
         className={cn(toolbarButton, "w-8 justify-center px-0 lg:hidden")}
       >
         <PanelLeftIcon className="size-3.5" />
@@ -168,14 +168,14 @@ export const ListToolbar = memo(function ListToolbar({
           <span
             aria-live="polite"
             className="min-w-0 flex-1 truncate font-medium text-sm"
-          >{`${selectedCount} selected`}</span>
+          >{`已选择 ${selectedCount} 封`}</span>
 
           {onMoveToInboxSelected ? (
-            <Tooltip content="Move to inbox">
+            <Tooltip content="移到收件箱">
               <button
                 type="button"
                 onClick={onMoveToInboxSelected}
-                aria-label="Move to inbox"
+                aria-label="移到收件箱"
                 className={cn(toolbarButton, "w-8 justify-center px-0")}
               >
                 <ArchiveRestoreIcon className="size-3.5" />
@@ -186,7 +186,7 @@ export const ListToolbar = memo(function ListToolbar({
               <button
                 type="button"
                 onClick={onArchiveSelected}
-                aria-label="Archive"
+                aria-label="归档"
                 className={cn(toolbarButton, "w-8 justify-center px-0")}
               >
                 <ArchiveIcon className="size-3.5" />
@@ -195,7 +195,7 @@ export const ListToolbar = memo(function ListToolbar({
           )}
 
           <Tooltip
-            content={isUnreadSelected ? "Mark as read" : undefined}
+            content={isUnreadSelected ? "标为已读" : undefined}
             shortcuts={isUnreadSelected ? undefined : ["markUnread"]}
           >
             <button
@@ -203,7 +203,7 @@ export const ListToolbar = memo(function ListToolbar({
               onClick={
                 isUnreadSelected ? onMarkReadSelected : onMarkUnreadSelected
               }
-              aria-label={isUnreadSelected ? "Mark as read" : "Mark as unread"}
+              aria-label={isUnreadSelected ? "标为已读" : "标为未读"}
               className={cn(toolbarButton, "w-8 justify-center px-0")}
             >
               {isUnreadSelected ? (
@@ -218,7 +218,7 @@ export const ListToolbar = memo(function ListToolbar({
             <button
               type="button"
               onClick={onStarSelected}
-              aria-label={isStarredSelected ? "Unstar" : "Star"}
+              aria-label={isStarredSelected ? "取消星标" : "加星标"}
               className={cn(toolbarButton, "w-8 justify-center px-0")}
             >
               {isStarredSelected ? (
@@ -233,7 +233,7 @@ export const ListToolbar = memo(function ListToolbar({
             <button
               type="button"
               onClick={onDeleteSelected}
-              aria-label="Delete"
+              aria-label="删除"
               className={cn(
                 toolbarButton,
                 "w-8 justify-center px-0 hover:bg-destructive/10 hover:text-destructive",
@@ -248,7 +248,7 @@ export const ListToolbar = memo(function ListToolbar({
               <button
                 type="button"
                 onClick={onLabelSelected}
-                aria-label="Label"
+                aria-label="标签"
                 className={cn(toolbarButton, "w-8 justify-center px-0")}
               >
                 <TagIcon className="size-3.5" />
@@ -258,11 +258,11 @@ export const ListToolbar = memo(function ListToolbar({
 
           {onAddToSplitSelected ? (
             <DropdownMenu>
-              <Tooltip content="More actions">
+              <Tooltip content="更多操作">
                 <DropdownMenuTrigger asChild>
                   <button
                     type="button"
-                    aria-label="More selection actions"
+                    aria-label="更多选择操作"
                     className={cn(toolbarButton, "w-8 justify-center px-0")}
                   >
                     <MoreHorizontalIcon className="size-3.5" />
@@ -272,17 +272,17 @@ export const ListToolbar = memo(function ListToolbar({
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onSelect={onAddToSplitSelected}>
                   <SplitIcon className="mr-2 size-4" />
-                  Add senders to split
+                  将发件人添加到拆分
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : null}
 
-          <Tooltip shortcuts={[{ id: "backToList", label: "Clear selection" }]}>
+          <Tooltip shortcuts={[{ id: "backToList", label: "清除选择" }]}>
             <button
               type="button"
               onClick={onClearSelection}
-              aria-label="Clear selection"
+              aria-label="清除选择"
               className={cn(toolbarButton, "w-8 justify-center px-0")}
             >
               <XIcon className="size-3.5" />
@@ -307,15 +307,13 @@ export const ListToolbar = memo(function ListToolbar({
       {selectedCount === 0 && onToggleBundleInbox ? (
         <Tooltip
           content={
-            bundleInbox
-              ? "Show every email on its own row"
-              : "Bundle low-priority emails in the inbox"
+            bundleInbox ? "让每封邮件单独占一行" : "在收件箱中打包低优先级邮件"
           }
         >
           <button
             type="button"
             onClick={onToggleBundleInbox}
-            aria-label="Bundle low-priority emails"
+            aria-label="打包低优先级邮件"
             aria-pressed={bundleInbox}
             className={cn(
               toolbarButton,
@@ -333,16 +331,14 @@ export const ListToolbar = memo(function ListToolbar({
           shortcuts={[
             {
               id: "togglePreview",
-              label: expandedPreview
-                ? "Shorten preview text"
-                : "Expand preview text",
+              label: expandedPreview ? "缩短预览文本" : "展开预览文本",
             },
           ]}
         >
           <button
             type="button"
             onClick={onTogglePreview}
-            aria-label="Expand or shorten preview text"
+            aria-label="展开或缩短预览文本"
             aria-pressed={expandedPreview}
             className={cn(
               toolbarButton,
@@ -357,14 +353,12 @@ export const ListToolbar = memo(function ListToolbar({
 
       {selectedCount === 0 ? (
         <Tooltip
-          shortcuts={[
-            { id: "toggleLayout", label: "Switch list / split view" },
-          ]}
+          shortcuts={[{ id: "toggleLayout", label: "切换列表 / 分栏视图" }]}
         >
           <button
             type="button"
             onClick={onToggleLayout}
-            aria-label="Switch list or split view"
+            aria-label="切换列表或分栏视图"
             className={cn(toolbarButton, "w-8 justify-center px-0")}
           >
             <LayoutIcon className="size-3.5" />
@@ -377,7 +371,7 @@ export const ListToolbar = memo(function ListToolbar({
           <button
             type="button"
             onClick={onToggleAssistant}
-            aria-label="Toggle the assistant"
+            aria-label="切换 AI 助手"
             className={cn(toolbarButton, "w-8 justify-center px-0")}
           >
             <SparklesIcon className="size-3.5" />
@@ -462,7 +456,7 @@ function MailSearchInput({
               <PopoverTrigger asChild>
                 <button
                   type="button"
-                  aria-label="Show search options"
+                  aria-label="显示搜索选项"
                   aria-expanded={filtersOpen}
                   className={cn(
                     "flex h-full w-7 shrink-0 items-center justify-center rounded-r-lg text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
@@ -492,10 +486,10 @@ function MailSearchInput({
           <input
             ref={inputRef}
             value={draft}
-            placeholder="Search mail"
+            placeholder="搜索邮件"
             enterKeyHint="search"
             role="combobox"
-            aria-label="Search mail"
+            aria-label="搜索邮件"
             aria-autocomplete="list"
             aria-expanded={suggestionsOpen}
             aria-controls={suggestionsOpen ? suggestionListId : undefined}
@@ -504,8 +498,8 @@ function MailSearchInput({
                 ? suggestionOptionId(suggestionListId, highlightedIndex)
                 : undefined
             }
-            // The forms plugin sizes untyped inputs at 1rem, so the size has
-            // to be stated for the field to match the rest of the toolbar.
+            // 表单插件把未指定类型的输入框设为 1rem，因此必须显式设置尺寸，
+            // 才能让该字段与工具栏其余部分匹配。
             className="h-full min-w-0 flex-1 border-0 bg-transparent p-0 text-foreground text-sm outline-none focus:ring-0 placeholder:text-muted-foreground"
             onChange={(event) => {
               onSearchChange(event.target.value);
@@ -539,8 +533,8 @@ function MailSearchInput({
                 return;
               }
               if (event.key !== "Escape") return;
-              // The mail-wide Escape shortcut also clears the search, so a
-              // press handled here must not reach it.
+              // 邮件范围内的 Escape 快捷键也会清空搜索，因此在这里处理的按键
+              // 不能继续传递给它。
               if (suggestionsOpen || filtersOpen || draft || searchQuery) {
                 event.preventDefault();
               }
@@ -564,7 +558,7 @@ function MailSearchInput({
           {draft || searchQuery ? (
             <button
               type="button"
-              aria-label="Clear search"
+              aria-label="清除搜索"
               onClick={() => onSearch("")}
               className="shrink-0 rounded p-0.5 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >

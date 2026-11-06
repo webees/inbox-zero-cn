@@ -3,14 +3,14 @@ import { unlinkSync, writeFileSync } from "node:fs";
 import { createServer } from "node:net";
 
 export async function acquireLocalLock(path: string, appPort?: number) {
-  // The kernel releases this checkout-specific lease after a crash. PID files
-  // alone cannot safely arbitrate concurrent stale-lock recovery.
+  // 崩溃后由内核释放此检出专用的租约。仅靠 PID 文件
+  // 无法安全地仲裁并发的陈旧锁恢复。
   const port =
     49_152 +
     (createHash("sha256").update(path).digest().readUInt32BE(0) % 16_384);
   if (port === appPort)
     throw new Error(
-      `App port ${port} is reserved for this checkout's development lock. Choose another app port with --port.`,
+      `应用端口 ${port} 已被保留给此检出的开发锁。请使用 --port 选择其他应用端口。`,
     );
   const server = createServer((socket) => socket.destroy());
   await new Promise<void>((resolve, reject) => {
@@ -18,7 +18,7 @@ export async function acquireLocalLock(path: string, appPort?: number) {
       if ((error as NodeJS.ErrnoException).code === "EADDRINUSE")
         reject(
           new Error(
-            `Local development lock port ${port} is in use. Stop the other launcher or process before starting again.`,
+            `本地开发锁端口 ${port} 已被占用。请先停止另一个启动器或进程再重试。`,
           ),
         );
       else reject(error);
@@ -36,10 +36,7 @@ export async function acquireLocalLock(path: string, appPort?: number) {
       unlinkSync(path);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT")
-        console.warn(
-          "[local] Could not remove informational launcher PID file",
-          error,
-        );
+        console.warn("[local] 无法删除信息性启动器 PID 文件", error);
     } finally {
       await new Promise<void>((resolve, reject) => {
         server.close((error) => (error ? reject(error) : resolve()));

@@ -14,9 +14,9 @@ export const REQUIRED_SCOPES = [
 
 export const SCOPES = [
   ...REQUIRED_SCOPES,
-  // Saved Contacts and Other Contacts are optional and were requested at
-  // different times. Accounts consented before either was requested keep
-  // working with whichever they hold.
+  // 已保存联系人和其他联系人是可选的，且是在不同时间
+  // 请求的。在请求其中任何一个之前已授权的账号
+  // 可继续使用其持有的权限。
   ...(env.NEXT_PUBLIC_CONTACTS_ENABLED ? [GOOGLE_CONTACTS_SCOPE] : []),
   ...(env.NEXT_PUBLIC_CONTACTS_ENABLED &&
   env.NEXT_PUBLIC_GMAIL_OTHER_CONTACTS_ENABLED

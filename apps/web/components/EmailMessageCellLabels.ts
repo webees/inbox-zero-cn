@@ -61,7 +61,7 @@ export function getEmailMessageCellLabels({
   if (shouldShowArchivedLabel({ labelIds, provider, labels })) {
     labels?.unshift({
       id: OutlookLabel.ARCHIVE,
-      name: "Archived",
+      name: "已归档",
       color: undefined,
     });
   }

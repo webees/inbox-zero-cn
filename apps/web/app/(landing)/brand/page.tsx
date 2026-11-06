@@ -18,13 +18,12 @@ import { getBrandTitle, HAS_BRAND_KIT } from "@/utils/branding";
 
 export const metadata: Metadata = {
   title: getBrandTitle("Brand Kit"),
-  description:
-    "Logos, colors, and guidelines for presenting the Inbox Zero brand consistently.",
+  description: "用于一致展示 Inbox Zero 品牌的标准 Logo、颜色与规范。",
   alternates: { canonical: "/brand" },
 };
 
 const BOILERPLATE =
-  "Inbox Zero is an open source AI email assistant and Superhuman alternative. It organizes your inbox, drafts replies in your voice, and helps you reach inbox zero fast, with a full email client for Gmail and Outlook.";
+  "Inbox Zero 是一款开源的 AI 邮件助手，也是 Superhuman 的替代方案。它能整理你的收件箱、用你的语气撰写回复，并帮助你快速实现收件箱清零，同时提供完整的 Gmail 和 Outlook 邮件客户端。";
 
 const SCREENSHOT_SRC = "/images/new-landing/inbox-zero-mail.webp";
 
@@ -35,7 +34,7 @@ const logos: {
   downloads: { label: string; href: string }[];
 }[] = [
   {
-    name: "Wordmark on dark",
+    name: "深色背景上的文字标识",
     theme: "dark",
     preview: <Logo className="h-7 w-auto text-white" />,
     downloads: [
@@ -44,7 +43,7 @@ const logos: {
     ],
   },
   {
-    name: "Wordmark on light",
+    name: "浅色背景上的文字标识",
     theme: "light",
     preview: <Logo className="h-7 w-auto text-gray-900" />,
     downloads: [
@@ -53,13 +52,13 @@ const logos: {
     ],
   },
   {
-    name: "App icon on dark",
+    name: "深色背景上的应用图标",
     theme: "dark",
     preview: <AppIcon size={88} />,
     downloads: [{ label: ".png", href: "/brand/inbox-zero-icon.png" }],
   },
   {
-    name: "App icon on light",
+    name: "浅色背景上的应用图标",
     theme: "light",
     preview: <AppIcon size={88} />,
     downloads: [{ label: ".png", href: "/brand/inbox-zero-icon.png" }],
@@ -67,10 +66,10 @@ const logos: {
 ];
 
 const colors = [
-  { name: "Sky Blue", hex: "#67B0F2" },
-  { name: "Inbox Blue", hex: "#3478F6" },
-  { name: "Ink", hex: "#111827" },
-  { name: "White", hex: "#FFFFFF" },
+  { name: "天蓝色", hex: "#67B0F2" },
+  { name: "收件箱蓝", hex: "#3478F6" },
+  { name: "墨色", hex: "#111827" },
+  { name: "白色", hex: "#FFFFFF" },
 ];
 
 export default function BrandPage() {
@@ -84,36 +83,32 @@ export default function BrandPage() {
         <div className="flex flex-col items-center pt-20 text-center">
           <AppIcon size={112} />
           <div className="mt-6">
-            <PageHeading>Brand Kit</PageHeading>
+            <PageHeading>品牌资源包</PageHeading>
           </div>
           <Paragraph className="mt-4" size="lg">
-            Guidelines and assets for presenting the Inbox Zero brand
-            consistently.
+            用于一致展示 Inbox Zero 品牌的标准与资源。
           </Paragraph>
           <div className="mt-8">
             <Button size="lg" asChild>
               <a href="/brand/inbox-zero-brand-assets.zip" download>
-                Download all assets
+                下载全部资源
               </a>
             </Button>
           </div>
         </div>
 
-        <BrandSection title="Naming">
+        <BrandSection title="命名">
           <BrandText>
-            “Inbox Zero” is the brand name. It is always two words, each
-            starting with a capital letter.
+            “Inbox Zero”是品牌名称，始终为两个单词，每个单词首字母大写。
           </BrandText>
           <BrandText>
-            It should not be written as “InboxZero”, “Inbox-Zero”, “inbox zero”,
-            or any other variation.
+            不要写作“InboxZero”、“Inbox-Zero”、“inbox zero”或其他任何变体。
           </BrandText>
         </BrandSection>
 
         <BrandSection title="Logo">
           <BrandText>
-            Use the wordmark wherever there is room for it, and the app icon
-            where space is tight. Do not alter these files in any way.
+            空间充裕时使用文字标识，空间紧张时使用应用图标。请勿以任何方式改动这些文件。
           </BrandText>
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
             {logos.map((logo) => (
@@ -134,7 +129,7 @@ export default function BrandPage() {
                       key={download.label}
                       href={download.href}
                       download
-                      aria-label={`Download ${logo.name} as ${download.label}`}
+                      aria-label={`下载 ${logo.name}（${download.label} 格式）`}
                       className={cn(
                         "inline-flex items-center gap-1 rounded-md px-2 py-1 font-medium text-xs",
                         logo.theme === "dark"
@@ -152,10 +147,9 @@ export default function BrandPage() {
           </div>
         </BrandSection>
 
-        <BrandSection title="Colors">
+        <BrandSection title="颜色">
           <BrandText>
-            Our blues come from the app icon gradient. Pair them with Ink and
-            White.
+            我们的蓝色取自应用图标的渐变色，请搭配墨色和白色使用。
           </BrandText>
           <div className="mt-6 grid grid-cols-2 gap-6 sm:grid-cols-4">
             {colors.map((color) => (
@@ -175,7 +169,7 @@ export default function BrandPage() {
                   </div>
                   <CopyButton
                     value={color.hex}
-                    label={`Copy ${color.name} hex`}
+                    label={`复制${color.name}色值`}
                     iconOnly
                   />
                 </div>
@@ -184,10 +178,10 @@ export default function BrandPage() {
           </div>
         </BrandSection>
 
-        <BrandSection title="Screenshots">
+        <BrandSection title="截图">
           <BrandText>
-            Use this product screenshot when presenting Inbox Zero. It uses demo
-            data, so no real inbox is shown.
+            展示 Inbox Zero
+            时请使用这张产品截图。截图使用演示数据，未显示任何真实收件箱。
           </BrandText>
           <a
             href={SCREENSHOT_SRC}
@@ -196,7 +190,7 @@ export default function BrandPage() {
           >
             <Image
               src={SCREENSHOT_SRC}
-              alt="Inbox Zero Mail on desktop and mobile"
+              alt="桌面端和移动端的 Inbox Zero Mail"
               width={2540}
               height={1520}
               className="h-auto w-full"
@@ -204,25 +198,24 @@ export default function BrandPage() {
           </a>
         </BrandSection>
 
-        <BrandSection title="Description">
-          <BrandText>Use this description when writing about us.</BrandText>
+        <BrandSection title="简介">
+          <BrandText>撰写关于我们的内容时请使用这段简介。</BrandText>
           <div className="mt-4 flex flex-col items-start gap-4 rounded-2xl border border-gray-200 p-6">
             <Paragraph color="dark">{BOILERPLATE}</Paragraph>
-            <CopyButton value={BOILERPLATE} label="Copy text" />
+            <CopyButton value={BOILERPLATE} label="复制文本" />
           </div>
         </BrandSection>
 
-        <BrandSection title="Questions">
+        <BrandSection title="问题咨询">
           <BrandText>
-            Please{" "}
+            如需其他资源，或对 Inbox Zero 品牌的使用有疑问，请{" "}
             <a
               href={`mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}`}
               className="font-medium text-gray-900 underline underline-offset-4"
             >
-              contact us
+              联系我们
             </a>{" "}
-            if you need additional assets or have questions about using the
-            Inbox Zero brand.
+            。
           </BrandText>
         </BrandSection>
       </div>

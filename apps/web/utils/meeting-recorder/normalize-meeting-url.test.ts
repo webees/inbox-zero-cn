@@ -69,8 +69,8 @@ describe("normalizeMeetingUrl", () => {
   });
 
   it("does not let a look-alike host collide with a real meeting", () => {
-    // The key decides which accounts share a recording, so a host an attacker
-    // controls must never normalize onto a genuine provider's key.
+    // 该键决定哪些账号共享同一段录制，因此攻击者控制的
+    // 主机绝不能规范化到真实服务商的键上。
     expect(normalizeMeetingUrl("https://evilzoom.us/j/8123456789")).not.toBe(
       "zoom.us/j/8123456789",
     );
@@ -83,7 +83,7 @@ describe("normalizeMeetingUrl", () => {
       ),
     ).not.toBe("teams.microsoft.com/l/meetup-join/19:meeting_abc123@thread.v2");
 
-    // Genuine subdomains still normalize.
+    // 真实的子域名仍会被规范化。
     expect(normalizeMeetingUrl("https://acme.zoom.us/j/8123456789")).toBe(
       "zoom.us/j/8123456789",
     );

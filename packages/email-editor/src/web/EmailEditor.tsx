@@ -43,10 +43,10 @@ export type EmailEditorHandle = {
     previewUrl: string;
   }) => boolean;
   removeInlineImage: (contentId: string) => boolean;
-  // Swaps the signature for another, adding it if there was none. Empty HTML
-  // removes it. The rest of the message is kept as written.
+  // 将签名替换为另一个，若原先没有则添加。空 HTML 会移除签名。
+  // 邮件其余部分保持原样。
   replaceSignature: (html: string) => boolean;
-  // Replaces the "/query" reported by onSlashTrigger.
+  // 替换 onSlashTrigger 报告的“/query”。
   replaceSlashTrigger: (html: string) => boolean;
 };
 
@@ -59,19 +59,18 @@ export type EmailEditorProps = {
   autofocus?: boolean;
   onStateChange?: (state: EmailEditorState) => void;
   onImageFiles?: (files: File[]) => void;
-  // A "/" typed at a line start or after whitespace.
+  // 在行首或空白后输入的“/”。
   onSlashTrigger?: (trigger: EmailEditorSlashTrigger | null) => void;
-  // Keys typed while a slash trigger is open. Return true when handled.
+  // 斜杠触发器打开时输入的按键。已处理时返回 true。
   onSlashKeyDown?: (event: KeyboardEvent) => boolean;
-  // Maps remote image URLs to proxied URLs for display. Images without a
-  // mapping show their alt text; sent HTML keeps the original addresses.
+  // 将远程图片 URL 映射为用于显示的代理 URL。没有映射的图片
+  // 显示其替代文本；发送的 HTML 保留原始地址。
   resolveRemoteImages?: (
     sources: string[],
   ) => Promise<Record<string, string | null>>;
 };
 
-// Squire touches the DOM when its module loads, so it must stay out of
-// server rendering.
+// Squire 在模块加载时会访问 DOM，因此必须排除在服务端渲染之外。
 const SquireEmailEditor = lazy(() =>
   import("./squire/SquireEmailEditor").then((module) => ({
     default: module.SquireEmailEditor,
@@ -85,7 +84,7 @@ export const EmailEditor = forwardRef<EmailEditorHandle, EmailEditorProps>(
       initialHtml,
       mode = "original",
       preservedBlocks = [],
-      placeholder = "Write a message…",
+      placeholder = "写一封邮件…",
       autofocus = true,
       onStateChange,
       onImageFiles,

@@ -117,7 +117,7 @@ export const ThreadRow = memo(function ThreadRow({
                 aria-hidden
                 className="size-3.5 shrink-0 text-muted-foreground"
               />
-              <span className="sr-only">Has attachment</span>
+              <span className="sr-only">有附件</span>
             </>
           ) : null}
           {sentMessageOpen ? (
@@ -151,7 +151,7 @@ export const ThreadRow = memo(function ThreadRow({
       onToggleSelect={onToggleSelect}
       participantSummary={participantSummary}
       renderSelectionControl={({ ariaLabel, checked, onClick, visible }) => (
-        // Opening above would cover the select-all checkbox for the first row.
+        // 在上方打开会遮住第一行的全选复选框。
         <Tooltip shortcuts={["select"]} side="right">
           <Checkbox
             aria-label={ariaLabel}
@@ -172,18 +172,18 @@ export const ThreadRow = memo(function ThreadRow({
 function OtpCodeButton({ code }: { code: string }) {
   return (
     <button
-      aria-label={`Copy code ${code}`}
+      aria-label={`复制验证码 ${code}`}
       className="inline-flex shrink-0 items-center gap-1 rounded-md border border-border bg-background px-1.5 py-px font-medium text-foreground text-xs tabular-nums leading-4 hover:bg-muted"
       onClick={async (event) => {
         event.stopPropagation();
         try {
           await navigator.clipboard.writeText(code);
-          toastSuccess({ description: "Code copied" });
+          toastSuccess({ description: "验证码已复制" });
         } catch {
-          toastError({ description: "Failed to copy code" });
+          toastError({ description: "复制验证码失败" });
         }
       }}
-      // Enter would otherwise bubble to the row and open the thread.
+      // 否则按 Enter 会冒泡到该行并打开会话。
       onKeyDown={(event) => event.stopPropagation()}
       type="button"
     >
@@ -203,7 +203,7 @@ function AccountAvatar({
 
   return (
     <Avatar
-      aria-label={`Inbox: ${label}`}
+      aria-label={`收件箱：${label}`}
       className="size-5"
       title={account.email}
     >

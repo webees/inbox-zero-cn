@@ -138,7 +138,7 @@ export function OnboardingContent({
   );
 
   useEffect(() => {
-    // Wait for step inputs before firing — totalSteps can be wrong while loading.
+    // 触发前等待步骤输入——加载期间 totalSteps 可能不准确。
     if (isMembershipLoading || isRulesLoading || !currentStepKey) return;
 
     if (clampedStep === 1 && !hasTrackedStart.current) {
@@ -215,7 +215,7 @@ export function OnboardingContent({
       isOptional: true,
     });
 
-    // Navigate directly — do not call onNext() which would also fire completion analytics.
+    // 直接导航——不要调用 onNext()，因为它还会触发完成分析事件。
     if (!nextStepKey) return;
 
     router.push(getOnboardingStepPath(nextStepKey));
@@ -255,11 +255,11 @@ export function OnboardingContent({
     let disposed = false;
     analyzePersonaAction(emailAccountId)
       .then(() => {
-        // Navigation can dispose the account's SWR cache before analysis finishes.
+        // 分析完成前，导航可能会销毁该账号的 SWR 缓存。
         if (!disposed) return mutate();
       })
       .catch((error) => {
-        console.error("Failed to analyze persona:", error);
+        console.error("分析用户画像失败：", error);
       });
 
     return () => {
@@ -269,7 +269,7 @@ export function OnboardingContent({
 
   const renderStep = steps[currentStepIndex] || steps[0];
 
-  // Wait for the inputs that determine which steps are visible before rendering.
+  // 在渲染前等待决定哪些步骤可见的输入就绪。
   if ((isLoading && !provider) || isMembershipLoading || isRulesLoading) {
     return null;
   }

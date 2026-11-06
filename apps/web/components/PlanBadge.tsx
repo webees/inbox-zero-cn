@@ -29,11 +29,11 @@ type Plan = Pick<ExecutedRule, "reason" | "status"> & {
 export function PlanBadge(props: { plan?: Plan; provider: string }) {
   const { plan, provider } = props;
 
-  // if (!plan) return <Badge color="gray">Not planned</Badge>;
+  // if (!plan) return <Badge color="gray">未计划</Badge>;
   if (!plan) return null;
 
   if (!plan.rule) {
-    const component = <Badge color="yellow">No plan</Badge>;
+    const component = <Badge color="yellow">无计划</Badge>;
 
     if (plan.reason) {
       return (
@@ -41,7 +41,7 @@ export function PlanBadge(props: { plan?: Plan; provider: string }) {
           className="w-80"
           content={
             <div className="max-w-full whitespace-pre-wrap text-sm">
-              <strong>Reason:</strong> {plan.reason}
+              <strong>原因：</strong> {plan.reason}
             </div>
           }
         >
@@ -100,30 +100,30 @@ function getActionLabel(
     case ActionType.LABEL:
       return terminology.label.action;
     case ActionType.ARCHIVE:
-      return "Archive";
+      return "归档";
     case ActionType.FORWARD:
-      return "Forward";
+      return "转发";
     case ActionType.REPLY:
-      return "Reply";
+      return "回复";
     case ActionType.SEND_EMAIL:
-      return "Send";
+      return "发送";
     case ActionType.DRAFT_EMAIL:
     case ActionType.DRAFT_MESSAGING_CHANNEL:
-      return "Draft";
+      return "草稿";
     case ActionType.CALL_WEBHOOK:
       return "Webhook";
     case ActionType.MARK_SPAM:
-      return "Mark as spam";
+      return "标记为垃圾邮件";
     case ActionType.MARK_READ:
-      return "Mark as read";
+      return "标记为已读";
     case ActionType.STAR:
-      return "Star";
+      return "加星标";
     case ActionType.NOTIFY_MESSAGING_CHANNEL:
       return action?.messagingChannel?.provider
-        ? `Notify on ${getMessagingProviderName(action.messagingChannel.provider)}`
-        : "Notify";
+        ? `在 ${getMessagingProviderName(action.messagingChannel.provider)} 上通知`
+        : "通知";
     case ActionType.NOTIFY_SENDER:
-      return "Notify Sender";
+      return "通知发件人";
     case ActionType.INTEGRATION:
       return getIntegrationActionLabel(action);
     default:
@@ -144,7 +144,7 @@ function getActionMessage(action: PlanAction, provider: string): string {
     // biome-ignore lint/suspicious/noFallthroughSwitchClause: ignore
     case ActionType.FORWARD:
       if (action.to)
-        return `${getActionLabel(action.type, provider, action)} to ${action.to}${
+        return `${getActionLabel(action.type, provider, action)} 给 ${action.to}${
           action.content ? `:\n${action.content}` : ""
         }`;
     default:

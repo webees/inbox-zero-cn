@@ -73,7 +73,7 @@ it("blocks new sessions for users disabled through SCIM", async () => {
     scimAccessDisabled: true,
   } as never);
   await expect(assertScimUserActive("user")).rejects.toThrow(
-    "Account access was disabled",
+    "你的组织已禁用账号访问",
   );
 });
 it("allows sessions for users who are not disabled", async () => {

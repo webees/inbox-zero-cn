@@ -29,24 +29,16 @@ describe("buildResolvedSystemPrompt", () => {
     });
 
     for (const prompt of [connectedPrompt, disconnectedPrompt, failedPrompt]) {
-      expect(prompt).toContain("calendar or inbox date-range tools");
+      expect(prompt).toContain("调用日历或收件箱日期范围工具前");
     }
     expect(disconnectedPrompt).toContain(
-      "you may tell them they can connect a calendar in settings",
+      "你可以告诉他们可以在设置中连接日历。",
     );
-    expect(connectedPrompt).not.toContain("connect a calendar");
-    expect(connectedPrompt).not.toContain(
-      "Checking the calendar connection failed",
-    );
-    expect(failedPrompt).toContain(
-      "Checking the calendar connection failed (Error: db down)",
-    );
-    expect(failedPrompt).toContain(
-      "reconnect their calendar in settings or try again",
-    );
-    expect(failedPrompt).not.toContain(
-      "you may tell them they can connect a calendar in settings",
-    );
+    expect(connectedPrompt).not.toContain("可以在设置中连接日历");
+    expect(connectedPrompt).not.toContain("检查日历连接失败");
+    expect(failedPrompt).toContain("检查日历连接失败（Error: db down）");
+    expect(failedPrompt).toContain("他们可以在设置中重新连接日历或重试");
+    expect(failedPrompt).not.toContain("你可以告诉他们可以在设置中连接日历。");
   });
 
   it("only asks for inline email card markup when the client can render it", () => {
@@ -58,7 +50,7 @@ describe("buildResolvedSystemPrompt", () => {
 
     expect(plainPrompt).not.toContain("<emails>");
     expect(plainPrompt).not.toContain("<email-detail");
-    expect(plainPrompt).toContain("numbered list");
+    expect(plainPrompt).toContain("使用编号列表");
   });
 
   it("never asks for inline email card markup on messaging surfaces", () => {
@@ -86,7 +78,7 @@ describe("buildInboxSnapshotMessage", () => {
     expect(message?.content).toContain("240");
     expect(message?.content).toContain("6");
     expect(message?.content).toMatch(/searchInbox/);
-    expect(message?.content).toMatch(/stale|out of date|may have changed/i);
+    expect(message?.content).toMatch(/可能已经变化/);
   });
 
   it("returns null when no inboxStats are available", () => {

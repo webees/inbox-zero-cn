@@ -24,9 +24,9 @@ export function SetupProgressCard() {
               <ProgressCircle completed={data.completed} total={data.total} />
 
               <div>
-                <h3 className="text-sm font-semibold">Complete setup</h3>
+                <h3 className="text-sm font-semibold">完成设置</h3>
                 <p className="text-xs text-muted-foreground">
-                  {data.completed}/{data.total} Completed
+                  {data.completed}/{data.total} 已完成
                 </p>
               </div>
             </div>
@@ -56,7 +56,7 @@ function ProgressCircle({
   return (
     <div className="relative h-8 w-8">
       <svg className="h-8 w-8 -rotate-90 transform" width="32" height="32">
-        {/* Background circle */}
+        {/* 背景圆环 */}
         <circle
           stroke="currentColor"
           strokeWidth={strokeWidth}
@@ -66,7 +66,7 @@ function ProgressCircle({
           cy={16}
           className="text-gray-200 dark:text-gray-700"
         />
-        {/* Progress circle */}
+        {/* 进度圆环 */}
         <circle
           stroke="currentColor"
           strokeWidth={strokeWidth}

@@ -8,7 +8,7 @@ export const saveOnboardingAnswersBody = z.object({
 });
 
 export const stepWhoSchema = z.object({
-  role: z.string().min(1, "Please select your role."),
+  role: z.string().min(1, "请选择你的角色"),
 });
 
 export type StepWhoSchema = z.infer<typeof stepWhoSchema>;

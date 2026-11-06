@@ -48,13 +48,13 @@ async function buildComment(reviewFile: string, changedPathsFile: string) {
 
 function getRequiredEnvironmentVariable(name: string): string {
   const value = process.env[name];
-  if (!value) throw new Error(`${name} is required`);
+  if (!value) throw new Error(`${name} 为必填项`);
   return value;
 }
 
 function getRequiredHttpsEnvironmentVariable(name: string): string {
   const value = getRequiredEnvironmentVariable(name);
-  if (!isHttpsUrl(value)) throw new Error(`${name} must use HTTPS`);
+  if (!isHttpsUrl(value)) throw new Error(`${name} 必须使用 HTTPS`);
   return value;
 }
 

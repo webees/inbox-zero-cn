@@ -67,5 +67,5 @@ it("cancels interactive setup without reporting a failure", async () => {
     return {};
   });
   await expect(getBedrockCredentials(false)).rejects.toThrow("process.exit:0");
-  expect(p.cancel).toHaveBeenCalledWith("Setup cancelled.");
+  expect(p.cancel).toHaveBeenCalledWith("安装已取消。");
 });

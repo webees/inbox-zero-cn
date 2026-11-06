@@ -1,6 +1,6 @@
 /**
- * Staging is a production-target Vercel project, so VERCEL_ENV alone does not
- * exclude it. Self-hosted installs stay indexable.
+ * Staging 是一个面向生产的 Vercel 项目，因此仅凭 VERCEL_ENV 无法
+ * 将其排除。自托管安装仍可被索引。
  */
 export function isIndexingAllowed(
   baseUrl: string,

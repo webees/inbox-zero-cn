@@ -74,9 +74,7 @@ describe("updateAiSettingsAction", () => {
       aiApiKey: undefined,
     });
 
-    expect(result?.serverError).toBe(
-      "You must provide an API key for this provider",
-    );
+    expect(result?.serverError).toBe("你必须为此服务商提供 API 密钥");
     expect(prisma.user.updateMany).not.toHaveBeenCalled();
   });
 
@@ -89,9 +87,7 @@ describe("updateAiSettingsAction", () => {
       aiApiKey: "new-api-key",
     });
 
-    expect(result?.serverError).toBe(
-      "AI model settings are managed by the deployment.",
-    );
+    expect(result?.serverError).toBe("AI 模型设置由部署方管理。");
     expect(prisma.user.updateMany).not.toHaveBeenCalled();
   });
 });
@@ -127,9 +123,7 @@ describe("updateSensitiveDataPolicyAction", () => {
       sensitiveDataPolicy: "BLOCK",
     });
 
-    expect(result?.serverError).toBe(
-      "Sensitive data protection is managed by the deployment.",
-    );
+    expect(result?.serverError).toBe("敏感数据保护由部署方管理。");
     expect(prisma.emailAccount.update).not.toHaveBeenCalled();
   });
 });

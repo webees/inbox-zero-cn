@@ -26,8 +26,8 @@ export async function createDesktopMailStore(
 
 export { nodeMailCrypto };
 
-// Timed from the call, so a transaction queued behind others on its connection
-// counts the wait the caller actually felt.
+// 从调用开始计时，因此在同一连接上排队等待其他事务时，
+// 会计入调用方实际感受到的等待时间。
 function timeTransactions(
   driver: SqliteDriver,
   onTransaction: SqliteTransactionTimer,

@@ -88,7 +88,7 @@ export function BulkArchiveCards({
     [categories],
   );
 
-  // Get the names of default categories to determine which categories to show as separate tabs
+  // 获取默认分类的名称，以确定哪些分类应显示为单独的标签页
   const defaultCategoryNames = useMemo(
     () => new Set<string>(Object.values(defaultCategory).map((c) => c.name)),
     [],
@@ -99,8 +99,8 @@ export function BulkArchiveCards({
       const categoryName =
         categoryMap[group.category?.name || ""]?.name || "Uncategorized";
 
-      // If the category is not one of the default categories, group it under "Other"
-      // This handles legacy categories from before the 4+Other category system
+      // 如果该分类不属于默认分类，则将其归入“其他”
+      // 这用于处理 4+其他分类体系之前的旧分类
       if (
         categoryName !== "Uncategorized" &&
         !defaultCategoryNames.has(categoryName)
@@ -111,7 +111,7 @@ export function BulkArchiveCards({
       return categoryName;
     });
 
-    // Always show default categories (even with 0 senders)
+    // 始终显示默认分类（即使没有发件人）
     for (const cat of Object.values(defaultCategory)) {
       if (!grouped[cat.name]) {
         grouped[cat.name] = [];
@@ -121,7 +121,7 @@ export function BulkArchiveCards({
     return grouped;
   }, [emailGroups, categoryMap, defaultCategoryNames]);
 
-  // Sort categories alphabetically, but always put Other and Uncategorized last
+  // 按字母顺序排列分类，但始终把“其他”和“未分类”放在最后
   const sortedCategoryEntries = useMemo(
     () =>
       Object.entries(groupedEmails).sort(([a], [b]) => {
@@ -164,7 +164,7 @@ export function BulkArchiveCards({
   const toggleSenderSelection = (senderAddress: string) => {
     setSelectedSenders((prev) => ({
       ...prev,
-      [senderAddress]: prev[senderAddress] === false,
+      [senderAddress]: !prev[senderAddress],
     }));
   };
 
@@ -231,7 +231,7 @@ export function BulkArchiveCards({
       bulkAction === "delete" &&
       selectedToProcess.length > 0 &&
       !window.confirm(
-        `Delete emails from ${selectedToProcess.length} sender${selectedToProcess.length === 1 ? "" : "s"}? This action cannot be undone.`,
+        `确定要删除来自 ${selectedToProcess.length} 个发件人的邮件吗？此操作无法撤销。`,
       )
     ) {
       return;
@@ -261,7 +261,7 @@ export function BulkArchiveCards({
         }
       }
 
-      if (failedToQueue) throw new Error("Some sender actions were not queued");
+      if (failedToQueue) throw new Error("部分发件人操作未能加入队列");
 
       if (bulkAction === "archive") {
         await queueArchiveSenders({
@@ -274,7 +274,7 @@ export function BulkArchiveCards({
       }
     } catch {
       toastError({
-        description: `Failed to ${getBulkActionVerb(bulkAction)} some senders. Please try again.`,
+        description: `无法${getBulkActionVerb(bulkAction)}部分发件人，请重试。`,
       });
     } finally {
       setLoadingCategories((prev) => ({ ...prev, [categoryName]: false }));
@@ -288,12 +288,12 @@ export function BulkArchiveCards({
         const categoryStyle = getCategoryStyle(categoryName);
         const CategoryIcon = categoryStyle.icon;
 
-        // Get default category info if no category exists
+        // 如果不存在分类，则获取默认分类信息
         const defaultCat = Object.values(defaultCategory).find(
           (c) => c.name === categoryName,
         );
 
-        // Skip if no category found and not a default category (but allow Uncategorized)
+        // 如果未找到分类且它也不是默认分类，则跳过（但允许“未分类”）
         if (!category && !defaultCat && categoryName !== "Uncategorized")
           return null;
 
@@ -304,7 +304,7 @@ export function BulkArchiveCards({
 
         return (
           <Card key={categoryName} className="overflow-hidden">
-            {/* Category header - clickable to expand */}
+            {/* 分类标题 - 可点击展开 */}
             <div
               className="cursor-pointer p-4 transition-colors hover:bg-muted/50"
               onClick={() => toggleCategory(categoryName)}
@@ -347,7 +347,7 @@ export function BulkArchiveCards({
                       {categoryName}
                     </h2>
                     <p className="text-sm text-muted-foreground">
-                      {senders.length} senders
+                      {senders.length} 个发件人
                       {isArchived &&
                         ` ${actionLabels.completedLabel.toLowerCase()}`}
                     </p>
@@ -390,20 +390,20 @@ export function BulkArchiveCards({
               </div>
             </div>
 
-            {/* Expanded sender list */}
+            {/* 已展开的发件人列表 */}
             {isExpanded && (
               <div className="border-t">
                 <div className="divide-y">
                   {senders.length === 0 ? (
                     <div className="p-4 text-center text-sm text-muted-foreground">
-                      No senders in this category
+                      该分类暂无发件人
                     </div>
                   ) : (
                     <>
-                      {/* Select all row */}
+                      {/* 全选行 */}
                       <div className="flex items-center gap-3 bg-muted/30 px-4 py-3">
                         <ButtonCheckbox
-                          label={`Select all senders in ${categoryName}`}
+                          label={`选中「${categoryName}」中的所有发件人`}
                           checked={areAllSelectedInCategory(categoryName)}
                           indeterminate={areSomeSelectedInCategory(
                             categoryName,
@@ -478,7 +478,7 @@ function SenderRow({
 
   return (
     <div>
-      {/* Sender row */}
+      {/* 发件人行 */}
       <div
         className="flex cursor-pointer items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/50"
         onClick={onToggle}
@@ -492,7 +492,7 @@ function SenderRow({
         tabIndex={0}
       >
         <ButtonCheckbox
-          label={`Select ${sender.name || sender.address}`}
+          label={`选择 ${sender.name || sender.address}`}
           checked={isSelected}
           onChange={() => onToggleSelection()}
         />
@@ -521,7 +521,7 @@ function SenderRow({
           }}
         >
           <PencilIcon className="size-4" />
-          <span className="sr-only">Edit category</span>
+          <span className="sr-only">编辑分类</span>
         </Button>
         <ChevronDownIcon
           className={cn(
@@ -531,12 +531,12 @@ function SenderRow({
         />
       </div>
 
-      {/* Expanded email list */}
+      {/* 展开的邮件列表 */}
       {isExpanded && (
         <ExpandedEmails sender={sender.address} userEmail={userEmail} />
       )}
 
-      {/* Edit category dialog */}
+      {/* 编辑分类对话框 */}
       <EditCategoryDialog
         open={editDialogOpen}
         onOpenChange={setEditDialogOpen}
@@ -582,7 +582,7 @@ function EditCategoryDialog({
       toastError({ description: result.serverError });
       setIsLoading(false);
     } else {
-      toastSuccess({ description: "Category updated" });
+      toastSuccess({ description: "分类已更新" });
       await onCategoryChange?.();
       setIsLoading(false);
       onOpenChange(false);
@@ -598,9 +598,9 @@ function EditCategoryDialog({
         <div className="space-y-4">
           <div className="flex items-center justify-between gap-8">
             <div className="space-y-1">
-              <p className="font-medium">Category</p>
+              <p className="font-medium">分类</p>
               <p className="text-sm text-muted-foreground">
-                Choose which category this sender belongs to
+                选择该发件人所属的分类
               </p>
             </div>
             <Select
@@ -608,7 +608,7 @@ function EditCategoryDialog({
               onValueChange={setSelectedCategoryId}
             >
               <SelectTrigger className="w-[180px] shrink-0">
-                <SelectValue placeholder="Select category" />
+                <SelectValue placeholder="选择分类" />
               </SelectTrigger>
               <SelectContent>
                 {categories.map((category) => (
@@ -625,10 +625,10 @@ function EditCategoryDialog({
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
             >
-              Cancel
+              取消
             </Button>
             <Button onClick={handleSave} disabled={isLoading}>
-              {isLoading ? "Saving..." : "Save"}
+              {isLoading ? "保存中..." : "保存"}
             </Button>
           </div>
         </div>
@@ -682,25 +682,25 @@ function ArchiveSenderStatus({
 }) {
   switch (status?.status) {
     case "pending":
-      return <span className="text-sm text-muted-foreground">Queued</span>;
+      return <span className="text-sm text-muted-foreground">已排队</span>;
     case "processing":
       return (
         <span className="text-sm text-blue-600">
           {status.threadsTotal
             ? `${status.threadsTotal - status.threadIds.length} / ${status.threadsTotal}`
-            : "Archiving..."}
+            : "正在归档..."}
         </span>
       );
     case "completed":
       return (
         <span className="text-sm text-green-600">
           {status.threadsTotal
-            ? `Archived ${status.threadsTotal}!`
-            : "Archived"}
+            ? `已归档 ${status.threadsTotal} 个会话！`
+            : "已归档"}
         </span>
       );
     case "failed":
-      return <span className="text-sm text-red-600">Failed</span>;
+      return <span className="text-sm text-red-600">失败</span>;
     default:
       return null;
   }
@@ -716,8 +716,8 @@ function MarkReadSenderStatus({
       return (
         <span className="text-sm text-green-600">
           {status.threadsTotal
-            ? `Marked ${status.threadsTotal} read!`
-            : "Marked read"}
+            ? `已将 ${status.threadsTotal} 封标为已读`
+            : "已标为已读"}
         </span>
       );
     case "processing":
@@ -728,9 +728,9 @@ function MarkReadSenderStatus({
         </span>
       );
     case "pending":
-      return <span className="text-sm text-muted-foreground">Pending...</span>;
+      return <span className="text-sm text-muted-foreground">等待中...</span>;
     case "failed":
-      return <span className="text-sm text-red-600">Failed</span>;
+      return <span className="text-sm text-red-600">失败</span>;
     default:
       return null;
   }
@@ -745,7 +745,9 @@ function DeleteSenderStatus({
     case "completed":
       return (
         <span className="text-sm text-green-600">
-          {status.threadsTotal ? `Deleted ${status.threadsTotal}!` : "Deleted"}
+          {status.threadsTotal
+            ? `已删除 ${status.threadsTotal} 个会话！`
+            : "已删除"}
         </span>
       );
     case "processing":
@@ -756,18 +758,18 @@ function DeleteSenderStatus({
         </span>
       );
     case "pending":
-      return <span className="text-sm text-muted-foreground">Pending...</span>;
+      return <span className="text-sm text-muted-foreground">等待中...</span>;
     case "failed":
-      return <span className="text-sm text-red-600">Failed</span>;
+      return <span className="text-sm text-red-600">失败</span>;
     default:
       return null;
   }
 }
 
 function getBulkActionVerb(action: BulkActionType) {
-  if (action === "markRead") return "mark as read";
-  if (action === "delete") return "delete";
-  return "archive";
+  if (action === "markRead") return "标记为已读";
+  if (action === "delete") return "删除";
+  return "归档";
 }
 
 function ExpandedEmails({
@@ -796,7 +798,7 @@ function ExpandedEmails({
   if (error) {
     return (
       <div className="border-t bg-muted/30 p-4 text-sm text-muted-foreground">
-        Error loading emails
+        加载邮件出错
       </div>
     );
   }
@@ -804,7 +806,7 @@ function ExpandedEmails({
   if (!data?.threads.length) {
     return (
       <div className="border-t bg-muted/30 p-4 text-sm text-muted-foreground">
-        No emails found
+        未找到邮件
       </div>
     );
   }
@@ -841,7 +843,7 @@ function ExpandedEmails({
                   {snippet && (
                     <span className="ml-2 text-muted-foreground">
                       {(() => {
-                        // Remove invisible/zero-width chars and normalize whitespace
+                        // 移除不可见/零宽字符并规范化空白
                         const cleaned = snippet
                           .replace(/[\u034F\u200B-\u200D\uFEFF\u00A0]/g, "")
                           .trim()

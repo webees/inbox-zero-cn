@@ -88,7 +88,7 @@ export const MailSplitTabs = memo(function MailSplitTabs({
     () =>
       [
         ...allLabels,
-        ...(isGoogle ? [{ id: GmailLabel.IMPORTANT, name: "Important" }] : []),
+        ...(isGoogle ? [{ id: GmailLabel.IMPORTANT, name: "重要" }] : []),
       ].map((label) => ({
         id: `label:${label.id}`,
         name: label.name,
@@ -258,9 +258,7 @@ export const MailSplitTabs = memo(function MailSplitTabs({
           rollbackOnError: true,
         },
       ).catch((error) => {
-        toast.error(
-          error instanceof Error ? error.message : "Couldn't save that",
-        );
+        toast.error(error instanceof Error ? error.message : "无法保存该设置");
       });
     },
     [emailAccountId, mutateSettings, settings],

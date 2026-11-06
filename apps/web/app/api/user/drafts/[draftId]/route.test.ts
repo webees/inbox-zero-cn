@@ -174,7 +174,7 @@ describe("/api/user/drafts/[draftId]", () => {
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toMatchObject({
-      error: expect.stringContaining("changed"),
+      error: expect.stringContaining("邮箱草稿已变更。"),
       isKnownError: true,
     });
   });

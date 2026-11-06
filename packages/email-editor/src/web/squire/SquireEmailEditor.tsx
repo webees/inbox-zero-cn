@@ -59,8 +59,8 @@ type SquireEmailEditorProps = {
   ) => Promise<Record<string, string | null>>;
 };
 
-// Undo and redo replace the whole document, so the signature's collapsed or
-// removed state has to be reconciled with the restored snapshot afterwards.
+// 撤销和重做会替换整个文档，因此之后必须将签名的折叠或移除状态
+// 与恢复的快照进行协调。
 class EmailSquire extends Squire {
   isChangingHistory = false;
   onHistoryChange?: (direction: "undo" | "redo") => void;
@@ -73,17 +73,16 @@ class EmailSquire extends Squire {
     return this.changeHistory("redo", () => super.redo());
   }
 
-  // Changes made through modifyDocument leave Squire in its "just undone"
-  // state, where saving an undo step is skipped. Edits made outside typing
-  // must still be undoable.
+  // 通过 modifyDocument 所做的更改会让 Squire 停留在“刚刚撤销”的状态，
+  // 此时会跳过保存撤销步骤。打字之外的编辑仍必须可以撤销。
   saveEditUndoState() {
     this._isInUndoState = false;
     this.saveUndoState();
   }
 
   private changeHistory(direction: "undo" | "redo", change: () => Squire) {
-    // Undo saves the current state before stepping back, and a collapsed
-    // signature can make two snapshots render alike, so check both.
+    // 撤销会在回退前保存当前状态，而折叠的签名可能让两个快照渲染得
+    // 完全相同，因此两者都要检查。
     const before = this.getRoot().innerHTML;
     const undoIndex = this._undoIndex;
     this.isChangingHistory = true;
@@ -131,10 +130,10 @@ export const SquireEmailEditor = forwardRef<
   const squireBodyRef = useRef<HTMLDivElement>(null);
   const preservedToggleRef = useRef<HTMLDivElement>(null);
 
-  // The signature element is detached from the editable root while collapsed,
-  // so select-all, deletes and typing can never change it unseen.
+  // 折叠时签名元素会从可编辑根节点中分离，
+  // 因此全选、删除和输入都不会在不可见时改动它。
   const signatureRef = useRef<HTMLElement | null>(null);
-  // Content typed below the shown signature stays below it while collapsed.
+  // 在显示的签名下方输入的内容在折叠时仍保留在其下方。
   const signatureTailRef = useRef<Node[]>([]);
   const [signaturePresent, setSignaturePresentState] = useState(false);
   const signaturePresentRef = useRef(false);
@@ -849,7 +848,7 @@ export const SquireEmailEditor = forwardRef<
           ref={squireBodyRef}
         >
           <div
-            aria-label="Email message"
+            aria-label="电子邮件内容"
             aria-multiline="true"
             className={styles.squireContent}
             data-email-editor-content=""

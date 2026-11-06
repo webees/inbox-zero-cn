@@ -1,42 +1,42 @@
 ---
-title: 'AWS Deployment'
-description: 'Choose the right AWS deployment method for Inbox Zero'
+title: 'AWS 部署'
+description: '为 Inbox Zero 选择合适的 AWS 部署方式'
 ---
 
-There are three ways to deploy Inbox Zero on AWS. Choose the one that fits your team and infrastructure.
+在 AWS 上部署 Inbox Zero 有三种方式。请选择最适合你的团队和基础设施的一种。
 
-| Approach | Best for | Infrastructure |
+| 方式 | 适用场景 | 基础设施 |
 |----------|----------|----------------|
-| [EC2 + Docker](/hosting/ec2-deployment) | Simple VPS-style deployment | Single EC2 instance with ALB |
-| [Terraform](/hosting/terraform) | Infrastructure-as-code teams | ECS Fargate + RDS + optional ElastiCache |
-| [AWS Copilot](/hosting/aws-copilot) | AWS-native teams | ECS Fargate (managed by Copilot) |
+| [EC2 + Docker](/hosting/ec2-deployment) | 简单的 VPS 式部署 | 带 ALB 的单台 EC2 实例 |
+| [Terraform](/hosting/terraform) | 使用基础设施即代码的团队 | ECS Fargate + RDS + 可选的 ElastiCache |
+| [AWS Copilot](/hosting/aws-copilot) | 原生使用 AWS 的团队 | ECS Fargate（由 Copilot 管理） |
 
 ## EC2 + Docker
 
-The most straightforward approach. Launch an EC2 instance, install Docker, and use the same Docker Compose setup from the [Docker/VPS Deployment Guide](/hosting/self-hosting). Add an ALB for HTTPS.
+最直接的方式。启动一台 EC2 实例，安装 Docker，并使用 [Docker/VPS 部署指南](/hosting/self-hosting) 中相同的 Docker Compose 配置。添加一个 ALB 用于 HTTPS。
 
-Best if you want full control over a single server and are comfortable with SSH.
+如果你希望对单台服务器拥有完全控制权，并且熟悉 SSH，这是最佳选择。
 
-<Card title="EC2 Deployment Guide" icon="server" href="/hosting/ec2-deployment">
-  Step-by-step EC2 setup with ALB and SSL.
+<Card title="EC2 部署指南" icon="server" href="/hosting/ec2-deployment">
+  包含 ALB 和 SSL 的分步 EC2 设置指南。
 </Card>
 
 ## Terraform
 
-Generate a complete Terraform configuration with one command. Provisions ECS Fargate, RDS PostgreSQL, optional ElastiCache Redis, and manages secrets via SSM Parameter Store.
+一条命令即可生成完整的 Terraform 配置。预配 ECS Fargate、RDS PostgreSQL、可选的 ElastiCache Redis，并通过 SSM Parameter Store 管理密钥。
 
-Best if your team uses infrastructure-as-code and wants repeatable deployments.
+如果你的团队使用基础设施即代码，并希望实现可重复的部署，这是最佳选择。
 
-<Card title="Terraform Deployment Guide" icon="rectangle-terminal" href="/hosting/terraform">
-  Deploy with `terraform init && terraform apply`.
+<Card title="Terraform 部署指南" icon="rectangle-terminal" href="/hosting/terraform">
+  使用 `terraform init && terraform apply` 进行部署。
 </Card>
 
 ## AWS Copilot
 
-AWS Copilot handles the infrastructure for you. It creates ECS services, load balancers, and networking with simple CLI commands.
+AWS Copilot 会为你处理基础设施。它通过简单的 CLI 命令创建 ECS 服务、负载均衡器和网络。
 
-Best if you prefer AWS-managed tooling and want to avoid writing infrastructure code.
+如果你偏好 AWS 托管的工具，并希望避免编写基础设施代码，这是最佳选择。
 
-<Card title="AWS Copilot Deployment Guide" icon="cloud" href="/hosting/aws-copilot">
-  Deploy with `copilot init` and `copilot svc deploy`.
+<Card title="AWS Copilot 部署指南" icon="cloud" href="/hosting/aws-copilot">
+  使用 `copilot init` 和 `copilot svc deploy` 进行部署。
 </Card>

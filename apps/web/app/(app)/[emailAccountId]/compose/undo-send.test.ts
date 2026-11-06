@@ -55,7 +55,7 @@ describe("undo send", () => {
     expect(toast).toEqual({
       duration: expect.any(Number),
       id: "undo-send:mutation",
-      message: "Email sent!",
+      message: "邮件已发送！",
       onUndo: expect.any(Function),
       shortcut: "z",
     });
@@ -154,8 +154,8 @@ describe("undo send", () => {
     const toast = notifications.toastSuccess.mock.calls[0]?.[0];
     expect(toast).toMatchObject({
       id: "undo-send:mutation",
-      description: "Email sent!",
-      action: { label: "View" },
+      description: "邮件已发送！",
+      action: { label: "查看" },
     });
     expect(toast.duration).toBeLessThan(Number.POSITIVE_INFINITY);
     toast.action.onClick();
@@ -169,7 +169,7 @@ describe("undo send", () => {
     expect(notifications.toastSuccess).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "undo-send:mutation",
-        description: "Email sent!",
+        description: "邮件已发送！",
         action: undefined,
       }),
     );
@@ -241,7 +241,7 @@ describe("undo send", () => {
     await expect(undoPendingSend()).resolves.toBe(false);
     expect(restoreComposer).not.toHaveBeenCalled();
     expect(notifications.toastError).toHaveBeenCalledWith({
-      description: "Too late to undo. This email was already sent.",
+      description: "撤销为时已晚。此邮件已发送。",
     });
     await expect(undoPendingSend()).resolves.toBe(false);
   });
@@ -273,7 +273,7 @@ function expectSentToastWithoutUndo() {
   expect(notifications.dismiss).not.toHaveBeenCalled();
   expect(notifications.toastSuccess).toHaveBeenCalledWith({
     id: "undo-send:mutation",
-    description: "Email sent!",
+    description: "邮件已发送！",
     duration: Number.POSITIVE_INFINITY,
   });
 }

@@ -36,7 +36,7 @@ export function SetDateDropdown({
           {value ? (
             format(value, "PPP")
           ) : (
-            <span>{placeholder || "Set a date"}</span>
+            <span>{placeholder || "设置日期"}</span>
           )}
           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
         </Button>

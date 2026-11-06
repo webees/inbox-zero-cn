@@ -72,20 +72,20 @@ export async function trackRegistrationCompletedConversion({
     ]);
 
     if (facebookResult.status === "rejected") {
-      logger.error("Facebook tracking failed", {
+      logger.error("Facebook 跟踪失败", {
         error: facebookResult.reason,
         userId,
       });
     }
 
     if (posthogResult.status === "rejected") {
-      logger.error("Posthog tracking failed", {
+      logger.error("Posthog 跟踪失败", {
         error: posthogResult.reason,
         userId,
       });
     }
   } catch (error) {
-    logger.error("Registration conversion tracking failed", {
+    logger.error("注册转化跟踪失败", {
       error,
       userId,
     });
@@ -101,12 +101,9 @@ export async function getRegistrationCompletedConversionEligibility(
     select: { createdAt: true },
   });
   if (!userCreatedAt) {
-    logger.error(
-      "getRegistrationCompletedConversionEligibility: User not found",
-      {
-        userId,
-      },
-    );
+    logger.error("getRegistrationCompletedConversionEligibility：未找到用户", {
+      userId,
+    });
     return { eligible: false };
   }
 
@@ -114,7 +111,7 @@ export async function getRegistrationCompletedConversionEligibility(
 
   if (userCreatedAt.createdAt < ONE_HOUR_AGO) {
     logger.warn(
-      "getRegistrationCompletedConversionEligibility: User created more than an hour ago",
+      "getRegistrationCompletedConversionEligibility：用户创建已超过一小时",
       { userId },
     );
     return { eligible: false };
@@ -191,7 +188,7 @@ async function reserveConversionTracking({
 
     return reserved ? { shouldTrack: true, key } : { shouldTrack: false };
   } catch (error) {
-    logger.error("Conversion tracking dedupe failed", {
+    logger.error("转化跟踪去重失败", {
       error,
       provider,
       eventName,
@@ -217,7 +214,7 @@ async function releaseConversionTrackingReservation({
   try {
     await redis.del(key);
   } catch (error) {
-    logger.error("Conversion tracking dedupe release failed", {
+    logger.error("转化跟踪去重释放失败", {
       error,
       provider,
       eventName,

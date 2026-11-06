@@ -36,7 +36,7 @@ export async function deduplicateOAuthCallback({
 
   const claim = await claimOAuthCodeAndWait(code, requestFingerprint);
   if (claim.status === "error" && claim.stage === "claim") {
-    logger.warn("OAuth callback deduplication unavailable", {
+    logger.warn("OAuth 回调去重不可用", {
       error: claim.error,
       provider,
     });
@@ -44,7 +44,7 @@ export async function deduplicateOAuthCallback({
   }
 
   if (claim.status === "error") {
-    logger.warn("Failed while waiting for OAuth callback result", {
+    logger.warn("等待 OAuth 回调结果时失败", {
       error: claim.error,
       provider,
     });
@@ -53,9 +53,7 @@ export async function deduplicateOAuthCallback({
 
   if (claim.status === "success") {
     logger.info(
-      claim.waited
-        ? "Reusing in-flight OAuth callback result"
-        : "Reusing completed OAuth callback",
+      claim.waited ? "复用处理中的 OAuth 回调结果" : "复用已完成的 OAuth 回调",
       { provider },
     );
     return createCachedRedirect({
@@ -65,7 +63,7 @@ export async function deduplicateOAuthCallback({
   }
 
   if (claim.status === "timeout") {
-    logger.warn("OAuth callback wait timed out", { provider });
+    logger.warn("OAuth 回调等待超时", { provider });
     return Response.redirect(getPublicRedirectUrl(), 302);
   }
 
@@ -89,7 +87,7 @@ export async function deduplicateOAuthCallback({
           ttlSeconds: CALLBACK_RESULT_TTL_SECONDS,
         });
       } catch (error) {
-        logger.warn("Failed to cache OAuth callback result", {
+        logger.warn("缓存 OAuth 回调结果失败", {
           error,
           provider,
         });

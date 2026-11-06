@@ -51,9 +51,9 @@ export function CategorizeSendersProgress({
     <ProgressPanel
       totalItems={totalItems}
       remainingItems={totalItems - completedItems}
-      inProgressText="Categorizing senders..."
-      completedText={`Categorization complete! ${completedItems} categorized!`}
-      itemLabel="senders"
+      inProgressText="正在为发件人分类..."
+      completedText={`分类完成！已分类 ${completedItems} 个！`}
+      itemLabel="发件人"
     />
   );
 }

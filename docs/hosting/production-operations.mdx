@@ -1,81 +1,81 @@
 ---
-title: 'Production Operations'
-description: 'Operate, update, back up, and recover a self-hosted Inbox Zero deployment.'
+title: '生产环境运维'
+description: '运维、更新、备份并恢复自托管的 Inbox Zero 部署。'
 icon: 'server'
 ---
 
-This guide complements the deployment guides with ongoing operational practices. Adapt the commands and retention periods to your infrastructure.
+本指南在部署指南的基础上补充日常运维实践。请根据你的基础设施调整命令和保留周期。
 
-For access restrictions, private networking, and other security controls, see [Security Hardening](/hosting/security-hardening).
+关于访问限制、私有网络和其他安全控制，请参阅[安全加固](/hosting/security-hardening)。
 
-## Version and change management
+## 版本与变更管理
 
-- Pin deployments to a specific image tag or source revision instead of relying on an unbounded latest version.
-- Read the changelog and release notes before updating.
-- Back up the database before migrations.
-- Test updates in a staging environment that uses the same database and job-backend topology as production.
-- Keep the previous image or revision available for rollback.
+- 将部署固定到特定的镜像标签或源代码版本，而不是依赖不受约束的 latest 版本。
+- 更新前先阅读更新日志和发行说明。
+- 迁移前先备份数据库。
+- 在与生产环境使用相同数据库和任务后端拓扑的预发布环境中测试更新。
+- 保留之前的镜像或版本以便回滚。
 
-Database migrations may not be reversible. Rolling the application image back does not automatically roll the database schema back.
+数据库迁移可能无法回滚。回滚应用镜像并不会自动回滚数据库 schema。
 
-## Database backups
+## 数据库备份
 
-Back up PostgreSQL on a schedule appropriate for your recovery-point objective. Include:
+按照适合你恢复点目标的周期备份 PostgreSQL。包括：
 
-- Automated database snapshots or `pg_dump` backups
-- Encryption at rest and in transit
-- A retention policy with more than one restore point
-- Copies stored outside the application host
-- Regular restore tests into an isolated database
+- 自动化数据库快照或 `pg_dump` 备份
+- 静态和传输中加密
+- 保留多个恢复点的保留策略
+- 存储在应用主机之外的副本
+- 定期将备份恢复到隔离数据库进行测试
 
-Do not treat a successful backup job as proof that the backup can be restored.
+不要把备份任务成功当作备份可以恢复的证明。
 
-## Secrets
+## 密钥
 
-Store production secrets in a secret manager or protected deployment environment. Restrict access to database credentials, OAuth client secrets, encryption keys, AI-provider keys, webhook secrets, and `CRON_SECRET`.
+将生产环境密钥存储在密钥管理器或受保护的部署环境中。限制对数据库凭据、OAuth 客户端密钥、加密密钥、AI 服务商密钥、webhook 密钥和 `CRON_SECRET` 的访问。
 
-Before rotating encryption material, verify whether existing encrypted mailbox credentials depend on it. Replacing encryption secrets without a migration can make stored credentials unreadable and force account reconnection.
+在轮换加密材料之前，请确认现有的加密邮箱凭据是否依赖它。不经迁移就替换加密密钥可能导致已存储的凭据无法读取，并迫使账号重新连接。
 
-## Monitoring
+## 监控
 
-Monitor at least:
+至少监控：
 
-- Application and worker availability
-- `/api/health` according to your configured health-check policy
-- PostgreSQL and Redis connectivity
-- Queue depth and failed jobs
-- Scheduled-task execution
-- OAuth or webhook failures from Google and Microsoft
-- Transactional email delivery
-- AI-provider errors, latency, and spend
-- Disk, memory, CPU, and database capacity
+- 应用和 worker 的可用性
+- 按你配置的运行状况检查策略监控 `/api/health`
+- PostgreSQL 和 Redis 连接
+- 队列深度和失败的任务
+- 定时任务执行情况
+- 来自 Google 和 Microsoft 的 OAuth 或 webhook 失败
+- 事务邮件投递
+- AI 服务商的错误、延迟和花费
+- 磁盘、内存、CPU 和数据库容量
 
-Alert on repeated failures rather than relying on manual log review.
+对反复出现的失败发送告警，而不是依赖手动查看日志。
 
-## Scheduled tasks and workers
+## 定时任务与 worker
 
-The web process alone does not run every background workflow. Ensure the deployment runs the scheduler described in [Docker/VPS Deployment](/hosting/self-hosting#scheduled-tasks) and any selected queue worker.
+仅靠 web 进程无法运行所有后台工作流。确保部署运行了 [Docker/VPS 部署](/hosting/self-hosting#scheduled-tasks) 中描述的调度器以及任何选定的队列 worker。
 
-After deployment, verify each enabled job at least once: watch renewal, scheduled actions, automation jobs, digests, meeting briefs, follow-up reminders, Meeting Recorder scheduling, reasoning retention, and unused AI draft cleanup when configured.
+部署后，请至少验证每个已启用的任务一次：watch 续订、定时操作、自动化任务、邮件摘要、会议简报、跟进提醒、会议记录器调度、推理保留，以及（如已配置）未使用的 AI 草稿清理。
 
-## Updating
+## 更新
 
-1. Take and verify a fresh database backup.
-2. Record the currently deployed image or commit.
-3. Pull the new image or source revision.
-4. Run the documented migration/deployment process.
-5. Check health, logs, mailbox processing, and scheduled jobs.
-6. Keep the previous version available until the observation window passes.
+1. 创建并验证一份新的数据库备份。
+2. 记录当前部署的镜像或提交。
+3. 拉取新的镜像或源代码版本。
+4. 运行文档中记录的迁移/部署流程。
+5. 检查运行状况、日志、邮件处理和定时任务。
+6. 在观察窗口结束前保持上一个版本可用。
 
-## Recovery
+## 恢复
 
-Maintain a written recovery procedure covering:
+维护一份书面的恢复流程，涵盖：
 
-- Recreating the application and worker infrastructure
-- Restoring PostgreSQL to a known point
-- Restoring or rebuilding Redis-backed transient state
-- Reapplying secrets and OAuth configuration
-- Reconnecting provider webhooks and watches
-- Validating email processing without sending unintended messages
+- 重建应用和 worker 基础设施
+- 将 PostgreSQL 恢复到已知时间点
+- 恢复或重建基于 Redis 的临时状态
+- 重新应用密钥和 OAuth 配置
+- 重新连接服务商的 webhook 和 watch
+- 在不发送意外邮件的情况下验证邮件处理
 
-Test the procedure periodically in an isolated environment.
+定期在隔离环境中测试该流程。

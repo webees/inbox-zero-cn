@@ -51,9 +51,8 @@ export function useFolderSelection({
     setChildrenByParentId(folderSelection.buildChildrenMap(availableFolders));
   }, [availableFolders]);
 
-  // Selection updates apply per-folder deltas via functional setState so
-  // concurrent persists (e.g. two lazy loads resolving together) merge
-  // instead of overwriting each other's whole selection set.
+  // 选择更新通过函数式 setState 应用每个文件夹的增量，使并发的持久化
+  // （例如两个懒加载同时完成）能合并，而不是彼此覆盖整个选择集合。
   const persistSelection = useCallback(
     async ({
       changedFolders,
@@ -91,8 +90,7 @@ export function useFolderSelection({
         )?.serverError;
 
         if (serverError) {
-          // Roll back only the failed folders; sibling mutations that
-          // succeeded are already persisted server-side.
+          // 只回滚失败的文件夹；已成功的同级变更已在服务端持久化。
           const failedFolderIds = changedFolderIds.filter(
             (_, index) => results[index]?.serverError,
           );
@@ -104,7 +102,7 @@ export function useFolderSelection({
             }),
           );
           toastError({
-            title: isChecked ? "Error adding folder" : "Error removing folder",
+            title: isChecked ? "添加文件夹时出错" : "移除文件夹时出错",
             description: serverError,
           });
         }
@@ -118,8 +116,8 @@ export function useFolderSelection({
           }),
         );
         toastError({
-          title: isChecked ? "Error adding folder" : "Error removing folder",
-          description: "Please try again.",
+          title: isChecked ? "添加文件夹时出错" : "移除文件夹时出错",
+          description: "请重试。",
         });
         mutateFolders();
       }

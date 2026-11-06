@@ -64,7 +64,7 @@ export async function createWasmSqliteDriver(input?: {
         try {
           database.exec("ROLLBACK");
         } catch {
-          // already rolled back
+          // 已经回滚
         }
         throw error;
       }

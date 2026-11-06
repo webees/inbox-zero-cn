@@ -18,6 +18,6 @@ describe("mapWithConcurrency", () => {
   ])("rejects invalid concurrency %s", async (concurrency) => {
     await expect(
       mapWithConcurrency(["value"], concurrency, async (item) => item),
-    ).rejects.toThrow("concurrency must be a positive integer");
+    ).rejects.toThrow("concurrency 必须是正整数");
   });
 });

@@ -47,7 +47,7 @@ export async function archiveCategory({
   );
 
   if (!normalizedSenderEmails.length) {
-    logger.info("Category archive had no senders", {
+    logger.info("分类归档没有发件人", {
       categoryName: resolvedCategory.category.name,
     });
 
@@ -57,7 +57,7 @@ export async function archiveCategory({
       category: resolvedCategory.category,
       sendersCount: 0,
       senders: [],
-      message: `No senders are currently assigned to "${resolvedCategory.category.name}".`,
+      message: `当前没有发件人分配到“${resolvedCategory.category.name}”。`,
     };
   }
 
@@ -67,7 +67,7 @@ export async function archiveCategory({
     emailAccountId,
   );
 
-  logger.info("Archived sender category", {
+  logger.info("已归档发件人分类", {
     categoryName: resolvedCategory.category.name,
     sendersCount: normalizedSenderEmails.length,
   });
@@ -78,7 +78,7 @@ export async function archiveCategory({
     category: resolvedCategory.category,
     sendersCount: normalizedSenderEmails.length,
     senders: normalizedSenderEmails.slice(0, MAX_SENDERS_IN_OUTPUT),
-    message: `Archived mail from ${normalizedSenderEmails.length} senders in "${resolvedCategory.category.name}".`,
+    message: `已归档“${resolvedCategory.category.name}”分类中 ${normalizedSenderEmails.length} 个发件人的邮件。`,
   };
 }
 
@@ -107,7 +107,7 @@ async function resolveCategory({
       return {
         success: false as const,
         action: "archive_category" as const,
-        message: "The requested category was not found for this account.",
+        message: "该账号中未找到所请求的分类。",
       };
     }
 
@@ -121,7 +121,7 @@ async function resolveCategory({
     return {
       success: false as const,
       action: "archive_category" as const,
-      message: "categoryId or categoryName is required.",
+      message: "categoryId 或 categoryName 为必填项。",
     };
   }
 

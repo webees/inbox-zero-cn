@@ -27,7 +27,7 @@ export function ComposeAttachmentList({
 
   return (
     <ul
-      aria-label="Attachments"
+      aria-label="附件"
       className={cn(
         "flex flex-wrap gap-2",
         isComposeWindow && "shrink-0 px-4 py-2",
@@ -37,7 +37,7 @@ export function ComposeAttachmentList({
         <li
           className="flex max-w-full items-center gap-2 rounded-md border bg-muted/40 px-2 py-1 text-xs"
           key={attachment.id}
-          title="Included from the message you are forwarding"
+          title="来自你要转发的邮件"
         >
           <PaperclipIcon aria-hidden className="size-3.5 shrink-0" />
           <span className="max-w-52 truncate">{attachment.filename}</span>
@@ -64,7 +64,7 @@ export function ComposeAttachmentList({
               formatFileSize(attachment.size)}
           </span>
           <button
-            aria-label={`Remove ${attachment.filename}`}
+            aria-label={`移除 ${attachment.filename}`}
             className="rounded-sm p-0.5 hover:bg-muted"
             onClick={() => onRemove(attachment)}
             type="button"
@@ -80,8 +80,8 @@ export function ComposeAttachmentList({
 const ATTACHMENT_STATUS_LABELS: Partial<
   Record<ComposeAttachment["status"], string>
 > = {
-  uploading: "Uploading…",
-  failed: "Not attached",
+  uploading: "正在上传…",
+  failed: "未附加",
 };
 
 function AttachmentIcon({ attachment }: { attachment: ComposeAttachment }) {

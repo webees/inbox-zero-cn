@@ -113,7 +113,7 @@ async function sendEmail({
   force?: boolean;
   logger: Logger;
 }): Promise<SendEmailResult> {
-  logger.info("Sending digest email");
+  logger.info("正在发送邮件摘要");
   const now = new Date();
 
   const emailAccount = await prisma.emailAccount.findUnique({
@@ -125,12 +125,12 @@ async function sendEmail({
   });
 
   if (!emailAccount) {
-    throw new Error("Email account not found");
+    throw new Error("找不到邮箱账号");
   }
 
   if (!emailAccount.account.refresh_token) {
-    logger.warn("Skipping digest: account has no refresh token");
-    return { success: false, message: "Account has no refresh token" };
+    logger.warn("跳过邮件摘要：账号没有刷新令牌");
+    return { success: false, message: "账号没有刷新令牌" };
   }
 
   const emailProvider = await createEmailProvider({
@@ -146,15 +146,15 @@ async function sendEmail({
 
   if (!force) {
     if (!digestScheduleData) {
-      logger.info("Skipping digest send because no schedule is configured");
-      return { success: true, message: "Digest schedule is not configured" };
+      logger.info("跳过邮件摘要发送，因为未配置计划");
+      return { success: true, message: "未配置邮件摘要计划" };
     }
 
     if (!isDigestScheduleDue(digestScheduleData, now)) {
-      logger.info("Skipping digest send because schedule is not due", {
+      logger.info("跳过邮件摘要发送，因为计划尚未到期", {
         nextOccurrenceAt: digestScheduleData.nextOccurrenceAt,
       });
-      return { success: true, message: "Digest schedule is not due yet" };
+      return { success: true, message: "邮件摘要计划尚未到期" };
     }
   }
 
@@ -192,7 +192,7 @@ async function sendEmail({
       },
     });
 
-    // Return early if no digests were found, unless force is true
+    // 如果没有找到邮件摘要就提前返回，除非 force 为 true
     if (pendingDigests.length === 0) {
       if (!force) {
         if (digestScheduleData && digestScheduleProgression) {
@@ -205,10 +205,10 @@ async function sendEmail({
           });
         }
 
-        return { success: true, message: "No digests to process" };
+        return { success: true, message: "没有需要处理的邮件摘要" };
       }
-      // When force is true, send an empty digest to indicate the system is working
-      logger.info("Force sending empty digest", { emailAccountId });
+      // 当 force 为 true 时，发送一封空摘要以表明系统正常运作
+      logger.info("强制发送空邮件摘要", { emailAccountId });
     }
 
     // Store the digest IDs for the final update
@@ -274,12 +274,12 @@ async function sendEmail({
         try {
           parsedContent = JSON.parse(item.content);
         } catch (error) {
-          logger.warn("Failed to parse digest item content, skipping item", {
+          logger.warn("解析邮件摘要条目内容失败，跳过该条目", {
             messageId: item.messageId,
             digestId: digest.id,
-            error: error instanceof Error ? error.message : "Unknown error",
+            error: error instanceof Error ? error.message : "未知错误",
           });
-          return; // Skip this item and continue with the next one
+          return; // 跳过该条目并继续处理下一个
         }
 
         const contentResult =
@@ -292,7 +292,7 @@ async function sendEmail({
             subject: message?.headers?.subject || "",
           });
         } else {
-          logger.warn("Failed to validate digest content structure", {
+          logger.warn("校验邮件摘要内容结构失败", {
             messageId: item.messageId,
             digestId: digest.id,
             error: contentResult.error,
@@ -303,7 +303,7 @@ async function sendEmail({
     }, {} as Digest);
 
     if (Object.keys(executedRulesByRule).length === 0) {
-      logger.info("No executed rules found, skipping digest email");
+      logger.info("未找到已执行的规则，跳过邮件摘要");
       await prisma.digest.updateMany({
         where: getDigestClaimWhere(digestClaim),
         data: {
@@ -312,7 +312,7 @@ async function sendEmail({
       });
       return {
         success: true,
-        message: "No executed rules found, skipping digest email",
+        message: "未找到已执行的规则，跳过邮件摘要",
       };
     }
 
@@ -320,15 +320,15 @@ async function sendEmail({
 
     const renewedClaim = await renewDigestClaim(digestClaim);
     if (!renewedClaim) {
-      logger.warn("Skipping digest send because the processing claim was lost");
+      logger.warn("跳过邮件摘要发送，因为处理声明已丢失");
       return {
         success: true,
-        message: "Digest processing claim was lost",
+        message: "邮件摘要处理声明已丢失",
       };
     }
     digestClaim = renewedClaim;
 
-    logger.info("Sending digest");
+    logger.info("正在发送邮件摘要");
 
     await sendDigest({
       emailAccountId,
@@ -340,12 +340,12 @@ async function sendEmail({
       logger,
     });
 
-    logger.info("Digest sent");
+    logger.info("邮件摘要已发送");
 
     const sentAt = new Date();
 
-    // Only update database if email sending succeeded
-    // Use a transaction to ensure atomicity - all updates succeed or none are applied
+    // 仅在邮件发送成功后才更新数据库
+    // 使用事务保证原子性——要么全部更新成功，要么都不应用
     await prisma.$transaction([
       ...(!force && digestScheduleData && digestScheduleProgression
         ? [
@@ -358,7 +358,7 @@ async function sendEmail({
             }),
           ]
         : []),
-      // Mark only the processed digests as sent
+      // 仅将已处理的邮件摘要标记为已发送
       prisma.digest.updateMany({
         where: getDigestClaimWhere(digestClaim),
         data: {
@@ -366,7 +366,7 @@ async function sendEmail({
           sentAt,
         },
       }),
-      // Redact all DigestItems for the processed digests
+      // 遮盖已处理邮件摘要的所有 DigestItem
       prisma.digestItem.updateMany({
         data: { content: "[REDACTED]" },
         where: {
@@ -387,10 +387,10 @@ async function sendEmail({
         status: DigestStatus.FAILED,
       },
     });
-    logger.error("Error sending digest email", { error });
+    logger.error("发送邮件摘要时出错", { error });
     captureException(error);
-    throw new SafeError("Error sending digest email", 500);
+    throw new SafeError("发送邮件摘要时出错", 500);
   }
 
-  return { success: true, message: "Digest email sent successfully" };
+  return { success: true, message: "邮件摘要已成功发送" };
 }

@@ -20,16 +20,12 @@ const PHOTO_PAGE_SIZE = 1000;
 const MAX_PHOTO_PAGES = 5;
 // Bounds the cached map and the payload sent to the browser.
 const MAX_CONTACT_PHOTOS = 2000;
-// The People API rejects longer queries, and no name or address prefix is that long.
-const MAX_PEOPLE_QUERY_LENGTH = 100;
 
 export async function searchContacts(
   client: people_v1.People,
   query: string,
   logger: Logger,
 ) {
-  if (query.length > MAX_PEOPLE_QUERY_LENGTH) return [];
-
   if (!env.NEXT_PUBLIC_GMAIL_OTHER_CONTACTS_ENABLED) {
     const onlySource = await loadContactSource(
       () => searchSavedContacts(client, query),
@@ -112,13 +108,13 @@ export async function listContactPhotos(
       : undefined,
   ]);
 
-  // An empty map would be cached as "this account has no photos".
+  // 空映射会被缓存为“此账号没有照片”。
   if (saved.deniedError && (!other || other.deniedError))
     throw saved.deniedError;
 
   const photos: Record<string, string> = {};
   let count = 0;
-  // Saved contacts come first so the user's own choice of photo wins.
+  // 已保存的联系人优先，以便用户自己选择的照片胜出。
   for (const person of [
     ...(saved.contacts ?? []),
     ...(other?.contacts ?? []),
@@ -150,13 +146,13 @@ async function loadContactSource<T>(
   } catch (error) {
     if (!isContactSourceDenied(error)) throw error;
 
-    logger.info("Gmail contact source not permitted", { source });
+    logger.info("Gmail 联系人来源未获授权", { source });
     return { contacts: undefined, deniedError: error };
   }
 }
 
 function isContactSourceDenied(error: unknown) {
-  // Google 403 rate-limit payloads reuse PERMISSION_DENIED; do not treat them as missing access.
+  // Google 的 403 限流响应会复用 PERMISSION_DENIED；不要将其视为缺少访问权限。
   if (
     isGmailRateLimitExceededError(error) ||
     isGmailQuotaExceededError(error)
@@ -243,7 +239,7 @@ async function listPeoplePages(
   return people;
 }
 
-// Google fills in a generated letter tile when a person has no photo.
+// 当某个人没有照片时，Google 会填入生成的字母头像。
 function getPhotoUrl(person: people_v1.Schema$Person) {
   return person.photos?.find((photo) => !photo.default)?.url ?? undefined;
 }

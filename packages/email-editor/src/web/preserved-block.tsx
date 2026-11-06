@@ -25,16 +25,16 @@ export function PreservedBlocksToggle({
   onToggle: () => void;
 }) {
   const hiddenContent = [
-    blocks.some((candidate) => candidate.kind === "signature") && "signature",
-    blocks.some((candidate) => candidate.kind === "quote") && "quoted message",
+    blocks.some((candidate) => candidate.kind === "signature") && "签名",
+    blocks.some((candidate) => candidate.kind === "quote") && "引用消息",
   ]
     .filter(Boolean)
-    .join(" and ");
+    .join(" 和 ");
 
   return (
     <button
       aria-expanded={expanded}
-      aria-label={`${expanded ? "Hide" : "Show"} ${hiddenContent}`}
+      aria-label={`${expanded ? "隐藏" : "显示"} ${hiddenContent}`}
       className={styles.preservedToggle}
       onClick={onToggle}
       onMouseDown={(event) => event.preventDefault()}
@@ -45,8 +45,7 @@ export function PreservedBlocksToggle({
   );
 }
 
-// Nothing in a quote preview may reach the network, even if the sanitizer
-// misses something.
+// 引用预览中的任何内容都不得访问网络，即使过滤逻辑有所遗漏。
 const PREVIEW_CONTENT_POLICY =
   "default-src 'none'; img-src data:; style-src 'unsafe-inline'";
 
@@ -57,7 +56,7 @@ export function QuotePreview({ previewHtml }: { previewHtml: string }) {
       sandbox=""
       srcDoc={`<!doctype html><html><head><meta http-equiv="Content-Security-Policy" content="${PREVIEW_CONTENT_POLICY}"><meta name="color-scheme" content="light"><style>html,body{margin:0;padding:0;background:#fff;color:#242424;font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{padding:8px}img{max-width:100%;height:auto}table{max-width:100%}a{color:#2563eb}</style></head><body>${previewHtml}</body></html>`}
       tabIndex={-1}
-      title="Quoted message preview"
+      title="引用消息预览"
     />
   );
 }

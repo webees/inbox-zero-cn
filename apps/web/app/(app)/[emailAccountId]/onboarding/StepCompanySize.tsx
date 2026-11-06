@@ -21,27 +21,27 @@ import { captureException, getActionErrorMessage } from "@/utils/error";
 const COMPANY_SIZES = [
   {
     value: 1,
-    label: "Only me",
+    label: "只有我",
     icon: <User className="size-4" />,
   },
   {
     value: 5,
-    label: "2-10 people",
+    label: "2-10 人",
     icon: <Users className="size-4" />,
   },
   {
     value: 50,
-    label: "11-100 people",
+    label: "11-100 人",
     icon: <Building className="size-4" />,
   },
   {
     value: 500,
-    label: "101-1000 people",
+    label: "101-1000 人",
     icon: <Factory className="size-4" />,
   },
   {
     value: 1000,
-    label: "1000+ people",
+    label: "1000+ 人",
     icon: <Landmark className="size-4" />,
   },
 ];
@@ -62,17 +62,14 @@ export function StepCompanySize({ onNext }: { onNext: () => void }) {
       })
         .then((result) => {
           if (result?.serverError || result?.validationErrors) {
-            captureException(
-              new Error("Failed to save onboarding company size"),
-              {
-                extra: {
-                  context: "onboarding",
-                  step: "company_size",
-                  serverError: result?.serverError,
-                  validationErrors: result?.validationErrors,
-                },
+            captureException(new Error("保存引导流程的公司规模失败"), {
+              extra: {
+                context: "onboarding",
+                step: "company_size",
+                serverError: result?.serverError,
+                validationErrors: result?.validationErrors,
               },
-            );
+            });
             toastError({
               description: getActionErrorMessage(
                 {
@@ -80,8 +77,7 @@ export function StepCompanySize({ onNext }: { onNext: () => void }) {
                   validationErrors: result?.validationErrors,
                 },
                 {
-                  prefix:
-                    "We couldn't save that answer, but you can keep going",
+                  prefix: "无法保存该答案，但你可以继续",
                 },
               ),
             });
@@ -95,8 +91,7 @@ export function StepCompanySize({ onNext }: { onNext: () => void }) {
             },
           });
           toastError({
-            description:
-              "We couldn't save that answer, but you can keep going.",
+            description: "无法保存该答案，但你可以继续。",
           });
         });
     },
@@ -110,9 +105,9 @@ export function StepCompanySize({ onNext }: { onNext: () => void }) {
       </IconCircle>
 
       <div className="text-center mt-4">
-        <PageHeading>What's the size of your company?</PageHeading>
+        <PageHeading>你的公司规模有多大？</PageHeading>
         <TypographyP className="mt-2 max-w-lg mx-auto">
-          This helps us tailor the experience to your organization's needs.
+          这有助于我们根据你组织的需求定制体验。
         </TypographyP>
       </div>
 

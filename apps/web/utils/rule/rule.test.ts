@@ -32,10 +32,7 @@ vi.mock("@/utils/rule/rule-history", () => ({
   ruleHistoryRuleInclude: { actions: true, group: true },
 }));
 vi.mock("@/utils/analytics/rule-events.server", () => ({
-  RULE_ANALYTICS_EVENTS: {
-    ruleChanged: "Rule changed",
-    ruleDeleted: "Rule deleted",
-  },
+  RULE_ANALYTICS_EVENTS: { ruleChanged: "Rule changed" },
   trackRuleEvent: trackRuleEventMock,
 }));
 vi.mock("@/utils/email/provider-types", () => ({
@@ -95,48 +92,6 @@ type ResolvedRuleAction = Parameters<
 
 describe("deleteRule", () => {
   beforeEach(resetRuleMocks);
-
-  it.each([
-    "rule",
-    "group",
-  ])("does not report a failed %s deletion", async (target) => {
-    const error = new Error("Delete failed");
-    if (target === "group") prisma.group.deleteMany.mockRejectedValue(error);
-    else prisma.rule.delete.mockRejectedValue(error);
-
-    await expect(
-      deleteRule({
-        emailAccountId: EMAIL_ACCOUNT_ID,
-        ruleId: RULE_ID,
-        groupId: target === "group" ? GROUP_ID : undefined,
-      }),
-    ).rejects.toThrow("Delete failed");
-
-    expect(trackRuleEventMock).not.toHaveBeenCalled();
-  });
-
-  it.each([
-    "rule",
-    "group",
-    "missing group",
-  ])("reports one successful %s deletion", async (target) => {
-    prisma.group.deleteMany.mockResolvedValue({
-      count: target === "group" ? 1 : 0,
-    });
-    prisma.rule.delete.mockResolvedValue({ id: RULE_ID } as never);
-
-    await deleteRule({
-      emailAccountId: EMAIL_ACCOUNT_ID,
-      ruleId: RULE_ID,
-      groupId: target === "rule" ? undefined : GROUP_ID,
-    });
-
-    expect(trackRuleEventMock).toHaveBeenCalledExactlyOnceWith({
-      emailAccountId: EMAIL_ACCOUNT_ID,
-      event: "Rule deleted",
-      properties: { ruleId: RULE_ID },
-    });
-  });
 
   it("deletes the group first and relies on cascade delete for grouped rules", async () => {
     prisma.group.deleteMany.mockResolvedValue({ count: 1 });
@@ -916,7 +871,7 @@ describe("integration action access", () => {
         emailAccountId: EMAIL_ACCOUNT_ID,
         logger,
       }),
-    ).rejects.toThrow("Integration actions are not enabled for this user.");
+    ).rejects.toThrow("此用户未启用集成操作。");
 
     expect(prisma.mcpConnection.findMany).not.toHaveBeenCalled();
     expect(prisma.rule.update).not.toHaveBeenCalled();

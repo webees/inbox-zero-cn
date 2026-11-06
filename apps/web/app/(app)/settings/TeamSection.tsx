@@ -18,9 +18,9 @@ export function TeamSection({ organizationId }: { organizationId?: string }) {
     <>
       <Item size="sm">
         <ItemContent>
-          <ItemTitle>Invite members</ItemTitle>
+          <ItemTitle>邀请成员</ItemTitle>
           <ItemDescription>
-            Share your plan by inviting teammates to your organization.
+            通过邀请队友加入你的组织来共享你的套餐。
           </ItemDescription>
         </ItemContent>
         <ItemActions>
@@ -29,7 +29,7 @@ export function TeamSection({ organizationId }: { organizationId?: string }) {
             variant="outline"
             onClick={() => setIsInviteDialogOpen(true)}
           >
-            Invite
+            邀请
           </Button>
         </ItemActions>
       </Item>

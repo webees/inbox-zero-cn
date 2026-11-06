@@ -132,9 +132,9 @@ export async function migrateMembershipIndex(tx: SqlTransaction) {
   );
   if (applied.length) return;
 
-  // Label, category, and folder views otherwise scan every message and parse
-  // its label JSON, which made sidebar counts cost seconds per refresh. Rows
-  // are per message so each write only touches that message's rows.
+  // 否则标签、分类和文件夹视图要扫描每条消息并解析其标签 JSON，
+  // 使得侧边栏计数每次刷新耗时数秒。行是按消息拆分的，
+  // 因此每次写入只触及该消息的行。
   await tx.exec(`
     CREATE TABLE effective_message_memberships (
       account_id TEXT NOT NULL,
@@ -175,7 +175,7 @@ export async function migrateMembershipIndex(tx: SqlTransaction) {
   );
 }
 
-// Backfill reads every stored message; triggers read the changed row.
+// 回填会读取每条已存储的消息；触发器只读取发生变更的行。
 function insertMemberships(row: "m" | "NEW") {
   const from = row === "m" ? "effective_messages AS m, " : "";
   const folderFrom = row === "m" ? "FROM effective_messages AS m" : "";

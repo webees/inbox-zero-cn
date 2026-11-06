@@ -45,7 +45,7 @@ export function MessagingChannelHint() {
     <div className="mb-2 flex items-center gap-3 rounded-lg border bg-muted/50 px-4 py-3 text-sm">
       <MessagesSquareIcon className="size-4 flex-shrink-0" />
       <span className="flex-1 text-muted-foreground">
-        You can also chat with your assistant on Slack.
+        你也可以在 Slack 上与 AI 助手聊天。
       </span>
       <Button
         variant="outline"
@@ -54,11 +54,11 @@ export function MessagingChannelHint() {
         disabled={connecting}
         onClick={connect}
       >
-        {connecting ? "Connecting..." : "Connect"}
+        {connecting ? "连接中…" : "连接"}
       </Button>
       <button
         type="button"
-        aria-label="Dismiss"
+        aria-label="关闭"
         className="rounded p-0.5 text-muted-foreground hover:bg-muted-foreground/10"
         onClick={() => dismiss({ hintId: HINT_ID })}
       >

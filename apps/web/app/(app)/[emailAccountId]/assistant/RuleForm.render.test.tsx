@@ -247,7 +247,7 @@ describe("RuleForm", () => {
 
     renderLabelRuleAndOpenActionTypeDropdown();
 
-    expect(screen.queryAllByText("Call webhook").length).toBeGreaterThan(0);
+    expect(screen.queryAllByText("调用 Webhook").length).toBeGreaterThan(0);
   });
 
   it("hides Call webhook from the action type dropdown when webhook actions are disabled", () => {
@@ -255,7 +255,7 @@ describe("RuleForm", () => {
 
     renderLabelRuleAndOpenActionTypeDropdown();
 
-    expect(screen.queryAllByText("Call webhook")).toHaveLength(0);
+    expect(screen.queryAllByText("调用 Webhook")).toHaveLength(0);
   });
 
   it("hides existing webhook actions when webhook actions are disabled", () => {
@@ -412,8 +412,8 @@ describe("RuleForm", () => {
       />,
     );
 
-    expect(screen.getAllByText("Draft to")).toHaveLength(1);
-    expect(screen.getByText("Email")).toBeTruthy();
+    expect(screen.getAllByText("草稿发送至")).toHaveLength(1);
+    expect(screen.getByText("邮件")).toBeTruthy();
     expect(screen.getByText("Slack DM")).toBeTruthy();
     expect(screen.getByText("Telegram DM")).toBeTruthy();
   });
@@ -483,8 +483,8 @@ describe("RuleForm", () => {
       />,
     );
 
-    expect(screen.getAllByText("Draft to")).toHaveLength(1);
-    expect(screen.getByText("Email")).toBeTruthy();
+    expect(screen.getAllByText("草稿发送至")).toHaveLength(1);
+    expect(screen.getByText("邮件")).toBeTruthy();
     expect(screen.queryByText(/Disconnected/)).toBeNull();
   });
 
@@ -523,7 +523,7 @@ describe("RuleForm", () => {
     );
 
     fireEvent.click(
-      within(view.container).getByRole("button", { name: "Save" }),
+      within(view.container).getByRole("button", { name: "保存" }),
     );
 
     await waitFor(() => expect(mockUpdateRuleAction).toHaveBeenCalledTimes(1));
@@ -580,7 +580,7 @@ describe("RuleForm", () => {
     );
 
     fireEvent.click(
-      within(view.container).getByRole("button", { name: "Save" }),
+      within(view.container).getByRole("button", { name: "保存" }),
     );
 
     await waitFor(() => expect(mockUpdateRuleAction).toHaveBeenCalledTimes(1));
@@ -643,7 +643,7 @@ describe("RuleForm", () => {
     );
 
     fireEvent.click(
-      within(view.container).getByRole("button", { name: "Save" }),
+      within(view.container).getByRole("button", { name: "保存" }),
     );
 
     await waitFor(() => expect(mutate).toHaveBeenCalledTimes(2));

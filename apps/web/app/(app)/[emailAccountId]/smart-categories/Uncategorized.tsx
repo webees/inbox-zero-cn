@@ -64,7 +64,7 @@ export function Uncategorized({
               disabled={!hasAiAccess}
               onClick={async () => {
                 if (!senderAddresses?.length) {
-                  toastError({ description: "No senders to categorize" });
+                  toastError({ description: "没有可分类的发件人" });
                   return;
                 }
 
@@ -74,8 +74,7 @@ export function Uncategorized({
                 });
               }}
             >
-              <SparklesIcon className="mr-2 size-4" />
-              Categorize all with AI
+              <SparklesIcon className="mr-2 size-4" />用 AI 分类全部
             </Button>
           </PremiumTooltip>
 
@@ -87,7 +86,7 @@ export function Uncategorized({
               }}
             >
               <StopCircleIcon className="mr-2 size-4" />
-              Stop
+              停止
             </Button>
           )}
         </div>
@@ -96,7 +95,7 @@ export function Uncategorized({
           <div className="mr-1.5">
             <TooltipExplanation
               size="sm"
-              text="Automatically categorize new senders when they email you"
+              text="当新发件人给你发邮件时自动分类"
             />
           </div>
           <AutoCategorizeToggle
@@ -120,14 +119,14 @@ export function Uncategorized({
                 ) : (
                   <ChevronsDownIcon className="mr-2 size-4" />
                 )}
-                Load More
+                加载更多
               </Button>
             )}
           </>
         ) : (
           !isLoading && (
             <SectionDescription className="p-4">
-              No senders left to categorize!
+              没有剩余的发件人需要分类！
             </SectionDescription>
           )
         )}
@@ -147,7 +146,7 @@ function AutoCategorizeToggle({
   return (
     <Toggle
       name="autoCategorizeSenders"
-      label="Auto categorize"
+      label="自动分类"
       enabled={autoCategorizeSenders}
       onChange={async (enabled) => {
         await setAutoCategorizeAction(emailAccountId, {
@@ -163,7 +162,7 @@ function useSenders() {
     pageIndex: number,
     previousPageData: UncategorizedSendersResponse | null,
   ) => {
-    // Reached the end
+    // 已到达末尾
     if (previousPageData && !previousPageData.nextOffset) return null;
 
     const baseUrl = "/api/user/categorize/senders/uncategorized";
@@ -184,13 +183,13 @@ function useSenders() {
     setSize(size + 1);
   }, [setSize, size]);
 
-  // Combine all senders from all pages
+  // 合并所有页面中的发件人
   const allSenders = useMemo(
     () => data?.flatMap((page) => page.uncategorizedSenders),
     [data],
   );
 
-  // Check if there's more data to load by looking at the last page
+  // 通过查看最后一页来判断是否还有更多数据可加载
   const hasMore = !!data?.[data.length - 1]?.nextOffset;
 
   return {

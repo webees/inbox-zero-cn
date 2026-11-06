@@ -24,25 +24,25 @@ export function RequestAccessDialog({
 }: RequestAccessDialogProps) {
   const isGenericRequest = !integrationName;
   const title = isGenericRequest
-    ? "Request an Integration"
-    : `Request ${integrationName} Access`;
+    ? "申请集成"
+    : `请求 ${integrationName} 访问权限`;
   const subject = isGenericRequest
-    ? "Integration Request"
-    : `Request Access: ${integrationName} Integration`;
+    ? "集成请求"
+    : `请求访问：${integrationName} 集成`;
 
   const messageBody = isGenericRequest
-    ? `Hi,\n\nI would like to request a new integration for ${BRAND_NAME}.\n\nIntegration name:\n\nUse case:\n\nThank you!`
-    : `Hi,\n\nI'm interested in using the ${integrationName} integration with ${BRAND_NAME}.\n\nCould you please let me know when this integration will be available?\n\nThank you!`;
+    ? `你好：\n\n我希望为 ${BRAND_NAME} 申请一个新的集成。\n\n集成名称：\n\n使用场景：\n\n谢谢！`
+    : `你好：\n\n我有兴趣在 ${BRAND_NAME} 中使用 ${integrationName} 集成。\n\n能否告知我该集成何时可用？\n\n谢谢！`;
 
   const handleCopyEmail = async () => {
     await navigator.clipboard.writeText(SUPPORT_EMAIL);
-    toastSuccess({ description: "Email copied to clipboard" });
+    toastSuccess({ description: "邮箱已复制到剪贴板" });
   };
 
   const handleCopyMessage = async () => {
     const message = `Subject: ${subject}\n\n${messageBody}`;
     await navigator.clipboard.writeText(message);
-    toastSuccess({ description: "Message copied to clipboard" });
+    toastSuccess({ description: "消息已复制到剪贴板" });
   };
 
   return (
@@ -50,7 +50,7 @@ export function RequestAccessDialog({
       <DialogTrigger asChild>
         {trigger || (
           <Button size="sm" variant="outline">
-            Request Access
+            请求访问
           </Button>
         )}
       </DialogTrigger>
@@ -59,13 +59,13 @@ export function RequestAccessDialog({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
             {isGenericRequest
-              ? "Send us an email to request a new integration."
-              : "Send us an email to request access to this integration."}
+              ? "给我们发邮件以申请新的集成。"
+              : "给我们发邮件以申请该集成的访问权限。"}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div>
-            <div className="text-sm font-medium">Email</div>
+            <div className="text-sm font-medium">邮箱</div>
             <div className="flex items-center gap-2 mt-1">
               <code className="flex-1 rounded bg-muted px-3 py-2 text-sm">
                 {SUPPORT_EMAIL}
@@ -76,10 +76,10 @@ export function RequestAccessDialog({
             </div>
           </div>
           <div>
-            <div className="text-sm font-medium">Message</div>
+            <div className="text-sm font-medium">消息</div>
             <div className="flex flex-col gap-2 mt-1">
               <div className="rounded bg-muted px-3 py-2 text-sm">
-                <div className="font-medium mb-2">Subject: {subject}</div>
+                <div className="font-medium mb-2">主题：{subject}</div>
                 <div className="whitespace-pre-wrap text-muted-foreground">
                   {messageBody}
                 </div>
@@ -91,7 +91,7 @@ export function RequestAccessDialog({
                 className="self-end"
               >
                 <Copy className="h-4 w-4 mr-2" />
-                Copy Message
+                复制消息
               </Button>
             </div>
           </div>

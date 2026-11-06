@@ -6,10 +6,10 @@ import type { OperationStatus } from "@inboxzero/mail-core/operations";
 
 export const UNDO_SEND_DELAY_MS = 10_000;
 const UNDO_SEND_TOAST_ID = "undo-send";
-const SENT_MESSAGE = "Email sent!";
+const SENT_MESSAGE = "邮件已发送！";
 const SENT_TOAST_DURATION_MS = 6000;
-// The server holds the send while it is executing or verifying, so undo stays
-// open until the send leaves it or the window ends.
+// 服务器在发送执行或验证期间会一直持有该发送，因此撤销入口会保持可用，
+// 直到发送离开该状态或时间窗口结束。
 const UNDOABLE_STATUSES = new Set<OperationStatus>([
   "preparing",
   "queued",
@@ -82,8 +82,8 @@ export function beginUndoSend({
     message: SENT_MESSAGE,
     shortcut: getShortcutHint("undo"),
     duration,
-    // A dismissed toast can still fire during its exit animation, after a
-    // newer send has taken over.
+    // 一个已被关闭的 toast 仍可能在其退出动画期间触发，
+    // 此时新的发送可能已经接管。
     onUndo: async () => {
       if (pending === current) await undoPendingSend();
     },
@@ -91,7 +91,7 @@ export function beginUndoSend({
   inspect();
 }
 
-/** Confirms a send that went out, with View when it can be shown, or closes the toast. */
+/** 确认已发出的发送，在可展示时提供“查看”，否则关闭 toast。 */
 export function finishUndoSendToast(
   operationId: string,
   outcome: { sent: false } | { sent: true; onView: (() => void) | null },
@@ -106,7 +106,7 @@ export function finishUndoSendToast(
     description: SENT_MESSAGE,
     duration: SENT_TOAST_DURATION_MS,
     action: outcome.onView
-      ? { label: "View", onClick: outcome.onView }
+      ? { label: "查看", onClick: outcome.onView }
       : undefined,
   });
 }
@@ -120,10 +120,10 @@ export async function undoPendingSend() {
     operationId: current.operationId,
   });
   if (result.status === "unavailable") {
-    // The send is still held, so the user can try again within the window.
+    // 发送仍被持有，因此用户可以在时间窗口内重试。
     current.undone = false;
     toastError({
-      description: "Couldn't reach the server to undo. Try again.",
+      description: "无法连接服务器以撤销。请重试。",
     });
     return false;
   }
@@ -137,8 +137,8 @@ export async function undoPendingSend() {
     toastError({
       description:
         result.status === "too_late"
-          ? "Too late to undo. This email was already sent."
-          : "Couldn't undo send",
+          ? "撤销为时已晚。此邮件已发送。"
+          : "无法撤销发送",
     });
     return false;
   }

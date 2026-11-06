@@ -75,7 +75,7 @@ function OptionsMenu({
           size="iconSm"
           variant="ghost"
           className="mt-1"
-          aria-label="More options"
+          aria-label="更多选项"
         >
           <MoreHorizontalIcon className="size-4 text-muted-foreground" />
         </Button>
@@ -85,37 +85,37 @@ function OptionsMenu({
         {onUsePrompt && !isPromptMode && (
           <DropdownMenuItem onClick={onUsePrompt}>
             <SparklesIcon className="mr-2 size-4" />
-            Use prompt
+            使用提示词
           </DropdownMenuItem>
         )}
         {onUseLabel && isPromptMode && (
           <DropdownMenuItem onClick={onUseLabel}>
             <SparklesIcon className="mr-2 size-4" />
-            Use label
+            使用标签
           </DropdownMenuItem>
         )}
         {onSetManually && !isManualMode && (
           <DropdownMenuItem onClick={onSetManually}>
             <PenLineIcon className="mr-2 size-4" />
-            Set content manually
+            手动设置内容
           </DropdownMenuItem>
         )}
         {onUseAiDraft && isManualMode && (
           <DropdownMenuItem onClick={onUseAiDraft}>
             <SparklesIcon className="mr-2 size-4" />
-            Use AI draft
+            使用 AI 草稿
           </DropdownMenuItem>
         )}
         {onAddDelay && !hasDelay && (
           <DropdownMenuItem onClick={onAddDelay}>
             <ClockIcon className="mr-2 size-4" />
-            Add delay
+            添加延迟
           </DropdownMenuItem>
         )}
         {onRemoveDelay && hasDelay && (
           <DropdownMenuItem onClick={onRemoveDelay}>
             <ClockIcon className="mr-2 size-4" />
-            Remove delay
+            移除延迟
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

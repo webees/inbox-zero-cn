@@ -58,7 +58,7 @@ export function CategoriesSetup({
 }) {
   const { isLoading, error } = usePersona();
 
-  // State for managing suggested and basic categories separately
+  // 分别管理推荐分类和基础分类的状态
   const [suggestedCategories, setSuggestedCategories] = React.useState<
     CategoryConfig[]
   >([]);
@@ -75,7 +75,7 @@ export function CategoriesSetup({
 
   const suggestedLabels = usersRolesInfo.Other.suggestedLabels;
 
-  // Initialize categories when persona data loads
+  // 用户画像数据加载后初始化分类
   useEffect(() => {
     if (!isLoading && suggestedLabels) {
       setSuggestedCategories(
@@ -124,7 +124,7 @@ export function CategoriesSetup({
 
   return (
     <div>
-      <SectionHeader>BASIC LABELS</SectionHeader>
+      <SectionHeader>基础标签</SectionHeader>
 
       <div className="grid grid-cols-1 gap-2">
         {basicCategories.map((category, index) => {
@@ -156,7 +156,7 @@ export function CategoriesSetup({
       >
         {suggestedCategories.length > 0 ? (
           <>
-            <SectionHeader className="mt-8">SUGGESTED FOR YOU</SectionHeader>
+            <SectionHeader className="mt-8">为你推荐</SectionHeader>
             <div className="grid grid-cols-1 gap-2">
               {suggestedCategories.map((category, index) => (
                 <CategoryCard
@@ -251,28 +251,28 @@ function CategoryCard({
             }}
           >
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select action" />
+              <SelectValue placeholder="选择操作" />
             </SelectTrigger>
             <SelectContent>
               {isMicrosoftProvider(provider) && (
                 <>
-                  <SelectItem value="label">Categorise</SelectItem>
-                  <SelectItem value="move_folder">Move to folder</SelectItem>
+                  <SelectItem value="label">分类</SelectItem>
+                  <SelectItem value="move_folder">移动到文件夹</SelectItem>
                   {/* <SelectItem value="move_folder_delayed">
-                    Move to folder after a week
+                    一周后移动到文件夹
                   </SelectItem> */}
                 </>
               )}
               {isGoogleProvider(provider) && (
                 <>
-                  <SelectItem value="label">Label</SelectItem>
-                  <SelectItem value="label_archive">Label & archive</SelectItem>
+                  <SelectItem value="label">打标签</SelectItem>
+                  <SelectItem value="label_archive">打标签并归档</SelectItem>
                   {/* <SelectItem value="label_archive_delayed">
-                    Label & archive after a week
+                    一周后打标签并归档
                   </SelectItem> */}
                 </>
               )}
-              <SelectItem value="none">Do nothing</SelectItem>
+              <SelectItem value="none">不做任何操作</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -287,9 +287,9 @@ function CustomCategoryCard() {
       <CardContent className="flex items-center gap-2 p-4">
         <IconCircle size="sm" color="purple" Icon={PencilLineIcon} />
         <div>
-          <div className="flex flex-1 items-center font-medium">Custom</div>
+          <div className="flex flex-1 items-center font-medium">自定义</div>
           <div className="ml-auto flex items-center gap-4 text-muted-foreground text-sm">
-            You can set your own custom categories later
+            你可以稍后设置自己的自定义分类
           </div>
         </div>
       </CardContent>

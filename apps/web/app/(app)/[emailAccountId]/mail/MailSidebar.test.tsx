@@ -77,19 +77,19 @@ describe("MailSidebar", () => {
     expect(screen.getByText("Inbox").closest("a")?.getAttribute("href")).toBe(
       "/mail?type=inbox",
     );
-    expect(screen.queryByText("Sent")).toBeNull();
+    expect(screen.queryByText("已发送")).toBeNull();
 
-    fireEvent.click(screen.getByRole("button", { name: "More" }));
+    fireEvent.click(screen.getByRole("button", { name: "更多" }));
 
     expect(
       [
-        "Drafts",
-        "Sent",
-        "Archived",
-        "Starred",
-        "Scheduled",
-        "Spam",
-        "Trash",
+        "草稿",
+        "已发送",
+        "已归档",
+        "已加星标",
+        "已安排",
+        "垃圾邮件",
+        "垃圾箱",
       ].map((name) =>
         screen.getByText(name).closest("a")?.getAttribute("href"),
       ),
@@ -106,10 +106,10 @@ describe("MailSidebar", () => {
 
   it("links to Discussions with its unread count only for organization members", () => {
     const { rerender } = renderSidebar();
-    expect(screen.queryByText("Discussions")).toBeNull();
+    expect(screen.queryByText("讨论")).toBeNull();
 
     rerender(sidebar({ team: { href: "/shared", unreadCount: 3 } }));
-    const row = screen.getByText("Discussions").closest("a");
+    const row = screen.getByText("讨论").closest("a");
     expect(row?.getAttribute("href")).toBe("/shared");
     expect(row?.textContent).toContain("3");
   });
@@ -118,7 +118,7 @@ describe("MailSidebar", () => {
     const onOpenSettings = vi.fn();
     renderSidebar({ onOpenSettings });
 
-    fireEvent.click(screen.getByRole("button", { name: "Settings" }));
+    fireEvent.click(screen.getByRole("button", { name: "设置" }));
 
     expect(onOpenSettings).toHaveBeenCalledOnce();
   });
@@ -127,14 +127,14 @@ describe("MailSidebar", () => {
     renderSidebar({ activeType: "trash" });
 
     expect(
-      screen.getByText("Trash").closest("a")?.getAttribute("aria-current"),
+      screen.getByText("垃圾箱").closest("a")?.getAttribute("aria-current"),
     ).toBe("page");
   });
 
   it("keeps the active view reachable in the icon rail", () => {
     renderSidebar({ activeType: "trash", collapsed: true });
 
-    expect(screen.getByText("Trash").closest("a")?.getAttribute("href")).toBe(
+    expect(screen.getByText("垃圾箱").closest("a")?.getAttribute("href")).toBe(
       "/mail?type=trash",
     );
   });
@@ -144,7 +144,7 @@ describe("MailSidebar", () => {
     // there while its own view is open.
     renderSidebar({ activeType: "inbox", collapsed: true });
 
-    expect(screen.queryByText("Trash")).toBeNull();
+    expect(screen.queryByText("垃圾箱")).toBeNull();
   });
 
   it("closes the More group in the rail once its view is left behind", () => {
@@ -153,12 +153,12 @@ describe("MailSidebar", () => {
       collapsed: true,
     });
 
-    expect(screen.getByText("Trash")).toBeDefined();
+    expect(screen.getByText("垃圾箱")).toBeDefined();
 
     // The rail offers no way back out, so the group cannot outlive its view.
     rerender(sidebar({ activeType: "inbox", collapsed: true }));
 
-    expect(screen.queryByText("Trash")).toBeNull();
+    expect(screen.queryByText("垃圾箱")).toBeNull();
   });
 
   it("keeps a chosen More group open across navigation when expanded", () => {
@@ -166,12 +166,12 @@ describe("MailSidebar", () => {
 
     rerender(sidebar({ activeType: "inbox" }));
 
-    expect(screen.getByText("Trash")).toBeDefined();
+    expect(screen.getByText("垃圾箱")).toBeDefined();
   });
 
   it("closes the Categories group in the rail once its view is left behind", () => {
     const categories = [
-      { name: "Promotions", type: "CATEGORY_PROMOTIONS", Icon: TagIcon },
+      { name: "推广", type: "CATEGORY_PROMOTIONS", Icon: TagIcon },
     ];
     const { rerender } = renderSidebar({
       activeType: "CATEGORY_PROMOTIONS",
@@ -180,7 +180,7 @@ describe("MailSidebar", () => {
       collapsed: true,
     });
 
-    expect(screen.getByText("Promotions")).toBeDefined();
+    expect(screen.getByText("推广")).toBeDefined();
 
     rerender(
       sidebar({
@@ -191,13 +191,13 @@ describe("MailSidebar", () => {
       }),
     );
 
-    expect(screen.queryByText("Promotions")).toBeNull();
+    expect(screen.queryByText("推广")).toBeNull();
   });
 
   it("leaves the extra views out of the combined inbox", () => {
     renderSidebar({ unified: true });
 
-    expect(screen.queryByRole("button", { name: "More" })).toBeNull();
-    expect(screen.getByText("All inboxes")).toBeDefined();
+    expect(screen.queryByRole("button", { name: "更多" })).toBeNull();
+    expect(screen.getByText("所有收件箱")).toBeDefined();
   });
 });

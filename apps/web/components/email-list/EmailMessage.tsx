@@ -104,18 +104,18 @@ export function EmailMessage({
   hideComposer?: boolean;
   onStartCompose?: () => void;
   expanded: boolean;
-  /** Absent when the thread has a single message, which never collapses. */
+  /** 会话只有一条消息且永不折叠时不存在。 */
   onToggle?: () => void;
   /**
-   * Keeps the message open once a composer opens in it. Otherwise a newer
-   * message arriving would collapse it and hide the reply being written.
+   * 编辑器打开后保持消息展开。否则新到的消息会将其折叠，
+   * 隐藏正在撰写的回复。
    */
   onExpand?: () => void;
   onSendSuccess: (messageId: string, threadId: string) => void;
   onMarkDone?: () => void;
   /**
-   * A saved draft shown in this message was discarded. Only wired up by
-   * parents for which that discard empties the conversation.
+   * 此消息中显示的已保存草稿已被丢弃。仅由丢弃草稿会清空会话的
+   * 父组件接入。
    */
   onDraftDiscarded?: () => void;
   onOpenSenderContext?: (message: ThreadMessage) => void;
@@ -124,22 +124,22 @@ export function EmailMessage({
   onSelect?: () => void;
   onNavigateMessage?: (direction: -1 | 1) => void;
   sentMessageOpen?: SentMessageOpenState;
-  /** For a reply the provider hasn't sent yet: the message replies thread on. */
+  /** 对于服务商尚未发出的回复：这条消息要回复到的会话。 */
   replyAnchor?: ThreadMessage;
-  /** Keeps a composer's draft when this message's id changes under it. */
+  /** 当这条消息的 ID 在其下方发生变化时，保留编辑器的草稿。 */
   composerSessionMessageId?: string;
-  /** A reply or forward from this message just left its composer. */
+  /** 这条消息的回复或转发刚刚离开编辑器。 */
   onReplySent?: () => void;
-  /** Hides a send's message as soon as it can reach the thread, before its composer hands off to it. */
+  /** 发送的消息一到达会话就隐藏，赶在其编辑器交接之前。 */
   concealSentReply?: (operationId: string) => () => void;
   /**
-   * Resolves once a queued send's message is ready in the thread, so its
-   * composer can stay up until then instead of leaving a gap.
+   * 当排队发送的消息在会话中就绪后完成，使其编辑器可以一直保持到那时，
+   * 而不是留下空档。
    */
   awaitSentReply?: (operationId: string) => Promise<void>;
-  /** The send this message came from, while it is outgoing or after it syncs. */
+  /** 这条消息所属的发送操作，在其发送中或同步后可用。 */
   sendOperationId?: string;
-  /** Laid out but invisible, so its body loads before it replaces the composer that sent it. */
+  /** 已布局但不可见，使其正文在替换发送它的编辑器之前加载。 */
   concealed?: boolean;
 }) {
   const { emailAccountId } = useAccount();
@@ -150,8 +150,7 @@ export function EmailMessage({
   );
   const translation = getMessageTranslation(threadTranslation, message.id);
   const showTranslation = Boolean(translation && !translation.showOriginal);
-  // `null` follows `defaultComposeMode`, which the reader's Reply button flips
-  // long after this message mounted.
+  // `null` 跟随 `defaultComposeMode`，而阅读器的“回复”按钮会在这条消息挂载很久后才切换它。
   const [composeOverride, setComposeOverride] = useState<
     ReplyDraftMode | "closed" | null
   >(null);
@@ -191,9 +190,9 @@ export function EmailMessage({
       getReplyDraftSessionId(draft.sessionMessageId, "reply") !==
         poppedOutDraftSessionId,
   );
-  // A new reply's autosave can sync back as a mailbox draft before the thread
-  // knows the open composer saved it. Once open, the new reply keeps the
-  // editor instead of being swapped for that copy mid-sentence.
+  // 新回复的自动保存可能在线程得知打开的编辑器已保存它之前，就作为邮箱
+  // 草稿同步回来。一旦打开，新回复会保留该编辑器，而不会在句中替换成
+  // 那份副本。
   const [newReplyOpen, setNewReplyOpen] = useState(false);
   const isNewReply =
     composeMode === "reply" && (newReplyOpen || visibleDrafts.length === 0);
@@ -209,8 +208,8 @@ export function EmailMessage({
   const composeSessionRef = useRef(0);
   const messageRef = useRef<HTMLLIElement>(null);
 
-  // The selection a reply should quote, and which composer quotes it: a saved
-  // draft by its session, or the new reply when unset.
+  // 回复应引用的选区，以及引用它的编辑器：按会话关联的已保存草稿，
+  // 未设置时为新的回复。
   const [pendingQuote, setPendingQuote] = useState<{
     text: string;
     draftSessionMessageId?: string;
@@ -335,7 +334,7 @@ export function EmailMessage({
       onClickCapture={onSelect}
       onKeyDown={onMessageKeyDown}
       onKeyDownCapture={(event) => {
-        // Handle draft Escape before the rich-text editor consumes it.
+        // 在富文本编辑器消费 Escape 前处理草稿。
         if (
           hasOpenComposer &&
           event.key === "Escape" &&
@@ -353,9 +352,8 @@ export function EmailMessage({
         }
       }}
       className={cn(
-        // Padding stays the same in both states so expanding doesn't shift
-        // the header. The thread draws a sliding selection bar when it tracks
-        // selection; otherwise the focused card draws its own.
+        // 两种状态下内边距保持一致，展开时标题不会位移。会话跟踪选区时
+        // 会绘制滑动选择条；否则由获得焦点的卡片自行绘制。
         "group/message relative min-w-0 rounded bg-card px-3 py-2.5 outline-none transition-colors sm:px-4",
         selected === undefined &&
           "before:absolute before:inset-y-0 before:left-0 before:w-1 before:rounded-l before:bg-primary before:opacity-0 focus-within:before:opacity-100",
@@ -381,7 +379,7 @@ export function EmailMessage({
       />
 
       {expanded && (
-        // Aligns the body with the sender's name rather than the avatar.
+        // 让正文与发件人姓名对齐，而不是与头像对齐。
         <div className="min-w-0 pt-3 sm:pl-9">
           {isCalendarInvitationMessage(message) && (
             <CalendarInvitation key={message.id} messageId={message.id} />
@@ -393,7 +391,7 @@ export function EmailMessage({
           {!isDraftRow && threadTranslation?.loading && (
             <p className="mb-3 flex items-center gap-1.5 text-muted-foreground text-xs">
               <LoadingMiniSpinner />
-              Translating…
+              正在翻译…
             </p>
           )}
           {!isDraftRow && translation && (
@@ -499,9 +497,8 @@ export function EmailMessage({
 }
 
 /**
- * One row per message, and the whole thread's rhythm: an avatar, who sent it,
- * and when. Collapsed it also carries the snippet, so a thread reads top to
- * bottom without opening every message.
+ * 每条消息一行，构成整个会话的节奏：头像、发件人和时间。
+ * 折叠时还显示摘要，这样无需打开每条消息也能从上到下阅读会话。
  */
 function MessageHeader({
   message,
@@ -539,7 +536,7 @@ function MessageHeader({
   const isSent = message.labelIds?.includes(GmailLabel.SENT) ?? false;
   const senderEmail = extractEmailAddress(message.headers.from);
   const senderName = isSent
-    ? "Me"
+    ? "我"
     : extractNameFromEmail(message.headers.from) || senderEmail;
   const contactPhoto = useContactPhoto({
     email: expanded && !isSent ? senderEmail : null,
@@ -558,8 +555,8 @@ function MessageHeader({
     !isSent &&
     Boolean(senderEmail) &&
     !isSameEmailAddress(senderEmail, userEmail);
-  // A reply already keeps the CC list, so reply all only adds the other To
-  // recipients. Replies to the user's own mail already go to everyone.
+  // 回复本身会保留抄送列表，因此全部回复只会添加其他收件人。
+  // 回复用户自己发出的邮件时本就发给所有人。
   const canReplyAll =
     !isSent &&
     splitRecipientList(message.headers.to ?? "").some(
@@ -568,8 +565,8 @@ function MessageHeader({
         !isSameEmailAddress(recipient, message.headers.from),
     );
 
-  // Collapsing is the thread's call, so a row is only interactive once it has
-  // been handed a toggle.
+  // 折叠由会话决定，所以只有等到该行获得切换回调后
+  // 才会变为可交互。
   const toggleProps: React.ComponentProps<"div"> | undefined = onToggle && {
     "aria-expanded": expanded,
     onClick: onToggle,
@@ -598,8 +595,7 @@ function MessageHeader({
       </AvatarFallback>
     </Avatar>
   );
-  // Fixed widths on the collapsed rows keep the snippet column aligned down
-  // the thread.
+  // 折叠行使用固定宽度，使摘要列沿会话保持对齐。
   const senderNameClassName = cn(
     "truncate text-sm",
     expanded
@@ -619,8 +615,8 @@ function MessageHeader({
       {expanded ? (
         <>
           {showDetails ? (
-            // Not one big toggle like the summary, so addresses stay
-            // selectable and a click inside doesn't collapse the message.
+            // 不像摘要那样作为整体切换，这样地址仍可选中，
+            // 点击内部也不会折叠消息。
             // biome-ignore lint/a11y/useKeyWithClickEvents: the button inside toggles from the keyboard
             <div
               className="flex min-w-0 flex-1 cursor-auto items-start gap-2"
@@ -630,7 +626,7 @@ function MessageHeader({
               <EmailDetails message={message}>
                 <Button
                   aria-expanded
-                  aria-label="Hide details"
+                  aria-label="隐藏详情"
                   onClick={toggleDetails}
                   size="iconXs"
                   variant="ghostMuted"
@@ -642,7 +638,7 @@ function MessageHeader({
           ) : (
             <button
               aria-expanded={false}
-              aria-label="Show details"
+              aria-label="显示详情"
               className="group/details flex min-w-0 items-center gap-2 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
               onClick={toggleDetails}
               type="button"
@@ -651,7 +647,7 @@ function MessageHeader({
               <span className={senderNameClassName}>{senderName}</span>
               {recipients && (
                 <span className="hidden min-w-0 shrink-[999] truncate text-muted-foreground text-sm sm:block">
-                  to{" "}
+                  收件人：{" "}
                   <span className="font-medium text-foreground">
                     {recipients}
                   </span>
@@ -661,9 +657,9 @@ function MessageHeader({
             </button>
           )}
           {canResearchSender && (
-            <Tooltip content="View public profile">
+            <Tooltip content="查看公开资料">
               <Button
-                aria-label={`View public profile for ${senderName}`}
+                aria-label={`查看 ${senderName} 的公开资料`}
                 className="transition-opacity focus-visible:opacity-100 group-hover/message:opacity-100 sm:opacity-0"
                 onClick={(event) => {
                   event.stopPropagation();
@@ -689,7 +685,7 @@ function MessageHeader({
 
       {hasDraft &&
         (!expanded || message.labelIds?.includes(GmailLabel.DRAFT)) && (
-          <span className="shrink-0 text-primary text-xs">Draft</span>
+          <span className="shrink-0 text-primary text-xs">草稿</span>
         )}
 
       <div className="ml-auto flex shrink-0 items-center gap-2">
@@ -704,18 +700,18 @@ function MessageHeader({
                     variant="ghostMuted"
                   >
                     <ReplyIcon className="size-3.5" />
-                    <span className="sr-only">Reply</span>
+                    <span className="sr-only">回复</span>
                   </Button>
                 </Tooltip>
                 {canReplyAll && (
-                  <Tooltip content="Reply all">
+                  <Tooltip content="全部回复">
                     <Button
                       onClick={compose(onReplyAll)}
                       size="iconXs"
                       variant="ghostMuted"
                     >
                       <ReplyAllIcon className="size-3.5" />
-                      <span className="sr-only">Reply all</span>
+                      <span className="sr-only">全部回复</span>
                     </Button>
                   </Tooltip>
                 )}
@@ -726,7 +722,7 @@ function MessageHeader({
                     variant="ghostMuted"
                   >
                     <ForwardIcon className="size-3.5" />
-                    <span className="sr-only">Forward</span>
+                    <span className="sr-only">转发</span>
                   </Button>
                 </Tooltip>
               </>
@@ -799,8 +795,8 @@ function ReplyPanel({
   const { popOutReply } = useComposeModal();
   const [handingOffSend, setHandingOffSend] = useState(false);
   const handoffStarted = useRef(false);
-  // Also set on unmount: undo can restore a new composer in this one's place,
-  // and a late handoff must not close it.
+  // 卸载时也会设置：撤销可能会在原编辑器位置恢复新编辑器，
+  // 迟到的交接不得关闭它。
   const closed = useRef(false);
   useEffect(() => {
     closed.current = false;
@@ -820,22 +816,22 @@ function ReplyPanel({
   );
 
   const replyRef = useRef<HTMLDivElement>(null);
-  // A forward owns its original source once composing starts. A later cache
-  // fallback must not replace that source or discard the unsent editor state.
+  // 开始撰写后，转发即占有其原始来源。后续的缓存回退不能替换该来源，
+  // 也不能丢弃未发送的编辑器状态。
   const [forwardSource, setForwardSource] = useState<ParsedMessage>();
   if (composeMode === "forward" && bodyAvailable && !forwardSource)
     setForwardSource(message);
-  // Once open, the composer and its local draft own the reply. A saved draft
-  // that sync brings back before its body loads must not replace them.
+  // 一旦打开，编辑器和其本地草稿即支配该回复。同步在正文加载前带回的
+  // 已保存草稿不能替换它们。
   const [draftSource, setDraftSource] = useState<ParsedMessage>();
   if (draftMessage && draftBodyAvailable && !draftSource)
     setDraftSource(draftMessage);
 
-  // scroll to the reply panel when it first opens
+  // 回复面板首次打开时滚动到它
   useEffect(() => {
     if (!autoScroll || !replyRef.current) return;
 
-    // Wait for the reply panel layout before scrolling.
+    // 滚动前等待回复面板完成布局。
     const scrollTimeout = setTimeout(() => {
       replyRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
     }, 500);
@@ -894,14 +890,14 @@ function ReplyPanel({
         ) {
           toastError({
             description: getActionErrorMessage(result, {
-              prefix: "Failed to discard draft",
+              prefix: "丢弃草稿失败",
             }),
           });
           onRestoreCompose(composeSession);
           return false;
         }
       } catch {
-        toastError({ description: "Failed to discard draft" });
+        toastError({ description: "丢弃草稿失败" });
         onRestoreCompose(composeSession);
         return false;
       } finally {
@@ -934,10 +930,10 @@ function ReplyPanel({
     return (
       <div className="mt-5 flex gap-2">
         <Button onClick={refetch} size="sm" variant="outline">
-          Load message to forward
+          加载要转发的邮件
         </Button>
         <Button onClick={onCloseCompose} size="sm" variant="ghost">
-          Cancel
+          取消
         </Button>
       </div>
     );
@@ -953,23 +949,22 @@ function ReplyPanel({
         draftSessionId={draftSessionId}
         onSubmitting={concealSentReply}
         onClose={(queuedOperationId?: string) => {
-          // An offline send closes again once queued; the handoff closes it.
+          // 离线发送排队后会再次关闭；交接会将其关闭。
           if (handoffStarted.current) return;
-          // Before the handoff, so this message stays open once the sent
-          // reply below it is the newest.
+          // 在交接之前执行，这样下方已发送的回复成为最新一条时，
+          // 此消息仍保持展开。
           onSent?.();
           if (!queuedOperationId || !awaitSentReply) {
             closeAfterSend();
             return;
           }
-          // Closing now would leave the thread without the reply until the
-          // sent message's body has loaded.
+          // 现在关闭会让会话在已发送邮件正文加载完成前缺少这条回复。
           handoffStarted.current = true;
           setHandingOffSend(true);
           awaitSentReply(queuedOperationId).then(closeAfterSend);
         }}
         onRestore={() => {
-          // Undo restores a fresh composer, which needs this one closed first.
+          // 撤销会恢复一个新的编辑器，需要先关闭当前这个。
           if (handoffStarted.current) closeAfterSend();
           onRestore?.();
         }}
@@ -1008,7 +1003,7 @@ function resolveComposeMode(
 ) {
   if (override === "closed") return;
   const mode = override ?? defaultComposeMode;
-  // A popped-out reply is written in its own window, not inline.
+  // 弹出的回复在其独立窗口中撰写，而不是内联。
   if (mode && isPoppedOut(mode)) return;
   return mode;
 }
@@ -1034,19 +1029,19 @@ const prepareReplyingToEmail = ({
       : undefined;
 
   return {
-    // If following an email from yourself, use original recipients, otherwise reply to sender
+    // 跟进自己发出的邮件时使用原始收件人，否则回复发件人
     to: sentFromUser ? message.headers.to : replyTo,
     fromHint: getFromHint(message),
-    // If following an email from yourself, don't add "Re:" prefix
+    // 跟进自己发出的邮件时不添加“Re:”前缀
     subject: sentFromUser
       ? message.headers.subject
       : formatReplySubject(message.headers.subject),
     headerMessageId: threadOn.headers["message-id"] || undefined,
     messageId: threadOn.id || undefined,
     threadId: threadOn.threadId || undefined,
-    // Keep original CC
+    // 保留原始抄送
     cc: replyAllCc ? formatCcList(replyAllCc) : message.headers.cc,
-    // Keep original BCC if available
+    // 如有原始密送则保留
     bcc: sentFromUser ? message.headers.bcc : "",
     references: threadOn.headers.references,
     draftHtml: "",
@@ -1063,7 +1058,7 @@ const prepareForwardingEmail = (
   subject: forwardEmailSubject(message.headers.subject),
   headerMessageId: undefined,
   threadId: message.threadId || undefined,
-  // The provider has no copy of an unsent message to forward from.
+  // 服务商没有可用来转发的未发送邮件副本。
   forwardedMessageId: unsent ? undefined : message.id || undefined,
   forwardedAttachments: message.attachments?.map((attachment) => ({
     id: attachment.attachmentId,
@@ -1101,8 +1096,8 @@ function prepareDraftReplyEmail(draft: ParsedMessage): ReplyingToEmail {
   };
 }
 
-// Follow-ups to the user's own mail keep its sender; replies to received mail
-// go out from whichever of the user's addresses it was sent to.
+// 跟进用户自己发出的邮件时保留其发件人；回复收到的邮件时，
+// 从该邮件发送到的用户地址发出。
 function getFromHint(message: ParsedMessage) {
   if (message.labelIds?.includes("SENT")) return message.headers.from;
   return [message.headers.to, message.headers.cc].filter(Boolean).join(", ");
@@ -1121,9 +1116,9 @@ function TranslationNotice({
 }) {
   const { emailAccountId } = useAccount();
   const translateThread = useTranslateThread();
-  let status = "Showing original";
+  let status = "正在显示原文";
   if (!showOriginal) {
-    status = languageName ? `Translated from ${languageName}` : "Translated";
+    status = languageName ? `已从${languageName}翻译` : "已翻译";
   }
 
   return (
@@ -1142,7 +1137,7 @@ function TranslationNotice({
         }}
         type="button"
       >
-        {showOriginal ? "Show translation" : "Show original"}
+        {showOriginal ? "显示译文" : "显示原文"}
       </button>
     </p>
   );
@@ -1156,12 +1151,12 @@ function MessageBodyLoading() {
       role="status"
     >
       <LoadingMiniSpinner />
-      Loading message…
+      正在加载邮件…
     </p>
   );
 }
 
-// Plain-text bodies render in the page, so their selection is the window's.
+// 纯文本正文直接渲染在页面中，因此其选区属于窗口。
 function getSelectedText(container: HTMLElement) {
   const selection = window.getSelection();
   if (!selection || selection.isCollapsed) return;

@@ -23,27 +23,27 @@ type Award = {
 
 const awards: Award[] = [
   {
-    title: "SOC2 Compliant",
-    description: "Enterprise-grade security. SOC 2 Type 2 certified",
+    title: "符合 SOC2",
+    description: "企业级安全。已通过 SOC 2 Type 2 认证",
     image: "/images/new-landing/awards/soc-award.png",
   },
   {
-    title: "#1 GitHub Trending",
-    description: "Trusted and loved by developers worldwide",
+    title: "GitHub Trending 第 1 名",
+    description: "受全球开发者信赖与喜爱",
     image: "/images/new-landing/awards/github-trending-award.png",
     imageSize: 160,
     top: "top-2",
     hideOnMobile: true,
   },
   {
-    title: "#1 Product Hunt",
-    description: "Product of the Day on Product Hunt",
+    title: "Product Hunt 第 1 名",
+    description: "Product Hunt 当日最佳产品",
     image: "/images/new-landing/awards/product-hunt-award.png",
     imageSize: 170,
   },
   {
-    title: "12k+ GitHub Stars",
-    description: "Open-source. See exactly what the code does",
+    title: "12k+ GitHub 星标",
+    description: "开源。代码做了什么一目了然",
     image: "/images/new-landing/awards/github-stars-award.png",
     imageSize: 170,
     top: "top-3",
@@ -55,11 +55,11 @@ const defaultAwardImageSize = 200;
 export function Awards() {
   return (
     <Section>
-      <SectionHeading>Privacy first and open source</SectionHeading>
+      <SectionHeading>隐私优先，开源</SectionHeading>
       <SectionSubtitle>
-        Your data stays private — no AI training, no funny business. We’re fully
-        certified for top-tier security, and you can even self-host Inbox Zero
-        if you want total control.
+        你的数据保持私密 —— 不用于 AI
+        训练，没有猫腻。我们已获得顶级安全的完整认证，如果你想要完全掌控，甚至可以自托管
+        Inbox Zero。
       </SectionSubtitle>
       <SectionContent
         noMarginTop

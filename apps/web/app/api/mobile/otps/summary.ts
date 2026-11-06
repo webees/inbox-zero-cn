@@ -36,7 +36,7 @@ export async function loadRecentOtpSummary({
         const provider = await createProvider(account);
         const { threads, hasMore } = await loadThreadsSince(provider, after);
         if (hasMore) {
-          logger.warn("Stopped loading recent OTP messages at page limit", {
+          logger.warn("达到分页上限，已停止加载最近的 OTP 邮件", {
             emailAccountId: account.id,
             pageLimit: MAX_THREAD_PAGES,
           });
@@ -51,7 +51,7 @@ export async function loadRecentOtpSummary({
         };
       } catch (error) {
         failedAccountIds.push(account.id);
-        logger.warn("Failed to load recent OTP messages", {
+        logger.warn("加载最近的 OTP 邮件失败", {
           emailAccountId: account.id,
           error,
         });

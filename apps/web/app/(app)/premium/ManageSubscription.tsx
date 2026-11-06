@@ -114,7 +114,7 @@ export function ViewInvoicesButton({
           loading={loading}
           onClick={openBillingPortal}
         >
-          {hasBoth ? "Stripe invoices" : "Invoices"}
+          {hasBoth ? "Stripe 发票" : "发票"}
         </Button>
       )}
 
@@ -125,7 +125,7 @@ export function ViewInvoicesButton({
             target="_blank"
             rel="noopener noreferrer"
           >
-            {hasBoth ? "Lemon invoices" : "Invoices"}
+            {hasBoth ? "Lemon 发票" : "发票"}
           </Link>
         </Button>
       )}
@@ -144,8 +144,7 @@ function useOpenBillingPortal() {
     if (result?.serverError || !url) {
       toastError({
         description:
-          result?.serverError ||
-          "Error loading billing portal. Please contact support.",
+          result?.serverError || "加载账单门户时出错。请联系支持人员。",
       });
     } else {
       redirectToSafeUrl(url, { allowExternal: true });

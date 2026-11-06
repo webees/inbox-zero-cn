@@ -8,8 +8,8 @@ import {
 import { cn } from "@/utils";
 
 /**
- * A component that truncates text to a single line and shows the full text
- * in a tooltip on hover if the text length exceeds maxLength.
+ * 将文本截断为单行，并在文本长度超过 maxLength 时
+ * 于悬停时在 tooltip 中显示完整文本的组件。
  */
 export function TruncatedTooltipText({
   text,

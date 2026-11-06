@@ -50,28 +50,27 @@ export function PreviewBatch({ job }: { job: CleanupJob }) {
   return (
     <CardGreen className="mb-4">
       <CardHeader>
-        <CardTitle>Preview run</CardTitle>
+        <CardTitle>预览运行</CardTitle>
         {/* <CardDescription>
-          We processed {total} emails. {archived} were{" "}
-          {job.action === CleanAction.ARCHIVE ? "archived" : "marked as read"}.
+          我们处理了 {total} 封邮件。其中 {archived} 封{" "}
+          {job.action === CleanAction.ARCHIVE ? "已归档" : "已标为已读"}。
         </CardDescription> */}
         <CardDescription>
-          We're cleaning up {PREVIEW_RUN_COUNT} emails so you can see how it
-          works.
+          我们正在清理 {PREVIEW_RUN_COUNT} 封邮件，让你看看效果。
         </CardDescription>
         <CardDescription>
-          To undo any, hover over the "
-          {job.action === CleanAction.ARCHIVE ? "Archive" : "Mark as read"}"
-          badge and click undo.
+          若要撤销，请将鼠标悬停在 "
+          {job.action === CleanAction.ARCHIVE ? "归档" : "标为已读"}"
+          徽章上，然后点击撤销。
         </CardDescription>
       </CardHeader>
       <CardContent className="flex items-center gap-4">
         <Button onClick={handleRunOnFullInbox} loading={isLoading}>
-          Run on Full Inbox
+          对全部收件箱运行
         </Button>
         {/* {disableRunOnFullInbox && (
           <CardDescription className="font-semibold">
-            All emails have been processed
+            所有邮件都已处理完毕
           </CardDescription>
         )} */}
       </CardContent>

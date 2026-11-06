@@ -189,8 +189,8 @@ export class OutlookSubscriptionManager {
   private async markSubscriptionLapsed(cancelledSubscriptionId?: string) {
     if (!cancelledSubscriptionId) return;
     try {
-      // Only while the row still points at what we cancelled, so a concurrent
-      // renewal that saved a replacement isn't marked lapsed.
+      // 仅当该记录仍指向我们已取消的订阅时才标记，以免并发
+      // 续订保存了替代订阅后，被误标为已失效。
       await prisma.emailAccount.updateMany({
         where: {
           id: this.emailAccountId,
@@ -199,12 +199,12 @@ export class OutlookSubscriptionManager {
         data: { watchEmailsExpirationDate: new Date() },
       });
     } catch (error) {
-      this.logger.error("Failed to mark subscription as lapsed", { error });
+      this.logger.error("无法将订阅标记为已失效", { error });
     }
   }
 
-  // The account still works once the user frees up space, so we show a
-  // banner instead of disconnecting. The watch cron clears it on recovery.
+  // 用户释放空间后账号仍可正常使用，因此我们显示
+  // 横幅而不是断开连接。监控定时任务会在恢复后清除它。
   private async showMailboxFullError() {
     try {
       const emailAccount = await prisma.emailAccount.findUnique({
@@ -216,11 +216,11 @@ export class OutlookSubscriptionManager {
       await addUserErrorMessage(
         emailAccount.userId,
         mailboxFullErrorKey(this.emailAccountId),
-        `The mailbox for ${emailAccount.email} is full or can't accept changes, so Inbox Zero can't process new emails. Free up space or fix the mailbox in Microsoft 365. This message clears once it's working again.`,
+        `${emailAccount.email} 的邮箱已满或无法接受更改，因此 Inbox Zero 无法处理新邮件。请释放空间或在 Microsoft 365 中修复该邮箱。此消息会在邮箱恢复正常后自动清除。`,
         this.logger,
       );
     } catch (error) {
-      this.logger.warn("Failed to save mailbox full error", { error });
+      this.logger.warn("无法保存邮箱已满错误", { error });
     }
   }
 
@@ -231,14 +231,14 @@ export class OutlookSubscriptionManager {
 
     try {
       await this.client.unwatchEmails(subscriptionId);
-      this.logger.info("Canceled existing subscription", { subscriptionId });
+      this.logger.info("已取消现有订阅", { subscriptionId });
       return true;
     } catch (error) {
       // The subscription might already be expired/invalid
-      this.logger.warn(
-        "Failed to cancel existing subscription (may already be expired)",
-        { subscriptionId, error },
-      );
+      this.logger.warn("无法取消现有订阅（可能已过期）", {
+        subscriptionId,
+        error,
+      });
       return false;
     }
   }

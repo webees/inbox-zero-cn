@@ -53,8 +53,8 @@ export function getConditions(rule: RuleConditions) {
   }
 
   if (isStaticRule(rule)) {
-    // Split static conditions into separate conditions for each populated field
-    // This matches the new UI where each condition has only one field
+    // 将静态条件按已填充的字段拆分为独立条件
+    // 这与新 UI 一致：每个条件只包含一个字段
     if (rule.from) {
       conditions.push({
         type: ConditionType.STATIC,
@@ -120,7 +120,7 @@ export function getEmptyCondition(type: CoreConditionType): ZodCondition {
         instructions: "",
       };
     case ConditionType.STATIC:
-      // Default to "from" field for new STATIC conditions
+      // 新的 STATIC 条件默认使用 "from" 字段
       return {
         type: ConditionType.STATIC,
         from: null,
@@ -160,7 +160,7 @@ export const flattenConditions = (
         if (condition.body) acc.body = condition.body;
         break;
       default:
-        logger.warn("Unknown condition type", { condition });
+        logger.warn("未知的条件类型", { condition });
         // biome-ignore lint/correctness/noSwitchDeclarations: intentional exhaustive check
         const exhaustiveCheck: never = condition.type;
         return exhaustiveCheck;
@@ -170,7 +170,7 @@ export const flattenConditions = (
 };
 
 //========================================
-// toString utils
+// toString 工具
 //========================================
 
 export function conditionTypesToString(rule: RuleConditions) {
@@ -184,11 +184,11 @@ function conditionTypeToString(conditionType: ConditionType): string {
     case ConditionType.AI:
       return "AI";
     case ConditionType.STATIC:
-      return "Static";
+      return "静态";
     case ConditionType.LEARNED_PATTERN:
-      return "Group";
+      return "分组";
     case ConditionType.PRESET:
-      return "Preset";
+      return "预设";
     default:
       // biome-ignore lint/correctness/noSwitchDeclarations: intentional exhaustive check
       const exhaustiveCheck: never = conditionType;
@@ -201,15 +201,15 @@ export function conditionsToString(rule: RuleConditions) {
   const connector =
     rule.conditionalOperator === LogicalOperator.AND ? " AND " : " OR ";
 
-  // Static conditions - grouped with commas
+  // 静态条件 - 用逗号分组
   const staticConditions: string[] = [];
-  if (rule.from) staticConditions.push(`From: ${rule.from}`);
-  if (rule.subject) staticConditions.push(`Subject: "${rule.subject}"`);
-  if (rule.to) staticConditions.push(`To: ${rule.to}`);
-  if (rule.body) staticConditions.push(`Body: "${rule.body}"`);
+  if (rule.from) staticConditions.push(`发件人：${rule.from}`);
+  if (rule.subject) staticConditions.push(`主题："${rule.subject}"`);
+  if (rule.to) staticConditions.push(`收件人：${rule.to}`);
+  if (rule.body) staticConditions.push(`正文："${rule.body}"`);
   if (staticConditions.length) conditions.push(staticConditions.join(", "));
 
-  // AI condition
+  // AI 条件
   if (rule.instructions) conditions.push(rule.instructions);
 
   return conditions.join(connector);

@@ -24,21 +24,20 @@ import {
 } from "@/components/ui/sheet";
 import type { PublicContactContextUnavailableReason } from "@/utils/ai/public-contact-context";
 import type { PublicContactContext } from "@/utils/ai/public-contact-context-schema";
-import { getSWRFetchErrorMessage } from "@/providers/swr-error";
 
 type SenderContextPanelProps = {
   messageId: string;
   senderName: string;
   senderEmail: string;
   /**
-   * `inline` sits beside the reader as a pane. `sheet` slides over it, for
-   * viewports too narrow to give up a column.
+   * `inline` 作为面板位于阅读器旁边。`sheet` 覆盖在阅读器上方，
+   * 用于窄到无法让出一列的视口。
    */
   variant: "inline" | "sheet";
   onClose: () => void;
 };
 
-/** Who a sender is, from public sources: role, company, and where that came from. */
+/** 发件人是谁，来自公开来源：职务、公司，以及信息来源。 */
 export function SenderContextPanel({
   messageId,
   senderName,
@@ -46,20 +45,15 @@ export function SenderContextPanel({
   variant,
   onClose,
 }: SenderContextPanelProps) {
-  const { data, isLoading, isValidating, error, mutate } =
-    usePublicContactContext({
-      messageId,
-      enabled: true,
-    });
-  // A retry keeps the last error until it settles, so don't leave it up
-  // meanwhile.
-  const isRetryingAfterError = Boolean(error) && isValidating;
+  const { data, isLoading, error } = usePublicContactContext({
+    messageId,
+    enabled: true,
+  });
   const isResearching =
     isLoading ||
-    isRetryingAfterError ||
     (data?.status === "unavailable" && data.reason === "research_in_progress");
-  // Focus as soon as the inline pane mounts, including when resizing from
-  // the sheet, so an immediate Escape is handled by the pane.
+  // 内联面板一挂载就聚焦，包括从抽屉模式调整大小时，
+  // 这样立即按 Escape 也能由该面板处理。
   const inlineRef = useCallback((element: HTMLElement | null) => {
     element?.focus();
   }, []);
@@ -67,19 +61,15 @@ export function SenderContextPanel({
   const body = (
     <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
       <LoadingContent
-        error={isRetryingAfterError ? undefined : error}
-        errorComponent={<ContextError error={error} onRetry={() => mutate()} />}
+        error={error}
+        errorComponent={<ContextError />}
         loading={isResearching}
         loadingComponent={<ContextSkeleton />}
       >
         {data?.status === "found" ? (
           <PublicContext context={data.context} />
         ) : (
-          <ContextUnavailable
-            onRetry={() => mutate()}
-            reason={data?.reason}
-            retrying={isValidating}
-          />
+          <ContextUnavailable reason={data?.reason} />
         )}
       </LoadingContent>
     </div>
@@ -120,13 +110,13 @@ export function SenderContextPanel({
 
   return (
     <aside
-      aria-label="Sender profile"
+      aria-label="发件人资料"
       className="flex w-80 shrink-0 flex-col border-border border-l bg-card outline-none"
       data-testid="sender-context-panel"
       onKeyDown={(event) => {
         if (event.key !== "Escape") return;
-        // Stopped here so the mail shell's Escape shortcut, which listens on
-        // the document, doesn't also close the whole reader.
+        // 在此阻止冒泡，这样监听 document 的邮件外壳 Escape
+        // 快捷键不会再关闭整个阅读器。
         event.preventDefault();
         event.stopPropagation();
         onClose();
@@ -137,7 +127,7 @@ export function SenderContextPanel({
       <div className="flex items-start gap-2 border-border border-b px-5 py-4">
         {identity}
         <Button
-          aria-label="Close sender profile"
+          aria-label="关闭发件人资料"
           className="-mr-2 -mt-1"
           onClick={onClose}
           size="iconXs"
@@ -165,7 +155,7 @@ function PublicContext({ context }: { context: PublicContactContext }) {
             ) : null}
             {context.confidence === "low" ? (
               <Badge className="font-normal" variant="outline">
-                Possible match
+                可能的匹配
               </Badge>
             ) : null}
           </div>
@@ -176,7 +166,7 @@ function PublicContext({ context }: { context: PublicContactContext }) {
 
       <section className="border-border border-t pt-5">
         <h3 className="font-medium text-foreground text-xs uppercase tracking-wide">
-          Public sources
+          公开来源
         </h3>
         <div className="mt-3 space-y-2">
           {context.sources.map((source, index) => (
@@ -215,7 +205,7 @@ function CompanyContext({
             </h3>
             {company.website ? (
               <a
-                aria-label={`Visit ${company.name}`}
+                aria-label={`访问 ${company.name}`}
                 className="text-muted-foreground hover:text-foreground"
                 href={company.website}
                 rel="noreferrer"
@@ -268,12 +258,8 @@ function CompanyFact({
 
 function ContextUnavailable({
   reason,
-  retrying,
-  onRetry,
 }: {
   reason?: PublicContactContextUnavailableReason;
-  retrying: boolean;
-  onRetry: () => void;
 }) {
   const message = getUnavailableMessage(reason);
 
@@ -283,44 +269,22 @@ function ContextUnavailable({
         <SparklesIcon className="size-4 text-muted-foreground" />
       </div>
       <div className="mt-3 font-medium text-foreground text-sm">
-        No public context
+        没有公开信息
       </div>
       <p className="mt-1 max-w-64 text-muted-foreground text-xs leading-5">
         {message}
       </p>
-      {reason === "research_failed" && (
-        <Button
-          className="mt-3"
-          loading={retrying}
-          onClick={onRetry}
-          size="sm"
-          variant="outline"
-        >
-          Try again
-        </Button>
-      )}
     </div>
   );
 }
 
-function ContextError({
-  error,
-  onRetry,
-}: {
-  error?: { info?: Record<string, unknown> };
-  onRetry: () => void;
-}) {
+function ContextError() {
   return (
     <div className="flex min-h-64 flex-col items-center justify-center text-center">
       <div className="font-medium text-foreground text-sm">
-        Couldn't load public context
+        无法加载公开信息
       </div>
-      <p className="mt-1 max-w-64 text-muted-foreground text-xs leading-5">
-        {getSWRFetchErrorMessage(error?.info)}
-      </p>
-      <Button className="mt-3" onClick={onRetry} size="sm" variant="outline">
-        Try again
-      </Button>
+      <p className="mt-1 text-muted-foreground text-xs">关闭面板后重试。</p>
     </div>
   );
 }
@@ -354,15 +318,15 @@ function getInitials(value: string) {
 function getUnavailableMessage(reason?: PublicContactContextUnavailableReason) {
   switch (reason) {
     case "personal_email":
-      return "Public profiles are not researched for personal email addresses.";
+      return "不会为个人邮箱地址研究公开资料。";
     case "search_unavailable":
-      return "Web search is not configured for this account.";
+      return "此账号未配置网页搜索。";
     case "research_failed":
-      return "Couldn't research this sender right now.";
+      return "暂时无法研究此发件人。请稍后重试。";
     case "cache_unavailable":
-      return "Public context is temporarily unavailable. Try again shortly.";
+      return "公开信息暂时不可用。请稍后重试。";
     default:
-      return "No confident public professional profile was found.";
+      return "未找到可靠的公开职业资料。";
   }
 }
 

@@ -1,47 +1,47 @@
 ---
-title: 'Docker/VPS Deployment Guide'
-description: 'Production deployment on your own VPS with Docker and Docker Compose'
+title: 'Docker/VPS 部署指南'
+description: '使用 Docker 和 Docker Compose 在你自己的 VPS 上进行生产部署'
 ---
 
 <Info>
-  For the fastest setup, see the [Quick Start](/hosting/quick-start).
+  最快的设置方式请参阅[快速开始](/hosting/quick-start)。
 </Info>
 
-This guide covers production deployment on a VPS using Docker and Docker Compose.
+本指南介绍如何使用 Docker 和 Docker Compose 在 VPS 上进行生产部署。
 
-## Prerequisites
+## 前置条件
 
-### Requirements
+### 要求
 
-- VPS with at least 2 GB RAM, 2 CPU cores, 20 GB storage, and a supported Linux distribution
-- Domain name pointed to your VPS IP
-- SSH access to your VPS
+- 至少 2 GB RAM、2 个 CPU 核心、20 GB 存储空间并运行受支持 Linux 发行版的 VPS
+- 指向你的 VPS IP 的域名
+- 对 VPS 的 SSH 访问
 
-## Step-by-Step VPS Setup
+## VPS 分步设置
 
-### 1. Prepare Your VPS
+### 1. 准备你的 VPS
 
-Connect to your VPS and install:
+连接到你的 VPS 并安装：
 
-1. **Docker Engine**: Follow [the official guide](https://docs.docker.com/engine/install) and the [Post installation steps](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user)
-2. **Node.js v24**: Follow [the official guide](https://nodejs.org/en/download) (required for the setup CLI and source installation)
+1. **Docker Engine**：遵循[官方指南](https://docs.docker.com/engine/install)和[安装后步骤](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user)
+2. **Node.js v24**：遵循[官方指南](https://nodejs.org/en/download)（设置 CLI 和源码安装需要）
 
-### 2. Setup and Configure
+### 2. 设置与配置
 
-The easiest way to get started is with the Inbox Zero CLI. You can either use it standalone or from within the cloned repo.
+最简单的入门方式是使用 Inbox Zero CLI。你可以单独使用它，也可以在克隆的仓库中使用。
 
-**Option A: Standalone (no clone needed)**
+**选项 A：独立使用（无需克隆）**
 
 ```bash
 npx @inbox-zero/cli setup
 ```
 
-This downloads the Docker Compose file and `.env` template automatically.
-Recommended choices for first-time self-hosting:
-- PostgreSQL/Redis: **Docker Compose**
-- Full stack: **Yes, everything in Docker** (especially when running via standalone `npx`)
+这会自动下载 Docker Compose 文件和 `.env` 模板。
+首次自托管的推荐选择：
+- PostgreSQL/Redis：**Docker Compose**
+- 完整栈：**是，所有内容都在 Docker 中**（尤其是通过独立 `npx` 运行时）
 
-**Option B: From the cloned repo**
+**选项 B：从克隆的仓库**
 
 ```bash
 git clone https://github.com/elie222/inbox-zero.git
@@ -51,69 +51,69 @@ pnpm install
 pnpm run setup
 ```
 
-The setup wizard will walk you through configuring Google and/or Microsoft OAuth, choosing an AI provider, and generating secrets.
+设置向导会引导你配置 Google 和/或 Microsoft OAuth、选择 AI 提供方并生成密钥。
 
-**Optional: Automated Google Cloud Setup**
+**可选：自动化 Google Cloud 设置**
 
-If you have the [gcloud CLI](https://cloud.google.com/sdk/docs/install) installed, you can automate API enabling and Pub/Sub setup:
+如果已安装 [gcloud CLI](https://cloud.google.com/sdk/docs/install)，你可以自动化启用 API 和 Pub/Sub 设置：
 
 ```bash
 npx @inbox-zero/cli setup-google --project-id YOUR_PROJECT_ID --domain yourdomain.com
 ```
 
-This works whether or not you have cloned the repository. If you installed the CLI globally, use `inbox-zero setup-google` with the same flags.
+无论是否克隆了仓库，这都可以工作。如果你全局安装了 CLI，请使用 `inbox-zero setup-google` 并带上相同的标志。
 
-The command enables required APIs, creates the Pub/Sub topic and subscription, and guides you through OAuth credential creation. It prints environment variables for you to add to your `.env`; it does not require a repo checkout.
+该命令会启用所需 API、创建 Pub/Sub 主题和订阅，并引导你创建 OAuth 凭据。它会打印需要添加到 `.env` 的环境变量；不需要检出仓库。
 
-You can also copy `.env.example` to `.env` and set the values yourself.
+你也可以将 `.env.example` 复制为 `.env` 并自行设置值。
 
-If you configure the deployment manually, set:
-- **Google OAuth**: `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
-- **LLM Provider**: Uncomment one provider block and add your API key
-- **Optional**: Microsoft OAuth, external Redis, etc.
+如果你手动配置部署，请设置：
+- **Google OAuth**：`GOOGLE_CLIENT_ID` 和 `GOOGLE_CLIENT_SECRET`
+- **LLM 提供方**：取消注释一个提供方块并添加你的 API 密钥
+- **可选**：Microsoft OAuth、外部 Redis 等
 
-For detailed configuration instructions, see the [Environment Variables Reference](/hosting/environment-variables).
+有关详细的配置说明，请参阅[环境变量参考](/hosting/environment-variables)。
 
-If you want remote email images to load through a separate privacy-preserving proxy, see the [Image Proxy guide](/hosting/image-proxy).
+如果你希望远程电子邮件图片通过单独的隐私保护代理加载，请参阅[图片代理指南](/hosting/image-proxy)。
 
-Browser unsubscribe is also optional. Docker Compose and `pnpm dev` never start `apps/unsubscribe-worker`. Leave `UNSUBSCRIBE_WORKER_URL` unset to keep HTTP unsubscribe (one-click POST, then a simple HTML form, then GET). If you do want isolated browser confirmation for JavaScript preference centers, run that app on a dedicated Linux host with gVisor as described in its README, then set `UNSUBSCRIBE_WORKER_URL` and `UNSUBSCRIBE_WORKER_SECRET` on the web app. The web app still tries one-click POST and simple HTML forms first.
+浏览器退订也是可选的。Docker Compose 和 `pnpm dev` 从不启动 `apps/unsubscribe-worker`。将 `UNSUBSCRIBE_WORKER_URL` 留空以保持 HTTP 退订（一键 POST，然后一个简单的 HTML 表单，然后 GET）。如果你确实希望为 JavaScript 偏好中心提供隔离的浏览器确认，请在其 README 所述，在配备 gVisor 的专用 Linux 主机上运行该应用，然后在 Web 应用上设置 `UNSUBSCRIBE_WORKER_URL` 和 `UNSUBSCRIBE_WORKER_SECRET`。Web 应用仍会首先尝试一键 POST 和简单 HTML 表单。
 
-**Note**: If you only use Microsoft OAuth, set `GOOGLE_CLIENT_ID=skipped` and `GOOGLE_CLIENT_SECRET=skipped`.
+**注意**：如果你仅使用 Microsoft OAuth，请设置 `GOOGLE_CLIENT_ID=skipped` 和 `GOOGLE_CLIENT_SECRET=skipped`。
 
-**Note**: When both the web app and its database/Redis run in Docker, remove or comment out `DATABASE_URL`, `DIRECT_URL`, and `REDIS_HTTP_URL` copied from `.env.example`. Those example URLs use `localhost` for running the app on your host; Compose supplies internal Docker hostnames when they are unset. Existing files that still set `UPSTASH_REDIS_URL` behave the same way. Keep explicit connection URLs when using external services.
+**注意**：当 Web 应用及其数据库/Redis 都运行在 Docker 中时，请移除或注释掉从 `.env.example` 复制的 `DATABASE_URL`、`DIRECT_URL` 和 `REDIS_HTTP_URL`。这些示例 URL 使用 `localhost` 以便在宿主机上运行应用；未设置时 Compose 会提供内部 Docker 主机名。仍设置 `UPSTASH_REDIS_URL` 的现有文件行为相同。使用外部服务时请保留显式连接 URL。
 
-### 3. Deploy
+### 3. 部署
 
-Start the services with the command setup printed. From a cloned repo, you can also run:
+使用设置过程打印的命令启动服务。从克隆的仓库中，你也可以运行：
 
 ```bash
 NEXT_PUBLIC_BASE_URL=https://yourdomain.com docker compose --env-file apps/web/.env --profile all up -d
 ```
 
-The pre-built Docker image is hosted at `ghcr.io/elie222/inbox-zero:latest` and will be automatically pulled. To pin a release, use its version without the `v` prefix (e.g., `ghcr.io/elie222/inbox-zero:2.30.0`).
+预构建的 Docker 镜像托管在 `ghcr.io/elie222/inbox-zero:latest`，并会自动拉取。要固定某个版本，请使用不带 `v` 前缀的版本号（例如 `ghcr.io/elie222/inbox-zero:2.30.0`）。
 
-**Important**: Compose-time `${...}` values are resolved before service-level `env_file` entries are loaded. If you're running from a cloned repo, make sure Compose can see the same values as the app by linking or copying `apps/web/.env` to the repo root as `.env`. The CLI setup does this automatically for the default configuration and preserves existing user-managed root files. Copied files are refreshed only while their contents match the last CLI-written version; changed copies and retargeted links are preserved with a warning. For manual setup, run `ln -s apps/web/.env .env` once from the repo root before `docker compose up`. If a root `.env` already exists, review it before replacing it, or use `docker compose --env-file apps/web/.env --profile all up -d`. Shell environment values still take precedence.
+**重要**：Compose 时 `${...}` 值会在加载服务级 `env_file` 条目之前解析。如果你从克隆的仓库运行，请通过链接或复制 `apps/web/.env` 到仓库根目录的 `.env`，确保 Compose 能看到与应用相同的值。CLI 设置会为默认配置自动执行此操作，并保留现有的用户管理的根目录文件。复制的文件仅在其内容与上次 CLI 写入的版本匹配时才会刷新；已更改的副本和重新指向的链接会被保留并给出警告。对于手动设置，请先在仓库根目录运行一次 `ln -s apps/web/.env .env`，再运行 `docker compose up`。如果根目录 `.env` 已存在，请在替换前检查它，或使用 `docker compose --env-file apps/web/.env --profile all up -d`。Shell 环境中的值仍然优先。
 
-For named CLI configurations, use the exact Compose command printed by setup. The generated `INBOX_ZERO_ENV_FILE` setting selects the same named file for container settings. Existing named files created by older CLI versions also need this setting (for example, `INBOX_ZERO_ENV_FILE=./apps/web/.env.staging` in a cloned repo, or `./.env.staging` for a standalone install). Named configs use the same Compose project and do not create isolated deployments.
+对于命名 CLI 配置，请使用设置过程打印的准确 Compose 命令。生成的 `INBOX_ZERO_ENV_FILE` 设置会为容器设置选择同一个命名文件。由旧版 CLI 创建的现有命名文件也需要此设置（例如，在克隆的仓库中为 `INBOX_ZERO_ENV_FILE=./apps/web/.env.staging`，独立安装则为 `./.env.staging`）。命名配置使用相同的 Compose 项目，不会创建隔离的部署。
 
-#### Using External Database Services (Optional)
+#### 使用外部数据库服务（可选）
 
-The `docker-compose.yml` supports different deployment modes using profiles:
+`docker-compose.yml` 通过 profiles 支持不同的部署模式：
 
-| Profile | Description | Use when |
+| Profile | 说明 | 何时使用 |
 |---------|-------------|----------|
-| `--profile all` | Includes Postgres and Redis containers | Default, simplest setup |
-| `--profile local-redis` | Local Redis only | Using managed Postgres (RDS, Neon, Supabase) |
-| `--profile local-db` | Local Postgres only | Using managed Redis (Upstash, ElastiCache) |
-| *(no profile)* | No local databases | Using managed services for both (production recommended) |
+| `--profile all` | 包含 Postgres 和 Redis 容器 | 默认，最简单的设置 |
+| `--profile local-redis` | 仅本地 Redis | 使用托管 Postgres（RDS、Neon、Supabase） |
+| `--profile local-db` | 仅本地 Postgres | 使用托管 Redis（Upstash、ElastiCache） |
+| *(无 profile)* | 无本地数据库 | 两者都使用托管服务（推荐用于生产） |
 
-For external services, set the appropriate environment variables in `apps/web/.env`:
-- **External Postgres**: Set `DATABASE_URL` and `DIRECT_URL`
-- **External Redis**: Set `REDIS_HTTP_URL` and `REDIS_HTTP_TOKEN`. `UPSTASH_REDIS_URL` and `UPSTASH_REDIS_TOKEN` still work.
+对于外部服务，请在 `apps/web/.env` 中设置相应的环境变量：
+- **外部 Postgres**：设置 `DATABASE_URL` 和 `DIRECT_URL`
+- **外部 Redis**：设置 `REDIS_HTTP_URL` 和 `REDIS_HTTP_TOKEN`。`UPSTASH_REDIS_URL` 和 `UPSTASH_REDIS_TOKEN` 仍然可用。
 
-### 4. Check Logs
+### 4. 检查日志
 
-Wait for the containers to start:
+等待容器启动：
 
 ```bash
 # Check that containers are running (STATUS should show "Up")
@@ -122,34 +122,34 @@ docker ps
 docker logs inbox-zero-services-web-1 -f
 ```
 
-### 5. Access Your Application
+### 5. 访问你的应用
 
-Your application should now be accessible at:
-- `http://your-server-ip:3000` (if accessing directly)
-- `https://yourdomain.com` (if you've set up a reverse proxy with SSL)
+你的应用现在应可通过以下地址访问：
+- `http://your-server-ip:3000`（直接访问时）
+- `https://yourdomain.com`（如果你已设置带 SSL 的反向代理）
 
-**Note:** For production deployments, you should set up a reverse proxy (like Nginx, Caddy, or use a cloud load balancer) to handle SSL/TLS termination and route traffic to your Docker container.
+**注意：** 对于生产部署，你应设置反向代理（如 Nginx、Caddy 或使用云负载均衡器）来处理 SSL/TLS 终止并将流量路由到你的 Docker 容器。
 
-## Scheduled Tasks
+## 计划任务
 
-The Docker Compose setup includes a `cron` container that handles these scheduled tasks automatically. It runs interval loops rather than a system cron daemon. It waits until the `web` service responds, sends the first request for each task, and then uses the intervals below. The daily and weekly tasks first wait five minutes after startup.
+Docker Compose 设置包含一个 `cron` 容器，会自动处理这些计划任务。它运行间隔循环，而不是系统 cron 守护进程。它会等待 `web` 服务响应，发送每个任务的第一个请求，然后使用下面的间隔。每日和每周任务会在启动后先等待五分钟。
 
-| Task | Interval | Endpoint | Description |
+| 任务 | 间隔 | 端点 | 说明 |
 |------|----------|----------|-------------|
-| **Scheduled mail actions** | Every 15 minutes | `/api/cron/scheduled-actions` | Executes delayed actions when QStash is not configured, and restores snoozed threads |
-| **Automation jobs** | Every 15 minutes | `/api/cron/automation-jobs` | Processes due automation jobs |
-| **Email digests** | Every 30 minutes | `/api/resend/digest/all` | Sends due email digests |
-| **Email watch renewal** | Every 6 hours | `/api/watch/all` | Renews Gmail/Outlook push notification subscriptions |
-| **Meeting briefs** | Every 15 minutes | `/api/meeting-briefs` | Sends pre-meeting briefings to users with the feature enabled |
-| **Meeting recorder scheduling** | Every 5 minutes | `/api/meeting-recorder/schedule` | Schedules Recall.ai meeting bots when Meeting Recorder is configured |
-| **Follow-up reminders** | Every hour | `/api/follow-up-reminders` | Processes follow-up reminder notifications |
-| **Retention cleanup** | Daily | `/api/cron/reasoning-retention`, `/api/cron/mobile-push-retention`, `/api/cron/email-send-operation-retention`, `/api/cron/draft-cleanup` | Redacts or deletes expired AI reasoning, sent-draft text, push records, send operations, and unused AI drafts |
-| **Inbox health emails** | Daily | `/api/resend/inbox-health/all` | Sends inbox health emails when Resend is configured |
-| **Weekly summary emails** | Weekly | `/api/resend/summary/all` | Sends weekly summary emails when Resend is configured |
+| **计划邮件操作** | 每 15 分钟 | `/api/cron/scheduled-actions` | 未配置 QStash 时执行延迟操作，并恢复已延后的会话 |
+| **自动化任务** | 每 15 分钟 | `/api/cron/automation-jobs` | 处理到期的自动化任务 |
+| **电子邮件摘要** | 每 30 分钟 | `/api/resend/digest/all` | 发送到期的电子邮件摘要 |
+| **电子邮件 watch 续订** | 每 6 小时 | `/api/watch/all` | 续订 Gmail/Outlook 推送通知订阅 |
+| **会议简报** | 每 15 分钟 | `/api/meeting-briefs` | 向启用了该功能的用户发送会前简报 |
+| **会议记录器调度** | 每 5 分钟 | `/api/meeting-recorder/schedule` | 配置会议记录器时调度 Recall.ai 会议机器人 |
+| **跟进提醒** | 每小时 | `/api/follow-up-reminders` | 处理跟进提醒通知 |
+| **保留清理** | 每日 | `/api/cron/reasoning-retention`、`/api/cron/mobile-push-retention`、`/api/cron/email-send-operation-retention`、`/api/cron/draft-cleanup` | 脱敏或删除过期的 AI 推理、已发送草稿文本、推送记录、发送操作和未使用的 AI 草稿 |
+| **收件箱健康电子邮件** | 每日 | `/api/resend/inbox-health/all` | 配置 Resend 时发送收件箱健康电子邮件 |
+| **每周摘要电子邮件** | 每周 | `/api/resend/summary/all` | 配置 Resend 时发送每周摘要电子邮件 |
 
-If you previously scheduled `/api/cron/reasoning-retention` or `/api/cron/draft-cleanup` outside Compose, you can remove those schedules; the bundled `cron` service now runs them. `reasoning-retention` only redacts data when `REASONING_RETENTION_DAYS` or `DRAFT_SENT_TEXT_RETENTION_DAYS` is configured, and `draft-cleanup` only affects users who enable automatic cleanup of unused AI-generated drafts.
+如果你之前已在 Compose 外安排了 `/api/cron/reasoning-retention` 或 `/api/cron/draft-cleanup`，可以移除这些计划；内置的 `cron` 服务现在会运行它们。`reasoning-retention` 仅在配置了 `REASONING_RETENTION_DAYS` 或 `DRAFT_SENT_TEXT_RETENTION_DAYS` 时脱敏数据，`draft-cleanup` 仅影响启用了未使用 AI 生成草稿自动清理的用户。
 
-**If you're not using Docker Compose** you need to set up cron jobs manually:
+**如果你不使用 Docker Compose**，则需要手动设置 cron 任务：
 
 ```bash
 # Scheduled actions (without QStash) and snooze fallback (always) - every 15 minutes
@@ -188,38 +188,38 @@ If you previously scheduled `/api/cron/reasoning-retention` or `/api/cron/draft-
 0 * * * * curl -s -X GET "https://yourdomain.com/api/follow-up-reminders" -H "Authorization: Bearer YOUR_CRON_SECRET"
 ```
 
-Replace `YOUR_CRON_SECRET` with the value of `CRON_SECRET` from your `.env` file.
+将 `YOUR_CRON_SECRET` 替换为 `.env` 文件中 `CRON_SECRET` 的值。
 
 <Info>
-  These endpoints accept the secret as a `GET` header (`Authorization: Bearer YOUR_CRON_SECRET`, as above) or in a `POST` JSON body (`{ "CRON_SECRET": "YOUR_CRON_SECRET" }`).
+  这些端点接受以 `GET` 请求头形式提供的密钥（如上文的 `Authorization: Bearer YOUR_CRON_SECRET`），或在 `POST` JSON 正文中提供（`{ "CRON_SECRET": "YOUR_CRON_SECRET" }`）。
 </Info>
 
-## Optional: Background Job Backends
+## 可选：后台任务后端
 
-Inbox Zero supports multiple background job backends for self-hosted deployments:
+Inbox Zero 为自托管部署支持多种后台任务后端：
 
-- **QStash**: best when you want a managed queue and are already using Upstash.
-- **BullMQ worker**: best when you're running Docker or another long-lived environment and want a local durable queue backed by Redis.
-- **Internal fallback**: no extra services, but limited durability and throttling.
+- **QStash**：当你想要托管队列且已在使用 Upstash 时最佳。
+- **BullMQ worker**：当你运行 Docker 或其他长期运行的环境，并希望使用由 Redis 支持的本地持久队列时最佳。
+- **内部回退**：无需额外服务，但持久性和限流能力有限。
 
-When neither QStash nor BullMQ is configured, we fall back to internal API calls and cron for scheduled actions. This works without extra infrastructure, but lacks built-in retries, deduping, and queue-level backpressure.
+当既未配置 QStash 也未配置 BullMQ 时，我们会回退到内部 API 调用和 cron 来处理计划操作。这无需额外基础设施即可工作，但缺少内置重试、去重和队列级背压。
 
-**Features that benefit from QStash:**
+**受益于 QStash 的功能：**
 
-| Feature | Without QStash | With QStash |
+| 功能 | 无 QStash | 有 QStash |
 |---------|---------------|-------------|
-| **Email digest** | ✅ Works (sync, no retries) | ✅ Full support |
-| **Delayed/scheduled email actions** | ✅ Works via cron fallback | ✅ Full support |
-| **AI categorization of senders*** | ✅ Works (sync) | ✅ Works (async with retries) |
-| **Bulk inbox cleaning*** | ✅ Works (sync, no throttling) | ✅ Full support |
+| **电子邮件摘要** | ✅ 可用（同步，无重试） | ✅ 完整支持 |
+| **延迟/计划邮件操作** | ✅ 通过 cron 回退可用 | ✅ 完整支持 |
+| **发件人 AI 分类*** | ✅ 可用（同步） | ✅ 可用（异步并带重试） |
+| **批量收件箱清理*** | ✅ 可用（同步，无限流） | ✅ 完整支持 |
 
-*Early access features - available on the Early Access page.
+*早期访问功能——可在 Early Access 页面使用。
 
-### Option 1: QStash
+### 选项 1：QStash
 
-**Cost**: QStash has a generous free tier and scales to zero when not in use. See [QStash pricing](https://upstash.com/pricing/qstash).
+**费用**：QStash 有充足的免费额度，并在不使用时缩减到零。参见 [QStash 定价](https://upstash.com/pricing/qstash)。
 
-Add your QStash credentials to `.env`:
+将你的 QStash 凭据添加到 `.env`：
 ```bash
 QUEUE_BACKEND=qstash
 QSTASH_TOKEN=your-qstash-token
@@ -227,28 +227,28 @@ QSTASH_CURRENT_SIGNING_KEY=your-signing-key
 QSTASH_NEXT_SIGNING_KEY=your-next-signing-key
 ```
 
-### Option 2: BullMQ Worker
+### 选项 2：BullMQ Worker
 
-If you're already running Docker Compose with Redis, you can use the built-in worker service instead of QStash:
+如果你已在带有 Redis 的 Docker Compose 中运行，可以使用内置 worker 服务代替 QStash：
 
 ```bash
 QUEUE_BACKEND=bullmq
 REDIS_URL=redis://redis:6379
 ```
 
-Then start the worker profile:
+然后启动 worker profile：
 
 ```bash
 docker compose --profile queue-worker up -d
 ```
 
-This runs a separate worker process that pulls jobs from Redis and forwards them to the web app over the internal network.
+这会运行一个单独的 worker 进程，从 Redis 拉取任务并通过内部网络转发到 Web 应用。
 
-By default the worker subscribes to the built-in queues. If you need to tune which queues it listens to, or adjust concurrency, you can override `WORKER_QUEUES` in your environment.
+默认情况下，worker 会订阅内置队列。如果你需要调整它监听的队列或调整并发数，可以在环境中覆盖 `WORKER_QUEUES`。
 
-## Building from Source (Optional)
+## 从源码构建（可选）
 
-If you prefer to build the image yourself instead of using the pre-built one:
+如果你希望自行构建镜像而不是使用预构建镜像：
 
 ```bash
 # Clone the repository
@@ -266,21 +266,21 @@ docker compose build
 NEXT_PUBLIC_BASE_URL=https://yourdomain.com docker compose --profile all up -d
 ```
 
-**Note**: Building from source requires significantly more resources (4GB+ RAM recommended) and takes longer than pulling the pre-built image.
+**注意**：从源码构建需要明显更多的资源（建议 4GB+ RAM），并且比拉取预构建镜像耗时更长。
 
-Having issues? See the [Troubleshooting](/hosting/troubleshooting) page for solutions to common problems.
+遇到问题？请参阅[故障排查](/hosting/troubleshooting)页面获取常见问题的解决方案。
 
-## Auto-Join Organization
+## 自动加入组织
 
-For self-hosted instances where all users should belong to a single organization, set:
+对于所有用户都应属于同一个组织的自托管实例，请设置：
 
 ```env
 AUTO_JOIN_ORGANIZATION_ENABLED=true
 ```
 
-New users will automatically join the organization when they sign in. This requires exactly one organization to exist — create one first via the app before enabling this.
+新用户登录时会自动加入该组织。这要求恰好存在一个组织——在启用此功能前，请先通过应用创建一个组织。
 
-To retroactively add all existing users to your organization, run this SQL query:
+要将所有现有用户追溯添加到你的组织，请运行此 SQL 查询：
 
 ```sql
 INSERT INTO "Member" ("id", "emailAccountId", "organizationId", "role", "createdAt")
@@ -292,14 +292,14 @@ WHERE NOT EXISTS (
 ON CONFLICT ("emailAccountId") DO NOTHING;
 ```
 
-Replace `<YOUR_ORG_ID>` with your organization's ID from the `Organization` table.
+将 `<YOUR_ORG_ID>` 替换为 `Organization` 表中你的组织 ID。
 
-## Default Organization Analytics Consent
+## 新组织默认分析同意
 
-If you want newly created organization members to start with organization analytics enabled, set:
+如果你希望新创建的组织成员一开始就启用组织分析，请设置：
 
 ```env
 AUTO_ENABLE_ORG_ANALYTICS=true
 ```
 
-This only affects new memberships created after the setting is enabled. Existing members keep their current stored value.
+这仅影响在启用该设置后创建的新成员身份。现有成员保留当前存储的值。

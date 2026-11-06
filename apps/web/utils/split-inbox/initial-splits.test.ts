@@ -14,7 +14,7 @@ describe("ensureAllMailSplit", () => {
     expect(ensureAllMailSplit([unread])).toEqual([
       {
         id: "all",
-        name: "All",
+        name: "全部",
         order: -1,
         matchAll: true,
         bundleInInbox: false,

@@ -29,7 +29,7 @@ export function ConversationParticipants({
       <PopoverTrigger asChild>
         <button
           type="button"
-          aria-label="Shared participants"
+          aria-label="共享参与者"
           className="inline-flex h-6 items-center gap-1.5 rounded-md border px-1.5 text-muted-foreground text-xs outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring/50"
         >
           <span className="-space-x-1 flex">
@@ -41,12 +41,12 @@ export function ConversationParticipants({
               />
             ))}
           </span>
-          Shared
+          已共享
         </button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-64 p-0">
         <p className="px-3 pt-3 pb-1 text-muted-foreground text-xs">
-          This conversation is shared with:
+          此会话已共享给：
         </p>
         <ul className="px-1 pb-1">
           {participants.map((participant) => (
@@ -58,13 +58,13 @@ export function ConversationParticipants({
               <span className="min-w-0 flex-1 truncate">
                 {participant.name}
                 {participant.memberId === currentMemberId && (
-                  <span className="text-muted-foreground"> (you)</span>
+                  <span className="text-muted-foreground"> （你）</span>
                 )}
               </span>
               {onRemove && participant.memberId !== currentMemberId && (
                 <button
                   type="button"
-                  aria-label={`Remove ${participant.name}`}
+                  aria-label={`移除 ${participant.name}`}
                   className="rounded-sm p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
                   onClick={() => onRemove(participant.memberId)}
                 >
@@ -76,8 +76,8 @@ export function ConversationParticipants({
         </ul>
         <p className="border-t px-3 py-2 text-muted-foreground text-xs">
           {publisherMemberId === currentMemberId
-            ? "Conversation shared by you"
-            : `Conversation shared by ${publisher?.name ?? "a teammate"}`}
+            ? "会话由你共享"
+            : `会话由 ${publisher?.name ?? "队友"} 共享`}
         </p>
       </PopoverContent>
     </Popover>

@@ -30,7 +30,7 @@ describe("mail notifications", () => {
         id: "second",
         threadId: "thread/?",
         title: "ada@example.com",
-        body: "(no subject)",
+        body: "（无主题）",
       },
     ]);
   });

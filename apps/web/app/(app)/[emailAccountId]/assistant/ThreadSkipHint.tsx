@@ -14,16 +14,16 @@ export function ThreadSkipHint({
 
   return (
     <div className={cn("text-sm text-muted-foreground", className)}>
-      Some rules were skipped because this email is part of a thread.{" "}
+      由于此邮件属于同一会话，部分规则被跳过。{" "}
       <HoverCard
         content={
           <div className="max-w-xs text-sm">
-            Skipped: {skippedThreadRuleNames.join(", ")}
+            已跳过：{skippedThreadRuleNames.join(", ")}
           </div>
         }
       >
         <button className="underline underline-offset-2" type="button">
-          View skipped rules
+          查看已跳过的规则
         </button>
       </HoverCard>
     </div>

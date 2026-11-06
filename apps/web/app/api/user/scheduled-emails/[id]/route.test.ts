@@ -64,7 +64,7 @@ describe("DELETE /api/user/scheduled-emails/[id]", () => {
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toMatchObject({
-      error: expect.stringContaining("started"),
+      error: expect.stringContaining("已开始"),
       isKnownError: true,
     });
   });

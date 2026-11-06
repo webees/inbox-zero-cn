@@ -23,20 +23,18 @@ export default function RequestAccessPage() {
         <EarlyAccessFeatures />
         <Card>
           <CardHeader>
-            <CardTitle>Mail</CardTitle>
+            <CardTitle>邮件</CardTitle>
             <CardDescription>
-              Open your inbox in the Inbox Zero mail client.
+              在 Inbox Zero 邮件客户端中打开你的收件箱。
             </CardDescription>
           </CardHeader>
           <CardContent>
             {emailAccountId ? (
               <Button asChild>
-                <Link href={prefixPath(emailAccountId, "/mail")}>
-                  Open Mail
-                </Link>
+                <Link href={prefixPath(emailAccountId, "/mail")}>打开邮件</Link>
               </Button>
             ) : (
-              <Button disabled>Open Mail</Button>
+              <Button disabled>打开邮件</Button>
             )}
           </CardContent>
         </Card>
@@ -44,44 +42,40 @@ export default function RequestAccessPage() {
           <>
             <Card>
               <CardHeader>
-                <CardTitle>Sender categories</CardTitle>
+                <CardTitle>发件人分类</CardTitle>
                 <CardDescription>
-                  Sender Categories is a feature that allows you to categorize
-                  emails by sender, and take bulk actions or apply rules to
-                  them.
+                  发件人分类功能允许你按发件人对邮件进行分类，并对它们执行批量操作或应用规则。
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Button asChild>
-                  <Link href="/smart-categories">Sender Categories</Link>
+                  <Link href="/smart-categories">发件人分类</Link>
                 </Button>
               </CardContent>
             </Card>
             {/* <Card>
               <CardHeader>
-                <CardTitle>Bulk archive</CardTitle>
+                <CardTitle>批量归档</CardTitle>
                 <CardDescription>
-                  Archive emails from multiple senders at once, organized by
-                  category.
+                  一次归档来自多个发件人的邮件，并按分类整理。
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Button asChild>
-                  <Link href="/bulk-archive">Bulk Archive</Link>
+                  <Link href="/bulk-archive">批量归档</Link>
                 </Button>
               </CardContent>
             </Card> */}
             {/* <Card>
               <CardHeader>
-                <CardTitle>Quick bulk archive</CardTitle>
+                <CardTitle>快速批量归档</CardTitle>
                 <CardDescription>
-                  Quickly archive emails from multiple senders at once, grouped
-                  by AI confidence level.
+                  快速一次归档来自多个发件人的邮件，并按 AI 置信度分组。
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Button asChild>
-                  <Link href="/quick-bulk-archive">Quick Bulk Archive</Link>
+                  <Link href="/quick-bulk-archive">快速批量归档</Link>
                 </Button>
               </CardContent>
             </Card> */}
@@ -89,15 +83,13 @@ export default function RequestAccessPage() {
         )}
         <Card>
           <CardHeader>
-            <CardTitle>Early access</CardTitle>
-            <CardDescription>
-              Give us feedback on what features you want to see.
-            </CardDescription>
+            <CardTitle>抢先体验</CardTitle>
+            <CardDescription>告诉我们你希望看到哪些功能。</CardDescription>
           </CardHeader>
           <CardContent>
             <Button asChild>
               <Link href="/waitlist" target="_blank">
-                Feedback Form
+                反馈表单
               </Link>
             </Button>
           </CardContent>

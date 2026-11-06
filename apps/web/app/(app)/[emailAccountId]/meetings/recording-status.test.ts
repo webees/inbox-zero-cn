@@ -13,7 +13,7 @@ describe("getRecordingStatusBadge", () => {
         endTime: new Date("2026-07-30T17:30:00.000Z"),
         now: NOW,
       }),
-    ).toEqual({ label: "Waiting to join", variant: "secondary" });
+    ).toEqual({ label: "等待加入", variant: "secondary" });
   });
 
   it("shows when the calendar event is in progress before a bot status exists", () => {
@@ -24,7 +24,7 @@ describe("getRecordingStatusBadge", () => {
         endTime: new Date("2026-07-30T17:30:00.000Z"),
         now: NOW,
       }),
-    ).toEqual({ label: "Call in progress", variant: "secondary" });
+    ).toEqual({ label: "通话进行中", variant: "secondary" });
   });
 
   it("shows that an ended meeting has no recording when capture failed", () => {
@@ -35,18 +35,15 @@ describe("getRecordingStatusBadge", () => {
         endTime: new Date("2026-07-30T16:30:00.000Z"),
         now: NOW,
       }),
-    ).toEqual({ label: "Not recorded", variant: "red" });
+    ).toEqual({ label: "未录制", variant: "red" });
   });
 
   it.each([
     [
       MeetingRecordingStatus.IN_CALL,
-      { label: "Notetaker joined", variant: "default" },
+      { label: "笔记助手已加入", variant: "default" },
     ],
-    [
-      MeetingRecordingStatus.RECORDING,
-      { label: "Recording", variant: "green" },
-    ],
+    [MeetingRecordingStatus.RECORDING, { label: "录制中", variant: "green" }],
   ] as const)("uses the bot status after the scheduled end while capture is still in progress (%s)", (status, expectedBadge) => {
     expect(
       getRecordingStatusBadge({
@@ -66,7 +63,7 @@ describe("getRecordingStatusBadge", () => {
         endTime: new Date("2026-07-30T17:30:00.000Z"),
         now: NOW,
       }),
-    ).toEqual({ label: "Waiting to be let in", variant: "default" });
+    ).toEqual({ label: "等待获准进入", variant: "default" });
   });
 
   it("shows when the notetaker has joined the call", () => {
@@ -77,7 +74,7 @@ describe("getRecordingStatusBadge", () => {
         endTime: new Date("2026-07-30T17:30:00.000Z"),
         now: NOW,
       }),
-    ).toEqual({ label: "Notetaker joined", variant: "default" });
+    ).toEqual({ label: "笔记助手已加入", variant: "default" });
   });
 
   it("hides a past booking the recorder never engaged with", () => {
@@ -110,6 +107,6 @@ describe("getRecordingStatusBadge", () => {
         endTime: new Date("2026-07-30T18:30:00.000Z"),
         now: NOW,
       }),
-    ).toEqual({ label: "Scheduled", variant: "secondary" });
+    ).toEqual({ label: "已安排", variant: "secondary" });
   });
 });

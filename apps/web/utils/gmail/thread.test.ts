@@ -70,7 +70,7 @@ describe("getThreadsBatch", () => {
     ]);
 
     await expect(getThreadsBatch(["t1"], accessToken, logger)).rejects.toThrow(
-      "Invalid access token",
+      "无效的访问令牌",
     );
   });
 

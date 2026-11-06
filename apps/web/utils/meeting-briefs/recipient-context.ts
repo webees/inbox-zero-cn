@@ -19,7 +19,7 @@ export interface MeetingContext {
 }
 
 /**
- * Checks if all required emails are attendees of the event.
+ * 检查所有必需的邮箱是否为该事件的受邀者。
  */
 function allRecipientsAreAttendees(
   event: CalendarEvent,
@@ -32,14 +32,14 @@ function allRecipientsAreAttendees(
 }
 
 /**
- * Fetches meeting context for a specific recipient.
- * Includes both recent past meetings and upcoming meetings.
- * Used to provide cross-context awareness when drafting emails.
+ * 为特定收件人拉取会议上下文。
+ * 包含最近的过往会议和即将到来的会议。
+ * 用于在起草邮件时提供跨上下文感知。
  *
- * Privacy: When additionalRecipients are provided (e.g., CC recipients),
- * only meetings where ALL recipients were attendees are included.
- * This prevents leaking private calendar information to people who
- * weren't part of those meetings.
+ * 隐私：当提供了 additionalRecipients（例如 CC 收件人）时，
+ * 仅包含所有收件人都作为受邀者参加的会议。
+ * 这可以防止将私有日历信息泄露给
+ * 并未参与这些会议的人。
  */
 export async function getMeetingContext({
   emailAccountId,
@@ -67,7 +67,7 @@ export async function getMeetingContext({
     const futureLimit = addDays(now, UPCOMING_MEETING_LOOKAHEAD_DAYS);
     const normalizedRecipientEmail = recipientEmail.trim().toLowerCase();
 
-    // normalize all additional recipients for privacy filtering
+    // 为隐私过滤规范化所有额外收件人
     const normalizedAdditionalRecipients = additionalRecipients.map((e) =>
       e.trim().toLowerCase(),
     );
@@ -81,7 +81,7 @@ export async function getMeetingContext({
 
     for (const provider of calendarProviders) {
       try {
-        // fetch recent past meetings
+        // 拉取最近的过往会议
         const pastEvents = await provider.fetchEventsWithAttendee({
           attendeeEmail: normalizedRecipientEmail,
           timeMin: pastLimit,
@@ -90,7 +90,7 @@ export async function getMeetingContext({
         });
         pastMeetings.push(...pastEvents);
 
-        // fetch upcoming meetings
+        // 拉取即将到来的会议
         const upcomingEvents = await provider.fetchEventsWithAttendee({
           attendeeEmail: normalizedRecipientEmail,
           timeMin: now,
@@ -99,12 +99,12 @@ export async function getMeetingContext({
         });
         upcomingMeetings.push(...upcomingEvents);
       } catch (error) {
-        logger.warn("Failed to fetch events from provider", { error });
+        logger.warn("从服务商拉取事件失败", { error });
       }
     }
 
-    // privacy filter: only include meetings where ALL recipients were attendees
-    // this prevents leaking private meeting info to CC recipients who weren't invited
+    // 隐私过滤：仅包含所有收件人都作为受邀者参加的会议
+    // 这可以防止将私有会议信息泄露给未被邀请的 CC 收件人
     const filterByAllAttendees = (events: CalendarEvent[]) =>
       normalizedAdditionalRecipients.length > 0
         ? events.filter((e) =>
@@ -115,16 +115,16 @@ export async function getMeetingContext({
     const filteredPastMeetings = filterByAllAttendees(pastMeetings);
     const filteredUpcomingMeetings = filterByAllAttendees(upcomingMeetings);
 
-    // sort past meetings by start time descending (most recent first)
+    // 按开始时间降序排序过往会议（最近的在前）
     filteredPastMeetings.sort(
       (a, b) => b.startTime.getTime() - a.startTime.getTime(),
     );
-    // sort upcoming meetings by start time ascending (soonest first)
+    // 按开始时间升序排序即将到来的会议（最早的在前）
     filteredUpcomingMeetings.sort(
       (a, b) => a.startTime.getTime() - b.startTime.getTime(),
     );
 
-    // take only the first few from each category
+    // 每个类别只取前几个
     const limitedPastMeetings = filteredPastMeetings.slice(
       0,
       MAX_MEETINGS_PER_CATEGORY,
@@ -150,7 +150,7 @@ export async function getMeetingContext({
       ...limitedUpcomingMeetings.map((e) => mapToContext(e, false)),
     ];
   } catch (error) {
-    logger.error("Failed to get meeting context", { error });
+    logger.error("获取会议上下文失败", { error });
     return [];
   }
 }
@@ -185,7 +185,7 @@ function formatMeeting(
 }
 
 /**
- * Formats meeting context for inclusion in AI prompts.
+ * 格式化会议上下文以便包含在 AI 提示词中。
  */
 export function formatMeetingContextForPrompt(
   meetings: MeetingContext[],

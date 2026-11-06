@@ -142,7 +142,7 @@ export function InlineEmailList({ children }: { children?: ReactNode }) {
       );
       const failedCount = results.filter((r) => r?.serverError).length;
       if (failedCount === results.length) {
-        toastError({ description: "Failed to archive emails" });
+        toastError({ description: "归档邮件失败" });
         setArchiveAllState("idle");
       } else if (failedCount > 0) {
         markArchived(successfulThreadIds);
@@ -151,7 +151,7 @@ export function InlineEmailList({ children }: { children?: ReactNode }) {
           successfulThreadIds,
         );
         toastSuccess({
-          description: `Archived ${results.length - failedCount} of ${results.length} emails`,
+          description: `已归档 ${results.length - failedCount} / ${results.length} 封邮件`,
         });
         setArchiveAllState("idle");
       } else {
@@ -161,12 +161,12 @@ export function InlineEmailList({ children }: { children?: ReactNode }) {
           successfulThreadIds,
         );
         toastSuccess({
-          description: `Archived ${remainingArchiveThreadIds.length} emails`,
+          description: `已归档 ${remainingArchiveThreadIds.length} 封邮件`,
         });
         setArchiveAllState("done");
       }
     } catch {
-      toastError({ description: "Failed to archive emails" });
+      toastError({ description: "归档邮件失败" });
       setArchiveAllState("idle");
     }
   }
@@ -188,7 +188,7 @@ export function InlineEmailList({ children }: { children?: ReactNode }) {
       );
       const failedCount = results.filter((r) => r?.serverError).length;
       if (failedCount === results.length) {
-        toastError({ description: "Failed to mark emails as read" });
+        toastError({ description: "将邮件标记为已读失败" });
         setMarkReadState("idle");
       } else if (failedCount > 0) {
         markRead(successfulThreadIds);
@@ -197,7 +197,7 @@ export function InlineEmailList({ children }: { children?: ReactNode }) {
           successfulThreadIds,
         );
         toastSuccess({
-          description: `Marked ${results.length - failedCount} of ${results.length} as read`,
+          description: `已将 ${results.length - failedCount} / ${results.length} 封邮件标记为已读`,
         });
         setMarkReadState("idle");
       } else {
@@ -207,12 +207,12 @@ export function InlineEmailList({ children }: { children?: ReactNode }) {
           successfulThreadIds,
         );
         toastSuccess({
-          description: `Marked ${remainingReadThreadIds.length} as read`,
+          description: `已将 ${remainingReadThreadIds.length} 封邮件标记为已读`,
         });
         setMarkReadState("done");
       }
     } catch {
-      toastError({ description: "Failed to mark emails as read" });
+      toastError({ description: "将邮件标记为已读失败" });
       setMarkReadState("idle");
     }
   }
@@ -233,7 +233,7 @@ export function InlineEmailList({ children }: { children?: ReactNode }) {
           onClick={() => setCollapsed(false)}
         >
           <div className="min-w-0">
-            <div className="text-sm font-medium">Completed emails</div>
+            <div className="text-sm font-medium">已处理邮件</div>
             <div className="text-xs text-muted-foreground">
               {formatCompletedSummary({
                 threadIds,
@@ -353,10 +353,10 @@ export function InlineEmailCard({
       }
       listState?.markArchived([threadId]);
       inlineEmailActionContext?.queueAction("archive_threads", [threadId]);
-      toastSuccess({ description: "Archived" });
+      toastSuccess({ description: "已归档" });
       setActionState("done");
     } catch {
-      toastError({ description: "Failed to archive" });
+      toastError({ description: "归档失败" });
       setActionState("idle");
     }
   }
@@ -376,10 +376,10 @@ export function InlineEmailCard({
       }
       listState?.markRead([threadId]);
       inlineEmailActionContext?.queueAction("mark_read_threads", [threadId]);
-      toastSuccess({ description: "Marked as read" });
+      toastSuccess({ description: "已标记为已读" });
       setMarkReadState("done");
     } catch {
-      toastError({ description: "Failed to mark as read" });
+      toastError({ description: "标记为已读失败" });
       setMarkReadState("idle");
     }
   }
@@ -453,10 +453,10 @@ export function InlineEmailCard({
         <div className="flex shrink-0 items-center gap-0.5">
           {threadId ? (
             <DropdownMenu>
-              <Tooltip content="More actions">
+              <Tooltip content="更多操作">
                 <DropdownMenuTrigger
                   className={iconButtonClass}
-                  aria-label="More actions"
+                  aria-label="更多操作"
                   onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
@@ -478,7 +478,7 @@ export function InlineEmailCard({
                     ) : (
                       <ArchiveIcon className="mr-2 size-4" />
                     )}
-                    {isDone ? "Archived" : "Archive"}
+                    {isDone ? "已归档" : "归档"}
                   </DropdownMenuItem>
                 ) : null}
                 <DropdownMenuItem
@@ -490,7 +490,7 @@ export function InlineEmailCard({
                   ) : (
                     <MailOpenIcon className="mr-2 size-4" />
                   )}
-                  {markReadComplete ? "Marked read" : "Mark as read"}
+                  {markReadComplete ? "已标记为已读" : "标记为已读"}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
@@ -499,7 +499,7 @@ export function InlineEmailCard({
                   }}
                 >
                   <InfoIcon className="mr-2 size-4" />
-                  {showDetails ? "Hide details" : "Show details"}
+                  {showDetails ? "隐藏详情" : "显示详情"}
                 </DropdownMenuItem>
                 {externalUrl ? (
                   <DropdownMenuItem asChild>
@@ -509,7 +509,7 @@ export function InlineEmailCard({
                       rel="noopener noreferrer"
                     >
                       <ExternalLinkIcon className="mr-2 size-4" />
-                      Open in email
+                      在邮件中打开
                     </a>
                   </DropdownMenuItem>
                 ) : null}
@@ -562,7 +562,7 @@ export function InlineEmailDetail({
       <div className="flex items-center justify-between gap-3 border-b px-3 py-2">
         <div className="min-w-0">
           <div className="truncate text-sm font-medium">
-            {meta?.subject || "Email"}
+            {meta?.subject || "邮件"}
           </div>
           {meta ? (
             <div className="text-xs text-muted-foreground">
@@ -576,7 +576,7 @@ export function InlineEmailDetail({
           ) : null}
         </div>
         {externalUrl ? (
-          <Tooltip content="Open in email">
+          <Tooltip content="在邮件中打开">
             <a
               href={externalUrl}
               target="_blank"
@@ -592,7 +592,7 @@ export function InlineEmailDetail({
         <EmailPreview threadId={threadId} compact />
       ) : (
         <div className="px-3 py-2 text-xs text-muted-foreground">
-          No email content found.
+          未找到邮件内容。
         </div>
       )}
     </div>
@@ -635,7 +635,7 @@ function EmailPreview({
   if (error) {
     return (
       <div className="px-3 py-2 text-xs text-muted-foreground">
-        Could not load email content: {error.error}
+        无法加载邮件内容：{error.error}
       </div>
     );
   }
@@ -643,7 +643,7 @@ function EmailPreview({
   if (!data?.thread?.messages?.length) {
     return (
       <div className="px-3 py-2 text-xs text-muted-foreground">
-        No email content found.
+        未找到邮件内容。
       </div>
     );
   }
@@ -667,11 +667,7 @@ function EmailPreview({
         />
       ) : (
         <PlainEmail
-          text={
-            lastMessage.textPlain ||
-            lastMessage.snippet ||
-            "No content available."
-          }
+          text={lastMessage.textPlain || lastMessage.snippet || "暂无内容。"}
         />
       )}
 
@@ -776,12 +772,12 @@ function formatCompletedSummary({
   const parts: string[] = [];
 
   if (archivedCount > 0) {
-    parts.push(`${archivedCount} archived`);
+    parts.push(`${archivedCount} 个已归档`);
   }
 
   if (readOnlyCount > 0) {
-    parts.push(`${readOnlyCount} marked read`);
+    parts.push(`${readOnlyCount} 个标记为已读`);
   }
 
-  return parts.join(", ");
+  return parts.join("、");
 }

@@ -114,18 +114,18 @@ export const MAIL_SCHEDULED_TYPE = "scheduled";
 
 /** Everything the inbox isn't. Visited rarely enough to stay behind a toggle. */
 export const MAILBOX_ITEMS: SystemItem[] = [
-  { name: "Drafts", type: "draft", countId: "DRAFT", Icon: FileIcon },
-  { name: "Sent", type: "sent", countId: null, Icon: SendIcon },
-  { name: "Archived", type: "archive", countId: null, Icon: ArchiveIcon },
-  { name: "Starred", type: "starred", countId: null, Icon: StarIcon },
+  { name: "草稿", type: "draft", countId: "DRAFT", Icon: FileIcon },
+  { name: "已发送", type: "sent", countId: null, Icon: SendIcon },
+  { name: "已归档", type: "archive", countId: null, Icon: ArchiveIcon },
+  { name: "已加星标", type: "starred", countId: null, Icon: StarIcon },
   {
-    name: "Scheduled",
+    name: "已安排",
     type: MAIL_SCHEDULED_TYPE,
     countId: null,
     Icon: Clock3Icon,
   },
-  { name: "Spam", type: "spam", countId: null, Icon: ShieldAlertIcon },
-  { name: "Trash", type: "trash", countId: null, Icon: Trash2Icon },
+  { name: "垃圾邮件", type: "spam", countId: null, Icon: ShieldAlertIcon },
+  { name: "垃圾箱", type: "trash", countId: null, Icon: Trash2Icon },
 ];
 
 export type MailCategory = {
@@ -136,27 +136,27 @@ export type MailCategory = {
 
 export const MAIL_CATEGORIES: MailCategory[] = [
   {
-    name: "Personal",
+    name: "个人",
     type: GmailLabel.PERSONAL,
     Icon: UserIcon,
   },
   {
-    name: "Social",
+    name: "社交",
     type: GmailLabel.SOCIAL,
     Icon: Users2Icon,
   },
   {
-    name: "Updates",
+    name: "更新",
     type: GmailLabel.UPDATES,
     Icon: BellIcon,
   },
   {
-    name: "Forums",
+    name: "论坛",
     type: GmailLabel.FORUMS,
     Icon: MessagesSquareIcon,
   },
   {
-    name: "Promotions",
+    name: "推广",
     type: GmailLabel.PROMOTIONS,
     Icon: MegaphoneIcon,
   },
@@ -282,14 +282,14 @@ export function MailSidebar({
 
       {collapsed ? (
         <ShortcutTooltip
-          shortcuts={[{ id: "compose", label: "Compose" }]}
+          shortcuts={[{ id: "compose", label: "写邮件" }]}
           side="right"
         >
           <Button
             variant="outline"
             size="icon"
             onClick={onCompose}
-            aria-label="Compose"
+            aria-label="写邮件"
             className="mb-2 size-8 shrink-0 self-center rounded-lg"
           >
             <PenLineIcon className="size-4 text-blue-600 dark:text-blue-400" />
@@ -299,13 +299,13 @@ export function MailSidebar({
         <Button
           variant="outline"
           onClick={onCompose}
-          aria-label="Compose"
+          aria-label="写邮件"
           aria-keyshortcuts="c"
           // The 9px inset plus the border lines the icon up with the rows below.
           className="mb-3 w-full shrink-0 justify-start gap-2.5 rounded-xl px-[9px]"
         >
           <PenLineIcon className="size-4 shrink-0 text-blue-600 dark:text-blue-400" />
-          <span className="flex-1 text-left">Compose</span>
+          <span className="flex-1 text-left">写邮件</span>
           <Kbd>{getShortcutHint("compose")}</Kbd>
         </Button>
       )}
@@ -324,7 +324,7 @@ export function MailSidebar({
               (!activeLabelId && !activeFolderId && activeType === "inbox")
             }
             icon={<InboxIcon className="size-4 shrink-0" />}
-            name={unified ? "All inboxes" : "Inbox"}
+            name={unified ? "所有收件箱" : "Inbox"}
             count={unified ? null : displayCount(countsById.get("INBOX"))}
             emphasizeCount
             collapsed={collapsed}
@@ -338,7 +338,7 @@ export function MailSidebar({
               expanded={showMailboxes}
               onToggle={() => setShowMailboxes((open) => !open)}
             >
-              More
+              更多
             </GroupHeading>
             <SidebarGroupContent open={showMailboxRows}>
               <nav className="flex flex-col gap-px">
@@ -403,7 +403,7 @@ export function MailSidebar({
 
         {!unified && sidebarFolders.length > 0 && (
           <>
-            <GroupHeading collapsed={collapsed}>Folders</GroupHeading>
+            <GroupHeading collapsed={collapsed}>文件夹</GroupHeading>
             <nav className="flex flex-col gap-px">
               {sidebarFolders.map((folder) => (
                 <MailboxItemContextMenu
@@ -496,7 +496,7 @@ export function MailSidebar({
                     className="flex items-center gap-1 rounded-md px-2.5 py-1 text-muted-foreground text-xs hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     <DisclosureChevron expanded={showHiddenLabels} />
-                    More
+                    更多
                   </button>
                   <SidebarGroupContent open={showHiddenLabels}>
                     <nav className="flex flex-col gap-px">
@@ -534,8 +534,8 @@ export function MailSidebar({
                     onKeyDown={(event) => {
                       if (event.key === "Escape") setIsAddingLabel(false);
                     }}
-                    placeholder={`${labelSingular} name`}
-                    aria-label={`New ${labelSingular} name`}
+                    placeholder={`${labelSingular}名称`}
+                    aria-label={`新建${labelSingular}名称`}
                     autoFocus
                     className="h-7 min-w-0 flex-1 px-2 text-xs"
                   />
@@ -545,7 +545,7 @@ export function MailSidebar({
                     size="xs-2"
                     disabled={!newLabelName.trim()}
                   >
-                    Add
+                    添加
                   </Button>
                 </form>
               ) : null}
@@ -560,7 +560,7 @@ export function MailSidebar({
             onNavigate={onNavigate}
             active={false}
             icon={<Users2Icon className="size-4 shrink-0" />}
-            name="Discussions"
+            name="讨论"
             count={team.unreadCount}
             emphasizeCount
             collapsed={collapsed}
@@ -571,7 +571,7 @@ export function MailSidebar({
           onNavigate={onNavigate}
           active={false}
           icon={<SettingsIcon className="size-4 shrink-0" />}
-          name="Settings"
+          name="设置"
           count={null}
           collapsed={collapsed}
         />

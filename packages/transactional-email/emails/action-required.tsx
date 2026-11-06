@@ -125,24 +125,23 @@ function Footer({
   return (
     <Section className="mt-8 text-center text-sm text-gray-500">
       <Text className="m-0">
-        You're receiving this email because your email account is connected to
-        Inbox Zero.
+        您收到此邮件是因为您的邮箱账号已连接到 Inbox Zero。
       </Text>
       <div className="mt-2">
         <Link
           href={`${baseUrl}/api/unsubscribe?token=${encodeURIComponent(unsubscribeToken)}`}
           className="text-gray-500 underline mr-4"
         >
-          Unsubscribe
+          退订
         </Link>
         <Link
           href={`${baseUrl}/support`}
           className="text-gray-500 underline mr-4"
         >
-          Support
+          支持
         </Link>
         <Link href={`${baseUrl}/privacy`} className="text-gray-500 underline">
-          Privacy Policy
+          隐私政策
         </Link>
       </div>
     </Section>
@@ -153,9 +152,9 @@ ActionRequiredEmail.PreviewProps = {
   baseUrl: "https://www.getinboxzero.com",
   email: "user@example.com",
   unsubscribeToken: "preview-token-123",
-  errorType: "API Key Issue",
+  errorType: "API 密钥问题",
   errorMessage:
-    "Your OpenAI API key is invalid. Please update it in your settings to continue using AI features.",
+    "您的 OpenAI API 密钥无效。请在设置中更新它，以继续使用 AI 功能。",
   actionUrl: "/settings",
-  actionLabel: "Update API Key",
+  actionLabel: "更新 API 密钥",
 };

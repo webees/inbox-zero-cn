@@ -85,7 +85,7 @@ export function MultiSelectFilter<TData, TValue>({
         <Command>
           <CommandInput placeholder={title} />
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandEmpty>未找到结果。</CommandEmpty>
             <CommandGroup>
               <CommandItem
                 onSelect={() =>
@@ -95,7 +95,7 @@ export function MultiSelectFilter<TData, TValue>({
                 }
                 className="justify-center text-center"
               >
-                Select all
+                全选
               </CommandItem>
             </CommandGroup>
             <CommandSeparator />
@@ -106,7 +106,7 @@ export function MultiSelectFilter<TData, TValue>({
                     onSelect={() => setSelectedValues(new Set())}
                     className="justify-center text-center"
                   >
-                    Clear filters
+                    清除筛选
                   </CommandItem>
                 </CommandGroup>
                 <CommandSeparator />

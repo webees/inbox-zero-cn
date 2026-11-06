@@ -58,21 +58,21 @@ export type MailboxItemEdit =
       messageListVisibility?: MessageVisibility;
     };
 
-/** Gmail's per-label visibility, as the label currently has it set. */
+/** Gmail 的逐标签可见性，以标签当前所设置的值表示。 */
 export type MailboxItemVisibility = {
   labelList?: string;
   messageList?: string;
 };
 
 const LABEL_LIST_OPTIONS = [
-  { value: labelVisibility.labelShow, name: "Show" },
-  { value: labelVisibility.labelShowIfUnread, name: "Show if unread" },
-  { value: labelVisibility.labelHide, name: "Hide" },
+  { value: labelVisibility.labelShow, name: "显示" },
+  { value: labelVisibility.labelShowIfUnread, name: "仅在未读时显示" },
+  { value: labelVisibility.labelHide, name: "隐藏" },
 ] as const;
 
 const MESSAGE_LIST_OPTIONS = [
-  { value: messageVisibility.show, name: "Show" },
-  { value: messageVisibility.hide, name: "Hide" },
+  { value: messageVisibility.show, name: "显示" },
+  { value: messageVisibility.hide, name: "隐藏" },
 ] as const;
 
 export type MailboxItemColorOption = EmailLabelColor & { name: string };
@@ -97,7 +97,7 @@ export function MailboxItemContextMenu({
     textColor?: string | null;
   };
   colorOptions?: readonly MailboxItemColorOption[];
-  /** Omitted for providers without visibility settings, which hides the menu section. */
+  /** 对没有可见性设置的服务商省略，这会隐藏菜单中的相应部分。 */
   visibility?: MailboxItemVisibility;
   onEdit: (edit: MailboxItemEdit) => Promise<boolean>;
   onDelete: (item: MailboxItem) => Promise<boolean>;
@@ -158,7 +158,7 @@ export function MailboxItemContextMenu({
       const success = await onEdit(edit);
       if (success) setIsEditOpen(false);
     } catch {
-      toast.error(`Failed to update ${typeName}. Please try again.`);
+      toast.error(`更新${typeName}失败。请重试。`);
     } finally {
       setIsSaving(false);
     }
@@ -173,7 +173,7 @@ export function MailboxItemContextMenu({
     try {
       await onEdit({ kind: "label", id: item.id, ...update });
     } catch {
-      toast.error(`Failed to update ${typeName}. Please try again.`);
+      toast.error(`更新${typeName}失败。请重试。`);
     }
   };
 
@@ -183,7 +183,7 @@ export function MailboxItemContextMenu({
       const success = await onDelete(item);
       if (success) setIsDeleteOpen(false);
     } catch {
-      toast.error(`Failed to delete ${typeName}. Please try again.`);
+      toast.error(`删除${typeName}失败。请重试。`);
     } finally {
       setIsDeleting(false);
     }
@@ -198,20 +198,20 @@ export function MailboxItemContextMenu({
         <ContextMenuContent className="w-48">
           <ContextMenuItem className="gap-2" onSelect={openEditor}>
             <PencilIcon className="size-4" />
-            Edit
+            编辑
           </ContextMenuItem>
           <ContextMenuItem
             className="gap-2 text-destructive focus:text-destructive"
             onSelect={() => setIsDeleteOpen(true)}
           >
             <Trash2Icon className="size-4" />
-            Delete
+            删除
           </ContextMenuItem>
           {visibility && (
             <>
               <ContextMenuSeparator />
               <ContextMenuLabel className="text-muted-foreground text-xs">
-                In {typeName} list
+                在{typeName}列表中
               </ContextMenuLabel>
               <ContextMenuRadioGroup
                 value={visibility.labelList ?? labelVisibility.labelShow}
@@ -229,7 +229,7 @@ export function MailboxItemContextMenu({
               </ContextMenuRadioGroup>
               <ContextMenuSeparator />
               <ContextMenuLabel className="text-muted-foreground text-xs">
-                In message list
+                在邮件列表中
               </ContextMenuLabel>
               <ContextMenuRadioGroup
                 value={visibility.messageList ?? messageVisibility.show}
@@ -253,14 +253,14 @@ export function MailboxItemContextMenu({
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent aria-describedby={undefined}>
           <DialogHeader>
-            <DialogTitle>Edit {typeName}</DialogTitle>
+            <DialogTitle>编辑{typeName}</DialogTitle>
           </DialogHeader>
           <form onSubmit={submitEdit}>
             {showsName && (
               <Input
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                aria-label={`${typeName} name`}
+                aria-label={`${typeName}名称`}
                 autoFocus
                 maxLength={255}
               />
@@ -268,7 +268,7 @@ export function MailboxItemContextMenu({
             {showsColor && (
               <div
                 role="radiogroup"
-                aria-label={`${typeName} color`}
+                aria-label={`${typeName}颜色`}
                 className={cn(
                   "grid grid-cols-[repeat(auto-fit,minmax(2rem,1fr))] gap-3 py-1",
                   showsName && "mt-5",
@@ -303,7 +303,7 @@ export function MailboxItemContextMenu({
                 onClick={() => setIsEditOpen(false)}
                 disabled={isSaving}
               >
-                Cancel
+                取消
               </Button>
               <Button
                 type="submit"
@@ -313,7 +313,7 @@ export function MailboxItemContextMenu({
                   (editMode === "color" && !color)
                 }
               >
-                Save
+                保存
               </Button>
             </DialogFooter>
           </form>
@@ -323,15 +323,15 @@ export function MailboxItemContextMenu({
       <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete {typeName}?</AlertDialogTitle>
+            <AlertDialogTitle>删除{typeName}？</AlertDialogTitle>
             <AlertDialogDescription>
               {item.kind === "folder"
-                ? `“${item.name}” and its contents will be removed from your mailbox.`
-                : `“${item.name}” will be removed from your mailbox. Emails using it will remain.`}
+                ? `“${item.name}”及其内容将从你的邮箱中移除。`
+                : `“${item.name}”将从你的邮箱中移除。使用它的邮件会保留。`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>取消</AlertDialogCancel>
             <AlertDialogAction
               onClick={async (event) => {
                 event.preventDefault();
@@ -340,7 +340,7 @@ export function MailboxItemContextMenu({
               disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isDeleting ? "Deleting..." : "Delete"}
+              {isDeleting ? "删除中…" : "删除"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

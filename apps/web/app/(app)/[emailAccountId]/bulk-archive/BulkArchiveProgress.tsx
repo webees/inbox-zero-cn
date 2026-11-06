@@ -36,19 +36,19 @@ export function BulkArchiveProgress({
     return null;
   }
 
-  const failedSuffix = failedItems ? ` ${failedItems} failed.` : "";
+  const failedSuffix = failedItems ? ` ${failedItems} 个失败。` : "";
 
   return (
     <ProgressPanel
       totalItems={totalItems}
       remainingItems={activeItems}
-      inProgressText={`Archiving ${Math.min(settledItems + 1, totalItems)} of ${totalItems} senders...${failedSuffix}`}
+      inProgressText={`正在归档 ${Math.min(settledItems + 1, totalItems)}/${totalItems} 个发件人…${failedSuffix}`}
       completedText={
         failedItems
-          ? `Archiving finished: ${completedItems} succeeded, ${failedItems} failed.`
-          : `Archiving complete! ${completedItems} senders processed!`
+          ? `归档完成：${completedItems} 个成功，${failedItems} 个失败。`
+          : `归档完成！已处理 ${completedItems} 个发件人！`
       }
-      itemLabel="senders"
+      itemLabel="发件人"
     />
   );
 }

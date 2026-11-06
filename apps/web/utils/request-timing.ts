@@ -16,7 +16,7 @@ export function startRequestTimer({
 }) {
   const startedAt = Date.now();
   const runningTimeout = setTimeout(() => {
-    logger.warn(`${requestName} still running`, {
+    logger.warn(`${requestName} 仍在运行`, {
       elapsedMs: Date.now() - startedAt,
     });
   }, runningWarnAfterMs);
@@ -26,7 +26,7 @@ export function startRequestTimer({
     logSlowCompletion: (metadata?: Record<string, unknown>) => {
       const durationMs = Date.now() - startedAt;
       if (durationMs > slowWarnAfterMs) {
-        logger.warn(`${requestName} completed slowly`, {
+        logger.warn(`${requestName} 完成缓慢`, {
           durationMs,
           ...metadata,
         });

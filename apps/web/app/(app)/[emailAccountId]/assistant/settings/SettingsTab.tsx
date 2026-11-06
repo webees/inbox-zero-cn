@@ -10,7 +10,6 @@ import { ReferralSignatureSetting } from "@/app/(app)/[emailAccountId]/assistant
 import { LearnedPatternsSetting } from "@/app/(app)/[emailAccountId]/assistant/settings/LearnedPatternsSetting";
 import { PersonalSignatureSetting } from "@/app/(app)/[emailAccountId]/assistant/settings/PersonalSignatureSetting";
 import { SentWithSignatureSetting } from "@/app/(app)/[emailAccountId]/assistant/settings/SentWithSignatureSetting";
-import { SignaturesSetting } from "@/app/(app)/[emailAccountId]/assistant/settings/SignaturesSetting";
 import { SnippetsSetting } from "@/app/(app)/[emailAccountId]/assistant/settings/SnippetsSetting";
 import { MultiRuleSetting } from "@/app/(app)/[emailAccountId]/assistant/settings/MultiRuleSetting";
 import { SyncToExtensionSetting } from "@/app/(app)/[emailAccountId]/assistant/settings/SyncToExtensionSetting";
@@ -31,31 +30,30 @@ export function SettingsTab() {
       )}
 
       <div className="space-y-2">
-        <SectionHeader>Updates</SectionHeader>
+        <SectionHeader>更新</SectionHeader>
         <FollowUpRemindersSetting />
         {env.NEXT_PUBLIC_DIGEST_ENABLED && <DigestSetting />}
       </div>
 
       <div className="space-y-2">
-        <SectionHeader>Your voice</SectionHeader>
+        <SectionHeader>你的语气</SectionHeader>
         <WritingStyleSetting />
         <AboutSetting />
         <PersonalSignatureSetting />
-        <SignaturesSetting />
         <SnippetsSetting />
         <SentWithSignatureSetting />
       </div>
 
       {!autoDraftDisabled && (
         <div className="space-y-2">
-          <SectionHeader>Knowledge</SectionHeader>
+          <SectionHeader>知识库</SectionHeader>
           <DraftKnowledgeSetting />
           <LearnedPatternsSetting />
         </div>
       )}
 
       <div className="space-y-2">
-        <SectionHeader>Advanced</SectionHeader>
+        <SectionHeader>高级</SectionHeader>
         <SyncToExtensionSetting />
         <MultiRuleSetting />
         <ReferralSignatureSetting />

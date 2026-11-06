@@ -26,7 +26,7 @@ export default async function CleanRunPage(props: {
     select: { email: true },
   });
 
-  if (!emailAccount) return <CardTitle>Email account not found</CardTitle>;
+  if (!emailAccount) return <CardTitle>未找到邮箱账号</CardTitle>;
 
   const threads = await getThreadsByJobId({ emailAccountId, jobId });
 
@@ -34,7 +34,7 @@ export default async function CleanRunPage(props: {
     ? await getJobById({ emailAccountId, jobId })
     : await getLastJob({ emailAccountId });
 
-  if (!job) return <CardTitle>Job not found</CardTitle>;
+  if (!job) return <CardTitle>未找到任务</CardTitle>;
 
   const [total, done] = await Promise.all([
     prisma.cleanupThread.count({

@@ -37,7 +37,7 @@ export async function unsnoozeThreads({
       await provider.unarchiveThread(threadId);
       unsnoozedThreadIds.push(threadId);
     } catch (error) {
-      logger.error("Failed to unsnooze thread", { error, threadId });
+      logger.error("取消暂缓会话失败", { error, threadId });
     }
   }
 

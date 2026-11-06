@@ -2,8 +2,8 @@ import sortBy from "lodash/sortBy";
 import { ActionType } from "@/generated/prisma/enums";
 
 /**
- * Defines the priority order for action types when displaying them.
- * Lower index = higher priority (appears first).
+ * 定义展示操作类型时的优先级顺序。
+ * 索引越小优先级越高（排在最前面）。
  */
 const ACTION_TYPE_PRIORITY_ORDER: ActionType[] = [
   ActionType.LABEL,
@@ -30,18 +30,18 @@ const ACTION_TYPE_PRIORITY_ORDER: ActionType[] = [
 ];
 
 /**
- * Gets the priority index for an action type.
- * Lower numbers indicate higher priority (appears first).
+ * 获取某个操作类型的优先级索引。
+ * 数字越小表示优先级越高（排在最前面）。
  */
 function getActionTypePriority(actionType: ActionType): number {
   const index = ACTION_TYPE_PRIORITY_ORDER.indexOf(actionType);
-  // If action type is not in our priority list, give it a very low priority
+  // 如果操作类型不在优先级列表中，给予非常低的优先级
   return index === -1 ? 999 : index;
 }
 
 /**
- * Sorts an array of actions by their type priority.
- * Actions with lower priority numbers (higher priority) appear first.
+ * 按操作类型优先级对操作数组排序。
+ * 优先级数字越小（优先级越高）的操作排在最前面。
  */
 export function sortActionsByPriority<T extends { type: ActionType }>(
   actions: T[],

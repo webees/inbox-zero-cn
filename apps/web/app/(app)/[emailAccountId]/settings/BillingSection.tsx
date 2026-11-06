@@ -47,7 +47,7 @@ export function BillingSection() {
     onError: (error) => {
       toastError({
         description: getActionErrorMessage(error.error, {
-          prefix: "Failed to update invoice emails",
+          prefix: "更新发票邮件失败",
         }),
       });
     },
@@ -79,25 +79,25 @@ export function BillingSection() {
       {premium && isPremium ? (
         <Item size="sm">
           <ItemContent>
-            <ItemTitle>{getPremiumTierName(tier)} plan</ItemTitle>
+            <ItemTitle>{getPremiumTierName(tier)} 套餐</ItemTitle>
             {hasAppleSubscription ? (
               <ItemDescription>
-                This subscription is billed through Apple. Manage or cancel it
-                from your iPhone or iPad subscription settings.
+                此订阅通过 Apple 计费。请在你的 iPhone 或 iPad
+                订阅设置中管理或取消。
               </ItemDescription>
             ) : isLegacyStripePlan ? (
               <ItemDescription>
-                You&apos;re on grandfathered Stripe pricing. The current plan
-                prices shown elsewhere in the app are for new subscriptions.
+                你使用的是老用户 Stripe
+                价格。应用其他地方显示的当前套餐价格适用于新订阅。
               </ItemDescription>
             ) : premium.stripeSubscriptionStatus === "trialing" ? (
-              <ItemDescription>Free trial</ItemDescription>
+              <ItemDescription>免费试用</ItemDescription>
             ) : null}
           </ItemContent>
           <ItemActions className="flex-wrap justify-end">
             {!hasAppleSubscription && (
               <Button asChild variant="outline" size="sm">
-                <Link href="/premium">Change plan</Link>
+                <Link href="/premium">更换套餐</Link>
               </Button>
             )}
             <ManageSubscription premium={premium} compact />
@@ -110,12 +110,12 @@ export function BillingSection() {
       ) : (
         <Item size="sm">
           <ItemContent>
-            <ItemTitle>No active plan</ItemTitle>
+            <ItemTitle>无有效套餐</ItemTitle>
           </ItemContent>
           <ItemActions>
             {premium && <ViewInvoicesButton premium={premium} />}
             <Button asChild variant="outline" size="sm">
-              <Link href="/premium">Upgrade</Link>
+              <Link href="/premium">升级</Link>
             </Button>
           </ItemActions>
         </Item>
@@ -126,14 +126,14 @@ export function BillingSection() {
           <ItemSeparator />
           <Item size="sm">
             <ItemContent>
-              <ItemTitle>Email paid invoices</ItemTitle>
+              <ItemTitle>通过邮件发送已付款发票</ItemTitle>
               <ItemDescription>
-                Automatically send each Stripe invoice to the billing email.
+                自动将每张 Stripe 发票发送到账单邮箱。
               </ItemDescription>
             </ItemContent>
             <ItemActions>
               <Switch
-                aria-label="Email paid Stripe invoices"
+                aria-label="通过邮件发送已付款的 Stripe 发票"
                 checked={premium.stripeInvoiceEmailsEnabled}
                 disabled={isExecuting}
                 onCheckedChange={handleInvoiceEmailToggle}

@@ -139,7 +139,7 @@ export function ResultDisplayContent({ result }: { result: RunRulesResult }) {
               ruleDialog.onOpen({ ruleId: rule.id });
             }}
           >
-            View matching rule
+            查看匹配规则
           </Button>
         )}
       </div>
@@ -168,7 +168,7 @@ export function ResultDisplayContent({ result }: { result: RunRulesResult }) {
             />
           </>
         ) : (
-          <div className="text-muted-foreground text-sm">No actions taken</div>
+          <div className="text-muted-foreground text-sm">未执行任何操作</div>
         )}
       </div>
 
@@ -199,7 +199,7 @@ export function ResultDisplayContent({ result }: { result: RunRulesResult }) {
           )}
           {reasonDisplay.actionFailureMessages.length > 0 && (
             <div className="space-y-1">
-              <div className="font-medium text-sm">Action issues:</div>
+              <div className="font-medium text-sm">操作问题：</div>
               <ul className="list-disc space-y-1 pl-4 text-sm text-slate-700 dark:text-foreground">
                 {reasonDisplay.actionFailureMessages.map((message) => (
                   <li key={message} className="break-words">

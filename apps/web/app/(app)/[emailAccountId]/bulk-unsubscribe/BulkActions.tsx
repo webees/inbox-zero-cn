@@ -183,11 +183,11 @@ export function BulkActions({
   const selectedCount = Array.from(selected.values()).filter(Boolean).length;
   const isVisible = selectedCount > 0;
 
-  // Get the selected newsletters with their details
+  // 获取所选发件人的详细信息
   const selectedNewsletters =
     newsletters?.filter((n) => selected.get(n.name)) || [];
 
-  // Check if all selected newsletters are already approved
+  // 检查是否所有所选发件人都已批准
   const allSelectedAreApproved = useMemo(() => {
     if (selectedNewsletters.length === 0) return false;
     return selectedNewsletters.every(
@@ -195,9 +195,8 @@ export function BulkActions({
     );
   }, [selectedNewsletters]);
 
-  // The selection map can hold senders no longer in the fetched rows (e.g.
-  // after a search or date-range change), so only offer unsubscribe when we
-  // have full rows to act on.
+  // 选择映射中可能保留已不在当前拉取结果里的发件人（例如搜索或日期范围变更后），
+  // 因此只有在拿到完整行数据时才提供退订操作。
   const allSelectedCanUnsubscribe =
     selectedNewsletters.length > 0 &&
     selectedNewsletters.every(
@@ -214,10 +213,10 @@ export function BulkActions({
 
   const unsubscribeLabel =
     hasUnsubscribeLinks && hasBlockableLinks
-      ? "Unsubscribe/Block"
+      ? "退订/屏蔽"
       : hasBlockableLinks
-        ? "Block"
-        : "Unsubscribe";
+        ? "屏蔽"
+        : "退订";
 
   return (
     <>
@@ -238,14 +237,14 @@ export function BulkActions({
                 <button
                   type="button"
                   onClick={onClearSelection}
-                  aria-label="Clear selection"
+                  aria-label="清除选择"
                   className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
                   <XIcon className="size-4" />
                 </button>
                 <span className="whitespace-nowrap pr-1 text-sm font-medium">
                   {selectedCount}
-                  <span className="hidden sm:inline"> selected</span>
+                  <span className="hidden sm:inline"> 已选择</span>
                 </span>
 
                 <div className="mx-1 h-6 w-px shrink-0 bg-border sm:mx-2" />
@@ -261,15 +260,15 @@ export function BulkActions({
                 )}
                 <ActionButton
                   icon={allSelectedAreApproved ? Undo2Icon : ThumbsUpIcon}
-                  label={allSelectedAreApproved ? "Move to review" : "Keep"}
+                  label={allSelectedAreApproved ? "移至待审核" : "保留"}
                   onClick={() =>
                     onBulkApprove(getSelectedValues(), allSelectedAreApproved)
                   }
                 />
                 <ActionButton
                   icon={ArchiveIcon}
-                  label="Archive"
-                  loadingLabel="Archiving"
+                  label="归档"
+                  loadingLabel="正在归档"
                   onClick={() => setArchiveDialogOpen(true)}
                   loading={isBulkArchiving}
                 />
@@ -279,7 +278,7 @@ export function BulkActions({
                       size="icon"
                       variant="ghost"
                       className="shrink-0"
-                      aria-label="More actions"
+                      aria-label="更多操作"
                       disabled={isBulkDeleting}
                     >
                       {isBulkDeleting ? (
@@ -294,7 +293,7 @@ export function BulkActions({
                       onClick={() => setAutoArchiveDialogOpen(true)}
                     >
                       <ArchiveRestoreIcon className="mr-2 size-4" />
-                      Auto-archive future emails
+                      自动归档以后的邮件
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
@@ -302,7 +301,7 @@ export function BulkActions({
                       onClick={() => setDeleteDialogOpen(true)}
                     >
                       <TrashIcon className="mr-2 size-4" />
-                      Delete all emails
+                      删除所有邮件
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -312,18 +311,17 @@ export function BulkActions({
         )}
       </AnimatePresence>
 
-      {/* Delete Confirmation Dialog */}
+      {/* 删除确认对话框 */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete all emails?</DialogTitle>
+            <DialogTitle>删除所有邮件？</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete all emails from these senders.
-              This action cannot be undone.
+              确定要删除这些发件人的所有邮件吗？此操作无法撤销。
             </DialogDescription>
           </DialogHeader>
 
-          {/* Selected Senders List */}
+          {/* 所选发件人列表 */}
           {selectedNewsletters.length > 0 && (
             <div className="max-h-[300px] overflow-y-auto rounded-lg border border-gray-200 dark:border-gray-700">
               <div className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -358,7 +356,7 @@ export function BulkActions({
               variant="outline"
               onClick={() => setDeleteDialogOpen(false)}
             >
-              Cancel
+              取消
             </Button>
             <Button
               variant="destructive"
@@ -367,19 +365,19 @@ export function BulkActions({
                 setDeleteDialogOpen(false);
               }}
             >
-              Delete
+              删除
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Archive Confirmation Dialog */}
+      {/* 归档确认对话框 */}
       <Dialog open={archiveDialogOpen} onOpenChange={setArchiveDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Archive all emails?</DialogTitle>
+            <DialogTitle>归档所有邮件？</DialogTitle>
             <DialogDescription>
-              Are you sure you want to archive all emails from these senders?
+              确定要归档这些发件人的所有邮件吗？
             </DialogDescription>
           </DialogHeader>
 
@@ -418,7 +416,7 @@ export function BulkActions({
               variant="outline"
               onClick={() => setArchiveDialogOpen(false)}
             >
-              Cancel
+              取消
             </Button>
             <Button
               onClick={() => {
@@ -426,23 +424,22 @@ export function BulkActions({
                 setArchiveDialogOpen(false);
               }}
             >
-              Archive
+              归档
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Auto Archive Confirmation Dialog */}
+      {/* 自动归档确认对话框 */}
       <Dialog
         open={autoArchiveDialogOpen}
         onOpenChange={setAutoArchiveDialogOpen}
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Auto-archive these senders?</DialogTitle>
+            <DialogTitle>自动归档这些发件人？</DialogTitle>
             <DialogDescription>
-              Automatically archive all current and future emails from these
-              senders. They will no longer appear in your inbox.
+              自动归档这些发件人当前和以后的所有邮件。它们将不再出现在你的收件箱中。
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -450,7 +447,7 @@ export function BulkActions({
               variant="outline"
               onClick={() => setAutoArchiveDialogOpen(false)}
             >
-              Cancel
+              取消
             </Button>
             <Button
               onClick={() => {
@@ -458,7 +455,7 @@ export function BulkActions({
                 setAutoArchiveDialogOpen(false);
               }}
             >
-              Auto-archive
+              自动归档
             </Button>
           </DialogFooter>
         </DialogContent>

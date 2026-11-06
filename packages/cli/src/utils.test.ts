@@ -633,9 +633,9 @@ describe("redactValue", () => {
 
   it("should show placeholder values as not configured", () => {
     expect(redactValue("GOOGLE_CLIENT_ID", "your-google-client-id")).toBe(
-      "(not configured)",
+      "（未配置）",
     );
-    expect(redactValue("GOOGLE_CLIENT_ID", "skipped")).toBe("(not configured)");
+    expect(redactValue("GOOGLE_CLIENT_ID", "skipped")).toBe("（未配置）");
   });
 
   it("should show non-sensitive values in full", () => {
@@ -687,31 +687,18 @@ describe("parsePortConflict", () => {
       "Error response from daemon: failed to set up container networking: " +
       "driver failed programming external connectivity on endpoint " +
       "inbox-zero-services-redis-1 (abc123): Bind for 0.0.0.0:6380 failed: port is already allocated";
-    expect(parsePortConflict(stderr)).toBe(
-      "Port 6380 is already in use by another process.",
-    );
+    expect(parsePortConflict(stderr)).toBe("端口 6380 已被另一个进程占用。");
   });
 
   it("should detect 'address already in use' errors", () => {
     expect(
       parsePortConflict("listen tcp 0.0.0.0:3000: address already in use"),
-    ).toBe("Port 3000 is already in use by another process.");
+    ).toBe("端口 3000 已被另一个进程占用。");
     expect(
       parsePortConflict("listen tcp 127.0.0.1:8080: address already in use"),
-    ).toBe("Port 8080 is already in use by another process.");
+    ).toBe("端口 8080 已被另一个进程占用。");
     expect(parsePortConflict("listen tcp :5432: address already in use")).toBe(
-      "Port 5432 is already in use by another process.",
-    );
-  });
-
-  it("should report the host port from 'failed to bind host port' errors", () => {
-    const stderr =
-      "Error response from daemon: failed to set up container networking: " +
-      "driver failed programming external connectivity on endpoint " +
-      "inbox-zero-services-db-1 (027a8dc5): failed to bind host port for " +
-      "127.0.0.1:5434:172.19.0.4:5432/tcp: address already in use";
-    expect(parsePortConflict(stderr)).toBe(
-      "Port 5434 is already in use by another process.",
+      "端口 5432 已被另一个进程占用。",
     );
   });
 

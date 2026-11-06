@@ -283,7 +283,7 @@ describe("local reply drafts", () => {
     await writer.clear();
     await expect(
       updateReplyDraftProviderState(identity, "compose-1"),
-    ).rejects.toThrow("This draft changed. Reopen the composer.");
+    ).rejects.toThrow("此草稿已变更。请重新打开写信器。");
     expect((await getReplyDraft(identity))?.content).toBeNull();
   });
 
@@ -766,7 +766,7 @@ describe("drafts deleted from the mailbox", () => {
       vi.fn().mockResolvedValue({
         status: 404,
         json: async () => ({
-          error: "Email account not found",
+          error: "未找到邮箱账号",
           isKnownError: true,
         }),
       }),

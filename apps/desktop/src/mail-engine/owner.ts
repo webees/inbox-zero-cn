@@ -103,7 +103,7 @@ type OwnedEngineInput = {
   assistant?: AssistantStateSource;
   idleCatchUpIntervalMs?: number;
   onSyncPageCommitted?: (page: SyncPage) => void;
-  /** The loop keeps retrying after a failed run; the host decides whether to report it. */
+  /** 循环在一次失败运行后持续重试；由宿主决定是否上报。 */
   onEngineError?: (error: unknown) => void;
   onSqliteTransaction?: SqliteTransactionTimer;
   followMailboxSignal?: (

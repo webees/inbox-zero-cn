@@ -38,13 +38,11 @@ export function ScheduledEmailList() {
     setActionError("");
     try {
       await action();
-      // The action already succeeded; a refresh that fails is stale data, not a
-      // failed cancel, and SWR retries on its own.
+      // 操作已经成功；刷新失败只是数据过时，并不是取消失败，
+      // 而且 SWR 会自行重试。
       await mutate().catch(() => {});
     } catch (failure) {
-      setActionError(
-        failure instanceof Error ? failure.message : "Something went wrong",
-      );
+      setActionError(failure instanceof Error ? failure.message : "出了点问题");
     } finally {
       setBusy(false);
     }
@@ -63,11 +61,10 @@ export function ScheduledEmailList() {
         <LoadingContent loading={isLoading} error={error}>
           {rows.length === 0 ? (
             <div className="px-6 py-12 text-center text-muted-foreground text-sm">
-              Nothing scheduled. Emails you send later show up here until
-              they&apos;re on their way.
+              没有已定时的邮件。你稍后发送的邮件会显示在这里，直到它们开始发送。
             </div>
           ) : (
-            <ul aria-label="Scheduled emails">
+            <ul aria-label="已定时邮件">
               {rows.map((row) => (
                 <li
                   key={row.id}
@@ -75,10 +72,10 @@ export function ScheduledEmailList() {
                 >
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium text-foreground text-sm">
-                      {row.subject?.trim() || "(no subject)"}
+                      {row.subject?.trim() || "（无主题）"}
                     </p>
                     <p className="truncate text-muted-foreground text-xs">
-                      {row.to?.trim() || "No recipient"}
+                      {row.to?.trim() || "无收件人"}
                     </p>
                   </div>
                   <p
@@ -103,17 +100,17 @@ export function ScheduledEmailList() {
                           )
                         }
                       >
-                        Cancel send
+                        取消发送
                       </InlineActionButton>
                     )}
                     {row.status === "UNCERTAIN" && (
-                      // Neither cancel nor retry accepts an uncertain row, so
-                      // this is the only way to resolve one.
+                      // 取消和重试都不接受状态不确定的行，因此
+                      // 这是解决该行的唯一方式。
                       <a
                         className="text-xs underline underline-offset-4"
                         href={prefixPath(emailAccountId, "/mail?type=sent")}
                       >
-                        Check Sent
+                        查看已发送
                       </a>
                     )}
                     {["BLOCKED_AUTH", "FAILED"].includes(row.status) && (
@@ -128,7 +125,7 @@ export function ScheduledEmailList() {
                           )
                         }
                       >
-                        Retry send
+                        重试发送
                       </InlineActionButton>
                     )}
                   </div>
@@ -159,13 +156,13 @@ function statusLabel(row: ScheduledEmail) {
     case "PENDING":
       return formatTime(row.sendAt);
     case "PROCESSING":
-      return "Sending…";
+      return "发送中…";
     case "UNCERTAIN":
-      return "Couldn't confirm delivery";
+      return "无法确认投递";
     case "BLOCKED_AUTH":
-      return "Reconnect your account to send this";
+      return "重新连接账号以发送此邮件";
     default:
-      return "Needs attention";
+      return "需要注意";
   }
 }
 

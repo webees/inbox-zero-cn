@@ -1,9 +1,6 @@
-"use client";
-
 import type React from "react";
 import { Loading } from "./Loading";
 import { ErrorDisplay } from "./ErrorDisplay";
-import { useIsOnline } from "@/hooks/useIsOnline";
 
 interface LoadingContentProps {
   children: React.ReactNode;
@@ -18,13 +15,10 @@ interface LoadingContentProps {
 }
 
 export function LoadingContent(props: LoadingContentProps) {
-  const online = useIsOnline();
   const ignoreError = shouldIgnoreError(props.error);
 
   if (props.error && !ignoreError) {
-    // Custom error screens can't tell a dropped connection from a server
-    // error, so offline always gets the shared offline state.
-    return props.errorComponent && online ? (
+    return props.errorComponent ? (
       props.errorComponent
     ) : (
       <div className="mt-4">
@@ -33,15 +27,15 @@ export function LoadingContent(props: LoadingContentProps) {
     );
   }
 
-  // In dev mode with ignored error, show loading while retrying
+  // 在开发模式下遇到被忽略的错误时，重试期间显示加载状态
   if (props.loading || ignoreError)
     return <>{props.loadingComponent || <Loading />}</>;
 
   return <>{props.children}</>;
 }
 
-// In development, ignore 404 errors (likely transient HMR errors), unless the
-// API sent one on purpose and the user is meant to read it.
+// 在开发环境中忽略 404 错误（很可能是短暂的 HMR 错误），
+// 除非 API 是有意发送该错误且需要用户看到。
 function shouldIgnoreError(error: LoadingContentProps["error"]): boolean {
   if (process.env.NODE_ENV !== "development") return false;
   if (error?.info?.isKnownError) return false;

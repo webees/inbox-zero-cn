@@ -36,8 +36,6 @@ type MobilePushNotification = {
   channelId?: string;
   priority?: "high";
   expiration?: number;
-  /** Lets the app attach actions, such as copying a one-time code. */
-  category?: string;
   data?: Record<string, string>;
 };
 
@@ -174,7 +172,7 @@ async function sendPushBatch({
   notification: MobilePushNotification;
   logger: Logger;
 }) {
-  const { subtitle, category: _category, ...expoNotification } = notification;
+  const { subtitle, ...expoNotification } = notification;
   let response: Response;
   try {
     response = await fetch(EXPO_PUSH_URL, {

@@ -28,33 +28,33 @@ import { AutosizeTextarea } from "@/components/ui/textarea";
 import { RuleSteps } from "@/app/(app)/[emailAccountId]/assistant/RuleSteps";
 import { TooltipExplanation } from "@/components/TooltipExplanation";
 
-// UI-level condition types
+// UI 层面的条件类型
 type UIConditionType = "from" | "to" | "subject" | "prompt";
 
 const CONDITION_TYPE_OPTIONS: { label: string; value: UIConditionType }[] = [
-  { label: "AI Prompt", value: "prompt" },
-  { label: "From", value: "from" },
-  { label: "To", value: "to" },
-  { label: "Subject", value: "subject" },
+  { label: "AI 提示词", value: "prompt" },
+  { label: "发件人", value: "from" },
+  { label: "收件人", value: "to" },
+  { label: "主题", value: "subject" },
 ];
 const MAX_CONDITIONS = CONDITION_TYPE_OPTIONS.length;
 
-// Convert backend condition to UI type
+// 将后端条件转换为 UI 类型
 function getUIConditionType(
   condition: ZodCondition,
 ): UIConditionType | undefined {
   if (condition.type === ConditionType.AI) {
     return "prompt";
   }
-  // For STATIC conditions, determine which field is populated
-  // With the new structure, each STATIC condition should only have one field
-  // We set the active field to "" (empty string) and others to null
-  // So we check which field is not null to determine the UI type
+  // 对于 STATIC 条件，判断哪个字段被填充
+  // 在新结构下，每个 STATIC 条件应只包含一个字段
+  // 我们把启用字段设为 ""（空字符串），其余设为 null
+  // 因此通过检查哪个字段不为 null 来确定 UI 类型
   if (condition.from !== null) return "from";
   if (condition.to !== null) return "to";
   if (condition.subject !== null) return "subject";
   if (condition.body !== null) return "subject"; // body maps to subject in UI
-  // Return undefined if no field is populated (new/unselected condition)
+  // 如果没有字段被填充（新建/未选择的条件），返回 undefined
   return;
 }
 
@@ -174,17 +174,17 @@ export function ConditionSteps({
   return (
     <RuleSteps
       onAdd={() => {
-        // Create empty condition with no default selection
+        // 创建没有默认选择项的空条件
         const newCondition = getConditionFromUIType(undefined);
         appendCondition(newCondition);
       }}
-      addButtonLabel="Add Condition"
+      addButtonLabel="添加条件"
       addButtonDisabled={!canAddMoreConditions}
       addButtonTooltip={
         maxConditionsReached
-          ? "Maximum number of conditions reached."
+          ? "已达到条件的最大数量。"
           : !canAddMoreConditions
-            ? "You can only set one condition for this rule."
+            ? "此规则只能设置一个条件。"
             : undefined
       }
     >
@@ -229,8 +229,7 @@ export function ConditionSteps({
 
                 if (uniqueUITypes.size !== configuredTypes.length) {
                   toastError({
-                    description:
-                      "You can only have one condition of each type.",
+                    description: "每种类型只能有一个条件。",
                   });
                   return;
                 }
@@ -283,17 +282,17 @@ export function ConditionSteps({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="and">and</SelectItem>
-                      <SelectItem value="or">or</SelectItem>
+                      <SelectItem value="and">且</SelectItem>
+                      <SelectItem value="or">或</SelectItem>
                     </SelectContent>
                   </Select>
                 ) : (
                   <p className="text-muted-foreground">
                     {isStaticFollowingStatic
-                      ? "and"
+                      ? "且"
                       : conditionalOperator === LogicalOperator.OR
-                        ? "or"
-                        : "and"}
+                        ? "或"
+                        : "且"}
                   </p>
                 )}
                 <FormControl>
@@ -301,7 +300,7 @@ export function ConditionSteps({
                     {uiType ? (
                       conditionTypeLabel
                     ) : (
-                      <SelectValue placeholder="Choose" />
+                      <SelectValue placeholder="选择" />
                     )}
                   </SelectTrigger>
                 </FormControl>
@@ -337,7 +336,7 @@ export function ConditionSteps({
           >
             <RuleStep
               onRemove={() => removeCondition(index)}
-              removeAriaLabel="Remove condition"
+              removeAriaLabel="移除条件"
               leftContent={leftContent}
               rightContent={(() => {
                 const currentCondition = watch(`conditions.${index}`);
@@ -350,7 +349,7 @@ export function ConditionSteps({
                         <div className="mb-2">
                           <Label
                             name={`conditions.${index}.instructions`}
-                            label="That matches:"
+                            label="匹配："
                           />
                         </div>
                       )}
@@ -359,7 +358,7 @@ export function ConditionSteps({
                           minRows={3}
                           rows={3}
                           {...register(`conditions.${index}.instructions`)}
-                          placeholder="e.g. Newsletters, regular content from publications, blogs, or services I've subscribed to"
+                          placeholder="例如：新闻邮件，来自我订阅的出版物、博客或服务的常规内容"
                         />
                       </div>
                       {(
@@ -374,7 +373,7 @@ export function ConditionSteps({
                                 errors.conditions?.[index] as {
                                   instructions?: FieldError;
                                 }
-                              )?.instructions?.message || "Invalid value"
+                              )?.instructions?.message || "无效的值"
                             }
                           />
                         </div>
@@ -390,7 +389,7 @@ export function ConditionSteps({
                         type="text"
                         name={`conditions.${index}.from`}
                         registerProps={register(`conditions.${index}.from`)}
-                        placeholder="hello@example.com OR support@test.com"
+                        placeholder="hello@example.com 或 support@test.com"
                         className="pr-8"
                         error={
                           (
@@ -419,7 +418,7 @@ export function ConditionSteps({
                         type="text"
                         name={`conditions.${index}.to`}
                         registerProps={register(`conditions.${index}.to`)}
-                        placeholder="hello@example.com OR support@test.com"
+                        placeholder="hello@example.com 或 support@test.com"
                         className="pr-8"
                         error={
                           (
@@ -448,7 +447,7 @@ export function ConditionSteps({
                         type="text"
                         name={`conditions.${index}.subject`}
                         registerProps={register(`conditions.${index}.subject`)}
-                        placeholder="Receipt for your purchase"
+                        placeholder="你的购买收据"
                         className="pr-8"
                         error={
                           (
@@ -460,7 +459,7 @@ export function ConditionSteps({
                       />
                       <div className="absolute right-2 top-1/2 -translate-y-1/2">
                         <TooltipExplanation
-                          text="Only apply this rule to emails with this subject. e.g. Receipt for your purchase"
+                          text="仅将此规则应用于主题为该内容的邮件。例如：你的购买收据"
                           side="right"
                           size="sm"
                           className="text-gray-400"
@@ -481,19 +480,19 @@ export function ConditionSteps({
 }
 
 const getFilterTooltipText = (filterType: "from" | "to") =>
-  `Only apply this rule ${filterType} emails from this address. Supports multiple addresses separated by comma, pipe, or OR. e.g. "@company.com", "hello@example.com OR support@test.com"`;
+  `仅将此规则应用于${filterType === "from" ? "来自" : "发往"}此地址的邮件。支持用逗号、竖线或 OR 分隔的多个地址。例如："@company.com"、"hello@example.com OR support@test.com"`;
 
 function getConditionTypeLabel(uiType: UIConditionType | undefined): string {
   switch (uiType) {
     case "prompt":
-      return "AI Prompt";
+      return "AI 提示词";
     case "from":
-      return "From";
+      return "发件人";
     case "to":
-      return "To";
+      return "收件人";
     case "subject":
-      return "Subject";
+      return "主题";
     default:
-      return "Select";
+      return "选择";
   }
 }

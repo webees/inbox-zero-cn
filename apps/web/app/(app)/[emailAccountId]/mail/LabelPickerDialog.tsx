@@ -29,11 +29,11 @@ import type { MailClient } from "@inboxzero/mail-core/engine";
 import { randomUuid } from "@/utils/uuid";
 
 const GMAIL_CATEGORY_NAMES: Record<string, string> = {
-  CATEGORY_PERSONAL: "Personal",
-  CATEGORY_SOCIAL: "Social",
-  CATEGORY_PROMOTIONS: "Promotions",
-  CATEGORY_UPDATES: "Updates",
-  CATEGORY_FORUMS: "Forums",
+  CATEGORY_PERSONAL: "个人",
+  CATEGORY_SOCIAL: "社交",
+  CATEGORY_PROMOTIONS: "促销",
+  CATEGORY_UPDATES: "更新",
+  CATEGORY_FORUMS: "论坛",
 };
 
 export function LabelPickerDialog({
@@ -150,8 +150,8 @@ export function LabelPickerDialog({
         error instanceof Error
           ? error.message
           : isMove
-            ? "Couldn't move conversations. Please try again."
-            : "Couldn't apply label. Please try again.",
+            ? "无法移动会话。请重试。"
+            : "无法应用标签。请重试。",
       );
     } finally {
       pending.current = false;
@@ -173,13 +173,13 @@ export function LabelPickerDialog({
         onEscapeKeyDown={(event) => event.stopPropagation()}
       >
         <DialogTitle className="sr-only">
-          {isMove ? "Move conversations" : "Label conversations"}
+          {isMove ? "移动会话" : "为会话添加标签"}
         </DialogTitle>
         <Command className="[&_[cmdk-input-wrapper]>svg]:hidden">
           <CommandInput
             aria-label={isFolderMove ? "Search folders" : "Search labels"}
             className="pr-8"
-            placeholder={isMove ? "Move to…" : "Label as…"}
+            placeholder={isMove ? "移至…" : "标记为…"}
             value={search}
             onValueChange={setSearch}
             disabled={isPending}
@@ -210,7 +210,7 @@ export function LabelPickerDialog({
                     onSelect={() => apply()}
                     disabled={isPending}
                   >
-                    <span className="break-all">Create “{name}”</span>
+                    <span className="break-all">创建“{name}”</span>
                   </CommandItem>
                 )}
               </CommandGroup>
@@ -224,7 +224,7 @@ export function LabelPickerDialog({
           >
             <Loader2Icon aria-hidden className="size-4 animate-spin" />
             <span className="sr-only">
-              {isMove ? "Moving…" : "Applying label…"}
+              {isMove ? "移动中…" : "正在应用标签…"}
             </span>
           </div>
         )}
@@ -234,11 +234,8 @@ export function LabelPickerDialog({
 }
 
 function getSuccessMessage(mode: "label" | "move", count: number) {
-  if (mode === "move")
-    return count === 1 ? "Moved" : `Moved ${count} conversations`;
-  return count === 1
-    ? "Label applied"
-    : `Label applied to ${count} conversations`;
+  if (mode === "move") return count === 1 ? "已移动" : `已移动 ${count} 个会话`;
+  return count === 1 ? "标签已应用" : `已为 ${count} 个会话应用标签`;
 }
 
 function getPartialFailureMessage(
@@ -246,10 +243,9 @@ function getPartialFailureMessage(
   count: number,
   isFolderMove: boolean,
 ) {
-  const action = mode === "move" ? "move" : "label";
-  const plural = count === 1 ? "" : "s";
-  const target = isFolderMove ? "folder" : "label";
-  return `Couldn't ${action} ${count} conversation${plural}. Select a ${target} to retry.`;
+  const action = mode === "move" ? "移动" : "应用标签到";
+  const target = isFolderMove ? "文件夹" : "标签";
+  return `无法${action} ${count} 个会话。请选择${target}以重试。`;
 }
 
 function getLabelDisplayName(id: string, name: string) {

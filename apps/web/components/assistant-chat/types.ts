@@ -50,8 +50,8 @@ export type ChatTools = {
   manageInbox: ManageInboxTool;
   getUserRulesAndSettings: GetUserRulesAndSettingsTool;
   getRuleExecutionForMessage: GetRuleExecutionForMessageTool;
-  getLearnedPatterns: GetLearnedPatternsTool;
   testRulesOnEmail: TestRulesOnEmailTool;
+  getLearnedPatterns: GetLearnedPatternsTool;
   createRule: CreateRuleTool;
   updateRule: UpdateRuleTool;
   deleteRule: DeleteRuleTool;

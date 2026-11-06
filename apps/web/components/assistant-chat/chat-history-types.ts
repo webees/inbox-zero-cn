@@ -5,5 +5,5 @@ export type ChatHistoryEntry = GetChatsResponse["chats"][number];
 export function getChatHistoryLabel(
   chat: Pick<ChatHistoryEntry, "name" | "createdAt">,
 ): string {
-  return chat.name ?? `Chat from ${new Date(chat.createdAt).toLocaleString()}`;
+  return chat.name ?? `${new Date(chat.createdAt).toLocaleString()} 的对话`;
 }

@@ -378,7 +378,7 @@ describe("executor", () => {
           executedAt: expect.any(Date),
           executionError: {
             code: "SEND_FAILED",
-            message: "Action reported failure",
+            message: "操作报告失败",
             stack: null,
             statusCode: null,
             requestId: null,

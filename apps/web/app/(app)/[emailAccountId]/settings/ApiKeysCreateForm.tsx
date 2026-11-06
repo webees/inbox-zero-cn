@@ -47,15 +47,15 @@ export function ApiKeysCreateButtonModal({ mutate }: { mutate: () => void }) {
     <Dialog>
       <DialogTrigger asChild>
         <Button size="sm" variant="outline">
-          Create key
+          创建密钥
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create new secret key</DialogTitle>
+          <DialogTitle>创建新的密钥</DialogTitle>
           <DialogDescription>
-            This will create a new secret key for your account. You will need to
-            use this secret key to authenticate your requests to the API.
+            这将为你的账号创建一个新的密钥。你需要使用此密钥来对 API
+            请求进行身份验证。
           </DialogDescription>
         </DialogHeader>
 
@@ -87,17 +87,17 @@ function ApiKeysForm({ mutate }: { mutate: () => void }) {
     {
       onSuccess: (result) => {
         if (!result?.data?.secretKey) {
-          toastError({ description: "Failed to create API key" });
+          toastError({ description: "创建 API 密钥失败" });
           return;
         }
 
         setSecretKey(result.data.secretKey);
-        toastSuccess({ description: "API key created!" });
+        toastSuccess({ description: "API 密钥已创建！" });
       },
       onError: (error) => {
         toastError({
           description: getActionErrorMessage(error.error, {
-            prefix: "Failed to create API key",
+            prefix: "创建 API 密钥失败",
           }),
         });
       },
@@ -141,10 +141,10 @@ function ApiKeysForm({ mutate }: { mutate: () => void }) {
     <form onSubmit={onSubmit} className="space-y-4">
       {emailAccounts.length > 1 && (
         <div className="space-y-2">
-          <p className="text-sm font-medium">Email account</p>
+          <p className="text-sm font-medium">邮箱账号</p>
           <Select value={emailAccountId} onValueChange={setSelectedAccountId}>
             <SelectTrigger>
-              <SelectValue placeholder="Select an account" />
+              <SelectValue placeholder="选择账号" />
             </SelectTrigger>
             <SelectContent>
               {emailAccounts.map((account) => (
@@ -160,14 +160,14 @@ function ApiKeysForm({ mutate }: { mutate: () => void }) {
       <Input
         type="text"
         name="name"
-        label="Name (optional)"
-        placeholder="My API key"
+        label="名称（可选）"
+        placeholder="我的 API 密钥"
         registerProps={register("name")}
         error={errors.name}
       />
 
       <div className="space-y-2">
-        <p className="text-sm font-medium">Permissions</p>
+        <p className="text-sm font-medium">权限</p>
         <div className="space-y-3 rounded-md border p-3">
           {API_KEY_SCOPE_OPTIONS.map((scope) => (
             <div key={scope.value} className="flex items-start gap-3 text-sm">
@@ -191,7 +191,7 @@ function ApiKeysForm({ mutate }: { mutate: () => void }) {
       </div>
 
       <div className="space-y-2">
-        <p className="text-sm font-medium">Expiry</p>
+        <p className="text-sm font-medium">有效期</p>
         <Select
           value={expiresIn}
           onValueChange={(value: CreateApiKeyBody["expiresIn"]) =>
@@ -211,22 +211,20 @@ function ApiKeysForm({ mutate }: { mutate: () => void }) {
         </Select>
       </div>
 
-      <SectionDescription>
-        This key will only work for the selected inbox account.
-      </SectionDescription>
+      <SectionDescription>此密钥仅对选定的收件箱账号有效。</SectionDescription>
 
       <Button
         type="submit"
         loading={isExecuting}
         disabled={!emailAccountId || selectedScopes.length === 0}
       >
-        Create
+        创建
       </Button>
     </form>
   ) : (
     <div className="space-y-2">
       <SectionDescription>
-        This will only be shown once. Please copy it. Your secret key is:
+        此密钥仅显示一次。请复制它。你的密钥是：
       </SectionDescription>
       <CopyInput value={secretKey} />
     </div>
@@ -246,12 +244,12 @@ export function ApiKeysDeactivateButton({
     deactivateApiKeyAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: "API key deactivated!" });
+        toastSuccess({ description: "API 密钥已停用！" });
       },
       onError: (error) => {
         toastError({
           description: getActionErrorMessage(error.error, {
-            prefix: "Failed to deactivate API key",
+            prefix: "停用 API 密钥失败",
           }),
         });
       },
@@ -269,7 +267,7 @@ export function ApiKeysDeactivateButton({
       disabled={!emailAccountId}
       onClick={() => execute({ id })}
     >
-      Revoke
+      撤销
     </Button>
   );
 }

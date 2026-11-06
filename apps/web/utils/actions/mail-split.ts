@@ -85,7 +85,7 @@ export const buildMailSplitFromPromptAction = actionClient
 
       if (!result.filters.length) {
         throw new SafeError(
-          "I couldn't find filters in that — name a sender, label or category.",
+          "我没能从中找到筛选条件——请指明发件人、标签或分类。",
         );
       }
 

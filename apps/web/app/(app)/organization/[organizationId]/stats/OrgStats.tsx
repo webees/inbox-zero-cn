@@ -17,10 +17,10 @@ import { hasOrganizationAdminRole } from "@/utils/organizations/roles";
 import { AccessDenied } from "@/components/AccessDenied";
 
 const selectOptions = [
-  { label: "Last week", value: "7" },
-  { label: "Last month", value: "30" },
-  { label: "Last 3 months", value: "90" },
-  { label: "All time", value: "0" },
+  { label: "上周", value: "7" },
+  { label: "上个月", value: "30" },
+  { label: "最近 3 个月", value: "90" },
+  { label: "全部时间", value: "0" },
 ];
 const defaultSelected = selectOptions[1];
 
@@ -87,7 +87,7 @@ export function OrgStats({ organizationId }: { organizationId: string }) {
 
   if (!isAdmin) {
     return (
-      <AccessDenied message="You don't have permission to view organization analytics. Only administrators can access this page." />
+      <AccessDenied message="你没有查看组织分析的权限。只有管理员可以访问此页面。" />
     );
   }
 
@@ -118,17 +118,17 @@ export function OrgStats({ organizationId }: { organizationId: string }) {
           {totalsData && (
             <div className="grid gap-4 md:grid-cols-3">
               <StatCard
-                title="Emails Received"
+                title="收到的邮件"
                 value={totalsData.totalEmails.toLocaleString()}
                 icon={<Mail className="h-4 w-4 text-muted-foreground" />}
               />
               <StatCard
-                title="Rules Executed"
+                title="执行的规则"
                 value={totalsData.totalRules.toLocaleString()}
                 icon={<Sparkles className="h-4 w-4 text-muted-foreground" />}
               />
               <StatCard
-                title="Active Members"
+                title="活跃成员"
                 value={totalsData.activeMembers.toLocaleString()}
                 icon={<Users className="h-4 w-4 text-muted-foreground" />}
               />
@@ -144,11 +144,11 @@ export function OrgStats({ organizationId }: { organizationId: string }) {
           >
             {emailBucketsData && (
               <BucketChart
-                title="Email Volume Distribution"
-                description="Number of users by emails received in selected period"
+                title="邮件量分布"
+                description="按所选时间段内收到的邮件数统计的用户数量"
                 data={emailBucketsData}
-                emptyMessage="No email data available. Users need to load their stats first."
-                unit="emails"
+                emptyMessage="暂无邮件数据。用户需要先加载他们的统计数据。"
+                unit="封邮件"
               />
             )}
           </LoadingContent>
@@ -160,11 +160,11 @@ export function OrgStats({ organizationId }: { organizationId: string }) {
           >
             {rulesBucketsData && (
               <BucketChart
-                title="Automation Usage Distribution"
-                description="Number of users by rules executed in selected period"
+                title="自动化使用分布"
+                description="按所选时间段内执行的规则数统计的用户数量"
                 data={rulesBucketsData}
-                emptyMessage="No automation data yet."
-                unit="rules"
+                emptyMessage="暂无自动化数据。"
+                unit="条规则"
               />
             )}
           </LoadingContent>
@@ -201,7 +201,7 @@ function BucketChart({
   description,
   data,
   emptyMessage,
-  unit = "emails",
+  unit = "封邮件",
 }: {
   title: string;
   description: string;
@@ -231,10 +231,7 @@ function BucketChart({
                   <span className="text-muted-foreground">
                     {bucket.label} {unit}
                   </span>
-                  <span className="font-medium">
-                    {bucket.userCount}{" "}
-                    {bucket.userCount === 1 ? "user" : "users"}
-                  </span>
+                  <span className="font-medium">{bucket.userCount} 名用户</span>
                 </div>
                 <div className="h-2 w-full rounded-full bg-secondary">
                   <div

@@ -73,7 +73,7 @@ export function toastUndo(options: {
     action: {
       label: (
         <>
-          Undo
+          撤销
           {options.shortcut && (
             <Kbd className={cn("ml-1.5", ACCENT_TEXT)}>{options.shortcut}</Kbd>
           )}

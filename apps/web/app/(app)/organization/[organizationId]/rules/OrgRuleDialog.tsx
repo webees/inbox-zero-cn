@@ -140,30 +140,27 @@ export function OrgRuleDialog({
     if (result?.serverError || result?.validationErrors) {
       toastError({
         description:
-          result.serverError ||
-          "There was an error saving the rule. Please check the fields and try again.",
+          result.serverError || "保存规则时出错。请检查各字段后重试。",
       });
       return;
     }
 
-    toastSuccess({ description: editing ? "Rule updated" : "Rule created" });
+    toastSuccess({ description: editing ? "规则已更新" : "规则已创建" });
     onSuccess();
   });
 
-  // ConditionSteps is typed against the personal-rule form, but only reads and
-  // writes `conditions` / `conditionalOperator`, which are identical in both
-  // forms. Casting here keeps the shared condition editor out of a generic.
+  // ConditionSteps 的类型是针对个人规则表单的，但它只读写 `conditions` /
+  // `conditionalOperator`，这两个字段在两种表单中完全相同。在此处进行类型转换，
+  // 可以避免把共享的条件编辑器改造成泛型。
   const conditionStepsForm = form as unknown as UseFormReturn<CreateRuleBody>;
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>
-            {editing ? "Edit organization rule" : "New organization rule"}
-          </DialogTitle>
+          <DialogTitle>{editing ? "编辑组织规则" : "新建组织规则"}</DialogTitle>
           <DialogDescription>
-            This rule applies to every member of your organization.
+            此规则适用于你组织中的每一位成员。
           </DialogDescription>
         </DialogHeader>
 
@@ -172,18 +169,18 @@ export function OrgRuleDialog({
             <Input
               type="text"
               name="name"
-              label="Name"
+              label="名称"
               registerProps={register("name", {
-                required: "Please enter a name",
+                required: "请输入名称",
               })}
               error={errors.name}
-              placeholder="e.g. Label invoices"
+              placeholder="例如：给发票打标签"
             />
 
             <RuleSectionCard
               icon={InboxIcon}
               color="blue"
-              title="When I get an email"
+              title="当我收到邮件时"
             >
               <ConditionSteps
                 conditionFields={conditionFields}
@@ -199,7 +196,7 @@ export function OrgRuleDialog({
               />
             </RuleSectionCard>
 
-            <RuleSectionCard icon={ZapIcon} color="green" title="Then">
+            <RuleSectionCard icon={ZapIcon} color="green" title="然后">
               <OrgActionSteps
                 fields={actionFields}
                 register={register}
@@ -212,15 +209,14 @@ export function OrgRuleDialog({
             </RuleSectionCard>
 
             <Collapsible open={isAdvancedOpen} onOpenChange={setIsAdvancedOpen}>
-              <CollapsibleHeading>Advanced options</CollapsibleHeading>
+              <CollapsibleHeading>高级选项</CollapsibleHeading>
               <CollapsibleContent>
                 <div className="rounded-md border">
                   <div className="flex items-center justify-between gap-4 px-4 py-3">
                     <div>
-                      <p className="text-sm font-medium">Apply to threads</p>
+                      <p className="text-sm font-medium">应用于会话</p>
                       <p className="text-sm text-muted-foreground">
-                        Run on every reply in a conversation, not just the first
-                        message.
+                        对会话中的每一封回复都执行，而不仅是第一封邮件。
                       </p>
                     </div>
                     <div className="shrink-0">
@@ -239,10 +235,10 @@ export function OrgRuleDialog({
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={onClose}>
-                Cancel
+                取消
               </Button>
               <Button type="submit" loading={isSubmitting}>
-                {editing ? "Save rule" : "Create rule"}
+                {editing ? "保存规则" : "创建规则"}
               </Button>
             </DialogFooter>
           </form>
@@ -253,9 +249,8 @@ export function OrgRuleDialog({
 }
 
 function toFormValues(rule?: OrgRule): OrgRuleFormValues {
-  // The shared condition editor has no Body type, so drop any legacy body-only
-  // condition from the editable list and carry the value through separately
-  // rather than surfacing it as a phantom empty Subject condition.
+  // 共享的条件编辑器没有 Body 类型，因此从可编辑列表中移除任何仅使用 Body 的旧条件，
+  // 并单独传递该值，而不是将其显示为一个虚假的空 Subject 条件。
   const conditions = (rule ? getConditions(rule) : []).filter(
     (condition) => !(condition.type === ConditionType.STATIC && condition.body),
   );

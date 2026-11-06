@@ -24,7 +24,7 @@ export default function GlobalError({ error }: any) {
         <ErrorDisplay error={{ error: error?.message }} />
 
         <div className="mt-4">
-          <Button onClick={() => window.location.reload()}>Reload Page</Button>
+          <Button onClick={() => window.location.reload()}>重新加载页面</Button>
         </div>
       </body>
     </html>

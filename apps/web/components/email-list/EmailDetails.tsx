@@ -5,23 +5,22 @@ import {
   splitRecipientList,
 } from "@/utils/email";
 
-// Spans rather than divs so the details can sit inside the header's toggle
-// button.
+// 使用 span 而不是 div，让详情可以放在标题栏的切换按钮内。
 export function EmailDetails({
   message,
   children,
 }: {
   message: ThreadMessage;
-  /** Shown after the date, such as the control that hides these details. */
+  /** 显示在日期之后，例如用于隐藏这些详情的控件。 */
   children?: React.ReactNode;
 }) {
   const headers = message.headers;
 
   const details = [
-    { label: "From", value: headers?.from },
-    { label: "To", value: headers?.to },
-    { label: "Cc", value: headers?.cc },
-    { label: "Bcc", value: headers?.bcc },
+    { label: "发件人", value: headers?.from },
+    { label: "收件人", value: headers?.to },
+    { label: "抄送", value: headers?.cc },
+    { label: "密送", value: headers?.bcc },
   ];
 
   return (

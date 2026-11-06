@@ -46,15 +46,13 @@ export function McpSection() {
         if (!data) return;
 
         toastSuccess({
-          description: data.enabled
-            ? "MCP access enabled!"
-            : "MCP access disabled!",
+          description: data.enabled ? "MCP 访问已启用！" : "MCP 访问已停用！",
         });
       },
       onError: (error) => {
         toastError({
           description: getActionErrorMessage(error.error, {
-            prefix: "Failed to update MCP access",
+            prefix: "更新 MCP 访问失败",
           }),
         });
       },
@@ -139,7 +137,7 @@ function McpAccessItem({
             size="sm"
             onClick={() => setConnectOpen(true)}
           >
-            Connect
+            连接
           </Button>
         )}
         <Switch
@@ -155,10 +153,9 @@ function McpAccessItem({
       <Dialog open={connectOpen} onOpenChange={setConnectOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Connect MCP</DialogTitle>
+            <DialogTitle>连接 MCP</DialogTitle>
             <DialogDescription>
-              Add this URL in ChatGPT, Claude, or Cursor. You'll be asked to
-              allow access.
+              在 ChatGPT、Claude 或 Cursor 中添加此 URL。系统会要求你允许访问。
             </DialogDescription>
           </DialogHeader>
           <CopyInput value={mcpUrl} />
@@ -168,7 +165,7 @@ function McpAccessItem({
             rel="noopener noreferrer"
             className="text-sm text-muted-foreground underline underline-offset-4"
           >
-            Full setup guide
+            完整设置指南
           </a>
         </DialogContent>
       </Dialog>
@@ -190,7 +187,7 @@ function McpConnectionsDialog({
   const { execute: executeReduce, isExecuting: isReducing } = useAction(
     reduceMcpConnectionScopesAction,
     {
-      onSuccess: () => toastSuccess({ description: "Permissions updated" }),
+      onSuccess: () => toastSuccess({ description: "权限已更新" }),
       onError: (error) =>
         toastError({ description: getActionErrorMessage(error.error) }),
       onSettled: () => mutate(),
@@ -200,12 +197,12 @@ function McpConnectionsDialog({
     revokeMcpConnectionAction,
     {
       onSuccess: () => {
-        toastSuccess({ description: "Disconnected" });
+        toastSuccess({ description: "已断开连接" });
       },
       onError: (error) => {
         toastError({
           description: getActionErrorMessage(error.error, {
-            prefix: "Failed to disconnect",
+            prefix: "断开连接失败",
           }),
         });
       },
@@ -220,17 +217,15 @@ function McpConnectionsDialog({
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
-          MCP apps ({connections.length})
+          MCP 应用 ({connections.length})
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>MCP apps</DialogTitle>
+          <DialogTitle>MCP 应用</DialogTitle>
         </DialogHeader>
         <DialogDescription>
-          Remove optional access below, or disconnect to remove all access. To
-          add permissions, reconnect from the application and approve the new
-          access.
+          在下方移除可选的访问权限，或断开连接以移除所有访问权限。若要添加权限，请从应用中重新连接并批准新的访问。
         </DialogDescription>
         <LoadingContent loading={isLoading} error={error}>
           <ul className="space-y-3">
@@ -248,12 +243,12 @@ function McpConnectionsDialog({
                     variant="outline"
                     size="sm"
                     disabled={isExecuting}
-                    aria-label={`Disconnect ${connection.name}`}
+                    aria-label={`断开连接 ${connection.name}`}
                     onClick={() =>
                       executeRevoke({ clientId: connection.clientId })
                     }
                   >
-                    Disconnect
+                    断开连接
                   </Button>
                 </div>
                 <McpPermissionControls
@@ -293,7 +288,7 @@ function McpPermissionControls({
         >
           <span>{label}</span>
           <Switch
-            aria-label={`${label} for ${connection.name}`}
+            aria-label={`${label} - ${connection.name}`}
             checked={granted.includes(scope)}
             disabled={
               disabled ||
@@ -312,8 +307,8 @@ function McpPermissionControls({
 }
 
 const MCP_PERMISSIONS = [
-  { scope: "mcp:read", label: "Read and search mail" },
-  { scope: "mcp:write", label: "Drafts, organization, and rules" },
-  { scope: "mcp:send", label: "Send email" },
-  { scope: "offline_access", label: "Offline access" },
+  { scope: "mcp:read", label: "读取和搜索邮件" },
+  { scope: "mcp:write", label: "草稿、整理和规则" },
+  { scope: "mcp:send", label: "发送邮件" },
+  { scope: "offline_access", label: "离线访问" },
 ] as const;

@@ -25,7 +25,7 @@ function PureExamples({
 
   return (
     <div>
-      <SectionHeader className="text-xl">Examples</SectionHeader>
+      <SectionHeader className="text-xl">示例</SectionHeader>
 
       <ScrollArea className={className}>
         <div className="grid grid-cols-1 gap-2">

@@ -2,7 +2,7 @@ import type { RulesResponse } from "@/app/api/user/rules/route";
 import { ActionType } from "@/generated/prisma/enums";
 import { normalizeLabelName } from "@/utils/label/normalize-label-name";
 
-// Keep in sync with inbox-zero-tabs-wxt/entrypoints/background.ts
+// 与 inbox-zero-tabs-wxt/entrypoints/background.ts 保持同步
 export type SyncTab = {
   displayLabel: string;
 } & (
@@ -10,20 +10,20 @@ export type SyncTab = {
   | { type: "add_custom"; label: string; icon: string; query: string }
 );
 
-// Keep in sync with inbox-zero-tabs-wxt/config/tabs.ts defaultTabsConfig IDs
+// 与 inbox-zero-tabs-wxt/config/tabs.ts 的 defaultTabsConfig ID 保持同步
 const DEFAULT_TABS = [
-  { label: "To Reply", tabId: "to-reply" },
-  { label: "Awaiting Reply", tabId: "awaiting-reply" },
-  { label: "FYI", tabId: "fyi" },
-  { label: "Actioned", tabId: "actioned" },
-  { label: "Newsletter", tabId: "newsletter" },
-  { label: "Marketing", tabId: "marketing" },
-  { label: "Calendar", tabId: "calendar" },
-  { label: "Receipt", tabId: "receipt" },
-  { label: "Notification", tabId: "notification" },
-  { label: "Cold Email", tabId: "cold-email" },
-  { label: "Follow-up", tabId: "follow-up" },
-  { label: "Team", tabId: "team" },
+  { label: "待回复", tabId: "to-reply" },
+  { label: "等待回复", tabId: "awaiting-reply" },
+  { label: "知悉", tabId: "fyi" },
+  { label: "已处理", tabId: "actioned" },
+  { label: "订阅简报", tabId: "newsletter" },
+  { label: "营销推广", tabId: "marketing" },
+  { label: "日历", tabId: "calendar" },
+  { label: "收据", tabId: "receipt" },
+  { label: "通知", tabId: "notification" },
+  { label: "冷邮件", tabId: "cold-email" },
+  { label: "跟进", tabId: "follow-up" },
+  { label: "团队", tabId: "team" },
   { label: "GitHub", tabId: "github" },
   { label: "Stripe", tabId: "stripe" },
 ] as const;
@@ -32,7 +32,7 @@ const LABEL_TO_DEFAULT_TAB = Object.fromEntries(
   DEFAULT_TABS.map((tab) => [normalizeLabelName(tab.label), tab]),
 );
 
-// Matches SYSTEM_RULE_ORDER from utils/rule/sort.ts, with Follow-up appended
+// 与 utils/rule/sort.ts 中的 SYSTEM_RULE_ORDER 匹配，并追加了 Follow-up
 const LABEL_ORDER = DEFAULT_TABS.map((tab) => normalizeLabelName(tab.label));
 
 function labelToGmailSlug(label: string): string {

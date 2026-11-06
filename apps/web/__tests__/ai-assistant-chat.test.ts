@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ModelMessage } from "ai";
 import {
   createTestLogger,
@@ -9,7 +9,9 @@ import {
   ActionType,
   DraftEmailStatus,
   GroupItemType,
+  SystemType,
 } from "@/generated/prisma/enums";
+import { getRuleLabel } from "@/utils/rule/consts";
 
 const {
   envState,
@@ -114,6 +116,7 @@ vi.mock("@/utils/prisma", () => ({
 
 vi.mock("@/env", () => ({
   env: {
+    NEXT_PUBLIC_BRAND_NAME: "Inbox Zero",
     get NEXT_PUBLIC_EMAIL_SEND_ENABLED() {
       return envState.sendEmailEnabled;
     },
@@ -123,7 +126,6 @@ vi.mock("@/env", () => ({
     get NEXT_PUBLIC_WEBHOOK_ACTION_ENABLED() {
       return envState.webhookActionsEnabled;
     },
-    NEXT_PUBLIC_BRAND_NAME: "Inbox Zero",
   },
 }));
 
@@ -202,12 +204,6 @@ async function captureCalendarChat(
 }
 
 describe("aiProcessAssistantChat", () => {
-  // Each test re-imports the chat module after resetting modules; transforming
-  // its import graph once here keeps that cost out of the first test's timeout.
-  beforeAll(async () => {
-    await import("@/utils/ai/assistant/chat");
-  }, 60_000);
-
   beforeEach(() => {
     vi.clearAllMocks();
     envState.sendEmailEnabled = true;
@@ -222,12 +218,10 @@ describe("aiProcessAssistantChat", () => {
       mockToolCallAgentStream.mock.lastCall?.[0].messages[0].content;
 
     for (const guidance of [system, tools.replyEmail.description]) {
-      expect.soft(guidance).toContain("language of the email being replied to");
-      expect.soft(guidance).toContain("new body, not quoted history");
-      expect.soft(guidance).toContain("not the chat language");
-      expect
-        .soft(guidance)
-        .toContain("unless the user explicitly requests another language");
+      expect.soft(guidance).toContain("被回复邮件的语言");
+      expect.soft(guidance).toContain("新正文，而非引用的历史内容");
+      expect.soft(guidance).toContain("而不是对话语言");
+      expect.soft(guidance).toContain("除非用户明确要求其他语言");
     }
   });
 
@@ -418,17 +412,17 @@ describe("aiProcessAssistantChat", () => {
         },
       }),
     );
-    expect(systemPrompt).toContain("calendar or inbox date-range tools");
-    expect(systemPrompt).not.toContain("Do not call a calendar tool");
+    expect(systemPrompt).toContain("调用日历或收件箱日期范围工具前");
+    expect(systemPrompt).not.toContain("不要调用日历工具");
 
     if (enabled) {
       expect(args.tools.getCalendarEvents).toBeDefined();
-      expect(systemPrompt).not.toContain("connect a calendar");
+      expect(systemPrompt).not.toContain("可以在设置中连接日历");
       return;
     }
 
     expect(args.tools.getCalendarEvents).toBeUndefined();
-    expect(systemPrompt).toContain("connect a calendar in settings");
+    expect(systemPrompt).toContain("可以在设置中连接日历");
   });
 
   it("tells the model when the calendar connection lookup fails", async () => {
@@ -445,11 +439,9 @@ describe("aiProcessAssistantChat", () => {
 
     expect(tools.getCalendarEvents).toBeUndefined();
     expect(systemPrompt).toContain(
-      "Checking the calendar connection failed (Error: db down postgres://[redacted]@localhost/db bearer [redacted])",
+      "检查日历连接失败（Error: db down postgres://[redacted]@localhost/db bearer [redacted]）",
     );
-    expect(systemPrompt).toContain(
-      "reconnect their calendar in settings or try again",
-    );
+    expect(systemPrompt).toContain("他们可以在设置中重新连接日历或重试");
     expect(systemPrompt).not.toContain("secret");
     expect(systemPrompt).not.toContain("Connection.connect");
     expect(errorSpy).toHaveBeenCalledWith(
@@ -480,15 +472,13 @@ describe("aiProcessAssistantChat", () => {
       mockToolCallAgentStream.mock.calls[0][0].messages[0].content,
     );
 
-    expect(systemPrompt).toContain("Email capabilities:");
+    expect(systemPrompt).toContain("邮件能力：");
     expect(systemPrompt).toContain(
-      "Email sending actions are disabled in this environment. sendEmail, replyEmail, and forwardEmail tools are unavailable.",
+      "在此环境中，邮件发送操作已禁用。sendEmail、replyEmail 和 forwardEmail 工具不可用。",
     );
-    expect(systemPrompt).toContain(
-      "Draft reply rule actions are disabled in this environment.",
-    );
-    expect(systemPrompt).not.toContain("Email sending:");
-    expect(systemPrompt).not.toContain("Draft replies in rules:");
+    expect(systemPrompt).toContain("在此环境中，草拟回复规则操作已禁用。");
+    expect(systemPrompt).not.toContain("邮件发送：");
+    expect(systemPrompt).not.toContain("规则中的草拟回复：");
   });
 
   it("uses the same email-capabilities block when send is disabled but draft-reply rules remain available", async () => {
@@ -512,15 +502,13 @@ describe("aiProcessAssistantChat", () => {
       mockToolCallAgentStream.mock.calls[0][0].messages[0].content,
     );
 
-    expect(systemPrompt).toContain("Email capabilities:");
+    expect(systemPrompt).toContain("邮件能力：");
+    expect(systemPrompt).toContain("草拟回复规则操作可用于自动化。");
     expect(systemPrompt).toContain(
-      "Draft reply rule actions are available for automation.",
+      "除非用户明确要求自动化，否则不要把基于规则的草拟操作当作已禁用的对话发送工具的替代品。",
     );
-    expect(systemPrompt).toContain(
-      "Do not treat rule-based draft actions as a substitute for disabled chat send tools unless the user explicitly asks for automation.",
-    );
-    expect(systemPrompt).not.toContain("Email sending:");
-    expect(systemPrompt).not.toContain("Draft replies in rules:");
+    expect(systemPrompt).not.toContain("邮件发送：");
+    expect(systemPrompt).not.toContain("规则中的草拟回复：");
   });
 
   it("keeps send guidance but removes draft-reply rule guidance when draft replies are disabled", async () => {
@@ -544,18 +532,14 @@ describe("aiProcessAssistantChat", () => {
       mockToolCallAgentStream.mock.calls[0][0].messages[0].content,
     );
 
-    expect(systemPrompt).toContain("Email capabilities:");
+    expect(systemPrompt).toContain("邮件能力：");
     expect(systemPrompt).toContain(
-      "sendEmail, replyEmail, and forwardEmail prepare a pending action only. No email is sent yet.",
+      "sendEmail、replyEmail 和 forwardEmail 仅准备一个待处理操作。尚未发送任何邮件。",
     );
-    expect(systemPrompt).toContain(
-      "Draft reply rule actions are disabled in this environment.",
-    );
-    expect(systemPrompt).toContain(
-      "Do not create or suggest draft-reply automation.",
-    );
-    expect(systemPrompt).not.toContain("Email sending:");
-    expect(systemPrompt).not.toContain("Draft replies in rules:");
+    expect(systemPrompt).toContain("在此环境中，草拟回复规则操作已禁用。");
+    expect(systemPrompt).toContain("不要创建或建议草拟回复自动化。");
+    expect(systemPrompt).not.toContain("邮件发送：");
+    expect(systemPrompt).not.toContain("规则中的草拟回复：");
   });
 
   it("warns that chat-uploaded files cannot be used as outgoing email attachments", async () => {
@@ -580,11 +564,9 @@ describe("aiProcessAssistantChat", () => {
       mockToolCallAgentStream.mock.calls[0][0].messages[0].content,
     );
 
+    expect(systemPrompt).toContain("对话中上传的文件不能作为外发邮件附件。");
     expect(systemPrompt).toContain(
-      "Chat-uploaded files are not available as outgoing email attachments.",
-    );
-    expect(systemPrompt).toContain(
-      "do not call sendEmail, replyEmail, or forwardEmail for that file",
+      "不要为该文件调用 sendEmail、replyEmail 或 forwardEmail",
     );
   });
 
@@ -1011,16 +993,16 @@ describe("aiProcessAssistantChat", () => {
 
     const content = hiddenContext?.content ?? "";
 
-    expect(content).toContain("Structured match details:");
+    expect(content).toContain("结构化匹配详情：");
     expect(content).toContain("Team Mail");
     expect(content).toContain("store@company.example");
     expect(content).toContain("FROM");
-    expect(content).toMatch(/static/i);
-    expect(content).toMatch(/learned pattern/i);
-    expect(content).toMatch(/new rule/i);
-    expect(content).toMatch(/intent/i);
-    expect(content).toMatch(/existing rule/i);
-    expect(content).toMatch(/overlap/i);
+    expect(content).toMatch(/静态/);
+    expect(content).toMatch(/学习到的模式/);
+    expect(content).toMatch(/新规则/);
+    expect(content).toMatch(/意图/);
+    expect(content).toMatch(/现有规则/);
+    expect(content).toMatch(/重叠/);
   });
 
   it("skips expected rule lookup when results already show conversation status", async () => {
@@ -2110,7 +2092,7 @@ describe("aiProcessAssistantChat", () => {
     } as any);
 
     expect(result).toEqual({
-      error: `Invalid sendEmail input: unsupported field "${field}"`,
+      error: `sendEmail 的输入无效：不支持的字段“${field}”`,
     });
     expect(mockCreateEmailProvider).toHaveBeenCalledTimes(providerCallsBefore);
   });
@@ -2129,7 +2111,7 @@ describe("aiProcessAssistantChat", () => {
     });
 
     expect(result).toEqual({
-      error: "Invalid sendEmail input: to must include valid email address(es)",
+      error: "sendEmail 的输入无效：to must include valid email address(es)",
     });
     expect(mockCreateEmailProvider).toHaveBeenCalledTimes(providerCallsBefore);
   });
@@ -2233,7 +2215,7 @@ describe("aiProcessAssistantChat", () => {
     } as any);
 
     expect(result).toEqual({
-      error: 'Invalid forwardEmail input: unsupported field "from"',
+      error: "forwardEmail 的输入无效：不支持的字段“from”",
     });
     expect(mockCreateEmailProvider).toHaveBeenCalledTimes(providerCallsBefore);
     expect(getMessage).not.toHaveBeenCalled();
@@ -2757,7 +2739,7 @@ describe("aiProcessAssistantChat", () => {
         {
           id: "message-2",
           threadId: "thread-2",
-          labelIds: ["inbox", "to reply", "unread"],
+          labelIds: ["inbox", getRuleLabel(SystemType.TO_REPLY), "unread"],
           snippet: "Needs reply",
           historyId: "hist-2",
           inline: [],

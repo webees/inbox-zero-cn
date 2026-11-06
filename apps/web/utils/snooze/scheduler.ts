@@ -101,7 +101,7 @@ export async function activatePreparedSnoozedThread({
     clientMutationId,
     emailAccountId,
   });
-  if (!snoozedThread) throw new Error("Prepared snooze was not found");
+  if (!snoozedThread) throw new Error("未找到已准备的延后记录");
   assertSnoozePayload(snoozedThread, { scheduledFor, threadId });
   if (snoozedThread.status !== SnoozedThreadStatus.PREPARING) {
     return snoozedThread;
@@ -227,7 +227,7 @@ async function publishSnoozedThread({
       await cancelQstashMessages(client, [snoozedThread.id]);
     }
   } catch (error) {
-    logger.warn("Failed to reconcile snoozed thread scheduling", {
+    logger.warn("核对已延后会话的调度失败", {
       error,
       snoozedThreadId: snoozedThread.id,
     });
@@ -376,12 +376,12 @@ async function cancelQstashMessages(
         label: snoozedThreadIds.map(getSchedulerLabel),
       },
     });
-    logger.info("Cancelled superseded snooze deliveries", {
+    logger.info("已取消被取代的延后投递", {
       cancelled: result.cancelled,
       snoozedThreadIds,
     });
   } catch (error) {
-    logger.warn("Failed to cancel superseded snooze deliveries", {
+    logger.warn("取消被取代的延后投递失败", {
       error,
       snoozedThreadIds,
     });
@@ -400,7 +400,7 @@ function assertSnoozePayload(
     snoozedThread.threadId !== expected.threadId ||
     snoozedThread.scheduledFor.getTime() !== expected.scheduledFor.getTime()
   ) {
-    throw new Error("Snooze mutation ID was reused with different input");
+    throw new Error("延后变更 ID 被以不同输入重复使用");
   }
 }
 

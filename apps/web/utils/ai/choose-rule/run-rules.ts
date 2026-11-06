@@ -274,7 +274,7 @@ function prepareRulesWithMetaRule(rules: RuleWithActions[]): {
   regularRules: RuleWithActions[];
   conversationRules: RuleWithActions[];
 } {
-  // Separate conversation status rules from regular rules
+  // 将会话状态规则与普通规则分开
   const conversationRules = rules.filter((r) =>
     isConversationStatusType(r.systemType),
   );
@@ -282,14 +282,14 @@ function prepareRulesWithMetaRule(rules: RuleWithActions[]): {
     (r) => !isConversationStatusType(r.systemType),
   );
 
-  // If any conversation status rules are enabled, create a meta-rule
+  // 如果启用了任何会话状态规则，则创建一条元规则
   if (conversationRules.some((r) => r.enabled)) {
     const template = conversationRules[0];
 
     const metaRule = {
       ...template,
       id: CONVERSATION_TRACKING_META_RULE_ID,
-      name: "Conversations",
+      name: "会话",
       instructions: CONVERSATION_TRACKING_INSTRUCTIONS,
       enabled: true,
       runOnThreads: true,

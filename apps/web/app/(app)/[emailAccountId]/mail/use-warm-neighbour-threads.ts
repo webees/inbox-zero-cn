@@ -164,7 +164,9 @@ function releaseAll(observations: Map<string, WarmObservation>) {
   observations.clear();
 }
 
-function releaseHovered(held: { hovered: WarmObservation | null }) {
+function releaseHovered(held: {
+  hovered: (WarmObservation & { key: string }) | null;
+}) {
   if (!held.hovered) return;
   release(held.hovered);
   held.hovered = null;

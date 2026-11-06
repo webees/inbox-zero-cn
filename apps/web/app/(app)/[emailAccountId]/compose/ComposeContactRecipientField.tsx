@@ -240,9 +240,7 @@ export function ComposeContactRecipientField({
                 className="absolute z-10 mt-1 flex w-80 items-center gap-3 rounded-md border bg-popover p-3 text-sm text-popover-foreground shadow-lg"
                 role="status"
               >
-                <span className="flex-1">
-                  Reconnect this account to enable contact suggestions.
-                </span>
+                <span className="flex-1">重新连接此账号以启用联系人建议。</span>
                 <Button
                   className="h-auto p-0"
                   disabled={isReconnectingContacts}
@@ -251,7 +249,7 @@ export function ComposeContactRecipientField({
                   type="button"
                   variant="link"
                 >
-                  Reconnect
+                  重新连接
                 </Button>
               </div>
             )}

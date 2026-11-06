@@ -11,8 +11,8 @@ import {
 
 const RECORDED_MEETING_LOOKBACK_DAYS = 30;
 const MAX_RECORDED_MEETINGS = 3;
-// Fetched before the attendee filter runs in JS, so this bounds the scan, not
-// the result size.
+// 在 JS 中的参会者过滤运行之前抓取，因此这限制的是扫描范围，
+// 而不是结果大小。
 const FETCH_LIMIT = 25;
 
 export interface RecordedMeetingContext {
@@ -22,12 +22,12 @@ export interface RecordedMeetingContext {
 }
 
 /**
- * Fetches AI summaries of recorded meetings (from the meeting notetaker) that
- * the email's recipients attended, for use as drafting context.
+ * 抓取由邮件收件人参加过的、已录制会议的 AI 摘要（来自会议记录助手），
+ * 用作起草上下文。
  *
- * Privacy: recorded content is stricter than calendar metadata. A meeting is
- * only included when every recipient of the email was a non-declined attendee,
- * so what was said in a call is never surfaced to someone who wasn't on it.
+ * 隐私：录制内容比日历元数据更敏感。仅当邮件的每一位收件人
+ * 都是未拒绝的参会者时才包含该会议，
+ * 因此通话中所说的内容绝不会暴露给不在场的人。
  */
 export async function getRecordedMeetingContext({
   emailAccountId,
@@ -87,14 +87,14 @@ export async function getRecordedMeetingContext({
 
     return results;
   } catch (error) {
-    logger.error("Failed to get recorded meeting context", { error });
+    logger.error("获取已录制会议的上下文失败", { error });
     return [];
   }
 }
 
 /**
- * Formats recorded meeting summaries for inclusion in the reply-drafting
- * prompt.
+ * 格式化已录制会议摘要，以便纳入回复起草
+ * 提示词。
  */
 export function formatRecordedMeetingContextForPrompt(
   meetings: RecordedMeetingContext[],

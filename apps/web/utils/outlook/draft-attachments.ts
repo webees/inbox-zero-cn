@@ -71,13 +71,13 @@ export async function addOutlookDraftAttachment({
         }),
     logger,
   );
-  if (!created.id) throw new Error("Outlook did not confirm the attachment.");
+  if (!created.id) throw new Error("Outlook 未确认该附件。");
   return created.id;
 }
 
 /**
- * Larger files go straight from the browser to Microsoft. The upload URL is
- * pre-authenticated and CORS-enabled, so no bytes or tokens pass through us.
+ * 较大的文件直接从浏览器发送到 Microsoft。上传 URL 已
+ * 预先认证并启用 CORS，因此没有字节或令牌经过我们。
  */
 export async function createOutlookDraftAttachmentUploadSession({
   client,
@@ -108,8 +108,7 @@ export async function createOutlookDraftAttachmentUploadSession({
         }),
     logger,
   );
-  if (!session.uploadUrl)
-    throw new Error("Outlook did not return an attachment upload URL.");
+  if (!session.uploadUrl) throw new Error("Outlook 未返回附件上传 URL。");
   return session.uploadUrl;
 }
 
@@ -136,7 +135,7 @@ export async function removeOutlookDraftAttachment({
       logger,
     );
   } catch (error) {
-    // Already gone is what the user asked for.
+    // 已经不存在正是用户想要的结果。
     if (!isOutlookItemNotFoundError(error)) throw error;
   }
 }

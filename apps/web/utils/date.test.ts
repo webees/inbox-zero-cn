@@ -11,8 +11,8 @@ import {
 } from "./date";
 
 describe("timezone formatting", () => {
-  // A fixed UTC timestamp: Dec 30, 2024 at 7:00 PM UTC
-  // This is the same moment in time, but displays differently in different timezones
+  // 固定的 UTC 时间戳：2024 年 12 月 30 日 UTC 晚上 7:00
+  // 这是同一时刻，但在不同时区显示不同
   const utcDate = new Date("2024-12-30T19:00:00Z");
 
   describe("formatTimeInUserTimezone", () => {
@@ -119,7 +119,7 @@ describe("timezone formatting", () => {
 
   describe("real-world briefing scenarios", () => {
     it("should correctly format a 4 PM BRT meeting for a BRT user", () => {
-      // User has a meeting at 4 PM BRT (which is stored as 7 PM UTC in the calendar)
+      // 用户在 BRT 下午 4 点有一个会议（在日历中存储为 UTC 晚上 7 点）
       const meetingTimeUtc = new Date("2024-12-30T19:00:00Z");
       const userTimezone = "America/Sao_Paulo";
 
@@ -128,12 +128,12 @@ describe("timezone formatting", () => {
         userTimezone,
       );
 
-      // User should see "4:00 PM", not "7:00 PM"
+      // 用户应看到 "4:00 PM"，而不是 "7:00 PM"
       expect(formattedTime).toBe("4:00 PM");
     });
 
     it("should correctly format a morning meeting across date line", () => {
-      // Meeting at 10 AM in Sydney (which is 11 PM previous day UTC)
+      // 悉尼上午 10 点的会议（对应 UTC 前一天晚上 11 点）
       const sydneyMorningUtc = new Date("2024-12-29T23:00:00Z");
       const userTimezone = "Australia/Sydney";
 
@@ -142,7 +142,7 @@ describe("timezone formatting", () => {
         userTimezone,
       );
 
-      // User should see Dec 30 at 10 AM, not Dec 29
+      // 用户应看到 12 月 30 日上午 10 点，而不是 12 月 29 日
       expect(formattedDateTime).toBe("Dec 30, 2024 at 10:00 AM");
     });
   });
@@ -264,18 +264,18 @@ describe("formatDateGroupLabel", () => {
   const now = new Date("2025-09-05T12:00:00");
 
   it.each([
-    { name: "today", date: "2025-09-05T09:30:00", expected: "Today" },
-    { name: "later today", date: "2025-09-05T23:30:00", expected: "Today" },
-    { name: "yesterday", date: "2025-09-04T23:59:00", expected: "Yesterday" },
+    { name: "today", date: "2025-09-05T09:30:00", expected: "今天" },
+    { name: "later today", date: "2025-09-05T23:30:00", expected: "今天" },
+    { name: "yesterday", date: "2025-09-04T23:59:00", expected: "昨天" },
     {
       name: "an earlier day this week",
       date: "2025-09-01T08:00:00",
-      expected: "Last 7 days",
+      expected: "最近 7 天",
     },
     {
       name: "the oldest day of the past week",
       date: "2025-08-30T00:00:00",
-      expected: "Last 7 days",
+      expected: "最近 7 天",
     },
     {
       name: "a day last month",
@@ -302,7 +302,7 @@ describe("formatDateGroupLabel", () => {
         new Date("2025-08-31T22:00:00"),
         new Date("2025-09-01T09:00:00"),
       ),
-    ).toBe("Yesterday");
+    ).toBe("昨天");
   });
 
   it("labels days older than a week but still in this month", () => {
@@ -311,7 +311,7 @@ describe("formatDateGroupLabel", () => {
         new Date("2025-09-05T08:00:00"),
         new Date("2025-09-20T09:00:00"),
       ),
-    ).toBe("Earlier this month");
+    ).toBe("本月早些时候");
   });
 });
 

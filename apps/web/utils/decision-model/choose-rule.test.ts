@@ -88,7 +88,7 @@ describe("decisionModelChooseRule", () => {
 
   it("falls back when the choice confidence is too low", async () => {
     mockAnswer("Receipts", { confidence: 0.29 });
-    await expect(chooseRule()).rejects.toThrow("confidence is too low");
+    await expect(chooseRule()).rejects.toThrow("置信度过低");
   });
 
   it("disambiguates duplicate rule names", async () => {
@@ -147,7 +147,7 @@ describe("decisionModelChooseRule", () => {
       chooseRule({
         emailAccount: getEmailAccount({ multiRuleSelectionEnabled: true }),
       }),
-    ).rejects.toThrow("does not support multi-rule selection");
+    ).rejects.toThrow("不支持多规则选择");
     expect(runDecisionModelMock).not.toHaveBeenCalled();
   });
 
@@ -188,7 +188,7 @@ describe("decisionModelChooseRule", () => {
 
       await expect(
         chooseRule({ rules: [...contentRules, systemNotificationRule] }),
-      ).rejects.toThrow("confidence is too low");
+      ).rejects.toThrow("置信度过低");
     });
 
     it("keeps Conversations when it outweighs content together", async () => {
@@ -219,7 +219,7 @@ describe("decisionModelChooseRule", () => {
       });
       expect(await chooseRule({ rules: contentRules })).toEqual({
         type: "undecided",
-        reason: "Decision model was too close to call (margin 0.02)",
+        reason: "决策模型的选择过于接近，无法确定（分差 0.02）",
       });
     });
 
@@ -235,7 +235,7 @@ describe("decisionModelChooseRule", () => {
       });
       expect(await chooseRule({ rules: contentRules })).toEqual({
         type: "undecided",
-        reason: "Decision model was too close to call (margin 0.03)",
+        reason: "决策模型的选择过于接近，无法确定（分差 0.03）",
       });
     });
 

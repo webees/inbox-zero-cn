@@ -69,12 +69,12 @@ async function runSmoke() {
     await openSubject(window, expectedSubjects[0] ?? subjects[0]);
     await waitForReaderBody(window);
     if (process.env.ELECTRON_LONG_THREAD === "1") {
-      await clickReaderPage(window, "Next messages");
+      await clickReaderPage(window, "下一批邮件");
       await waitForReaderBody(
         window,
         "Hydrated desktop message body m-local-50",
       );
-      await clickReaderPage(window, "Previous messages");
+      await clickReaderPage(window, "上一批邮件");
       await waitForReaderBody(window, "Hydrated desktop message body m-local");
     }
     if (process.env.ELECTRON_SCREENSHOT) {
@@ -217,7 +217,7 @@ async function openSubject(window: BrowserWindow, subject?: string) {
   if (!subject) throw new Error("No subject available to open");
   const opened = (await window.webContents.executeJavaScript(`
     (() => {
-      const row = [...document.querySelectorAll("[role='listbox'][aria-label='Conversations'] [role='option']")]
+      const row = [...document.querySelectorAll("[role='listbox'] [role='option']")]
         .find((item) => item.textContent.includes(${JSON.stringify(subject)}));
       row?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
       return Boolean(row);
@@ -270,11 +270,11 @@ async function assertSharedMailUiStyles(
   if (!subject) throw new Error("No subject available for style validation");
   const computed = (await window.webContents.executeJavaScript(`
     (() => {
-      const row = [...document.querySelectorAll("[role='listbox'][aria-label='Conversations'] [role='option']")]
+      const row = [...document.querySelectorAll("[role='listbox'] [role='option']")]
         .find((item) => item.textContent.includes(${JSON.stringify(subject)}));
       const subjectElement = row?.querySelector("[data-mail-thread-subject]");
       const reader = document.querySelector('[data-testid="thread-reader"]');
-      const toolbar = reader?.querySelector('[aria-label="Thread actions"]');
+      const toolbar = reader?.querySelector('[data-testid="thread-actions"]');
       const rowStyle = row ? getComputedStyle(row) : null;
       const subjectStyle = subjectElement ? getComputedStyle(subjectElement) : null;
       const readerStyle = reader ? getComputedStyle(reader) : null;
@@ -323,10 +323,10 @@ async function waitForMissingSubject(window: BrowserWindow, subject: string) {
 async function clickArchive(window: BrowserWindow, subject: string) {
   const clicked = (await window.webContents.executeJavaScript(`
     (() => {
-      const row = [...document.querySelectorAll("[role='listbox'][aria-label='Conversations'] [role='option']")]
+      const row = [...document.querySelectorAll("[role='listbox'] [role='option']")]
         .find((item) => item.textContent.includes(${JSON.stringify(subject)}));
       const button = [...(row?.querySelectorAll("button") ?? [])]
-        .find((item) => item.textContent === "Archive");
+        .find((item) => item.textContent === "归档");
       button?.click();
       return Boolean(button);
     })()
@@ -336,7 +336,7 @@ async function clickArchive(window: BrowserWindow, subject: string) {
 
 async function readSubjects(window: BrowserWindow) {
   return (await window.webContents.executeJavaScript(`
-    [...document.querySelectorAll("[role='listbox'][aria-label='Conversations'] [role='option'] [data-mail-thread-subject]")]
+    [...document.querySelectorAll("[role='listbox'] [role='option'] [data-mail-thread-subject]")]
       .map((subject) => subject.textContent)
   `)) as string[];
 }

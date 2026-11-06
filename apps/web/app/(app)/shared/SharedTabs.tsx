@@ -10,17 +10,16 @@ export function SharedTabs() {
   return (
     <div>
       <div className="mb-4">
-        <PageHeading>Discussions</PageHeading>
+        <PageHeading>讨论</PageHeading>
         <PageSubHeading className="mt-1">
-          Email threads your teammates share with you to discuss in private
-          comments.
+          团队成员与你分享、用于私密评论讨论的邮件会话。
         </PageSubHeading>
       </div>
       <div className="border-b border-neutral-200">
         <TabSelect
           options={[
-            { id: "conversations", label: "Conversations", href: "/shared" },
-            { id: "activity", label: "Activity", href: "/shared/activity" },
+            { id: "conversations", label: "会话", href: "/shared" },
+            { id: "activity", label: "活动", href: "/shared/activity" },
           ]}
           selected={
             pathname.endsWith("/activity") ? "activity" : "conversations"
@@ -34,8 +33,7 @@ export function SharedTabs() {
 export function NoOrganization() {
   return (
     <p className="text-muted-foreground text-sm">
-      This account isn't in an organization. Switch to an account that is to see
-      conversations your teammates share with you.
+      此账号不属于任何组织。请切换到已加入组织的账号，以查看团队成员与你分享的会话。
     </p>
   );
 }

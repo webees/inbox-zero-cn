@@ -21,7 +21,7 @@ async function getRuleStats({
   fromDate?: number;
   toDate?: number;
 }) {
-  // Build WHERE conditions as SQL fragments
+  // 以 SQL 片段形式构建 WHERE 条件
   const conditions: Prisma.Sql[] = [
     Prisma.sql`er."emailAccountId" = ${emailAccountId}`,
   ];
@@ -39,7 +39,7 @@ async function getRuleStats({
     Array<{ rule_name: string; executed_count: bigint }>
   >(Prisma.sql`
     SELECT 
-      COALESCE(r.name, 'No Rule') AS rule_name,
+      COALESCE(r.name, '无规则') AS rule_name,
       COUNT(er.id) AS executed_count
     FROM "ExecutedRule" er
     LEFT JOIN "Rule" r ON er."ruleId" = r.id

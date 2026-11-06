@@ -11,8 +11,8 @@ import { COLORS } from "@/utils/colors";
 import { BRAND_NAME } from "@/utils/branding";
 
 const chartConfig = {
-  Archived: { label: "Archived", color: COLORS.analytics.green },
-  Deleted: { label: "Deleted", color: COLORS.analytics.pink },
+  Archived: { label: "已归档", color: COLORS.analytics.green },
+  Deleted: { label: "已删除", color: COLORS.analytics.pink },
 } satisfies ChartConfig;
 
 export function EmailActionsAnalytics() {
@@ -23,9 +23,9 @@ export function EmailActionsAnalytics() {
   if (data?.disabled) {
     return (
       <CardBasic>
-        <p>{`How many emails you've archived and deleted with ${BRAND_NAME}`}</p>
+        <p>{`你使用 ${BRAND_NAME} 归档和删除了多少邮件`}</p>
         <div className="mt-4 h-72 flex items-center justify-center text-muted-foreground">
-          <p>This feature is disabled. Contact your admin to enable it.</p>
+          <p>此功能已禁用。请联系你的管理员启用。</p>
         </div>
       </CardBasic>
     );
@@ -39,7 +39,7 @@ export function EmailActionsAnalytics() {
     >
       {data && (
         <CardBasic>
-          <p>{`How many emails you've archived and deleted with ${BRAND_NAME}`}</p>
+          <p>{`你使用 ${BRAND_NAME} 归档和删除了多少邮件`}</p>
           <div className="mt-4">
             <BarChart
               data={data.result}

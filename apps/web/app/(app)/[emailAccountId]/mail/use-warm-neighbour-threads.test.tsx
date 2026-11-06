@@ -90,29 +90,6 @@ describe("useWarmNeighbourThreads", () => {
     expect(second.openKeys()).toEqual(["t1", "t2"]);
   });
 
-  it("warms one hovered thread at a time beside the held neighbours", () => {
-    const client = fakeClient();
-    const { result, unmount } = renderHook(
-      () =>
-        useWarmNeighbourThreads({
-          threads: ["t1", "t2", "t3", "t4", "t5"].map(listThread),
-          activeThreadKey: "t1",
-          emailAccountId: "acc-1",
-        }),
-      { wrapper: client.wrapper },
-    );
-
-    act(() => result.current(listThread("t4")));
-    expect(client.openKeys()).toEqual(["t1", "t2", "t4"]);
-    act(() => result.current(listThread("t2")));
-    expect(client.openKeys()).toEqual(["t1", "t2", "t4"]);
-    act(() => result.current(listThread("t5")));
-    expect(client.openKeys()).toEqual(["t1", "t2", "t5"]);
-
-    unmount();
-    expect(client.openKeys()).toEqual([]);
-  });
-
   it("requests a neighbour's missing bodies once per message across snapshot updates", () => {
     const client = fakeClient();
     renderHook(

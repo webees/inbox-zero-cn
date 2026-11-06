@@ -171,7 +171,7 @@ function CommandPaletteContent({
           try {
             const change = mutationPayloadToChange({ kind: "archive" });
             if (!client || !change) {
-              throw new Error("Mail engine is unavailable");
+              throw new Error("邮件引擎不可用");
             }
             const { admission } = await submitConversationChange({
               accountId: emailAccountId,
@@ -183,14 +183,14 @@ function CommandPaletteContent({
               toastError({
                 description:
                   admissionRejectionCopy(admission.code) ??
-                  "Couldn't queue archiving this email",
+                  "无法将这封邮件加入归档队列",
               });
               return;
             }
             showEmail(null);
           } catch {
             toastError({
-              description: "Couldn't queue archiving this email",
+              description: "无法将这封邮件加入归档队列",
             });
           }
         }
@@ -200,8 +200,8 @@ function CommandPaletteContent({
           if (displayedThread?.thread.id !== threadId) {
             toastError({
               description: isDisplayedThreadLoading
-                ? "Email is still loading"
-                : "Email is unavailable",
+                ? "邮件仍在加载"
+                : "邮件不可用",
             });
             return;
           }
@@ -211,7 +211,7 @@ function CommandPaletteContent({
               starred: !isThreadStarred(displayedThread.thread.messages),
             });
             if (!client || !change) {
-              throw new Error("Mail engine is unavailable");
+              throw new Error("邮件引擎不可用");
             }
             const { admission } = await submitConversationChange({
               accountId: emailAccountId,
@@ -223,12 +223,12 @@ function CommandPaletteContent({
               toastError({
                 description:
                   admissionRejectionCopy(admission.code) ??
-                  "Couldn’t update the star for this email",
+                  "无法更新这封邮件的星标",
               });
             }
           } catch {
             toastError({
-              description: "Couldn’t update the star for this email",
+              description: "无法更新这封邮件的星标",
             });
           }
         }
@@ -310,12 +310,12 @@ function CommandPaletteContent({
         ]
       : shortcutCommands;
     const themeCommands: Command[] = [
-      { theme: "dark", label: "Dark", icon: MoonIcon },
-      { theme: "light", label: "Light", icon: SunIcon },
-      { theme: "system", label: "System", icon: MonitorIcon },
+      { theme: "dark", label: "深色", icon: MoonIcon },
+      { theme: "light", label: "浅色", icon: SunIcon },
+      { theme: "system", label: "跟随系统", icon: MonitorIcon },
     ].map(({ theme, label, icon }) => ({
       id: `theme-${theme}`,
-      label: `Set Theme: ${label}`,
+      label: `设置主题：${label}`,
       icon,
       section: "settings",
       keywords: ["theme", "appearance", "mode", theme],
@@ -325,7 +325,7 @@ function CommandPaletteContent({
       ...actionCommands,
       {
         id: "switch-accounts",
-        label: "Switch accounts",
+        label: "切换账号",
         icon: UsersIcon,
         section: "accounts",
         keywords: ["switch", "accounts", "email", "inbox"],
@@ -338,7 +338,7 @@ function CommandPaletteContent({
     if (feedbackEnabled) {
       allCommands.push({
         id: "send-feedback",
-        label: "Send feedback",
+        label: "发送反馈",
         icon: MessageSquarePlusIcon,
         section: "settings",
         keywords: ["feedback", "bug", "report", "suggestion", "idea"],

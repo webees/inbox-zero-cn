@@ -86,7 +86,7 @@ export async function onRun(
         message:
           typeof errorData.error === "string"
             ? errorData.error
-            : `Error: ${response.status}`,
+            : `错误：${response.status}`,
         retryAfterMs: getRetryAfterDelayMs(
           response.headers?.get("Retry-After") ?? undefined,
         ),
@@ -107,7 +107,7 @@ export async function onRun(
         if (completeIfCancelled()) return;
         if (error instanceof BulkRunRequestError) {
           toastError({
-            title: "Failed to fetch emails",
+            title: "获取邮件失败",
             description: error.message,
           });
           onComplete("error", totalProcessed);
@@ -120,8 +120,8 @@ export async function onRun(
 
       if (!data.threads) {
         toastError({
-          title: "Invalid response",
-          description: "Failed to process emails. Please try again.",
+          title: "响应无效",
+          description: "处理邮件失败，请重试",
         });
         onComplete("error", totalProcessed);
         return;
@@ -181,15 +181,14 @@ export async function onRun(
       const processedCount = totalProcessed + completedInBatch;
       if (error instanceof BulkRunRateLimitGiveUpError) {
         toastError({
-          title: "Processing stopped",
-          description: `Your email provider kept limiting requests, so processing stopped after ${processedCount} emails. Run it again later to ${rerun ? "try again" : "continue with the rest"}.`,
+          title: "处理已停止",
+          description: `你的邮件服务商持续限制请求，处理在 ${processedCount} 封邮件后停止。请稍后再次运行以${rerun ? "重试" : "继续处理剩余邮件"}。`,
         });
       } else {
         captureException(error);
         toastError({
-          title: "Failed to process emails",
-          description:
-            error instanceof Error ? error.message : "Please try again.",
+          title: "处理邮件失败",
+          description: error instanceof Error ? error.message : "请重试",
         });
       }
       onComplete("error", processedCount);

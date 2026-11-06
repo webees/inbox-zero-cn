@@ -1,8 +1,8 @@
-# E2E Tests
+# E2E 测试
 
-End-to-end integration tests for Inbox Zero AI that test against real email provider APIs.
+针对真实邮件服务商 API 的 Inbox Zero AI 端到端集成测试。
 
-## Structure
+## 结构
 
 ```
 e2e/
@@ -14,9 +14,9 @@ e2e/
 └── README.md                      # This file
 ```
 
-## Running E2E Tests
+## 运行 E2E 测试
 
-E2E tests are skipped by default. To run them:
+E2E 测试默认跳过。运行方式：
 
 ```bash
 # Run all E2E tests
@@ -32,11 +32,11 @@ pnpm test-e2e outlook-operations
 pnpm test-e2e microsoft-labeling -t "should apply and remove label"
 ```
 
-## Setup
+## 设置
 
-### Microsoft/Outlook Tests
+### Microsoft/Outlook 测试
 
-Set these environment variables:
+设置这些环境变量：
 
 ```bash
 export TEST_OUTLOOK_EMAIL=your@outlook.com
@@ -44,9 +44,9 @@ export TEST_OUTLOOK_MESSAGE_ID=AQMkADAwATNiZmYAZS05YWEAYy1iNWY0LTAwAi0wMAoARgAAA
 export TEST_CONVERSATION_ID=AQQkADAwATNiZmYAZS05YWEAYy1iNWY0LTAwAi0wMAoAEABuo...
 ```
 
-### Google/Gmail Tests
+### Google/Gmail 测试
 
-Set these environment variables:
+设置这些环境变量：
 
 ```bash
 export TEST_GMAIL_EMAIL=your@gmail.com
@@ -54,37 +54,36 @@ export TEST_GMAIL_MESSAGE_ID=18d1c2f3e4b5a678
 export TEST_GMAIL_THREAD_ID=18d1c2f3e4b5a678
 ```
 
-## Test Approach
+## 测试方法
 
-All E2E tests follow a **clean slate approach**:
+所有 E2E 测试都遵循**干净状态方法**：
 
-1. **Setup**: Create test data (labels, etc.)
-2. **Action**: Perform the operation being tested
-3. **Verify**: Check that the state is correct
-4. **Cleanup**: Remove test data and restore original state
+1. **设置**：创建测试数据（标签等）
+2. **操作**：执行被测操作
+3. **验证**：检查状态是否正确
+4. **清理**：移除测试数据并恢复原始状态
 
-This ensures:
-- Tests are idempotent and can be run multiple times
-- Tests don't pollute the test account
-- State verification at each step catches issues early
+这确保：
+- 测试幂等，可多次运行
+- 测试不会污染测试账号
+- 每一步的状态验证能及早发现问题
 
-## Getting Test IDs
+## 获取测试 ID
 
-### For Outlook
+### Outlook
 
-1. Run the app and trigger a webhook
-2. Check the logs for message IDs and conversation IDs
-3. Or use the Outlook API explorer: <https://developer.microsoft.com/en-us/graph/graph-explorer>
+1. 运行应用并触发 webhook
+2. 在日志中查找邮件 ID 和会话 ID
+3. 或使用 Outlook API 资源管理器：<https://developer.microsoft.com/en-us/graph/graph-explorer>
 
-### For Gmail
+### Gmail
 
-1. Use the Gmail API explorer: <https://developers.google.com/gmail/api/reference/rest>
-2. Or check your app logs when processing emails
+1. 使用 Gmail API 资源管理器：<https://developers.google.com/gmail/api/reference/rest>
+2. 或在处理邮件时查看应用日志
 
-## Notes
+## 注意事项
 
-- These tests use real API calls and count against your quota
-- Tests may take 30+ seconds due to API rate limits
-- Make sure your test account has proper permissions
-- **Microsoft Graph**: All API requests use immutable IDs (`Prefer: IdType="ImmutableId"` header) to ensure message IDs remain stable across operations
-
+- 这些测试使用真实 API 调用，会计入你的配额
+- 由于 API 速率限制，测试可能需要 30 秒以上
+- 确保测试账号具有适当权限
+- **Microsoft Graph**：所有 API 请求都使用不可变 ID（`Prefer: IdType="ImmutableId"` 请求头），以确保邮件 ID 在操作之间保持稳定

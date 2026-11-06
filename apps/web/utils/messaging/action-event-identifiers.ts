@@ -35,7 +35,7 @@ export function getTelegramChatId(event: ActionEvent): string | null {
       return String(decoded.chatId);
     }
   } catch {
-    // Fall back to providerUserId-only authorization below.
+    // 下面回退到仅按 providerUserId 授权。
   }
 
   return null;

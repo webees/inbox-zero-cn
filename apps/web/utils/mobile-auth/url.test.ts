@@ -60,7 +60,7 @@ describe("mobile auth URL helpers", () => {
     mockEnv.MOBILE_AUTH_ORIGIN = "";
 
     expect(() => getMobileAuthAppCallbackUrl("custom-scheme")).toThrow(
-      "MOBILE_AUTH_ORIGIN is required for this auth callback scheme",
+      "MOBILE_AUTH_ORIGIN 是此认证回调方案所必需的",
     );
   });
 
@@ -68,7 +68,7 @@ describe("mobile auth URL helpers", () => {
     mockEnv.DESKTOP_AUTH_ORIGIN = "";
 
     expect(() => getMobileAuthAppCallbackUrl("desktop-scheme")).toThrow(
-      "DESKTOP_AUTH_ORIGIN is required for this auth callback scheme",
+      "DESKTOP_AUTH_ORIGIN 是此认证回调方案所必需的",
     );
   });
 

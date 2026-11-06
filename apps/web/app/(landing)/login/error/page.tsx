@@ -25,36 +25,36 @@ import {
 
 const errorMessages: Record<string, { title: string; description: string }> = {
   email_not_found: {
-    title: "Account Not Authorized",
+    title: "账号未获授权",
     description:
-      "Your account is not authorized to access this application. This may be because your email is not part of the allowed organization. Please contact your administrator or try signing in with a different account.",
+      "你的账号没有访问此应用的权限。这可能是因为你的邮箱不属于允许的组织。请联系管理员，或尝试使用其他账号登录。",
   },
   signup_not_allowed: {
-    title: "Sign-up Restricted",
+    title: "注册受限",
     description:
-      "This deployment only allows sign-up from specific email addresses or domains. Please contact your administrator or try signing in with a different account.",
+      "此部署仅允许来自特定邮箱地址或域名的注册。请联系管理员，或尝试使用其他账号登录。",
   },
   email_already_linked: {
-    title: "Email Already Linked",
+    title: "邮箱已关联",
     description: getEmailAlreadyLinkedDescription(),
   },
   account_not_linked: {
-    title: "Sign-in Method Doesn't Match",
+    title: "登录方式不匹配",
     description:
-      "An account already exists for this email, but it was created with a different sign-in method or a different provider account. Sign in the way you originally signed up, or contact support so we can reconnect the two.",
+      "此邮箱已存在账号，但它是使用其他登录方式或不同的服务商账号创建的。请使用你最初注册的方式登录，或联系支持，以便我们重新关联这两者。",
   },
   org_invite_invalid_code: {
-    title: "Organization Invite Sign-in Failed",
+    title: "组织邀请登录失败",
     description:
-      "We couldn't complete sign-in while joining this organization. Please start from the invitation link again. If it still fails, sign in with the original account for this mailbox, then accept the invite again.",
+      "在加入此组织时无法完成登录。请从邀请链接重新开始。如果仍然失败，请使用此邮箱的原始账号登录，然后再次接受邀请。",
   },
   invalid_code: {
-    title: "Sign-in Session Expired",
+    title: "登录会话已过期",
     description:
-      "Your sign-in link is no longer valid. This can happen if the login flow was opened twice, timed out, or already used. Please start sign-in again from the login page.",
+      "你的登录链接已失效。这可能是因为登录流程被打开两次、超时或已被使用。请从登录页面重新开始登录。",
   },
   requiresreconsent: {
-    title: "Permissions need to be refreshed",
+    title: "需要重新授权权限",
     description: getRequiresReconsentDescription(),
   },
 };
@@ -80,8 +80,8 @@ function LoginErrorContent() {
     });
   }, [data?.id, isLoading, posthog, resolvedErrorCode]);
 
-  // For some reason users are being sent to this page when logged in
-  // This will redirect them out of this page to the app
+  // 已登录用户有时会被带到此页面
+  // 这会将他们从此页面重定向到应用
   useEffect(() => {
     if (data?.id) {
       const authErrorCookie = getAndClearAuthErrorCookie();
@@ -95,15 +95,15 @@ function LoginErrorContent() {
   }, [data, router]);
 
   if (isLoading) return <Loading />;
-  // will redirect to welcome if user is logged in
+  // 用户已登录时会重定向到欢迎页
   if (data?.id) return <Loading />;
 
   const errorInfo = resolvedErrorCode ? errorMessages[resolvedErrorCode] : null;
-  const title = errorInfo?.title || "Error Logging In";
-  const supportText = `If this error persists, please use the support chat or email us at ${SUPPORT_EMAIL}.`;
+  const title = errorInfo?.title || "登录出错";
+  const supportText = `如果此错误持续存在，请使用支持聊天，或通过 ${SUPPORT_EMAIL} 给我们发邮件。`;
   const fallbackDescription = resolvedErrorCode
-    ? `Please try signing in again. (Error code: ${resolvedErrorCode}) ${supportText}`
-    : `Please try signing in again. ${supportText}`;
+    ? `请再次尝试登录。（错误代码：${resolvedErrorCode}）${supportText}`
+    : `请再次尝试登录。${supportText}`;
   const description = errorInfo?.description
     ? `${errorInfo.description} ${supportText}`
     : fallbackDescription;
@@ -115,7 +115,7 @@ function LoginErrorContent() {
         description={description}
         button={
           <Button asChild>
-            <Link href="/login">Log In</Link>
+            <Link href="/login">登录</Link>
           </Button>
         }
       />

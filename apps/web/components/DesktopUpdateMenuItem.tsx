@@ -17,12 +17,12 @@ export function DesktopUpdateMenuItem() {
       <SidebarMenuItem className="font-semibold">
         <SidebarMenuButton
           className="h-9"
-          tooltip="Restart to update"
+          tooltip="重启以更新"
           sidebarName="left-sidebar"
           onClick={() => getInboxZeroDesktopApp()?.installUpdate?.()}
         >
           <DownloadIcon />
-          <span>Restart to update</span>
+          <span>重启以更新</span>
         </SidebarMenuButton>
       </SidebarMenuItem>
     </SidebarMenu>

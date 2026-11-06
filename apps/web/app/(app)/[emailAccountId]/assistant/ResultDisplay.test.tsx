@@ -72,12 +72,10 @@ describe("ResultDisplayContent", () => {
 
     expect(screen.getByText("No match found")).toBeTruthy();
     expect(
-      screen.getByText(
-        "Some rules were skipped because this email is part of a thread.",
-      ),
+      screen.getByText("由于此邮件属于同一会话，部分规则被跳过。"),
     ).toBeTruthy();
     expect(
-      screen.getByRole("button", { name: "View skipped rules" }),
+      screen.getByRole("button", { name: "查看已跳过的规则" }),
     ).toBeTruthy();
   });
 
@@ -102,12 +100,10 @@ describe("ResultDisplayContent", () => {
     );
 
     expect(
-      screen.queryByText(
-        "Some rules were skipped because this email is part of a thread.",
-      ),
+      screen.queryByText("由于此邮件属于同一会话，部分规则被跳过。"),
     ).toBeNull();
     expect(
-      screen.queryByRole("button", { name: "View skipped rules" }),
+      screen.queryByRole("button", { name: "查看已跳过的规则" }),
     ).toBeNull();
   });
 
@@ -140,12 +136,8 @@ describe("ResultDisplayContent", () => {
       />,
     );
 
-    expect(
-      screen.getByText("Some rules were excluded by learned patterns."),
-    ).toBeTruthy();
-    expect(
-      screen.getByRole("button", { name: "View exclusions" }),
-    ).toBeTruthy();
+    expect(screen.getByText("部分规则已被学习模式排除。")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "查看排除项" })).toBeTruthy();
   });
 
   it("shows learned-pattern exclusions for applied results", () => {
@@ -188,12 +180,8 @@ describe("ResultDisplayContent", () => {
       />,
     );
 
-    expect(
-      screen.getByText("Some rules were excluded by learned patterns."),
-    ).toBeTruthy();
-    expect(
-      screen.getByRole("button", { name: "View exclusions" }),
-    ).toBeTruthy();
+    expect(screen.getByText("部分规则已被学习模式排除。")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "查看排除项" })).toBeTruthy();
   });
 });
 

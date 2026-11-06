@@ -25,7 +25,7 @@ export function createDesktopIpcMailClient(input?: {
   const unsubscribe = desktop?.mailEngineUnsubscribe;
   const onSnapshot = desktop?.onMailEngineSnapshot;
   if (!invoke || !subscribe || !unsubscribe || !onSnapshot) {
-    throw new Error("Desktop mail engine IPC is unavailable");
+    throw new Error("桌面邮件引擎 IPC 不可用");
   }
   const client = createMailIpcClient(invoke, {
     provider: input?.provider,

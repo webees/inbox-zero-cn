@@ -96,8 +96,8 @@ export function ReaderToolbar({
         <>
           {showChat && (
             <Button
-              aria-label="Chat about this email"
-              title="Chat about this email"
+              aria-label="就此邮件对话"
+              title="就此邮件对话"
               size="iconXs"
               variant="ghost"
               onClick={() => toggleSidebar(["chat-sidebar"])}

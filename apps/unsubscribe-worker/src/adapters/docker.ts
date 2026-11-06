@@ -26,7 +26,7 @@ export function dockerAdapter({
       const name = `unsubscribe-${jobId}`;
       const router = `${name}-router`;
       const timer = `${name}-expiry`;
-      // The host timer survives coordinator crashes and a compromised guest.
+      // 主机定时器可在协调器崩溃和客户机被攻陷后继续生效。
       await command(
         "systemd-run",
         [

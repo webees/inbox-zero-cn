@@ -17,10 +17,10 @@ describe("buildSnoozeCommandPalette", () => {
     expect(
       commands.map((command) => [command.label, command.description]),
     ).toEqual([
-      ["Tomorrow", "Wed, Aug 19 at 9:00 AM"],
-      ["End of week", "Fri, Aug 21 at 9:00 AM"],
-      ["This weekend", "Sat, Aug 22 at 9:00 AM"],
-      ["Next week", "Mon, Aug 24 at 9:00 AM"],
+      ["明天", "Wed, Aug 19 at 9:00 AM"],
+      ["本周末", "Fri, Aug 21 at 9:00 AM"],
+      ["这周末", "Sat, Aug 22 at 9:00 AM"],
+      ["下周", "Mon, Aug 24 at 9:00 AM"],
     ]);
   });
 
@@ -52,10 +52,10 @@ describe("buildSnoozeCommandPalette", () => {
   });
 
   it.each([
-    "t",
-    "tom",
-    "Tomorrow",
-    " tomorrow ",
+    "明",
+    "明天",
+    "明天",
+    " 明天 ",
   ])("offers tomorrow while typing %j", (query) => {
     const onSnooze = vi.fn();
     const commands = buildSnoozeCommandPalette({
@@ -75,18 +75,18 @@ describe("buildSnoozeCommandPalette", () => {
     const commands = buildSnoozeCommandPalette({
       now,
       onSnooze,
-      query: "week",
+      query: "周",
     });
 
     expect(commands.map(({ label }) => label)).toEqual([
-      "End of week",
-      "This weekend",
-      "Next week",
+      "本周末",
+      "这周末",
+      "下周",
     ]);
     const weekendCommands = buildSnoozeCommandPalette({
       now,
       onSnooze,
-      query: "weeken",
+      query: "这周",
     });
     expect(weekendCommands).toHaveLength(1);
     weekendCommands[0]?.action();
@@ -98,7 +98,7 @@ describe("buildSnoozeCommandPalette", () => {
     const commands = buildSnoozeCommandPalette({
       now: new Date(2026, 7, 18, 10),
       onSnooze,
-      query: " Next week ",
+      query: " 下周 ",
     });
 
     expect(commands).toHaveLength(1);
@@ -107,10 +107,10 @@ describe("buildSnoozeCommandPalette", () => {
   });
 
   it.each([
-    { day: 18, query: "next w", label: "Next week", until: 24 },
-    { day: 20, query: "end", label: "End of week", until: 21 },
-    { day: 21, query: "thi", label: "This weekend", until: 22 },
-    { day: 23, query: "next wee", label: "Next week", until: 24 },
+    { day: 18, query: "下", label: "下周", until: 24 },
+    { day: 20, query: "本", label: "本周末", until: 21 },
+    { day: 21, query: "这", label: "这周末", until: 22 },
+    { day: 23, query: "下", label: "下周", until: 24 },
   ])("keeps the matching preset date for $query", ({
     day,
     query,

@@ -319,8 +319,7 @@ function getProviderCost(
     : undefined;
 }
 
-// Blank keys count as unset so they fall back to LLM_API_KEY instead of
-// failing every call.
+// 空键视为未设置，这样会回退到 LLM_API_KEY，而不是让每次调用都失败。
 function resolveApiKey(providerApiKey: string | undefined) {
   return providerApiKey?.trim() || env.LLM_API_KEY?.trim();
 }
@@ -329,9 +328,9 @@ function isJsonObject(value: unknown): value is JSONObject {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-// AI SDK errors can carry the request input, which here is email content.
+// AI SDK 的错误可能携带请求输入，在这里就是邮件内容。
 function getLoggableError(error: unknown) {
   return error instanceof Error
     ? { name: error.name, message: error.message }
-    : { name: "UnknownError", message: "Non-Error rejection" };
+    : { name: "UnknownError", message: "非 Error 拒绝" };
 }

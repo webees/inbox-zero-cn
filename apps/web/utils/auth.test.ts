@@ -611,13 +611,13 @@ describe("handleLinkAccount", () => {
     expect(upsert?.create.mailSplits).toEqual({
       create: [
         {
-          name: "All",
+          name: "全部",
           matchAll: true,
           filters: { create: [] },
           order: 0,
         },
         {
-          name: "Unread",
+          name: "未读",
           matchAll: true,
           filters: {
             create: [

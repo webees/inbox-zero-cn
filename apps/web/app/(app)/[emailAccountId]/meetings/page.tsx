@@ -42,14 +42,14 @@ function MeetingsPageContent() {
   if (!meetingRecorderEnabled) {
     return (
       <PageWrapper>
-        <PageHeader title="Meetings" />
+        <PageHeader title="会议" />
 
         <div className="mt-8 max-w-3xl">
           <ActionCard
             variant="blue"
             icon={<MicIcon className="h-5 w-5" />}
-            title="Meeting notetaker is disabled"
-            description="The meeting notetaker is turned off on this server. Set NEXT_PUBLIC_MEETING_RECORDER_ENABLED=true and see the self-hosting docs to configure it."
+            title="会议笔记助手已停用"
+            description="此服务器上已关闭会议笔记助手。将 NEXT_PUBLIC_MEETING_RECORDER_ENABLED=true，并查阅自托管文档进行配置。"
           />
         </div>
       </PageWrapper>
@@ -87,7 +87,7 @@ function MeetingRecorderPageContent() {
       onError: ({ error }) => {
         toastError({
           description: getActionErrorMessage(error, {
-            prefix: "Failed to turn on the notetaker",
+            prefix: "开启笔记助手失败",
           }),
         });
       },
@@ -114,8 +114,8 @@ function MeetingRecorderPageContent() {
     setOpenMeetingId(meetingId);
   };
 
-  // Enabling is entitlement-gated server-side, so a non-premium user needs the
-  // upgrade path on the onboarding screen too, not just once they are set up.
+  // 启用权限由服务端控制，因此非高级版用户也需要在引导页看到升级入口，
+  // 而不仅仅是在完成设置之后。
   if (!settings?.enabled) {
     return (
       <PageWrapper>
@@ -142,14 +142,14 @@ function MeetingRecorderPageContent() {
   return (
     <PageWrapper>
       <div className="flex items-start justify-between gap-4">
-        <PageHeader title="Meetings" />
+        <PageHeader title="会议" />
 
         <Button
           variant="outline"
           Icon={SettingsIcon}
           onClick={() => setIsSettingsOpen(true)}
         >
-          Settings
+          设置
         </Button>
       </div>
 
@@ -160,12 +160,11 @@ function MeetingRecorderPageContent() {
           <ActionCard
             variant="blue"
             icon={<CalendarIcon className="h-5 w-5" />}
-            title="Reconnect your calendar"
+            title="重新连接你的日历"
             description={
               <div className="space-y-4">
                 <p>
-                  Your meeting notetaker is still enabled. Connect a calendar so
-                  it can find upcoming meetings.
+                  你的会议笔记助手仍处于启用状态。连接一个日历，它就能找到即将开始的会议。
                 </p>
                 <ConnectCalendar
                   analyticsPage="meetings"

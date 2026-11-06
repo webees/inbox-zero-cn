@@ -116,20 +116,20 @@ function StatusBadge({
   emailAccountId: string;
 }) {
   if (status === "processing") {
-    return <Badge color="purple">Processing...</Badge>;
+    return <Badge color="purple">正在处理…</Badge>;
   }
 
   if (undoState === "undoing") {
-    return <Badge color="purple">Undoing...</Badge>;
+    return <Badge color="purple">正在撤销…</Badge>;
   }
 
   if (undoState === "undone") {
-    return <Badge color="purple">Undone</Badge>;
+    return <Badge color="purple">已撤销</Badge>;
   }
 
-  // If the email has the undone flag, show it as undone regardless of other status
+  // 如果邮件带有已撤销标记，无论其他状态如何都显示为已撤销
   if (email.undone) {
-    return <Badge color="purple">Undone</Badge>;
+    return <Badge color="purple">已撤销</Badge>;
   }
 
   if (status === "markedDone" || status === "markingDone") {
@@ -139,11 +139,11 @@ function StatusBadge({
           <Badge color="green">
             {status === "markingDone"
               ? action === CleanAction.MARK_READ
-                ? "Marking read..."
-                : "Archiving..."
+                ? "正在标记为已读…"
+                : "正在归档…"
               : action === CleanAction.MARK_READ
-                ? "Marked read"
-                : "Archived"}
+                ? "已标记为已读"
+                : "已归档"}
           </Badge>
         </span>
         <div className="hidden group-hover:inline-flex">
@@ -169,7 +169,7 @@ function StatusBadge({
             }}
           >
             <Undo2Icon className="size-3" />
-            Undo
+            撤销
           </Button>
         </div>
       </div>
@@ -180,7 +180,7 @@ function StatusBadge({
     return (
       <div className="group">
         <span className="group-hover:hidden">
-          <Badge color="blue">Keep</Badge>
+          <Badge color="blue">保留</Badge>
         </span>
         <div className="hidden group-hover:inline-flex">
           <Button
@@ -206,12 +206,12 @@ function StatusBadge({
             {action === CleanAction.ARCHIVE ? (
               <>
                 <ArchiveIcon className="mr-1 size-3" />
-                Archive
+                归档
               </>
             ) : (
               <>
                 <CheckIcon className="mr-1 size-3" />
-                Mark Read
+                标记为已读
               </>
             )}
           </Button>

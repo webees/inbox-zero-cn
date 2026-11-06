@@ -16,10 +16,10 @@ test("fails readiness immediately when a managed service crashes", async () => {
         },
         2000,
       ),
-    ).rejects.toThrow("crashing service exited (7)");
+    ).rejects.toThrow("crashing service 已退出（7）");
     expect(manager.signal.aborted).toBe(true);
     expect(manager.signal.reason.message).toContain(
-      "crashing service exited (7)",
+      "crashing service 已退出（7）",
     );
   } finally {
     await manager.stop();
@@ -36,7 +36,7 @@ test("bounds a command that ignores termination", async () => {
         ["-e", "process.on('SIGTERM',()=>{}); setInterval(()=>{},1000)"],
         100,
       ),
-    ).rejects.toThrow("timed out");
+    ).rejects.toThrow("超时");
   } finally {
     await manager.stop();
   }

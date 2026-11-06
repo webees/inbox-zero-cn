@@ -23,11 +23,11 @@ export function AppearanceSection() {
   return (
     <Item size="sm">
       <ItemContent>
-        <ItemTitle>Dark mode</ItemTitle>
+        <ItemTitle>深色模式</ItemTitle>
       </ItemContent>
       <ItemActions>
         <Switch
-          aria-label="Toggle dark mode"
+          aria-label="切换深色模式"
           checked={isDarkMode}
           onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
           disabled={!mounted}

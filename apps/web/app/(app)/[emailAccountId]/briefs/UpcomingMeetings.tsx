@@ -46,12 +46,12 @@ export function UpcomingMeetings({
   const { execute } = useAction(sendBriefAction.bind(null, emailAccountId), {
     onSuccess: ({ data: result }) => {
       toastSuccess({
-        description: result.message || "Test brief sent!",
+        description: result.message || "测试简报已发送！",
       });
     },
     onError: ({ error }) => {
       toastError({
-        description: error.serverError || "Failed to send brief",
+        description: error.serverError || "发送简报失败",
       });
     },
     onSettled: () => {
@@ -81,7 +81,7 @@ export function UpcomingMeetings({
 
   return (
     <>
-      <TypographyH3>Upcoming Meetings</TypographyH3>
+      <TypographyH3>即将到来的会议</TypographyH3>
 
       <LoadingContent loading={isLoading} error={error}>
         {!data?.events.length ? (
@@ -90,7 +90,7 @@ export function UpcomingMeetings({
               <EmptyMedia variant="icon">
                 <CalendarIcon />
               </EmptyMedia>
-              <EmptyTitle>No upcoming calendar events found</EmptyTitle>
+              <EmptyTitle>未找到即将到来的日历事件</EmptyTitle>
             </EmptyHeader>
           </Empty>
         ) : (
@@ -115,12 +115,12 @@ export function UpcomingMeetings({
                           Icon={SendIcon}
                           loading={sendingEventId === event.id}
                         >
-                          Send test brief
+                          发送测试简报
                         </Button>
                       }
-                      title="Send test brief?"
-                      description="This will send you a briefing email for this meeting now. Use this to verify briefs are working correctly."
-                      confirmText="Send"
+                      title="发送测试简报？"
+                      description="这会立即为该会议向你发送一封简报邮件。可用它来验证简报功能是否正常。"
+                      confirmText="发送"
                       onConfirm={() => handleSendTestBrief(event)}
                     />
                   </ItemActions>
@@ -145,12 +145,12 @@ function SendHistoryLink() {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="link" className="h-auto p-0 text-muted-foreground">
-          View send history →
+          查看发送历史 →
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Send History</DialogTitle>
+          <DialogTitle>发送历史</DialogTitle>
         </DialogHeader>
 
         <LoadingContent
@@ -164,7 +164,7 @@ function SendHistoryLink() {
                 <EmptyMedia variant="icon">
                   <CalendarIcon />
                 </EmptyMedia>
-                <EmptyTitle>No briefings have been sent yet</EmptyTitle>
+                <EmptyTitle>尚未发送任何简报</EmptyTitle>
               </EmptyHeader>
             </Empty>
           ) : (
@@ -174,8 +174,7 @@ function SendHistoryLink() {
                   <ItemContent>
                     <ItemTitle>{briefing.eventTitle}</ItemTitle>
                     <ItemDescription>
-                      {briefing.guestCount} guest
-                      {briefing.guestCount !== 1 ? "s" : ""} •{" "}
+                      {briefing.guestCount} 位嘉宾 •{" "}
                       {formatDistanceToNow(new Date(briefing.createdAt), {
                         addSuffix: true,
                       })}

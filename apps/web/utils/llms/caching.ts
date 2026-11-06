@@ -3,7 +3,7 @@ import { Provider } from "@/utils/llms/config";
 
 type ProviderOptions = Record<string, Record<string, JSONValue>>;
 
-// Gateways here pass `anthropic` provider options through to Anthropic models.
+// 这里的网关会把 `anthropic` 服务商选项透传给 Anthropic 模型。
 const ANTHROPIC_CACHE_CONTROL_PROVIDERS = new Set<string>([
   Provider.ANTHROPIC,
   Provider.OPENROUTER,
@@ -23,8 +23,8 @@ export function getSystemCacheProviderOptions(
   if (OPENAI_PROMPT_CACHE_PROVIDERS.has(provider)) {
     return { openai: { promptCacheKey: cacheKey } };
   }
-  // Without a key, OpenRouter's sticky routing hashes the first user message
-  // too, which is the email here, so calls from one account wouldn't stick.
+  // 没有密钥时，OpenRouter 的粘性路由会哈希第一条用户消息
+  // （此处即邮件内容），因此同一账号的调用无法保持粘性。
   if (provider === Provider.OPENROUTER) {
     return { openrouter: { prompt_cache_key: cacheKey } };
   }

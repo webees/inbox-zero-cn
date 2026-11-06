@@ -14,9 +14,9 @@ import { escapeHtml } from "@/utils/string";
 
 interface SourceMessageInfo {
   headerMessageId: string;
-  // Platform-specific message ID (e.g. Microsoft Graph ID) — required so
-  // Outlook's createReply can thread the notification into the source
-  // conversation instead of starting a new thread.
+  // 平台特定的消息 ID（例如 Microsoft Graph ID）——必需，以便
+  // Outlook 的 createReply 能将通知归入来源
+  // 会话，而不是开启新会话。
   messageId?: string;
   references?: string;
   threadId: string;
@@ -48,9 +48,9 @@ type FilingNotification = {
 // ============================================================================
 
 /**
- * Send a notification email for a successful filing.
- * "✓ Filed Receipt.pdf to Receipts/2024/December"
- * Sent as a reply to the source email thread.
+ * 为成功的归档发送通知邮件。
+ * "✓ 已归档 Receipt.pdf 到 Receipts/2024/December"
+ * 作为对来源邮件会话的回复发送。
  */
 export async function sendFiledNotification({
   emailProvider,
@@ -69,14 +69,14 @@ export async function sendFiledNotification({
   });
 
   if (!filing) {
-    log.error("Filing not found");
+    log.error("未找到归档记录");
     return;
   }
 
   const replyToAddress = getFilebotReplyTo({ userEmail });
   const fromAddress = getFilebotFrom({ userEmail });
 
-  const subject = `✓ Filed ${filing.filename}`;
+  const subject = `✓ 已归档 ${filing.filename}`;
   const messageHtml = buildFiledEmailHtml({
     filename: filing.filename,
     folderPath: filing.folderPath,
@@ -97,9 +97,9 @@ export async function sendFiledNotification({
 }
 
 /**
- * Send a notification email asking where to file a document.
- * "📄 Where should I file Contract.pdf?"
- * Sent as a reply to the source email thread.
+ * 发送通知邮件询问文档应归档到哪里。
+ * "📄 应该把 Contract.pdf 归档到哪里？"
+ * 作为对来源邮件会话的回复发送。
  */
 export async function sendAskNotification({
   emailProvider,
@@ -115,14 +115,14 @@ export async function sendAskNotification({
   });
 
   if (!filing) {
-    log.error("Filing not found");
+    log.error("未找到归档记录");
     return;
   }
 
   const replyToAddress = getFilebotReplyTo({ userEmail });
   const fromAddress = getFilebotFrom({ userEmail });
 
-  const subject = `📄 Where should I file ${filing.filename}?`;
+  const subject = `📄 应该把 ${filing.filename} 归档到哪里？`;
   const messageHtml = buildAskEmailHtml({
     filename: filing.filename,
     reasoning: filing.reasoning,
@@ -142,7 +142,7 @@ export async function sendAskNotification({
 }
 
 /**
- * Send one notification for all newly processed attachments in a source email.
+ * 为来源邮件中所有新处理的附件发送一条通知。
  */
 export async function sendFilingNotifications({
   emailProvider,
@@ -169,7 +169,7 @@ export async function sendFilingNotifications({
   });
 
   if (filings.length === 0) {
-    log.info("No filing notifications to send");
+    log.info("没有需要发送的归档通知");
     return;
   }
 
@@ -197,9 +197,9 @@ export async function sendFilingNotifications({
 }
 
 /**
- * Send a confirmation email after a correction.
- * "Done! Moved to Business/Expenses"
- * Sent as a reply to the source email thread.
+ * 在更正后发送确认邮件。
+ * "完成！已移动到 Business/Expenses"
+ * 作为对来源邮件会话的回复发送。
  */
 export async function sendCorrectionConfirmation({
   emailProvider,
@@ -216,14 +216,14 @@ export async function sendCorrectionConfirmation({
   });
 
   if (!filing) {
-    log.error("Filing not found");
+    log.error("未找到归档记录");
     return;
   }
 
   const replyToAddress = getFilebotReplyTo({ userEmail });
   const fromAddress = getFilebotFrom({ userEmail });
 
-  const subject = `Re: ✓ Filed ${filing.filename}`;
+  const subject = `Re: ✓ 已归档 ${filing.filename}`;
   const messageHtml = buildCorrectionConfirmationHtml({
     filename: filing.filename,
     newFolderPath,
@@ -242,9 +242,9 @@ export async function sendCorrectionConfirmation({
       { preserveThreadSubject: true },
     );
 
-    log.info("Correction confirmation sent");
+    log.info("已发送更正确认");
   } catch (error) {
-    log.error("Failed to send correction confirmation", { error });
+    log.error("发送更正确认失败", { error });
     throw error;
   }
 }
@@ -264,11 +264,11 @@ function buildFiledEmailHtml({
 }): string {
   return `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px;">
-      <p>Filed your document:</p>
+      <p>已归档你的文档：</p>
       ${buildFiledItemHtml({ filename, folderPath, driveName: getDriveName(driveProvider) })}
       
       <p style="color: #666; font-size: 14px;">
-        Wrong folder? Just reply with where it should go.
+        文件夹不对？直接回复应该放到的位置即可。
       </p>
     </div>
   `;
@@ -283,16 +283,16 @@ function buildAskEmailHtml({
 }): string {
   return `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px;">
-      <p>Got a document I'm not sure about:</p>
+      <p>有一份我不太确定的文档：</p>
       ${buildAskItemHtml({ filename, reasoning })}
       
-      <p><strong>Where should I put it?</strong></p>
+      <p><strong>应该把它放到哪里？</strong></p>
       
       <p style="color: #666; font-size: 14px;">
-        Reply with a folder path, e.g.:<br>
+        回复一个文件夹路径，例如：<br>
         • "Receipts/2024"<br>
         • "Projects/Acme Corp/Contracts"<br>
-        • "Skip" to ignore this one
+        • "Skip" 以忽略这一个
       </p>
     </div>
   `;
@@ -306,7 +306,7 @@ function buildFilingSummaryEmailHtml(filings: FilingNotification[]): string {
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px;">
       ${
         filedItems.length > 0
-          ? `<p>Filed your documents:</p>
+          ? `<p>已归档你的文档：</p>
              ${filedItems
                .map((filing) =>
                  buildFiledItemHtml({
@@ -320,7 +320,7 @@ function buildFilingSummaryEmailHtml(filings: FilingNotification[]): string {
       }
       ${
         askedItems.length > 0
-          ? `<p>Got some documents I'm not sure about:</p>
+          ? `<p>有一些我不太确定的文档：</p>
              ${askedItems.map(buildAskItemHtml).join("")}`
           : ""
       }
@@ -328,8 +328,8 @@ function buildFilingSummaryEmailHtml(filings: FilingNotification[]): string {
       <p style="color: #666; font-size: 14px;">
         ${
           askedItems.length > 0
-            ? "Reply with the document name and folder path for anything that needs your input."
-            : "Wrong folder? Reply with the document name and where it should go."
+            ? "对于任何需要你确认的内容，请回复文档名称和文件夹路径。"
+            : "文件夹不对？请回复文档名称以及它应该放到的位置。"
         }
       </p>
     </div>
@@ -398,15 +398,15 @@ function getFilingNotificationSubject({
 }): string {
   if (filingCount === 1) {
     return askedCount === 1
-      ? `📄 Where should I file ${firstFilename}?`
-      : `✓ Filed ${firstFilename}`;
+      ? `📄 应该把 ${firstFilename} 归档到哪里？`
+      : `✓ 已归档 ${firstFilename}`;
   }
 
-  if (askedCount === 0) return `✓ Filed ${filingCount} documents`;
+  if (askedCount === 0) return `✓ 已归档 ${filingCount} 个文档`;
   if (askedCount === filingCount) {
-    return `📄 Where should I file ${filingCount} documents?`;
+    return `📄 应该把 ${filingCount} 个文档归档到哪里？`;
   }
-  return `📄 Filing update for ${filingCount} documents`;
+  return `📄 归档更新：${filingCount} 个文档`;
 }
 
 function getDriveName(provider: string): string {
@@ -450,7 +450,7 @@ async function sendNotificationEmail({
       logger,
       notificationBatchId,
     });
-    logger.info("Filing notification already claimed", {
+    logger.info("归档通知已被认领", {
       filingCount: filingIds.length,
     });
     return;
@@ -477,7 +477,7 @@ async function sendNotificationEmail({
       notificationBatchId,
     });
 
-    logger.error("Failed to send filing notification", { error });
+    logger.error("发送归档通知失败", { error });
     throw error;
   }
 
@@ -495,11 +495,11 @@ async function sendNotificationEmail({
         data: { notificationMessageId: result.messageId },
       });
     } catch (error) {
-      logger.error("Failed to save filing notification message ID", { error });
+      logger.error("保存归档通知消息 ID 失败", { error });
     }
   }
 
-  logger.info("Filing notification sent", {
+  logger.info("已发送归档通知", {
     messageId: result.messageId,
     filingCount: filingIds.length,
   });
@@ -531,7 +531,7 @@ async function completeNotificationBatch({
 
       if (result.count === filingIds.length) return true;
 
-      logger.error("Failed to complete every filing notification claim", {
+      logger.error("未能完成全部归档通知认领", {
         completedCount: result.count,
         filingCount: filingIds.length,
       });
@@ -541,7 +541,7 @@ async function completeNotificationBatch({
     }
   }
 
-  logger.error("Failed to complete filing notification claim", {
+  logger.error("完成归档通知认领失败", {
     error: lastError,
   });
   return false;
@@ -565,7 +565,7 @@ async function releaseNotificationBatch({
       data: { notificationBatchId: null },
     });
   } catch (error) {
-    logger.error("Failed to release filing notification claim", { error });
+    logger.error("释放归档通知认领失败", { error });
   }
 }
 
@@ -578,7 +578,7 @@ function buildCorrectionConfirmationHtml({
 }): string {
   return `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px;">
-      <p>✓ Done! Moved <strong>${escapeHtml(filename)}</strong> to:</p>
+      <p>✓ 完成！已将 <strong>${escapeHtml(filename)}</strong> 移动到：</p>
       
       <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin: 16px 0;">
         <p style="margin: 0;">

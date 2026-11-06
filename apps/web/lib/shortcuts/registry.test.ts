@@ -241,7 +241,7 @@ describe("buildShortcutPaletteCommands", () => {
     expect(rest).toEqual([]);
     expect(command).toMatchObject({
       id: "archive",
-      label: "Archive",
+      label: "归档",
       section: "actions",
       shortcut: "E",
     });
@@ -264,7 +264,7 @@ describe("buildShortcutPaletteCommands", () => {
       expect.arrayContaining([
         expect.objectContaining({
           id: "help",
-          label: "Keyboard shortcuts",
+          label: "键盘快捷键",
           section: "settings",
           shortcut: "?",
         }),
@@ -282,7 +282,7 @@ describe("buildShortcutPaletteCommands", () => {
     expect(commands).toHaveLength(1);
     expect(commands.at(0)).toMatchObject({
       id: "forward",
-      label: "Forward",
+      label: "转发",
       section: "actions",
       shortcut: "F",
     });

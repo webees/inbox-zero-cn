@@ -48,7 +48,7 @@ export default function AccountsPage() {
 
   return (
     <PageWrapper>
-      <PageHeader title="Accounts" />
+      <PageHeader title="账号" />
       {notification ? (
         <AlertError
           className="mt-4"
@@ -155,8 +155,8 @@ function AccountOptionsDropdown({
   const { execute, isExecuting } = useAction(deleteEmailAccountAction, {
     onSuccess: async () => {
       toastSuccess({
-        title: "Email account deleted",
-        description: "The email account has been deleted successfully.",
+        title: "邮箱账号已删除",
+        description: "邮箱账号已成功删除。",
       });
       onAccountDeleted();
       if (emailAccount.isPrimary) {
@@ -166,9 +166,8 @@ function AccountOptionsDropdown({
           await clearLocalMailAccountState(emailAccount.id);
         } catch {
           toastError({
-            title: "Local mailbox still on this device",
-            description:
-              "The account was deleted. Sign out to finish removing its mail from this device.",
+            title: "本地邮箱仍在此设备上",
+            description: "账号已删除。请退出登录，以完成从此设备上移除其邮件。",
           });
         }
         await clearOfflineMailCacheForAccount(emailAccount.id);
@@ -176,7 +175,7 @@ function AccountOptionsDropdown({
     },
     onError: (error) => {
       toastError({
-        title: "Error deleting email account",
+        title: "删除邮箱账号时出错",
         description: getActionErrorMessage(error.error),
       });
       onAccountDeleted();
@@ -186,7 +185,7 @@ function AccountOptionsDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="Account options">
+        <Button variant="ghost" size="icon" aria-label="账号选项">
           <MoreVertical className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -201,7 +200,7 @@ function AccountOptionsDropdown({
             onClick={(e: MouseEvent<HTMLAnchorElement>) => e.stopPropagation()}
           >
             <Settings className="size-4" />
-            Setup
+            设置
           </Link>
         </DropdownMenuItem>
         <ConfirmDialog
@@ -216,16 +215,16 @@ function AccountOptionsDropdown({
               disabled={isExecuting}
             >
               <Trash2 className="size-4" />
-              Delete
+              删除
             </DropdownMenuItem>
           }
-          title="Delete Account"
+          title="删除账号"
           description={
             emailAccount.isPrimary
-              ? `Are you sure you want to delete "${emailAccount.email}"? This is your primary account. You will be logged out and need to log in again. Your oldest remaining account will become your new primary account. All data for "${emailAccount.email}" will be permanently deleted from ${BRAND_NAME}.`
-              : `Are you sure you want to delete "${emailAccount.email}"? This will delete all data for it on ${BRAND_NAME}.`
+              ? `你确定要删除“${emailAccount.email}”吗？这是你的主账号。你将被退出登录，需要重新登录。剩余账号中最早添加的账号将成为新的主账号。“${emailAccount.email}”的所有数据将从 ${BRAND_NAME} 中永久删除。`
+              : `你确定要删除“${emailAccount.email}”吗？这将删除其在 ${BRAND_NAME} 上的所有数据。`
           }
-          confirmText="Delete"
+          confirmText="删除"
           onConfirm={() => {
             execute({ emailAccountId: emailAccount.id });
           }}
@@ -270,22 +269,22 @@ function useAccountNotifications() {
         { title: string; description: string }
       > = {
         account_merged: {
-          title: "Account merged successfully!",
-          description: "Your accounts have been merged.",
+          title: "账号合并成功！",
+          description: "你的账号已合并。",
         },
         account_created_and_linked: {
-          title: "Account added successfully!",
-          description: "Your new account has been linked.",
+          title: "账号添加成功！",
+          description: "你的新账号已关联。",
         },
         tokens_updated: {
-          title: "Account reconnected successfully!",
-          description: "Your account permissions were refreshed.",
+          title: "账号重新连接成功！",
+          description: "你的账号权限已刷新。",
         },
       };
 
       const successMessage = successMessages[successParam] || {
-        title: "Success",
-        description: "Operation completed successfully.",
+        title: "成功",
+        description: "操作已成功完成。",
       };
 
       toastSuccess({
@@ -311,97 +310,91 @@ function getAccountErrorMessage(
   errorParam: string,
   errorDescription: string | null,
 ): AccountNotification {
-  const defaultDescription =
-    errorDescription || "An error occurred. Please try again.";
+  const defaultDescription = errorDescription || "发生错误。请重试。";
 
   const errorMessages: Record<string, AccountNotification> = {
     account_not_found_for_merge: {
-      title: "Account not found",
-      description: `This account doesn't exist in ${BRAND_NAME} yet. Please select 'No, it's a new account' instead.`,
-      toastDescription: `This account doesn't exist in ${BRAND_NAME} yet. Please select 'No, it's a new account' instead.`,
+      title: "未找到账号",
+      description: `此账号在 ${BRAND_NAME} 中尚不存在。请改为选择“不，这是一个新账号”。`,
+      toastDescription: `此账号在 ${BRAND_NAME} 中尚不存在。请改为选择“不，这是一个新账号”。`,
     },
     account_already_exists: {
-      title: "Account already exists",
-      description: `This account is already linked to another ${BRAND_NAME} profile. Sign in to that profile, use a different email account, or contact support if you need help.`,
-      toastDescription: `This account is already linked to another ${BRAND_NAME} profile. Sign in to that profile, use a different email account, or contact support if you need help.`,
+      title: "账号已存在",
+      description: `此账号已关联到另一个 ${BRAND_NAME} 个人资料。请登录该个人资料、使用其他邮箱账号，或联系支持人员寻求帮助。`,
+      toastDescription: `此账号已关联到另一个 ${BRAND_NAME} 个人资料。请登录该个人资料、使用其他邮箱账号，或联系支持人员寻求帮助。`,
     },
     reconnect_account_mismatch: {
-      title: "Wrong account signed in",
+      title: "登录的账号不正确",
       description:
-        "You signed in with a different account than the one you were reconnecting. Sign out of that provider, or pick the original account, and try again.",
+        "你登录的账号与你正在重新连接的账号不同。请退出该服务商，或选择原来的账号，然后重试。",
       toastDescription:
-        "You signed in with a different account than the one you were reconnecting. Sign out of that provider, or pick the original account, and try again.",
+        "你登录的账号与你正在重新连接的账号不同。请退出该服务商，或选择原来的账号，然后重试。",
     },
     already_linked_to_self: {
-      title: "Account already linked",
-      description: "This account is already linked to your profile.",
-      toastDescription: "This account is already linked to your profile.",
+      title: "账号已关联",
+      description: "此账号已关联到你的个人资料。",
+      toastDescription: "此账号已关联到你的个人资料。",
     },
     provider_sign_in_required: {
-      title: "Provider sign-in required",
+      title: "需要登录服务商",
       description:
-        "Connecting or reconnecting a mailbox isn't available when you signed in with an email code. Sign in with Google or Microsoft and try again.",
+        "使用邮箱验证码登录时，无法连接或重新连接邮箱。请使用 Google 或 Microsoft 登录，然后重试。",
       toastDescription:
-        "Connecting or reconnecting a mailbox isn't available when you signed in with an email code. Sign in with Google or Microsoft and try again.",
+        "使用邮箱验证码登录时，无法连接或重新连接邮箱。请使用 Google 或 Microsoft 登录，然后重试。",
     },
     invalid_state: {
-      title: "Invalid request",
-      description: "The authentication request was invalid. Please try again.",
-      toastDescription:
-        "The authentication request was invalid. Please try again.",
+      title: "无效请求",
+      description: "身份验证请求无效。请重试。",
+      toastDescription: "身份验证请求无效。请重试。",
     },
     invalid_state_format: {
-      title: "Invalid response from provider",
+      title: "服务商返回无效响应",
       description:
-        "We couldn't validate the account authorization response. Please try linking the account again. If the problem continues, contact support.",
-      toastDescription:
-        "We couldn't validate the account authorization response. Please try linking the account again.",
+        "我们无法验证账号授权响应。请再次尝试关联账号。如果问题仍然存在，请联系支持人员。",
+      toastDescription: "我们无法验证账号授权响应。请再次尝试关联账号。",
     },
     missing_code: {
-      title: "Authentication failed",
-      description: "Failed to receive authentication code. Please try again.",
-      toastDescription:
-        "Failed to receive authentication code. Please try again.",
+      title: "身份验证失败",
+      description: "未能收到验证码。请重试。",
+      toastDescription: "未能收到验证码。请重试。",
     },
     consent_declined: {
-      title: "Microsoft permissions were not granted",
-      description: `Microsoft sign-in was canceled before ${BRAND_NAME} received the required permissions. Please try again and complete the consent screen.`,
-      toastDescription: `Microsoft sign-in was canceled before ${BRAND_NAME} received the required permissions. Please try again and complete the consent screen.`,
+      title: "未授予 Microsoft 权限",
+      description: `在 ${BRAND_NAME} 收到所需权限之前，Microsoft 登录被取消。请重试并完成同意屏幕。`,
+      toastDescription: `在 ${BRAND_NAME} 收到所需权限之前，Microsoft 登录被取消。请重试并完成同意屏幕。`,
     },
     admin_consent_required: {
-      title: "Admin approval required",
+      title: "需要管理员审批",
       description: buildMicrosoftPermissionHelp(
-        `Your Microsoft 365 organization requires admin approval before ${BRAND_NAME} can access this account.`,
+        `你的 Microsoft 365 组织需要管理员审批后，${BRAND_NAME} 才能访问此账号。`,
       ),
-      toastDescription: `Your Microsoft 365 organization requires admin approval before ${BRAND_NAME} can access this account. Ask your Microsoft 365 admin to approve ${BRAND_NAME}, then try again.`,
+      toastDescription: `你的 Microsoft 365 组织需要管理员审批后，${BRAND_NAME} 才能访问此账号。请让你的 Microsoft 365 管理员批准 ${BRAND_NAME}，然后重试。`,
     },
     invalid_scope_configuration: {
-      title: "Microsoft app setup needs attention",
+      title: "Microsoft 应用设置需要注意",
       description: buildMicrosoftPermissionHelp(
-        "Microsoft rejected the requested permissions for this app.",
+        "Microsoft 拒绝了此应用请求的权限。",
       ),
       toastDescription:
-        "Microsoft rejected the requested permissions for this app. Ask your admin to verify the delegated Microsoft Graph permissions and redirect URLs, then try again.",
+        "Microsoft 拒绝了此应用请求的权限。请让你的管理员核实委托的 Microsoft Graph 权限和重定向 URL，然后重试。",
     },
     consent_incomplete: {
-      title: "More Microsoft permissions are required",
+      title: "需要更多 Microsoft 权限",
       description: buildMicrosoftPermissionHelp(
-        `Microsoft connected the account, but did not grant all required permissions to ${BRAND_NAME}.`,
+        `Microsoft 已连接该账号，但未向 ${BRAND_NAME} 授予所有必需的权限。`,
       ),
-      toastDescription: `Microsoft connected the account, but did not grant all required permissions. Reconnect and approve every requested permission. If your organization restricts consent, ask your admin to approve ${BRAND_NAME} first.`,
+      toastDescription: `Microsoft 已连接该账号，但未授予所有必需的权限。请重新连接并批准每一项请求的权限。如果你的组织限制了同意，请先让你的管理员批准 ${BRAND_NAME}。`,
     },
     link_failed: {
-      title: "Account linking failed",
-      description:
-        errorDescription || "Failed to link account. Please try again.",
-      toastDescription:
-        errorDescription || "Failed to link account. Please try again.",
+      title: "账号关联失败",
+      description: errorDescription || "关联账号失败。请重试。",
+      toastDescription: errorDescription || "关联账号失败。请重试。",
     },
   };
 
   return (
     errorMessages[errorParam] || {
-      title: "Error",
+      title: "错误",
       description: defaultDescription,
       toastDescription: defaultDescription,
     }
@@ -412,34 +405,34 @@ function buildMicrosoftPermissionHelp(summary: string) {
   return (
     <div className="space-y-3">
       <p>
-        {summary} This usually means your Microsoft 365 organization allowed
-        sign-in, but did not return all of the permissions needed to finish
-        connecting the account.
+        {summary} 这通常意味着你的 Microsoft 365
+        组织允许了登录，但没有返回完成账号连接所需的全部权限。
       </p>
       <p>
-        Ask your Microsoft 365 admin to approve {BRAND_NAME} for the Microsoft
-        Graph permissions below, then try again.
+        请让你的 Microsoft 365 管理员为下方 Microsoft Graph 权限批准{" "}
+        {BRAND_NAME}
+        ，然后重试。
       </p>
       <Button asChild size="sm">
         <Link href="/login/microsoft-admin-consent">
-          Open Microsoft admin approval
+          打开 Microsoft 管理员审批
         </Link>
       </Button>
       <div>
-        <p className="font-medium">Email and inbox connection</p>
+        <p className="font-medium">邮件与收件箱连接</p>
         <PermissionList scopes={MICROSOFT_EMAIL_SCOPES} />
       </div>
       <div>
         <p className="font-medium">
-          Additional permissions if you later connect other Microsoft features
+          如果以后连接其他 Microsoft 功能所需的额外权限
         </p>
         <div className="space-y-2">
           <div>
-            <p className="font-medium">Calendar</p>
+            <p className="font-medium">日历</p>
             <PermissionList scopes={CALENDAR_SCOPES} />
           </div>
           <div>
-            <p className="font-medium">Docs and OneDrive</p>
+            <p className="font-medium">文档与 OneDrive</p>
             <PermissionList scopes={MICROSOFT_DRIVE_SCOPES} />
           </div>
         </div>

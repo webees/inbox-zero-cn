@@ -99,18 +99,18 @@ export function EmailMessageCell({
                 href={emailActions.openUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Open in email"
+                aria-label="在邮件中打开"
               >
                 <ExternalLinkIcon className="h-4 w-4" />
               </Link>
             )}
             {emailActions.showViewEmailButton && (
-              <Tooltip content="View email">
+              <Tooltip content="查看邮件">
                 <button
                   type="button"
                   className="hover:text-foreground"
                   onClick={() => showEmail({ threadId, messageId })}
-                  aria-label="View email"
+                  aria-label="查看邮件"
                 >
                   <MailIcon className="h-4 w-4" />
                 </button>
@@ -148,11 +148,11 @@ export function EmailMessageCellWithData({
       userEmail={userEmail}
       subject={
         error
-          ? "Error loading email"
+          ? "加载邮件出错"
           : isLoading
-            ? "Loading email..."
+            ? "正在加载邮件..."
             : emailNotFound
-              ? "Email not found"
+              ? "未找到邮件"
               : firstMessage?.headers.subject || ""
       }
       snippet={

@@ -54,10 +54,10 @@ type PricingTier = Tier & {
 const pricingTiers: PricingTier[] = [
   {
     ...tiers[0],
-    badges: [{ message: "Save 10%", annualOnly: true }],
+    badges: [{ message: "省 10%", annualOnly: true }],
     button: {
       variant: "secondary-two",
-      content: "Try free for 7 days",
+      content: "免费试用 7 天",
       href: "/login",
     },
     icon: <Briefcase />,
@@ -65,21 +65,21 @@ const pricingTiers: PricingTier[] = [
   {
     ...tiers[1],
     badges: [
-      { message: "Save 20%", annualOnly: true },
-      { message: "Popular", variant: "green" },
+      { message: "省 20%", annualOnly: true },
+      { message: "热门", variant: "green" },
     ],
     button: {
-      content: "Try free for 7 days",
+      content: "免费试用 7 天",
       href: "/login",
     },
     icon: <Zap />,
   },
   {
     ...tiers[2],
-    badges: [{ message: "Save 16%", annualOnly: true }],
+    badges: [{ message: "省 16%", annualOnly: true }],
     button: {
       variant: "secondary-two",
-      content: "Try free for 7 days",
+      content: "免费试用 7 天",
       href: "/login",
     },
     icon: <Sparkle />,
@@ -99,8 +99,8 @@ export function Pricing() {
 
   return (
     <Section id="pricing">
-      <SectionHeading>Try for free, affordable paid plans</SectionHeading>
-      <SectionSubtitle>No hidden fees. Cancel anytime.</SectionSubtitle>
+      <SectionHeading>免费试用，价格实惠的付费套餐</SectionHeading>
+      <SectionSubtitle>没有隐藏费用。随时取消。</SectionSubtitle>
       <SectionContent
         noMarginTop
         className="mt-6 flex flex-col items-center justify-center"
@@ -118,7 +118,7 @@ export function Pricing() {
           }}
           className="w-fit rounded-full p-1.5 text-xs font-semibold leading-5 ring-1 ring-inset ring-gray-200 mb-6 shadow-[0_0_7px_0_rgba(0,0,0,0.0.07)]"
         >
-          <Label className="sr-only">Payment frequency</Label>
+          <Label className="sr-only">付款频率</Label>
           {frequencies.map((value) => (
             <Radio
               key={value}
@@ -157,12 +157,12 @@ export function Pricing() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="font-title text-lg">Email app</h3>
-                    <Badge variant="blue">New</Badge>
+                    <h3 className="font-title text-lg">邮件应用</h3>
+                    <Badge variant="blue">新</Badge>
                   </div>
                   <Paragraph size="sm" className="mt-1">
-                    A fast email app for Gmail and Outlook. Free on web,
-                    desktop, and iPhone.
+                    一款适用于 Gmail 和 Outlook 的快速邮件应用。在网页、桌面端和
+                    iPhone 上免费使用。
                   </Paragraph>
                 </div>
               </div>
@@ -182,7 +182,7 @@ export function Pricing() {
                     })
                   }
                 >
-                  <span className="relative z-10">Get started free</span>
+                  <span className="relative z-10">免费开始</span>
                 </Link>
               </Button>
             </CardContent>
@@ -196,10 +196,9 @@ export function Pricing() {
                   <Sparkle />
                 </div>
                 <div>
-                  <h3 className="font-title text-lg">Enterprise</h3>
+                  <h3 className="font-title text-lg">企业版</h3>
                   <Paragraph size="sm" className="mt-1">
-                    Need SSO, SCIM, on-premise deployment, or a dedicated
-                    account manager?
+                    需要 SSO、SCIM、本地部署或专属客户经理吗？
                   </Paragraph>
                 </div>
               </div>
@@ -219,7 +218,7 @@ export function Pricing() {
                   }
                 >
                   <Chat />
-                  <span className="relative z-10">Speak to sales</span>
+                  <span className="relative z-10">联系销售</span>
                 </Link>
               </Button>
             </CardContent>
@@ -280,12 +279,12 @@ function PricingCard({
                   ${price}
                 </div>
                 <Paragraph size="xs" color="light" className="-translate-y-1">
-                  /user /month
+                  /用户/月
                 </Paragraph>
               </>
             ) : (
               <div className="font-title text-[#242424] text-[1.7rem] md:text-[2.5rem] leading-tight">
-                Contact us
+                联系我们
               </div>
             )}
           </div>

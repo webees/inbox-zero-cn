@@ -158,15 +158,15 @@ export function ThreadReader({
           errorComponent={<ThreadReaderError error={error} onRetry={refetch} />}
           loadingComponent={
             <Loader2Icon
-              aria-label="Loading email"
+              aria-label="正在加载邮件"
               className="size-6 animate-spin text-muted-foreground"
             />
           }
         >
           <MailIcon className="size-6 text-muted-foreground" />
-          <div className="text-foreground text-sm">Nothing selected</div>
+          <div className="text-foreground text-sm">未选择任何内容</div>
           <div className="text-muted-foreground text-xs">
-            Pick another view, or head back to the inbox.
+            选择其他视图，或返回收件箱。
           </div>
         </LoadingContent>
       </div>
@@ -300,22 +300,20 @@ function ThreadReaderError({
   return (
     <>
       <AlertCircleIcon className="size-6 text-muted-foreground" />
-      <div className="text-foreground text-sm">
-        Couldn't open this conversation
-      </div>
+      <div className="text-foreground text-sm">无法打开此会话</div>
       <div className="text-muted-foreground text-xs">
         {getSWRFetchErrorMessage(error?.info)}
       </div>
       <Button className="mt-2" onClick={onRetry} size="sm" variant="outline">
-        Try again
+        重试
       </Button>
     </>
   );
 }
 
 /**
- * A callback ref rather than an effect: the reader mounts its measured element
- * only once a thread is open, after the loading branch has come and gone.
+ * 使用回调引用而非 effect：阅读器只在线程打开后、加载分支结束之后
+ * 才挂载其测量元素。
  */
 function useElementWidth() {
   const [width, setWidth] = useState(0);

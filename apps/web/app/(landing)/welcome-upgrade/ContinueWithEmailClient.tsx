@@ -24,10 +24,10 @@ export function ContinueWithEmailClient() {
           <MailIcon className="size-6 shrink-0 text-gray-400" />
           <div>
             <h3 className="font-title text-lg leading-8 text-gray-900">
-              Email app
+              邮件应用
             </h3>
             <p className="text-sm leading-6 text-gray-600">
-              Just want the email app? It's free on web, desktop, and iPhone.
+              只想要邮件应用？它在网页、桌面端和 iPhone 上都是免费的。
             </p>
           </div>
         </div>
@@ -38,7 +38,7 @@ export function ContinueWithEmailClient() {
           loading={isExecuting}
           onClick={() => execute({ intent: "MAIL_CLIENT" })}
         >
-          Continue for free
+          免费继续
         </Button>
       </div>
     </div>

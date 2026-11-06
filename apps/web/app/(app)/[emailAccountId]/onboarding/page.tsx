@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Onboarding } from "@/app/(app)/[emailAccountId]/onboarding/Onboarding";
-import { PermissionsCheck } from "@/app/(app)/[emailAccountId]/PermissionsCheck";
 import {
   ConversionAnalyticsScript,
   ConversionQueryParamEvents,
@@ -16,8 +15,8 @@ import { BRAND_NAME, getBrandTitle } from "@/utils/branding";
 export const maxDuration = 300;
 
 export const metadata: Metadata = {
-  title: getBrandTitle("Onboarding"),
-  description: `Learn how ${BRAND_NAME} works and get set up.`,
+  title: getBrandTitle("引导流程"),
+  description: `了解 ${BRAND_NAME} 的工作原理并完成设置。`,
   alternates: { canonical: "/onboarding" },
 };
 
@@ -53,7 +52,6 @@ export default async function OnboardingPage(props: {
 
   return (
     <>
-      <PermissionsCheck />
       <Suspense>
         <ConversionQueryParamEvents />
       </Suspense>

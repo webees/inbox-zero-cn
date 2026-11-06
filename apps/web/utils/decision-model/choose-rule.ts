@@ -62,12 +62,9 @@ export async function decisionModelChooseRule<T extends RuleCandidate>({
 }): Promise<DecisionRuleSelection<T>> {
   const logger = parentLogger.with({ module: MODULE });
 
-  // Secondary rules can overlap the primary rule, and JEV did not reliably
-  // separate those from explicit negative instructions in evals.
+  // 次要规则可能与主规则重叠，且 JEV 在评测中未能可靠地将它们与明确的负面指令区分开来。
   if (shouldSelectMultipleRules({ rules, emailAccount })) {
-    throw new Error(
-      "Decision model does not support multi-rule selection; use the LLM path",
-    );
+    throw new Error("决策模型不支持多规则选择，请使用 LLM 路径");
   }
 
   const { criteria, rulesByKey } = buildCriteria(rules);
@@ -91,25 +88,24 @@ export async function decisionModelChooseRule<T extends RuleCandidate>({
         criteria,
       },
     },
-    label: "Choose rule",
+    label: "选择规则",
     logger,
   });
 
   const answer = res.answers[CHOICE_QUESTION_KEY];
   if (answer?.type !== "choice") {
-    throw new Error("Decision model response is missing the rule choice");
+    throw new Error("决策模型响应中缺少规则选择结果");
   }
   const { choice, probability, margin } = resolveChoice({ answer, rulesByKey });
   if (probability < MIN_CHOICE_CONFIDENCE) {
-    throw new Error("Decision model confidence is too low for rule selection");
+    throw new Error("决策模型对规则选择的置信度过低");
   }
-  logger.info("Decision model chose rule", {
+  logger.info("决策模型已选择规则", {
     choice,
     topChoice: answer.choice,
     confidence: probability,
     margin,
-    // An array, not a record: each key of a logged object becomes a permanent
-    // Axiom field, and these keys are user-named rules.
+    // 这里是数组而非记录：日志对象的每个键都会成为永久的 Axiom 字段，而这些键是用户命名的规则
     probabilities: Object.entries(answer.probabilities)
       .sort(([, a], [, b]) => b - a)
       .map(([rule, probability]) => ({ rule, probability })),
@@ -120,7 +116,7 @@ export async function decisionModelChooseRule<T extends RuleCandidate>({
   if (margin !== null && margin < DEAD_HEAT_MARGIN) {
     return {
       type: "undecided",
-      reason: `Decision model was too close to call (margin ${margin.toFixed(2)})`,
+      reason: `决策模型的选择过于接近，无法确定（分差 ${margin.toFixed(2)}）`,
     };
   }
 

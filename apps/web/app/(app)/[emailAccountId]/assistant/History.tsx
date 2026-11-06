@@ -60,11 +60,11 @@ export function History() {
             />
           ) : (
             <AlertBasic
-              title="No history"
+              title="无历史记录"
               description={
                 ruleId === "all"
-                  ? "No emails have been processed yet."
-                  : "No emails have been processed for this rule."
+                  ? "还没有处理过任何邮件。"
+                  : "此规则还没有处理过任何邮件。"
               }
             />
           )}
@@ -145,9 +145,7 @@ function HistoryThread({
             <Button
               variant="ghost"
               size="iconSm"
-              aria-label={
-                expanded ? "Collapse conversation" : "Expand conversation"
-              }
+              aria-label={expanded ? "折叠会话" : "展开会话"}
               aria-expanded={expanded}
               onClick={() => setExpanded((value) => !value)}
             >
@@ -223,10 +221,10 @@ function ThreadHistory({
                 disabled={page === 1}
                 onClick={() => setPage((value) => value - 1)}
               >
-                Previous messages
+                上一页消息
               </Button>
               <span className="text-sm text-muted-foreground">
-                Page {page} of {data.totalPages}
+                第 {page} 页，共 {data.totalPages} 页
               </span>
               <Button
                 variant="outline"
@@ -234,7 +232,7 @@ function ThreadHistory({
                 disabled={page >= data.totalPages}
                 onClick={() => setPage((value) => value + 1)}
               >
-                Next messages
+                下一页消息
               </Button>
             </div>
           )}
@@ -284,10 +282,10 @@ function HistoryMessageRow({
               )}
             <div className="mt-2 flex flex-wrap gap-2">
               {messageCount && messageCount > 1 ? (
-                <Badge color="blue">{messageCount} messages handled</Badge>
+                <Badge color="blue">已处理 {messageCount} 封邮件</Badge>
               ) : null}
               {!result.executedRules[0]?.automated && (
-                <Badge color="yellow">Applied manually</Badge>
+                <Badge color="yellow">手动应用</Badge>
               )}
             </div>
           </div>
@@ -342,9 +340,7 @@ function EmailCell({
     );
   }
 
-  return (
-    <span className="text-sm text-muted-foreground">Email unavailable</span>
-  );
+  return <span className="text-sm text-muted-foreground">邮件不可用</span>;
 }
 
 function RuleCell({
@@ -373,7 +369,7 @@ function RuleCell({
         <Skeleton className="h-9 w-16" />
       ) : (
         <Button variant="outline" size="sm" disabled>
-          Fix
+          修复
         </Button>
       )}
     </div>
@@ -408,9 +404,9 @@ function groupByDate(items: ExecutedRuleResult[]) {
 }
 
 function formatDateGroupLabel(date: Date | null) {
-  if (!date) return "Unknown date";
-  if (isToday(date)) return "Today";
-  if (isYesterday(date)) return "Yesterday";
+  if (!date) return "未知日期";
+  if (isToday(date)) return "今天";
+  if (isYesterday(date)) return "昨天";
   if (date.getFullYear() === new Date().getFullYear()) {
     return format(date, "EEEE, MMM d");
   }

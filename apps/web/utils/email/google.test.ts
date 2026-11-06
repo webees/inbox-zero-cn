@@ -174,7 +174,7 @@ describe("GmailProvider.sendEmail", () => {
         subject: "Subject",
         messageText: "Message",
       }),
-    ).rejects.toThrow("Provider did not return a sent message ID");
+    ).rejects.toThrow("服务商未返回已发送邮件的 ID");
   });
 });
 
@@ -1102,7 +1102,7 @@ describe("GmailProvider.updateDraft", () => {
 
     await expect(
       provider.updateDraft("r-123", { messageHtml: "<p>Edited</p>" }),
-    ).rejects.toThrow("Missing Gmail attachment data");
+    ).rejects.toThrow("缺少 Gmail 附件数据");
     expect(update).not.toHaveBeenCalled();
   });
 

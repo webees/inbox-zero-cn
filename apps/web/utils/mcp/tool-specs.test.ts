@@ -11,7 +11,7 @@ describe("getIntegrationActionLabel", () => {
         integrationName: "todoist",
         integrationToolName: "add-tasks",
       }),
-    ).toBe("Add Todoist task");
+    ).toBe("添加 Todoist 任务");
   });
 
   it("does not borrow another integration's label for an unknown tool", () => {
@@ -20,7 +20,7 @@ describe("getIntegrationActionLabel", () => {
       integrationToolName: "not-a-real-tool",
     });
 
-    expect(label).not.toBe("Add Todoist task");
+    expect(label).not.toBe("添加 Todoist 任务");
   });
 
   it("does not borrow a label for an unknown integration", () => {
@@ -29,7 +29,7 @@ describe("getIntegrationActionLabel", () => {
       integrationToolName: "create-record",
     });
 
-    expect(label).not.toBe("Add Todoist task");
+    expect(label).not.toBe("添加 Todoist 任务");
   });
 });
 

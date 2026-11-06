@@ -189,21 +189,21 @@ export const PRODUCT_ANALYTICS_ACTIONS = {
 } as const;
 
 export const APP_PAGES = {
-  mail: { label: "Mail", area: "mail" },
-  shared_conversations: { label: "Shared with me", area: "mail" },
-  shared_activity: { label: "Activity", area: "mail" },
-  assistant_chat: { label: "Chat", area: "manage" },
-  automation: { label: "Assistant", area: "manage" },
-  channels: { label: "Channels", area: "manage" },
-  meetings: { label: "Meetings", area: "manage" },
-  bulk_unsubscribe: { label: "Bulk Unsubscribe", area: "cleanup" },
-  bulk_archive: { label: "Bulk Archive", area: "cleanup" },
-  analytics: { label: "Analytics", area: "cleanup" },
-  deep_clean: { label: "Deep Clean", area: "cleanup" },
-  meeting_briefs: { label: "Meeting Briefs", area: "more" },
-  attachments: { label: "Attachments", area: "more" },
-  calendars: { label: "Calendars", area: "more" },
-  integrations: { label: "Integrations", area: "more" },
+  mail: { label: "邮件", area: "mail" },
+  shared_conversations: { label: "与我共享", area: "mail" },
+  shared_activity: { label: "动态", area: "mail" },
+  assistant_chat: { label: "对话", area: "manage" },
+  automation: { label: "助手", area: "manage" },
+  channels: { label: "渠道", area: "manage" },
+  meetings: { label: "会议", area: "manage" },
+  bulk_unsubscribe: { label: "批量退订", area: "cleanup" },
+  bulk_archive: { label: "批量归档", area: "cleanup" },
+  analytics: { label: "分析", area: "cleanup" },
+  deep_clean: { label: "深度清理", area: "cleanup" },
+  meeting_briefs: { label: "会议简报", area: "more" },
+  attachments: { label: "附件", area: "more" },
+  calendars: { label: "日历", area: "more" },
+  integrations: { label: "集成", area: "more" },
 } as const;
 
 export type AppPage = keyof typeof APP_PAGES;
@@ -214,7 +214,7 @@ export type ProductAnalyticsAction = StringLeaf<
 const APP_ROUTE_SEGMENTS: Array<{ segment: string; page: AppPage }> = [
   { segment: "mail", page: "mail" },
   { segment: "compose", page: "mail" },
-  // Before "shared", which also appears in /shared/activity.
+  // 必须放在 "shared" 之前，因为 /shared/activity 也会匹配 "shared"。
   { segment: "activity", page: "shared_activity" },
   { segment: "shared", page: "shared_conversations" },
   { segment: "assistant", page: "assistant_chat" },

@@ -5,10 +5,10 @@ const TRUNCATION_NOTICE =
   "\n[Transcript truncated: the middle of this meeting was omitted to fit the context limit.]\n";
 
 /**
- * Renders a transcript as speaker-labelled, timestamped lines. Hour-long calls
- * easily exceed the model's context, so when the transcript is too long we keep
- * the opening and the closing, which is where agreements and next steps land,
- * and drop the middle.
+ * 将转录渲染为带说话人标签和时间戳的行。长达一小时的通话
+ * 很容易超出模型的上下文，因此当转录过长时我们保留
+ * 开头和结尾——达成一致和后续步骤通常出现在那里——
+ * 并丢弃中间部分。
  */
 export function transcriptToPromptText(
   transcript: NormalizedTranscript,
@@ -24,8 +24,8 @@ export function transcriptToPromptText(
   const full = lines.join("\n");
   if (full.length <= maxChars) return full;
 
-  // Too small to say anything useful and still explain the truncation, so just
-  // stay inside the limit rather than overflowing it with the notice.
+  // 太小，既无法说明有用内容又无法解释截断，因此
+  // 保持在限制内，而不是用提示撑爆限制。
   if (maxChars <= TRUNCATION_NOTICE.length) return full.slice(0, maxChars);
 
   const budget = maxChars - TRUNCATION_NOTICE.length;

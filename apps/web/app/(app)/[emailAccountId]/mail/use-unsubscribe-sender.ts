@@ -111,7 +111,7 @@ export function useUnsubscribeSender(
 
     setIsUpdatingAutoArchive(true);
     const toastId = toast.loading(
-      `${isAutoArchived ? "Disabling" : "Enabling"} auto archive for ${senderName}`,
+      `正在${isAutoArchived ? "关闭" : "开启"} ${senderName} 的自动归档`,
     );
 
     try {
@@ -128,7 +128,7 @@ export function useUnsubscribeSender(
     } catch (error) {
       captureException(error);
       toast.error(
-        `Couldn't ${isAutoArchived ? "disable" : "enable"} auto archive for ${senderName}`,
+        `无法${isAutoArchived ? "关闭" : "开启"} ${senderName} 的自动归档`,
         { id: toastId },
       );
       return;
@@ -137,18 +137,18 @@ export function useUnsubscribeSender(
     }
 
     if (isAutoArchived) {
-      toast.success(`Future emails from ${senderName} will stay in the inbox`, {
+      toast.success(`${senderName} 未来的邮件将留在收件箱`, {
         id: toastId,
       });
       return;
     }
 
-    toast.success(`Future emails from ${senderName} will be archived`, {
+    toast.success(`${senderName} 未来的邮件将被归档`, {
       id: toastId,
     });
 
-    // These follow-up tasks do not change the provider filter that was just
-    // committed, so their failures must not report the enable as unsuccessful.
+    // 这些后续任务不会改动刚刚提交的服务商筛选条件，
+    // 因此它们的失败不应被视为开启操作未成功。
     queueArchiveSenders({ senders: [senderEmail] }).catch(captureException);
     decrementUnsubscribeCreditAction()
       .then(() => refetchPremium())
@@ -187,8 +187,8 @@ export function useUnsubscribeSender(
       return;
     }
 
-    // Sending the user to a mailto they have to compose is the last resort: an
-    // http link opens a page that finishes the job, so it wins when both exist.
+    // 让用户自己撰写 mailto 邮件是最后的手段：http 链接会打开一个
+    // 能完成操作的页面，因此两者都存在时优先使用 http 链接。
     const manualLink = httpLink ?? userFacingLink;
 
     if (!httpLink) {
@@ -196,12 +196,12 @@ export function useUnsubscribeSender(
       return;
     }
 
-    const toastId = toast.loading(`Unsubscribing from ${senderName}`);
+    const toastId = toast.loading(`正在退订 ${senderName}`);
     const failed = () =>
-      toast.error(`Couldn't unsubscribe from ${senderName}`, {
+      toast.error(`无法退订 ${senderName}`, {
         id: toastId,
         action: {
-          label: "Open page",
+          label: "打开页面",
           onClick: () => openUnsubscribePage(manualLink),
         },
       });
@@ -221,12 +221,12 @@ export function useUnsubscribeSender(
       return;
     }
 
-    toast.success(`Unsubscribed from ${senderName}`, { id: toastId });
+    toast.success(`已退订 ${senderName}`, { id: toastId });
 
     queueArchiveSenders({ senders: [senderEmail] }).catch(() => {});
 
-    // Metering happens after the fact, and neither half changes what the user
-    // just saw: a failure here must not read as a failed unsubscribe.
+    // 计量在事后进行，两部分都不会改变用户刚刚看到的结果：
+    // 这里的失败不应被理解为退订失败。
     decrementUnsubscribeCreditAction()
       .then(() => refetchPremium())
       .catch(() => {});
@@ -256,10 +256,10 @@ export function useUnsubscribeSender(
       (isSenderStatsLoading && !httpLink) ||
       (!canUnsubscribe && (isAutoArchiveStatusLoading || isAutoArchived)),
     unsubscribeLabel: canUnsubscribe
-      ? "Unsubscribe"
+      ? "退订"
       : isAutoArchived
-        ? "Sender blocked"
-        : "Block sender",
+        ? "发件人已屏蔽"
+        : "屏蔽发件人",
     canUnsubscribe,
     canManageAutoArchive: Boolean(senderEmail),
     isAutoArchived,

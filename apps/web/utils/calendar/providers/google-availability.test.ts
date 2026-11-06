@@ -51,21 +51,24 @@ describe("createGoogleAvailabilityProvider", () => {
   });
 
   it("queries large calendar lists in batches Google accepts", async () => {
-    // Google answers only the first 20 calendars of a request and returns
-    // tooManyCalendarsRequested for the rest.
     query.mockImplementation(({ requestBody }) => ({
       data: {
         calendars: Object.fromEntries(
-          requestBody.items.map(({ id }: { id: string }, index: number) => [
+          requestBody.items.map(({ id }: { id: string }) => [
             id,
-            index < 20
-              ? { busy: [{ start: `${id}-start`, end: `${id}-end` }] }
-              : { errors: [{ reason: "tooManyCalendarsRequested" }] },
+            {
+              busy: [
+                {
+                  start: `${id}-start`,
+                  end: `${id}-end`,
+                },
+              ],
+            },
           ]),
         ),
       },
     }));
-    const calendarIds = Array.from({ length: 66 }, (_, i) => `cal-${i}`);
+    const calendarIds = Array.from({ length: 120 }, (_, i) => `cal-${i}`);
 
     const provider = createGoogleAvailabilityProvider(logger);
     const result = await provider.fetchBusyPeriods({
@@ -79,7 +82,11 @@ describe("createGoogleAvailabilityProvider", () => {
       timeMin: "2026-05-04T00:00:00.000Z",
     });
 
-    expect(result).toHaveLength(66);
+    expect(query).toHaveBeenCalledTimes(3);
+    for (const [{ requestBody }] of query.mock.calls) {
+      expect(requestBody.items.length).toBeLessThanOrEqual(50);
+    }
+    expect(result).toHaveLength(120);
   });
 
   it("fails closed on individual calendar errors when requested", async () => {
@@ -109,7 +116,7 @@ describe("createGoogleAvailabilityProvider", () => {
         timeMin: "2026-05-04T00:00:00.000Z",
       }),
     ).rejects.toMatchObject({
-      message: "Failed to fetch Google calendar availability",
+      message: "无法获取 Google 日历可用性",
       name: "CalendarAvailabilityError",
       provider: "google",
       calendarErrors: [{ calendarId: "cal-1", errors: calendarErrors }],

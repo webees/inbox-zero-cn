@@ -7,9 +7,9 @@ export function StepChat({ onNext }: { onNext: () => void }) {
   return (
     <OnboardingFeatureStep
       illustration={<ChatIllustration />}
-      title="A chat that runs your email"
+      title="一个帮你管理邮件的聊天机器人"
       description={
-        "Clean up, draft replies, set up rules. Works in Slack, Telegram, or here, and pings you when you're needed."
+        "清理收件箱、起草回复、设置规则。可在 Slack、Telegram 或此处使用，并在需要你时提醒你。"
       }
       onNext={onNext}
     />

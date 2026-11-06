@@ -19,8 +19,8 @@ import { useAccount } from "@/providers/EmailAccountProvider";
 import { captureException } from "@/utils/error";
 import type { GetOnboardingProcessedEmailsResponse } from "@/app/api/user/onboarding/processed-emails/route";
 
-// Group SystemTypes by intent so the preview reads as semantically meaningful
-// rather than rainbow-noise.
+// 按意图对 SystemType 进行分组，让预览在语义上有意义，
+// 而不是像彩虹般的杂乱色块。
 const systemTypeBadgeColor: Record<SystemType, Color> = {
   [SystemType.TO_REPLY]: "green",
   [SystemType.ACTIONED]: "green",
@@ -90,7 +90,7 @@ export function StepInboxProcessedView({
 }) {
   const hasEmails = !!data && data.emails.length > 0;
   const { label } = getEmailTerminology(provider);
-  const pastVerb = isMicrosoftProvider(provider) ? "categorized" : "labeled";
+  const pastVerb = isMicrosoftProvider(provider) ? "进行了分类" : "打了标签";
   const hasDrafts = (data?.draftCount ?? 0) > 0;
 
   return (
@@ -98,13 +98,13 @@ export function StepInboxProcessedView({
       <div className="mb-6 text-center">
         <PageHeading className="mb-3">
           {hasDrafts
-            ? `${label.pluralCapitalized} and drafts are ready`
-            : `${label.pluralCapitalized} are ready`}
+            ? `${label.pluralCapitalized} 和草稿已就绪`
+            : `${label.pluralCapitalized} 已就绪`}
         </PageHeading>
         <TypographyP className="text-muted-foreground">
           {hasDrafts
-            ? `We ${pastVerb} your last ${ONBOARDING_PROCESS_EMAILS_COUNT} emails and drafted replies. Nothing was archived.`
-            : `We ${pastVerb} your last ${ONBOARDING_PROCESS_EMAILS_COUNT} emails. Nothing was archived.`}
+            ? `我们为你最近的 ${ONBOARDING_PROCESS_EMAILS_COUNT} 封邮件${pastVerb}并起草了回复。没有归档任何邮件。`
+            : `我们为你最近的 ${ONBOARDING_PROCESS_EMAILS_COUNT} 封邮件${pastVerb}。没有归档任何邮件。`}
         </TypographyP>
       </div>
 
@@ -120,7 +120,7 @@ export function StepInboxProcessedView({
         <ContinueButton onClick={onNext} size="lg" />
         {!isPremium && (
           <p className="max-w-md text-center text-sm text-muted-foreground">
-            Upgrade on the next step to process new emails automatically
+            在下一步升级即可自动处理新邮件
           </p>
         )}
       </div>
@@ -143,7 +143,7 @@ function InboxPreview({
 }) {
   return (
     <section
-      aria-label="Recently organized emails"
+      aria-label="最近整理的邮件"
       className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
     >
       <div
@@ -184,7 +184,7 @@ function EmailRow({
           {email.sender}
         </span>
         <span className="min-w-0 flex-1 truncate text-sm text-muted-foreground">
-          {email.subject || "(no subject)"}
+          {email.subject || "（无主题）"}
         </span>
       </div>
 
@@ -192,7 +192,7 @@ function EmailRow({
         {email.hasDraft && (
           <Badge color={getActionColor(ActionType.DRAFT_EMAIL)}>
             <ReplyIcon className="mr-1 size-3" />
-            Draft
+            草稿
           </Badge>
         )}
         <span className="whitespace-nowrap text-xs text-muted-foreground tabular-nums">
@@ -206,7 +206,7 @@ function EmailRow({
 function InboxPreviewSkeleton() {
   return (
     <section
-      aria-label="Loading recently organized emails"
+      aria-label="正在加载最近整理的邮件"
       className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
     >
       <ul className="divide-y divide-slate-100 dark:divide-border py-3.5">

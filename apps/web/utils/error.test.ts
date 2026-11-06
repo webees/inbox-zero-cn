@@ -271,12 +271,7 @@ describe("getActionErrorMessage", () => {
       undefined,
       "Third entry error",
     ],
-    [
-      "fallback when no errors are present",
-      {},
-      undefined,
-      "An unknown error occurred",
-    ],
+    ["fallback when no errors are present", {}, undefined, "发生未知错误。"],
     [
       "custom fallback when provided",
       {},
@@ -783,8 +778,7 @@ describe("checkCommonErrors", () => {
       checkCommonErrors(createGraphServerError(500), "/api/test", logger),
     ).toEqual({
       type: "Outlook Service Unavailable",
-      message:
-        "Microsoft is temporarily unavailable. Please try again shortly.",
+      message: "Microsoft 服务暂时不可用，请稍后重试。",
       code: 503,
     });
   });

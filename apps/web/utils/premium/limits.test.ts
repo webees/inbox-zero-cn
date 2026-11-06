@@ -29,7 +29,7 @@ describe("assertHasAiAccess", () => {
       assertHasAiAccess({ userId: "missing-user" }),
     ).rejects.toMatchObject({
       name: "SafeError",
-      safeMessage: "User not found",
+      safeMessage: "未找到用户",
       statusCode: 404,
     } satisfies Partial<SafeError>);
   });
@@ -43,7 +43,7 @@ describe("assertHasAiAccess", () => {
       assertHasAiAccess({ userId: "free-user" }),
     ).rejects.toMatchObject({
       name: "SafeError",
-      safeMessage: "Please upgrade for AI access",
+      safeMessage: "请升级以使用 AI",
       statusCode: 403,
     } satisfies Partial<SafeError>);
   });
@@ -66,7 +66,7 @@ describe("assertHasAiAccess", () => {
       assertHasAiAccess({ userId: "pro-without-key", hasUserApiKey: false }),
     ).rejects.toMatchObject({
       name: "SafeError",
-      safeMessage: "Please upgrade for AI access",
+      safeMessage: "请升级以使用 AI",
       statusCode: 403,
     } satisfies Partial<SafeError>);
   });

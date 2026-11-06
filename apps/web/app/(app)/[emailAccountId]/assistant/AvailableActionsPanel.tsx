@@ -16,30 +16,29 @@ import { getIntegrationActionLabel } from "@/utils/mcp/tool-specs";
 import { useIntegrationActionsEnabled } from "@/hooks/useFeatureFlags";
 
 const actionNames: Record<ActionType, string> = {
-  [ActionType.LABEL]: "Label",
-  [ActionType.MOVE_FOLDER]: "Move to folder",
-  [ActionType.ARCHIVE]: "Archive",
-  [ActionType.DELETE]: "Delete",
-  [ActionType.DRAFT_EMAIL]: "Draft replies",
-  [ActionType.DRAFT_MESSAGING_CHANNEL]: "Draft replies",
-  [ActionType.REPLY]: "Send replies",
-  [ActionType.FORWARD]: "Forward",
-  [ActionType.MARK_READ]: "Mark as read",
-  [ActionType.STAR]: "Star",
-  [ActionType.MARK_SPAM]: "Mark as spam",
-  [ActionType.SEND_EMAIL]: "Send email",
-  [ActionType.CALL_WEBHOOK]: "Call webhook",
-  [ActionType.DIGEST]: "Add to digest",
-  [ActionType.NOTIFY_MESSAGING_CHANNEL]: "Notify",
-  [ActionType.NOTIFY_SENDER]: "Notify sender",
+  [ActionType.LABEL]: "标签",
+  [ActionType.MOVE_FOLDER]: "移动到文件夹",
+  [ActionType.ARCHIVE]: "归档",
+  [ActionType.DELETE]: "删除",
+  [ActionType.DRAFT_EMAIL]: "起草回复",
+  [ActionType.DRAFT_MESSAGING_CHANNEL]: "起草回复",
+  [ActionType.REPLY]: "发送回复",
+  [ActionType.FORWARD]: "转发",
+  [ActionType.MARK_READ]: "标记为已读",
+  [ActionType.STAR]: "加星标",
+  [ActionType.MARK_SPAM]: "标记为垃圾邮件",
+  [ActionType.SEND_EMAIL]: "发送邮件",
+  [ActionType.CALL_WEBHOOK]: "调用 webhook",
+  [ActionType.DIGEST]: "添加到摘要",
+  [ActionType.NOTIFY_MESSAGING_CHANNEL]: "通知",
+  [ActionType.NOTIFY_SENDER]: "通知发件人",
   [ActionType.INTEGRATION]: getIntegrationActionLabel(),
 };
 
 const actionTooltips: Partial<Record<ActionType, string>> = {
   [ActionType.CALL_WEBHOOK]:
-    "For developers: trigger external integrations by sending email data to a custom URL",
-  [ActionType.DIGEST]:
-    "Group emails together and receive them as a daily summary",
+    "面向开发者：通过将邮件数据发送到自定义 URL 来触发外部集成",
+  [ActionType.DIGEST]: "将邮件归组，并作为每日摘要接收",
 };
 
 export function AvailableActionsPanel() {
@@ -60,7 +59,7 @@ export function AvailableActionsPanel() {
               }),
             ]}
             notifyActionName={notifyActionName}
-            title="Available Actions"
+            title="可用操作"
           />
         </div>
       </CardContent>
@@ -116,13 +115,13 @@ function getNotifyActionName(
   );
 
   return providerNames.length > 0
-    ? `Notify on ${formatProviderList(providerNames)}`
-    : "Notify";
+    ? `在 ${formatProviderList(providerNames)} 上通知`
+    : "通知";
 }
 
 function formatProviderList(providerNames: string[]) {
   if (providerNames.length === 1) return providerNames[0];
-  if (providerNames.length === 2) return providerNames.join(" or ");
+  if (providerNames.length === 2) return providerNames.join(" 或 ");
 
-  return `${providerNames.slice(0, -1).join(", ")}, or ${providerNames.at(-1)}`;
+  return `${providerNames.slice(0, -1).join("、")}或${providerNames.at(-1)}`;
 }

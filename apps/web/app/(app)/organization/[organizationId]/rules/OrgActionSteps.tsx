@@ -50,7 +50,7 @@ export function OrgActionSteps({
   return (
     <RuleSteps
       onAdd={() => append(EMPTY_ORG_ACTION)}
-      addButtonLabel="Add Action"
+      addButtonLabel="添加操作"
       addButtonDisabled={false}
     >
       {fields.map((field, index) => (
@@ -117,7 +117,7 @@ function OrgActionCard({
                 <span>{selectedOption.label}</span>
               </div>
             ) : (
-              <SelectValue placeholder="Select action" />
+              <SelectValue placeholder="选择操作" />
             )}
           </SelectTrigger>
         </FormControl>
@@ -141,7 +141,7 @@ function OrgActionCard({
   const actionFields = renderOrgActionFields({ index, type, register });
   const delayControls = delayEnabled ? (
     <div className="flex items-center space-x-2">
-      <span className="text-muted-foreground">after</span>
+      <span className="text-muted-foreground">之后</span>
       <DelayInputControls
         name={`org-delay-${index}`}
         value={delayValue}
@@ -165,7 +165,7 @@ function OrgActionCard({
   return (
     <RuleStep
       onRemove={onRemove}
-      removeAriaLabel="Remove action"
+      removeAriaLabel="移除操作"
       leftContent={leftContent}
       rightContent={rightContent}
       onAddDelay={
@@ -211,9 +211,9 @@ function renderOrgActionFields({
         key="label"
         type="text"
         name={`actions.${index}.label`}
-        label="Label name"
+        label="标签名称"
         registerProps={register(`actions.${index}.label`)}
-        placeholder="e.g. Invoices"
+        placeholder="例如：发票"
       />,
     );
   }
@@ -224,7 +224,7 @@ function renderOrgActionFields({
         key="folderName"
         type="text"
         name={`actions.${index}.folderName`}
-        label="Folder name"
+        label="文件夹名称"
         registerProps={register(`actions.${index}.folderName`)}
       />,
     );
@@ -236,7 +236,7 @@ function renderOrgActionFields({
         key="url"
         type="text"
         name={`actions.${index}.url`}
-        label="Webhook URL"
+        label="Webhook 地址"
         registerProps={register(`actions.${index}.url`)}
       />,
     );
@@ -248,7 +248,7 @@ function renderOrgActionFields({
         key="to"
         type="text"
         name={`actions.${index}.to`}
-        label={isForward ? "Forward to" : "To"}
+        label={isForward ? "转发至" : "收件人"}
         registerProps={register(`actions.${index}.to`)}
       />,
     );
@@ -260,7 +260,7 @@ function renderOrgActionFields({
         key="subject"
         type="text"
         name={`actions.${index}.subject`}
-        label="Subject"
+        label="主题"
         registerProps={register(`actions.${index}.subject`)}
       />,
     );
@@ -275,11 +275,7 @@ function renderOrgActionFields({
         autosizeTextarea
         rows={2}
         name={`actions.${index}.content`}
-        label={
-          type === ActionType.DRAFT_EMAIL
-            ? "Draft content (optional)"
-            : "Content"
-        }
+        label={type === ActionType.DRAFT_EMAIL ? "草稿内容（可选）" : "内容"}
         registerProps={register(`actions.${index}.content`)}
       />,
     );
@@ -291,13 +287,13 @@ function renderOrgActionFields({
         <Input
           type="text"
           name={`actions.${index}.cc`}
-          label="CC (optional)"
+          label="抄送（可选）"
           registerProps={register(`actions.${index}.cc`)}
         />
         <Input
           type="text"
           name={`actions.${index}.bcc`}
-          label="BCC (optional)"
+          label="密送（可选）"
           registerProps={register(`actions.${index}.bcc`)}
         />
       </div>,

@@ -23,7 +23,7 @@ const senders: {
 }[] = [
   {
     id: 1,
-    name: "Daily Deals",
+    name: "每日优惠",
     color: "bg-red-100 text-red-600",
     icon: Tag,
     rotate: -3,
@@ -31,7 +31,7 @@ const senders: {
   },
   {
     id: 2,
-    name: "Newsletter",
+    name: "新闻简报",
     color: "bg-orange-100 text-orange-600",
     icon: Newspaper,
     rotate: 2,
@@ -39,7 +39,7 @@ const senders: {
   },
   {
     id: 3,
-    name: "Promo Alert",
+    name: "促销提醒",
     color: "bg-yellow-100 text-yellow-600",
     icon: Megaphone,
     rotate: -1.5,
@@ -47,7 +47,7 @@ const senders: {
   },
   {
     id: 4,
-    name: "Weekly Digest",
+    name: "每周摘要",
     color: "bg-purple-100 text-purple-600",
     icon: Calendar,
     rotate: 2.5,
@@ -55,7 +55,7 @@ const senders: {
   },
   {
     id: 5,
-    name: "Updates",
+    name: "更新",
     color: "bg-pink-100 text-pink-600",
     icon: Bell,
     rotate: -2,
@@ -87,7 +87,7 @@ export function BulkUnsubscribeIllustration() {
       <div className="relative z-10 flex h-[160px] w-[150px] flex-col rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-slate-800">
         <div className="border-b border-gray-100 px-3 py-2 dark:border-gray-700">
           <div className="text-[10px] font-medium text-gray-600 dark:text-gray-300">
-            Inbox
+            收件箱
           </div>
         </div>
         <div className="relative flex-1 p-2">
@@ -201,7 +201,7 @@ export function BulkUnsubscribeIllustration() {
       <div className="relative z-10 flex h-[160px] w-[150px] flex-col rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-slate-800">
         <div className="border-b border-gray-100 px-3 py-2 dark:border-gray-700">
           <div className="text-[10px] font-medium text-gray-600 dark:text-gray-300">
-            Archived
+            已归档
           </div>
         </div>
         <motion.div
@@ -218,7 +218,7 @@ export function BulkUnsubscribeIllustration() {
             animate={{ scale: 1 }}
             className="text-[11px] font-medium text-gray-600 dark:text-gray-300"
           >
-            {archivedEmailCount} emails
+            {archivedEmailCount} 封邮件
           </motion.div>
         </motion.div>
       </div>

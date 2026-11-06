@@ -51,7 +51,7 @@ type ChatMessagePart =
 type PendingChatRequest = {
   attachmentCount: number;
   chatId: string;
-  // Set by onError when the message never reached the server.
+  // 由 onError 设置，表示消息从未到达服务器。
   sendError?: Error;
   textLength: number;
 };
@@ -94,7 +94,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const pendingRequestContextRef = useRef<MessageContext | null>(null);
   const previousChatIdRef = useRef(chatId);
   const previousEmailAccountIdRef = useRef<string | null>(null);
-  // After an explicit stop, don't reattach until the user sends again.
+  // 用户显式停止后，不要重新连接，直到用户再次发送消息。
   const stoppedRef = useRef(false);
   // A send failed or dropped mid-reply; the run may still be going server-side.
   const interruptedRef = useRef(false);
@@ -102,9 +102,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const resumedStreamIdRef = useRef<string | null>(null);
   const messagesAtHideRef = useRef<unknown>(null);
 
-  // useChat replaces (and stops) its Chat whenever `id` changes, so a new chat
-  // needs its id before the first send adopts it into the URL. Rotate once
-  // adopted so clearing chatId later starts a fresh chat.
+  // useChat 会在 `id` 变化时替换（并停止）其 Chat，因此新对话
+  // 需要在首次发送将其写入 URL 之前拥有 id。被采用后轮换一次，
+  // 以便之后清除 chatId 时能开始新的对话。
   const [draftChatId, setDraftChatId] = useState(generateUUID);
   if (chatId === draftChatId) setDraftChatId(generateUUID());
 
@@ -415,8 +415,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // The reply's message id is its stream id; sending it keeps a late stop
-    // from cancelling a newer reply.
+    // 回复的消息 id 就是它的流 id；发送该 id 可避免稍后到达的停止请求
+    // 取消更新的回复。
     const lastMessage = chat.messages.at(-1);
     const activeStreamId =
       lastMessage?.role === "assistant" &&
@@ -436,9 +436,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const response = await stopRequest;
-      if (!response.ok) throw new Error(`Status ${response.status}`);
+      if (!response.ok) throw new Error(`状态码 ${response.status}`);
     } catch (error) {
-      logger.warn("Failed to stop assistant chat run", {
+      logger.warn("停止 AI 助手对话运行失败", {
         chatId,
         errorName: error instanceof Error ? error.name : "UnknownError",
       });
@@ -529,7 +529,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 export function useChat(): ChatContextType {
   const context = useContext(ChatContext);
   if (context === undefined) {
-    throw new Error("useChat must be used within a ChatProvider");
+    throw new Error("useChat 必须在 ChatProvider 内使用");
   }
   return context;
 }
@@ -579,7 +579,7 @@ function reportChatRequestError({
   fallbackChatId: string;
   request: PendingChatRequest | null;
 }) {
-  logger.error("Assistant chat request failed", {
+  logger.error("AI 助手对话请求失败", {
     attachmentCount: request?.attachmentCount ?? 0,
     chatId: request?.chatId ?? fallbackChatId,
     emailAccountId,
@@ -590,7 +590,7 @@ function reportChatRequestError({
   });
   logger.flush().catch(() => undefined);
   toastError({
-    description: "We couldn't send your message. Please try again.",
+    description: "无法发送您的消息。请重试。",
   });
   console.error(error);
   captureException(error);

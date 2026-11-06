@@ -22,8 +22,8 @@ export function RegenerateSecretButton({
       onGenerated(data.webhookSecret);
       toastSuccess({
         description: hasSecret
-          ? "Webhook secret regenerated. Copy it now, it will not be shown again."
-          : "Webhook secret generated. Copy it now, it will not be shown again.",
+          ? "Webhook 密钥已重新生成。请立即复制，之后将不会再显示。"
+          : "Webhook 密钥已生成。请立即复制，之后将不会再显示。",
       });
     },
     onError: (error) => {
@@ -44,7 +44,7 @@ export function RegenerateSecretButton({
       onClick={() => execute()}
     >
       <KeyIcon className="mr-2 size-4" />
-      {hasSecret ? "Regenerate secret" : "Generate secret"}
+      {hasSecret ? "重新生成密钥" : "生成密钥"}
     </Button>
   );
 }

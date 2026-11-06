@@ -146,7 +146,7 @@ async function getInvitationFromMessage(
       return null;
     const decoded = Buffer.from(attachment.data, "base64").toString("utf8");
     if (decoded.length > CALENDAR_INVITATION_LIMITS.content) return null;
-    // Calendar emails can include both a MIME alternative and a downloadable copy.
+    // 日历邮件可能同时包含 MIME alternative 和可下载副本。
     if (content !== undefined && !isSameCalendarInvitation(content, decoded))
       return null;
     content ??= decoded;

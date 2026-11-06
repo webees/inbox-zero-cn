@@ -53,7 +53,7 @@ describe("fetchAttachment", () => {
         url: "/api/mail/v1/accounts/account-id/attachment-content?messageId=message-id",
         emailAccountId: "account-id",
       }),
-    ).rejects.toThrow("Failed to download attachment");
+    ).rejects.toThrow("下载附件失败");
     expect(cancel).toHaveBeenCalled();
   });
 
@@ -63,7 +63,7 @@ describe("fetchAttachment", () => {
         url: "/api/mail/v1/accounts/account-id/attachment-content?messageId=message-id",
         emailAccountId: "",
       }),
-    ).rejects.toThrow("Email account ID is required");
+    ).rejects.toThrow("需要邮箱账号 ID");
 
     expect(fetchWithAccount).not.toHaveBeenCalled();
   });
@@ -88,7 +88,7 @@ describe("fetchAttachment", () => {
         maxBytes: 5,
         onProgress: progress,
       }),
-    ).rejects.toThrow("Attachment exceeds the download size limit");
+    ).rejects.toThrow("附件超过下载大小上限");
     expect(cancel).toHaveBeenCalled();
     expect(progress).toHaveBeenLastCalledWith(3);
   });
@@ -106,7 +106,7 @@ describe("fetchAttachment", () => {
         emailAccountId: "account-id",
         maxBytes: 5,
       }),
-    ).rejects.toThrow("Attachment exceeds the download size limit");
+    ).rejects.toThrow("附件超过下载大小上限");
     expect(cancel).toHaveBeenCalled();
   });
 

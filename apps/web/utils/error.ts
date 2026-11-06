@@ -28,7 +28,7 @@ const RATE_LIMIT_MESSAGE_TEMPLATE =
   "{provider} is temporarily limiting requests. Please try again shortly.";
 export const EMAIL_PROVIDER_RATE_LIMIT_MESSAGE =
   "Your email provider is temporarily limiting requests. Please try again shortly.";
-export const UNEXPECTED_ACTION_ERROR_MESSAGE = "An unknown error occurred.";
+export const UNEXPECTED_ACTION_ERROR_MESSAGE = "发生未知错误。";
 
 export function getEmailProviderRateLimitMessage(
   provider: EmailProviderRateLimitProvider,
@@ -472,7 +472,7 @@ export function checkCommonErrors(
 ): ApiErrorType | null {
   if (isProviderRateLimitModeError(error)) {
     const apiErrorType = getProviderRateLimitApiErrorType(error.provider);
-    logger.warn("Provider rate-limit mode active for url", {
+    logger.warn("服务商速率限制模式已对以下网址生效", {
       url,
       provider: error.provider,
       retryAt: error.retryAt,
@@ -485,17 +485,17 @@ export function checkCommonErrors(
   }
 
   if (isGmailInsufficientPermissionsError(error)) {
-    logger.warn("Gmail insufficient permissions error for url", { url });
+    logger.warn("Gmail 权限不足错误，网址", { url });
     return {
       type: "Gmail Insufficient Permissions",
       message:
-        "You must grant all Gmail permissions to use the app. Please log out and log in again to grant permissions.",
+        "使用本应用必须授予全部 Gmail 权限。请退出登录后重新登录以授予权限。",
       code: 403,
     };
   }
 
   if (isGmailRateLimitExceededError(error)) {
-    logger.warn("Gmail rate limit exceeded for url", { url });
+    logger.warn("Gmail 速率限制已超限，网址", { url });
     return {
       type: getProviderRateLimitApiErrorType("google"),
       message: getEmailProviderRateLimitMessage("google"),
@@ -504,16 +504,16 @@ export function checkCommonErrors(
   }
 
   if (isGmailQuotaExceededError(error)) {
-    logger.warn("Gmail quota exceeded for url", { url });
+    logger.warn("Gmail 配额已超限，网址", { url });
     return {
       type: "Gmail Quota Exceeded",
-      message: "You have exceeded the Gmail quota. Please try again later.",
+      message: "Gmail 配额已超限，请稍后重试。",
       code: 429,
     };
   }
 
   if (isOutlookThrottlingError(error)) {
-    logger.warn("Outlook throttling error for url", { url });
+    logger.warn("Outlook 限流错误，网址", { url });
     return {
       type: getProviderRateLimitApiErrorType("microsoft"),
       message: getEmailProviderRateLimitMessage("microsoft"),
@@ -522,42 +522,40 @@ export function checkCommonErrors(
   }
 
   if (isOutlookAccessDeniedError(error)) {
-    logger.warn("Outlook access denied error for url", { url });
+    logger.warn("Outlook 访问被拒错误，网址", { url });
     return {
       type: "Outlook Access Denied",
-      message:
-        "Access to the mailbox was denied. The account may need to be reconnected.",
+      message: "访问邮箱的请求被拒绝，可能需要重新连接该账号。",
       code: 403,
     };
   }
 
   if (isOutlookItemNotFoundError(error)) {
-    logger.warn("Outlook item not found for url", { url });
+    logger.warn("Outlook 未找到项目，网址", { url });
     return {
       type: "Outlook Item Not Found",
-      message: "The requested email was not found. It may have been deleted.",
+      message: "未找到所请求的邮件，它可能已被删除。",
       code: 404,
     };
   }
 
   if (isOutlookServerError(error)) {
-    logger.warn("Outlook service unavailable for url", {
+    logger.warn("Outlook 服务不可用，网址", {
       url,
       statusCode: (error as { statusCode: number }).statusCode,
     });
     return {
       type: "Outlook Service Unavailable",
-      message:
-        "Microsoft is temporarily unavailable. Please try again shortly.",
+      message: "Microsoft 服务暂时不可用，请稍后重试。",
       code: 503,
     };
   }
 
   if (RetryError.isInstance(error) && isAiQuotaExceededError(error)) {
-    logger.warn("AI quota exceeded for url", { url });
+    logger.warn("AI 额度已超限，网址", { url });
     return {
       type: "AI Quota Exceeded",
-      message: `AI error: ${error.message}`,
+      message: `AI 错误：${error.message}`,
       code: 429,
     };
   }
@@ -648,15 +646,13 @@ type ActionErrorMessageOptions = {
  */
 export function getActionErrorMessage(
   error: SafeActionError,
-  fallbackOrOptions:
-    | string
-    | ActionErrorMessageOptions = "An unknown error occurred",
+  fallbackOrOptions: string | ActionErrorMessageOptions = "发生未知错误。",
 ): string {
   const { fallback, prefix } =
     typeof fallbackOrOptions === "string"
       ? { fallback: fallbackOrOptions, prefix: undefined }
       : {
-          fallback: fallbackOrOptions.fallback ?? "An unknown error occurred",
+          fallback: fallbackOrOptions.fallback ?? "发生未知错误。",
           prefix: fallbackOrOptions.prefix,
         };
 

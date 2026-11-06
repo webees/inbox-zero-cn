@@ -38,12 +38,12 @@ export function CopyRulesSection({
       <ItemSeparator />
       <Item size="sm">
         <ItemContent>
-          <ItemTitle>Copy Rules From Another Account</ItemTitle>
+          <ItemTitle>从其他账号复制规则</ItemTitle>
         </ItemContent>
         <ItemActions>
           <Button size="sm" variant="outline" onClick={() => setOpen(true)}>
             <ArrowLeftRight className="mr-2 size-4" />
-            Copy Rules
+            复制规则
           </Button>
         </ItemActions>
       </Item>

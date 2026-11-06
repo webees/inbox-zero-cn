@@ -74,7 +74,7 @@ export function TimeDurationSetting({
       }
 
       toastSuccess({
-        description: "Settings saved!",
+        description: "设置已保存！",
         id: "time-duration-saved",
       });
       onSaved();
@@ -126,8 +126,8 @@ export function TimeDurationSetting({
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="minutes">minutes</SelectItem>
-          <SelectItem value="hours">hours</SelectItem>
+          <SelectItem value="minutes">分钟</SelectItem>
+          <SelectItem value="hours">小时</SelectItem>
         </SelectContent>
       </Select>
     </form>

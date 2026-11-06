@@ -33,7 +33,7 @@ export class BulkRunRequestError extends Error {
 
 export class BulkRunRateLimitGiveUpError extends Error {
   constructor() {
-    super("Your email provider kept limiting requests.");
+    super("你的邮件服务商持续限制请求");
     this.name = "BulkRunRateLimitGiveUpError";
   }
 }
@@ -91,8 +91,8 @@ export function createBulkRunRetrier({
 
   function recordSuccess() {
     rateLimitStreak = 0;
-    // A request that was already in flight can succeed while the others are
-    // still waiting out the cooldown, so the run stays paused until it ends.
+    // 已在途的请求可能在其余请求仍在等待冷却时成功，
+    // 因此运行会保持暂停，直到该请求结束。
     if (waitingSince === null || Date.now() < resumeAt) return;
     waitingSince = null;
     onWaiting(null);
@@ -184,5 +184,5 @@ function throwIfAborted(signal: AbortSignal) {
 }
 
 function getAbortReason(signal: AbortSignal) {
-  return signal.reason ?? new DOMException("Aborted", "AbortError");
+  return signal.reason ?? new DOMException("已中止", "AbortError");
 }

@@ -9,8 +9,8 @@ import { getEnabledLoginProviders } from "@/utils/oauth/login-providers";
 import { BRAND_NAME, SUPPORT_EMAIL, getBrandTitle } from "@/utils/branding";
 
 export const metadata: Metadata = {
-  title: getBrandTitle("Microsoft admin consent"),
-  description: `Approve ${BRAND_NAME} for your Microsoft 365 organization.`,
+  title: getBrandTitle("Microsoft 管理员同意"),
+  description: `为你的 Microsoft 365 组织批准 ${BRAND_NAME}。`,
   alternates: { canonical: "/login/microsoft-admin-consent" },
 };
 
@@ -26,12 +26,12 @@ export default async function MicrosoftAdminConsentPage(props: {
         <section className="max-w-xl">
           <Logo className="mb-12 h-auto w-56 text-primary" />
           <h1 className="font-title text-4xl font-semibold tracking-normal text-foreground sm:text-5xl">
-            Approve {BRAND_NAME} for your organization
+            为你的组织批准 {BRAND_NAME}
           </h1>
           <p className="mt-6 text-lg leading-8 text-muted-foreground">
-            Grant tenant-wide Microsoft admin consent so users in your
-            organization can connect their own Outlook mailboxes without each
-            approval being blocked by IT.
+            授予整个租户的 Microsoft
+            管理员同意，让你的组织中的用户能够连接自己的 Outlook
+            邮箱，而不必让每次批准都被 IT 拦截。
           </p>
 
           <AdminConsentStatus
@@ -58,16 +58,14 @@ export default async function MicrosoftAdminConsentPage(props: {
                     height={24}
                     unoptimized
                   />
-                  <span className="ml-3">
-                    Grant Admin Consent with Microsoft
-                  </span>
+                  <span className="ml-3">使用 Microsoft 授予管理员同意</span>
                 </a>
               </Button>
             ) : (
               <AlertBasic
                 variant="destructive"
-                title="Microsoft login is not configured"
-                description={`Set up Microsoft OAuth before granting admin consent. Contact ${SUPPORT_EMAIL} if you need help.`}
+                title="未配置 Microsoft 登录"
+                description={`在授予管理员同意之前，请先设置 Microsoft OAuth。如需帮助，请联系 ${SUPPORT_EMAIL}。`}
               />
             )}
 
@@ -76,7 +74,7 @@ export default async function MicrosoftAdminConsentPage(props: {
                 href="/login"
                 className="font-medium text-foreground hover:underline"
               >
-                Back to sign in
+                返回登录
               </Link>
             </p>
           </div>
@@ -104,20 +102,20 @@ export default async function MicrosoftAdminConsentPage(props: {
 
 const ADMIN_CONSENT_POINTS = [
   {
-    title: "Microsoft 365 integration",
-    description: "Works with your existing Microsoft Entra organization.",
+    title: "Microsoft 365 集成",
+    description: "与你的现有 Microsoft Entra 组织配合使用。",
   },
   {
-    title: "Tenant-wide approval",
-    description: "Approves the Microsoft permissions once for eligible users.",
+    title: "整个租户批准",
+    description: "为符合条件的用户一次性批准 Microsoft 权限。",
   },
   {
-    title: "User-level connection",
-    description: "Each user still signs in and connects their own mailbox.",
+    title: "用户级连接",
+    description: "每个用户仍需自行登录并连接自己的邮箱。",
   },
   {
-    title: "Admin control",
-    description: "Manage access later from Microsoft Entra Enterprise Apps.",
+    title: "管理员控制",
+    description: "之后可从 Microsoft Entra 企业应用管理访问权限。",
   },
 ] as const;
 
@@ -133,8 +131,8 @@ function AdminConsentStatus({
       <AlertBasic
         className="mt-8"
         variant="success"
-        title="Admin consent granted"
-        description="Users in your organization can now sign in with Microsoft and connect their own Outlook mailbox."
+        title="已授予管理员同意"
+        description="你的组织中的用户现在可以使用 Microsoft 登录并连接自己的 Outlook 邮箱。"
       />
     );
   }
@@ -145,8 +143,8 @@ function AdminConsentStatus({
     <AlertBasic
       className="mt-8"
       variant="destructive"
-      title="Admin consent was not completed"
-      description="Try again with a Microsoft 365 admin account that is allowed to grant tenant-wide consent."
+      title="管理员同意未完成"
+      description="请使用获准授予整个租户同意的 Microsoft 365 管理员账号重试。"
     />
   );
 }

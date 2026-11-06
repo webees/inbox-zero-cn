@@ -21,8 +21,8 @@ import { getInboxZeroDesktopApp } from "@/utils/desktop-app";
 const SCOPES: readonly ShortcutScope[] = ["global", "mail"];
 
 /**
- * Rendered straight from the shortcut registry, so a binding can never be
- * documented here without also being bound — or bound without being documented.
+ * 直接根据快捷键注册表渲染，因此某个绑定不可能在这里被记录却没有
+ * 绑定——也不可能被绑定却没有被记录。
  */
 export function ShortcutsDialog() {
   const [open, setOpen] = useAtom(shortcutsDialogOpenAtom);
@@ -37,10 +37,8 @@ export function ShortcutsDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Keyboard shortcuts</DialogTitle>
-          <DialogDescription>
-            Everything here works without the mouse.
-          </DialogDescription>
+          <DialogTitle>键盘快捷键</DialogTitle>
+          <DialogDescription>这里的一切都无需鼠标即可操作。</DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-6 sm:grid-cols-2">

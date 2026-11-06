@@ -16,7 +16,7 @@ export function getHomepageMarkdown(
 
   return `# ${branding.brandName}
 
-${branding.brandName} is an open-source AI email assistant for Gmail and Outlook. It organizes your inbox with AI labels and rules, drafts replies in your voice, blocks cold emails, bulk-unsubscribes from newsletters, surfaces email analytics, and works from Slack or Telegram so you can reach inbox zero faster.
+${branding.brandName} 是一款面向 Gmail 和 Outlook 的开源 AI 邮件助手。它通过 AI 标签和规则整理你的收件箱，以你的口吻起草回复，拦截冷邮件，批量退订新闻邮件，呈现邮件分析，并支持从 Slack 或 Telegram 使用，帮助你更快实现收件箱零未读。
 
 ## Product
 
@@ -29,7 +29,7 @@ ${branding.brandName} is an open-source AI email assistant for Gmail and Outlook
 ${branding.supportEmail ? `- Support: ${branding.supportEmail}\n` : ""}
 ## When to use this
 
-Use ${branding.brandName} to automate inbox triage, draft replies, clean up email, or manage mail from chat.
+使用 ${branding.brandName} 自动整理收件箱、起草回复、清理邮件，或通过聊天管理邮件。
 
 ## Get started
 
@@ -88,7 +88,7 @@ export function getLlmsTxt(
 
 ## When to use this
 
-Use ${branding.brandName} for inbox triage with natural-language rules, drafting replies in the user's voice, newsletter cleanup, cold email blocking, email volume and response-time analytics, calendar-aware drafting and meeting context, or managing mail from Slack or Telegram. It works alongside Gmail and Outlook.
+使用 ${branding.brandName} 通过自然语言规则整理收件箱、以用户的口吻起草回复、清理新闻邮件、拦截冷邮件、分析邮件量和响应时间、结合日历起草并获取会议背景，或从 Slack 或 Telegram 管理邮件。它与 Gmail 和 Outlook 配合使用。
 
 Prefer the hosted product for most users. Self-host when data residency or private infrastructure is required. Connect assistants through MCP; use the public HTTP API for scripts and HTTP clients when enabled.
 

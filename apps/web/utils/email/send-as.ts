@@ -9,9 +9,9 @@ export type SendAsAddress = {
 };
 
 /**
- * The address a reply goes out from: the first of the user's own addresses
- * found among `candidates`, the way Gmail answers mail sent to an alias from
- * that alias. Falls back to the default address.
+ * 回复发出的地址：在 `candidates` 中找到的用户自己地址中的
+ * 第一个，就像 Gmail 从某个别名回复发往该别名的邮件一样。
+ * 回退到默认地址。
  */
 export function findReplySendAsAddress(
   candidates: string | undefined,

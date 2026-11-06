@@ -50,23 +50,23 @@ export default function SummaryEmail(props: SummaryEmailProps) {
   } = props;
 
   const preview = [
-    `${archivedEmailCount} ${pluralize(archivedEmailCount, "email")} archived`,
-    `${coldEmailCount} cold ${pluralize(coldEmailCount, "email")} blocked`,
+    `${archivedEmailCount} 封邮件已归档`,
+    `${coldEmailCount} 封冷邮件已拦截`,
   ].join(", ");
 
   return (
     <StatsEmailLayout
       baseUrl={baseUrl}
       unsubscribeToken={unsubscribeToken}
-      preview={`${preview}. Here's your week in email.`}
-      eyebrow={<>Weekly Update &middot; {formatPeriod(periodEnd)}</>}
-      title="Your week in email"
-      subtitle="Here's how your assistant handled your inbox this week."
+      preview={`${preview}。这是你本周的邮件概览。`}
+      eyebrow={<>每周更新 &middot; {formatPeriod(periodEnd)}</>}
+      title="你本周的邮件"
+      subtitle="以下是你的 AI 助手本周处理收件箱的情况。"
     >
       <StatStrip
         stats={[
-          { value: archivedEmailCount, label: "archived for you" },
-          { value: coldEmailCount, label: "cold emails blocked" },
+          { value: archivedEmailCount, label: "为你归档" },
+          { value: coldEmailCount, label: "已拦截的冷邮件" },
         ]}
       />
 
@@ -91,28 +91,28 @@ SummaryEmail.PreviewProps = {
   archivedEmailCount: 8,
   archivedEmails: [
     {
-      from: "Updates <updates@example.com>",
-      subject: "New product features this week",
+      from: "更新 <updates@example.com>",
+      subject: "本周新功能",
       sentAt: new Date("2024-03-20"),
-      ruleName: "Marketing",
+      ruleName: "营销",
     },
     {
-      from: "Updates <updates@example.com>",
-      subject: "Last chance to join our webinar",
+      from: "更新 <updates@example.com>",
+      subject: "加入我们网络研讨会的最后机会",
       sentAt: new Date("2024-03-19"),
-      ruleName: "Marketing",
+      ruleName: "营销",
     },
     {
-      from: "Newsletter <newsletter@example.com>",
-      subject: "Weekly industry roundup",
+      from: "新闻通讯 <newsletter@example.com>",
+      subject: "每周行业综述",
       sentAt: new Date("2024-03-19"),
-      ruleName: "Newsletter",
+      ruleName: "新闻通讯",
     },
     {
-      from: "Sales <sales@example.com>",
-      subject: "Quick question",
+      from: "销售 <sales@example.com>",
+      subject: "问个问题",
       sentAt: new Date("2024-03-18"),
-      ruleName: "Cold Email",
+      ruleName: "冷邮件",
     },
   ],
   coldEmailers: [
@@ -182,17 +182,15 @@ function ArchivedEmails({
 
   return (
     <StatsEmailCard
-      title="Archived For You"
-      badge={{ label: `${archivedEmailCount} this week`, ...BADGES.green }}
-      description="Emails your rules labeled and moved out of your inbox."
+      title="为你归档"
+      badge={{ label: `${archivedEmailCount} 本周`, ...BADGES.green }}
+      description="你的规则已打上标签并移出收件箱的邮件。"
       footnote={
-        hiddenCount > 0
-          ? `And ${hiddenCount} more archived ${pluralize(hiddenCount, "email")}.`
-          : undefined
+        hiddenCount > 0 ? `还有 ${hiddenCount} 封已归档邮件。` : undefined
       }
       cta={{
         href: `${baseUrl}/automation?tab=history`,
-        label: "View automation history",
+        label: "查看自动化历史",
       }}
     >
       {archivedEmailGroups.map((group) => (
@@ -221,15 +219,11 @@ function ColdEmails({
 
   return (
     <StatsEmailCard
-      title="Cold Email Blocker"
-      badge={{ label: `${coldEmailCount} blocked`, ...BADGES.blue }}
-      description="Unsolicited outreach kept out of your inbox."
-      footnote={
-        hiddenCount > 0
-          ? `And ${hiddenCount} more cold ${pluralize(hiddenCount, "email")}.`
-          : undefined
-      }
-      cta={{ href: `${baseUrl}/cold-email-blocker`, label: "View cold emails" }}
+      title="冷邮件拦截"
+      badge={{ label: `${coldEmailCount} 封已拦截`, ...BADGES.blue }}
+      description="被拦截在收件箱之外的未经请求的推广邮件。"
+      footnote={hiddenCount > 0 ? `还有 ${hiddenCount} 封冷邮件。` : undefined}
+      cta={{ href: `${baseUrl}/cold-email-blocker`, label: "查看冷邮件" }}
     >
       <EmailList emails={coldEmailers} />
     </StatsEmailCard>
@@ -313,7 +307,7 @@ function SenderRow({
         {hiddenCount > 0 && (
           <OptionalLink href={latest.senderUrl}>
             <Text className="m-0 pt-0.5 text-[13px] leading-5 text-[#848484]">
-              +{hiddenCount} more
+              +{hiddenCount} 封
             </Text>
           </OptionalLink>
         )}
@@ -327,7 +321,7 @@ function SenderRow({
         </Text>
         {count > 1 && (
           <Text className="m-0 text-[12px] leading-4 text-[#848484]">
-            {count} emails
+            {count} 封邮件
           </Text>
         )}
       </Column>
@@ -394,11 +388,7 @@ function formatDay(date: Date) {
 }
 
 function formatPeriod(end: Date) {
-  // Subtract in UTC milliseconds so local DST transitions cannot shift the day.
+  // 以 UTC 毫秒相减，这样本地夏令时切换不会改变日期。
   const start = new Date(new Date(end).getTime() - 6 * 24 * 60 * 60 * 1000);
-  return `${formatDay(start)} to ${formatDay(end)}`;
-}
-
-function pluralize(count: number, word: string) {
-  return count === 1 ? word : `${word}s`;
+  return `${formatDay(start)} 至 ${formatDay(end)}`;
 }

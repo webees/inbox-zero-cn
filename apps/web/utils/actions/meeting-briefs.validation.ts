@@ -11,8 +11,8 @@ export type UpdateMeetingBriefsEnabledBody = z.infer<
 export const updateMeetingBriefsMinutesBeforeBody = z.object({
   minutesBefore: z
     .number()
-    .min(1, "Number must be at least 1 minute")
-    .max(2880, "Number must be at most 2880 minutes (48 hours)"),
+    .min(1, "数值至少为 1 分钟")
+    .max(2880, "数值最多为 2880 分钟（48 小时）"),
 });
 
 export type UpdateMeetingBriefsMinutesBeforeBody = z.infer<

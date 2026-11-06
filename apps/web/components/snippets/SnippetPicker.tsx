@@ -97,18 +97,18 @@ export const SnippetPicker = forwardRef<SnippetPickerRef, SnippetPickerProps>(
       >
         {onQueryChange ? (
           <input
-            aria-label="Search snippets"
+            aria-label="搜索片段"
             className="h-10 w-full border-b bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground"
             onChange={(event) => onQueryChange(event.target.value)}
             onKeyDown={(event) => {
               if (handleKeyDown(event)) event.preventDefault();
             }}
-            placeholder="Search snippets"
+            placeholder="搜索片段"
             value={query}
           />
         ) : null}
         <div
-          aria-label="Snippets"
+          aria-label="片段"
           className="max-h-64 overflow-auto p-1"
           role="listbox"
         >
@@ -117,7 +117,7 @@ export const SnippetPicker = forwardRef<SnippetPickerRef, SnippetPickerProps>(
             onSelect={() => selectItem(0)}
           >
             <BracesIcon className="size-4 shrink-0 text-muted-foreground" />
-            <span className="font-medium">Turn into snippet</span>
+            <span className="font-medium">转换为片段</span>
           </PickerRow>
           {filteredSnippets.map((snippet, index) => (
             <PickerRow
@@ -136,7 +136,7 @@ export const SnippetPicker = forwardRef<SnippetPickerRef, SnippetPickerProps>(
           {filteredSnippets.length === 0 ? (
             <p className="px-3 py-2 text-sm text-muted-foreground">
               {snippets.length === 0
-                ? "No snippets yet."
+                ? "No snippets yet. Save one to reuse it with /."
                 : "No matching snippets."}
             </p>
           ) : null}

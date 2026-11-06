@@ -1,71 +1,71 @@
-# Browser unsubscribe worker
+# 浏览器退订 worker
 
-Opt-in browser automation for the existing unsubscribe action. The web app resolves a link from the authenticated account's mailbox and sends only that link, its recipient email and a random job ID. The coordinator creates a fresh sandbox, drives a bounded browser session and destroys the sandbox before returning a result.
+为现有退订操作提供可选启用的浏览器自动化。Web 应用从已认证账号的邮箱中解析出链接，并且只发送该链接、其收件人邮箱和一个随机任务 ID。协调器会创建一个全新沙箱，驱动一个有边界的浏览器会话，并在返回结果之前销毁沙箱。
 
-This app is **not** started by Docker Compose, `pnpm dev`, or the web image. Self-hosters who do not want it should leave `UNSUBSCRIBE_WORKER_URL` unset on the web app; unsubscribe then keeps the existing HTTP flow.
+此应用**不会**由 Docker Compose、`pnpm dev` 或 Web 镜像启动。不希望使用它的自托管者应在 Web 应用上保持 `UNSUBSCRIBE_WORKER_URL` 未设置；此时退订会保留现有的 HTTP 流程。
 
-Only an explicit page acknowledgment can produce `confirmed`. HTTP success alone is insufficient. Login, CAPTCHA, ambiguous scope and unsupported pages return `needs_user` or `failed`; the UI retains its manual unsubscribe fallback. A page acknowledgment still does not prove that future mail will stop.
+只有页面明确确认才能产生 `confirmed`。仅 HTTP 成功并不够。登录、CAPTCHA、范围不明确和不支持的页面会返回 `needs_user` 或 `failed`；界面保留手动退订的兜底方案。页面确认仍不能证明未来的邮件会停止。
 
-There are no schema changes. Existing structured logs record the successful method, sender ID and completion time; subsequent blocked-email logs include sender ID and original received time. Join those events by account/sender, deduplicate message IDs and allow a delivery grace period. Log retention and incomplete message processing still limit longitudinal analysis; this is not a durable unsubscribe audit trail.
+没有数据库 schema 变更。现有结构化日志会记录成功的方法、发件人 ID 和完成时间；后续被拦截邮件的日志包含发件人 ID 和原始接收时间。按账号/发件人关联这些事件，对邮件 ID 去重，并预留投递宽限期。日志保留期限和邮件处理不完整仍会限制纵向分析；这不是持久的退订审计轨迹。
 
-## Architecture and privacy boundary
+## 架构与隐私边界
 
-- The coordinator is trusted and holds the service secret and model credentials. Mailbox provider credentials remain in the web app, which resolves the unsubscribe link and sends only `jobId`, `url`, and `recipientEmail`. The coordinator runs separately from the web app. A compromised coordinator can access concurrent job data, so its host and dependencies remain part of the trusted computing base.
-- Each job has its own OS sandbox, browser process/context, capability token, model history and network namespace. Sandboxes never receive mailbox OAuth tokens, database credentials, other jobs or model/provider API keys. No browser or sandbox is pooled between jobs.
-- Browser traffic goes through a TLS CONNECT broker. It resolves and pins public IPv4 destinations, rejects private/reserved addresses and its own IP, and allows only destination port 443. Requests, tunnels, bytes, controls and model steps are bounded. TLS verification remains enabled. This deliberately excludes plaintext and IPv6-only sites.
-- The runner can click observed controls, enter only the owning recipient email, select an observed option, or stop. The new model prompt treats pages as untrusted and limits actions to the requested unsubscribe. This is an AI judgment boundary, not a proof against deceptive same-page content. It cannot execute model-supplied scripts or access another job.
-- Tokens are revoked on completion/cancellation. Work is bounded to 120 seconds plus at most 30 seconds of awaited cleanup; the web caller allows 170 seconds. Every sandbox also has an independent three-minute expiry. Unconfirmed cleanup stops new jobs until the service is restarted after operator investigation.
-- The application stores no screenshots, browser profiles or page bodies. The configured model receives page text and controls, which may contain personal data or unsubscribe tokens. Use providers and retention settings appropriate for your privacy requirements, or an independently hosted compatible model endpoint. Disable request-body, command-output and proxy credential logging in surrounding infrastructure.
+- 协调器是可信的，持有服务密钥和模型凭证。邮箱服务商凭证仍保留在 Web 应用中，由它解析退订链接并仅发送 `jobId`、`url` 和 `recipientEmail`。协调器与 Web 应用分开运行。协调器一旦被攻破，可能访问并发任务数据，因此其主机和依赖仍属于可信计算基。
+- 每个任务都有独立的操作系统沙箱、浏览器进程/上下文、能力令牌、模型历史和网络命名空间。沙箱绝不会收到邮箱 OAuth 令牌、数据库凭证、其他任务或模型/服务商 API 密钥。任务之间不共享浏览器或沙箱。
+- 浏览器流量经由 TLS CONNECT 代理。该代理解析并固定公网 IPv4 目标，拒绝私有/保留地址及其自身 IP，并且只允许目标端口 443。请求、隧道、字节数、控件操作和模型步骤都设有上限。TLS 验证保持启用。这会刻意排除明文站点和仅支持 IPv6 的站点。
+- 运行器可以点击已观察到的控件、仅输入所属收件人邮箱、选择已观察到的选项，或停止。新的模型提示词将页面视为不可信，并将操作限制为所请求的退订。这是 AI 判断边界，并不能防范同页面内的欺骗性内容。它无法执行模型提供的脚本，也无法访问其他任务。
+- 令牌在完成/取消时撤销。工作上限为 120 秒，另加最多 30 秒的等待清理时间；Web 调用方允许 170 秒。每个沙箱还有独立的 3 分钟到期时间。清理未确认时，在运维人员调查并重启服务之前，会停止接受新任务。
+- 应用不存储截图、浏览器配置文件或页面正文。配置的模型会收到页面文本和控件，其中可能包含个人数据或退订令牌。请使用符合你隐私要求的服务商和保留策略，或使用独立托管且兼容的模型端点。在周边基础设施中禁用请求正文、命令输出和代理凭证日志。
 
-## Configure the coordinator
+## 配置协调器
 
-Use Node 24 and install from the repository root with:
+使用 Node 24，并在仓库根目录安装：
 
 ```sh
 pnpm install --filter @inboxzero/unsubscribe-worker --config.enable-global-virtual-store=false
 ```
 
-A plain `pnpm install` links dependencies through the store under `$HOME`, which a service unit that protects the home directory cannot follow. Copy this app's `.env.example` to a protected environment file, filling required fields.
+直接运行 `pnpm install` 会通过 `$HOME` 下的 store 链接依赖，而保护主目录的服务单元无法跟随该路径。请将此应用的 `.env.example` 复制到受保护的环境文件，并填写必填字段。
 
-Set `UNSUBSCRIBE_BROKER_URL` to the dedicated TLS hostname, and `UNSUBSCRIBE_BROKER_IP` to its fixed IPv4 address reachable from sandboxes. The broker address must expose **only the broker port** to sandbox traffic. Keep management services on another address/interface. Set the TLS certificate/key file paths and the corresponding listening port. Use a publicly trusted certificate for the runner; do not disable TLS verification.
+将 `UNSUBSCRIBE_BROKER_URL` 设为专用 TLS 主机名，将 `UNSUBSCRIBE_BROKER_IP` 设为其可从沙箱访问的固定 IPv4 地址。broker 地址必须**仅向沙箱流量暴露 broker 端口**。管理服务应放在另一个地址/接口上。设置 TLS 证书/密钥文件路径及对应的监听端口。运行器应使用受公网信任的证书；不要禁用 TLS 验证。
 
-Set `UNSUBSCRIBE_MODEL_ENDPOINT` to the full HTTPS chat-completions endpoint, with the model name and API key. The endpoint must accept JSON-object output, `max_tokens` and `temperature` and return `choices[0].message.content`. There is no implicit model provider or credential fallback.
+将 `UNSUBSCRIBE_MODEL_ENDPOINT` 设为完整的 HTTPS chat-completions 端点，并配置模型名称和 API 密钥。该端点必须接受 JSON-object 输出、`max_tokens` 和 `temperature`，并返回 `choices[0].message.content`。没有隐式的模型服务商或凭证回退。
 
-Run the coordinator as a supervised service with its protected environment loaded:
+以受监管服务运行协调器，并加载其受保护环境：
 
 ```sh
 cd apps/unsubscribe-worker
 node --env-file=/etc/unsubscribe-worker.env src/index.ts
 ```
 
-The coordinator serves `/jobs`, `/decision`, and authenticated CONNECT on the same TLS port. Many HTTP reverse proxies do not forward CONNECT; use direct TLS or a compatible TCP load balancer. Sessions are in memory: use a single coordinator instance initially. Multiple instances need a broker address pinned to the instance that owns the job. Do not load-balance requests randomly across instances. Concurrent capacity defaults to two; additional jobs fail promptly and the user can retry.
+协调器在同一 TLS 端口上提供 `/jobs`、`/decision` 和需认证的 CONNECT。许多 HTTP 反向代理不会转发 CONNECT；请使用直接 TLS 或兼容的 TCP 负载均衡器。会话保存在内存中：初期请使用单个协调器实例。多实例部署时，broker 地址必须固定到拥有该任务的实例。不要在各实例之间随机负载均衡请求。默认并发容量为 2；额外的任务会立即失败，用户可重试。
 
-## Self-hosted Docker + gVisor
+## 自托管 Docker + gVisor
 
-This is the shipped sandbox adapter. Use a dedicated Linux host with Docker, the `runsc` gVisor runtime, systemd and Linux 5.16+ with nftables netdev egress support. The coordinator needs permission to run Docker, schedule `systemd-run` expiry timers and stop those timers. Those are privileged host operations: do not expose the Docker socket to any browser container. `/usr/bin/docker` must exist for the independent timer.
+这是随附的沙箱适配器。请使用专用 Linux 主机，配备 Docker、`runsc` gVisor 运行时、systemd，以及支持 nftables netdev 出站规则的 Linux 5.16+。协调器需要有权运行 Docker、调度并停止 `systemd-run` 到期计时器。这些是特权主机操作：不要向任何浏览器容器暴露 Docker socket。独立计时器需要存在 `/usr/bin/docker`。
 
-Build these images from the repository root:
+在仓库根目录构建这些镜像：
 
 ```sh
 docker build -f apps/unsubscribe-worker/Dockerfile -t unsubscribe-runner .
 docker build -f apps/unsubscribe-worker/Dockerfile.router -t unsubscribe-router apps/unsubscribe-worker
 ```
 
-Set `UNSUBSCRIBE_SANDBOX_IMAGE=unsubscribe-runner` and `UNSUBSCRIBE_ROUTER_IMAGE=unsubscribe-router`. Pre-pull/build images; runtime package installation is not allowed.
+设置 `UNSUBSCRIBE_SANDBOX_IMAGE=unsubscribe-runner` 和 `UNSUBSCRIBE_ROUTER_IMAGE=unsubscribe-router`。请预先拉取/构建镜像；运行时不允许安装软件包。
 
-Every job starts a small trusted router container that installs deny-by-default IPv4/IPv6 and device egress rules. Device egress filtering is required because gVisor uses raw AF_PACKET networking that bypasses ordinary IP OUTPUT filtering. See the [gVisor networking architecture](https://gvisor.dev/docs/architecture_guide/networking/) and [netfilter device hooks](https://netfilter.org/projects/nftables/manpage.html). A separate unprivileged, read-only gVisor browser joins that job's network namespace with no network administration capability, host mounts or inherited credentials. Temporary browser data lives on bounded tmpfs. The host schedules deletion before any job data enters the sandbox. Missing systemd, firewall support or gVisor causes failure; there is no ordinary-container fallback. Standard Docker Desktop on macOS is not this deployment target.
+每个任务都会启动一个小的可信路由容器，用于安装默认拒绝的 IPv4/IPv6 和设备出站规则。设备出站过滤是必需的，因为 gVisor 使用原始 AF_PACKET 网络，会绕过普通的 IP OUTPUT 过滤。参见 [gVisor 网络架构](https://gvisor.dev/docs/architecture_guide/networking/) 和 [netfilter 设备钩子](https://netfilter.org/projects/nftables/manpage.html)。一个独立的、无特权且只读的 gVisor 浏览器会加入该任务的网络命名空间，且不具备网络管理能力、主机挂载或继承的凭证。临时浏览器数据存放在有大小上限的 tmpfs 上。主机在任务数据进入沙箱之前就安排好删除。缺少 systemd、防火墙支持或 gVisor 都会导致失败；没有普通容器兜底方案。macOS 上的标准 Docker Desktop 不是此部署目标。
 
-## Enable the web app
+## 启用 Web 应用
 
-Set only `UNSUBSCRIBE_WORKER_URL` and `UNSUBSCRIBE_WORKER_SECRET` on the web app. Use the same high-entropy secret (at least 32 characters) on the coordinator. Model credentials belong only on the coordinator. Existing unsubscribe actions then use one-click POST, a simple HTML form, and the browser worker in that order. Worker failures do not fall back to treating a successful HTTP GET as an unsubscribe confirmation. Leave the URL unset to retain the existing HTTP behavior, including GET success.
+在 Web 应用中仅设置 `UNSUBSCRIBE_WORKER_URL` 和 `UNSUBSCRIBE_WORKER_SECRET`。在协调器上使用相同的高熵密钥（至少 32 个字符）。模型凭证只能放在协调器上。现有退订操作随后会依次尝试一键 POST、简单 HTML 表单和浏览器 worker。worker 失败时，不会退而将成功的 HTTP GET 视为退订确认。保持 URL 未设置即可保留现有 HTTP 行为，包括 GET 成功。
 
-The caller pages and unsubscribe route allow 180 seconds. Configure your hosting platform to support that duration. Large bulk requests may exceed the platform deadline because each selected sender starts separate work; this implementation does not add a durable queue or batch scheduler.
+调用方页面和退订路由允许 180 秒。请配置托管平台以支持该时长。大型批量请求可能超过平台截止时间，因为每个选中的发件人都会启动独立工作；此实现没有增加持久队列或批处理调度器。
 
-## Adding a provider
+## 添加服务商
 
-Docker + gVisor is the only shipped adapter. `SandboxAdapter` in `src/contracts.ts` remains so another isolation backend can be added later without changing browser or broker logic. Providers must offer a fresh OS isolation boundary, restricted egress, independent expiry and confirmed destruction. Respect cancellation and clean up a late-created instance. Do not substitute a shared browser context for a sandbox.
+Docker + gVisor 是唯一随附的适配器。保留 `src/contracts.ts` 中的 `SandboxAdapter`，以便日后添加其他隔离后端时无需改动浏览器或 broker 逻辑。服务商必须提供全新的操作系统隔离边界、受限出站、独立到期时间和已确认的销毁。遵守取消操作，并清理延迟创建的实例。不要用共享浏览器上下文替代沙箱。
 
-## Verification
+## 验证
 
 ```sh
 pnpm --filter @inboxzero/unsubscribe-worker typecheck
@@ -75,6 +75,6 @@ pnpm --filter @inboxzero/unsubscribe-worker test-ai
 pnpm test utils/senders/browser-unsubscribe.test.ts utils/senders/unsubscribe.test.ts utils/senders/html-form-unsubscribe.test.ts
 ```
 
-Default tests cover local browser forms with scripted decisions, HTTP one-click, simple HTML forms, worker fallback, and Docker isolation. They do not establish live model accuracy or host isolation.
+默认测试覆盖带脚本化决策的本地浏览器表单、HTTP 一键退订、简单 HTML 表单、worker 兜底以及 Docker 隔离。它们不能证明实时模型准确率或主机隔离。
 
-`pnpm --filter @inboxzero/unsubscribe-worker test-ai` runs the same pages with the real model (`UNSUBSCRIBE_MODEL_*`, or `OPENAI_API_KEY`). Those fixtures are injected with `page.setContent`; they do not need HTTPS or the sandbox. Before using real account links, test synthetic jobs on the chosen host: direct Internet/private/metadata access must fail, broker access must succeed, parallel jobs must not see each other's files/processes, and killing the coordinator must still remove sandboxes by the independent expiry. Test delayed confirmations, login/CAPTCHA and prompt injection with the configured model. Verify deletion operationally.
+`pnpm --filter @inboxzero/unsubscribe-worker test-ai` 使用真实模型（`UNSUBSCRIBE_MODEL_*` 或 `OPENAI_API_KEY`）运行相同的页面。这些测试夹具通过 `page.setContent` 注入；不需要 HTTPS 或沙箱。在使用真实账号链接之前，请在所选主机上测试合成任务：直接访问互联网/私有地址/元数据必须失败，broker 访问必须成功，并行任务不得看到彼此的文件/进程，终止协调器后沙箱仍必须按独立到期时间被移除。使用配置的模型测试延迟确认、登录/CAPTCHA 和提示词注入。从运维层面验证删除。

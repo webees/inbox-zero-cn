@@ -1,0 +1,103 @@
+name: 汉化数据迁移（规则名/提示词/标签）
+
+# 一次性迁移，手动触发。把仍然停留在英文默认值的系统规则名、默认提示词、
+# 发件人分类名、拆分收件箱名称，以及邮箱服务商上的标签/类别/文件夹名改成中文。
+#
+# 默认是演练：只统计、不写库。确认统计没问题后再勾选 apply 真正写入。
+# 用户自己改过的规则名与提示词不会被覆盖（脚本只动"仍等于默认值"的行）。
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "是否真正写入（不勾选=演练，只统计）"
+        type: boolean
+        default: false
+      skip_provider:
+        description: "只改数据库，不去改 Gmail/Outlook 上的标签"
+        type: boolean
+        default: false
+      email_account:
+        description: "只处理这个邮箱账号 id（留空=全部）"
+        type: string
+        default: ""
+      limit:
+        description: "最多处理多少个邮箱账号（留空=全部）"
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: migrate-localized-rule-labels
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: 安装依赖
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
+        run: pnpm install --frozen-lockfile
+
+      - name: 生成 Prisma Client
+        run: pnpm -F inbox-zero-ai exec prisma generate
+
+      - name: 运行迁移
+        env:
+          NODE_ENV: production
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL || secrets.DATABASE_URL }}
+          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+          EMAIL_ENCRYPT_SECRET: ${{ secrets.EMAIL_ENCRYPT_SECRET }}
+          EMAIL_ENCRYPT_SALT: ${{ secrets.EMAIL_ENCRYPT_SALT }}
+          INTERNAL_API_KEY: ${{ secrets.INTERNAL_API_KEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          # 迁移用不到 Pub/Sub，占位即可（env.ts 要求非空）
+          GOOGLE_PUBSUB_TOPIC_NAME: ${{ secrets.GOOGLE_PUBSUB_TOPIC_NAME || 'topic' }}
+          MICROSOFT_CLIENT_ID: ${{ secrets.MICROSOFT_CLIENT_ID }}
+          MICROSOFT_CLIENT_SECRET: ${{ secrets.MICROSOFT_CLIENT_SECRET }}
+          NEXT_PUBLIC_BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL || 'https://www.getinboxzero.com' }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}
+          UPSTASH_REDIS_URL: ${{ secrets.UPSTASH_REDIS_URL }}
+          UPSTASH_REDIS_TOKEN: ${{ secrets.UPSTASH_REDIS_TOKEN }}
+          DEFAULT_LLMS: ${{ secrets.DEFAULT_LLMS || 'openai:gpt-5.4-mini' }}
+        run: |
+          set -euo pipefail
+          if [ -z "${DATABASE_URL:-}" ]; then
+            echo "::error title=缺少 DATABASE_URL::本仓库没有配置生产库连接串，迁移无法执行。请在 Settings → Secrets and variables → Actions 里添加 DATABASE_URL（以及 DIRECT_URL），或本地用 .env 跑：pnpm -F inbox-zero-ai exec tsx scripts/migrate-localized-rule-labels.ts"
+            exit 1
+          fi
+          if [ -z "${GOOGLE_CLIENT_ID:-}" ] || [ -z "${GOOGLE_CLIENT_SECRET:-}" ]; then
+            echo "::warning title=缺少 Google OAuth 凭据::没有 GOOGLE_CLIENT_ID/SECRET，Gmail 标签重命名会被跳过（数据库部分照常迁移）。"
+          fi
+          args=()
+          if [ "${{ inputs.apply }}" = "true" ]; then
+            args+=(--apply)
+          fi
+          if [ "${{ inputs.skip_provider }}" = "true" ]; then
+            args+=(--skip-provider)
+          fi
+          if [ -n "${{ inputs.email_account }}" ]; then
+            args+=(--email-account "${{ inputs.email_account }}")
+          fi
+          if [ -n "${{ inputs.limit }}" ]; then
+            args+=(--limit "${{ inputs.limit }}")
+          fi
+          echo "运行迁移：${args[*]:-（演练，未写入）}"
+          pnpm -F inbox-zero-ai exec tsx scripts/migrate-localized-rule-labels.ts ${args[@]+"${args[@]}"}

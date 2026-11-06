@@ -67,13 +67,12 @@ export function BulkArchive() {
       <PageWrapper>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <PageHeading>Bulk Archive</PageHeading>
-            <TooltipExplanation text="Archive, delete, or mark emails as read in bulk by category to quickly clean up your inbox." />
+            <PageHeading>批量归档</PageHeading>
+            <TooltipExplanation text="按类别批量归档、删除或将邮件标记为已读，快速清理你的收件箱。" />
             <PageHeaderVideoButton
               video={{
-                title: "Getting started with Bulk Archive",
-                description:
-                  "Learn how to archive whole categories of old email at once.",
+                title: "批量归档入门",
+                description: "了解如何一次性归档整类旧邮件。",
                 muxPlaybackId:
                   "jyy00xnJVvyjVsyNKjclj02r023p200rOyDMAFNUE6Lwnpo",
               }}

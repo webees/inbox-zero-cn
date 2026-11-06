@@ -12,29 +12,29 @@ const rules = [
   {
     instruction: "Forward receipts and invoices to my accountant",
     actions: [
-      { type: ActionType.LABEL, text: "Receipt" },
+      { type: ActionType.LABEL, text: "收据" },
       { type: ActionType.FORWARD, text: "accountant@example.com" },
     ],
   },
   {
     instruction: "Label newsletters and archive them after a week",
     actions: [
-      { type: ActionType.LABEL, text: "Newsletter" },
-      { type: ActionType.ARCHIVE, text: "Archive after 7 days" },
+      { type: ActionType.LABEL, text: "新闻通讯" },
+      { type: ActionType.ARCHIVE, text: "7 天后归档" },
     ],
   },
   {
     instruction: "Draft replies to customer questions using our help docs",
     actions: [
-      { type: ActionType.LABEL, text: "Support" },
-      { type: ActionType.DRAFT_EMAIL, text: "Draft reply" },
+      { type: ActionType.LABEL, text: "支持" },
+      { type: ActionType.DRAFT_EMAIL, text: "草稿回复" },
     ],
   },
   {
     instruction: "Let me know in Slack when an investor emails",
     actions: [
-      { type: ActionType.LABEL, text: "Investors" },
-      { type: ActionType.NOTIFY_MESSAGING_CHANNEL, text: "Notify in Slack" },
+      { type: ActionType.LABEL, text: "投资者" },
+      { type: ActionType.NOTIFY_MESSAGING_CHANNEL, text: "在 Slack 中通知" },
     ],
   },
 ];

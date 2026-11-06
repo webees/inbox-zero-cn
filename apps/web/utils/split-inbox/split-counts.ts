@@ -8,8 +8,8 @@ import {
 } from "@/utils/split-inbox/split-query";
 
 /**
- * Counts use the same predicate as the thread list. A client-side count of the
- * loaded page would under-report every split that has more mail than one page.
+ * 计数使用与会话列表相同的谓词。在客户端对已加载页面
+ * 进行计数会少报每个邮件超过一页的分类。
  */
 export function splitCountTargets({
   splits,
@@ -18,7 +18,7 @@ export function splitCountTargets({
 }: {
   splits: MailSplit[];
   now?: Date;
-  /** `null` means the split's predicate is not ready, so it is left uncounted. */
+  /** `null` 表示该分类的谓词尚未就绪，因此不予计数。 */
   overrides?: ReadonlyMap<string, MailPredicate | null>;
 }): Array<{ id: string; predicate: MailPredicate }> {
   const targets: Array<{ id: string; predicate: MailPredicate }> = [];
@@ -36,8 +36,8 @@ export function splitCountTargets({
         predicate: predicateForSplit(split, splits, now),
       });
     } catch {
-      // The list query throws for a split that is missing a required value.
-      // Skip it here so one incomplete split does not blank every other count.
+      // 对于缺少必需值的分类，列表查询会抛出异常。
+      // 在此跳过它，这样一个不完整的分类不会让其他所有计数都变空。
     }
   }
 

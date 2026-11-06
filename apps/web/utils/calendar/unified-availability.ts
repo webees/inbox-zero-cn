@@ -10,7 +10,7 @@ import { isGoogleVirtualCalendarId } from "./providers/google-calendar-id";
 import { isGoogleProvider } from "@/utils/email/provider-types";
 
 /**
- * Fetch calendar availability across all connected calendars (Google and Microsoft)
+ * 获取所有已连接日历（Google 和 Microsoft）的日历可用性
  */
 export async function getUnifiedCalendarAvailability({
   emailAccountId,
@@ -20,7 +20,6 @@ export async function getUnifiedCalendarAvailability({
   logger,
   failClosed = false,
   excludeGoogleVirtualCalendars = false,
-  exactRange = false,
 }: {
   emailAccountId: string;
   startDate: Date | string;
@@ -29,21 +28,16 @@ export async function getUnifiedCalendarAvailability({
   logger: Logger;
   failClosed?: boolean;
   excludeGoogleVirtualCalendars?: boolean;
-  /**
-   * Query exactly startDate..endDate instead of the whole days they fall on.
-   * For callers that pass real instants, such as a booking slot: the whole-day
-   * window is built from the UTC date, so it can cover the wrong local day.
-   */
-  exactRange?: boolean;
 }): Promise<BusyPeriod[]> {
-  const { timeMin, timeMax } = exactRange
-    ? {
-        timeMin: new Date(startDate).toISOString(),
-        timeMax: new Date(endDate).toISOString(),
-      }
-    : getDayRange({ startDate, endDate, timezone });
+  // 在用户时区中计算天的边界
+  // 将日期解析为目标时区中的日历日期以避免 UTC 偏移问题
+  const startDateInTZ = parseDateInTimezone(startDate, timezone);
+  const endDateInTZ = parseDateInTimezone(endDate, timezone);
 
-  logger.trace("Unified calendar availability request", {
+  const timeMin = startOfDay(startDateInTZ).toISOString();
+  const timeMax = endOfDay(endDateInTZ).toISOString();
+
+  logger.trace("统一日历可用性请求", {
     timezone,
     emailAccountId,
     startDate: startDate instanceof Date ? startDate.toISOString() : startDate,
@@ -52,7 +46,7 @@ export async function getUnifiedCalendarAvailability({
     timeMax,
   });
 
-  // Fetch all calendar connections with their calendars
+  // 获取所有日历连接及其日历
   const calendarConnections = await prisma.calendarConnection.findMany({
     where: {
       emailAccountId,
@@ -69,11 +63,11 @@ export async function getUnifiedCalendarAvailability({
   });
 
   if (!calendarConnections.length) {
-    logger.info("No calendar connections found", { emailAccountId });
+    logger.info("未找到日历连接", { emailAccountId });
     return [];
   }
 
-  // Group calendars by provider
+  // 按服务商分组日历
   const googleConnections = calendarConnections.filter((conn) =>
     isGoogleProvider(conn.provider),
   );
@@ -83,7 +77,7 @@ export async function getUnifiedCalendarAvailability({
 
   const promises: Promise<BusyPeriod[]>[] = [];
 
-  // Fetch Google calendar availability
+  // 获取 Google 日历可用性
   for (const connection of googleConnections) {
     const calendarIds = connection.calendars.map((cal) => cal.calendarId);
     const availabilityCalendarIds = excludeGoogleVirtualCalendars
@@ -109,7 +103,7 @@ export async function getUnifiedCalendarAvailability({
           failOnCalendarError: failClosed,
         })
         .catch((error) => {
-          logger.error("Error fetching Google calendar availability", {
+          logger.error("获取 Google 日历可用性出错", {
             error,
             connectionId: connection.id,
             ...getCalendarAvailabilityErrorLogContext(error),
@@ -120,12 +114,12 @@ export async function getUnifiedCalendarAvailability({
     );
   }
 
-  // Fetch Microsoft calendar availability
+  // 获取 Microsoft 日历可用性
   for (const connection of microsoftConnections) {
     const calendarIds = connection.calendars.map((cal) => cal.calendarId);
 
     if (!calendarIds.length) {
-      logger.warn("No enabled calendars for Microsoft connection", {
+      logger.warn("Microsoft 连接没有已启用的日历", {
         connectionId: connection.id,
       });
       continue;
@@ -147,7 +141,7 @@ export async function getUnifiedCalendarAvailability({
           failOnCalendarError: failClosed,
         })
         .catch((error) => {
-          logger.error("Error fetching Microsoft calendar availability", {
+          logger.error("获取 Microsoft 日历可用性出错", {
             error,
             connectionId: connection.id,
             ...getCalendarAvailabilityErrorLogContext(error),
@@ -158,19 +152,19 @@ export async function getUnifiedCalendarAvailability({
     );
   }
 
-  // Wait for all providers to return results
+  // 等待所有服务商返回结果
   const results = await Promise.all(promises);
 
-  // Flatten and merge all busy periods
+  // 展平并合并所有忙碌时段
   const allBusyPeriods = results.flat();
 
-  // Convert all busy periods from UTC to user timezone
+  // 将所有忙碌时段从 UTC 转换为用户时区
   const convertedBusyPeriods = convertBusyPeriodsToTimezone(
     allBusyPeriods,
     timezone,
   );
 
-  logger.trace("Unified calendar availability results", {
+  logger.trace("统一日历可用性结果", {
     totalBusyPeriods: convertedBusyPeriods.length,
     googleConnectionsCount: googleConnections.length,
     microsoftConnectionsCount: microsoftConnections.length,
@@ -180,7 +174,7 @@ export async function getUnifiedCalendarAvailability({
 }
 
 /**
- * Converts busy periods from UTC to specified timezone
+ * 将忙碌时段从 UTC 转换为指定时区
  */
 function convertBusyPeriodsToTimezone(
   busyPeriods: BusyPeriod[],
@@ -197,45 +191,25 @@ function convertBusyPeriodsToTimezone(
   });
 }
 
-// Compute day boundaries in the user's timezone. Dates are parsed as calendar
-// dates in the target timezone to avoid UTC shift issues.
-function getDayRange({
-  startDate,
-  endDate,
-  timezone,
-}: {
-  startDate: Date | string;
-  endDate: Date | string;
-  timezone: string;
-}) {
-  const startDateInTZ = parseDateInTimezone(startDate, timezone);
-  const endDateInTZ = parseDateInTimezone(endDate, timezone);
-
-  return {
-    timeMin: startOfDay(startDateInTZ).toISOString(),
-    timeMax: endOfDay(endDateInTZ).toISOString(),
-  };
-}
-
 /**
- * Parse a date string (YYYY-MM-DD) or ISO date string and create a TZDate in the target timezone.
- * This ensures the date is interpreted as that calendar date in the target timezone,
- * not as a UTC timestamp that gets shifted.
+ * 解析日期字符串（YYYY-MM-DD）或 ISO 日期字符串，并在目标时区创建 TZDate。
+ * 这确保日期被解释为目标时区中的该日历日期，
+ * 而不是被偏移的 UTC 时间戳。
  */
 function parseDateInTimezone(
   dateInput: string | Date,
   timezone: string,
 ): TZDate {
   if (dateInput instanceof Date) {
-    // For backwards compatibility: if a Date object is passed, use its UTC date components
-    // to construct the date in the target timezone
+    // 为向后兼容：如果传入 Date 对象，则使用其 UTC 日期组成部分
+    // 在目标时区中构造日期
     const year = dateInput.getUTCFullYear();
     const month = dateInput.getUTCMonth();
     const day = dateInput.getUTCDate();
     return new TZDate(year, month, day, 0, 0, 0, 0, timezone);
   }
 
-  // Handle ISO date strings (YYYY-MM-DD) or datetime strings
+  // 处理 ISO 日期字符串（YYYY-MM-DD）或日期时间字符串
   const dateStr = dateInput.includes("T") ? dateInput.split("T")[0] : dateInput;
   const [year, month, day] = dateStr.split("-").map(Number);
   return new TZDate(year, month - 1, day, 0, 0, 0, 0, timezone);

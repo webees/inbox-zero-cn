@@ -137,7 +137,7 @@ export function WeeklyHoursEditor({
                           : day.ranges,
                     })
                   }
-                  aria-label={`Toggle ${dayLabel}`}
+                  aria-label={`切换 ${dayLabel}`}
                 />
                 <span
                   className={cn(
@@ -173,13 +173,13 @@ export function WeeklyHoursEditor({
                       {rangeIndex === 0 ? (
                         <>
                           <IconButton
-                            title="Add another range"
+                            title="添加另一个时间段"
                             onClick={() => addRange(dayIndex)}
                           >
                             <Plus className="size-4" />
                           </IconButton>
                           <IconButton
-                            title="Copy to other days"
+                            title="复制到其他日期"
                             onClick={() => copyDayToOthers(dayIndex)}
                           >
                             <Copy className="size-3.5" />
@@ -187,7 +187,7 @@ export function WeeklyHoursEditor({
                         </>
                       ) : (
                         <IconButton
-                          title="Remove range"
+                          title="移除时间段"
                           onClick={() => removeRange(dayIndex, rangeIndex)}
                         >
                           <X className="size-3.5" />
@@ -197,7 +197,7 @@ export function WeeklyHoursEditor({
                   ))
                 ) : (
                   <div className="flex h-8 items-center text-sm text-muted-foreground">
-                    Unavailable
+                    不可用
                   </div>
                 )}
               </div>

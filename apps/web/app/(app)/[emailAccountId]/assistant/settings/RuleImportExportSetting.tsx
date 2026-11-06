@@ -60,7 +60,7 @@ export function RuleImportExportSetting({
       }));
 
     if (exportData.length === 0) {
-      toastError({ description: "No personal rules to export." });
+      toastError({ description: "没有可导出的个人规则。" });
       return;
     }
 
@@ -76,7 +76,7 @@ export function RuleImportExportSetting({
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    toast.success("Rules exported successfully");
+    toast.success("规则导出成功");
   }, [data]);
 
   const importRules = useCallback(
@@ -90,7 +90,7 @@ export function RuleImportExportSetting({
         const rulesArray = Array.isArray(rules) ? rules : rules.rules;
 
         if (!Array.isArray(rulesArray) || rulesArray.length === 0) {
-          toastError({ description: "Invalid rules file format" });
+          toastError({ description: "规则文件格式无效" });
           return;
         }
 
@@ -100,21 +100,20 @@ export function RuleImportExportSetting({
 
         if (result?.serverError) {
           toastError({
-            title: "Import failed",
+            title: "导入失败",
             description: result.serverError,
           });
         } else if (result?.data) {
           const { createdCount, updatedCount, skippedCount } = result.data;
           toast.success(
-            `Imported ${createdCount} new, updated ${updatedCount} existing${skippedCount > 0 ? `, skipped ${skippedCount}` : ""}`,
+            `已导入 ${createdCount} 条新规则，更新 ${updatedCount} 条现有规则${skippedCount > 0 ? `，跳过 ${skippedCount} 条` : ""}`,
           );
           mutate();
         }
       } catch (error) {
         toastError({
-          title: "Import failed",
-          description:
-            error instanceof Error ? error.message : "Failed to parse file",
+          title: "导入失败",
+          description: error instanceof Error ? error.message : "解析文件失败",
         });
       }
 
@@ -130,7 +129,7 @@ export function RuleImportExportSetting({
       <ItemSeparator />
       <Item size="sm">
         <ItemContent>
-          <ItemTitle>Import / Export Rules</ItemTitle>
+          <ItemTitle>导入 / 导出规则</ItemTitle>
         </ItemContent>
         <ItemActions>
           <input
@@ -139,7 +138,7 @@ export function RuleImportExportSetting({
             accept=".json"
             onChange={importRules}
             className="hidden"
-            aria-label="Import rules from JSON file"
+            aria-label="从 JSON 文件导入规则"
           />
           <Button
             size="sm"
@@ -147,7 +146,7 @@ export function RuleImportExportSetting({
             onClick={() => fileInputRef.current?.click()}
           >
             <UploadIcon className="mr-2 size-4" />
-            Import
+            导入
           </Button>
           <Button
             size="sm"
@@ -156,7 +155,7 @@ export function RuleImportExportSetting({
             disabled={!data?.length}
           >
             <DownloadIcon className="mr-2 size-4" />
-            Export
+            导出
           </Button>
         </ItemActions>
       </Item>

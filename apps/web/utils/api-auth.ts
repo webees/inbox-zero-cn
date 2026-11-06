@@ -37,12 +37,12 @@ export async function validateApiKey(
 ) {
   const apiKey = request.headers.get(API_KEY_HEADER);
 
-  if (!apiKey) throw new SafeError("Missing API key", 401);
+  if (!apiKey) throw new SafeError("缺少 API 密钥", 401);
 
   const storedApiKey = await getStoredApiKey(apiKey);
 
   if (!storedApiKey || isExpired(storedApiKey.expiresAt)) {
-    throw new SafeError("Invalid API key", 401);
+    throw new SafeError("API 密钥无效", 401);
   }
 
   if (options?.requiredScopes?.length) {
@@ -51,7 +51,7 @@ export async function validateApiKey(
     );
 
     if (!hasAllScopes) {
-      throw new SafeError("API key does not have required permissions", 403);
+      throw new SafeError("API 密钥缺少所需权限", 403);
     }
   }
 
@@ -90,7 +90,7 @@ export async function validateAccountApiKey(
   const { apiKey } = await validateApiKey(request, { requiredScopes });
 
   if (!apiKey.emailAccountId) {
-    throw new SafeError("Account-scoped API key required", 403);
+    throw new SafeError("需要账号范围的 API 密钥", 403);
   }
 
   const emailAccount = apiKey.emailAccount!;
@@ -107,7 +107,7 @@ export async function validateAccountApiKey(
 }
 
 /**
- * Validates an API key and gets an email provider for the associated inbox.
+ * 校验 API 密钥并获取关联收件箱的邮件服务商。
  */
 export async function validateApiKeyAndGetEmailProvider(
   request: RequestWithLogger,

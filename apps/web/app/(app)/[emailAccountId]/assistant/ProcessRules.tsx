@@ -158,21 +158,21 @@ export function ProcessRulesContent({ testMode }: { testMode: boolean }) {
         testMode,
       };
       if (result?.serverError) {
-        logger.error("runRulesAction returned server error", {
+        logger.error("runRulesAction 返回了服务器错误", {
           ...logContext,
           serverError: true,
         });
         toastError({
-          title: "There was an error processing the email",
+          title: "处理邮件时出错",
           description: result.serverError,
         });
       } else if (result?.data) {
         const resultSummary = summarizeRunRulesResult(result.data);
-        logger.info("runRulesAction returned results", {
+        logger.info("runRulesAction 返回了结果", {
           ...logContext,
           ...resultSummary,
         });
-        logger.trace("runRulesAction returned result details", {
+        logger.trace("runRulesAction 返回了结果详情", {
           ...logContext,
           ...getSelectionMetadataTraceDetails(
             result.data.map((item) => item.selectionMetadata),
@@ -180,7 +180,7 @@ export function ProcessRulesContent({ testMode }: { testMode: boolean }) {
         });
         setResultsMap((prev) => ({ ...prev, [message.id]: result.data! }));
       } else {
-        logger.warn("runRulesAction returned empty response", logContext);
+        logger.warn("runRulesAction 返回了空响应", logContext);
       }
       setIsRunning((prev) => ({ ...prev, [message.id]: false }));
     },
@@ -224,10 +224,10 @@ export function ProcessRulesContent({ testMode }: { testMode: boolean }) {
             await onRun(message);
             handledThreadsRef.current.add(message.threadId);
           } catch (error) {
-            console.error(`Failed to process message ${message.id}:`, error);
+            console.error(`处理消息 ${message.id} 失败：`, error);
             toastError({
-              title: "Failed to process email",
-              description: `Error processing email from ${message.headers.from}: ${error instanceof Error ? error.message : "Unknown error"}`,
+              title: "处理邮件失败",
+              description: `处理来自 ${message.headers.from} 的邮件时出错：${error instanceof Error ? error.message : "未知错误"}`,
             });
           }
         });
@@ -256,11 +256,11 @@ export function ProcessRulesContent({ testMode }: { testMode: boolean }) {
 
   const { setInput } = useChat();
 
-  let loadMoreLabel = "No More Messages";
+  let loadMoreLabel = "没有更多消息";
   if (isValidating) {
-    loadMoreLabel = "Loading...";
+    loadMoreLabel = "加载中…";
   } else if (hasMore) {
-    loadMoreLabel = "Load More";
+    loadMoreLabel = "加载更多";
   }
 
   return (
@@ -270,12 +270,12 @@ export function ProcessRulesContent({ testMode }: { testMode: boolean }) {
           {isRunningAll ? (
             <Button onClick={handleStop} variant="outline" size="sm">
               <PauseIcon className="mr-2 size-4" />
-              Stop
+              停止
             </Button>
           ) : (
             <Button onClick={handleRunAll} size="sm">
               <BookOpenCheckIcon className="mr-2 size-4" />
-              {testMode ? "Test All" : "Run on All"}
+              {testMode ? "全部测试" : "全部运行"}
             </Button>
           )}
         </div>
@@ -288,7 +288,7 @@ export function ProcessRulesContent({ testMode }: { testMode: boolean }) {
               size="sm"
             >
               <PenSquareIcon className="mr-2 size-4" />
-              Custom
+              自定义
             </Button>
           )}
           <SearchForm
@@ -303,8 +303,8 @@ export function ProcessRulesContent({ testMode }: { testMode: boolean }) {
           {!hasAiRules && (
             <Alert variant="destructive">
               <AlertDescription>
-                You don't have any AI rules set up. The test won't match
-                anything. Please create AI rules first.
+                你还没有设置任何 AI 规则。测试将无法匹配任何内容。请先创建 AI
+                规则。
               </AlertDescription>
             </Alert>
           )}
@@ -318,7 +318,7 @@ export function ProcessRulesContent({ testMode }: { testMode: boolean }) {
         loadingComponent={<ProcessRulesLoading />}
       >
         {messages.length === 0 ? (
-          <MutedText className="p-4 text-center">No emails found</MutedText>
+          <MutedText className="p-4 text-center">未找到邮件</MutedText>
         ) : (
           <Card>
             <Table className="table-fixed sm:table-auto">

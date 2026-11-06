@@ -22,7 +22,7 @@ export const AdminHashEmail = () => {
   } = useAction(adminHashEmailAction, {
     onError: ({ error }) => {
       toastError({
-        description: `Error hashing value: ${error.serverError}`,
+        description: `哈希值出错：${error.serverError}`,
       });
     },
   });
@@ -46,7 +46,7 @@ export const AdminHashEmail = () => {
     if (result.data?.hash) {
       navigator.clipboard.writeText(result.data.hash);
       toastSuccess({
-        description: "Hash copied to clipboard",
+        description: "哈希值已复制到剪贴板",
       });
     }
   };
@@ -54,21 +54,21 @@ export const AdminHashEmail = () => {
   return (
     <Card className="max-w-xl">
       <CardHeader>
-        <CardTitle>Hash for Log Search</CardTitle>
+        <CardTitle>日志搜索哈希</CardTitle>
       </CardHeader>
       <CardContent>
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <Input
             type="text"
             name="email"
-            label="Value to Hash"
+            label="要哈希的值"
             placeholder="user@example.com"
             registerProps={register("email")}
             error={errors.email}
           />
 
           <Button type="submit" loading={isExecuting}>
-            Generate Hash
+            生成哈希
           </Button>
 
           {result.data?.hash && (
@@ -77,7 +77,7 @@ export const AdminHashEmail = () => {
                 <Input
                   type="text"
                   name="hashedValue"
-                  label="Hashed Value"
+                  label="哈希后的值"
                   registerProps={{
                     value: result.data.hash,
                     readOnly: true,
@@ -91,7 +91,7 @@ export const AdminHashEmail = () => {
                   variant="outline"
                   onClick={copyToClipboard}
                 >
-                  Copy
+                  复制
                 </Button>
               </div>
             </div>

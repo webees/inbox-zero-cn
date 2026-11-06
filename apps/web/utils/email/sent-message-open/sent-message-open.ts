@@ -85,15 +85,15 @@ export function describeSentMessageOpen(
 ) {
   const firstOpenedAt = parseDate(open.firstOpenedAt);
   if (!firstOpenedAt) {
-    return "Not opened yet";
+    return "尚未打开";
   }
 
   const lastOpenedAt = parseDate(open.lastOpenedAt) ?? firstOpenedAt;
   if (open.openCount > 1) {
-    return `Opened ${open.openCount} times · Last opened ${formatRelative(lastOpenedAt)}`;
+    return `已打开 ${open.openCount} 次 · 最近打开于 ${formatRelative(lastOpenedAt)}`;
   }
 
-  return `Opened ${formatRelative(firstOpenedAt)}`;
+  return `已于 ${formatRelative(firstOpenedAt)} 打开`;
 }
 
 function parseDate(value: Date | string | null) {

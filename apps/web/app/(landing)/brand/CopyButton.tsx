@@ -30,15 +30,15 @@ export function CopyButton({
             setCopied(true);
             setTimeout(() => setCopied(false), 1500);
           } catch {
-            toastError({ description: "Couldn't copy to the clipboard" });
+            toastError({ description: "无法复制到剪贴板" });
           }
         }}
       >
         <Icon className={iconOnly ? "size-4" : "mr-2 size-4"} />
-        {!iconOnly && (copied ? "Copied" : label)}
+        {!iconOnly && (copied ? "已复制" : label)}
       </Button>
       <span className="sr-only" aria-live="polite">
-        {copied ? "Copied" : ""}
+        {copied ? "已复制" : ""}
       </span>
     </>
   );

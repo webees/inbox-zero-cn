@@ -187,8 +187,8 @@ export function useComposeDraft({
       },
     });
 
-  // The open thread holds its drafts still until the save says which mailbox
-  // message is this composer's, so a copy that syncs in first can't replace it.
+  // 打开的会话会保持草稿不变，直到保存操作指明哪个邮箱消息属于此编辑器，
+  // 这样先同步进来的副本就无法替换它。
   const whileSaving = async <T>(save: () => Promise<T>) => {
     const end = localDraftIdentity
       ? startDraftSave(emailAccountId, localDraftIdentity.threadId)
@@ -200,8 +200,8 @@ export function useComposeDraft({
     }
   };
 
-  // Every compose with files needs a mailbox draft to hold them. New messages
-  // also get one from autosave; replies and forwards get one on first attach.
+  // 每个带文件的编辑操作都需要一个邮箱草稿来存放附件。新邮件也会由自动保存
+  // 创建草稿；回复和转发则在首次添加附件时创建。
   const ensureProviderDraft = () => whileSaving(createProviderDraft);
   const createProviderDraft = async () => {
     if (providerDraftId.current) return providerDraftId.current;
@@ -211,14 +211,11 @@ export function useComposeDraft({
         messageId: providerDraftMessageId,
       });
       if (!draftId)
-        throw new Error(
-          "Could not find this draft in your mailbox. Reopen it and try again.",
-        );
+        throw new Error("无法在你的邮箱中找到此草稿，请重新打开后再试。");
       providerDraftId.current = draftId;
       return draftId;
     }
-    if (!localDraftIdentity)
-      throw new Error("Local draft storage is required to save attachments.");
+    if (!localDraftIdentity) throw new Error("保存附件需要使用本地草稿存储。");
     const deletedDraftId = storedDraft?.content?.providerDraftId;
     if (initialDraftMissing && deletedDraftId)
       await forgetReplyDraftProvider(localDraftIdentity, deletedDraftId);
@@ -237,13 +234,11 @@ export function useComposeDraft({
           ...content,
           replyToEmail: getReplyToEmailPayload(getValues("replyToEmail")),
         },
-        composeSessionId: requestId,
       });
       if (!created?.data)
         throw new Error(
           "Mailbox draft creation could not be confirmed. Check Drafts in Gmail or Outlook; your message is still saved on this device.",
         );
-      if (created.data.sessionSent) throw sessionAlreadySent();
       draftId = created.data.draftId;
       createdMessageId = created.data.messageId;
     }
@@ -276,10 +271,8 @@ export function useComposeDraft({
       const result = await saveComposeDraftAction(emailAccountId, {
         draftId,
         content,
-        composeSessionId: requestId,
       });
       if (!result?.data) throw new Error(getDraftSyncErrorMessage(result));
-      if (result.data.sessionSent) throw sessionAlreadySent();
       await followDraftMessage(result.data.messageId);
       return;
     }
@@ -421,14 +414,6 @@ export function useComposeDraft({
     discard,
     isDiscarding,
   };
-}
-
-// A save that landed after its reply was sent; the server removed the draft
-// it wrote, so there is nothing left to save to.
-function sessionAlreadySent() {
-  return new DraftAutosaveHaltedError(
-    "This reply was already sent, so edits here are no longer saved to your mailbox.",
-  );
 }
 
 // Gmail rebuilds the whole message on each save, files included.

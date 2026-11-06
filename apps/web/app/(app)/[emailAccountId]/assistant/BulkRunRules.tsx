@@ -109,13 +109,13 @@ export function BulkRunRules() {
     dispatch({ type: "START" });
 
     if (!startDate) {
-      toastError({ description: "Please select a start date" });
+      toastError({ description: "请选择开始日期" });
       dispatch({ type: "RESET" });
       return;
     }
     if (!emailAccountId) {
       toastError({
-        description: "Email account ID is missing. Please refresh the page.",
+        description: "缺少邮箱账号 ID，请刷新页面",
       });
       dispatch({ type: "RESET" });
       return;
@@ -151,10 +151,10 @@ export function BulkRunRules() {
         },
       );
     } catch (error) {
-      console.error("Failed to start bulk processing:", error);
+      console.error("启动批量处理失败：", error);
       toastError({
-        title: "Failed to start",
-        description: "An error occurred. Please try again.",
+        title: "启动失败",
+        description: "发生错误，请重试",
       });
       dispatch({ type: "RESET" });
     }
@@ -182,14 +182,14 @@ export function BulkRunRules() {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           <Button type="button" variant="outline" size="sm">
-            Process Past Emails
+            处理历史邮件
           </Button>
         </DialogTrigger>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
-            <DialogTitle>Bulk Process Emails</DialogTitle>
+            <DialogTitle>批量处理邮件</DialogTitle>
             <DialogDescription>
-              Run your rules on emails already in your inbox.
+              对收件箱中已有的邮件运行你的规则
             </DialogDescription>
           </DialogHeader>
           {progressMessage && (
@@ -204,8 +204,8 @@ export function BulkRunRules() {
               role="status"
               className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100"
             >
-              Your email provider is limiting requests, so processing is paused.
-              It will continue automatically around{" "}
+              你的邮件服务商正在限制请求，因此处理已暂停。
+              将在以下时间前后自动继续{" "}
               {state.rateLimitResumeAt.toLocaleTimeString()}.
             </div>
           )}
@@ -220,7 +220,7 @@ export function BulkRunRules() {
                     dispatch({ type: "RESET" });
                   }}
                   value={startDate}
-                  placeholder="Set start date"
+                  placeholder="设置开始日期"
                   disabled={isRunActive}
                 />
                 <SetDateDropdown
@@ -229,14 +229,14 @@ export function BulkRunRules() {
                     dispatch({ type: "RESET" });
                   }}
                   value={endDate}
-                  placeholder="Set end date (optional)"
+                  placeholder="设置结束日期（可选）"
                   disabled={isRunActive}
                 />
               </div>
 
               <ItemCard>
                 <ToggleRow
-                  title="Include read emails"
+                  title="包含已读邮件"
                   checked={isIncludeReadEnabled}
                   onCheckedChange={setIncludeRead}
                   disabled={isRunActive}
@@ -244,7 +244,7 @@ export function BulkRunRules() {
                 />
                 <ItemSeparator />
                 <ToggleRow
-                  title="Rerun rules on already processed emails"
+                  title="对已处理邮件重新运行规则"
                   checked={isRerunEnabled}
                   onCheckedChange={setRerun}
                   disabled={isRunActive}
@@ -252,7 +252,7 @@ export function BulkRunRules() {
                 />
                 <ItemSeparator />
                 <ToggleRow
-                  title="Generate draft replies"
+                  title="生成草稿回复"
                   checked={generateDraftReplies}
                   onCheckedChange={setGenerateDraftReplies}
                   disabled={isBusy}
@@ -263,7 +263,7 @@ export function BulkRunRules() {
                 <div className="flex flex-col gap-3 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-800 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-200 sm:flex-row sm:items-center sm:justify-between">
                   <span>
                     {trialAiLimitMessage ??
-                      `Trials can process up to ${TRIAL_BULK_PROCESS_EMAIL_LIMIT.toLocaleString()} past emails at a time.`}
+                      `试用版一次最多可处理 ${TRIAL_BULK_PROCESS_EMAIL_LIMIT.toLocaleString()} 封历史邮件`}
                   </span>
                   <EndTrialButton
                     size="sm"
@@ -299,7 +299,7 @@ export function BulkRunRules() {
                     }
                     onClick={handleStart}
                   >
-                    Process Emails
+                    处理邮件
                   </Button>
                 )}
               {isRunActive && (
@@ -308,30 +308,29 @@ export function BulkRunRules() {
                     {isPaused ? (
                       <>
                         <PlayIcon className="mr-1.5 h-3.5 w-3.5" />
-                        Resume
+                        继续
                       </>
                     ) : (
                       <>
                         <PauseIcon className="mr-1.5 h-3.5 w-3.5" />
-                        Pause
+                        暂停
                       </>
                     )}
                   </Button>
                   <Button variant="outline" size="sm" onClick={handleStop}>
                     <SquareIcon className="mr-1.5 h-3.5 w-3.5" />
-                    Stop
+                    停止
                   </Button>
                 </div>
               )}
 
               {state.runResult && state.runResult.count === 0 && (
                 <div className="mt-4 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-800 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-200">
-                  No{" "}
+                  在所选日期范围内未在收件箱中找到
                   {describeTargetedEmails({
                     includeRead: isIncludeReadEnabled,
                     rerun: isRerunEnabled,
-                  })}{" "}
-                  found in your inbox in the selected date range.
+                  })}
                 </div>
               )}
             </div>
@@ -360,9 +359,7 @@ function ToggleRow({
     <Item size="sm">
       <ItemContent>
         <ItemTitle>{title}</ItemTitle>
-        {onUpgrade && (
-          <ItemDescription>Available on the Professional plan.</ItemDescription>
-        )}
+        {onUpgrade && <ItemDescription>专业版套餐可用。</ItemDescription>}
       </ItemContent>
       <ItemActions>
         {onUpgrade ? (
@@ -370,10 +367,10 @@ function ToggleRow({
             type="button"
             size="sm"
             variant="outline"
-            aria-label={`Upgrade to use ${title.toLowerCase()}`}
+            aria-label={`升级以使用${title}`}
             onClick={onUpgrade}
           >
-            Upgrade
+            升级
           </Button>
         ) : (
           <Switch
@@ -396,9 +393,9 @@ function describeTargetedEmails({
   rerun: boolean;
 }) {
   const qualifiers = [
-    includeRead ? null : "unread",
-    rerun ? null : "unprocessed",
+    includeRead ? null : "未读",
+    rerun ? null : "未处理",
   ].filter(Boolean);
 
-  return qualifiers.length ? `${qualifiers.join(", ")} emails` : "emails";
+  return qualifiers.length ? `${qualifiers.join("、")}邮件` : "邮件";
 }

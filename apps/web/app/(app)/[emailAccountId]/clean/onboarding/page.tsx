@@ -41,7 +41,7 @@ export default async function CleanPage(props: {
   });
 
   if (!emailAccount) {
-    return <CardTitle>Email account not found</CardTitle>;
+    return <CardTitle>未找到邮箱账号</CardTitle>;
   }
 
   const emailProvider = await createEmailProvider({
@@ -86,7 +86,7 @@ export default async function CleanPage(props: {
           />
         );
 
-      // first / default step
+      // 第一步 / 默认步骤
       default:
         return (
           <IntroStep unhandledCount={unhandledCount} cleanAction={"ARCHIVE"} />

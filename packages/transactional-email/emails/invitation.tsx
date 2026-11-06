@@ -106,24 +106,23 @@ function Footer({
   return (
     <Section className="mt-8 text-center text-sm text-gray-500">
       <Text className="m-0">
-        You're receiving this email because you were invited to join an
-        organization on Inbox Zero.
+        您收到这封邮件，是因为有人邀请您加入 Inbox Zero 上的一个组织。
       </Text>
       <div className="mt-2">
         <Link
           href={`${baseUrl}/api/unsubscribe?token=${unsubscribeToken}`}
           className="text-gray-500 underline mr-4"
         >
-          Unsubscribe
+          退订
         </Link>
         <Link
           href={`${baseUrl}/support`}
           className="text-gray-500 underline mr-4"
         >
-          Support
+          支持
         </Link>
         <Link href={`${baseUrl}/privacy`} className="text-gray-500 underline">
-          Privacy Policy
+          隐私政策
         </Link>
       </div>
     </Section>

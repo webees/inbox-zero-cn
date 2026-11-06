@@ -5,12 +5,12 @@ import { CheckIcon, XIcon } from "lucide-react";
 import { cn } from "@/utils";
 
 interface YesNoIndicatorProps {
-  /** When "wrong", the X button becomes a dropdown trigger (no onClick call, no stopPropagation) */
+  /** 当值为 "wrong" 时，X 按钮会变为下拉触发器（不调用 onClick，也不 stopPropagation） */
   dropdownTrigger?: "wrong";
   onClick?: (value: boolean) => void;
   size?: "sm" | "md";
   value: boolean | null | undefined;
-  /** Force the X button to show as active (red) even when value !== false */
+  /** 即使 value !== false，也强制让 X 按钮显示为激活（红色）状态 */
   wrongActive?: boolean;
 }
 
@@ -30,7 +30,7 @@ export function YesNoIndicator({
         <span
           className="rounded-full p-1.5 bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400 inline-flex"
           role="status"
-          aria-label="Correct"
+          aria-label="正确"
         >
           <CheckIcon className={iconSize} />
         </span>
@@ -41,7 +41,7 @@ export function YesNoIndicator({
         <span
           className="rounded-full p-1.5 bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 inline-flex"
           role="status"
-          aria-label="Wrong"
+          aria-label="错误"
         >
           <XIcon className={iconSize} />
         </span>
@@ -57,7 +57,7 @@ export function YesNoIndicator({
 
   const handleXClick = (_e: MouseEvent) => {
     if (dropdownTrigger === "wrong") {
-      // Let the click propagate to the DropdownMenuTrigger parent
+      // 让点击事件向上冒泡到 DropdownMenuTrigger 父元素
       return;
     }
     if (value !== false) onClick?.(false);
@@ -75,7 +75,7 @@ export function YesNoIndicator({
             ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400 hover:opacity-80"
             : "text-muted-foreground hover:bg-muted hover:text-foreground",
         )}
-        aria-label="Correct"
+        aria-label="正确"
       >
         <CheckIcon className={iconSize} />
       </button>
@@ -88,7 +88,7 @@ export function YesNoIndicator({
             ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 hover:opacity-80"
             : "text-muted-foreground hover:bg-muted hover:text-foreground",
         )}
-        aria-label="Wrong"
+        aria-label="错误"
       >
         <XIcon className={iconSize} />
       </button>

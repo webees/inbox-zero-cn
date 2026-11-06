@@ -115,7 +115,7 @@ describe("AssistantInlineEmailResponse", () => {
 
     openMoreActions();
 
-    expect((await screen.findByText("Open in email")).closest("a")?.href).toBe(
+    expect((await screen.findByText("在邮件中打开")).closest("a")?.href).toBe(
       getEmailUrlForMessage(
         "msg-thread-1",
         "thread-1",
@@ -123,7 +123,7 @@ describe("AssistantInlineEmailResponse", () => {
         "google",
       ),
     );
-    expect(screen.getByText("Archive")).toBeTruthy();
+    expect(screen.getByText("归档")).toBeTruthy();
   });
 
   it("renders inline email detail views", () => {
@@ -269,7 +269,7 @@ describe("AssistantInlineEmailResponse", () => {
 
     expect(screen.getByText("Large messages")).toBeTruthy();
     expect(screen.getByText("size > 10MB")).toBeTruthy();
-    expect(screen.getByText("Archive")).toBeTruthy();
+    expect(screen.getByText("归档")).toBeTruthy();
   });
 
   it.each([
@@ -321,19 +321,19 @@ describe("AssistantInlineEmailResponse", () => {
     expect(
       screen.getByText("mention alerts from monitoring tools"),
     ).toBeTruthy();
-    expect(screen.getByText("Label as 'Monitoring'")).toBeTruthy();
-    expect(screen.getByText("Archive")).toBeTruthy();
+    expect(screen.getByText("打标签为 'Monitoring'")).toBeTruthy();
+    expect(screen.getByText("归档")).toBeTruthy();
 
-    fireEvent.click(screen.getByRole("button", { name: /Approve/i }));
+    fireEvent.click(screen.getByRole("button", { name: /批准/ }));
 
     await waitFor(() => {
       expect(mockSubmitTextMessage).toHaveBeenCalledWith(
-        expect.stringContaining("Create this suggested rule: Monitoring"),
+        expect.stringContaining("创建这条建议的规则：Monitoring"),
       );
     });
 
-    expect(screen.queryByRole("button", { name: /Approve/i })).toBeNull();
-    expect(screen.getByText("Rule created")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /批准/ })).toBeNull();
+    expect(screen.getByText("规则已创建")).toBeTruthy();
   });
 
   it("renders rule suggestions with attributes split across lines", () => {
@@ -370,8 +370,8 @@ describe("AssistantInlineEmailResponse", () => {
         "emails from noreply@sentry.io regarding infrastructure or load balancer changes",
       ),
     ).toBeTruthy();
-    expect(screen.getAllByText("Label as 'Notification'")).toHaveLength(2);
-    expect(screen.getAllByText("Archive")).toHaveLength(2);
+    expect(screen.getAllByText("打标签为 'Notification'")).toHaveLength(2);
+    expect(screen.getAllByText("归档")).toHaveLength(2);
   });
 
   it("renders free-form rule suggestion actions as plain text", () => {
@@ -386,7 +386,7 @@ describe("AssistantInlineEmailResponse", () => {
     expect(
       screen.getByText("label the email as Monitoring and archive"),
     ).toBeTruthy();
-    expect(screen.queryByText("Label as 'the email as'")).toBeNull();
+    expect(screen.queryByText("打标签为 'the email as'")).toBeNull();
   });
 
   it("renders specific notification destinations in rule suggestions", () => {
@@ -398,8 +398,8 @@ describe("AssistantInlineEmailResponse", () => {
       ),
     );
 
-    expect(screen.getByText("Label as 'Support'")).toBeTruthy();
-    expect(screen.getByText("Notify on Slack")).toBeTruthy();
+    expect(screen.getByText("打标签为 'Support'")).toBeTruthy();
+    expect(screen.getByText("通知 Slack")).toBeTruthy();
     expect(screen.queryByText("Notify on chat app")).toBeNull();
   });
 
@@ -412,13 +412,13 @@ describe("AssistantInlineEmailResponse", () => {
       ),
     );
 
-    expect(screen.getByText("Draft Reply")).toBeTruthy();
-    expect(screen.getByText("Mark Read")).toBeTruthy();
+    expect(screen.getByText("草稿回复")).toBeTruthy();
+    expect(screen.getByText("标为已读")).toBeTruthy();
   });
 });
 
 function openMoreActions() {
-  fireEvent.pointerDown(screen.getByRole("button", { name: "More actions" }), {
+  fireEvent.pointerDown(screen.getByRole("button", { name: "更多操作" }), {
     button: 0,
     ctrlKey: false,
   });

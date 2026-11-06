@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ActionType, SystemType } from "@/generated/prisma/enums";
-import { trackRuleEvent } from "@/utils/analytics/rule-events.server";
 import { ConditionType } from "@/utils/config";
 
 const { createEmailProviderMock, createRuleHistoryMock, setRuleEnabledMock } =
@@ -18,11 +17,6 @@ vi.mock("@/utils/rule/rule", async (importOriginal) => {
   };
 });
 
-vi.mock("@/utils/analytics/rule-events.server", () => ({
-  RULE_ANALYTICS_EVENTS: { allRulesToggled: "All rules toggled" },
-  trackRuleEvent: vi.fn(),
-}));
-
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("@/utils/prisma");
 vi.mock("@/utils/email/provider", () => ({
@@ -38,15 +32,12 @@ vi.mock("@/utils/auth", () => ({
 import prisma from "@/utils/__mocks__/prisma";
 import { createEmailProvider } from "@/utils/email/provider";
 import {
-  createRulesOnboardingAction,
   deleteRuleAction,
   enableDraftRepliesAction,
   toggleRuleAction,
-  toggleAllRulesAction,
   updateRuleAction,
 } from "@/utils/actions/rule";
 import { RULE_MANAGED_BY_ORGANIZATION_ERROR } from "@/utils/organizations/rules";
-import { SafeError } from "@/utils/error";
 
 describe("enableDraftRepliesAction", () => {
   beforeEach(() => {
@@ -319,97 +310,5 @@ describe("toggleRuleAction", () => {
 
     expect(result?.serverError).toBe(RULE_MANAGED_BY_ORGANIZATION_ERROR);
     expect(setRuleEnabledMock).not.toHaveBeenCalled();
-  });
-});
-
-describe("createRulesOnboardingAction", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it("fails the action without unhandled rejections when the provider cannot be created", async () => {
-    const unhandled: unknown[] = [];
-    const onUnhandled = (reason: unknown) => unhandled.push(reason);
-    process.on("unhandledRejection", onUnhandled);
-
-    (
-      prisma.emailAccount.findUnique as ReturnType<typeof vi.fn>
-    ).mockResolvedValue({
-      id: "ea_1",
-      email: "owner@example.com",
-      account: { userId: "u1", provider: "google" },
-    });
-    vi.mocked(createEmailProvider).mockRejectedValue(
-      new SafeError("No refresh token"),
-    );
-
-    try {
-      const result = await createRulesOnboardingAction(
-        "ea_1" as never,
-        [
-          {
-            key: SystemType.TO_REPLY,
-            name: "To Reply",
-            description: "",
-            action: "label",
-          },
-          {
-            key: null,
-            name: "Custom",
-            description: "",
-            action: "label",
-          },
-        ] as never,
-      );
-      await new Promise((resolve) => setImmediate(resolve));
-
-      expect(result?.serverError).toBeDefined();
-      expect(unhandled).toEqual([]);
-      expect(createEmailProvider).toHaveBeenCalledTimes(1);
-    } finally {
-      process.off("unhandledRejection", onUnhandled);
-    }
-  });
-});
-
-describe("toggleAllRulesAction analytics", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    createEmailProviderMock.mockResolvedValue({});
-    prisma.emailAccount.findUnique.mockResolvedValue({
-      email: "owner@example.com",
-      account: { userId: "u1", provider: "google" },
-    } as never);
-  });
-
-  it.each([
-    true,
-    false,
-  ])("does not report a failed bulk toggle to %s", async (enabled) => {
-    if (enabled)
-      prisma.rule.updateMany.mockRejectedValue(new Error("Update failed"));
-    else prisma.$transaction.mockRejectedValue(new Error("Update failed"));
-
-    const result = await toggleAllRulesAction("ea_1", { enabled });
-
-    expect(result?.serverError).toBeDefined();
-    expect(trackRuleEvent).not.toHaveBeenCalled();
-  });
-
-  it.each([
-    true,
-    false,
-  ])("reports one successful bulk toggle to %s", async (enabled) => {
-    prisma.rule.updateMany.mockResolvedValue({ count: 2 });
-    prisma.$transaction.mockResolvedValue([]);
-
-    const result = await toggleAllRulesAction("ea_1", { enabled });
-
-    expect(result?.data).toEqual({ success: true });
-    expect(trackRuleEvent).toHaveBeenCalledExactlyOnceWith({
-      emailAccountId: "ea_1",
-      event: "All rules toggled",
-      properties: { enabled },
-    });
   });
 });

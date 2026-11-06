@@ -122,7 +122,7 @@ export async function syncAiGenerationOverageForUpcomingInvoice({
       periodEnd,
       units: 0,
     });
-    logger.info("No AI overage units for upcoming invoice", {
+    logger.info("即将开具的发票没有 AI 超额用量", {
       invoiceId,
       premiumId: premium.id,
       generationCount,
@@ -140,7 +140,7 @@ export async function syncAiGenerationOverageForUpcomingInvoice({
     customer: customerId,
     currency: "usd",
     amount: amountCents,
-    description: `AI generation overage: ${extraGenerations} extra generations (${overageUnits} x ${BILLING_UNIT_GENERATIONS})`,
+    description: `AI 生成超额费用：额外 ${extraGenerations} 次生成（${overageUnits} x ${BILLING_UNIT_GENERATIONS}）`,
     metadata: {
       type: "ai_generation_overage",
       premiumId: premium.id,
@@ -167,7 +167,7 @@ export async function syncAiGenerationOverageForUpcomingInvoice({
     units: overageUnits,
   });
 
-  logger.info("Added AI overage line item to upcoming Stripe invoice", {
+  logger.info("已向即将开具的 Stripe 发票添加 AI 超额行项目", {
     invoiceId,
     premiumId: premium.id,
     generationCount,

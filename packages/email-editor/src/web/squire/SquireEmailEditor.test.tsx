@@ -57,14 +57,14 @@ describe("Squire email editor", () => {
 
     expect(textbox().textContent).not.toContain("Example Person");
     expect(
-      screen.getByRole("button", { name: "Show signature and quoted message" }),
+      screen.getByRole("button", { name: "显示 签名 和 引用消息" }),
     ).toBeTruthy();
   });
 
   it("shows the full signature for editing when expanded", async () => {
     const { textbox } = await renderEditor({ preservedBlocks: [SIGNATURE] });
 
-    fireEvent.click(screen.getByRole("button", { name: "Show signature" }));
+    fireEvent.click(screen.getByRole("button", { name: "显示 签名" }));
 
     const signature = textbox().querySelector("[data-smartmail]");
     expect(signature?.querySelector("table")).toBeTruthy();
@@ -96,7 +96,7 @@ describe("Squire email editor", () => {
       preservedBlocks: [SIGNATURE],
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "Show signature" }));
+    fireEvent.click(screen.getByRole("button", { name: "显示 签名" }));
     await deleteSignature(textbox());
 
     expect(textbox().querySelector("[data-smartmail]")).toBeNull();
@@ -111,7 +111,7 @@ describe("Squire email editor", () => {
     const { handle, textbox, onStateChange } = await renderEditor({
       preservedBlocks: [SIGNATURE],
     });
-    fireEvent.click(screen.getByRole("button", { name: "Show signature" }));
+    fireEvent.click(screen.getByRole("button", { name: "显示 签名" }));
     act(() => {
       handle().insertText("Hello");
     });
@@ -130,7 +130,7 @@ describe("Squire email editor", () => {
     const { handle, textbox } = await renderEditor({
       preservedBlocks: [SIGNATURE],
     });
-    fireEvent.click(screen.getByRole("button", { name: "Show signature" }));
+    fireEvent.click(screen.getByRole("button", { name: "显示 签名" }));
     act(() => {
       handle().insertText("Draft body");
     });
@@ -178,7 +178,7 @@ describe("Squire email editor", () => {
     const { handle, textbox } = await renderEditor({
       preservedBlocks: [SIGNATURE],
     });
-    fireEvent.click(screen.getByRole("button", { name: "Show signature" }));
+    fireEvent.click(screen.getByRole("button", { name: "显示 签名" }));
     await deleteSignature(textbox());
     expect(textbox().querySelector("[data-smartmail]")).toBeNull();
 
@@ -245,11 +245,11 @@ describe("Squire email editor", () => {
     });
 
     for (let cycle = 0; cycle < 3; cycle++) {
-      fireEvent.click(await screen.findByRole("button", { name: /^Show/u }));
+      fireEvent.click(await screen.findByRole("button", { name: /^显示/u }));
       await act(async () => {
         handle().insertText("x");
       });
-      fireEvent.click(await screen.findByRole("button", { name: /^Hide/u }));
+      fireEvent.click(await screen.findByRole("button", { name: /^隐藏/u }));
       await act(async () => {});
     }
 
@@ -287,7 +287,7 @@ describe("Squire email editor", () => {
         { id: "signature", kind: "signature", html: "<div>Old</div>" },
       ],
     });
-    fireEvent.click(await screen.findByRole("button", { name: /^Show/u }));
+    fireEvent.click(await screen.findByRole("button", { name: /^显示/u }));
 
     await act(async () => {
       handle().replaceSignature("<div>New</div>");
@@ -314,7 +314,7 @@ describe("Squire email editor", () => {
       ],
       resolveRemoteImages,
     });
-    fireEvent.click(await screen.findByRole("button", { name: /^Show/u }));
+    fireEvent.click(await screen.findByRole("button", { name: /^显示/u }));
 
     await act(async () => {
       handle().replaceSignature(SIGNATURE_FIXTURES.tableWithLogo);
@@ -373,7 +373,7 @@ describe("Squire email editor", () => {
     await act(async () => {
       handle().replaceSignature("<div>New</div>");
     });
-    expect(screen.getByRole("button", { name: "Show signature" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "显示 签名" })).toBeTruthy();
     expect(handle().getValue().editableHtml).toContain("New");
 
     await act(async () => {
@@ -391,14 +391,14 @@ describe("Squire email editor", () => {
         { id: "signature", kind: "signature", html: "<div>Sig</div>" },
       ],
     });
-    fireEvent.click(await screen.findByRole("button", { name: /^Show/u }));
+    fireEvent.click(await screen.findByRole("button", { name: /^显示/u }));
     const postscript = document.createElement("div");
     postscript.textContent = "PS";
     await act(async () => {
       textbox().append(postscript);
     });
 
-    fireEvent.click(await screen.findByRole("button", { name: /^Hide/u }));
+    fireEvent.click(await screen.findByRole("button", { name: /^隐藏/u }));
     await act(async () => {});
 
     expect(textbox().textContent).toBe("Body");
@@ -418,7 +418,7 @@ describe("Squire email editor", () => {
     });
 
     expect(textbox().textContent).toContain("Someone else");
-    fireEvent.click(await screen.findByRole("button", { name: /^Show/u }));
+    fireEvent.click(await screen.findByRole("button", { name: /^显示/u }));
     expect(textbox().textContent).toContain("Mine");
   });
 
@@ -473,7 +473,7 @@ describe("Squire email editor", () => {
     });
 
     expect(textbox().textContent).toBe("Reply");
-    expect(screen.getByRole("button", { name: "Show signature" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "显示 签名" })).toBeTruthy();
     act(() => {
       handle().insertText("!");
     });
@@ -662,10 +662,10 @@ describe("Squire email editor", () => {
     act(() => {
       fireEvent.keyDown(textbox(), { key: "k", ctrlKey: true });
     });
-    fireEvent.change(screen.getByLabelText("Link address"), {
+    fireEvent.change(screen.getByLabelText("链接地址"), {
       target: { value: "example.com:8080/docs" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Add" }));
+    fireEvent.click(screen.getByRole("button", { name: "添加" }));
 
     expect(textbox().querySelector("a")?.getAttribute("href")).toBe(
       "https://example.com:8080/docs",
@@ -681,11 +681,11 @@ describe("Squire email editor", () => {
     act(() => {
       fireEvent.keyDown(textbox(), { key: "k", ctrlKey: true });
     });
-    const dialog = screen.getByRole("dialog", { name: "Add link" });
+    const dialog = screen.getByRole("dialog", { name: "添加链接" });
     fireEvent.change(dialog.querySelector("input") as HTMLInputElement, {
       target: { value: "example.com/docs" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Add" }));
+    fireEvent.click(screen.getByRole("button", { name: "添加" }));
 
     expect(screen.queryByRole("dialog")).toBeNull();
     const link = textbox().querySelector("a");
@@ -702,12 +702,12 @@ describe("Squire email editor", () => {
     act(() => {
       fireEvent.keyDown(textbox(), { key: "k", ctrlKey: true });
     });
-    fireEvent.change(screen.getByLabelText("Link address"), {
+    fireEvent.change(screen.getByLabelText("链接地址"), {
       target: { value: address },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Add" }));
+    fireEvent.click(screen.getByRole("button", { name: "添加" }));
 
-    expect(screen.getByRole("alert").textContent).toContain("safe");
+    expect(screen.getByRole("alert").textContent).toContain("安全");
     expect(textbox().querySelector("a")).toBeNull();
   });
 
@@ -717,12 +717,12 @@ describe("Squire email editor", () => {
     act(() => {
       fireEvent.keyDown(textbox(), { key: "k", ctrlKey: true });
     });
-    fireEvent.change(screen.getByLabelText("Link address"), {
+    fireEvent.change(screen.getByLabelText("链接地址"), {
       target: { value: "   " },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Add" }));
+    fireEvent.click(screen.getByRole("button", { name: "添加" }));
 
-    expect(screen.getByRole("alert").textContent).toContain("safe");
+    expect(screen.getByRole("alert").textContent).toContain("安全");
     expect(textbox().querySelector("a")).toBeNull();
   });
 
@@ -755,7 +755,7 @@ async function renderEditor(props: Partial<EmailEditorProps>) {
   );
   // The Squire engine is loaded lazily, and fills the textbox only once it
   // attaches, which is when it makes the root editable.
-  const root = await screen.findByRole("textbox", { name: "Email message" });
+  const root = await screen.findByRole("textbox", { name: "电子邮件内容" });
   await waitFor(() =>
     expect(root.getAttribute("contenteditable")).toBe("true"),
   );
@@ -765,7 +765,7 @@ async function renderEditor(props: Partial<EmailEditorProps>) {
       return ref.current;
     },
     onStateChange,
-    textbox: () => screen.getByRole("textbox", { name: "Email message" }),
+    textbox: () => screen.getByRole("textbox", { name: "电子邮件内容" }),
   };
 }
 

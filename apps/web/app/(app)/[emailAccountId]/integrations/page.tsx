@@ -36,28 +36,25 @@ export default function IntegrationsPage() {
     minimumTier: "PLUS_MONTHLY",
   });
 
-  // The feature flag is undefined while PostHog bootstraps
+  // PostHog 初始化期间功能标志为 undefined
   if (integrationsEnabled === undefined) return null;
 
   if (!integrationsEnabled) {
     return (
       <PageWrapper>
         <div className="flex items-center justify-between gap-2">
-          <PageHeader
-            title="Integrations"
-            description="Connect the tools you already use."
-          />
+          <PageHeader title="集成" description="连接你已经在使用的工具。" />
         </div>
 
         <div className="mt-8">
           <ActionCard
             variant="blue"
             icon={<ZapIcon className="h-5 w-5" />}
-            title="Integrations are not enabled"
-            description="This feature is in limited rollout. Join early access to enable integrations for your account."
+            title="集成未启用"
+            description="此功能处于限量发布阶段。加入抢先体验以为你的账号启用集成。"
             action={
               <Button asChild variant="outline">
-                <Link href="/early-access">Join Early Access</Link>
+                <Link href="/early-access">加入抢先体验</Link>
               </Button>
             }
           />
@@ -69,17 +66,12 @@ export default function IntegrationsPage() {
   return (
     <PageWrapper>
       <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <PageHeader
-          title="Integrations"
-          description="Connect the tools you already use."
-        />
+        <PageHeader title="集成" description="连接你已经在使用的工具。" />
         {hasAccess && (
           <div className="flex flex-wrap items-center gap-2 sm:shrink-0 sm:flex-nowrap">
             <AddCustomMcpServerDialog />
             <RequestAccessDialog
-              trigger={
-                <Button variant="outline">Request an Integration</Button>
-              }
+              trigger={<Button variant="outline">请求集成</Button>}
             />
           </div>
         )}
@@ -106,9 +98,9 @@ function Capabilities() {
           </FeatureIcon>
         </ItemMedia>
         <ItemContent>
-          <ItemTitle>Better drafts</ItemTitle>
+          <ItemTitle>更好的草稿</ItemTitle>
           <ItemDescription>
-            Replies arrive knowing the sender's plan, tickets, and history.
+            回复在起草时会了解发件人的套餐、工单和历史记录。
           </ItemDescription>
         </ItemContent>
       </Item>
@@ -120,9 +112,9 @@ function Capabilities() {
             </FeatureIcon>
           </ItemMedia>
           <ItemContent>
-            <ItemTitle>Rule actions</ItemTitle>
+            <ItemTitle>规则操作</ItemTitle>
             <ItemDescription>
-              Rules can write back, like adding a Todoist task.
+              规则可以执行写回操作，例如添加 Todoist 任务。
             </ItemDescription>
           </ItemContent>
         </Item>

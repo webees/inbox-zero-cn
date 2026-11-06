@@ -21,7 +21,7 @@ export function DesktopUpdateToast() {
     }
     // Progress keeps arriving after dismissal; don't reopen the same download.
     if (dismissedVersion.current === status.version) return;
-    toast(`Downloading Inbox Zero ${status.version}`, {
+    toast(`正在下载 Inbox Zero ${status.version}`, {
       id: DESKTOP_UPDATE_TOAST_ID,
       description: (
         <div className="mt-2 flex items-center gap-2">

@@ -36,9 +36,9 @@ export function ColdEmailRejected() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Email</TableHead>
-                <TableHead>AI Reason</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead>邮件</TableHead>
+                <TableHead>AI 原因</TableHead>
+                <TableHead>日期</TableHead>
                 <TableHead />
               </TableRow>
             </TableHeader>
@@ -95,8 +95,8 @@ function NoRejectedColdEmails() {
   return (
     <div className="p-2">
       <AlertBasic
-        title="No emails marked as 'Not a cold email'"
-        description="When you mark an AI-detected cold email as 'Not a cold email', it will appear here."
+        title="没有标记为「非冷邮件」的邮件"
+        description="当你将 AI 识别出的冷邮件标记为「非冷邮件」时，它会显示在这里。"
       />
     </div>
   );

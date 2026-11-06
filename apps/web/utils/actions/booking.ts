@@ -29,7 +29,7 @@ export const createBookingLinkAction = actionClient
       destinationCalendarId: parsedInput.destinationCalendarId,
     });
     if (!destinationCalendar) {
-      throw new SafeError("Connect your calendar to create a booking link");
+      throw new SafeError("连接你的日历以创建预约链接");
     }
 
     const durationMinutes = parsedInput.durationMinutes;
@@ -61,7 +61,7 @@ export const createBookingLinkAction = actionClient
           ? { connect: { id: defaultAvailabilitySchedule.id } }
           : {
               create: {
-                name: "Default availability",
+                name: "默认可用时间",
                 isDefault: true,
                 emailAccount: { connect: { id: emailAccountId } },
                 windows: {
@@ -184,9 +184,9 @@ export const updateBookingAvailabilityAction = actionClient
     return { success: true };
   });
 
-// Edits the account's default availability schedule directly, independent of a
-// booking link. The same schedule constrains AI-suggested meeting times and any
-// booking link, so users without a booking link can still set their hours.
+// 直接编辑账号的默认可用时间安排，独立于预约链接。
+// 同一套安排会约束 AI 建议的会议时间以及任何预约链接，
+// 因此没有预约链接的用户也能设置自己的可预约时段。
 export const updateDefaultAvailabilityAction = actionClient
   .metadata({ name: "updateDefaultAvailability" })
   .inputSchema(updateDefaultAvailabilityBody)
@@ -210,7 +210,7 @@ export const updateDefaultAvailabilityAction = actionClient
     } else {
       await prisma.availabilitySchedule.create({
         data: {
-          name: "Default availability",
+          name: "默认可用时间",
           isDefault: true,
           emailAccount: { connect: { id: emailAccountId } },
           windows: { create: parsedInput.windows },
@@ -244,7 +244,7 @@ async function ensureBookingLinkOwner({
     },
   });
 
-  if (!bookingLink) throw new SafeError("Booking link not found");
+  if (!bookingLink) throw new SafeError("未找到预约链接");
 
   return bookingLink;
 }
@@ -260,7 +260,7 @@ async function assertNoBookingLinkForAccount({
   });
 
   if (existingLink) {
-    throw new SafeError("Booking link already exists");
+    throw new SafeError("预约链接已存在");
   }
 }
 
@@ -305,7 +305,7 @@ async function getOwnedDestinationCalendar({
     },
   });
 
-  if (!calendar) throw new SafeError("Destination calendar not found");
+  if (!calendar) throw new SafeError("未找到目标日历");
 
   return { id: calendar.id, provider: calendar.connection.provider };
 }
@@ -326,7 +326,7 @@ async function assertBookingLinkSlugAvailable({
   });
 
   if (conflictingLink) {
-    throw new SafeError("Booking link slug is already in use");
+    throw new SafeError("预约链接 Slug 已被使用");
   }
 }
 

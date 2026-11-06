@@ -12,7 +12,7 @@ import type { SendEmailBody } from "@/utils/types/mail";
 
 /**
  * A file already on the mailbox draft. Only the reference is stored locally;
- * the mailbox draft holds the bytes.
+ * 邮箱草稿持有这些字节。
  */
 export type ComposeAttachmentReference = EmailAttachmentMetadata & {
   draftAttachmentId: string;
@@ -22,8 +22,8 @@ export type ReplyDraftContent = {
   providerDraftId?: string;
   providerDraftCreationUnconfirmed?: boolean;
   /**
-   * Mailbox messages this composer saved its draft as. The thread hides them
-   * so the open composer is the only place the draft shows.
+   * 此写信器将其草稿保存成的邮箱消息。会话会隐藏它们，
+   * 因此打开的写信器是唯一显示该草稿的地方。
    */
   providerDraftMessageIds?: string[];
   composeMode?: ReplyDraftMode;
@@ -56,8 +56,8 @@ type ReplyDraftScope = Pick<ReplyDraftIdentity, "emailAccountId" | "threadId">;
 const drafts = new Map<string, StoredReplyDraft>();
 const pendingWrites = new Map<string, Promise<unknown>>();
 const engineRevisions = new Map<string, number>();
-// Gmail stores every draft save as a new message. Remembering which message a
-// draft was first opened from keeps its composer and local draft across saves.
+// Gmail 会把每次草稿保存都存为新消息。记住某个草稿最初
+// 是从哪条消息打开的，可在多次保存间保留其写信器和本地草稿。
 const draftSessionMessageIds = new Map<string, Map<string, string>>();
 const latestDraftMessageIds = new Map<string, Map<string, string>>();
 const listeners = new Set<(scope: ReplyDraftScope) => void>();
@@ -208,7 +208,7 @@ export async function updateReplyDraftProviderState(
   assertAccountEpoch(identity.emailAccountId);
   const current = drafts.get(draftKey(identity));
   if (!current?.content || current.content.requestId !== requestId) {
-    throw new Error("This draft changed. Reopen the composer.");
+    throw new Error("此草稿已变更。请重新打开写信器。");
   }
   if (current.content.providerDraftId) return current.content.providerDraftId;
   if (!draftId && current.content.providerDraftCreationUnconfirmed) {
@@ -319,7 +319,7 @@ export function createReplyDraftWriter(
         const previous = drafts.get(draftKey(identity));
         if ((previous?.revision ?? 0) !== revision) {
           throw new Error(
-            "This draft changed in another tab. Reopen the composer to load that version.",
+            "此草稿在另一个标签页中已变更。请重新打开写信器以加载该版本。",
           );
         }
         let nextContent = content;
@@ -379,9 +379,7 @@ export function createReplyDraftWriter(
     save(content: ReplyDraftContent) {
       if (stopped) {
         return Promise.reject(
-          new Error(
-            "This draft is closed. Reopen the composer before editing.",
-          ),
+          new Error("此草稿已关闭。编辑前请重新打开写信器。"),
         );
       }
       return write(content);
@@ -397,8 +395,8 @@ export function createReplyDraftWriter(
 }
 
 /**
- * Once a draft reaches the mailbox the mailbox owns it, so deleting it there
- * must not leave the composer reopening this copy. Only a definite "gone"
+ * 一旦草稿到达邮箱，就归邮箱所有，因此在那边删除它
+ * 不能让写信器重新打开这份副本。只有明确的 "gone"
  * discards it; an unreachable mailbox keeps what the user wrote.
  */
 export async function dropReplyDraftDeletedFromMailbox(
@@ -431,7 +429,7 @@ export async function dropReplyDraftDeletedFromMailbox(
   if (client) {
     if (engineRevision === undefined) return draft;
     try {
-      // A fresh revision read here could authorize clearing another client's edits.
+      // 此处新读取的修订版本可能会授权清除另一个客户端的 edits.
       const cleared = await client.saveDraft({
         key: { accountId: draft.emailAccountId, draftId: engineDraftId(draft) },
         expectedRevision: engineRevision,

@@ -7,7 +7,8 @@ import {
   toMockMessages,
   toRuleRows,
 } from "@/__tests__/fixtures/inboxes/adapters";
-import { ActionType } from "@/generated/prisma/enums";
+import { ActionType, SystemType } from "@/generated/prisma/enums";
+import { getRuleLabel } from "@/utils/rule/consts";
 
 describe("demo inbox fixture adapters", () => {
   test("converts every fixture message into Gmail seed data", () => {
@@ -105,7 +106,11 @@ describe("demo inbox fixture adapters", () => {
     });
 
     expect(rules.map((rule) => rule.name)).toEqual(
-      expect.arrayContaining(["To Reply", "Newsletter", "VIP Customers"]),
+      expect.arrayContaining([
+        getRuleLabel(SystemType.TO_REPLY),
+        getRuleLabel(SystemType.NEWSLETTER),
+        "VIP Customers",
+      ]),
     );
     expect(
       buildRuleFixtureRow({

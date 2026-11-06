@@ -4,15 +4,13 @@ export const VOICE_CATALOG: VoiceCatalogEntry[] = [
   {
     id: "openai",
     name: "OpenAI",
-    description:
-      "Dictation, spoken replies, and GPT-Live full-duplex conversations.",
+    description: "听写、语音回复，以及 GPT-Live 全双工对话。",
     capabilities: { transcribe: true, synthesize: true, live: true },
   },
   {
     id: "groq",
     name: "Groq",
-    description:
-      "Fast Whisper-class dictation. Does not speak or run live calls.",
+    description: "快速的 Whisper 级听写。不支持语音播报或实时通话。",
     capabilities: { transcribe: true, synthesize: false, live: false },
   },
 ];

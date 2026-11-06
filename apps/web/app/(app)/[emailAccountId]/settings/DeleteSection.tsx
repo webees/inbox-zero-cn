@@ -74,12 +74,10 @@ export function DeleteSection() {
         if (result?.serverError) throw new Error(result.serverError);
       },
       {
-        loading: "Deleting account...",
-        success: "Account deleted!",
+        loading: "正在删除账号…",
+        success: "账号已删除！",
         error: (err: unknown) =>
-          `Error deleting account: ${
-            err instanceof Error ? err.message : "Unknown error"
-          }`,
+          `删除账号时出错：${err instanceof Error ? err.message : "未知错误"}`,
       },
     );
   };
@@ -89,57 +87,51 @@ export function DeleteSection() {
   return (
     <Item size="sm">
       <ItemContent>
-        <ItemTitle>Delete account</ItemTitle>
+        <ItemTitle>删除账号</ItemTitle>
         <ItemDescription>
-          Removes your Inbox Zero data. Your emails aren't affected.
+          删除你的 Inbox Zero 数据，不会影响你的邮件。
         </ItemDescription>
       </ItemContent>
       <ItemActions>
         <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <AlertDialogTrigger asChild>
             <Button variant="destructiveSoft" size="sm">
-              Delete
+              删除
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
                 {shouldBlockDeletion
-                  ? "Cancel subscription first"
-                  : "Delete your Inbox Zero account?"}
+                  ? "请先取消订阅"
+                  : "要删除你的 Inbox Zero 账号吗？"}
               </AlertDialogTitle>
               <AlertDialogDescription asChild>
                 <div>
                   {shouldBlockDeletion ? (
                     <>
-                      <p className="mb-3">
-                        Please cancel your subscription before deleting your
-                        account.
-                      </p>
+                      <p className="mb-3">请在删除账号前取消你的订阅。</p>
                       <p className="mb-3">
                         {hasAppleSubscription ? (
                           <>
-                            You can manage your subscription from your iPhone or
-                            iPad subscription settings.
+                            你可以在你的 iPhone 或 iPad 订阅设置中管理你的订阅。
                           </>
                         ) : (
                           <>
-                            You can manage your subscription by clicking "Manage
-                            Subscription" above or going to the{" "}
+                            你可以点击上方的“管理订阅”，或前往{" "}
                             <Link
                               href="/premium"
                               className="text-blue-600 underline hover:text-blue-800"
                               onClick={() => setIsDialogOpen(false)}
                             >
-                              premium page
+                              高级版页面
                             </Link>{" "}
-                            and clicking "Manage subscription".
+                            并点击“管理订阅”来管理你的订阅。
                           </>
                         )}
                       </p>
                       <p className="text-sm text-gray-600">
-                        Already cancelled your subscription? Click the button
-                        below to proceed.
+                        已经取消了订阅？点击下方按钮继续。
                       </p>
                     </>
                   ) : (
@@ -149,8 +141,7 @@ export function DeleteSection() {
                         error={accountsError}
                       >
                         <p>
-                          This permanently deletes your Inbox Zero data and
-                          disconnects{" "}
+                          这将永久删除你的 Inbox Zero 数据，并断开{" "}
                           {connectedEmailParts.map((part, index) =>
                             part.type === "element" ? (
                               <span
@@ -163,7 +154,7 @@ export function DeleteSection() {
                               part.value
                             ),
                           )}
-                          . Your emails aren't affected.
+                          。不会影响你的邮件。
                         </p>
                       </LoadingContent>
                       {connectedEmails.length > 1 && (
@@ -172,7 +163,7 @@ export function DeleteSection() {
                           className="text-foreground underline"
                           onClick={() => setIsDialogOpen(false)}
                         >
-                          Remove just one account instead
+                          改为仅移除一个账号
                         </Link>
                       )}
                     </div>
@@ -181,16 +172,16 @@ export function DeleteSection() {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>取消</AlertDialogCancel>
               {shouldBlockDeletion ? (
                 <AlertDialogAction
                   onClick={(event) => {
-                    // Keep the dialog open so it advances to the delete confirmation
+                    // 保持对话框打开，以便继续进入删除确认
                     event.preventDefault();
                     setHasConfirmedCancellation(true);
                   }}
                 >
-                  I've already cancelled my subscription
+                  我已取消订阅
                 </AlertDialogAction>
               ) : (
                 <AlertDialogAction
@@ -198,7 +189,7 @@ export function DeleteSection() {
                   disabled={!accountsData || Boolean(accountsError)}
                   onClick={handleDeleteAccount}
                 >
-                  Delete account
+                  删除账号
                 </AlertDialogAction>
               )}
             </AlertDialogFooter>

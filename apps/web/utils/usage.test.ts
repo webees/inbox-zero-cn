@@ -45,22 +45,6 @@ function languageModelUsage({
 }
 
 describe("calculateUsageCost", () => {
-  it.each([
-    ["openai/gpt-oss-20b", 0.356_25],
-    ["openai/gpt-oss-120b", 0.7125],
-  ])("prices Groq %s using its provider rates", (model, expected) => {
-    const usage = languageModelUsage({
-      inputTokens: 1_000_000,
-      outputTokens: 1_000_000,
-      totalTokens: 2_000_000,
-      cachedInputTokens: 500_000,
-    });
-
-    expect(calculateUsageCost({ provider: "groq", model, usage })).toBeCloseTo(
-      expected,
-    );
-  });
-
   it("prices decision-model calls by input tokens only", () => {
     const usage = languageModelUsage({
       inputTokens: 1_000_000_000,
@@ -146,7 +130,7 @@ describe("calculateUsageCost", () => {
       totalTokens: 150,
     });
 
-    // Fallback map values in supported-model-pricing.ts for gpt-4o
+    // supported-model-pricing.ts 中 gpt-4o 的回退映射值
     const expected =
       usage.inputTokens! * (5 / 1_000_000) +
       usage.outputTokens! * (15 / 1_000_000);

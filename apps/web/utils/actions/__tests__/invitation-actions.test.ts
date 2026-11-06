@@ -108,9 +108,7 @@ describe("createInvitationAction", () => {
       invitations: [{ email: "user@test.com", role: "member" }],
     });
 
-    expect(res?.serverError).toBe(
-      "Only organization owners or admins can invite members.",
-    );
+    expect(res?.serverError).toBe("只有组织所有者或管理员可以邀请成员。");
     expect(prisma.invitation.create).not.toHaveBeenCalled();
     expect(mockSendOrganizationInvitation).not.toHaveBeenCalled();
   });
@@ -165,7 +163,7 @@ describe("createInvitationAction", () => {
         {
           email: "failed@test.com",
           success: false,
-          error: "Failed to send email",
+          error: "邮件发送失败",
         },
         { email: "success@test.com", success: true },
       ],
@@ -211,7 +209,7 @@ describe("createInvitationAction", () => {
         {
           email: "fresh@test.com",
           success: false,
-          error: "Duplicate email",
+          error: "邮箱重复",
         },
       ],
     });
@@ -253,7 +251,7 @@ describe("createInvitationAction", () => {
         {
           email: "existing@test.com",
           success: false,
-          error: "Already invited",
+          error: "已邀请",
         },
         { email: "fresh@test.com", success: true },
       ],
@@ -316,7 +314,7 @@ describe("createInvitationAction", () => {
 
     expect(prisma.member.create).not.toHaveBeenCalled();
     expect(res?.serverError).toBe(
-      "This invitation has expired. Ask your organization admin to send a new one.",
+      "此邀请已过期。请让你的组织管理员重新发送一份。",
     );
   });
 

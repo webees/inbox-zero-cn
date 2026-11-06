@@ -12,13 +12,13 @@ import {
 } from "@/components/ui/dialog";
 import { landingPageAnalytics } from "@/hooks/useAnalytics";
 
-// Recorded on every hero video event so videos can be compared by video_id.
+// 记录每个主视觉视频事件，以便按 video_id 对比视频。
 const HERO_VIDEO_ID = "YeTrweHxCIM5tcBMXlvRbmDuPqL028lJrmJ3F6ZgwnDY";
 
 export function HeroVideoDialog({
   playbackId = HERO_VIDEO_ID,
   thumbnailTime,
-  title = "Inbox Zero product video",
+  title = "Inbox Zero 产品视频",
 }: {
   playbackId?: string;
   thumbnailTime?: number;
@@ -37,7 +37,7 @@ export function HeroVideoDialog({
         onClick={() => landingPageAnalytics.videoClicked(posthog, playbackId)}
       >
         <LiquidGlassButton
-          aria-label="Play product demo video"
+          aria-label="播放产品演示视频"
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
         >
           <div>

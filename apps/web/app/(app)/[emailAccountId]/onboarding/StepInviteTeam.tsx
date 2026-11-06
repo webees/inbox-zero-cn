@@ -69,7 +69,7 @@ export function StepInviteTeam({
       });
 
       if (result?.serverError || result?.validationErrors) {
-        toastError({ description: "Failed to send invitations" });
+        toastError({ description: "发送邀请失败" });
         return;
       }
 
@@ -85,7 +85,7 @@ export function StepInviteTeam({
 
       if (result?.serverError || result?.validationErrors) {
         toastError({
-          description: "Failed to create organization and send invitations",
+          description: "创建组织并发送邀请失败",
         });
         return;
       }
@@ -98,12 +98,12 @@ export function StepInviteTeam({
 
     if (successCount > 0) {
       toastSuccess({
-        description: `${successCount} invitation${successCount > 1 ? "s" : ""} sent successfully!`,
+        description: `已成功发送 ${successCount} 个邀请！`,
       });
     }
     if (errorCount > 0) {
       toastError({
-        description: `Failed to send ${errorCount} invitation${errorCount > 1 ? "s" : ""}`,
+        description: `发送 ${errorCount} 个邀请失败`,
       });
     }
 
@@ -127,9 +127,9 @@ export function StepInviteTeam({
       </IconCircle>
 
       <div className="text-center mt-4">
-        <PageHeading>Invite your team</PageHeading>
+        <PageHeading>邀请你的团队</PageHeading>
         <TypographyP className="mt-2 max-w-lg mx-auto">
-          Add more anytime from settings.
+          随时可以从设置中添加更多成员。
         </TypographyP>
 
         <form onSubmit={onSubmit}>
@@ -141,7 +141,7 @@ export function StepInviteTeam({
                 name={`emails.${i}.email`}
                 registerProps={register(`emails.${i}.email`, {
                   validate: (v) =>
-                    !v || isValidEmail(v) || "Enter a valid email",
+                    !v || isValidEmail(v) || "请输入有效的邮箱地址",
                 })}
                 placeholder="name@company.com"
                 error={errors.emails?.[i]?.email}
@@ -156,7 +156,7 @@ export function StepInviteTeam({
               loading={isSubmitting}
               disabled={filledEmailCount === 0}
             >
-              Send invites
+              发送邀请
               <ArrowRightIcon className="size-4 ml-2" />
             </Button>
             <Button
@@ -173,7 +173,7 @@ export function StepInviteTeam({
               }}
               disabled={isSubmitting}
             >
-              Skip
+              跳过
             </Button>
           </div>
         </form>

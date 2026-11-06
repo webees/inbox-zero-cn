@@ -14,7 +14,7 @@ export default async function McpConsentPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  // The MCP flag can be enabled at runtime after a build with it disabled.
+  // 在构建时禁用 MCP 开关的情况下，它仍可在运行时启用。
   await connection();
   if (!isMcpServerAvailable()) notFound();
   const params = await searchParams;
@@ -30,24 +30,24 @@ export default async function McpConsentPage({
   const scopes = params.scope.split(" ").filter(Boolean);
   if (scopes.some((scope) => !MCP_SCOPES.some((allowed) => allowed === scope)))
     notFound();
-  // Email code sessions are rejected by every authorization endpoint, so this
-  // page cannot load the client or record a decision for them.
+  // 每个授权端点都会拒绝邮箱验证码会话，因此此页面
+  // 无法为其加载客户端或记录决定。
   if (session.session.emailOtp === true)
     return (
       <main className="mx-auto flex min-h-screen max-w-md items-center px-4 py-12">
         <Card className="w-full">
           <CardHeader>
-            <CardTitle>Sign in with Google or Microsoft</CardTitle>
+            <CardTitle>使用 Google 或 Microsoft 登录</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Email code sign-in can't authorize apps.
+              邮箱验证码登录无法授权应用。
             </p>
             <Link
               href="/settings"
               className="text-sm text-muted-foreground underline"
             >
-              Settings
+              设置
             </Link>
           </CardContent>
         </Card>
@@ -63,7 +63,7 @@ export default async function McpConsentPage({
   ]);
   return (
     <McpConsent
-      clientName={client.client_name || "MCP application"}
+      clientName={client.client_name || "MCP 应用"}
       scopes={scopes}
       enabled={access.enabled}
     />

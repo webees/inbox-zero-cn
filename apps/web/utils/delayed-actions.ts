@@ -1,6 +1,6 @@
 import { ActionType } from "@/generated/prisma/enums";
 
-// Action types that support delayed execution
+// 支持延迟执行的操作类型
 const SUPPORTED_DELAYED_ACTIONS: ActionType[] = [
   ActionType.ARCHIVE,
   ActionType.LABEL,

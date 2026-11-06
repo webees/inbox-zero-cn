@@ -16,7 +16,7 @@ interface CallToActionProps {
 }
 
 export function CallToAction({
-  text = "Get started",
+  text = "开始使用",
   buttonSize = "xl",
   className,
   href = "/login",
@@ -41,7 +41,7 @@ export function CallToAction({
             onClick={() => landingPageAnalytics.talkToSalesClicked(posthog)}
           >
             <Chat />
-            Talk to sales
+            联系销售
           </Link>
         </Button>
       ) : null}

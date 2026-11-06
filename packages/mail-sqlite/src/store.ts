@@ -2161,8 +2161,8 @@ async function admitConversations(
       ],
     );
   }
-  // Membership resolution needs the network, so apply the change to the
-  // messages already stored; preparation adds any the provider reports later.
+  // 会话成员解析需要访问网络，因此先把变更应用到已存储的邮件；
+  // 准备阶段会补充服务商之后报告的邮件。
   for (const target of knownTargets) {
     await tx.execute(
       `INSERT INTO operation_targets(account_id, command_id, message_id, conversation_id)
@@ -2426,11 +2426,9 @@ async function applyPageFacts(
 }
 
 /**
- * Claims the next hydration job, together with other waiting jobs for the
- * same account and purpose up to one request's worth of keys, so a
- * conversation's missing bodies arrive in one round trip instead of one each.
- * Interactive jobs are found through their id prefix, so neither pass sorts
- * or scans the queue.
+ * 领取下一个补全任务，并同时领取同一账号与用途下最多一次请求所需的键，
+ * 让一个会话缺失的正文在一次往返中到达，而不是逐个获取。
+ * 交互式任务通过其 id 前缀查找，因此两次遍历都不会排序或扫描队列。
  */
 async function claimHydration(
   tx: SqlTransaction,
@@ -2457,7 +2455,7 @@ async function claimHydration(
   const jobs = [{ jobId: String(first.job_id), keys: firstPayload.keys }];
   const seen = new Set(firstPayload.keys.map(messageKeyIdentity));
   if (seen.size < HYDRATION_JOB_KEY_LIMIT) {
-    // Bodies someone is waiting for join the batch before background ones.
+    // 有人正在等待的正文会先于后台任务加入本批次。
     const interactiveRange = `j.job_id >= '${INTERACTIVE_HYDRATION_PREFIX}' AND j.job_id < '${INTERACTIVE_HYDRATION_PREFIX_END}'`;
     const companionsWhere = (range: string) =>
       tx.query(
@@ -2520,8 +2518,8 @@ async function claimHydration(
   };
 }
 
-// A body someone is waiting to read. The prefix lets claims find these jobs
-// with a primary-key range instead of reading every payload.
+// 有人正在等待阅读的正文。该前缀让领取操作可以通过主键范围找到这些任务，
+// 而不必读取每个载荷。
 const INTERACTIVE_HYDRATION_PREFIX = "hydrate-now:";
 const INTERACTIVE_HYDRATION_PREFIX_END = "hydrate-now;";
 
@@ -2859,9 +2857,8 @@ async function recomputeTargets(tx: SqlTransaction, targets: MessageKey[]) {
        ORDER BY o.rowid ASC`,
       [target.accountId, target.messageId],
     );
-    // Effects are applied in this order, so it has to be admission order (the
-    // rowid order execution dependencies use): command ids are random, and an
-    // undo must land after what it undoes.
+    // 效果按此顺序应用，因此必须是准入顺序（执行依赖使用的 rowid 顺序）：
+    // 命令 id 是随机的，而撤销必须发生在其撤销对象之后。
     const pending = pendingRows
       .filter((row) => {
         const outcome = row.outcome == null ? null : String(row.outcome);
@@ -2879,7 +2876,7 @@ async function recomputeTargets(tx: SqlTransaction, targets: MessageKey[]) {
         return {
           operationId: String(row.command_id),
           change: payload.change,
-          // Preparing payloads name conversations; the join scopes the row.
+          // 准备中的负载以会话为单位；此处的连接用于限定到当前目标行。
           targets: payload.targets ?? [target],
         };
       });
@@ -3371,8 +3368,7 @@ async function readConversationSends(tx: SqlTransaction, key: ConversationKey) {
      ORDER BY o.created_at_ms ASC, o.rowid ASC`,
     [...OUTGOING_SEND_STATUSES, key.accountId, key.conversationId],
   );
-  // Reached through the sent message so the lookup stays indexed however many
-  // commands the account has settled.
+  // 通过已发送邮件访问，因此无论该账号已结算多少命令，查询都能保持索引。
   const confirmed = await tx.query(
     `SELECT o.command_id, o.status, o.payload_json, o.sent_message_id, d.content_json
      FROM messages m

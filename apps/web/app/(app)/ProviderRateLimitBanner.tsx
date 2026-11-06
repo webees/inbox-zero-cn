@@ -19,13 +19,12 @@ export function ProviderRateLimitBanner() {
 
   return (
     <AppAlertBanner
-      title={`${providerLabel} Is Rate Limiting This Account`}
+      title={`${providerLabel} 正在对此账号限流`}
       description={
         <p>
-          Inbox Zero actions are temporarily paused until around{" "}
-          <strong>{retryAtLabel}</strong>. This limit is enforced by{" "}
-          {providerLabel}, and other apps connected to this mailbox can
-          contribute to the same shared limit.
+          Inbox Zero 的操作会暂时暂停，直到大约 <strong>{retryAtLabel}</strong>
+          。此限制由 {providerLabel}{" "}
+          强制执行，连接到该邮箱的其他应用也会占用同一共享额度。
         </p>
       }
     />

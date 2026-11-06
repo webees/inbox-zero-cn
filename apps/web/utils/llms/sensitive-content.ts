@@ -22,8 +22,7 @@ type LlmRequestOptions = {
 };
 
 const BLOCKED_TOOL_OUTPUT = {
-  error:
-    "Sensitive content was detected, so this tool result was blocked by your account settings.",
+  error: "检测到敏感内容，因此该工具结果已被你的账号设置阻止。",
   blocked: true,
 } as const;
 
@@ -86,7 +85,7 @@ function enforceSensitiveDataPolicyOnValue<T>({
   if (findings.length === 0) return value;
 
   const summary = summarizeFindings(findings);
-  logger.warn("Sensitive content detected in AI content", {
+  logger.warn("在 AI 内容中检测到敏感内容", {
     emailAccountId,
     userId,
     label,
@@ -97,9 +96,7 @@ function enforceSensitiveDataPolicyOnValue<T>({
   if (parsedPolicy === "BLOCK") {
     if (blockReplacement !== undefined) return blockReplacement as T;
 
-    throw new SafeError(
-      "Sensitive content was detected, so this AI request was blocked by your account settings.",
-    );
+    throw new SafeError("检测到敏感内容，因此该 AI 请求已被你的账号设置阻止。");
   }
 
   if (parsedPolicy === "REDACT") {

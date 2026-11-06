@@ -97,8 +97,7 @@ function ModelSectionForm(props: {
         });
       } else {
         toastSuccess({
-          description:
-            "Settings updated! Please check it works on the Assistant page.",
+          description: "设置已更新！请在助手页面检查其是否正常工作。",
         });
       }
 
@@ -120,7 +119,7 @@ function ModelSectionForm(props: {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-sm space-y-4">
       <Select
-        label="Provider"
+        label="服务商"
         options={providerOptions}
         {...register("aiProvider")}
         error={errors.aiProvider}
@@ -130,7 +129,7 @@ function ModelSectionForm(props: {
         <>
           {modelSelectOptions.length ? (
             <Select
-              label="Model"
+              label="模型"
               options={modelSelectOptions}
               {...register("aiModel")}
               error={errors.aiModel}
@@ -139,7 +138,7 @@ function ModelSectionForm(props: {
             <Input
               type="text"
               name="aiModel"
-              label="Model"
+              label="模型"
               registerProps={register("aiModel")}
               error={errors.aiModel}
             />
@@ -148,17 +147,13 @@ function ModelSectionForm(props: {
           <Input
             type="password"
             name="aiApiKey"
-            label="API Key"
+            label="API 密钥"
             registerProps={register("aiApiKey")}
             error={errors.aiApiKey}
-            placeholder={
-              hasStoredAiApiKey
-                ? "Leave blank to keep the current key"
-                : undefined
-            }
+            placeholder={hasStoredAiApiKey ? "留空以保留当前密钥" : undefined}
             explainText={
               hasStoredAiApiKey
-                ? "Leave this blank to keep the current API key, or enter a new key to replace it."
+                ? "留空以保留当前 API 密钥，或输入新密钥以替换它。"
                 : undefined
             }
           />
@@ -166,7 +161,7 @@ function ModelSectionForm(props: {
       )}
 
       {globalError?.message && (
-        <AlertError title="Error saving" description={globalError.message} />
+        <AlertError title="保存时出错" description={globalError.message} />
       )}
 
       {aiProvider === Provider.OPEN_AI &&
@@ -174,24 +169,24 @@ function ModelSectionForm(props: {
         modelSelectOptions.length === 0 &&
         (hasStoredAiApiKey ? (
           <AlertError
-            title="Invalid API Key"
-            description="We couldn't validate your API key. Please try again."
+            title="API 密钥无效"
+            description="我们无法验证你的 API 密钥。请重试。"
           />
         ) : (
           <AlertBasic
-            title="API Key"
-            description="Click Save to view available models for your API key."
+            title="API 密钥"
+            description="点击保存以查看你的 API 密钥可用的模型。"
           />
         ))}
 
       <div className="flex items-center gap-2">
         <Button type="submit" size="sm" loading={isSubmitting}>
-          Save
+          保存
         </Button>
         <Button asChild variant="outline" size="sm">
           <Link href={prefixPath(emailAccountId, "/usage")}>
             <BarChartIcon className="mr-2 size-4" />
-            View usage
+            查看用量
           </Link>
         </Button>
       </div>

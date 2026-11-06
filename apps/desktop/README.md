@@ -1,71 +1,71 @@
-# Desktop app
+# 桌面应用
 
-Electron shell for the hosted Inbox Zero web app.
+面向托管版 Inbox Zero Web 应用的 Electron 外壳。
 
-## Run
+## 运行
 
-Against production:
+针对生产环境：
 
 ```sh
 pnpm --filter @inboxzero/desktop dev
 ```
 
-Against a local web app:
+针对本地 Web 应用：
 
 ```sh
 INBOX_ZERO_APP_URL=http://localhost:3000 pnpm --filter @inboxzero/desktop dev
 ```
 
-Sign-in uses the system browser and returns through `inboxzero://`. The web app's `DESKTOP_AUTH_ORIGIN` defaults to this scheme.
+登录使用系统浏览器，并通过 `inboxzero://` 返回。Web 应用的 `DESKTOP_AUTH_ORIGIN` 默认使用此 scheme。
 
-## Multiple windows
+## 多窗口
 
-File → New Window (⌘N / Ctrl+N) opens another mailbox window. ⌘-click or Ctrl-click an account in the switcher to open that inbox in its own window. Each window keeps its own account and size; they are restored on the next launch.
+文件 → 新建窗口（⌘N / Ctrl+N）会打开另一个邮箱窗口。在账号切换器中按住 ⌘ 或 Ctrl 点击某个账号，即可在独立窗口中打开该收件箱。每个窗口各自保留账号和尺寸，并在下次启动时恢复。
 
-Clicking a new-mail notification focuses a window already showing that account, or opens one if needed.
+点击新邮件通知时，会聚焦已显示该账号的窗口；如果没有，则打开一个新窗口。
 
-## Mail badge and notifications
+## 邮件角标与通知
 
-The macOS Dock badge shows the combined unread inbox count across connected accounts, refreshed about once a minute and on focus. Linux uses the supported launcher badge; Windows does not currently display a numeric badge.
+macOS Dock 角标显示所有已连接账号的未读收件箱总数，大约每分钟以及窗口获得焦点时刷新。Linux 使用受支持的启动器角标；Windows 目前不显示数字角标。
 
-New unread inbox mail produces a native notification while the app is in the background. Clicking it opens that account's inbox. Alerts contain no sender or subject preview. Mail from before app startup or more than five minutes ago is suppressed, and repeated sync results do not replay alerts. Notifications follow the existing mailbox sync schedule (normally about a minute), rather than a server push channel.
+应用在后台运行时，新的未读收件箱邮件会产生原生通知。点击通知会打开该账号的收件箱。提醒不含发件人或主题预览。应用启动之前或超过五分钟的邮件会被抑制，重复的同步结果不会重放提醒。通知遵循现有的邮箱同步计划（通常约一分钟），而不是服务端推送通道。
 
-The app must remain running; hiding the Mac window is supported, fully quitting stops updates. macOS notifications require a signed app and notification permission in System Settings. Use the OS notification settings to disable alerts or sounds. Both the desktop release and hosted web changes are needed; older desktop versions safely ignore the new integration.
+应用必须保持运行；支持隐藏 Mac 窗口，完全退出会停止更新。macOS 通知需要已签名的应用，并在系统设置中授予通知权限。可使用操作系统通知设置关闭提醒或声音。桌面版发布和托管 Web 变更都需要；较旧的桌面版会安全地忽略新集成。
 
-## Record diagnostics
+## 记录诊断信息
 
-Help → Record Diagnostics… captures 30 seconds of performance data while the user reproduces a slowdown (clicking the progress notification stops early). It writes an `Inbox-Zero-Diagnostics-<timestamp>` folder to Downloads and reveals it:
+帮助 → 记录诊断信息… 会在用户复现卡顿期间采集 30 秒的性能数据（点击进度通知可提前停止）。它会在下载目录写入一个 `Inbox-Zero-Diagnostics-<timestamp>` 文件夹并显示出来：
 
-- `trace.json.gz`: a Chromium trace of the main and renderer processes (timeline, task, IPC, and sampled JS stack categories). Open it in the DevTools Performance panel or [Perfetto](https://ui.perfetto.dev). Paint, layer, and screenshot categories are excluded, and URL query strings are stripped.
-- `diagnostics.json`: app, Electron, and OS versions, per-process CPU and memory, system memory, mail database file sizes, and local mail engine sync and queue counts. It contains no messages, subjects, or addresses.
+- `trace.json.gz`：主进程和渲染进程的 Chromium 跟踪（时间线、任务、IPC 和采样的 JS 堆栈类别）。可在 DevTools Performance 面板或 [Perfetto](https://ui.perfetto.dev) 中打开。绘制、图层和截图类别会被排除，URL 查询字符串会被剥离。
+- `diagnostics.json`：应用、Electron 和操作系统版本，各进程的 CPU 与内存、系统内存、邮件数据库文件大小，以及本地邮件引擎的同步与队列计数。其中不含邮件、主题或地址。
 
-When Sentry is configured, the app offers to send both files as attachments on a `User diagnostics` event (tag `area: diagnostics`) and shows the event ID for the user to quote to support.
+配置 Sentry 后，应用会提供将这两个文件作为附件发送到 `User diagnostics` 事件（标签 `area: diagnostics`），并显示事件 ID，供用户向支持团队提供。
 
-## Package
+## 打包
 
 ```sh
 pnpm --filter @inboxzero/desktop dist:mac
 pnpm --filter @inboxzero/desktop dist:win
 ```
 
-Installers land in `apps/desktop/release/`. macOS packaging requires a Developer ID certificate and notarization credentials.
+安装包位于 `apps/desktop/release/`。macOS 打包需要 Developer ID 证书和公证凭证。
 
-## Release
+## 发布
 
-Push a `desktop-v*` tag to build and publish a release, or run the [Desktop Release workflow](../../.github/workflows/desktop-release.yml) manually with optional publishing. It packages macOS (DMG/ZIP) and Windows (NSIS) for arm64 and x64.
+推送 `desktop-v*` 标签即可构建并发布版本，或手动运行 [桌面版发布工作流](../../.github/workflows/desktop-release.yml) 并选择是否发布。它会为 arm64 和 x64 打包 macOS（DMG/ZIP）和 Windows（NSIS）。
 
-The macOS release requires these GitHub secrets:
+macOS 发布需要以下 GitHub secrets：
 
-- `MAC_CSC_LINK` / `MAC_CSC_KEY_PASSWORD` — Developer ID Application `.p12` (base64) for signed Mac builds
-- `APPLE_API_KEY_ID` / `APPLE_API_ISSUER` / `APPLE_API_KEY_P8` / `APPLE_TEAM_ID` — Apple credentials used to notarize the signed build
+- `MAC_CSC_LINK` / `MAC_CSC_KEY_PASSWORD` — 用于签名 Mac 构建的 Developer ID Application `.p12`（base64）
+- `APPLE_API_KEY_ID` / `APPLE_API_ISSUER` / `APPLE_API_KEY_P8` / `APPLE_TEAM_ID` — 用于公证签名构建的 Apple 凭证
 
-The Windows release is signed with Azure Artifact Signing and fails if signing doesn't happen. It requires:
+Windows 发布使用 Azure Artifact Signing 签名，若未发生签名会失败。它需要：
 
-- `AZURE_SIGNING_TENANT_ID` / `AZURE_SIGNING_CLIENT_ID` secrets: an Entra app registration with the Certificate Profile Signer role on the signing account. It has no client secret; the job logs in through GitHub OIDC, so the app needs a federated credential for subject `repo:elie222/inbox-zero:environment:desktop-release`
-- `AZURE_SIGNING_PUBLISHER_NAME` / `AZURE_SIGNING_ENDPOINT` / `AZURE_SIGNING_ACCOUNT_NAME` / `AZURE_SIGNING_CERTIFICATE_PROFILE` variables: the certificate's subject CN, the account's regional endpoint (for example `https://eus.codesigning.azure.net/`), the signing account name, and the certificate profile name
+- `AZURE_SIGNING_TENANT_ID` / `AZURE_SIGNING_CLIENT_ID` secrets：在签名账号上具有 Certificate Profile Signer 角色的 Entra 应用注册。它没有客户端密钥；任务通过 GitHub OIDC 登录，因此应用需要为 `repo:elie222/inbox-zero:environment:desktop-release` 主体配置联合凭证
+- `AZURE_SIGNING_PUBLISHER_NAME` / `AZURE_SIGNING_ENDPOINT` / `AZURE_SIGNING_ACCOUNT_NAME` / `AZURE_SIGNING_CERTIFICATE_PROFILE` 变量：证书主体 CN、账号的区域端点（例如 `https://eus.codesigning.azure.net/`）、签名账号名称以及证书配置文件名称
 
-Local `pnpm dist:win` builds stay unsigned.
+本地 `pnpm dist:win` 构建保持未签名。
 
-Error reporting from the main process (including renderer, GPU, and native crashes) uses the optional `DESKTOP_SENTRY_DSN` secret, injected at build time as `INBOX_ZERO_SENTRY_DSN`. Builds without it, including local development, don't report to Sentry.
+主进程的错误上报（包括渲染进程、GPU 和原生崩溃）使用可选的 `DESKTOP_SENTRY_DSN` secret，并在构建时注入为 `INBOX_ZERO_SENTRY_DSN`。没有该配置的构建（包括本地开发）不会向 Sentry 上报。
 
-Auto-update metadata (`latest-mac.yml` / `latest.yml`) is published to the `desktop-updates` release; installers stay on `desktop-v*` releases.
+自动更新元数据（`latest-mac.yml` / `latest.yml`）发布到 `desktop-updates` 版本；安装包仍留在 `desktop-v*` 版本中。

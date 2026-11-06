@@ -34,14 +34,14 @@ export async function saveGroupItem({
   source: GroupItemSource;
 }) {
   const normalizedValue = normalizeGroupItemValue(value);
-  if (!normalizedValue) throw new Error("Learned pattern cannot be empty");
+  if (!normalizedValue) throw new Error("已学习的模式不能为空");
 
   const updateData = {
     exclude,
     reason,
     threadId,
     messageId,
-    // Inferred inclusions retain their original provenance for spam cleanup.
+    // 推断出的包含项会保留其原始来源，以便清理垃圾内容。
     source:
       source === GroupItemSource.USER || exclude === true ? source : undefined,
   };

@@ -29,7 +29,7 @@ async function fetchMicrosoftCalendarBusyPeriods({
         const startDateTime = new Date(timeMin).toISOString();
         const endDateTime = new Date(timeMax).toISOString();
 
-        // Fetch all pages of events by following @odata.nextLink
+        // 通过跟进 @odata.nextLink 获取所有页事件
         let nextLink: string | undefined;
         let isFirstPage = true;
 
@@ -39,7 +39,7 @@ async function fetchMicrosoftCalendarBusyPeriods({
                 .api(`/me/calendars/${calendarId}/calendarView`)
                 .query({ startDateTime, endDateTime })
                 .select("subject,start,end,showAs,isAllDay")
-                // Request events in UTC to avoid Windows timezone name conversion issues
+                // 以 UTC 请求事件以避免 Windows 时区名称转换问题
                 .header("Prefer", 'outlook.timezone="UTC"')
                 .get()
             : await calendarClient.api(nextLink!).get();
@@ -53,8 +53,8 @@ async function fetchMicrosoftCalendarBusyPeriods({
                 event.start?.dateTime &&
                 event.end?.dateTime
               ) {
-                // With Prefer: outlook.timezone="UTC", dateTime is in UTC but without the Z suffix
-                // We need to add it for proper ISO 8601 format
+                // 使用 Prefer: outlook.timezone="UTC" 时，dateTime 是 UTC 但不带 Z 后缀
+                // 我们需要加上它以符合正确的 ISO 8601 格式
                 const startDatetime = event.start.dateTime.endsWith("Z")
                   ? event.start.dateTime
                   : `${event.start.dateTime}Z`;
@@ -70,17 +70,17 @@ async function fetchMicrosoftCalendarBusyPeriods({
             }
           }
 
-          // Check for next page
+          // 检查下一页
           nextLink = response["@odata.nextLink"];
         } while (nextLink);
       } catch (calendarError) {
         const calendarIsMissing = isMissingCalendarError(calendarError);
         if (calendarIsMissing) {
-          logger.warn("Skipping unavailable Microsoft calendar", {
+          logger.warn("跳过不可用的 Microsoft 日历", {
             calendarIdIsPrimary: calendarId === "primary",
           });
         } else {
-          logger.error("Error fetching calendar events", {
+          logger.error("获取日历事件出错", {
             calendarId,
             error: calendarError,
           });
@@ -92,7 +92,7 @@ async function fetchMicrosoftCalendarBusyPeriods({
 
     return allBusyPeriods;
   } catch (error) {
-    logger.error("Error fetching Microsoft Calendar busy periods", { error });
+    logger.error("获取 Microsoft 日历忙碌时段出错", { error });
     throw error;
   }
 }

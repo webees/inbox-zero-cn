@@ -87,7 +87,7 @@ export function RuleStatsChart({ dateRange, title }: RuleStatsChartProps) {
 
     const config: ChartConfig = {
       value: {
-        label: "Executed Rules",
+        label: "已执行规则",
       },
       ...fromPairs(
         data.ruleStats.map((rule, index) => [
@@ -101,7 +101,7 @@ export function RuleStatsChart({ dateRange, title }: RuleStatsChartProps) {
     };
 
     const barConfig: ChartConfig = {
-      executed: { label: "Executed Rules", color: COLORS.analytics.blue },
+      executed: { label: "已执行规则", color: COLORS.analytics.blue },
     };
 
     return {
@@ -123,8 +123,8 @@ export function RuleStatsChart({ dateRange, title }: RuleStatsChartProps) {
             <div className="flex items-center justify-between">
               <p>{title}</p>
               <TabsList>
-                <TabsTrigger value="bar">Bar Chart</TabsTrigger>
-                <TabsTrigger value="pie">Pie Chart</TabsTrigger>
+                <TabsTrigger value="bar">柱状图</TabsTrigger>
+                <TabsTrigger value="pie">饼图</TabsTrigger>
               </TabsList>
             </div>
 
@@ -142,7 +142,7 @@ export function RuleStatsChart({ dateRange, title }: RuleStatsChartProps) {
               <ShadcnCard className="border-0 shadow-none">
                 <CardHeader className="items-center pb-0">
                   <CardTitle className="text-base font-normal text-muted-foreground">
-                    Rule Execution Distribution
+                    规则执行分布
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1 pb-0">
@@ -176,7 +176,7 @@ export function RuleStatsChart({ dateRange, title }: RuleStatsChartProps) {
         <CardBasic>
           <p>{title}</p>
           <div className="mt-4 h-72 flex items-center justify-center text-muted-foreground">
-            <p>No executed rules found for this period.</p>
+            <p>此时间段没有已执行的规则。</p>
           </div>
         </CardBasic>
       )}

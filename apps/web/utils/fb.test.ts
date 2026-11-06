@@ -43,7 +43,7 @@ describe("sendCompleteRegistrationEvent", () => {
 
     await expect(
       sendCompleteRegistrationEvent(getEventInput()),
-    ).rejects.toThrow("Facebook conversion event failed: 400");
+    ).rejects.toThrow("Facebook 转化事件失败：400");
   });
 
   it("sends the provided event id for provider-side dedupe", async () => {

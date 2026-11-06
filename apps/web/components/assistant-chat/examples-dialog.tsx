@@ -58,15 +58,15 @@ export function ExamplesDialog({
     const persona = personas[selectedPersona as keyof typeof personas];
 
     if (selectedExamples.length === 1) {
-      // Single selection - use the example directly
+      // 单次选择 - 直接使用该示例
       const selectedExample = persona.promptArray[selectedExamples[0]];
       setInput(convertMentionsToLabels(selectedExample));
     } else {
-      // Multiple selections - format as "add the following rules:"
+      // 多次选择 - 格式化为 "添加以下规则："
       const selectedRules = selectedExamples.map((index) =>
         convertMentionsToLabels(persona.promptArray[index]),
       );
-      const formattedPrompt = `Add the following rules:\n${selectedRules.map((rule) => `- ${rule}`).join("\n")}`;
+      const formattedPrompt = `添加以下规则：\n${selectedRules.map((rule) => `- ${rule}`).join("\n")}`;
       setInput(formattedPrompt);
     }
 
@@ -97,11 +97,11 @@ export function ExamplesDialog({
                 onClick={handleBackToPersonas}
               >
                 <ArrowLeftIcon className="size-4" />
-                <span className="sr-only">Back to personas</span>
+                <span className="sr-only">返回用户画像</span>
               </Button>
             )}
             <DialogTitle>
-              {selectedPersona ? "Choose examples" : "Choose persona"}
+              {selectedPersona ? "选择示例" : "选择用户画像"}
             </DialogTitle>
           </div>
         </DialogHeader>
@@ -149,7 +149,7 @@ export function ExamplesDialog({
                   variant="default"
                 >
                   <PlusIcon className="size-4" />
-                  Add Selected ({selectedExamples.length})
+                  添加所选 ({selectedExamples.length})
                 </Button>
               </div>
             )}

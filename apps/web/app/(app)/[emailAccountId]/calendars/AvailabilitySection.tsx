@@ -24,10 +24,9 @@ export function AvailabilitySection() {
     <section className="space-y-3">
       <CardBasic className="px-4 py-4">
         <div className="mb-1">
-          <h3 className="font-medium">Availability</h3>
+          <h3 className="font-medium">空闲时间</h3>
           <p className="text-sm text-muted-foreground">
-            Set the hours your assistant can suggest when scheduling meetings
-            over email.
+            设置助手通过邮件安排会议时可以建议的时间段。
           </p>
         </div>
 
@@ -68,14 +67,13 @@ function AvailabilityEditor({
     updateDefaultAvailabilityAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: "Availability updated" });
+        toastSuccess({ description: "空闲时间已更新" });
         onSaved();
       },
       onError: (actionError) => {
         toastError({
           description:
-            getActionErrorMessage(actionError.error) ??
-            "Failed to update availability",
+            getActionErrorMessage(actionError.error) ?? "更新空闲时间失败",
         });
       },
     },
@@ -96,11 +94,10 @@ function AvailabilityEditor({
       <WeeklyHoursEditor controller={controller} />
       <div className="flex items-center justify-between gap-4">
         <p className="text-xs text-muted-foreground">
-          We hide times where you already have events on your connected
-          calendar.
+          我们会隐藏你已连接日历上已有活动的时间段。
         </p>
         <Button onClick={handleSave} loading={isSaving}>
-          Save
+          保存
         </Button>
       </div>
     </div>

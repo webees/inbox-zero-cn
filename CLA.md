@@ -1,45 +1,45 @@
-# Inbox Zero Contributors License Agreement
+# Inbox Zero 贡献者许可协议
 
-This Contributors License Agreement ("CLA") is entered into between the Contributor, and Inbox Zero, collectively referred to as the "Parties."
+本贡献者许可协议（"CLA"）由贡献者与 Inbox Zero 双方订立，以下合称"双方"。
 
-## Background:
+## 背景：
 
-Inbox Zero is an open-source project aimed at providing an open-source app to help manage email better. This CLA governs the rights and contributions made by the Contributor to the Inbox Zero project.
+Inbox Zero 是一个开源项目，旨在提供一款帮助更好地管理邮件的开源应用。本 CLA 规范贡献者向 Inbox Zero 项目所做贡献的相关权利。
 
-## Agreement:
+## 协议：
 
-**Contributor Grant of License:**
+**贡献者授予许可：**
 
-By submitting code, documentation, or any other materials (collectively, "Contributions") to the Inbox Zero project, the Contributor grants Inbox Zero a perpetual, worldwide, non-exclusive, royalty-free, sublicensable license to use, modify, distribute, and otherwise exploit the Contributions, including any intellectual property rights therein, for the purposes of the Inbox Zero project.
+通过向 Inbox Zero 项目提交代码、文档或任何其他材料（统称"贡献"），贡献者授予 Inbox Zero 一项永久、全球范围、非排他、免版税、可再许可的许可，允许其使用、修改、分发并以其他方式利用这些贡献，包括其中的任何知识产权，用于 Inbox Zero 项目之目的。
 
-**Representation of Ownership and Right to Contribute:**
+**所有权与贡献权的声明：**
 
-The Contributor represents that they have the legal right to grant the license stated in Section 1, and that the Contributions do not infringe upon the intellectual property rights of any third party. The Contributor also represents that they have the authority to submit the Contributions on their own behalf or, if applicable, on behalf of their employer or any other entity.
+贡献者声明其拥有授予第 1 条所述许可的合法权利，且这些贡献不侵犯任何第三方的知识产权。贡献者还声明，其有权代表自己提交这些贡献，或在适用情况下代表其雇主或任何其他实体提交。
 
-**Patent Grant:**
+**专利许可：**
 
-If the Contributions include any method, process, or apparatus that is covered by a patent, the Contributor agrees to grant Inbox Zero a non-exclusive, worldwide, royalty-free license under any patent claims necessary to use, modify, distribute, and otherwise exploit the Contributions for the purposes of the Inbox Zero project.
+如果这些贡献包含任何受专利保护的方法、工艺或装置，贡献者同意授予 Inbox Zero 一项非排他、全球范围、免版税的许可，涵盖为 Inbox Zero 项目之目的使用、修改、分发并以其他方式利用这些贡献所需的任何专利权利要求。
 
-**No Implied Warranties or Support:**
+**无默示担保或支持：**
 
-The Contributor acknowledges that the Contributions are provided "as is," without any warranties or support of any kind. Inbox Zero shall have no obligation to provide maintenance, updates, bug fixes, or support for the Contributions.
+贡献者知悉，这些贡献按"原样"提供，不附带任何形式的担保或支持。Inbox Zero 无义务为这些贡献提供维护、更新、错误修复或支持。
 
-**Retention of Contributor Rights:**
+**贡献者权利的保留：**
 
-The Contributor retains all right, title, and interest in and to their Contributions. This CLA does not restrict the Contributor from using their own Contributions for any other purpose.
+贡献者保留对其贡献的一切权利、所有权和权益。本 CLA 不限制贡献者将自身贡献用于任何其他目的。
 
-**Governing Law:**
+**管辖法律：**
 
-This CLA shall be governed by and construed in accordance with the laws of Israel, without regard to its conflict of laws principles.
+本 CLA 受以色列法律管辖并据其解释，不考虑其法律冲突原则。
 
-**Entire Agreement:**
+**完整协议：**
 
-This CLA constitutes the entire agreement between the Parties with respect to the subject matter hereof and supersedes all prior and contemporaneous understandings, agreements, representations, and warranties.
+本 CLA 构成双方就本协议标的事项达成的完整协议，并取代此前和同期的一切谅解、协议、声明和担保。
 
-**Acceptance:**
+**接受：**
 
-By submitting Contributions to the Inbox Zero project, the Contributor acknowledges and agrees to the terms and conditions of this CLA. If the Contributor is agreeing to this CLA on behalf of an entity, they represent that they have the necessary authority to bind that entity to these terms.
+通过向 Inbox Zero 项目提交贡献，贡献者知悉并同意本 CLA 的条款与条件。如果贡献者代表某一实体同意本 CLA，则其声明拥有约束该实体遵守这些条款的必要授权。
 
-**Effective Date:**
+**生效日期：**
 
-This CLA is effective as of the date of the first Contribution made by the Contributor to the Inbox Zero project.
+本 CLA 自贡献者向 Inbox Zero 项目做出首次贡献之日起生效。

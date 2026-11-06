@@ -62,8 +62,8 @@ export default async function UsagePage(props: {
       <PageHeader
         title={
           isOwnAccount
-            ? "Credits and Usage"
-            : `Credits and Usage for ${emailAccount.name || emailAccount.email}`
+            ? "额度与用量"
+            : `${emailAccount.name || emailAccount.email} 的额度与用量`
         }
       />
       <div className="my-4">

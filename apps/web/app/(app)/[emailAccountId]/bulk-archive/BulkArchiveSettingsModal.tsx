@@ -38,20 +38,19 @@ export function BulkArchiveSettingsModal({
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
           <SettingsIcon className="mr-2 size-4" />
-          Settings
+          设置
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>Bulk Archive Settings</DialogTitle>
+          <DialogTitle>批量归档设置</DialogTitle>
         </DialogHeader>
         <div className="space-y-6">
           <div className="flex items-center justify-between gap-8">
             <div className="space-y-2">
-              <p className="font-medium">Action</p>
+              <p className="font-medium">操作</p>
               <p className="text-sm text-muted-foreground">
-                Choose what happens when you click the action buttons on each
-                category
+                选择点击每个类别上的操作按钮时会发生什么
               </p>
             </div>
             <Select
@@ -65,19 +64,19 @@ export function BulkArchiveSettingsModal({
                 <SelectItem value="archive">
                   <div className="flex items-center gap-2">
                     <ArchiveIcon className="size-4" />
-                    <span>Archive</span>
+                    <span>归档</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="markRead">
                   <div className="flex items-center gap-2">
                     <MailOpenIcon className="size-4" />
-                    <span>Mark as read</span>
+                    <span>标记为已读</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="delete">
                   <div className="flex items-center gap-2">
                     <TrashIcon className="size-4" />
-                    <span>Delete</span>
+                    <span>删除</span>
                   </div>
                 </SelectItem>
               </SelectContent>
@@ -92,31 +91,31 @@ export function BulkArchiveSettingsModal({
 export function getActionLabels(action: BulkActionType) {
   if (action === "delete") {
     return {
-      buttonLabel: "Delete",
-      allLabel: "Delete all",
+      buttonLabel: "删除",
+      allLabel: "全部删除",
       countLabel: (selected: number, total: number) =>
-        `Delete ${selected} of ${total}`,
-      completedLabel: "Deleted",
+        `删除 ${selected}/${total}`,
+      completedLabel: "已删除",
       icon: TrashIcon,
     };
   }
 
   if (action === "markRead") {
     return {
-      buttonLabel: "Mark as read",
-      allLabel: "Mark all as read",
+      buttonLabel: "标记为已读",
+      allLabel: "全部标记为已读",
       countLabel: (selected: number, total: number) =>
-        `Mark ${selected} of ${total} as read`,
-      completedLabel: "Marked as read",
+        `将 ${selected}/${total} 标记为已读`,
+      completedLabel: "已标记为已读",
       icon: MailOpenIcon,
     };
   }
   return {
-    buttonLabel: "Archive",
-    allLabel: "Archive all",
+    buttonLabel: "归档",
+    allLabel: "全部归档",
     countLabel: (selected: number, total: number) =>
-      `Archive ${selected} of ${total}`,
-    completedLabel: "Archived",
+      `归档 ${selected}/${total}`,
+    completedLabel: "已归档",
     icon: ArchiveIcon,
   };
 }

@@ -50,11 +50,11 @@ export default function CreateOrganizationPage() {
 
       if (result?.serverError) {
         toastError({
-          title: "Error creating organization",
+          title: "创建组织时出错",
           description: result.serverError,
         });
       } else {
-        toastSuccess({ description: "Organization created successfully!" });
+        toastSuccess({ description: "组织创建成功！" });
         mutate();
         router.push(`/organization/${result?.data?.id}`);
       }
@@ -64,7 +64,7 @@ export default function CreateOrganizationPage() {
 
   return (
     <PageWrapper className="max-w-2xl mx-auto">
-      <PageHeader title="Create Organization" />
+      <PageHeader title="创建组织" />
       <LoadingContent loading={isLoading} error={error}>
         <form
           className="max-w-sm space-y-4 mt-4"
@@ -73,8 +73,8 @@ export default function CreateOrganizationPage() {
           <Input
             type="text"
             name="name"
-            label="Organization Name"
-            placeholder="Apple Inc."
+            label="组织名称"
+            placeholder="苹果公司"
             registerProps={register("name")}
             error={errors.name}
           />
@@ -82,14 +82,14 @@ export default function CreateOrganizationPage() {
           <Input
             type="text"
             name="slug"
-            label="URL Slug"
+            label="URL 别名"
             placeholder="apple-inc"
             registerProps={register("slug")}
             error={errors.slug}
           />
 
           <Button type="submit" loading={isSubmitting}>
-            Create Organization
+            创建组织
           </Button>
         </form>
       </LoadingContent>

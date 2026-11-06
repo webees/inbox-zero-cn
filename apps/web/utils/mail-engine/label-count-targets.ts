@@ -33,19 +33,19 @@ export type MailboxCountTarget = {
 export function mailboxCountTargets(input: {
   labels: Array<{ id: string; name: string }>;
   folders: MailboxCountFolder[];
-  /** Drafts a pending send stands in for, hidden from Drafts like in its list. */
+  /** 待发送邮件所代替的草稿，会像在草稿列表中那样从草稿中隐藏。 */
   hiddenDraftMessageIds?: string[];
 }): MailboxCountTarget[] {
   const targets: MailboxCountTarget[] = [
     {
       id: "INBOX",
-      name: "Inbox",
+      name: "收件箱",
       kind: "system",
       predicate: { kind: "role", role: "inbox" },
     },
     {
       id: "DRAFT",
-      name: "Drafts",
+      name: "草稿",
       kind: "system",
       predicate: withoutHiddenDrafts(
         { kind: "role", role: "draft" },

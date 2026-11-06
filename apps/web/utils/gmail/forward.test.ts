@@ -75,7 +75,7 @@ describe("email forwarding", () => {
 <div class="gmail_quote gmail_quote_container">
   <div dir="ltr" class="gmail_attr">---------- Forwarded message ----------<br>
 From: <strong class="gmail_sendername" dir="auto">From</strong> <span dir="auto">&lt;<a href="mailto:from@demo.com">from@demo.com</a>&gt;</span><br>
-Date: Thu, 6 Feb 2025 at 22:35<br>
+Date: Thu, 6 Feb 2025 22:35<br>
 Subject: great meeting!<br>
 To: To &lt;<a href="mailto:to@demo.com">to@demo.com</a>&gt;<br>
 </div><br><br>

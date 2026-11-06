@@ -101,14 +101,14 @@ export function DesktopDownloadCta({
             <a href={GITHUB_RELEASES_URL}>
               <span className="relative z-10 flex items-center gap-2">
                 <Download className="size-4" />
-                View desktop releases
+                查看桌面端版本
               </span>
             </a>
           </Button>
         )}
         <Button variant="secondary-two" size={buttonSize} asChild>
           <button type="button" onClick={() => scrollToSection("downloads")}>
-            Other platforms
+            其他平台
           </button>
         </Button>
       </div>
@@ -120,10 +120,10 @@ type MobileStore = { href: string; label: string };
 
 function detectMobileStore(userAgent: string): MobileStore | null {
   if (/iPhone|iPod/.test(userAgent)) {
-    return { href: "/ios", label: "Download on the App Store" };
+    return { href: "/ios", label: "在 App Store 下载" };
   }
   if (/Android/.test(userAgent)) {
-    return { href: "/android", label: "Get it on Google Play" };
+    return { href: "/android", label: "在 Google Play 获取" };
   }
   return null;
 }

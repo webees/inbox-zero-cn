@@ -45,21 +45,18 @@ export function CalendarInvitation({ messageId }: { messageId: string }) {
   if (!isLoading && !error && !data?.invitation) return null;
   const invitation = data?.invitation;
   const response = submitted?.response ?? invitation?.response;
-  let status =
-    "No matching calendar event was verified. Your response will be emailed to the organizer.";
-  if (invitation?.calendarSynced)
-    status =
-      "Your response will update your calendar and notify the organizer.";
+  let status = "未验证到匹配的日历事件。你的回复将通过邮件发送给组织者。";
+  if (invitation?.calendarSynced) status = "你的回复将更新日历并通知组织者。";
   if (submitted) {
     status = submitted.calendarSynced
-      ? "Response sent and calendar updated."
-      : "Response emailed to the organizer. Calendar sync wasn’t confirmed.";
+      ? "回复已发送，日历已更新。"
+      : "回复已通过邮件发送给组织者。日历同步未确认。";
   }
-  if (isExecuting) status = "Sending response…";
+  if (isExecuting) status = "正在发送回复…";
   return (
     <section
       className="mb-4 rounded-lg border bg-muted/30 p-4"
-      aria-label="Calendar invitation"
+      aria-label="日历邀请"
     >
       <LoadingContent loading={isLoading} error={error}>
         {invitation && (
@@ -75,9 +72,7 @@ export function CalendarInvitation({ messageId }: { messageId: string }) {
                   {invitation.organizer}
                 </p>
                 {invitation.recurring && (
-                  <p className="text-sm text-muted-foreground">
-                    Recurring invitation
-                  </p>
+                  <p className="text-sm text-muted-foreground">重复邀请</p>
                 )}
               </div>
             </div>
@@ -102,12 +97,12 @@ export function CalendarInvitation({ messageId }: { messageId: string }) {
             )}
 
             <fieldset className="flex flex-wrap gap-2">
-              <legend className="sr-only">Your response</legend>
+              <legend className="sr-only">你的回复</legend>
               {(
                 [
-                  ["accepted", "Yes"],
-                  ["declined", "No"],
-                  ["tentative", "Maybe"],
+                  ["accepted", "是"],
+                  ["declined", "否"],
+                  ["tentative", "可能"],
                 ] as const
               ).map(([value, label]) => (
                 <Button

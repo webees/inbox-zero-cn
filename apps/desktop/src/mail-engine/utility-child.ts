@@ -31,11 +31,9 @@ export type ChildToMainMessage =
 
 export type ChildHealth = {
   eventLoopDelayMs: DurationSummary | null;
-  /** From the call, so including time queued behind other transactions. */
+  /** 从调用开始计时，因此包含在其他事务之后排队的时间。 */
   sqliteReadMs: DurationSummary | null;
   sqliteWriteMs: DurationSummary | null;
-  /** Archive, star, send and other commands, until accepted and shown in open views. */
-  mailCommandMs: DurationSummary | null;
 };
 
 /**
@@ -57,9 +55,8 @@ export function createUtilityChildRuntime(
   const eventLoopDelay = startEventLoopDelayMonitor();
   const sqliteReads = createDurationRecorder();
   const sqliteWrites = createDurationRecorder();
-  const mailCommands = createDurationRecorder();
 
-  // Session cookies stay in the main process; it answers per request.
+  // 会话 cookie 保留在主进程；主进程按请求作答。
   function requestCookieHeader(url: string) {
     const requestId = randomUUID();
     return new Promise<string>((resolve, reject) => {
@@ -70,13 +67,13 @@ export function createUtilityChildRuntime(
 
   function rejectPendingCookieRequests() {
     for (const pending of cookieRequests.values()) {
-      pending.reject(new Error("mail engine is closed"));
+      pending.reject(new Error("邮件引擎已关闭"));
     }
     cookieRequests.clear();
   }
 
   function requireOwner() {
-    if (!owner) throw new Error("mail engine is not started");
+    if (!owner) throw new Error("邮件引擎未启动");
     return owner;
   }
 
@@ -85,7 +82,6 @@ export function createUtilityChildRuntime(
       eventLoopDelayMs: eventLoopDelay.drain(),
       sqliteReadMs: sqliteReads.drain(),
       sqliteWriteMs: sqliteWrites.drain(),
-      mailCommandMs: mailCommands.drain(),
     };
   }
 
@@ -120,17 +116,8 @@ export function createUtilityChildRuntime(
             }),
         });
         return null;
-      case "ipc": {
-        if (!isMailCommand(message.payload)) {
-          return requireOwner().handleIpc(message.payload);
-        }
-        const startedAt = performance.now();
-        try {
-          return await requireOwner().handleIpc(message.payload);
-        } finally {
-          mailCommands.record(performance.now() - startedAt);
-        }
-      }
+      case "ipc":
+        return requireOwner().handleIpc(message.payload);
       case "subscribe": {
         const { subscriptionId } = message;
         const unsubscribe = requireOwner().subscribe(
@@ -187,15 +174,6 @@ export function createUtilityChildRuntime(
       }
     },
   };
-}
-
-function isMailCommand(payload: unknown) {
-  const method = (payload as { method?: unknown } | null)?.method;
-  return (
-    method === "submitConversations" ||
-    method === "submitMetadata" ||
-    method === "submitSend"
-  );
 }
 
 function engineErrorMessage(error: unknown): ChildToMainMessage {

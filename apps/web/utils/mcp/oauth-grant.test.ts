@@ -75,7 +75,7 @@ describe("OAuth grant replacement", () => {
         integration: notionIntegration,
         emailAccountId: "mailbox-1",
       }),
-    ).rejects.toThrow("no refresh token is available");
+    ).rejects.toThrow("没有可用的刷新令牌");
     expect(refreshAuthorization).not.toHaveBeenCalled();
   });
 

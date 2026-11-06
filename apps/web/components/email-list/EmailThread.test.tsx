@@ -121,8 +121,8 @@ describe("EmailThread reply composer", () => {
     const view = render(
       <EmailThread messages={[first]} refetch={vi.fn()} showReplyButton />,
     );
-    fireEvent.click(screen.getByRole("button", { name: "Reply" }));
-    expect(screen.getByRole("textbox", { name: "Email message" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "回复" }));
+    expect(screen.getByRole("textbox", { name: "电子邮件内容" })).toBeTruthy();
 
     view.rerender(
       <EmailThread
@@ -131,7 +131,7 @@ describe("EmailThread reply composer", () => {
         showReplyButton
       />,
     );
-    expect(screen.getByRole("textbox", { name: "Email message" })).toBeTruthy();
+    expect(screen.getByRole("textbox", { name: "电子邮件内容" })).toBeTruthy();
 
     view.rerender(
       <EmailThread
@@ -146,7 +146,7 @@ describe("EmailThread reply composer", () => {
     );
     expect(
       screen
-        .getAllByRole("textbox", { name: "Email message" })
+        .getAllByRole("textbox", { name: "电子邮件内容" })
         .map((editor) => editor.dataset.draftSessionId),
     ).toEqual(["first:reply", "other-copy:reply"]);
 
@@ -164,7 +164,7 @@ describe("EmailThread reply composer", () => {
       />,
     );
     expect(
-      screen.getByRole("textbox", { name: "Email message" }).dataset
+      screen.getByRole("textbox", { name: "电子邮件内容" }).dataset
         .draftSessionId,
     ).toBe("other-draft:reply");
   });
@@ -182,9 +182,9 @@ describe("EmailThread reply composer", () => {
       />,
     );
     const editors = () =>
-      screen.getAllByRole("textbox", { name: "Email message" });
+      screen.getAllByRole("textbox", { name: "电子邮件内容" });
     fireEvent.change(editors()[0], { target: { value: "Independent edit" } });
-    fireEvent.click(screen.getByRole("button", { name: "Forward" }));
+    fireEvent.click(screen.getByRole("button", { name: "转发" }));
     expect(editors().map((editor) => editor.dataset.draftSessionId)).toEqual([
       "independent-first:reply",
       "independent-second:reply",
@@ -230,7 +230,7 @@ describe("EmailThread reply composer", () => {
         />,
       );
       expect(
-        screen.getAllByRole("textbox", { name: "Email message" }),
+        screen.getAllByRole("textbox", { name: "电子邮件内容" }),
       ).toHaveLength(1);
       expect(composerMounts).toBe(1);
     }
@@ -238,8 +238,8 @@ describe("EmailThread reply composer", () => {
     rememberReplacedDraftMessage("account-1", "race-v1", "race-v2");
     act(() => endSave());
 
-    expect(screen.queryByText("Loading message…")).toBeNull();
-    const current = screen.getByRole("textbox", { name: "Email message" });
+    expect(screen.queryByText("正在加载邮件…")).toBeNull();
+    const current = screen.getByRole("textbox", { name: "电子邮件内容" });
     expect(current.dataset.draftSessionId).toBe("race-v1:reply");
     expect(current.dataset.providerDraftMessageId).toBe("race-v2");
     expect(composerMounts).toBe(1);
@@ -259,7 +259,7 @@ describe("EmailThread reply composer", () => {
         showReplyButton
       />,
     );
-    const composer = screen.getByRole("textbox", { name: "Email message" });
+    const composer = screen.getByRole("textbox", { name: "电子邮件内容" });
     expect(composer.dataset.draftSessionId).toBe("draft-v1:reply");
 
     rememberReplacedDraftMessage("account-1", "draft-v1", "draft-v2");
@@ -276,8 +276,8 @@ describe("EmailThread reply composer", () => {
         />,
       );
 
-      expect(screen.queryByText("Loading message…")).toBeNull();
-      const current = screen.getByRole("textbox", { name: "Email message" });
+      expect(screen.queryByText("正在加载邮件…")).toBeNull();
+      const current = screen.getByRole("textbox", { name: "电子邮件内容" });
       expect(current.dataset.draftSessionId).toBe("draft-v1:reply");
       expect(current.dataset.providerDraftMessageId).toBe("draft-v2");
       expect(composerMounts).toBe(1);
@@ -291,10 +291,10 @@ describe("EmailThread reply composer", () => {
       />,
     );
     expect(
-      screen.getAllByRole("textbox", { name: "Email message" }),
+      screen.getAllByRole("textbox", { name: "电子邮件内容" }),
     ).toHaveLength(2);
     expect(
-      screen.getAllByRole("textbox", { name: "Email message" })[1].dataset
+      screen.getAllByRole("textbox", { name: "电子邮件内容" })[1].dataset
         .draftSessionId,
     ).toBe("parent:forward");
     view.rerender(
@@ -306,22 +306,22 @@ describe("EmailThread reply composer", () => {
       />,
     );
     expect(
-      screen.getAllByRole("textbox", { name: "Email message" }),
+      screen.getAllByRole("textbox", { name: "电子邮件内容" }),
     ).toHaveLength(1);
     expect(
-      screen.getByRole("textbox", { name: "Email message" }).dataset
+      screen.getByRole("textbox", { name: "电子邮件内容" }).dataset
         .draftSessionId,
     ).toBe("draft-v1:reply");
-    fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+    fireEvent.click(screen.getByRole("button", { name: "回复" }));
     expect(
-      screen.getAllByRole("textbox", { name: "Email message" }),
+      screen.getAllByRole("textbox", { name: "电子邮件内容" }),
     ).toHaveLength(1);
-    fireEvent.click(screen.getByRole("button", { name: "Forward" }));
+    fireEvent.click(screen.getByRole("button", { name: "转发" }));
     expect(
-      screen.getAllByRole("textbox", { name: "Email message" }),
+      screen.getAllByRole("textbox", { name: "电子邮件内容" }),
     ).toHaveLength(2);
     expect(
-      screen.getAllByRole("textbox", { name: "Email message" })[1].dataset
+      screen.getAllByRole("textbox", { name: "电子邮件内容" })[1].dataset
         .draftSessionId,
     ).toBe("parent:forward");
   });
@@ -352,8 +352,8 @@ describe("EmailThread outgoing replies", () => {
       '[data-thread-message-id="outgoing:send-1"]',
     );
     expect(outgoingRow?.querySelector("time")).toBeTruthy();
-    expect(outgoingRow?.textContent).not.toContain("Sending");
-    expect(screen.getAllByRole("button", { name: "Reply" })).toHaveLength(2);
+    expect(outgoingRow?.textContent).not.toContain("正在发送…");
+    expect(screen.getAllByRole("button", { name: "回复" })).toHaveLength(2);
 
     view.rerender(
       <EmailThread
@@ -382,7 +382,7 @@ describe("EmailThread outgoing replies", () => {
         showReplyButton
       />,
     );
-    fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+    fireEvent.click(screen.getByRole("button", { name: "回复" }));
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
 
     view.rerender(
@@ -424,7 +424,7 @@ describe("EmailThread outgoing replies", () => {
       const view = render(
         <EmailThread messages={[parent]} refetch={vi.fn()} showReplyButton />,
       );
-      fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+      fireEvent.click(screen.getByRole("button", { name: "回复" }));
       fireEvent.click(screen.getByRole("button", { name: "Queue send" }));
       view.rerender(
         <EmailThread
@@ -449,7 +449,7 @@ describe("EmailThread outgoing replies", () => {
         '[data-send-operation-id="send-1"]',
       );
       expect(
-        screen.getByLabelText("Email message").closest("[inert]"),
+        screen.getByLabelText("电子邮件内容").closest("[inert]"),
       ).toBeTruthy();
       expect(sentRow?.getAttribute("aria-hidden")).toBe("true");
 
@@ -458,7 +458,7 @@ describe("EmailThread outgoing replies", () => {
         ?.setAttribute("data-email-ready", "true");
       await act(async () => vi.advanceTimersByTimeAsync(20));
 
-      expect(screen.queryByLabelText("Email message")).toBeNull();
+      expect(screen.queryByLabelText("电子邮件内容")).toBeNull();
       expect(sentRow?.hasAttribute("aria-hidden")).toBe(false);
       expect(
         view.container
@@ -481,7 +481,7 @@ describe("EmailThread outgoing replies", () => {
       const view = render(
         <EmailThread messages={[parent]} refetch={vi.fn()} showReplyButton />,
       );
-      fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+      fireEvent.click(screen.getByRole("button", { name: "回复" }));
       fireEvent.click(screen.getByRole("button", { name: "Submit send" }));
       view.rerender(
         <EmailThread
@@ -507,7 +507,7 @@ describe("EmailThread outgoing replies", () => {
       expect(sentRow?.getAttribute("aria-hidden")).toBe("true");
       await act(async () => vi.advanceTimersByTimeAsync(1500));
       expect(sentRow?.getAttribute("aria-hidden")).toBe("true");
-      expect(screen.getByLabelText("Email message")).toBeTruthy();
+      expect(screen.getByLabelText("电子邮件内容")).toBeTruthy();
 
       fireEvent.click(screen.getByRole("button", { name: "Queue send" }));
       sentRow
@@ -515,7 +515,7 @@ describe("EmailThread outgoing replies", () => {
         ?.setAttribute("data-email-ready", "true");
       await act(async () => vi.advanceTimersByTimeAsync(20));
 
-      expect(screen.queryByLabelText("Email message")).toBeNull();
+      expect(screen.queryByLabelText("电子邮件内容")).toBeNull();
       expect(sentRow?.hasAttribute("aria-hidden")).toBe(false);
     } finally {
       htmlBodyReady.current = true;
@@ -560,7 +560,7 @@ describe("EmailThread outgoing replies", () => {
           showReplyButton
         />,
       );
-      expect(screen.getByLabelText("Email message")).toBeTruthy();
+      expect(screen.getByLabelText("电子邮件内容")).toBeTruthy();
 
       fireEvent.click(screen.getByRole("button", { name: "Queue send" }));
       view.container
@@ -568,7 +568,7 @@ describe("EmailThread outgoing replies", () => {
         ?.setAttribute("data-email-ready", "true");
       await act(async () => vi.advanceTimersByTimeAsync(20));
 
-      expect(screen.queryByLabelText("Email message")).toBeNull();
+      expect(screen.queryByLabelText("电子邮件内容")).toBeNull();
       expect(
         view.container
           .querySelector('[data-send-operation-id="send-1"]')
@@ -610,7 +610,7 @@ describe("EmailThread outgoing replies", () => {
 
       expect(
         screen
-          .getAllByRole("textbox", { name: "Email message" })
+          .getAllByRole("textbox", { name: "电子邮件内容" })
           .map((editor) => editor.dataset.providerDraftMessageId),
       ).toEqual(["draft-1"]);
     } finally {
@@ -629,13 +629,13 @@ describe("EmailThread outgoing replies", () => {
           showReplyButton
         />,
       );
-      fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+      fireEvent.click(screen.getByRole("button", { name: "回复" }));
       fireEvent.click(screen.getByRole("button", { name: "Queue send" }));
       await act(async () => vi.advanceTimersByTimeAsync(500));
-      expect(screen.getByLabelText("Email message")).toBeTruthy();
+      expect(screen.getByLabelText("电子邮件内容")).toBeTruthy();
 
       await act(async () => vi.advanceTimersByTimeAsync(600));
-      expect(screen.queryByLabelText("Email message")).toBeNull();
+      expect(screen.queryByLabelText("电子邮件内容")).toBeNull();
     } finally {
       vi.useRealTimers();
     }
@@ -664,11 +664,11 @@ describe("EmailThread outgoing replies", () => {
     );
     const reply = Array.from(
       outgoingRow?.querySelectorAll("button") ?? [],
-    ).find((button) => button.textContent === "Reply");
+    ).find((button) => button.textContent === "回复");
     if (!reply) throw new Error("expected a reply button on the sent reply");
     fireEvent.click(reply);
 
-    const composer = screen.getByRole("textbox", { name: "Email message" });
+    const composer = screen.getByRole("textbox", { name: "电子邮件内容" });
     expect(composer.dataset.draftKeyMessageId).toBe("parent");
     expect(composer.dataset.draftSessionId).toBe("outgoing:send-1:reply");
   });
@@ -701,7 +701,7 @@ describe("EmailThread outgoing replies", () => {
         />,
       );
       expect(
-        screen.getByRole("textbox", { name: "Email message" }).dataset
+        screen.getByRole("textbox", { name: "电子邮件内容" }).dataset
           .draftSessionId,
       ).toBe("outgoing:send-1:reply");
       const outgoingRow = document.querySelector(
@@ -709,7 +709,7 @@ describe("EmailThread outgoing replies", () => {
       );
       const replyButton = Array.from(
         outgoingRow?.querySelectorAll("button") ?? [],
-      ).find((button) => button.textContent === "Reply");
+      ).find((button) => button.textContent === "回复");
       if (!replyButton) throw new Error("expected outgoing reply button");
       fireEvent.click(replyButton);
       view.rerender(
@@ -721,7 +721,7 @@ describe("EmailThread outgoing replies", () => {
         />,
       );
       expect(
-        screen.getByRole("textbox", { name: "Email message" }).dataset
+        screen.getByRole("textbox", { name: "电子邮件内容" }).dataset
           .draftSessionId,
       ).toBe("outgoing:send-1:reply");
     } finally {
@@ -754,7 +754,7 @@ describe("EmailThread outgoing replies", () => {
       />,
     );
 
-    expect(screen.queryByRole("textbox", { name: "Email message" })).toBeNull();
+    expect(screen.queryByRole("textbox", { name: "电子邮件内容" })).toBeNull();
     localDrafts.current = [];
   });
 });
@@ -782,7 +782,7 @@ describe("EmailThread scheduled send drafts", () => {
       />,
     );
 
-    expect(screen.queryByRole("textbox", { name: "Email message" })).toBeNull();
+    expect(screen.queryByRole("textbox", { name: "电子邮件内容" })).toBeNull();
   });
 
   it("shows the draft again once its scheduled send is no longer pending", () => {
@@ -801,7 +801,7 @@ describe("EmailThread scheduled send drafts", () => {
     );
 
     expect(
-      screen.getByRole("textbox", { name: "Email message" }).dataset
+      screen.getByRole("textbox", { name: "电子邮件内容" }).dataset
         .providerDraftMessageId,
     ).toBe("draft-1");
   });
@@ -818,12 +818,12 @@ describe("EmailThread scheduled send drafts", () => {
         showReplyButton
       />,
     );
-    expect(screen.queryByRole("textbox", { name: "Email message" })).toBeNull();
+    expect(screen.queryByRole("textbox", { name: "电子邮件内容" })).toBeNull();
 
     act(() => showDraftAgain());
 
     expect(
-      screen.getByRole("textbox", { name: "Email message" }).dataset
+      screen.getByRole("textbox", { name: "电子邮件内容" }).dataset
         .providerDraftMessageId,
     ).toBe("draft-1");
   });
@@ -876,7 +876,7 @@ describe("EmailThread draft discard", () => {
     fireEvent.click(screen.getByRole("button", { name: "Discard draft" }));
     await act(async () => {});
 
-    expect(screen.getByRole("textbox", { name: "Email message" })).toBeTruthy();
+    expect(screen.getByRole("textbox", { name: "电子邮件内容" })).toBeTruthy();
     expect(onThreadDiscarded).not.toHaveBeenCalled();
   });
 
@@ -900,7 +900,7 @@ describe("EmailThread draft discard", () => {
     await act(async () => {});
 
     expect(
-      screen.getAllByRole("textbox", { name: "Email message" }),
+      screen.getAllByRole("textbox", { name: "电子邮件内容" }),
     ).toHaveLength(1);
     expect(onThreadDiscarded).not.toHaveBeenCalled();
   });
@@ -922,7 +922,7 @@ describe("EmailThread draft discard", () => {
     fireEvent.click(screen.getByRole("button", { name: "Discard draft" }));
     await act(async () => {});
 
-    expect(screen.queryByRole("textbox", { name: "Email message" })).toBeNull();
+    expect(screen.queryByRole("textbox", { name: "电子邮件内容" })).toBeNull();
     expect(onThreadDiscarded).not.toHaveBeenCalled();
   });
 });
@@ -943,7 +943,7 @@ describe("EmailThread mailbox copies of local replies", () => {
     const view = render(
       <EmailThread messages={messages} refetch={vi.fn()} showReplyButton />,
     );
-    expect(screen.queryByRole("textbox", { name: "Email message" })).toBeNull();
+    expect(screen.queryByRole("textbox", { name: "电子邮件内容" })).toBeNull();
     localDrafts.isLoading = false;
     localDrafts.current = [
       {
@@ -962,7 +962,7 @@ describe("EmailThread mailbox copies of local replies", () => {
       <EmailThread messages={messages} refetch={vi.fn()} showReplyButton />,
     );
 
-    const composers = screen.getAllByRole("textbox", { name: "Email message" });
+    const composers = screen.getAllByRole("textbox", { name: "电子邮件内容" });
     expect(composers).toHaveLength(1);
     expect(composers[0]?.dataset.draftSessionId).toBe("parent:reply");
   });
@@ -981,7 +981,7 @@ describe("EmailThread mailbox copies of local replies", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Discard draft" }));
     await act(async () => {});
-    expect(screen.queryByRole("textbox", { name: "Email message" })).toBeNull();
+    expect(screen.queryByRole("textbox", { name: "电子邮件内容" })).toBeNull();
   });
 });
 
@@ -1202,7 +1202,7 @@ function MockComposer({
   return (
     <>
       <textarea
-        aria-label="Email message"
+        aria-label="电子邮件内容"
         data-draft-key-message-id={draftKeyMessageId}
         data-draft-session-id={draftSessionId}
         data-provider-draft-message-id={providerDraftMessageId}

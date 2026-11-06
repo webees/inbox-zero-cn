@@ -18,7 +18,7 @@ import {
 } from "@/app/(app)/[emailAccountId]/onboarding/onboardingFlow";
 import { AutomationTabs } from "@/app/(app)/[emailAccountId]/automation/AutomationTabs";
 
-export const maxDuration = 300; // Applies to the actions
+export const maxDuration = 300; // 适用于 actions
 
 export default async function AutomationPage({
   params,
@@ -28,7 +28,7 @@ export default async function AutomationPage({
   const { emailAccountId } = await params;
   await checkUserOwnsEmailAccount({ emailAccountId });
 
-  // onboarding redirect
+  // 引导流程重定向
   const cookieStore = await cookies();
   const viewedOnboarding =
     cookieStore.get(ASSISTANT_ONBOARDING_COOKIE)?.value === "true";
@@ -53,11 +53,10 @@ export default async function AutomationPage({
           <div className="flex items-center justify-between">
             <div>
               <PageHeader
-                title="AI Assistant"
+                title="AI 助手"
                 video={{
-                  title: "Getting started with AI Personal Assistant",
-                  description:
-                    "Learn how to use the AI Personal Assistant to automatically label, archive, and more.",
+                  title: "AI 个人助手入门",
+                  description: "了解如何使用 AI 个人助手自动打标签、归档等。",
                   muxPlaybackId:
                     "TYo3SIMdhg008x022H79400CxeRSiB6mLyuwHx8Szc00Rec",
                 }}
@@ -74,8 +73,8 @@ export default async function AutomationPage({
           <DismissibleVideoCard
             className="my-4"
             icon={<SparklesIcon className="h-5 w-5" />}
-            title="Getting started with AI Assistant"
-            description="Learn how to use the AI Assistant to automatically label, archive, and more."
+            title="AI 助手入门"
+            description="了解如何使用 AI 助手自动打标签、归档等。"
             muxPlaybackId="TYo3SIMdhg008x022H79400CxeRSiB6mLyuwHx8Szc00Rec"
             storageKey="ai-assistant-onboarding-video"
             videoAnalytics={{

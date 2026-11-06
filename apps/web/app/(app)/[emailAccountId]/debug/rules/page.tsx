@@ -27,13 +27,13 @@ export default function DebugRulesPage() {
     toggleAllRulesAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: "Rules updated successfully" });
+        toastSuccess({ description: "规则更新成功" });
         mutate();
       },
       onError: (result) => {
         toastError({
-          title: "Failed to update rules",
-          description: result.error.serverError || "Unknown error",
+          title: "更新规则失败",
+          description: result.error.serverError || "未知错误",
         });
       },
     },
@@ -43,13 +43,13 @@ export default function DebugRulesPage() {
     if (!data) return;
     navigator.clipboard.writeText(JSON.stringify(data, null, 2));
     setCopied(true);
-    toastSuccess({ description: "Copied to clipboard" });
+    toastSuccess({ description: "已复制到剪贴板" });
     setTimeout(() => setCopied(false), 2000);
   }, [data]);
 
   return (
     <PageWrapper>
-      <PageHeading>Rules</PageHeading>
+      <PageHeading>规则</PageHeading>
 
       <LoadingContent loading={isLoading} error={error}>
         <div className="mt-6 space-y-6">
@@ -63,10 +63,10 @@ export default function DebugRulesPage() {
               />
               <Label htmlFor="toggle-all-rules" className="font-medium">
                 {allRulesEnabled
-                  ? "All rules enabled"
+                  ? "所有规则已启用"
                   : someRulesEnabled
-                    ? "Some rules enabled"
-                    : "All rules disabled"}
+                    ? "部分规则已启用"
+                    : "所有规则已禁用"}
               </Label>
             </div>
             <Button
@@ -80,13 +80,13 @@ export default function DebugRulesPage() {
               ) : (
                 <CopyIcon className="mr-2 h-4 w-4" />
               )}
-              {copied ? "Copied" : "Copy JSON"}
+              {copied ? "已复制" : "复制 JSON"}
             </Button>
           </div>
 
           <div className="rounded-lg border bg-muted/50 p-4">
             <pre className="overflow-auto text-sm">
-              {data ? JSON.stringify(data, null, 2) : "Loading..."}
+              {data ? JSON.stringify(data, null, 2) : "加载中…"}
             </pre>
           </div>
         </div>

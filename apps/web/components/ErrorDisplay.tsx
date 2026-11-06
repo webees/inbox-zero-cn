@@ -30,10 +30,8 @@ export function ErrorDisplay(props: {
           <EmptyMedia variant="icon">
             <WifiOffIcon />
           </EmptyMedia>
-          <EmptyTitle>You're offline</EmptyTitle>
-          <EmptyDescription>
-            Check your internet connection and try again.
-          </EmptyDescription>
+          <EmptyTitle>你已离线</EmptyTitle>
+          <EmptyDescription>请检查你的网络连接后重试。</EmptyDescription>
         </EmptyHeader>
       </Empty>
     );
@@ -46,7 +44,7 @@ export function ErrorDisplay(props: {
           <EmptyMedia variant="icon" className="bg-destructive/10">
             <AlertCircle className="text-destructive" />
           </EmptyMedia>
-          <EmptyTitle>There was an error</EmptyTitle>
+          <EmptyTitle>出错了</EmptyTitle>
           <EmptyDescription>{errorMessage}</EmptyDescription>
         </EmptyHeader>
       </Empty>
@@ -60,13 +58,13 @@ export function ErrorDisplay(props: {
           <EmptyMedia variant="icon" className="bg-destructive/10">
             <AlertCircle className="text-destructive" />
           </EmptyMedia>
-          <EmptyTitle>There was an error</EmptyTitle>
+          <EmptyTitle>出错了</EmptyTitle>
           <EmptyDescription>
-            Please refresh or contact support at{" "}
+            请刷新页面；如果错误仍然存在，请联系支持团队{" "}
             <a href={`mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}`}>
               {env.NEXT_PUBLIC_SUPPORT_EMAIL}
-            </a>{" "}
-            if the error persists.
+            </a>
+            。
           </EmptyDescription>
         </EmptyHeader>
       </Empty>
@@ -78,9 +76,9 @@ export function ErrorDisplay(props: {
 
 export const NotLoggedIn = () => (
   <div className="flex flex-col items-center justify-center sm:p-20 md:p-32">
-    <div className="text-lg text-gray-700">You are not signed in 😞</div>
+    <div className="text-lg text-gray-700">你尚未登录 😞</div>
     <Button variant="outline" className="mt-2" onClick={() => logOut("/login")}>
-      Sign in
+      登录
     </Button>
     <div className="mt-8">
       <Image
@@ -101,17 +99,17 @@ const safeErrorToString = (
   if (!error) return null;
   if (typeof error === "string") return error;
   if (typeof error === "object") {
-    // Handle Zod validation errors with issues array
+    // 处理带 issues 数组的 Zod 校验错误
     if ("issues" in error && Array.isArray(error.issues)) {
       return error.issues
-        .map((issue) => issue.message || "Validation error")
+        .map((issue) => issue.message || "校验错误")
         .join(", ");
     }
-    // For other objects, try to stringify safely
+    // 对于其他对象，尝试安全地字符串化
     try {
       return JSON.stringify(error);
     } catch {
-      return "Invalid data format";
+      return "数据格式无效";
     }
   }
   return String(error);

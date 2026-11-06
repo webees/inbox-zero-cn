@@ -1,11 +1,11 @@
 /**
- * Convert standard Markdown to Slack mrkdwn format.
+ * 将标准 Markdown 转换为 Slack mrkdwn 格式。
  *
- * Key differences:
- * - Bold: **text** → *text*
- * - Links: [text](url) → <url|text>
- * - Headings: # text → *text* (Slack has no heading syntax)
- * - Bullets: * item / - item → • item
+ * 主要差异：
+ * - 粗体：**text** → *text*
+ * - 链接：[text](url) → <url|text>
+ * - 标题：# text → *text*（Slack 没有标题语法）
+ * - 项目符号：* item / - item → • item
  */
 export function markdownToSlackMrkdwn(text: string): string {
   const links: Array<{ token: string; replacement: string }> = [];
@@ -25,15 +25,15 @@ export function markdownToSlackMrkdwn(text: string): string {
         return token;
       },
     )
-    // Handle escaped Markdown from model outputs: \*\*text\*\* → *text*
+    // 处理模型输出中转义的 Markdown：\*\*text\*\* → *text*
     .replace(/\\\*\\\*(.+?)\\\*\\\*/g, "*$1*")
-    // Bold: **text** → *text*
+    // 粗体：**text** → *text*
     .replace(/\*\*(.+?)\*\*/g, "*$1*")
-    // Headings: # text → *text*
+    // 标题：# text → *text*
     .replace(/^#{1,6}\s+(.+)$/gm, "*$1*")
-    // Escaped unordered list bullets: \* item / \- item → • item
+    // 转义的无序列表项目符号：\* item / \- item → • item
     .replace(/^(\s*)\\[*-]\s+/gm, "$1• ")
-    // Unordered list bullets: * item or - item → • item
+    // 无序列表项目符号：* item 或 - item → • item
     .replace(/^(\s*)[*-]\s+/gm, "$1• ");
 
   return links.reduce(
@@ -43,8 +43,8 @@ export function markdownToSlackMrkdwn(text: string): string {
 }
 
 /**
- * Normalizes lightweight HTML that can leak into draft previews before
- * converting the result to Slack mrkdwn.
+ * 在把结果转换为 Slack mrkdwn 之前，规范化可能混入草稿预览的
+ * 轻量 HTML。
  */
 export function richTextToSlackMrkdwn(text: string): string {
   const links: Array<{ token: string; replacement: string }> = [];
@@ -114,7 +114,7 @@ function normalizeSlackRichText(text: string): string {
         tagName === "ul" ||
         tagName === "ol"
       ) {
-        // Strip structural opening tags while keeping their contents.
+        // 去掉结构性开始标签，保留其中的内容。
       } else if (
         tagName === "/p" ||
         tagName === "/div" ||

@@ -87,12 +87,12 @@ export const updateMultiAccountPremiumAction = actionClientUser
       },
     });
 
-    if (!user) throw new SafeError("User not found");
+    if (!user) throw new SafeError("未找到用户");
 
     if (!isAdminForPremium(user.premium?.admins || [], userId))
-      throw new SafeError("Not admin");
+      throw new SafeError("不是管理员");
 
-    // check all users exist
+    // 检查所有用户是否存在
     const uniqueEmails = uniq(emails);
     const users = await prisma.user.findMany({
       where: { email: { in: uniqueEmails } },
@@ -103,43 +103,41 @@ export const updateMultiAccountPremiumAction = actionClientUser
 
     const otherUsers = users.filter((u) => u.id !== userId);
 
-    // make sure that the users being added to this plan are not on higher tiers already
+    // 确保要添加到此套餐的用户尚未处于更高档位
     for (const userToAdd of otherUsers) {
       if (
         isOnHigherTier(getUserTier(userToAdd.premium), getUserTier(premium))
       ) {
         throw new SafeError(
-          "One of the users you are adding to your plan already has premium and cannot be added.",
+          "你要添加到套餐中的某个用户已拥有高级版，无法添加。",
         );
       }
     }
 
     if ((premium.emailAccountsAccess || 0) < uniqueEmails.length) {
-      // Check if user has an active subscription
+      // 检查用户是否有有效订阅
       if (
         !premium.lemonSqueezySubscriptionItemId &&
         !premium.stripeSubscriptionItemId
       ) {
-        throw new SafeError(
-          "You must upgrade to premium before adding more users to your account.",
-        );
+        throw new SafeError("在向账号添加更多用户前，你必须升级到高级版。");
       }
     }
 
-    // Get current users connected to this premium
+    // 获取当前连接到此高级版的用户
     const currentPremium = await prisma.premium.findUnique({
       where: { id: premium.id },
       select: { users: { select: { id: true, email: true } } },
     });
     const currentUsers = currentPremium?.users || [];
 
-    // Determine which users to disconnect (those not in the new email list)
+    // 确定要断开哪些用户（不在新邮箱列表中的用户）
     const usersToDisconnect = currentUsers.filter(
       (u) => u.id !== userId && !uniqueEmails.includes(u.email),
     );
 
-    // delete premium for other users when adding them to this premium plan
-    // don't delete the premium for the current user
+    // 在将其他用户添加到此高级版套餐时删除他们的高级版
+    // 不要删除当前用户的高级版
     await prisma.premium.deleteMany({
       where: {
         id: { not: premium.id },
@@ -147,7 +145,7 @@ export const updateMultiAccountPremiumAction = actionClientUser
       },
     });
 
-    // Update users: disconnect removed users and connect new users
+    // 更新用户：断开被移除的用户并连接新用户
     await prisma.premium.update({
       where: { id: premium.id },
       data: {
@@ -158,8 +156,8 @@ export const updateMultiAccountPremiumAction = actionClientUser
       },
     });
 
-    // Set pending invites to exactly match non-existing users in the email list
-    // Exclude emails that belong to the user's own EmailAccount records
+    // 将待处理邀请设置为与邮箱列表中不存在的用户完全一致
+    // 排除属于用户自己的 EmailAccount 记录的邮箱
     const userEmailAccounts = new Set(
       user.emailAccounts?.map((ea) => ea.email) || [],
     );
@@ -192,9 +190,9 @@ export const updateMultiAccountPremiumAction = actionClientUser
 //       },
 //     });
 
-//     if (!user) throw new SafeError("User not found");
+//     if (!user) throw new SafeError("未找到用户");
 //     if (!user.premium?.lemonSqueezySubscriptionId)
-//       throw new SafeError("You do not have a premium subscription");
+//       throw new SafeError("你没有高级版订阅");
 
 //     const variantId = getVariantId({ tier: premiumTier });
 
@@ -207,13 +205,13 @@ export const activateLicenseKeyAction = actionClientUser
   .action(async ({ ctx: { userId, logger }, parsedInput: { licenseKey } }) => {
     const lemonSqueezyLicense = await activateLemonLicenseKey(
       licenseKey,
-      `License for ${userId}`,
+      `用户 ${userId} 的许可证`,
       logger,
     );
 
     if (lemonSqueezyLicense.error) {
       return {
-        error: lemonSqueezyLicense.data?.error || "Error activating license",
+        error: lemonSqueezyLicense.data?.error || "激活许可证时出错",
       };
     }
 
@@ -277,7 +275,7 @@ export const adminChangePremiumStatusAction = adminActionClient
         const { count: deleted } = await prisma.pendingPremiumGrant.deleteMany({
           where: { email: normalizedEmail },
         });
-        if (!deleted) throw new SafeError("User not found");
+        if (!deleted) throw new SafeError("未找到用户");
         return { pending: true };
       }
 
@@ -298,7 +296,7 @@ export const adminChangePremiumStatusAction = adminActionClient
           },
         });
       } else {
-        throw new SafeError("User not premium.");
+        throw new SafeError("用户不是高级版。");
       }
 
       return { pending: false };
@@ -313,9 +311,9 @@ export const claimPremiumAdminAction = actionClientUser
       select: { premium: { select: { id: true, admins: true } } },
     });
 
-    if (!user) throw new SafeError("User not found");
-    if (!user.premium?.id) throw new SafeError("User does not have a premium");
-    if (user.premium?.admins.length) throw new SafeError("Already has admin");
+    if (!user) throw new SafeError("未找到用户");
+    if (!user.premium?.id) throw new SafeError("用户没有高级版");
+    if (user.premium?.admins.length) throw new SafeError("已有管理员");
 
     await prisma.premium.update({
       where: { id: user.premium.id },
@@ -341,11 +339,11 @@ export const updateStripeInvoiceEmailsAction = actionClientUser
     });
 
     if (!user) {
-      throw new SafeError("User not found");
+      throw new SafeError("未找到用户");
     }
     assertCanManageBilling(userId, user);
     if (!user.premium?.stripeCustomerId) {
-      throw new SafeError("Stripe billing account not found");
+      throw new SafeError("未找到 Stripe 账单账号");
     }
 
     await prisma.premium.update({
@@ -382,15 +380,15 @@ export const getBillingPortalUrlAction = actionClientUser
     });
 
     if (!user) {
-      throw new SafeError("User not found");
+      throw new SafeError("未找到用户");
     }
     assertCanManageBilling(userId, user);
     if (!user.premium) {
-      throw new SafeError("Premium subscription not found");
+      throw new SafeError("未找到高级版订阅");
     }
     if (!user.premium.stripeCustomerId) {
-      logger.error("Stripe customer id not found");
-      throw new SafeError("Stripe customer id not found");
+      logger.error("未找到 Stripe 客户 ID");
+      throw new SafeError("未找到 Stripe 客户 ID");
     }
 
     const stripe = getStripe();
@@ -402,7 +400,7 @@ export const getBillingPortalUrlAction = actionClientUser
         ? await stripe.subscriptions
             .retrieve(user.premium.stripeSubscriptionId)
             .catch((error) => {
-              logger.error("Failed to retrieve Stripe subscription", {
+              logger.error("获取 Stripe 订阅失败", {
                 error: error?.message,
                 subscriptionId: user.premium?.stripeSubscriptionId,
               });
@@ -410,7 +408,7 @@ export const getBillingPortalUrlAction = actionClientUser
             })
         : null;
 
-    // we can't use the billing portal if the subscription is canceled
+    // 如果订阅已取消，则无法使用账单门户
     if (priceId && subscription && subscription.status === "canceled") {
       return { url: null };
     }
@@ -424,9 +422,7 @@ export const getBillingPortalUrlAction = actionClientUser
       storedSubscriptionItemId: user.premium.stripeSubscriptionItemId,
     });
     if (priceId && subscription && !planChangeItem) {
-      throw new SafeError(
-        "We couldn't change your plan. Your subscription has not been changed.",
-      );
+      throw new SafeError("我们无法更改你的套餐。你的订阅尚未更改。");
     }
     const confirmFlow =
       subscription &&
@@ -467,12 +463,11 @@ export const getBillingPortalUrlAction = actionClientUser
         throw error;
       }
 
-      // Monthly ↔ annual (and other interval) switches are often rejected by
-      // the portal confirm flow even though Stripe can apply them directly.
-      logger.warn(
-        "Stripe plan-change confirm flow failed; applying the price update directly",
-        { error: error instanceof Error ? error.message : error },
-      );
+      // 月付 ↔ 年付（以及其他计费周期）切换常常被门户确认流程拒绝，
+      // 尽管 Stripe 可以直接应用这些变更。
+      logger.warn("Stripe 套餐变更确认流程失败；直接应用价格更新", {
+        error: error instanceof Error ? error.message : error,
+      });
 
       const updated = await stripe.subscriptions.update(
         user.premium.stripeSubscriptionId,
@@ -513,17 +508,17 @@ export const endStripeTrialAction = actionClientUser
     });
 
     if (!user) {
-      throw new SafeError("User not found");
+      throw new SafeError("未找到用户");
     }
     assertCanManageBilling(userId, user);
 
     const premium = user.premium;
     if (!premium?.stripeSubscriptionId) {
-      throw new SafeError("Stripe subscription not found");
+      throw new SafeError("未找到 Stripe 订阅");
     }
 
     if (premium.stripeSubscriptionStatus !== "trialing") {
-      throw new SafeError("Your trial has already ended");
+      throw new SafeError("你的试用期已结束");
     }
 
     const stripe = getStripe();
@@ -534,7 +529,7 @@ export const endStripeTrialAction = actionClientUser
       },
     );
 
-    logger.info("Ended Stripe trial", {
+    logger.info("已结束 Stripe 试用", {
       subscriptionStatus: subscription.status,
     });
 
@@ -553,7 +548,7 @@ export const generateCheckoutSessionAction = actionClientUser
     const { tier, offer } = parsedInput;
     const priceId = getCheckoutPriceId({ tier, offer });
 
-    if (!priceId) throw new SafeError("Unknown tier. Contact support.");
+    if (!priceId) throw new SafeError("未知套餐档位。请联系支持。");
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -576,8 +571,8 @@ export const generateCheckoutSessionAction = actionClientUser
       },
     });
     if (!user) {
-      logger.error("User not found");
-      throw new SafeError("User not found");
+      logger.error("未找到用户");
+      throw new SafeError("未找到用户");
     }
     assertCanManageBilling(userId, user);
 
@@ -586,9 +581,7 @@ export const generateCheckoutSessionAction = actionClientUser
       !user.premium.stripeEndedAt &&
       user.premium.stripeSubscriptionStatus !== "incomplete_expired"
     ) {
-      throw new SafeError(
-        "You already have an existing subscription. Change your plan instead of starting a new subscription.",
-      );
+      throw new SafeError("你已有订阅。请更改套餐，而不是开始新订阅。");
     }
 
     const stripe = getStripe();
@@ -600,7 +593,7 @@ export const generateCheckoutSessionAction = actionClientUser
           email: user.email,
           metadata: { userId },
         },
-        // prevent race conditions of creating 2 customers in stripe for on user
+        // 防止在 Stripe 中为同一用户创建 2 个客户端的竞态条件
         // https://github.com/stripe/stripe-node/issues/476#issuecomment-402541143
         { idempotencyKey: userId },
       );
@@ -660,7 +653,7 @@ export const generateCheckoutSessionAction = actionClientUser
       },
     };
 
-    // ALWAYS create a checkout with a stripeCustomerId
+    // 始终使用 stripeCustomerId 创建结账会话
     const checkout = await stripe.checkout.sessions.create(checkoutParams, {
       idempotencyKey: `checkout:${createHash("sha256")
         .update(JSON.stringify(checkoutParams))

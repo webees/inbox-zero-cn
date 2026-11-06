@@ -1,58 +1,58 @@
 ---
-title: 'Enterprise SSO and SCIM'
-description: 'Configure SAML SSO and SCIM user provisioning for organization deployments.'
+title: '企业 SSO 和 SCIM'
+description: '为组织部署配置 SAML SSO 和 SCIM 用户预配。'
 ---
 
-Inbox Zero supports SAML SSO and SCIM user provisioning for organization deployments.
+Inbox Zero 为组织部署支持 SAML SSO 和 SCIM 用户预配。
 
 <Info>
-  If you use the hosted Inbox Zero cloud platform, contact sales to enable SSO or SCIM for your organization. If you self-host Inbox Zero, an app admin configures SSO from the admin page; SCIM credentials are managed in the same admin page.
+  如果你使用托管的 Inbox Zero 云平台，请联系销售为你的组织启用 SSO 或 SCIM。如果你自托管 Inbox Zero，应用管理员可以从管理页面配置 SSO；SCIM 凭据也在同一个管理页面中管理。
 </Info>
 
-## When to Use This
+## 何时使用此功能
 
-Use SSO and SCIM when your organization wants to manage Inbox Zero access through an identity provider such as Okta, Microsoft Entra ID, or Google Workspace.
+当你的组织希望通过 Okta、Microsoft Entra ID 或 Google Workspace 等身份提供商管理 Inbox Zero 访问权限时，请使用 SSO 和 SCIM。
 
-- **SSO** lets users sign in with your identity provider instead of a personal login flow.
-- **SCIM** lets your identity provider provision, update, and deprovision users.
+- **SSO** 让用户使用你的身份提供商登录，而不是个人登录流程。
+- **SCIM** 让你的身份提供商预配、更新和取消预配用户。
 
-## Prerequisites
+## 前置条件
 
-- A deployed Inbox Zero instance with a stable `NEXT_PUBLIC_BASE_URL`.
-- An admin user listed in `ADMINS`.
-- SAML IdP metadata XML from your identity provider.
-- The organization domain users will sign in with.
-- `SSO_LOGIN_ENABLED=true` if you want to show and allow SSO login.
+- 一个已部署的 Inbox Zero 实例，具有稳定的 `NEXT_PUBLIC_BASE_URL`。
+- 一个列在 `ADMINS` 中的管理员用户。
+- 来自你身份提供商的 SAML IdP 元数据 XML。
+- 用户将用于登录的组织域名。
+- 如果你想显示并允许 SSO 登录，需设置 `SSO_LOGIN_ENABLED=true`。
 
-## Configure SSO
+## 配置 SSO
 
-1. Sign in as an app admin.
-2. Open `/admin`.
-3. Click **Register SSO Provider**.
-4. Enter the organization name, provider ID, email domain, and SAML IdP metadata XML.
-5. Save the ACS callback URL returned after registration.
-6. Add the ACS callback URL to your identity provider's SAML application.
+1. 以应用管理员身份登录。
+2. 打开 `/admin`。
+3. 点击**注册 SSO 提供商**。
+4. 输入组织名称、提供商 ID、邮箱域名和 SAML IdP 元数据 XML。
+5. 保存注册后返回的 ACS 回调 URL。
+6. 把该 ACS 回调 URL 添加到你的身份提供商的 SAML 应用中。
 
-The ACS callback URL uses this format:
+ACS 回调 URL 使用以下格式：
 
 ```txt
 https://your-domain.com/api/auth/sso/saml2/sp/acs/{providerId}
 ```
 
-Users sign in through `/login/sso` using their email and the organization slug (a slugified form of the organization name you registered).
+用户通过 `/login/sso` 登录，使用其邮箱和组织的 slug（你注册的组织名称的 slug 化形式）。
 
-## Configure SCIM
+## 配置 SCIM
 
-SCIM requires a registered organization SSO provider and a separate `SCIM_CREDENTIAL_HASH_SECRET` (generate it with `openssl rand -hex 32`). Keep this secret stable. Open `/admin` → **SCIM provisioning**, enter the registered SSO provider ID and expiry, and select **Create SCIM connection**. Save the displayed token, connection ID, and credential ID securely. Use **Revoke a credential** in the same section to revoke it. Configure your identity provider with:
+SCIM 需要一个已注册的组织 SSO 提供商，以及一个单独的 `SCIM_CREDENTIAL_HASH_SECRET`（用 `openssl rand -hex 32` 生成）。请保持此密钥稳定。打开 `/admin` → **SCIM 预配**，输入已注册的 SSO 提供商 ID 和到期时间，并选择**创建 SCIM 连接**。请安全地保存显示的令牌、连接 ID 和凭据 ID。在同一部分使用**撤销凭据**可撤销它。用以下内容配置你的身份提供商：
 
-| Setting | Value |
+| 设置 | 值 |
 | ------- | ----- |
-| SCIM base URL | `https://your-domain.com/api/auth/scim/v2` |
-| Authentication | Bearer token |
-| Supported resource | Users |
+| SCIM 基础 URL | `https://your-domain.com/api/auth/scim/v2` |
+| 认证 | Bearer 令牌 |
+| 支持的资源 | Users |
 
-Keep the SCIM token secret. Revoke it if exposed. Existing identities require reviewed `ScimIdentityLink` records keyed by connection ID and immutable external ID; email addresses never authorize account linking. Deprovisioning disables new logins and removes stored sessions. Existing session cookies may remain usable for up to the configured cookie-cache expiry (currently five minutes). SCIM does not grant application organization roles automatically. See the [1.7 cutover checklist](https://github.com/elie222/inbox-zero/blob/main/docs/better-auth-1.7-upgrade.md) for legacy deployments.
+请对 SCIM 令牌保密。若泄露请撤销它。现有身份需要经过审阅的 `ScimIdentityLink` 记录，以连接 ID 和不可变的外部 ID 为键；邮箱地址永远不会授权账号关联。取消预配会禁用新的登录并移除已存储的会话。现有会话 cookie 可能在此前最多到配置的 cookie 缓存到期时间（目前为五分钟）内仍可使用。SCIM 不会自动授予应用组织角色。旧部署请参阅 [1.7 切换清单](https://github.com/elie222/inbox-zero/blob/main/docs/better-auth-1.7-upgrade.md)。
 
-## Managed Setup
+## 托管设置
 
-Hosted cloud organizations, or self-hosted deployments that want help configuring enterprise access, can contact sales from the pricing page.
+托管云组织，或希望获得企业访问配置帮助的自托管部署，可以从定价页面联系销售。

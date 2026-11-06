@@ -380,7 +380,7 @@ describe("OneDriveProvider", () => {
         } as unknown as Buffer,
         folderId: "folder-1",
       }),
-    ).rejects.toThrow("exceeds the maximum supported upload size");
+    ).rejects.toThrow("超过支持的最大上传大小");
 
     expect(api).not.toHaveBeenCalled();
   });

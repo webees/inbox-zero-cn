@@ -4,10 +4,7 @@ export async function withSetupActionTimeout<T>(
 ): Promise<T> {
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
   const timeout = new Promise<never>((_, reject) => {
-    timeoutId = setTimeout(
-      () => reject(new Error("Setup action timed out")),
-      timeoutMs,
-    );
+    timeoutId = setTimeout(() => reject(new Error("设置操作超时")), timeoutMs);
   });
 
   try {

@@ -17,23 +17,23 @@ export const POST = withError(
   async (request) => {
     if (!(await hasPostCronSecret(request))) {
       captureException(
-        new Error("Unauthorized cron request: api/follow-up-reminders/account"),
+        new Error("未授权的 cron 请求：api/follow-up-reminders/account"),
       );
-      return new Response("Unauthorized", { status: 401 });
+      return new Response("未授权", { status: 401 });
     }
 
     if (!env.NEXT_PUBLIC_FOLLOW_UP_REMINDERS_ENABLED) {
-      request.logger.warn("Follow-up reminders feature is disabled");
-      return NextResponse.json({ message: "Follow-up reminders disabled" });
+      request.logger.warn("跟进提醒功能已禁用");
+      return NextResponse.json({ message: "跟进提醒已禁用" });
     }
 
     const parseResult = bodySchema.safeParse(await request.json());
     if (!parseResult.success) {
-      request.logger.error("Invalid follow-up reminder account payload", {
+      request.logger.error("跟进提醒账号载荷无效", {
         errors: parseResult.error.issues,
       });
       return NextResponse.json(
-        { error: "Invalid payload", details: parseResult.error.issues },
+        { error: "载荷无效", details: parseResult.error.issues },
         { status: 400 },
       );
     }
@@ -45,7 +45,7 @@ export const POST = withError(
       logger,
     });
 
-    logger.info("Finished follow-up reminder account task", {
+    logger.info("已完成跟进提醒账号任务", {
       result,
     });
 

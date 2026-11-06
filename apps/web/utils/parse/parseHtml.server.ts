@@ -15,27 +15,27 @@ export function findUnsubscribeLink(html?: string | null) {
     if (containsUnsubscribeKeyword(text)) {
       unsubscribeLink = $(element).attr("href");
       // console.debug(
-      //   `Found link with text '${text}' and a link: ${unsubscribeLink}`,
+      //   `找到文本为 '${text}' 且链接为 ${unsubscribeLink} 的链接`,
       // );
-      return false; // break the loop
+      return false; // 跳出循环
     }
 
     const href = $(element).attr("href") || "";
     if (containsUnsubscribeUrlPattern(href)) {
       unsubscribeLink = href;
       // console.debug(
-      //   `Found link with href '${href}' and a link: ${unsubscribeLink}`,
+      //   `找到 href 为 '${href}' 且链接为 ${unsubscribeLink} 的链接`,
       // );
-      return false; // break the loop
+      return false; // 跳出循环
     }
   });
 
   if (unsubscribeLink) return unsubscribeLink;
 
-  // if we didn't find a link yet, try looking for lines that include the word unsubscribe
-  // with a link in the same line.
+  // 如果还没有找到链接，尝试查找包含单词 unsubscribe 的行
+  // 且同一行中有链接。
 
-  // nodeType of 3 represents a text node, which is the actual text inside an element or attribute.
+  // nodeType 为 3 表示文本节点，即元素或属性内部的真实文本。
   const textNodes = $("*")
     .contents()
     .filter(
@@ -44,13 +44,13 @@ export function findUnsubscribeLink(html?: string | null) {
     );
 
   textNodes.each((_index, textNode) => {
-    // Find the closest parent that has an 'a' tag
+    // 查找最近一个包含 'a' 标签的父节点
     const parent = $(textNode).parent();
     const link = parent.find("a").attr("href");
     if (link) {
-      // console.debug(`Found text including 'unsubscribe' and a link: ${link}`);
+      // console.debug(`找到包含 'unsubscribe' 的文本和链接：${link}`);
       unsubscribeLink = link;
-      return false; // break the loop
+      return false; // 跳出循环
     }
   });
 

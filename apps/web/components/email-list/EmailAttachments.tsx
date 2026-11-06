@@ -74,8 +74,7 @@ export function EmailAttachments({ message }: { message: ThreadMessage }) {
       signal.throwIfAborted();
       saveBlob(blob, filename);
     } catch {
-      if (!signal.aborted)
-        toastError({ description: "Failed to download attachment" });
+      if (!signal.aborted) toastError({ description: "下载附件失败" });
     } finally {
       setIsDownloading(false);
     }
@@ -107,7 +106,7 @@ export function EmailAttachments({ message }: { message: ThreadMessage }) {
               <button
                 type="button"
                 className="absolute inset-0 rounded-[inherit] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
-                aria-label={`Preview ${attachment.filename}`}
+                aria-label={`预览 ${attachment.filename}`}
                 title={attachment.filename}
                 onClick={() => setPreviewingId(attachment.attachmentId)}
               />
@@ -138,8 +137,8 @@ export function EmailAttachments({ message }: { message: ThreadMessage }) {
                   size="iconSm"
                   type="button"
                   className="relative"
-                  aria-label={`Download ${attachment.filename}`}
-                  title="Download attachment"
+                  aria-label={`下载 ${attachment.filename}`}
+                  title="下载附件"
                   disabled={!emailAccountId || isDownloading}
                   onClick={() =>
                     downloadAttachment({
@@ -190,7 +189,7 @@ function AttachmentPreviewDialogContent({
   const [file, setFile] = useState<Blob>();
   const [preview, setPreview] = useState<{ url: string; type: string }>();
   const [error, setError] = useState<string | undefined>(
-    tooLarge ? "This file is too large to preview." : undefined,
+    tooLarge ? "此文件过大，无法预览。" : undefined,
   );
 
   useEffect(() => {
@@ -209,15 +208,14 @@ function AttachmentPreviewDialogContent({
         if (controller.signal.aborted) return;
         setFile(blob);
         if (!typed) {
-          setError("Preview isn't available for this file.");
+          setError("此文件无法预览。");
           return;
         }
         objectUrl = URL.createObjectURL(typed);
         setPreview({ url: objectUrl, type: typed.type });
       })
       .catch(() => {
-        if (!controller.signal.aborted)
-          setError("Couldn't load this attachment.");
+        if (!controller.signal.aborted) setError("无法加载此附件。");
       });
 
     return () => {
@@ -232,9 +230,7 @@ function AttachmentPreviewDialogContent({
         <DialogTitle className="min-w-0 flex-1 truncate font-medium text-sm">
           {filename}
         </DialogTitle>
-        <DialogDescription className="sr-only">
-          Attachment preview
-        </DialogDescription>
+        <DialogDescription className="sr-only">附件预览</DialogDescription>
         <Button
           variant="outline"
           size="sm"
@@ -243,7 +239,7 @@ function AttachmentPreviewDialogContent({
           onClick={() => file && saveBlob(file, filename)}
         >
           <DownloadIcon className="mr-2 size-4" aria-hidden="true" />
-          Download
+          下载
         </Button>
       </div>
       <div className="relative flex min-h-0 flex-1 items-center justify-center bg-muted/40">

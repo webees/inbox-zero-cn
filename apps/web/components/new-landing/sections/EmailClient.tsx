@@ -22,35 +22,35 @@ export const EMAIL_CLIENT_SECTION_ID = "email-client";
 
 const LAUNCH_VIDEO = {
   playbackId: "1K01tCypmkqhB3OZwCzO9j0202K0089aqXX02tYpgoUzztmc",
-  title: "Meet the Inbox Zero email app",
+  title: "认识 Inbox Zero 邮件应用",
   thumbnailTime: 1.5,
 };
 
 const reasons = [
   {
     icon: <Gift className="size-5" />,
-    title: "Free to use",
-    description: "The app is free. Add the AI only if you want it.",
+    title: "免费使用",
+    description: "应用免费使用。只有你想要时才添加 AI。",
   },
   {
     icon: <Repeat className="size-5" />,
-    title: "No need to switch",
-    description: "Prefer Gmail or Outlook? The AI works there too.",
+    title: "无需切换",
+    description: "更喜欢用 Gmail 或 Outlook？AI 在那里同样可用。",
   },
   {
     icon: <Zap className="size-5" />,
-    title: "Half the price of Superhuman",
-    description: `AI drafts and a sorted inbox from $${tiers[0].price.annually}/month, half what Superhuman charges.`,
+    title: "价格只有 Superhuman 的一半",
+    description: `AI 草稿和分类收件箱每月 $${tiers[0].price.annually} 起，只有 Superhuman 收费的一半。`,
   },
 ];
 
 export function EmailClient() {
   return (
     <Section id={EMAIL_CLIENT_SECTION_ID}>
-      <SectionHeading>Fly through email on desktop and mobile</SectionHeading>
+      <SectionHeading>在桌面端和移动端飞速处理邮件</SectionHeading>
       <SectionSubtitle>
-        Every Gmail and Outlook account in one inbox, on the web, Mac, Windows,
-        and iPhone. Like Superhuman, but free.
+        所有 Gmail 和 Outlook 邮箱账号汇聚到一个收件箱，覆盖网页、Mac、Windows
+        和 iPhone。像 Superhuman，但免费。
       </SectionSubtitle>
       <SectionContent>
         <BlurFade inView>
@@ -90,7 +90,7 @@ export function EmailClient() {
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
           <Button size="lg" asChild>
             <Link href={MAIL_CLIENT_SIGNUP_PATH}>
-              <span className="relative z-10">Try the email app free</span>
+              <span className="relative z-10">免费试用邮件应用</span>
             </Link>
           </Button>
         </div>

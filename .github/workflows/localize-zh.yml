@@ -1,0 +1,898 @@
+name: 自动汉化（简体中文）
+
+# 上游变更由 upstream-watch.yml 的长驻 watcher 负责即时触发（约 3 分钟粒度）；
+# 这里的 cron 只是兜底：watcher 万一挂掉，仍能按固定节奏发现上游更新。
+# 上游无更新时只做一次 checkout + fetch + rev-list 就结束（约 15 秒，不烧模型 token、不产生提交）。
+#
+# 调度模型：全局队列（不再按区域串行）。
+#   1. 同步上游后，用启发式扫描全仓库，得到「疑似还有英文文案」的文件；
+#   2. 交给汉化账本（.github/i18n-ledger.jsonl）按内容哈希过滤：
+#      内容没变且上一轮已判定 clean/skipped 的文件直接出队，不消耗模型 token；
+#      上一轮没翻干净的（residual）排到队首；
+#   3. 队列按「每批 QUEUE_BATCH_SIZE 个文件、单批上限 CODEX_BATCH_SECONDS」分批交给
+#      Codex 翻译，每批结束立刻格式化、记账、提交、推送；
+#   4. 一轮最多处理 CODEX_BATCHES 批。队列没清空就自动重新排队下一轮，清空了就
+#      跑一次完整测试并触发镜像打包。
+#
+# 汉化结果直接提交并推送到当前分支，不创建 PR、不需要人工介入。
+# 每次汉化结束后会立即清理旧的 Actions 运行，避免历史无限增长。
+# 汉化由 Codex CLI（codex exec）完成，任务说明见 .github/codex/localize-zh.prompt.md。
+# 注意：Codex 自定义 provider 只支持 Responses API，AI_API_URL 必须提供 POST /v1/responses。
+# 需要在仓库 Settings → Secrets and variables → Actions 中配置：
+#   AI_API_KEY  必填
+#   AI_API_URL  必填（也可放在 Variables）
+#   AI_MODEL    必填，需与网关中的模型别名一致
+# 可选 Variables：
+#   UPSTREAM_REPO    默认 https://github.com/elie222/inbox-zero.git
+#   UPSTREAM_BRANCH  默认 main
+#   CODEX_SANDBOX    默认 danger-full-access；如需更严格的文件系统沙箱可设为 workspace-write
+#   CODEX_BATCHES    单轮最多处理多少批（默认 6）
+#   QUEUE_BATCH_SIZE 每批文件数（默认 8）
+#   MAX_LOCALIZE_ROUNDS 一条链最多自我重排多少轮（默认 20），防止无限循环
+
+on:
+  schedule:
+    # 兜底巡检（每 2 小时一次，错开整点）。不要靠它做低延迟触发：
+    # 实测这个仓库的 schedule 会被 GitHub 延迟 2–4 小时。
+    - cron: "23 */2 * * *"
+  workflow_dispatch:
+    inputs:
+      area:
+        description: "已废弃（保留兼容）：全局队列不再按区域调度，填了也会忽略"
+        type: string
+      retry:
+        description: "已废弃（保留兼容）：全局队列用账本记录进度，不再需要重试计数"
+        type: string
+        default: "0"
+      round:
+        description: "本轮序号（工作流自动递增，一般无需手动填写）"
+        type: string
+        default: "0"
+      force_run:
+        description: "上游无更新时也强制执行汉化"
+        type: boolean
+        default: false
+      scope:
+        description: "汉化范围：all=代码+文档，ui=仅界面代码，docs=仅文档"
+        type: choice
+        options: [all, ui, docs]
+        default: all
+      dry_run:
+        description: "仅预览：写入文件但不提交、不推送"
+        type: boolean
+        default: false
+      prompt_path:
+        description: "提示词文件路径（留空=默认 .github/codex/localize-zh.prompt.md；用于 A/B 对比 token 成本）"
+        type: string
+        default: ""
+
+permissions:
+  contents: write
+  actions: write # 清理旧运行需要删除 workflow run 的权限
+
+concurrency:
+  # 定时轮询与链条续跑必须分开分组：同一个 concurrency group 只保留
+  # 1 个 running + 1 个 pending，后到的 pending 会顶掉先到的 pending。
+  # 若共用分组，高频轮询会把「排队中的链条续跑」顶掉，导致链条静默中断。
+  group: localize-zh-${{ github.event_name }}
+  cancel-in-progress: false
+
+jobs:
+  localize:
+    runs-on: ubuntu-latest
+    # GitHub 托管 runner 单个 job 的硬上限是 6 小时（360 分钟）
+    timeout-minutes: 360
+    steps:
+      - name: 检查 AI 配置
+        id: config
+        env:
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+          AI_API_URL: ${{ secrets.AI_API_URL || vars.AI_API_URL }}
+          AI_MODEL: ${{ vars.AI_MODEL || secrets.AI_MODEL }}
+        run: |
+          if [ -z "$AI_API_KEY" ] || [ -z "$AI_API_URL" ] || [ -z "$AI_MODEL" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=跳过汉化::未配置 AI_API_KEY、AI_API_URL 或 AI_MODEL，请在 Settings → Secrets and variables → Actions 添加。"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 定时运行去重
+        id: dedupe
+        # 轮询与链条分组不同，可能真的并发执行。如果链条还在跑（别的 localize 运行
+        # 处于 in_progress/queued），直接退出：否则它会和链条抢同一批文件、重复烧 token。
+        # limit 取 100 是因为轮询频率高（每天约 96 次），需要覆盖足够长的历史窗口。
+        if: steps.config.outputs.configured == 'true' && github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          others=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow localize-zh.yml \
+            --limit 100 --json databaseId,status \
+            --jq "[.[] | select(.databaseId != ${GITHUB_RUN_ID} and (.status == \"in_progress\" or .status == \"queued\"))] | length" \
+            2>/dev/null || echo 0)
+          if [ "${others:-0}" -gt 0 ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice title=链条仍在进行::已有 ${others} 个汉化运行在跑，跳过本次定时检查。"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout
+        if: steps.config.outputs.configured == 'true' && steps.dedupe.outputs.skip != 'true'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 同步上游代码
+        id: sync
+        if: steps.config.outputs.configured == 'true' && steps.dedupe.outputs.skip != 'true'
+        # 这里不再 continue-on-error：合并失败必须让整轮显式失败，
+        # 否则会像 38840091387 那样"上游落后 10 个提交却报成功、什么都不做"。
+        env:
+          UPSTREAM_REPO: ${{ vars.UPSTREAM_REPO || 'https://github.com/elie222/inbox-zero.git' }}
+          UPSTREAM_BRANCH: ${{ vars.UPSTREAM_BRANCH || 'main' }}
+          TARGET_BRANCH: ${{ github.ref_name }}
+          FORCE_RUN: ${{ inputs.force_run }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote remove upstream >/dev/null 2>&1 || true
+          git remote add upstream "$UPSTREAM_REPO"
+          git fetch --no-tags upstream "$UPSTREAM_BRANCH"
+          upstream_tip="$(git rev-parse FETCH_HEAD)"
+          git fetch --no-tags origin "$TARGET_BRANCH"
+          echo "WORKFLOW_PROTECT_REF=origin/${TARGET_BRANCH}" >> "$GITHUB_ENV"
+          new_commits="$(git rev-list --count HEAD.."$upstream_tip")"
+          echo "上游领先 ${new_commits} 个提交。"
+          if [ "$FORCE_RUN" != "true" ] && [ "$new_commits" = "0" ]; then
+            echo "updated=false" >> "$GITHUB_OUTPUT"
+            echo "上游无更新，跳过本次汉化。"
+            exit 0
+          fi
+          echo "updated=true" >> "$GITHUB_OUTPUT"
+
+          # 同步与冲突解析统一由脚本处理，工作流与离线仿真共用同一套逻辑。
+          bash .github/scripts/merge-upstream.sh "$upstream_tip"
+          echo "已按上游覆盖：${UPSTREAM_REPO}（${UPSTREAM_BRANCH}）"
+
+      - name: Setup Node
+        if: steps.config.outputs.configured == 'true' && steps.dedupe.outputs.skip != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: 确保 ripgrep 可用
+        # 全仓库扫描依赖 rg；runner 镜像不保证预装，
+        # 缺失时扫描会静默返回 0 个候选文件，整轮看起来"没有英文可译"。
+        if: steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true'
+        run: |
+          set -euo pipefail
+          if ! command -v rg >/dev/null 2>&1; then
+            echo "runner 上没有 rg，安装 ripgrep。"
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ripgrep
+          fi
+          command -v rg
+          rg --version | head -1
+
+      - name: 建立全局汉化队列
+        id: queue
+        if: steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true'
+        env:
+          QUEUE_BATCH_SIZE: ${{ vars.QUEUE_BATCH_SIZE || '8' }}
+          CODEX_BATCHES: ${{ vars.CODEX_BATCHES || '6' }}
+        run: |
+          set -euo pipefail
+          if ! command -v rg >/dev/null 2>&1; then
+            echo "::error title=缺少 ripgrep::汉化点扫描依赖 rg，但当前 runner 上没有安装，已中止以免误判为「没有英文可译」"
+            exit 1
+          fi
+
+          # 1. 机械扫描全仓库：只保留仍然命中英文启发式的文件（已汉化的文件不会命中）
+          bash .github/scripts/i18n-candidates.sh . > "$RUNNER_TEMP/i18n-candidates.txt"
+          bash .github/scripts/i18n-candidates.sh --lines . > "$RUNNER_TEMP/i18n-candidate-lines.txt"
+
+          # 2. 账本过滤（.github/i18n-ledger.jsonl）：
+          #    内容没变且已判定 clean/skipped 的文件直接出队，零模型成本；
+          #    上一轮没翻干净的（residual）排到队首；单轮最多取 CODEX_BATCHES*QUEUE_BATCH_SIZE 个。
+          batch_capacity=$(( CODEX_BATCHES * QUEUE_BATCH_SIZE ))
+          node .github/scripts/i18n-ledger.mjs queue \
+            --candidates "$RUNNER_TEMP/i18n-candidates.txt" \
+            --hits "$RUNNER_TEMP/i18n-candidate-lines.txt" \
+            --out "$RUNNER_TEMP/i18n-queue.txt" \
+            --limit "$batch_capacity" > "$RUNNER_TEMP/i18n-queue-stats.json"
+          cat "$RUNNER_TEMP/i18n-queue-stats.json"
+
+          queued=$(wc -l < "$RUNNER_TEMP/i18n-queue.txt" | tr -d ' ')
+          queued_total=$(node -e 'const fs=require("fs");const s=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));process.stdout.write(String(s.queuedTotal));' "$RUNNER_TEMP/i18n-queue-stats.json")
+          echo "count=${queued}" >> "$GITHUB_OUTPUT"
+          echo "total=${queued_total}" >> "$GITHUB_OUTPUT"
+          if [ "$queued" = "0" ]; then
+            echo "has_candidates=false" >> "$GITHUB_OUTPUT"
+            echo "全仓库没有待汉化文件（账本已覆盖），跳过依赖安装、汉化与测试。"
+          else
+            echo "has_candidates=true" >> "$GITHUB_OUTPUT"
+            echo "本轮队列：${queued} 个文件（账本待办共 ${queued_total} 个，单轮上限 ${batch_capacity}）。队列前 10 个："
+            head -10 "$RUNNER_TEMP/i18n-queue.txt"
+          fi
+
+      - name: 安装 Codex CLI
+        if: steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true' && steps.queue.outputs.has_candidates == 'true'
+        run: npm install -g @openai/codex
+
+      - name: 安装 pnpm
+        if: steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true' && steps.queue.outputs.has_candidates == 'true'
+        uses: pnpm/action-setup@v4
+
+      - name: 安装依赖
+        if: steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true' && steps.queue.outputs.has_candidates == 'true'
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
+          UPSTREAM_BRANCH: ${{ vars.UPSTREAM_BRANCH || 'main' }}
+        run: |
+          set -euo pipefail
+          # 依赖文件（package.json / pnpm-workspace.yaml / lockfile / patches）本仓库从不修改，
+          # 但 squash 会偶尔把上游的依赖升级覆盖回旧版本，于是 lockfile 与 manifest 不一致，
+          # `--frozen-lockfile` 直接失败（历史上汉化运行 59 秒就挂在「安装依赖」，
+          # 镜像构建也因为同一个原因双架构全挂）。这里检测到漂移就按上游版本还原再装一次。
+          if ! pnpm install --frozen-lockfile; then
+            echo "::warning title=依赖文件与上游漂移::已按上游版本还原依赖文件后重试安装。"
+            git fetch --no-tags upstream "$UPSTREAM_BRANCH"
+            git checkout FETCH_HEAD -- '*package.json' pnpm-workspace.yaml pnpm-lock.yaml
+            # patches/ 里的补丁会随版本改名，先清掉本地目录再按上游还原，避免留下失效补丁
+            git rm -r -q --ignore-unmatch patches >/dev/null 2>&1 || true
+            git checkout FETCH_HEAD -- patches
+            bash .github/scripts/stage-worktree.sh
+            pnpm install --frozen-lockfile
+          fi
+
+      - name: 生成 Prisma Client
+        if: steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true' && steps.queue.outputs.has_candidates == 'true'
+        run: pnpm -F inbox-zero-ai exec prisma generate
+
+      - name: 分批汉化并逐批提交
+        id: localize
+        if: steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true' && steps.queue.outputs.has_candidates == 'true'
+        env:
+          AI_API_URL: ${{ secrets.AI_API_URL || vars.AI_API_URL }}
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+          AI_MODEL: ${{ vars.AI_MODEL || secrets.AI_MODEL }}
+          CODEX_HOME: ${{ runner.temp }}/codex-home
+          LOCALIZE_SCOPE: ${{ inputs.scope || 'all' }}
+          CODEX_SANDBOX: ${{ vars.CODEX_SANDBOX || 'danger-full-access' }}
+          CODEX_BATCH_SECONDS: ${{ vars.CODEX_BATCH_SECONDS || '1200' }}
+          # 单轮批次数：全局队列下每轮最多处理 CODEX_BATCHES*QUEUE_BATCH_SIZE 个文件，
+          # 队列没清空会自动重排下一轮（靠账本续跑，不会重复处理已完成的文件）
+          CODEX_BATCHES: ${{ vars.CODEX_BATCHES || '6' }}
+          # 翻译是机械任务，降低推理档位可显著减少 reasoning/output token（可用 vars 覆盖）
+          CODEX_REASONING_EFFORT: ${{ vars.CODEX_REASONING_EFFORT || 'low' }}
+          # 单轮墙钟预算：即使单批没超时，跑满预算也要收手重新排队，避免整轮被 job 上限杀掉
+          RUN_BUDGET_SECONDS: ${{ vars.RUN_BUDGET_SECONDS || '10800' }}
+          ROUND: ${{ inputs.round }}
+          # 每批文件数：改成纯翻译批次后单批成本大幅下降（实测 4 文件约 12-15 万 token、waste=0），
+          # 这里取 8 提高单轮覆盖面；仍可用 vars.QUEUE_BATCH_SIZE 覆盖
+          QUEUE_BATCH_SIZE: ${{ vars.QUEUE_BATCH_SIZE || '8' }}
+          # 提示词变体标记：只用于指标标签，方便按配置对比
+          LOCALIZE_PROMPT_VARIANT: p2
+          LOCALIZE_PROMPT_PATH: ${{ inputs.prompt_path }}
+          DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
+          TARGET_BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          if ! command -v rg >/dev/null 2>&1; then
+            echo "::error title=缺少 ripgrep::汉化点扫描依赖 rg，但当前 runner 上没有安装，已中止以免误判为「没有英文可译」"
+            exit 1
+          fi
+          mkdir -p "$CODEX_HOME"
+          cat > "$CODEX_HOME/config.toml" <<EOF
+          model = "${AI_MODEL}"
+          model_provider = "custom"
+          model_reasoning_effort = "${CODEX_REASONING_EFFORT}"
+          sandbox_mode = "${CODEX_SANDBOX}"
+
+          [model_providers.custom]
+          name = "Custom"
+          base_url = "${AI_API_URL}"
+          env_key = "AI_API_KEY"
+          wire_api = "responses"
+
+          [sandbox_workspace_write]
+          network_access = true
+          EOF
+          codex --version
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          prompt_path="${LOCALIZE_PROMPT_PATH:-.github/codex/localize-zh.prompt.md}"
+          if [ ! -f "$prompt_path" ]; then
+            echo "::error title=缺少提示词::找不到 ${prompt_path}"
+            exit 1
+          fi
+          base_prompt="范围标记：${LOCALIZE_SCOPE}（全局队列第 ${ROUND:-0} 轮）。$(cat "$prompt_path")"
+          # 指标按运行分文件，避免并发运行互相覆盖记录
+          METRICS_DIR=".github/i18n-metrics"
+          METRICS_FILE="${METRICS_DIR}/${GITHUB_RUN_ID}.jsonl"
+          mkdir -p "$METRICS_DIR"
+
+          # 用「建立全局汉化队列」步骤产出的队列（已按账本过滤 + 残留优先 + 命中数排序），
+          # 逐批取固定数量文件，避免"翻到哪算哪"
+          all_files=$(cat "$RUNNER_TEMP/i18n-queue.txt")
+          total=$(printf '%s\n' "$all_files" | rg -c . || true)
+          echo "本轮队列：${total:-0} 个文件（每批 ${QUEUE_BATCH_SIZE} 个）"
+
+          run_started=$SECONDS
+          changed_any=0
+          for i in $(seq 1 "$CODEX_BATCHES"); do
+            if [ $(( SECONDS - run_started )) -ge "${RUN_BUDGET_SECONDS:-10800}" ]; then
+              echo "::warning title=本轮预算用尽::已跑 ${SECONDS} 秒，停止分批，剩余文件交给下一轮。"
+              break
+            fi
+            from=$(( (i - 1) * QUEUE_BATCH_SIZE + 1 ))
+            to=$(( i * QUEUE_BATCH_SIZE ))
+            batch=$(printf '%s\n' "$all_files" | rg . | sed -n "${from},${to}p" || true)
+            if [ -z "$batch" ]; then
+              echo "第 ${i} 批：已无更多候选文件，结束分批。"
+              break
+            fi
+            # 把命中行号一并交给模型，让它只读必要区域，减少整文件通读的 token 消耗
+            file_list=""
+            # 用 read 逐行读而不是 for f in $batch：路径里有 `[emailAccountId]` 这类
+            # glob 元字符，未加引号的展开在存在同名目录时会把路径换成别的文件。
+            while IFS= read -r f; do
+              [ -n "$f" ] || continue
+              lines=$(grep -F "$f:" "$RUNNER_TEMP/i18n-candidate-lines.txt" 2>/dev/null \
+                | cut -d: -f2 | head -12 | paste -sd, - || true)
+              if [ -n "$lines" ]; then
+                file_list="${file_list} ${f}（命中行：${lines}）"
+              else
+                file_list="${file_list} ${f}"
+              fi
+            done <<< "$batch"
+            file_count=$(printf '%s\n' "$batch" | wc -l | tr -d ' ')
+            batch_log="$RUNNER_TEMP/codex-r${ROUND:-0}-${i}.jsonl"
+            echo "::group::第 ${i} 批汉化（单批上限 ${CODEX_BATCH_SECONDS}s，${file_count} 个文件）"
+            # --kill-after 兜底：codex 有时不响应 TERM，单批必须能被强制结束，避免整轮挂死
+            # 非超时的失败（例如网关/模型报错）重试一次，避免偶发错误把整轮带偏
+            attempt=1
+            while :; do
+              set +e
+              timeout --signal=TERM --kill-after=60 "$CODEX_BATCH_SECONDS" codex exec --json \
+                --sandbox "${CODEX_SANDBOX}" \
+                -C "$GITHUB_WORKSPACE" \
+                "本次只做一件事：把下列文件里命中行附近的英文用户可见文案翻成简体中文。对每个文件只读命中行前后约 30 行，用 apply_patch 改完就结束；不要读取未列出的文件（包括测试文件），不要运行任何命令（biome、测试、全仓库 rg 扫描都不要跑）。本次忽略提示词中『测试文件同步』与『跑 biome/测试』的要求——测试断言与校验由后续独立步骤处理。文件与命中行：${file_list}。${base_prompt}" \
+                > "$batch_log" 2>&1
+              codex_exit=$?
+              set -e
+              if [ "$codex_exit" -eq 0 ] || [ "$codex_exit" -eq 124 ] || [ "$attempt" -ge 2 ]; then
+                break
+              fi
+              attempt=$((attempt + 1))
+              echo "::warning::第 ${i} 批 codex 退出码 ${codex_exit}，重试一次。"
+              sleep 5
+            done
+            timed_out=0
+            if [ "$codex_exit" -eq 124 ]; then
+              # 超时是预期情况：提交本批已完成的内容，但不写入跳过名单（没改完≠误报）
+              timed_out=1
+              echo "::warning::第 ${i} 批达到单批时长上限，先提交本批已完成的内容。"
+            elif [ "$codex_exit" -ne 0 ]; then
+              # 其它非零退出说明 codex 自身失败（模型/网关报错等）。必须显式失败，
+              # 否则会静默空转：反复烧 token 却没有任何产出。
+              echo "::error title=codex 调用失败::第 ${i} 批 codex 退出码 ${codex_exit}，本批没有产出。"
+              node .github/scripts/i18n-token-metrics.mjs \
+                --append "${METRICS_FILE}" \
+                --label "round=${ROUND:-0} batch=${i} cfg=b${QUEUE_BATCH_SIZE}-r${CODEX_REASONING_EFFORT}-${LOCALIZE_PROMPT_VARIANT}" \
+                --files "${file_count}" \
+                --changed 0 \
+                --summary "$batch_log" || true
+              exit 1
+            fi
+            echo "::endgroup::"
+
+            # 每批结束后立即格式化、提交、推送，避免长跑丢进度
+            pnpm exec biome format --write >/dev/null 2>&1 || true
+            bash .github/scripts/protect-workflows.sh
+            bash .github/scripts/fix-literal-keys.sh
+            bash .github/scripts/stage-worktree.sh
+            # 数据层文案是匹配/模型契约，禁止被翻译：检测到改动就自动还原
+            protected=$(git diff --cached --name-only \
+              | rg 'utils/rule/consts\.ts|utils/categories\.ts|utils/split-inbox/split-library\.ts|utils/category-config\.tsx' || true)
+            if [ -n "$protected" ]; then
+              echo "::warning title=数据层文件被改动::已自动还原（不参与翻译）："
+              printf '%s\n' "$protected"
+              printf '%s\n' "$protected" | xargs git restore --source=HEAD --staged --worktree --
+              bash .github/scripts/stage-worktree.sh
+            fi
+            # 记录本批真实 token 用量与命中率：tokens/changed-file 与 waste 是优化对比的核心指标
+            # 排除 .github/**（指标/跳过名单自身的变化不算汉化产出）
+            changed_count=$(git diff --cached --name-only | rg -v '^\.github/' | rg -c . || true)
+            node .github/scripts/i18n-token-metrics.mjs \
+              --append "${METRICS_FILE}" \
+              --label "round=${ROUND:-0} batch=${i} cfg=b${QUEUE_BATCH_SIZE}-r${CODEX_REASONING_EFFORT}-${LOCALIZE_PROMPT_VARIANT}" \
+              --files "${file_count}" \
+              --changed "${changed_count:-0}" \
+              --summary "$batch_log" | tee -a "$GITHUB_STEP_SUMMARY" || true
+            staged_changed=$(git diff --cached --name-only || true)
+            # 账本记账（.github/i18n-ledger.jsonl）：
+            #   翻过且机械扫描已无命中 → clean（以后内容不变就不再进队列）
+            #   翻过但仍有命中       → residual（下一轮排到队首）
+            #   模型判定不需要改     → skipped（按哈希记住这个判断）
+            # 超时的批次不记账，避免把没翻完的文件误标成 clean。
+            if [ "$timed_out" = "1" ]; then
+              echo "本批未正常结束，不写入账本。"
+            else
+              : > "$RUNNER_TEMP/i18n-record-clean.txt"
+              : > "$RUNNER_TEMP/i18n-record-residual.txt"
+              : > "$RUNNER_TEMP/i18n-record-skipped.txt"
+              while IFS= read -r f; do
+                [ -n "$f" ] || continue
+                if printf '%s\n' "$staged_changed" | grep -qxF "$f"; then
+                  if [ -n "$(bash .github/scripts/i18n-candidates.sh "$f" 2>/dev/null)" ]; then
+                    printf '%s\n' "$f" >> "$RUNNER_TEMP/i18n-record-residual.txt"
+                  else
+                    printf '%s\n' "$f" >> "$RUNNER_TEMP/i18n-record-clean.txt"
+                  fi
+                else
+                  printf '%s\n' "$f" >> "$RUNNER_TEMP/i18n-record-skipped.txt"
+                fi
+              done <<< "$batch"
+              for status in clean residual skipped; do
+                record_list="$RUNNER_TEMP/i18n-record-${status}.txt"
+                [ -s "$record_list" ] || continue
+                node .github/scripts/i18n-ledger.mjs record \
+                  --status "$status" \
+                  --files "$record_list" \
+                  --hits "$RUNNER_TEMP/i18n-candidate-lines.txt" || true
+              done
+            fi
+            # 指标文件与账本是在前面 git add 之后写入的，这里重新暂存：
+            # 否则推送被拒后的合并会因为存在未暂存改动而直接失败。
+            bash .github/scripts/stage-worktree.sh
+            if git diff --cached --quiet; then
+              echo "第 ${i} 批没有产生改动，结束分批。"
+              break
+            fi
+            changed_any=1
+            if ! git commit -m "chore(i18n): 第 ${ROUND:-0} 轮汉化（第 ${i} 批）"; then
+              # pre-commit（husky + ultracite）会拦住语法错误。把这一批存入 stash 后跳过，
+              # 避免单批失败中断整条链；坏改动不会进入仓库。
+              echo "::warning::第 ${i} 批未通过 pre-commit 校验（通常是语法错误），已存入 stash 并跳过本批。"
+              git stash push --include-untracked -m "bad-batch-r${ROUND:-0}-${i}" >/dev/null 2>&1 || true
+              continue
+            fi
+            if [ "$DRY_RUN" = "1" ]; then
+              echo "dry_run 模式：本批改动不推送。"
+              continue
+            fi
+            if ! git push origin "HEAD:${TARGET_BRANCH}"; then
+              echo "推送被拒绝，合并远端后重试。"
+              bash .github/scripts/merge-remote.sh "${TARGET_BRANCH}"
+              git push origin "HEAD:${TARGET_BRANCH}"
+            fi
+            echo "第 ${i} 批已推送到 ${TARGET_BRANCH}。"
+          done
+
+          # 收尾统计：重新机械扫描 + 账本过滤，算出还剩多少待办文件。
+          # 这个数字决定「继续排队下一轮」还是「清空收尾（跑全量测试 + 打镜像）」。
+          bash .github/scripts/i18n-candidates.sh . > "$RUNNER_TEMP/i18n-candidates-after.txt"
+          bash .github/scripts/i18n-candidates.sh --lines . > "$RUNNER_TEMP/i18n-candidate-lines-after.txt"
+          node .github/scripts/i18n-ledger.mjs queue \
+            --candidates "$RUNNER_TEMP/i18n-candidates-after.txt" \
+            --hits "$RUNNER_TEMP/i18n-candidate-lines-after.txt" \
+            --out "$RUNNER_TEMP/i18n-queue-after.txt" > "$RUNNER_TEMP/i18n-queue-after-stats.json"
+          remaining=$(wc -l < "$RUNNER_TEMP/i18n-queue-after.txt" | tr -d ' ')
+          echo "changed=${changed_any}" >> "$GITHUB_OUTPUT"
+          echo "remaining=${remaining:-0}" >> "$GITHUB_OUTPUT"
+          echo "本轮产生改动：${changed_any}；账本剩余待办：${remaining:-0}"
+
+      - name: 格式化并校验
+        if: steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true' && steps.queue.outputs.has_candidates == 'true'
+        run: |
+          set -euo pipefail
+          pnpm exec biome format --write
+          bash .github/scripts/fix-literal-keys.sh
+          pnpm check
+
+      - name: 同步生成的 openapi 文档
+        if: steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true' && steps.queue.outputs.has_candidates == 'true'
+        run: |
+          set -euo pipefail
+          # 生成物必须随源码一起更新，否则 utils/public-openapi.test.ts 会红
+          UPDATE_OPENAPI=true pnpm -F inbox-zero-ai exec vitest run utils/public-openapi.test.ts >/dev/null 2>&1 \
+            || echo "::warning::已重新生成 docs/openapi.json（该校验首次运行会因静态导入而失败，属预期）"
+
+      - name: 提交并推送（收尾）
+        if: steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true' && steps.queue.outputs.has_candidates == 'true' && inputs.dry_run != true
+        env:
+          TARGET_BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          bash .github/scripts/protect-workflows.sh
+          bash .github/scripts/stage-worktree.sh
+          if git diff --cached --quiet; then
+            echo "没有需要提交的收尾改动。"
+            exit 0
+          fi
+          git commit -m "chore(i18n): 收尾格式化"
+          if ! git push origin "HEAD:${TARGET_BRANCH}"; then
+            echo "推送被拒绝，合并远端后重试。"
+            bash .github/scripts/merge-remote.sh "${TARGET_BRANCH}"
+            git push origin "HEAD:${TARGET_BRANCH}"
+          fi
+          echo "收尾改动已推送到 ${TARGET_BRANCH}。"
+
+      - name: 运行单元测试与集成测试
+        id: verify
+        # 每轮都跑完整套件；失败不直接终止：先让 Codex 同步失效的测试断言，再复验。
+        # 触发条件不依赖「队列里有没有待译文件」：上游有更新就跑测试，
+        # 否则队列为空的那几轮即使 main 已经红着也不会被修复。
+        continue-on-error: true
+        if: steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true'
+        env:
+          REMAINING: ${{ steps.localize.outputs.remaining }}
+          RUN_AI_TESTS: "false"
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+          DIRECT_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+          AUTH_SECRET: "secret"
+          GOOGLE_CLIENT_ID: "client_id"
+          GOOGLE_CLIENT_SECRET: "client_secret"
+          MICROSOFT_CLIENT_ID: "client_id"
+          MICROSOFT_CLIENT_SECRET: "client_secret"
+          GOOGLE_PUBSUB_TOPIC_NAME: "topic"
+          EMAIL_ENCRYPT_SECRET: "secret"
+          EMAIL_ENCRYPT_SALT: "salt"
+          INTERNAL_API_KEY: "secret"
+          NEXT_PUBLIC_BASE_URL: "http://localhost:3000"
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/verify"
+          # 每一轮都要跑全量测试并同步断言，不能只在收尾轮做：
+          # 否则链条中途 main 会一直红着（push 触发的 Run Tests 逐批失败），
+          # 断言的积压只会越滚越大。多花约 7 分钟/轮换 main 常绿，值得。
+          echo "队列剩余 ${REMAINING:-0} 个文件；本轮照常跑全量测试。"
+          # --retry=1：runner 负载下的偶发超时重跑一次即可通过，避免把抖动当成真实回归
+          pnpm -F inbox-zero-ai test --run --retry=1 > "$RUNNER_TEMP/verify/unit.log" 2>&1
+          unit_exit=$?
+          pnpm -F inbox-zero-ai test-integration --retry=1 > "$RUNNER_TEMP/verify/integration.log" 2>&1
+          integration_exit=$?
+          # --no-bail：pnpm -r 默认遇到第一个失败的包就中止，只会暴露 packages/cli 的失败，
+          # email-editor / image-proxy 的问题会被藏住（历史上就是这样漏掉的）。
+          pnpm -r --no-bail --filter '!inbox-zero-ai' --if-present test > "$RUNNER_TEMP/verify/packages.log" 2>&1
+          packages_exit=$?
+          set -e
+          tail -n 15 "$RUNNER_TEMP/verify/unit.log" || true
+          tail -n 15 "$RUNNER_TEMP/verify/integration.log" || true
+          tail -n 15 "$RUNNER_TEMP/verify/packages.log" || true
+          if [ "$unit_exit" = "0" ] && [ "$integration_exit" = "0" ] && [ "$packages_exit" = "0" ]; then
+            echo "failed=false" >> "$GITHUB_OUTPUT"
+            echo "单元测试与集成测试通过。"
+            exit 0
+          fi
+          logs=("$RUNNER_TEMP/verify/unit.log" "$RUNNER_TEMP/verify/integration.log" "$RUNNER_TEMP/verify/packages.log")
+
+          # 提取「真正失败」的测试文件，供下一步用 Codex 同步断言。
+          # vitest 的失败行形如：
+          #   apps/desktop test:  FAIL  src/context-menu.test.ts > 套件 > 用例   （pnpm -r 各包）
+          #    FAIL  src/foo.test.ts > 套件 > 用例                              （在 apps/web 下跑）
+          # 旧实现把日志里出现过的所有 *.test.* 文件名都收进来（进度输出、汇总表、
+          # 已通过的文件全在内），一次给模型几百个无关文件，断言同步长期没有产出，
+          # main 也就一直红着。这里只取失败行，并把相对路径补成仓库内路径。
+          # 字符类里绝不能再放 \[ \]（GNU grep 下会让整个字符类失配，清单永远是空的）；
+          # 日志里可能混入非 UTF-8 字节，用 -a + LC_ALL=C 保证不会中途报错。
+          LC_ALL=C sed -E 's/\x1b\[[0-9;]*[a-zA-Z]//g' "${logs[@]}" 2>/dev/null \
+            | grep -aoE '([A-Za-z0-9_./@-]+ test: +)?FAIL +[^ ]+\.test\.(tsx?|mjs)' \
+            | sed -E -e 's/^([A-Za-z0-9_./@-]+) test: +FAIL +/\1\//' -e 's/^FAIL +/apps\/web\//' \
+            | sort -u > "$RUNNER_TEMP/verify/failing-tests.txt" || true
+
+          # 纯超时是 runner 负载抖动，不是汉化回归：这种失败交给 Codex 只会白烧一轮预算。
+          # 只有「失败用例数 > 超时数」时才认为存在需要同步的断言。
+          failed_total=$(LC_ALL=C grep -hoaE 'Tests +[0-9]+ failed' "${logs[@]}" | grep -oaE '[0-9]+' | awk '{s+=$1} END{print s+0}')
+          timeout_total=$(LC_ALL=C grep -hoac 'Test timed out' "${logs[@]}" | awk '{s+=$1} END{print s+0}')
+          if [ "${failed_total:-0}" -gt 0 ] && [ "${timeout_total:-0}" -ge "${failed_total:-0}" ]; then
+            echo "failed=false" >> "$GITHUB_OUTPUT"
+            echo "flaky=true" >> "$GITHUB_OUTPUT"
+            echo "::warning title=仅超时抖动::${failed_total} 个失败用例全部是超时，跳过 Codex 断言同步与复验。"
+            exit 0
+          fi
+
+          echo "failed=true" >> "$GITHUB_OUTPUT"
+          echo "::warning title=测试未通过::$(tr '\n' ' ' < "$RUNNER_TEMP/verify/failing-tests.txt")"
+          exit 0
+
+      - name: 类型与构建校验
+        id: buildcheck
+        # 汉化偶尔会把机器可读的字面量（联合类型成员、枚举值、对象键）翻成中文，
+        # 这类问题测试跑得过、只有 next build 的类型检查才会暴露。
+        # 失败不直接掐断链条：交给下一步的 Codex 把这些字面量改回英文。
+        # 同 verify：不依赖队列是否有待译文件，上游有更新就校验。
+        continue-on-error: true
+        if: steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true'
+        env:
+          NODE_OPTIONS: "--max_old_space_size=16384"
+          NODE_ENV: production
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+          DIRECT_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+          AUTH_SECRET: "secret"
+          GOOGLE_CLIENT_ID: "client_id"
+          GOOGLE_CLIENT_SECRET: "client_secret"
+          MICROSOFT_CLIENT_ID: "client_id"
+          MICROSOFT_CLIENT_SECRET: "client_secret"
+          GOOGLE_PUBSUB_TOPIC_NAME: "topic"
+          EMAIL_ENCRYPT_SECRET: "secret"
+          EMAIL_ENCRYPT_SALT: "salt"
+          DEFAULT_LLMS: "openai:gpt-5.4-mini"
+          INTERNAL_API_KEY: "secret"
+          NEXT_PUBLIC_BASE_URL: "http://localhost:3000"
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/verify"
+          pnpm -F inbox-zero-ai build:ci > "$RUNNER_TEMP/verify/build.log" 2>&1
+          build_exit=$?
+          set -e
+          if [ "$build_exit" = "0" ]; then
+            echo "passed=true" >> "$GITHUB_OUTPUT"
+            echo "类型与构建校验通过。"
+            exit 0
+          fi
+          echo "passed=false" >> "$GITHUB_OUTPUT"
+          rg -n "Type error|Build error|Module not found|Failed to compile" "$RUNNER_TEMP/verify/build.log" | head -20 > "$RUNNER_TEMP/verify/build-errors.txt" || true
+          {
+            echo "### 类型与构建校验未通过（已交给 Codex 修正）"
+            echo '```'
+            cat "$RUNNER_TEMP/verify/build-errors.txt" || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::warning title=类型与构建校验未通过::详情见 step summary；下一步会让 Codex 把被误译的机器可读字面量改回英文。"
+          exit 0
+
+      - name: 用 Codex 同步失效的测试断言
+        id: fixup
+        if: steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true' && (steps.verify.outputs.failed == 'true' || steps.buildcheck.outputs.passed == 'false')
+        env:
+          AI_API_URL: ${{ secrets.AI_API_URL || vars.AI_API_URL }}
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+          AI_MODEL: ${{ vars.AI_MODEL || secrets.AI_MODEL }}
+          CODEX_HOME: ${{ runner.temp }}/codex-home
+          CODEX_SANDBOX: ${{ vars.CODEX_SANDBOX || 'danger-full-access' }}
+          CODEX_BATCH_SECONDS: ${{ vars.CODEX_BATCH_SECONDS || '1200' }}
+          TARGET_BRANCH: ${{ github.ref_name }}
+          ROUND: ${{ inputs.round }}
+          # 指标标签要用到，缺了会拼出空的 cfg= 字段
+          QUEUE_BATCH_SIZE: ${{ vars.QUEUE_BATCH_SIZE || '8' }}
+          CODEX_REASONING_EFFORT: ${{ vars.CODEX_REASONING_EFFORT || 'low' }}
+          LOCALIZE_PROMPT_VARIANT: p2
+          LOCALIZE_PROMPT_PATH: ${{ inputs.prompt_path }}
+        run: |
+          set -euo pipefail
+          instruction=""
+          if [ "${{ steps.verify.outputs.failed }}" = "true" ]; then
+            failing="$(tr '\n' ' ' < "$RUNNER_TEMP/verify/failing-tests.txt" 2>/dev/null | tr -s ' ' || true)"
+            if [ -z "${failing// /}" ]; then
+              echo "::warning title=未能提取失败测试::改为让 Codex 自行定位断言这些文案的测试。"
+              failing="本轮未能从日志提取具体失败测试文件，请自行用 rg 定位断言最近改动文案的测试文件"
+            fi
+            echo "需要同步断言的测试：${failing}"
+            instruction="以下测试因汉化改动而失败：${failing}。只更新这些测试里引用用户可见文案的断言，使其与源码中的中文文案逐字一致；不要改测试逻辑、data-testid、mock 名、函数名或测试名称，不要修改 apps/web/__tests__/playwright/**。"
+          fi
+          if [ "${{ steps.buildcheck.outputs.passed }}" = "false" ]; then
+            build_errors="$(cat "$RUNNER_TEMP/verify/build-errors.txt" 2>/dev/null || true)"
+            echo "类型与构建校验报错："
+            printf '%s\n' "$build_errors"
+            instruction="${instruction}$(printf '\n%s\n%s' "另外类型与构建校验失败，报错如下。这类问题几乎都是把机器可读的字面量（联合类型成员、枚举值、对象键、常量）误译成了中文：请把这些字面量改回英文，其余逻辑与用户可见文案保持不动。" "$build_errors")"
+          fi
+          fixup_log="$RUNNER_TEMP/codex-fixup.jsonl"
+          fixup_prompt="${LOCALIZE_PROMPT_PATH:-.github/codex/localize-zh.prompt.md}"
+          METRICS_DIR=".github/i18n-metrics"
+          METRICS_FILE="${METRICS_DIR}/${GITHUB_RUN_ID}.jsonl"
+          mkdir -p "$METRICS_DIR"
+          timeout --signal=TERM --kill-after=60 "$CODEX_BATCH_SECONDS" codex exec --json \
+            --sandbox "${CODEX_SANDBOX}" \
+            -C "$GITHUB_WORKSPACE" \
+            "${instruction}$(cat "$fixup_prompt")" \
+            > "$fixup_log" 2>&1 \
+            || echo "::warning::测试断言同步达到时长上限。"
+          pnpm exec biome format --write >/dev/null 2>&1 || true
+          bash .github/scripts/protect-workflows.sh
+          bash .github/scripts/fix-literal-keys.sh
+          bash .github/scripts/stage-worktree.sh
+          changed_count=$(git diff --cached --name-only | rg -c . || true)
+          node .github/scripts/i18n-token-metrics.mjs \
+            --append "${METRICS_FILE}" \
+            --label "round=${ROUND:-0} fixup cfg=b${QUEUE_BATCH_SIZE}-r${CODEX_REASONING_EFFORT}-${LOCALIZE_PROMPT_VARIANT}" \
+            --files "${changed_count:-0}" \
+            --changed "${changed_count:-0}" \
+            --summary "$fixup_log" | tee -a "$GITHUB_STEP_SUMMARY" || true
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "没有产生需要提交的测试改动。"
+            exit 0
+          fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          git commit -m "chore(i18n): 同步失效的测试断言"
+          if ! git push origin "HEAD:${TARGET_BRANCH}"; then
+            echo "推送被拒绝，合并远端后重试。"
+            bash .github/scripts/merge-remote.sh "${TARGET_BRANCH}"
+            git push origin "HEAD:${TARGET_BRANCH}"
+          fi
+
+      - name: 复验单元测试与集成测试
+        id: reverify
+        # 只在断言同步真的改了东西时才复验，省掉一次全量套件（约 7 分钟）。
+        # 复验本身仍只作提示、不掐断链条：这里剩下的失败几乎都是 runner 负载下的超时抖动
+        # （日志里只有 "Test timed out"），真正的硬门禁是 push 之后自动跑的 Run Tests。
+        continue-on-error: true
+        if: steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true' && steps.verify.outputs.failed == 'true' && steps.fixup.outputs.changed == 'true'
+        env:
+          RUN_AI_TESTS: "false"
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+          DIRECT_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+          AUTH_SECRET: "secret"
+          GOOGLE_CLIENT_ID: "client_id"
+          GOOGLE_CLIENT_SECRET: "client_secret"
+          MICROSOFT_CLIENT_ID: "client_id"
+          MICROSOFT_CLIENT_SECRET: "client_secret"
+          GOOGLE_PUBSUB_TOPIC_NAME: "topic"
+          EMAIL_ENCRYPT_SECRET: "secret"
+          EMAIL_ENCRYPT_SALT: "salt"
+          INTERNAL_API_KEY: "secret"
+          NEXT_PUBLIC_BASE_URL: "http://localhost:3000"
+        run: |
+          set +e
+          mkdir -p "$RUNNER_TEMP/verify"
+          pnpm -F inbox-zero-ai test --run --retry=1 > "$RUNNER_TEMP/verify/re-unit.log" 2>&1
+          unit_exit=$?
+          pnpm -F inbox-zero-ai test-integration --retry=1 > "$RUNNER_TEMP/verify/re-integration.log" 2>&1
+          integration_exit=$?
+          pnpm -r --no-bail --filter '!inbox-zero-ai' --if-present test > "$RUNNER_TEMP/verify/re-packages.log" 2>&1
+          packages_exit=$?
+          set -e
+          tail -n 15 "$RUNNER_TEMP/verify/re-unit.log" || true
+          tail -n 15 "$RUNNER_TEMP/verify/re-integration.log" || true
+          tail -n 15 "$RUNNER_TEMP/verify/re-packages.log" || true
+          if [ "$unit_exit" = "0" ] && [ "$integration_exit" = "0" ] && [ "$packages_exit" = "0" ]; then
+            echo "passed=true" >> "$GITHUB_OUTPUT"
+            echo "复验通过。"
+            exit 0
+          fi
+          echo "passed=false" >> "$GITHUB_OUTPUT"
+          {
+            echo "### 复验未通过（已按抖动处理，未中断链条）"
+            echo '```'
+            tail -n 20 "$RUNNER_TEMP/verify/re-unit.log" || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::warning title=复验未通过::失败详情已写入 step summary；push 触发的 Run Tests 仍是硬门禁，链条继续推进。"
+          exit 0
+
+      - name: 汇总 token 成本指标
+        if: always() && steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true'
+        run: |
+          set -euo pipefail
+          # 只保留最近 50 次运行的指标文件，避免目录无限增长。
+          # 用 find+sort 而不是 `ls -1t`：后者遇到非字母数字文件名会解析出错。
+          if [ -d .github/i18n-metrics ]; then
+            find .github/i18n-metrics -maxdepth 1 -type f -name '*.jsonl' -printf '%T@ %p\n' 2>/dev/null \
+              | sort -rn \
+              | tail -n +51 \
+              | cut -d' ' -f2- \
+              | xargs -r -d '\n' rm -f -- || true
+          fi
+          {
+            echo "### 汉化 token 成本（累计）"
+            echo '```'
+            node .github/scripts/i18n-token-metrics.mjs --aggregate .github/i18n-metrics --summary
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 清理旧的 Actions 运行
+        if: always() && steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true'
+        uses: Mattraks/delete-workflow-runs@v2.1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          retain_days: ${{ vars.ACTION_RETENTION_DAYS || '0' }}
+          keep_minimum_runs: ${{ vars.ACTION_KEEP_MINIMUM_RUNS || '5' }}
+          dry_run: "false"
+
+      - name: 压缩为单个提交并强推
+        # 即使后续步骤（如单元测试）失败也要压缩：否则 main 会残留在多个批次提交上，违背"始终只领先上游 1 个提交"。
+        # 只要上游有更新就压缩推送，不再要求"队列里有待汉化文件"：否则上游改动会在
+        # 没有待译文案的那些轮次里被合并却推不上去（历史上 38804443270 就是这样丢的）。
+        if: "!cancelled() && steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true' && inputs.dry_run != true"
+        env:
+          UPSTREAM_BRANCH: ${{ vars.UPSTREAM_BRANCH || 'main' }}
+          TARGET_BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # 以当前上游分支 tip 为父提交，把整棵工作树压成一个提交，
+          # 这样 main 永远只领先上游 1 个提交，且上游祖先关系保留。
+          git fetch --no-tags upstream "$UPSTREAM_BRANCH"
+          base="$(git rev-parse FETCH_HEAD)"
+          if [ "$(git rev-parse HEAD)" = "$base" ]; then
+            echo "没有需要压缩的提交。"
+            exit 0
+          fi
+          # 并发推送保护：如果远端已经有别人推的提交，本次不再强推（避免覆盖），
+          # 只告警并跳过。下一个区域运行会以最新 main 为基线重新压缩成一个提交。
+          git fetch --no-tags origin "${TARGET_BRANCH}"
+          remote_tip="$(git rev-parse FETCH_HEAD)"
+          if [ "$remote_tip" != "$(git rev-parse HEAD)" ] && ! git merge-base --is-ancestor "$remote_tip" HEAD; then
+            echo "::warning title=远端已变化::${TARGET_BRANCH} 上有并发提交（${remote_tip:0:9}），跳过本次压缩以免覆盖，交由下一次运行收敛为单提交。"
+            exit 0
+          fi
+          bash .github/scripts/protect-workflows.sh "$remote_tip"
+          bash .github/scripts/stage-worktree.sh
+          tree="$(git write-tree)"
+          squashed="$(git commit-tree "$tree" -p "$base" -m "chore(i18n): 同步上游并汉化（单提交快照）")"
+          git update-ref "refs/heads/${TARGET_BRANCH}" "$squashed"
+          # GitHub 偶发 5xx（历史上撞过一次 "remote: Internal Server Error"）不该让整轮白跑，
+          # 只对瞬时错误重试；租约不匹配这类真实冲突立刻失败，避免误覆盖。
+          for attempt in 1 2 3; do
+            set +e
+            push_output="$(git push --force-with-lease origin "${TARGET_BRANCH}" 2>&1)"
+            push_status=$?
+            set -e
+            printf '%s\n' "$push_output"
+            if [ "$push_status" -eq 0 ]; then
+              break
+            fi
+            if ! printf '%s' "$push_output" | rg -q 'Internal Server Error|5[0-9][0-9]|timed out|Could not resolve host|Connection reset'; then
+              echo "::error title=压缩推送失败::非瞬时错误，直接失败以免覆盖远端。"
+              exit 1
+            fi
+            if [ "$attempt" -eq 3 ]; then
+              echo "::error title=压缩推送失败::连续 3 次遇到瞬时错误。"
+              exit 1
+            fi
+            echo "::warning::压缩推送遇到瞬时错误（第 ${attempt} 次），5 秒后重试。"
+            sleep 5
+          done
+          echo "已压缩为单个提交：${squashed:0:9}（父提交 ${base:0:9}）"
+
+      - name: 继续排队或收尾
+        # 队列还有待办 → 自动重排下一轮（靠账本续跑，不重复处理已完成文件）；
+        # 队列清空 → 触发 GHCR 镜像打包，一条链到此结束。
+        # 不依赖整条 job success()：末端复验/清理的偶发抖动不该把链条掐停。
+        # 同样不再要求"队列里有待汉化文件"：上游有更新就要把镜像重打一遍。
+        if: "!cancelled() && steps.config.outputs.configured == 'true' && steps.sync.outcome == 'success' && steps.sync.outputs.updated == 'true' && steps.localize.outcome != 'failure'"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REMAINING: ${{ steps.localize.outputs.remaining }}
+          ROUND: ${{ inputs.round }}
+          MAX_ROUNDS: ${{ vars.MAX_LOCALIZE_ROUNDS || '20' }}
+        run: |
+          set -euo pipefail
+          round="${ROUND:-0}"
+          trigger_image() {
+            echo "触发 GHCR 镜像打包。"
+            gh workflow run publish-ghcr.yml --repo "$GITHUB_REPOSITORY"
+          }
+          if [ "${REMAINING:-0}" -gt 0 ]; then
+            if [ "$round" -ge "$MAX_ROUNDS" ]; then
+              echo "::warning title=达到轮次上限::仍有 ${REMAINING} 个待办文件，但已跑满 ${MAX_ROUNDS} 轮，停止自我重排。"
+              # 停止重排 ≠ 不用打镜像：这一轮已经改过 main，镜像必须跟上，
+              # 否则线上会一直停在旧内容（历史上这里直接 exit 0，漏掉了镜像）。
+              trigger_image
+              exit 0
+            fi
+            if [ "${{ steps.localize.outputs.changed }}" != "1" ]; then
+              echo "::warning title=本轮没有产出::仍有 ${REMAINING} 个待办文件，但本轮没有任何改动，停止自我重排以免空转烧 token。"
+              # 没有产出时镜像内容通常没变，触发一次只是约 10 秒的指纹跳过；
+              # 万一此前有未打包的改动，这一步能兜住。
+              trigger_image
+              exit 0
+            fi
+            echo "账本仍有 ${REMAINING} 个待办文件，排队第 $((round + 1)) 轮。"
+            gh workflow run localize-zh.yml --repo "$GITHUB_REPOSITORY" \
+              -f force_run=true \
+              -f round="$((round + 1))"
+          else
+            echo "队列已清空（第 ${round} 轮完成），触发 GHCR 镜像打包。"
+            trigger_image
+          fi
+

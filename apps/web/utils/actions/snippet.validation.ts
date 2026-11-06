@@ -9,18 +9,17 @@ const snippetShortcutSchema = z
   .trim()
   .transform(normalizeSnippetShortcut)
   .refine(isValidSnippetShortcut, {
-    message:
-      "Start with a letter. Use lowercase letters, numbers, and hyphens.",
+    message: "以字母开头，可使用小写字母、数字和连字符",
   });
 
 export const createSnippetBody = z.object({
-  content: z.string().trim().min(1, "Content is required").max(10_000),
+  content: z.string().trim().min(1, "内容为必填项").max(10_000),
   shortcut: snippetShortcutSchema,
 });
 export type CreateSnippetBody = z.infer<typeof createSnippetBody>;
 
 export const updateSnippetBody = z.object({
-  content: z.string().trim().min(1, "Content is required").max(10_000),
+  content: z.string().trim().min(1, "内容为必填项").max(10_000),
   id: z.string().min(1),
   shortcut: snippetShortcutSchema,
 });

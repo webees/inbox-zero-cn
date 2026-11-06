@@ -79,13 +79,13 @@ ${
     : ""
 }
 
-The email to analyze:
+待分析的邮件：
 
 <email>
 ${message}
 </email>
 
-The current date is ${currentDate}.
+当前日期为 ${currentDate}。
 `.trim();
 
   // ${user.about ? `<user_background_information>${user.about}</user_background_information>` : ""}
@@ -97,7 +97,7 @@ The current date is ${currentDate}.
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Clean",
+    label: "清理",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "compact" },
   });

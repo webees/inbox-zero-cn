@@ -25,7 +25,7 @@ describe("api-auth", () => {
     it("throws when the key is missing", async () => {
       await expect(validateApiKey(getRequest(null))).rejects.toThrow(SafeError);
       await expect(validateApiKey(getRequest(null))).rejects.toThrow(
-        "Missing API key",
+        "缺少 API 密钥",
       );
     });
 
@@ -34,7 +34,7 @@ describe("api-auth", () => {
 
       await expect(
         validateApiKey(getRequest("invalid-api-key")),
-      ).rejects.toThrow("Invalid API key");
+      ).rejects.toThrow("API 密钥无效");
     });
 
     it("rejects inactive keys", async () => {
@@ -42,7 +42,7 @@ describe("api-auth", () => {
 
       await expect(
         validateApiKey(getRequest("inactive-api-key")),
-      ).rejects.toThrow("Invalid API key");
+      ).rejects.toThrow("API 密钥无效");
       expect(prisma.apiKey.findUnique).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { hashedKey: "hashed-key", isActive: true },
@@ -57,7 +57,7 @@ describe("api-auth", () => {
 
       await expect(
         validateApiKey(getRequest("expired-api-key")),
-      ).rejects.toThrow("Invalid API key");
+      ).rejects.toThrow("API 密钥无效");
       expect(prisma.apiKey.update).not.toHaveBeenCalled();
     });
 
@@ -126,7 +126,7 @@ describe("api-auth", () => {
 
       await expect(
         validateAccountApiKey(getRequest("valid-key"), ["RULES_WRITE"]),
-      ).rejects.toThrow("API key does not have required permissions");
+      ).rejects.toThrow("API 密钥缺少所需权限");
     });
 
     it("returns an account-scoped principal", async () => {
@@ -160,7 +160,7 @@ describe("api-auth", () => {
 
       await expect(
         validateAccountApiKey(getRequest("stale-key"), ["RULES_READ"]),
-      ).rejects.toThrow("Invalid API key");
+      ).rejects.toThrow("API 密钥无效");
       expect(prisma.apiKey.update).not.toHaveBeenCalled();
     });
 
@@ -175,7 +175,7 @@ describe("api-auth", () => {
 
       await expect(
         validateAccountApiKey(getRequest("stale-key"), ["RULES_READ"]),
-      ).rejects.toThrow("Invalid API key");
+      ).rejects.toThrow("API 密钥无效");
       expect(prisma.apiKey.update).not.toHaveBeenCalled();
     });
 
@@ -189,7 +189,7 @@ describe("api-auth", () => {
 
       await expect(
         validateAccountApiKey(getRequest("legacy-key"), ["RULES_READ"]),
-      ).rejects.toThrow("Account-scoped API key required");
+      ).rejects.toThrow("需要账号范围的 API 密钥");
     });
   });
 
@@ -227,7 +227,7 @@ describe("api-auth", () => {
 
       await expect(
         validateApiKeyAndGetEmailProvider(getRequest("legacy-key") as any),
-      ).rejects.toThrow("Account-scoped API key required");
+      ).rejects.toThrow("需要账号范围的 API 密钥");
     });
   });
 });

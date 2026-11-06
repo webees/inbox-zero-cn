@@ -5,9 +5,14 @@ import {
   resolveLibraryEntry,
   SPLIT_LIBRARY,
 } from "@/utils/split-inbox/split-library";
+import { getRuleLabel } from "@/utils/rule/consts";
 
-const otpEntry = SPLIT_LIBRARY.find((entry) => entry.name === "OTP");
-const toReplyEntry = SPLIT_LIBRARY.find((entry) => entry.name === "To Reply");
+const otpEntry = SPLIT_LIBRARY.find(
+  (entry) => entry.createsSystemType === SystemType.OTP,
+);
+const toReplyEntry = SPLIT_LIBRARY.find(
+  (entry) => entry.name === getRuleLabel(SystemType.TO_REPLY),
+);
 
 describe("availableLibraryFilters", () => {
   it("hides label-backed splits when the account has no matching label", () => {
@@ -44,9 +49,10 @@ describe("availableLibraryFilters", () => {
 
   it("resolves OTP to the label filter once the label exists", () => {
     expect(otpEntry).toBeDefined();
+    const otpLabelName = getRuleLabel(SystemType.OTP).toLowerCase();
     expect(
       availableLibraryFilters(otpEntry!, {
-        labelsByName: new Map([["otp", "otp-label-id"]]),
+        labelsByName: new Map([[otpLabelName, "otp-label-id"]]),
         categoriesByName: new Map(),
       }),
     ).toEqual([{ kind: MailSplitFilterKind.LABEL, value: "otp-label-id" }]);

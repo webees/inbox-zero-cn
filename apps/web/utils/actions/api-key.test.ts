@@ -50,7 +50,7 @@ describe("API key actions", () => {
       expiresIn: "never",
     });
     expect(result?.serverError).toBe(
-      "Sign in with your connected provider to manage API keys.",
+      "请使用已连接的服务商登录以管理 API 密钥。",
     );
     expect(prisma.apiKey.create).not.toHaveBeenCalled();
   });
@@ -71,7 +71,7 @@ describe("API key actions", () => {
     currentSession.emailOtp = true;
     const result = await deactivateApiKeyAction("account-1", { id: "key-1" });
     expect(result?.serverError).toBe(
-      "Sign in with your connected provider to manage API keys.",
+      "请使用已连接的服务商登录以管理 API 密钥。",
     );
     expect(prisma.apiKey.update).not.toHaveBeenCalled();
   });
@@ -101,7 +101,7 @@ it("blocks MCP enablement from an email code session", async () => {
   vi.clearAllMocks();
   currentSession.emailOtp = true;
   const result = await updateMcpServerAccessAction({ enabled: true });
-  expect(result?.serverError).toContain("connected provider");
+  expect(result?.serverError).toContain("已连接的服务商");
   expect(prisma.user.update).not.toHaveBeenCalled();
 });
 
@@ -114,7 +114,7 @@ it("allows revocation while the MCP server is unavailable", async () => {
     expect(result?.data).toEqual({ enabled: false });
     expect(prisma.oauthConsent.deleteMany).toHaveBeenCalled();
     const enableResult = await updateMcpServerAccessAction({ enabled: true });
-    expect(enableResult?.serverError).toBe("MCP server is not enabled");
+    expect(enableResult?.serverError).toBe("未启用 MCP 服务器");
   } finally {
     mcpFlags.enabled = true;
   }
@@ -139,6 +139,6 @@ it("blocks MCP client disconnect from an email code session", async () => {
   vi.clearAllMocks();
   currentSession.emailOtp = true;
   const result = await revokeMcpConnectionAction({ clientId: "client-1" });
-  expect(result?.serverError).toContain("connected provider");
+  expect(result?.serverError).toContain("已连接的服务商");
   expect(prisma.$transaction).not.toHaveBeenCalled();
 });

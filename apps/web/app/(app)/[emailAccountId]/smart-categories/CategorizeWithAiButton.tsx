@@ -33,6 +33,7 @@ export function CategorizeWithAiButton({
       >
         <Button
           type="button"
+          data-testid="categorize-with-ai"
           loading={isCategorizing}
           disabled={!hasAiAccess}
           onClick={async () => {
@@ -65,26 +66,24 @@ export function CategorizeWithAiButton({
                 }
               },
               {
-                loading: "Categorizing senders... This might take a while.",
+                loading: "正在对发件人分类……这可能需要一些时间。",
                 success: (
                   data:
                     | { totalUncategorizedSenders: number | undefined }
                     | undefined,
                 ) => {
                   if (!data) {
-                    return "Categorization started.";
+                    return "已开始分类。";
                   }
 
                   return data.totalUncategorizedSenders
-                    ? `Categorizing ${data.totalUncategorizedSenders} senders...`
-                    : "No more senders to categorize right now.";
+                    ? `正在对 ${data.totalUncategorizedSenders} 个发件人分类……`
+                    : "当前没有更多需要分类的发件人。";
                 },
                 error: (err: unknown) => {
                   const message =
-                    err instanceof Error
-                      ? err.message
-                      : "An unknown error occurred.";
-                  return `Error categorizing senders: ${message}`;
+                    err instanceof Error ? err.message : "发生未知错误。";
+                  return `分类发件人时出错：${message}`;
                 },
               },
             );
@@ -94,7 +93,7 @@ export function CategorizeWithAiButton({
           {buttonProps?.children || (
             <>
               <SparklesIcon className="mr-2 size-4" />
-              Categorize
+              自动分类
             </>
           )}
         </Button>
@@ -115,7 +114,7 @@ function CategorizeWithAiButtonTooltip({
 }) {
   if (hasAiAccess) {
     return (
-      <Tooltip content="Categorize thousands of senders. This will take a few minutes.">
+      <Tooltip content="将为数千个发件人自动分类，大约需要几分钟。">
         {children}
       </Tooltip>
     );

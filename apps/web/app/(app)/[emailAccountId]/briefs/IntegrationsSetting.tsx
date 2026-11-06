@@ -12,7 +12,7 @@ export function IntegrationsSetting() {
   const { data, isLoading } = useIntegrations();
   const integrationsEnabled = useIntegrationsEnabled();
 
-  // Wait for data so we don't flash the unconnected state
+  // 等待数据加载完成，避免闪现未连接状态
   if (!integrationsEnabled || isLoading) {
     return null;
   }
@@ -31,16 +31,16 @@ export function IntegrationsSetting() {
 
   return (
     <SettingCard
-      title="Integrations"
+      title="集成"
       description={
         hasConnectedIntegrations
-          ? `Connected to ${connectedIntegrations.map((i) => i.shortName || i.displayName).join(", ")} with ${enabledToolsCount} tool${enabledToolsCount === 1 ? "" : "s"} enabled`
-          : "Connect to CRM, databases, and other tools to enrich briefings with more context"
+          ? `已连接到 ${connectedIntegrations.map((i) => i.shortName || i.displayName).join("、")}，已启用 ${enabledToolsCount} 个工具`
+          : "连接到 CRM、数据库和其他工具，为简报补充更多背景信息"
       }
       right={
         <Button variant="outline" asChild>
           <Link href={`/${emailAccountId}/integrations`}>
-            {hasConnectedIntegrations ? "Manage" : "Connect"}
+            {hasConnectedIntegrations ? "管理" : "连接"}
           </Link>
         </Button>
       }

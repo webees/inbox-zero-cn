@@ -18,20 +18,20 @@ describe("ThreadRow", () => {
   it("shows an attachment indicator when any message in the thread has one", () => {
     render(row(thread([false, true])));
 
-    expect(screen.getByText("Has attachment")).toBeTruthy();
+    expect(screen.getByText("有附件")).toBeTruthy();
   });
 
   it("omits the attachment indicator for threads without attachments", () => {
     render(row(thread([false, undefined])));
 
-    expect(screen.queryByText("Has attachment")).toBeNull();
+    expect(screen.queryByText("有附件")).toBeNull();
   });
 
   it("copies a one-time code from the row without opening the thread", async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     vi.stubGlobal("navigator", { clipboard: { writeText } });
     const onOpen = vi.fn();
-    const otpLabel = { id: "Label_otp", name: "OTP" };
+    const otpLabel = { id: "Label_otp", name: "验证码" };
     render(
       row(thread([undefined], "Use code 235578 to log in", [otpLabel.id]), {
         onOpen,
@@ -39,7 +39,7 @@ describe("ThreadRow", () => {
       }),
     );
 
-    const button = screen.getByRole("button", { name: "Copy code 235578" });
+    const button = screen.getByRole("button", { name: "复制验证码 235578" });
     fireEvent.click(button);
     fireEvent.keyDown(button, { key: "Enter" });
 
@@ -109,7 +109,7 @@ describe("ThreadRow", () => {
   it("does not offer a code to copy on ordinary mail with numbers", () => {
     render(row(thread([undefined], "Invoice 482913 for October")));
 
-    expect(screen.queryByRole("button", { name: /Copy code/ })).toBeNull();
+    expect(screen.queryByRole("button", { name: /复制验证码/ })).toBeNull();
   });
 });
 

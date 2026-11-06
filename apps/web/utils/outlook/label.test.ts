@@ -230,7 +230,7 @@ describe("unarchiveThread", () => {
         threadId: "thread-1",
         logger: createTestLogger(),
       }),
-    ).rejects.toThrow("Archive folder not found");
+    ).rejects.toThrow("找不到归档文件夹，无法将会话移入收件箱");
 
     expect(post).not.toHaveBeenCalled();
   });
@@ -269,7 +269,7 @@ describe("untrashThread", () => {
         threadId: "thread-1",
         logger: createTestLogger(),
       }),
-    ).rejects.toThrow("Deleted items folder not found");
+    ).rejects.toThrow("找不到已删除邮件文件夹，无法将会话移入收件箱");
 
     expect(post).not.toHaveBeenCalled();
   });

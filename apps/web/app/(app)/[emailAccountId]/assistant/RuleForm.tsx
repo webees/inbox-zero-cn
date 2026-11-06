@@ -240,7 +240,7 @@ export function RuleForm({
           if (mutate) mutate();
         } else if (!res?.data?.rule) {
           toastError({
-            description: "There was an error updating the rule.",
+            description: "更新规则时出错。",
           });
           if (mutate) mutate();
         } else {
@@ -249,9 +249,8 @@ export function RuleForm({
             ruleId: res.data.rule.id,
             attachmentSources,
             shouldSave: hasDraftAction,
-            successMessage: "Saved!",
-            partialErrorMessage:
-              "Rule saved, but draft attachment sources could not be updated.",
+            successMessage: "已保存！",
+            partialErrorMessage: "规则已保存，但无法更新草稿附件来源。",
           });
 
           // Revalidate to get the real data from server
@@ -279,7 +278,7 @@ export function RuleForm({
           toastError({ description: res.serverError });
         } else if (!res?.data?.rule) {
           toastError({
-            description: "There was an error creating the rule.",
+            description: "创建规则时出错。",
           });
         } else {
           await handleRuleAttachmentSourceSave({
@@ -287,9 +286,8 @@ export function RuleForm({
             ruleId: res.data.rule.id,
             attachmentSources,
             shouldSave: hasDraftAction,
-            successMessage: "Created!",
-            partialErrorMessage:
-              "Rule created, but draft attachment sources could not be saved.",
+            successMessage: "已创建！",
+            partialErrorMessage: "规则已创建，但无法保存草稿附件来源。",
           });
 
           posthog.capture("User created AI rule", {
@@ -339,7 +337,7 @@ export function RuleForm({
         formState.errors?.actions?.[index]?.messagingChannelId?.message ||
         formState.errors?.actions?.[index]?.integrationArgs?.message ||
         formState.errors?.actions?.[index]?.integrationArgs?.root?.message;
-      // react-hook-form widens a nested record's message to string | FieldError
+      // react-hook-form 会把嵌套 record 的 message 拓宽为 string | FieldError
       if (typeof actionError === "string") actionErrors.push(actionError);
     });
     return actionErrors;
@@ -397,7 +395,7 @@ export function RuleForm({
         {isSubmitted && formErrors.length > 0 && (
           <div className="mt-4">
             <AlertError
-              title="Error"
+              title="错误"
               description={
                 <ul className="list-disc">
                   {formErrors.map((message) => (
@@ -414,10 +412,10 @@ export function RuleForm({
             <Input
               type="text"
               name="name"
-              label="Rule name"
+              label="规则名称"
               registerProps={register("name")}
               error={errors.name}
-              placeholder="e.g. Label receipts"
+              placeholder="例如：给收据打标签"
             />
           ) : (
             <TypographyH3
@@ -433,12 +431,12 @@ export function RuleForm({
         <RuleSectionCard
           icon={InboxIcon}
           color="blue"
-          title="When I get an email"
+          title="当我收到邮件时"
           className="!mt-6"
           errors={
             errors.conditions?.root?.message ? (
               <AlertError
-                title="Error"
+                title="错误"
                 description={errors.conditions.root.message}
               />
             ) : undefined
@@ -461,11 +459,11 @@ export function RuleForm({
         <RuleSectionCard
           icon={ZapIcon}
           color="green"
-          title="Then"
+          title="然后"
           errors={
             actionErrors.length > 0 ? (
               <AlertError
-                title="Error"
+                title="错误"
                 description={
                   <ul className="list-inside list-disc">
                     {actionErrors.map((error, index) => (
@@ -504,16 +502,16 @@ export function RuleForm({
         </RuleSectionCard>
 
         <Collapsible open={isAdvancedOpen} onOpenChange={setIsAdvancedOpen}>
-          <CollapsibleHeading>Advanced options</CollapsibleHeading>
+          <CollapsibleHeading>高级选项</CollapsibleHeading>
           <CollapsibleContent>
             {isAdvancedOpen ? (
               <div className="rounded-md border divide-y">
                 <AdvancedRow
-                  title="Apply to threads"
-                  description="Run on every reply in a conversation, not just the first message."
+                  title="应用于会话"
+                  description="对会话中的每一封回复都执行，而不仅是第一封邮件。"
                 >
                   <Tooltip
-                    content="This can't be changed for this rule type."
+                    content="此规则类型无法更改该项。"
                     hide={allowMultipleConditions(rule.systemType)}
                   >
                     <span>
@@ -531,11 +529,11 @@ export function RuleForm({
 
                 {env.NEXT_PUBLIC_DIGEST_ENABLED && (
                   <AdvancedRow
-                    title="Include in digest"
+                    title="纳入邮件摘要"
                     description={
                       !hasDigestAccess && watch("digest")
-                        ? "Digests are available on the Plus plan. Turn this off to update this rule on your current plan."
-                        : "Show matched emails in your digest summary."
+                        ? "邮件摘要需使用 Plus 套餐。关闭该项即可在你当前的套餐下更新此规则。"
+                        : "在邮件摘要中显示匹配的邮件。"
                     }
                   >
                     {isLoadingPremium ? null : hasDigestAccess ||
@@ -548,7 +546,7 @@ export function RuleForm({
                         }}
                       />
                     ) : (
-                      <UpgradeToPlusButton tooltip="Upgrade to the Plus plan to include emails in your digest." />
+                      <UpgradeToPlusButton tooltip="升级到 Plus 套餐即可将邮件纳入你的邮件摘要。" />
                     )}
                   </AdvancedRow>
                 )}
@@ -571,11 +569,11 @@ export function RuleForm({
 
                 {!!rule.id && (
                   <AdvancedRow
-                    title="Learned patterns"
-                    description="Patterns inferred from your corrections."
+                    title="学习到的模式"
+                    description="根据你的修正推断出的模式。"
                   >
                     <Tooltip
-                      content="Learned patterns aren't available for this rule type."
+                      content="此规则类型不支持学习到的模式。"
                       hide={!isConversationStatusType(rule.systemType)}
                     >
                       <span>
@@ -583,7 +581,7 @@ export function RuleForm({
                           ruleId={rule.id}
                           groupId={rule.groupId || null}
                           disabled={isConversationStatusType(rule.systemType)}
-                          label="View"
+                          label="查看"
                         />
                       </span>
                     </Tooltip>
@@ -591,10 +589,7 @@ export function RuleForm({
                 )}
 
                 {rule.id && !rule.systemType && (
-                  <AdvancedRow
-                    title="Delete rule"
-                    description="Permanently remove this rule."
-                  >
+                  <AdvancedRow title="删除规则" description="永久移除此规则。">
                     <Button
                       size="sm"
                       variant="outline"
@@ -602,9 +597,7 @@ export function RuleForm({
                       loading={isDeleting}
                       disabled={isSubmitting}
                       onClick={async () => {
-                        const yes = confirm(
-                          "Are you sure you want to delete this rule?",
-                        );
+                        const yes = confirm("你确定要删除此规则吗？");
                         if (yes) {
                           try {
                             setIsDeleting(true);
@@ -620,7 +613,7 @@ export function RuleForm({
                               });
                             } else {
                               toastSuccess({
-                                description: "The rule has been deleted.",
+                                description: "规则已删除。",
                               });
 
                               if (isDialog && onSuccess) {
@@ -636,7 +629,7 @@ export function RuleForm({
                             }
                           } catch {
                             toastError({
-                              description: "Failed to delete rule.",
+                              description: "删除规则失败。",
                             });
                           } finally {
                             setIsDeleting(false);
@@ -644,7 +637,7 @@ export function RuleForm({
                         }
                       }}
                     >
-                      Delete
+                      删除
                     </Button>
                   </AdvancedRow>
                 )}
@@ -656,7 +649,7 @@ export function RuleForm({
         <div className="flex justify-end space-x-2 !mt-6">
           {onCancel && (
             <Button variant="outline" size="sm" onClick={onCancel}>
-              Cancel
+              取消
             </Button>
           )}
 
@@ -667,11 +660,11 @@ export function RuleForm({
               loading={isSubmitting}
               disabled={isDeleting}
             >
-              Save
+              保存
             </Button>
           ) : (
             <Button type="submit" size="sm" loading={isSubmitting}>
-              Create
+              创建
             </Button>
           )}
         </div>
@@ -709,18 +702,18 @@ function NotifyChannelRow({
 
   const channelsPath = prefixPath(emailAccountId, "/channels");
   const draftsNote = hasDraftToChat
-    ? "Drafts also go to chat — configured in actions above."
+    ? "草稿也会发送到聊天——在上方操作中配置。"
     : undefined;
 
   if (!hasChannels) {
     return (
       <AdvancedRow
-        title="Notify in chat"
-        description="Send a message when this rule matches."
+        title="在聊天中通知"
+        description="当此规则匹配时发送一条消息。"
         note={draftsNote}
       >
         <Button asChild variant="outline" size="sm">
-          <Link href={channelsPath}>Connect</Link>
+          <Link href={channelsPath}>连接</Link>
         </Button>
       </AdvancedRow>
     );
@@ -739,8 +732,8 @@ function NotifyChannelRow({
 
   return (
     <AdvancedRow
-      title="Notify in chat"
-      description="Send a message when this rule matches."
+      title="在聊天中通知"
+      description="当此规则匹配时发送一条消息。"
       note={draftsNote}
     >
       <Select
@@ -757,7 +750,7 @@ function NotifyChannelRow({
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="off">Off</SelectItem>
+          <SelectItem value="off">关闭</SelectItem>
           {showGroups
             ? Array.from(channelsByProvider.entries()).map(
                 ([provider, providerChannels]) => (
@@ -781,9 +774,7 @@ function NotifyChannelRow({
           {canConnect ? (
             <>
               <SelectSeparator />
-              <SelectItem value={CONNECT_SENTINEL}>
-                + Connect new channel
-              </SelectItem>
+              <SelectItem value={CONNECT_SENTINEL}>+ 连接新频道</SelectItem>
             </>
           ) : null}
         </SelectContent>

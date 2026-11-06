@@ -83,7 +83,7 @@ export async function trackServerConversionEvent({
       },
     );
   } catch (error) {
-    logger.error("Server conversion tracking failed", {
+    logger.error("服务端转化跟踪失败", {
       error,
       eventName: name,
       eventId: id,
@@ -148,9 +148,7 @@ function getServerConversionPath(endpoint: string) {
     !normalizedEndpoint.startsWith("/") ||
     normalizedEndpoint.startsWith("//")
   ) {
-    throw new Error(
-      "CONVERSION_ANALYTICS_SERVER_URL must be a same-origin relative path",
-    );
+    throw new Error("CONVERSION_ANALYTICS_SERVER_URL 必须是同源的相对路径");
   }
 
   return normalizedEndpoint;

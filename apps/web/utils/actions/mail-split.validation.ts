@@ -10,11 +10,11 @@ export const createMailSplitBody = z
   .object({
     name: mailSplitNameSchema,
     filters: mailSplitFiltersSchema,
-    /** False shows mail matching any one condition instead of all of them. */
+    /** 为 false 时显示匹配任一条件的邮件，而不是全部条件。 */
     matchAll: z.boolean().default(true),
   })
   .refine(validConjunction, {
-    message: "Use match any for multiple senders or inbox sections",
+    message: "多个发件人或收件箱分区请使用“匹配任一”",
     path: ["filters"],
   });
 export type CreateMailSplitBody = z.infer<typeof createMailSplitBody>;
@@ -27,14 +27,13 @@ export const updateMailSplitBody = z
     matchAll: z.boolean().default(true),
   })
   .refine(validConjunction, {
-    message: "Use match any for multiple senders or inbox sections",
+    message: "多个发件人或收件箱分区请使用“匹配任一”",
     path: ["filters"],
   });
 export type UpdateMailSplitBody = z.infer<typeof updateMailSplitBody>;
 
-// The client sends the account's available labels and categories so the server
-// doesn't have to re-fetch them from the provider; the AI only ever picks from
-// these, so it can't invent a label that doesn't exist.
+// 客户端会发送账号可用的标签和类别，这样服务器无需再从服务商重新获取；AI 只会从这些
+// 选项中选择，因此无法凭空创造不存在的标签。
 const splitPromptOption = z.object({
   id: z.string().min(1),
   name: z.string().trim().min(1),
@@ -87,10 +86,10 @@ export const updateMailPreferencesBody = z
     expandedPreview: z.boolean().optional(),
     bundleInbox: z.boolean().optional(),
   })
-  // Every field is optional so a caller can update one preference without
-  // restating the others, which would otherwise also accept an empty update.
+  // 每个字段都是可选的，这样调用方可以只更新一项偏好而不必重述其他项；否则也会接受空
+  // 更新。
   .refine((data) => Object.values(data).some((value) => value !== undefined), {
-    message: "Provide at least one preference",
+    message: "请至少提供一项偏好设置",
   });
 export type UpdateMailPreferencesBody = z.infer<
   typeof updateMailPreferencesBody

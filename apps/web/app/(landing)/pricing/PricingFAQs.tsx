@@ -18,66 +18,60 @@ const pricingFaqs: {
   answerText?: string;
 }[] = [
   {
-    question: `Can I try ${BRAND_NAME} for free?`,
-    answer:
-      "Yes. The email app is free to use. The AI plans include a 7-day free trial.",
+    question: `我可以免费试用 ${BRAND_NAME} 吗？`,
+    answer: "可以。邮件应用可免费使用。AI 套餐包含 7 天免费试用。",
   },
   {
-    question: "Can I switch between plans?",
-    answer:
-      "Yes, you can upgrade or downgrade at any time. Changes take effect immediately and billing is prorated.",
+    question: "我可以在套餐之间切换吗？",
+    answer: "可以，你可以随时升级或降级。更改立即生效，费用按比例结算。",
   },
   {
-    question: "What payment methods do you accept?",
-    answer: "We accept all major credit cards through Stripe.",
+    question: "你们接受哪些支付方式？",
+    answer: "我们通过 Stripe 接受所有主流信用卡。",
   },
   {
-    question: "Do you offer annual discounts?",
-    answer: "Yes! Save up to 20% by choosing annual billing on any plan.",
+    question: "你们提供年付折扣吗？",
+    answer: "提供！任何套餐选择年付最多可节省 20%。",
   },
   {
-    question:
-      "Do you offer discounts for students, nonprofits, or open-source projects?",
+    question: "你们为学生、非营利组织或开源项目提供折扣吗？",
     answer: (
       <span>
-        Yes! Send us an{" "}
-        <Anchor href={`mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}`}>email</Anchor>{" "}
-        and we&apos;ll set up a discounted plan for you.
+        提供！给我们{" "}
+        <Anchor href={`mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}`}>邮件</Anchor>{" "}
+        ，我们会为你设置一个折扣套餐。
+      </span>
+    ),
+    answerText: "提供！给我们发邮件，我们会为你设置一个折扣套餐。",
+  },
+  {
+    question: "如果我取消会怎样？",
+    answer: "你可以随时取消。你的订阅会一直保持有效，直到当前计费周期结束。",
+  },
+  {
+    question: "你们提供退款吗？",
+    answer: (
+      <span>
+        提供，如果你认为我们没有为你带来价值，请在升级后 14 天内给我们{" "}
+        <Anchor href={`mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}`}>邮件</Anchor>{" "}
+        ，我们会为你退款。
       </span>
     ),
     answerText:
-      "Yes! Send us an email and we'll set up a discounted plan for you.",
+      "提供，如果你认为我们没有为你带来价值，请在升级后 14 天内给我们发邮件，我们会为你退款。",
   },
   {
-    question: "What happens if I cancel?",
-    answer:
-      "You can cancel anytime. Your subscription will remain active until the end of the billing period.",
-  },
-  {
-    question: "Do you offer refunds?",
-    answer: (
-      <span>
-        Yes, if you don&apos;t think we provided you with value send us an{" "}
-        <Anchor href={`mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}`}>email</Anchor>{" "}
-        within 14 days of upgrading and we&apos;ll refund you.
-      </span>
-    ),
-    answerText:
-      "Yes, if you don't think we provided you with value send us an email within 14 days of upgrading and we'll refund you.",
-  },
-  {
-    question: "Need a custom plan for your enterprise?",
+    question: "你的企业需要定制套餐吗？",
     answer: (
       <span>
         <Anchor href="https://www.getinboxzero.com/sales">
-          Contact our sales team
+          联系我们的销售团队
         </Anchor>{" "}
-        for custom pricing, SSO, SCIM, on-premise deployment, and dedicated
-        support.
+        ，获取定制定价、SSO、SCIM、本地部署和专属支持。
       </span>
     ),
     answerText:
-      "Contact our sales team for custom pricing, SSO, SCIM, on-premise deployment, and dedicated support.",
+      "联系我们的销售团队，获取定制定价、SSO、SCIM、本地部署和专属支持。",
   },
 ];
 
@@ -105,7 +99,7 @@ export function PricingFAQs() {
         // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON.stringify on controlled object is safe
         dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingFaqJsonLd) }}
       />
-      <SectionHeading>Pricing FAQ</SectionHeading>
+      <SectionHeading>定价常见问题</SectionHeading>
       <SectionContent>
         <CardWrapper>
           <dl className="grid md:grid-cols-2 gap-6">

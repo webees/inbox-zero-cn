@@ -7,10 +7,8 @@ export function StepDraftReplies({ onNext }: { onNext: () => void }) {
   return (
     <OnboardingFeatureStep
       illustration={<DraftRepliesIllustration />}
-      title="Drafts ready to send"
-      description={
-        "Every email needing a reply gets a draft, written in your tone."
-      }
+      title="可直接发送的草稿"
+      description={"每封需要回复的邮件都会得到一份草稿，并以你的语气撰写。"}
       onNext={onNext}
     />
   );

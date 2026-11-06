@@ -171,7 +171,7 @@ export async function runMeetingBrief({
 
     if (!claimed) {
       eventLog.info("Event already claimed by another process, skipping");
-      return { success: false, message: "Already being processed" };
+      return { success: false, message: "已在处理中" };
     }
   }
 
@@ -198,7 +198,7 @@ export async function runMeetingBrief({
           logger: eventLog,
         });
       }
-      return { success: false, message: "No external guests found" };
+      return { success: false, message: "未找到外部参会者" };
     }
 
     const briefingContent = await aiGenerateMeetingBriefing({
@@ -231,7 +231,7 @@ export async function runMeetingBrief({
     }
 
     eventLog.info("Meeting briefing sent successfully");
-    return { success: true, message: "Brief sent successfully" };
+    return { success: true, message: "简报发送成功" };
   } catch (error) {
     if (error instanceof SafeError && error.message === "No refresh token") {
       eventLog.warn(

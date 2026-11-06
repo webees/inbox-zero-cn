@@ -80,11 +80,11 @@ Base your analysis on:
 
 Return a JSON object with the analyzed persona information.`;
 
-  const prompt = `The user's email address is: ${emailAccount.email}
+  const prompt = `用户的邮箱地址是：${emailAccount.email}
 
-This is important: You are analyzing the persona of ${emailAccount.email}. Look at what they write about, how they communicate, and who they interact with to determine their professional role.
+这一点很重要：你正在分析 ${emailAccount.email} 的用户画像。查看其邮件涉及的主题、沟通方式以及互动对象，以判断其职业角色。
 
-Here are the emails they've sent:
+以下是其已发送的邮件：
 <emails>
 ${getEmailListPrompt({ messages: emails, messageMaxLength: 1000 })}
 </emails>`;
@@ -96,7 +96,7 @@ ${getEmailListPrompt({ messages: emails, messageMaxLength: 1000 })}
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Persona Analysis",
+    label: "用户画像分析",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "none" },
   });

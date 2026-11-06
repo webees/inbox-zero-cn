@@ -79,7 +79,7 @@ export async function aiChooseRule<
   // or no name at all). Fail loudly instead of recording the email as skipped.
   if (!rulesWithMetadata.length) {
     throw new Error(
-      `AI rule selection claimed a match but did not resolve to any offered rule (returned ${aiResponse.matchedRules.length} rule name(s) for ${orderedRules.length} candidate(s))`,
+      `AI 规则选择声称匹配，但没有解析出任何候选规则（返回了 ${aiResponse.matchedRules.length} 个规则名称，候选规则为 ${orderedRules.length} 个）`,
     );
   }
 
@@ -109,7 +109,7 @@ async function getAiResponse(options: GetAiResponseOptions): Promise<{
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Choose rule",
+    label: "选择规则",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "full" },
     cacheSystemPrompt: true,
@@ -444,13 +444,11 @@ function formatClassificationFeedback(
   if (!feedback?.length) return "";
 
   const lines = feedback.map((entry) => {
-    const subject = entry.subject
-      ? `"${entry.subject}"`
-      : "(email no longer available)";
+    const subject = entry.subject ? `"${entry.subject}"` : "（邮件已不可用）";
     if (entry.eventType === "LABEL_ADDED") {
       return `- ${subject} → ${entry.ruleName}`;
     }
-    return `- ${subject} removed from ${entry.ruleName}`;
+    return `- ${subject} 已从 ${entry.ruleName} 中移除`;
   });
 
   return `<classification_feedback>
@@ -460,7 +458,7 @@ These are hints from past user actions. Still evaluate the current email on its 
 </classification_feedback>`;
 }
 
-// Per-sender feedback stays out of the system prompt so the prefix is cacheable.
+// 每个发件人的反馈不放入系统提示词，以便前缀可缓存。
 function appendClassificationFeedback(
   feedback: ClassificationFeedbackItem[] | null | undefined,
 ): string {

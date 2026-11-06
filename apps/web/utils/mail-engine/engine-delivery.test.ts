@@ -59,9 +59,9 @@ describe("engine send delivery status", () => {
 
   it("labels blocked and failed sends", () => {
     expect(engineDeliveryLabel("blocked_auth", true)).toBe(
-      "Reconnect your account to send this reply",
+      "重新连接账号以发送此回复",
     );
-    expect(engineDeliveryLabel("queued", false)).toBe("Waiting for connection");
+    expect(engineDeliveryLabel("queued", false)).toBe("等待连接");
     expect(canEditEngineSend("queued", true)).toBe(true);
     expect(canEditEngineSend("executing", true)).toBe(false);
   });

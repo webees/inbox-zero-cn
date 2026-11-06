@@ -124,14 +124,14 @@ export function getProgressMessage(
   const completed = state.processedThreadIds.size - remaining;
 
   if (remaining > 0) {
-    return `Progress: ${completed}/${state.processedThreadIds.size} emails completed`;
+    return `进度：已完成 ${completed}/${state.processedThreadIds.size} 封邮件`;
   }
 
   if (state.status === "stopped" && state.stoppedCount !== null) {
-    return `Processed ${state.stoppedCount} emails`;
+    return `已处理 ${state.stoppedCount} 封邮件`;
   }
 
-  return `Processed ${state.processedThreadIds.size} emails`;
+  return `已处理 ${state.processedThreadIds.size} 封邮件`;
 }
 
 function isRunActive(status: ProcessingStatus) {

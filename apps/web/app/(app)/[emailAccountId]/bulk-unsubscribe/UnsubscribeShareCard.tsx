@@ -12,18 +12,16 @@ export const UnsubscribeShareCard = forwardRef<
     className?: string;
   }
 >(function UnsubscribeShareCard({ senderCount, yearlyEmails, className }, ref) {
-  const senders = senderCount === 1 ? "sender" : "senders";
-  // Lead with the future emails avoided (the real win); fall back to the
-  // sender count when we can't project a yearly figure.
+  // 先展示未来可避免的邮件数（真正的收益）；无法估算年度数据时，回退到发件人数量。
   const hero = yearlyEmails
     ? {
         number: yearlyEmails,
-        label: `fewer ${yearlyEmails === 1 ? "email" : "emails"} a year`,
-        caption: `after unsubscribing from ${senderCount} ${senders}`,
+        label: "每年少收的邮件",
+        caption: `已退订 ${senderCount} 个发件人`,
       }
     : {
         number: senderCount,
-        label: `${senders} unsubscribed`,
+        label: `已退订 ${senderCount} 个发件人`,
         caption: null,
       };
 
@@ -60,7 +58,7 @@ export const UnsubscribeShareCard = forwardRef<
       )}
 
       <div className="relative mt-7 text-sm font-medium text-white/70">
-        Cleaned up with {BRAND_NAME}
+        使用 {BRAND_NAME} 清理
       </div>
     </div>
   );

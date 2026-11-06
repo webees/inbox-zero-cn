@@ -264,8 +264,7 @@ export function MailShell() {
             emailAccountId,
             preferences,
           );
-          // Thrown so SWR rolls the optimistic value back rather than leaving
-          // the UI showing a preference the server never accepted.
+          // 抛出以便 SWR 回滚乐观更新的值，而不是让 UI 显示服务器从未接受的偏好设置。
           if (result?.serverError || result?.validationErrors)
             throw new Error(getActionErrorMessage(result));
           return { ...(current ?? loadedSettings), ...preferences };
@@ -279,9 +278,7 @@ export function MailShell() {
           rollbackOnError: true,
         },
       ).catch((error) => {
-        toast.error(
-          error instanceof Error ? error.message : "Couldn't save that",
-        );
+        toast.error(error instanceof Error ? error.message : "无法保存");
       });
     },
     [emailAccountId, mutateSettings, settings],
@@ -303,13 +300,12 @@ export function MailShell() {
   const toggleBundleInbox = useCallback(async () => {
     const enabling = !bundleInbox;
     await updatePreferences({ bundleInbox: enabling });
-    // Turning bundling on picks default splits on the server.
+    // 开启打包时会在服务器上选择默认拆分。
     if (enabling) mutateSettings();
   }, [bundleInbox, mutateSettings, updatePreferences]);
 
-  // A sidebar selection scopes the whole list, which replaces the split tabs —
-  // splits are a way of slicing the inbox, not of slicing an arbitrary view.
-  // Resolved once so the tab bar and the fetched rows can't disagree.
+  // 侧边栏的选择会限定整个列表的范围，从而替换拆分标签页——拆分是切分收件箱的方式，
+  // 而不是切分任意视图的方式。只解析一次，以免标签栏与获取到的行不一致。
   const scopeQuery: ThreadsQuery | null = useMemo(() => {
     if (scopeLabelId) return { labelId: scopeLabelId };
     if (scopeFolderId) return { folderId: scopeFolderId };
@@ -338,8 +334,7 @@ export function MailShell() {
       ? searchDraft.value
       : searchParam) ?? "";
   const searchQuery = searchValue.trim() || null;
-  // Scheduled sends live in our own database, so this view has no thread
-  // list to fetch.
+  // 定时发送存储在我们自己的数据库中，因此此视图没有需要获取的会话列表。
   const isScheduledView =
     !isAllAccounts && !searchQuery && scopeType === MAIL_SCHEDULED_TYPE;
   const [settledSearch, setSettledSearch] = useState(searchQuery);
@@ -360,8 +355,7 @@ export function MailShell() {
     (value: string) => setSearchDraft({ identity: searchEditIdentity, value }),
     [searchEditIdentity],
   );
-  // Picking the view that's already open leaves the URL unchanged, so an
-  // unsubmitted search would otherwise keep filtering the list.
+  // 选择已打开的视图不会改变 URL，因此未提交的搜索否则会一直过滤列表。
   const discardSearchDraft = useCallback(() => setSearchDraft(undefined), []);
 
   const combinedLabelSplits = useMemo(
@@ -376,14 +370,14 @@ export function MailShell() {
           ...split,
           name:
             isGoogle && split.name.trim().toLowerCase() === "other"
-              ? `${split.name} (custom)`
+              ? `${split.name}（自定义）`
               : split.name,
         })),
         ...(isGoogle && !isAllAccounts
           ? [
               {
                 id: OTHER_SPLIT_ID,
-                name: "Other",
+                name: "其他",
                 matchAll: true,
                 filters: [],
               },
@@ -496,7 +490,7 @@ export function MailShell() {
             threads: listedThreads,
             splits: settings?.splits ?? [],
             expandedBundleIds,
-            // A sign-in code is wanted now, so it never waits inside a bundle.
+            // 登录验证码需要立即查看，因此它永远不会留在打包中等待。
             keepVisible: (thread) => isOtpThread(thread, userLabels),
           })
         : { rows: listedThreads, rowBundles: undefined },
@@ -528,8 +522,7 @@ export function MailShell() {
     previousSearchFocus.current = next;
     if (next.index !== focusedIndex) setFocusedIndex(next.index);
   }, [orderedIds, focusedIndex, searchQuery, searchViewIdentity]);
-  // Local reads answer fast, so the list stays blank while one is in flight
-  // rather than flashing a spinner.
+  // 本地读取响应很快，因此在进行中时列表保持空白，而不是闪一下加载动画。
   let emptyListMessage: ReactNode;
   if (isLoading || !searchSettled) {
     emptyListMessage = null;
@@ -537,11 +530,11 @@ export function MailShell() {
     emptyListMessage = (
       <span className="inline-flex items-center gap-2">
         <LoadingMiniSpinner />
-        Syncing your mail…
+        正在同步你的邮件…
       </span>
     );
   } else if (searchQuery) {
-    emptyListMessage = "No emails found";
+    emptyListMessage = "未找到邮件";
   } else if (!scopeQuery) {
     emptyListMessage = (
       <InboxZeroCelebration
@@ -975,8 +968,7 @@ export function MailShell() {
       if (removedOpenThreadKey) {
         removedOpenThreadKeyRef.current = removedOpenThreadKey;
       }
-      // Advance before the list drops the row, so focus moves straight to
-      // the next row instead of briefly landing on none.
+      // 在列表移除该行之前就推进，使焦点直接移到下一行，而不是短暂地落在空处。
       const advancedTo =
         removedOpenThreadKey && autoAdvanceReader
           ? advanceReaderPast(removedOpenThreadKey, ids)
@@ -985,9 +977,8 @@ export function MailShell() {
       const queuedOpenThread =
         removedOpenThreadKey !== null &&
         queuedThreadKeys.includes(removedOpenThreadKey);
-      // If it didn't queue, go back, unless the user has since moved on.
-      // A reader closed on a bundle row has stayed put while focus has too;
-      // one closed for any other reason can't tell staying from leaving.
+      // 如果没有加入队列，就回退，除非用户此后已经继续操作。在打包行上关闭的阅读器
+      // 保持原地，焦点也是如此；因其他任何原因关闭的阅读器无法区分停留与离开。
       const stayedWhereAdvanced =
         advancedTo !== null &&
         ("openedKey" in advancedTo
@@ -1853,12 +1844,12 @@ export function MailShell() {
                 {scopeTitle ? (
                   <div className="flex items-center gap-1 px-1.5 py-1">
                     <Tooltip
-                      shortcuts={[{ id: "backToList", label: "Go to inbox" }]}
+                      shortcuts={[{ id: "backToList", label: "前往收件箱" }]}
                     >
                       <button
                         type="button"
                         onClick={goToInbox}
-                        aria-label="Go to inbox"
+                        aria-label="前往收件箱"
                         className="flex size-7 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         <ChevronLeftIcon className="size-4" />
@@ -1872,8 +1863,7 @@ export function MailShell() {
                 {isAllAccounts &&
                 combinedThreadState.failedAccountIds.length ? (
                   <div className="border-border border-b bg-amber-50 px-3 py-2 text-amber-900 text-xs dark:bg-amber-950/30 dark:text-amber-200">
-                    Some inboxes couldn&apos;t be loaded. Try again shortly or
-                    check their connections.
+                    部分收件箱无法加载。请稍后重试，或检查它们的连接。
                   </div>
                 ) : null}
                 <MailPanelErrorBoundary
@@ -1884,7 +1874,7 @@ export function MailShell() {
                     displayedActiveSplitId,
                     searchQuery,
                   ])}
-                  title="Unable to show your mail list"
+                  title="无法显示你的邮件列表"
                 >
                   {isScheduledView ? (
                     <ScheduledEmailList />

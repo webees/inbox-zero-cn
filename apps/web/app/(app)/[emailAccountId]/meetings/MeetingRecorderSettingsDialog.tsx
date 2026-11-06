@@ -43,7 +43,7 @@ export function MeetingRecorderSettingsDialog({
     updateMeetingRecorderSettingsAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: "Settings saved" });
+        toastSuccess({ description: "设置已保存" });
         mutate();
         mutateUpcoming();
       },
@@ -51,15 +51,15 @@ export function MeetingRecorderSettingsDialog({
         mutate();
         toastError({
           description: getActionErrorMessage(error, {
-            prefix: "Failed to save settings",
+            prefix: "保存设置失败",
           }),
         });
       },
     },
   );
 
-  // Paint the change immediately. These controls stay on screen while the
-  // action round-trips, so without this the radio and toggles look stuck.
+  // 立即显示出变化。这些控件在 action 往返期间会一直留在屏幕上，
+  // 不做这一步的话，单选框和开关看起来会卡住。
   const save = (update: UpdateMeetingRecorderSettingsBody) => {
     if (data) mutate({ ...data, ...update }, { revalidate: false });
     execute(update);
@@ -69,16 +69,16 @@ export function MeetingRecorderSettingsDialog({
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Notetaker settings</DialogTitle>
+          <DialogTitle>笔记助手设置</DialogTitle>
         </DialogHeader>
 
         {data && (
           <div className="space-y-6">
             <div className="space-y-2">
-              <ItemTitle>Which meetings to join</ItemTitle>
+              <ItemTitle>要加入哪些会议</ItemTitle>
               <RadioCardGroup
                 name="joinRule"
-                ariaLabel="Which meetings to join"
+                ariaLabel="要加入哪些会议"
                 value={data.joinRule}
                 onChange={(joinRule) => {
                   analytics.captureAction("meeting_recorder_setting_changed", {
@@ -94,11 +94,11 @@ export function MeetingRecorderSettingsDialog({
             <ListCard>
               <Item>
                 <ItemContent>
-                  <ItemTitle>Email me the notes</ItemTitle>
+                  <ItemTitle>把笔记发邮件给我</ItemTitle>
                 </ItemContent>
                 <Toggle
                   name="recapEmailEnabled"
-                  ariaLabel="Email me the notes"
+                  ariaLabel="把笔记发邮件给我"
                   enabled={data.recapEmailEnabled}
                   onChange={(recapEmailEnabled) => {
                     analytics.captureAction(
@@ -112,11 +112,11 @@ export function MeetingRecorderSettingsDialog({
 
               <Item>
                 <ItemContent>
-                  <ItemTitle>Draft a follow-up email</ItemTitle>
+                  <ItemTitle>起草跟进邮件</ItemTitle>
                 </ItemContent>
                 <Toggle
                   name="followUpDraftEnabled"
-                  ariaLabel="Draft a follow-up email"
+                  ariaLabel="起草跟进邮件"
                   enabled={data.followUpDraftEnabled}
                   onChange={(followUpDraftEnabled) => {
                     analytics.captureAction(
@@ -133,7 +133,7 @@ export function MeetingRecorderSettingsDialog({
             </ListCard>
 
             <div className="flex items-center justify-between gap-4">
-              <MutedText>Cancels every call it is booked to join.</MutedText>
+              <MutedText>会取消它已预约要加入的每一通电话。</MutedText>
               <Button
                 variant="outline"
                 onClick={() => {
@@ -142,7 +142,7 @@ export function MeetingRecorderSettingsDialog({
                   onClose();
                 }}
               >
-                Turn off
+                关闭
               </Button>
             </div>
           </div>

@@ -72,7 +72,7 @@ export async function aiExtractFromEmailHistory({
   logger: Logger;
 }): Promise<string | null> {
   try {
-    logger.info("Extracting information from email history", {
+    logger.info("正在从邮件历史记录中提取信息", {
       currentThreadCount: currentThreadMessages.length,
       historicalCount: historicalMessages.length,
     });
@@ -92,7 +92,7 @@ export async function aiExtractFromEmailHistory({
 
     const generateObject = createGenerateObject({
       emailAccount,
-      label: "Email history extraction",
+      label: "邮件历史记录提取",
       modelOptions,
       promptHardening: { trust: "untrusted", level: "compact" },
     });
@@ -106,7 +106,7 @@ export async function aiExtractFromEmailHistory({
 
     return result.object.summary;
   } catch (error) {
-    logger.error("Failed to extract information from email history", { error });
+    logger.error("无法从邮件历史记录中提取信息", { error });
     return null;
   }
 }

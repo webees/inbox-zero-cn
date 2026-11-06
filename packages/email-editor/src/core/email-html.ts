@@ -214,7 +214,7 @@ export function validateEmailAttachments(
     if (decodedBase64Size(attachment.contentBase64) !== attachment.size) {
       return {
         valid: false,
-        error: "Attachment sizes do not match their content.",
+        error: "附件大小与其内容不匹配。",
       };
     }
     if (
@@ -223,7 +223,7 @@ export function validateEmailAttachments(
     ) {
       return {
         valid: false,
-        error: "Inline image content does not match its file type.",
+        error: "内联图片内容与其文件类型不匹配。",
       };
     }
   }
@@ -237,7 +237,7 @@ export function validateEmailAttachmentMetadata(
   if (attachments.length > EMAIL_ATTACHMENT_LIMITS.maxFiles) {
     return {
       valid: false,
-      error: `Attach at most ${EMAIL_ATTACHMENT_LIMITS.maxFiles} files.`,
+      error: `最多可附加 ${EMAIL_ATTACHMENT_LIMITS.maxFiles} 个文件。`,
     };
   }
 
@@ -247,7 +247,7 @@ export function validateEmailAttachmentMetadata(
   if (inlineAttachments.length > EMAIL_ATTACHMENT_LIMITS.maxInlineFiles) {
     return {
       valid: false,
-      error: `Insert at most ${EMAIL_ATTACHMENT_LIMITS.maxInlineFiles} inline images.`,
+      error: `最多可插入 ${EMAIL_ATTACHMENT_LIMITS.maxInlineFiles} 张内联图片。`,
     };
   }
 
@@ -257,20 +257,20 @@ export function validateEmailAttachmentMetadata(
 
   for (const attachment of attachments) {
     if (seenIds.has(attachment.id)) {
-      return { valid: false, error: "Attachment IDs must be unique." };
+      return { valid: false, error: "附件 ID 必须唯一。" };
     }
     seenIds.add(attachment.id);
 
     if (!attachment.filename.trim()) {
-      return { valid: false, error: "Attachments must have a filename." };
+      return { valid: false, error: "附件必须包含文件名。" };
     }
     if (!Number.isSafeInteger(attachment.size) || attachment.size < 0) {
-      return { valid: false, error: "Attachment sizes are invalid." };
+      return { valid: false, error: "附件大小无效。" };
     }
     if (attachment.size > EMAIL_ATTACHMENT_LIMITS.maxFileBytes) {
       return {
         valid: false,
-        error: "Attachments must be 10 MB or smaller.",
+        error: "附件必须不超过 10 MB。",
       };
     }
     totalBytes += attachment.size;
@@ -279,25 +279,25 @@ export function validateEmailAttachmentMetadata(
     if (attachment.size > EMAIL_ATTACHMENT_LIMITS.maxInlineBytes) {
       return {
         valid: false,
-        error: "Inline images must be 3 MB or smaller.",
+        error: "内联图片必须不超过 3 MB。",
       };
     }
     if (!INLINE_IMAGE_MIME_TYPES.has(attachment.mimeType)) {
       return {
         valid: false,
-        error: "Inline images must be PNG, JPEG, GIF, or WebP files.",
+        error: "内联图片必须是 PNG、JPEG、GIF 或 WebP 文件。",
       };
     }
     if (!attachment.contentId || !isSafeContentId(attachment.contentId)) {
       return {
         valid: false,
-        error: "Inline images require a valid Content-ID.",
+        error: "内联图片需要有效的 Content-ID。",
       };
     }
     if (seenContentIds.has(attachment.contentId)) {
       return {
         valid: false,
-        error: "Inline image Content-IDs must be unique.",
+        error: "内联图片的 Content-ID 必须唯一。",
       };
     }
     seenContentIds.add(attachment.contentId);
@@ -306,7 +306,7 @@ export function validateEmailAttachmentMetadata(
   if (totalBytes > EMAIL_ATTACHMENT_LIMITS.maxTotalBytes) {
     return {
       valid: false,
-      error: "Attachments must total 15 MB or less.",
+      error: "附件总大小必须不超过 15 MB。",
     };
   }
 
@@ -314,8 +314,8 @@ export function validateEmailAttachmentMetadata(
 }
 
 /**
- * Splits provider HTML at its first quote container. Everything before it is
- * the reply and everything from it on is the quote, so no content is lost.
+ * 在首个引用容器处拆分服务商 HTML。它之前的所有内容都是回复，从它开始的所有
+ * 内容都是引用，因此不会有任何内容丢失。
  */
 export function splitQuotedHtml(html: string) {
   const fragment = parseFragment(html, { sourceCodeLocationInfo: true });

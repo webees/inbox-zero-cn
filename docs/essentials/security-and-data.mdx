@@ -1,50 +1,49 @@
 ---
-title: 'Security, Permissions, and AI'
-description: 'Understand account access, confirmations, sensitive-data controls, and recovery.'
+title: '安全、权限与 AI'
+description: '了解账号访问、确认机制、敏感数据控制和恢复。'
 icon: 'shield-check'
 ---
 
-Inbox Zero needs access to your mailbox to search messages and run the workflows you enable. Optional features request additional access only when you connect them, such as calendar or drive permissions.
+Inbox Zero 需要访问你的邮箱，才能搜索邮件并运行你启用的工作流。可选功能只在你连接它们时才请求额外访问权限，例如日历或云盘权限。
 
-## Account permissions
+## 账号权限
 
-- Email permissions allow Inbox Zero to read and organize messages and create drafts.
-- Calendar permissions support availability, booking links, and meeting features.
-- Drive permissions support filing attachments and attaching approved files to drafts.
-- Slack, Teams, and Telegram connections let the assistant respond and deliver configured notifications.
+- 邮件权限允许 Inbox Zero 读取和整理邮件并创建草稿。
+- 日历权限支持空闲时间、预约链接和会议功能。
+- 云盘权限支持归档附件，并把已批准的文件附加到草稿。
+- Slack、Teams 和 Telegram 连接让助手可以回复并投递已配置的通知。
 
-You can revoke a connection from Inbox Zero or from the provider's security settings. Revoking provider access stops the affected feature until you reconnect it.
+你可以从 Inbox Zero 或服务商的安全设置中撤销某个连接。撤销服务商访问权限会停止受影响的功能，直到你重新连接它。
 
-## Confirming high-impact actions
+## 确认高影响操作
 
-Chat and messaging-channel workflows ask for confirmation before high-impact actions such as sending messages or creating automation that can communicate externally. Always review generated recipients, content, links, and attachments before approving.
+聊天和消息渠道工作流会在发送邮件或创建可与外部通信的自动化等高影响操作前要求确认。批准前务必检查生成的收件人、内容、链接和附件。
 
-Rules run automatically after they are enabled. Test new rules with recent messages and review **Assistant → History** before relying on outbound actions.
+规则在启用后会自动运行。在依赖外发操作之前，请先用近期邮件测试新规则，并查看**助手 → 历史**。
 
-## Sensitive-data protection
+## 敏感数据保护
 
-Assistant settings include a sensitive-data policy that can allow, redact, or block detected credentials and payment-card numbers before content is sent to an AI provider.
+助手设置中包含一项敏感数据政策，可以在内容发送给 AI 服务商之前允许、打码或阻止检测到的凭据和支付卡号。
 
-This control reduces accidental exposure; it is not a substitute for removing secrets from email or reviewing generated content.
+该控件可减少意外泄露；但它不能替代从邮件中移除机密信息或检查生成内容。
 
-## AI limitations
+## AI 的局限
 
-AI output can be incomplete or incorrect. In particular:
+AI 输出可能不完整或不正确。尤其是：
 
-- A rule may match an unexpected message.
-- A draft may omit context or make an unsupported assumption.
-- A summary may miss a detail from a long thread or attachment.
-- Availability and external-tool results depend on connected services being current.
+- 规则可能匹配到意料之外的邮件。
+- 草稿可能遗漏上下文，或做出没有依据的假设。
+- 摘要可能遗漏长会话或附件中的某个细节。
+- 空闲时间和外部工具的结果取决于已连接服务是否为最新状态。
 
-Use rule tests, draft confidence, confirmation prompts, and the **Fix** workflow to reduce these risks.
+使用规则测试、起草置信度、确认提示和**修复**工作流来降低这些风险。
 
-## Safer cleanup and recovery
+## 更安全的清理与恢复
 
-Prefer labels, folders, archiving, or marking mail as read while testing a workflow. Deletion is more difficult to recover and may depend on the retention behavior of Gmail or Outlook.
+在测试工作流时，优先使用标签、文件夹、归档或把邮件标记为已读。删除更难恢复，且可能取决于 Gmail 或 Outlook 的保留策略。
 
-If a rule behaves incorrectly, disable it, inspect its History entry, and use **Fix**. You can also disable all rules for one mailbox from **Settings → Email Accounts** while investigating.
+如果规则行为不正确，请停用它、检查其历史记录并使用**修复**。排查期间，你也可以从**设置 → 邮箱账号**禁用某个邮箱的所有规则。
 
-## Account deletion
+## 删除账号
 
-Deleting your Inbox Zero account is separate from revoking Google or Microsoft access. See the [FAQ](/essentials/faq) for both processes and review the [Privacy Policy](https://www.getinboxzero.com/privacy) for the hosted service's current data terms.
-
+删除你的 Inbox Zero 账号与撤销 Google 或 Microsoft 访问权限是两回事。这两个流程请参阅[常见问题](/essentials/faq)，托管服务当前的数据条款请查看[隐私政策](https://www.getinboxzero.com/privacy)。

@@ -28,14 +28,14 @@ export function SentWithSignatureSection({
       <ItemSeparator />
       <Item size="sm">
         <ItemContent>
-          <ItemTitle>Include 'Sent with {BRAND_NAME}'</ItemTitle>
+          <ItemTitle>包含“Sent with {BRAND_NAME}”</ItemTitle>
         </ItemContent>
         <ItemActions>
           {enabled === undefined ? (
             <Skeleton className="h-5 w-9 rounded-full" />
           ) : (
             <Switch
-              aria-label={`Toggle 'Sent with ${BRAND_NAME}'`}
+              aria-label={`切换“Sent with ${BRAND_NAME}”`}
               checked={enabled}
               disabled={isExecuting}
               onCheckedChange={toggle}

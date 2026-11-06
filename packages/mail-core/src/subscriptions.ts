@@ -76,8 +76,8 @@ function createGroup<T>(
   let inFlight: Promise<void> | null = null;
   let followUp: Promise<void> | null = null;
   let publishedData: string | null = null;
-  // A late observer of a loaded query starts from its last ready snapshot
-  // instead of waiting for its own read.
+  // 较晚加入的对已加载查询的观察者会从最近一次就绪快照开始，
+  // 而不是等待自己完成读取。
   let settled: QuerySnapshot<T> | null = null;
 
   async function runLoad() {
@@ -85,9 +85,9 @@ function createGroup<T>(
     try {
       const loaded = await load();
       if (read !== latestRead) return;
-      // The revision is database-wide, so most refreshes follow unrelated
-      // writes; skip republishing identical data. Query data is plain schema
-      // data (no Map, Set, or Date), so comparing its JSON form is faithful.
+      // 修订号是数据库级别的，因此大多数刷新都跟随不相关的写入；
+      // 跳过重复发布相同数据。查询数据是纯 schema 数据（不含 Map、Set 或 Date），
+      // 所以比较其 JSON 形式是可靠的。
       const data = JSON.stringify(loaded.data);
       const unchanged = data === publishedData;
       publishedData = data;
@@ -120,8 +120,6 @@ function createGroup<T>(
     }
   }
 
-  // A caller waits for the load in flight plus at most one load that starts
-  // after its request, never for refreshes requested later.
   async function refresh() {
     if (handles.size === 0) return;
     if (!inFlight) return startLoad();

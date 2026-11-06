@@ -52,7 +52,7 @@ export interface RequestWithLogger extends NextRequest {
   logger: Logger;
 }
 
-// Extended request type with validated account info
+// 带有已校验账号信息的扩展请求类型
 export interface RequestWithAuth extends RequestWithLogger {
   auth: { userId: string; emailOtp?: boolean };
 }
@@ -76,7 +76,7 @@ export interface MiddlewareOptions {
   };
 }
 
-// Higher-order middleware factory that handles common error logic
+// 处理通用错误逻辑的高阶中间件工厂
 function withMiddleware<T extends NextRequest>(
   handler: NextHandler<T>,
   middleware?: (
@@ -96,7 +96,7 @@ function withMiddleware<T extends NextRequest>(
       options?.requestTiming !== undefined
         ? startRequestTimer({
             logger: baseLogger,
-            requestName: `${scope || "api"} request`,
+            requestName: `${scope || "api"} 请求`,
             runningWarnAfterMs: options.requestTiming.runningWarnAfterMs,
             slowWarnAfterMs: options.requestTiming.slowWarnAfterMs,
           })
@@ -114,23 +114,23 @@ function withMiddleware<T extends NextRequest>(
       },
       async () => {
         try {
-          // Apply middleware if provided
+          // 如果提供了中间件，则应用中间件
           let enhancedReq = reqWithLogger;
           if (middleware) {
             const middlewareResult = await middleware(reqWithLogger, options);
 
-            // If middleware returned a Response, return it directly
+            // 如果中间件返回了 Response，则直接返回
             if (middlewareResult instanceof Response) {
               flushLogger(reqWithLogger);
               return middlewareResult;
             }
 
-            // Otherwise, continue with the enhanced request
+            // 否则继续处理增强后的请求
             enhancedReq = middlewareResult;
           }
           requestForError = enhancedReq;
 
-          // Execute the handler with the (potentially) enhanced request
+          // 使用（可能）增强后的请求执行处理程序
           const response = await handler(enhancedReq as T, context);
 
           flushLogger(enhancedReq);
@@ -139,7 +139,7 @@ function withMiddleware<T extends NextRequest>(
         } catch (error) {
           flushLogger(requestForError);
 
-          // redirects work by throwing an error. allow these
+          // 重定向通过抛出错误实现，需要放行这些错误
           if (error instanceof Error && error.message === "NEXT_REDIRECT") {
             throw error;
           }
@@ -155,13 +155,13 @@ function withMiddleware<T extends NextRequest>(
                 return publicApiErrorResponse({
                   status: 401,
                   code: "UNAUTHORIZED",
-                  message: "Authorization required. Please grant permissions.",
+                  message: "需要授权，请授予权限",
                 });
               }
 
               return NextResponse.json(
                 {
-                  error: "Authorization required. Please grant permissions.",
+                  error: "需要授权，请授予权限",
                   errorCode: NO_REFRESH_TOKEN_ERROR_CODE,
                   isKnownError: true,
                 },
@@ -175,8 +175,7 @@ function withMiddleware<T extends NextRequest>(
                   status: 401,
                   code: "UNAUTHORIZED",
                   message:
-                    error.safeMessage ||
-                    "Microsoft authorization has expired. Please reconnect.",
+                    error.safeMessage || "Microsoft 授权已过期，请重新连接",
                 });
               }
 
@@ -266,7 +265,7 @@ function withMiddleware<T extends NextRequest>(
             );
           }
 
-          // Quick fix: log full error in development. TODO: handle properly
+          // 临时修复：在开发环境中记录完整错误
           if (env.NODE_ENV === "development") {
             // biome-ignore lint/suspicious/noConsole: helpful for debugging
             console.error(error);
@@ -290,14 +289,11 @@ function withMiddleware<T extends NextRequest>(
             return publicApiErrorResponse({
               status: 500,
               code: "INTERNAL_ERROR",
-              message: "An unexpected error occurred",
+              message: "发生意外错误",
             });
           }
 
-          return NextResponse.json(
-            { error: "An unexpected error occurred" },
-            { status: 500 },
-          );
+          return NextResponse.json({ error: "发生意外错误" }, { status: 500 });
         } finally {
           requestTimer?.logSlowCompletion();
           requestTimer?.stop();
@@ -392,7 +388,7 @@ async function emailAccountMiddleware(
   const middlewareStartTime = Date.now();
 
   try {
-    // If account ID is provided, validate and get the email account ID
+    // 如果提供了账号 ID，则校验并获取邮箱账号 ID
     const email = await runTimedMiddlewareStep({
       logger: middlewareLogger,
       step: "validate-email-account",
@@ -402,7 +398,7 @@ async function emailAccountMiddleware(
     const emailAccountLogger = middlewareLogger.with({ email });
 
     if (!email && options?.allowOrgAdmins) {
-      // Check if user is admin or owner and is in the same org as the target email account
+      // 检查用户是否为管理员或所有者，且与目标邮箱账号属于同一组织
       const callerEmailAccount = await runTimedMiddlewareStep({
         logger: emailAccountLogger,
         step: "resolve-org-admin-caller-account",
@@ -417,7 +413,7 @@ async function emailAccountMiddleware(
         );
       }
 
-      // Check if target member has consented to org admin analytics access
+      // 检查目标成员是否已同意组织管理员分析访问
       const targetMember = await runTimedMiddlewareStep({
         logger: emailAccountLogger,
         step: "check-org-admin-consent",
@@ -566,8 +562,8 @@ async function emailProviderMiddleware(
 
     return providerReq;
   } catch (error) {
-    // Known errors (revoked access, rate-limit mode) are logged where they're
-    // raised, and withMiddleware applies shared error handling.
+    // 已知错误（访问被撤销、速率限制模式）会在抛出处记录，
+    // 由 withMiddleware 应用共享的错误处理。
     if (error instanceof SafeError || isProviderRateLimitModeError(error)) {
       throw error;
     }
@@ -614,7 +610,7 @@ async function adminMiddleware(
   return authReq;
 }
 
-// Public middlewares that build on the common infrastructure
+// 基于通用基础设施构建的公共中间件
 
 // withError overloads
 export function withError(
@@ -784,7 +780,7 @@ async function runTimedMiddlewareStep<T>({
 }): Promise<T> {
   const startedAt = Date.now();
   const slowStepLogTimeout = setTimeout(() => {
-    logger.warn("Middleware step still running", {
+    logger.warn("中间件步骤仍在运行", {
       step,
       elapsedMs: Date.now() - startedAt,
     });
@@ -796,7 +792,7 @@ async function runTimedMiddlewareStep<T>({
     clearTimeout(slowStepLogTimeout);
     const durationMs = Date.now() - startedAt;
     if (durationMs > SLOW_MIDDLEWARE_STEP_MS) {
-      logger.warn("Middleware step completed slowly", {
+      logger.warn("中间件步骤完成较慢", {
         step,
         durationMs,
       });
@@ -815,7 +811,7 @@ function logSlowMiddlewareTotal({
 }) {
   const durationMs = Date.now() - startedAt;
   if (durationMs > SLOW_MIDDLEWARE_TOTAL_MS) {
-    logger.warn("Middleware completed slowly", {
+    logger.warn("中间件完成较慢", {
       middleware,
       durationMs,
     });

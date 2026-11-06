@@ -330,11 +330,11 @@ describe("getMessagesBatch", () => {
     ]);
     expect(
       warnSpy.mock.calls.filter(
-        ([message]) => message === "Retrying Gmail batch items",
+        ([message]) => message === "正在重试 Gmail 批量项",
       ),
     ).toEqual([
       [
-        "Retrying Gmail batch items",
+        "正在重试 Gmail 批量项",
         {
           batchSize: 25,
           rateLimitedItemCount: 15,

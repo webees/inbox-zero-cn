@@ -33,7 +33,7 @@ export function ABTestimonial() {
     <PersonWithLogo
       src="/images/case-studies/clicks-talent/ab-lieberman.png"
       name='Abraham "AB" Lieberman'
-      title="Founder & CEO of Clicks Talent"
+      title="Clicks Talent 创始人兼 CEO"
     />
   );
 }

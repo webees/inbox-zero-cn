@@ -12,12 +12,12 @@ export function StepMailApp({ onNext }: { onNext: () => void }) {
           <AnnouncementVideo
             playbackId={EMAIL_CLIENT_LAUNCH_VIDEO_ID}
             thumbnailTime={1.5}
-            title="Meet the Inbox Zero email app"
+            title="认识 Inbox Zero 邮件应用"
           />
         </div>
       }
-      title="Meet your new email app"
-      description="Read and send email on web, desktop, and iPhone. Add the AI assistant anytime."
+      title="认识你的新邮件应用"
+      description="在网页、桌面端和 iPhone 上收发邮件。随时随地添加 AI 助手。"
       onNext={onNext}
     />
   );

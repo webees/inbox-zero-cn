@@ -66,7 +66,7 @@ export function SplitPickerDialog({
         senders,
       });
     } catch {
-      toast.error("Couldn't add senders. Please try again.");
+      toast.error("无法添加发件人，请重试。");
       return;
     } finally {
       pending.current = false;
@@ -80,8 +80,8 @@ export function SplitPickerDialog({
     const added = result?.data?.added ?? 0;
     toast.success(
       added
-        ? `Added ${pluralSenders(added)} to ${split.name}`
-        : `${split.name} already includes ${senderCount === 1 ? "this sender" : "these senders"}`,
+        ? `已将 ${pluralSenders(added)}添加到 ${split.name}`
+        : `${split.name} 已包含${senderCount === 1 ? "此发件人" : "这些发件人"}`,
     );
     onApplied(split.id);
   };
@@ -99,20 +99,20 @@ export function SplitPickerDialog({
         hideCloseButton
         onEscapeKeyDown={(event) => event.stopPropagation()}
       >
-        <DialogTitle className="sr-only">Add senders to split</DialogTitle>
+        <DialogTitle className="sr-only">将发件人添加到拆分</DialogTitle>
         <Command className="[&_[cmdk-input-wrapper]>svg]:hidden">
           <CommandInput
-            aria-label="Search splits"
+            aria-label="搜索拆分"
             className="pr-8"
             disabled={isPending || isLoadingSendAs || !senderCount}
             placeholder={
               isLoadingSendAs || senderCount
-                ? `Add ${pluralSenders(senderCount)} to…`
-                : "No senders to add"
+                ? `将 ${pluralSenders(senderCount)}添加到…`
+                : "没有可添加的发件人"
             }
           />
           <CommandList aria-busy={isPending || isLoadingSendAs}>
-            <CommandEmpty>No matching splits.</CommandEmpty>
+            <CommandEmpty>没有匹配的拆分。</CommandEmpty>
             <CommandGroup>
               {splits.map((split) => {
                 const eligible = canAddSendersToSplit(split);
@@ -129,7 +129,7 @@ export function SplitPickerDialog({
                     <span className="flex-1 break-all">{split.name}</span>
                     {eligible ? null : (
                       <span className="shrink-0 text-muted-foreground text-xs">
-                        Matches all conditions
+                        匹配全部条件
                       </span>
                     )}
                   </CommandItem>
@@ -144,7 +144,7 @@ export function SplitPickerDialog({
             role="status"
           >
             <Loader2Icon aria-hidden className="size-4 animate-spin" />
-            <span className="sr-only">Adding senders…</span>
+            <span className="sr-only">正在添加发件人…</span>
           </div>
         )}
       </DialogContent>
@@ -153,5 +153,5 @@ export function SplitPickerDialog({
 }
 
 function pluralSenders(count: number) {
-  return count === 1 ? "1 sender" : `${count} senders`;
+  return `${count} 个发件人`;
 }

@@ -133,9 +133,6 @@ export async function cleanThread({
 
   let needsLLMCheck = false;
 
-  // Anything that says "keep" must be checked across the whole thread before
-  // an archive shortcut fires: a newsletter's unsubscribe link in the first
-  // message must not archive a thread the user later starred or replied to.
   for (const message of messages) {
     if (skips.starred && isStarred(message)) {
       await publish({ markDone: false });
@@ -163,21 +160,17 @@ export async function cleanThread({
       }
     }
 
-    if (skips.calendar && getCalendarEventStatus(message).timing === "future") {
-      await publish({ markDone: false });
-      return;
-    }
-  }
-
-  for (const message of messages) {
     const calendarEventStatus = getCalendarEventStatus(message);
-    if (
-      skips.calendar &&
-      calendarEventStatus.isEvent &&
-      calendarEventStatus.timing === "past"
-    ) {
-      await publish({ markDone: true });
-      return;
+    if (skips.calendar && calendarEventStatus.isEvent) {
+      if (calendarEventStatus.timing === "past") {
+        await publish({ markDone: true });
+        return;
+      }
+
+      if (calendarEventStatus.timing === "future") {
+        await publish({ markDone: false });
+        return;
+      }
     }
 
     if (!isSent(message) && hasUnsubscribeLink(message)) {

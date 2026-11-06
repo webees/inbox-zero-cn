@@ -127,15 +127,13 @@ export function ThreadDeliveryStatus({
       await action();
       await mutate();
       await refreshOutbox();
-      // Which drafts are hidden follows whether their sends are still pending.
+      // 隐藏哪些草稿取决于它们的发送是否仍在等待中。
       await mutateCache(upcomingScheduledEmailsKey(emailAccountId)).catch(
         () => {},
       );
     } catch (failure) {
       setActionError(
-        failure instanceof Error
-          ? failure.message
-          : "Could not update delivery.",
+        failure instanceof Error ? failure.message : "无法更新投递状态。",
       );
     } finally {
       setBusy(false);
@@ -166,7 +164,7 @@ export function ThreadDeliveryStatus({
     [dismissedSendIds, outbox],
   );
   return (
-    <section className="space-y-1" aria-label="Reply delivery status">
+    <section className="space-y-1" aria-label="回复投递状态">
       {visible.map((row) => {
         const showStatus = shouldShowEngineDeliveryStatus({
           online,
@@ -199,12 +197,12 @@ export function ThreadDeliveryStatus({
                 className="underline underline-offset-4"
                 href={`/${emailAccountId}/mail?type=sent`}
               >
-                Check Sent
+                检查“已发送”
               </a>
             )}
             {row.status === "failed" && (
               <InlineActionButton
-                aria-label="Dismiss failed reply"
+                aria-label="忽略发送失败的回复"
                 disabled={busy}
                 onClick={() =>
                   setDismissedSendIds((current) => [
@@ -213,7 +211,7 @@ export function ThreadDeliveryStatus({
                   ])
                 }
               >
-                Dismiss
+                忽略
               </InlineActionButton>
             )}
             {canEditReply && canEditEngineSend(row.status, online) && (
@@ -236,7 +234,7 @@ export function ThreadDeliveryStatus({
                       });
                       if (result && result.status !== "cancelled") {
                         throw new Error(
-                          "This reply's status changed. Refresh the thread and try again.",
+                          "此回复的状态已变更。请刷新会话后重试。",
                         );
                       }
                     }
@@ -263,7 +261,7 @@ export function ThreadDeliveryStatus({
                   })
                 }
               >
-                Edit reply
+                编辑回复
               </InlineActionButton>
             )}
           </div>
@@ -285,7 +283,7 @@ export function ThreadDeliveryStatus({
             {["PENDING", "BLOCKED_AUTH", "FAILED"].includes(row.status) &&
               !isUnconfirmedScheduledEmail(row) && (
                 <InlineActionButton
-                  aria-label="Cancel send"
+                  aria-label="取消发送"
                   disabled={busy || !online}
                   onClick={() =>
                     act(() =>
@@ -293,18 +291,18 @@ export function ThreadDeliveryStatus({
                     )
                   }
                 >
-                  Cancel
+                  取消
                 </InlineActionButton>
               )}
             {["BLOCKED_AUTH", "FAILED"].includes(row.status) && (
               <InlineActionButton
-                aria-label="Retry send"
+                aria-label="重试发送"
                 disabled={busy || !online}
                 onClick={() =>
                   act(() => scheduledAction(retryScheduledEmailAction, row.id))
                 }
               >
-                Retry
+                重试
               </InlineActionButton>
             )}
             {row.status === "UNCERTAIN" && (
@@ -312,7 +310,7 @@ export function ThreadDeliveryStatus({
                 className="underline underline-offset-4"
                 href={`/${emailAccountId}/mail?type=sent`}
               >
-                Check Sent
+                检查“已发送”
               </a>
             )}
           </div>
@@ -322,12 +320,12 @@ export function ThreadDeliveryStatus({
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                 <p className="flex items-center gap-2">
                   <BellIcon aria-hidden className="size-3.5 shrink-0" />
-                  Reminder if no reply by {formatTime(row.remindAt)}
+                  {formatTime(row.remindAt)} 前未回复则提醒
                 </p>
                 {row.reminderStatus === "PENDING" &&
                   !isUnconfirmedScheduledEmail(row) && (
                     <InlineActionButton
-                      aria-label="Cancel reminder"
+                      aria-label="取消提醒"
                       disabled={busy || !online}
                       onClick={() =>
                         act(() =>
@@ -335,7 +333,7 @@ export function ThreadDeliveryStatus({
                         )
                       }
                     >
-                      Cancel
+                      取消
                     </InlineActionButton>
                   )}
               </div>
@@ -344,17 +342,17 @@ export function ThreadDeliveryStatus({
       ))}
       {!online && scheduledRows.length > 0 && (
         <p role="status" className="text-muted-foreground text-xs">
-          Offline. Showing the last known status.
+          离线。正在显示最后已知状态。
         </p>
       )}
       {online && error && scheduledRows.length > 0 && (
         <div className="flex items-center gap-2 text-muted-foreground text-xs">
-          <p role="status">Could not refresh. Showing the last known status.</p>
+          <p role="status">无法刷新。正在显示最后已知状态。</p>
           <InlineActionButton
             disabled={isValidating}
             onClick={() => mutate().catch(() => undefined)}
           >
-            Retry
+            重试
           </InlineActionButton>
         </div>
       )}
@@ -402,16 +400,16 @@ function scheduledDeliveryLabel(
   switch (row.status) {
     case "PENDING":
       return isUnconfirmedScheduledEmail(row)
-        ? `Scheduling for ${formatTime(row.sendAt)}…`
-        : `Scheduled for ${formatTime(row.sendAt)}`;
+        ? `计划在 ${formatTime(row.sendAt)} 发送…`
+        : `计划在 ${formatTime(row.sendAt)} 发送`;
     case "PROCESSING":
-      return "Sending…";
+      return "正在发送…";
     case "SENT":
-      return "Reply sent";
+      return "回复已发送";
     case "UNCERTAIN":
-      return "Couldn't confirm delivery";
+      return "无法确认投递状态";
     default:
-      return "Reply could not be sent";
+      return "回复无法发送";
   }
 }
 

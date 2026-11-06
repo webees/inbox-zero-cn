@@ -74,7 +74,7 @@ describe("registerSSOProviderAction", () => {
   ])("rejects callers without application admin access: %s", async (session) => {
     mockAuth.mockResolvedValue(session);
     const result = await registerSSOProviderAction(input);
-    expect(result?.serverError).toBe("Unauthorized");
+    expect(result?.serverError).toBe("未授权");
     expect(prisma.organization.create).not.toHaveBeenCalled();
     expect(prisma.ssoProvider.create).not.toHaveBeenCalled();
   });
@@ -136,7 +136,7 @@ describe("registerSSOProviderAction", () => {
 
     const result = await registerSSOProviderAction(input);
 
-    expect(result?.serverError).toMatch(/organization ID/i);
+    expect(result?.serverError).toMatch(/组织 ID/);
     expect(prisma.organization.create).not.toHaveBeenCalled();
     expect(prisma.ssoProvider.create).not.toHaveBeenCalled();
   });
@@ -151,7 +151,7 @@ describe("registerSSOProviderAction", () => {
       organizationId: "org-other",
     });
 
-    expect(result?.serverError).toMatch(/exact organization ID/i);
+    expect(result?.serverError).toMatch(/准确的组织 ID/);
     expect(prisma.organization.create).not.toHaveBeenCalled();
     expect(prisma.ssoProvider.create).not.toHaveBeenCalled();
   });
@@ -164,7 +164,7 @@ describe("registerSSOProviderAction", () => {
       organizationId: "org-other",
     });
 
-    expect(result?.serverError).toMatch(/does not match/i);
+    expect(result?.serverError).toMatch(/不匹配/);
     expect(prisma.organization.create).not.toHaveBeenCalled();
     expect(prisma.ssoProvider.create).not.toHaveBeenCalled();
   });
@@ -180,7 +180,7 @@ describe("registerSSOProviderAction", () => {
       organizationId: "org-existing",
     });
 
-    expect(result?.serverError).toMatch(/already has an SSO provider/i);
+    expect(result?.serverError).toMatch(/已配置 SSO 服务商/);
     expect(prisma.organization.create).not.toHaveBeenCalled();
     expect(prisma.ssoProvider.create).not.toHaveBeenCalled();
   });
@@ -202,7 +202,7 @@ describe("registerSSOProviderAction", () => {
       organizationId: "org-existing",
     });
 
-    expect(result?.serverError).toMatch(/already has an SSO provider/i);
+    expect(result?.serverError).toMatch(/已配置 SSO 服务商/);
   });
 
   it("refuses to attach SSO to an existing organization when no owner/admin is on the SSO domain", async () => {
@@ -217,7 +217,7 @@ describe("registerSSOProviderAction", () => {
       organizationId: "org-squatted",
     });
 
-    expect(result?.serverError).toMatch(/none of its owners or admins/i);
+    expect(result?.serverError).toMatch(/所有者或管理员都没有/);
     expect(prisma.organization.create).not.toHaveBeenCalled();
     expect(prisma.ssoProvider.create).not.toHaveBeenCalled();
   });

@@ -17,19 +17,19 @@ const defaultTab: AutomationTab = "rules";
 const tabOptions = [
   {
     id: "rules",
-    label: "Rules",
+    label: "规则",
   },
   {
     id: "test",
-    label: "Test",
+    label: "测试",
   },
   {
     id: "history",
-    label: "History",
+    label: "历史记录",
   },
   {
     id: "settings",
-    label: "Settings",
+    label: "设置",
   },
 ] satisfies { id: AutomationTab; label: string }[];
 

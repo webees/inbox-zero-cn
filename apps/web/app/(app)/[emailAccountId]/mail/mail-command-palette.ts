@@ -48,8 +48,8 @@ export function buildMailCommandPalette({
   isAutoArchived = false,
   isAutoArchiveDisabled = false,
   isUnsubscribeDisabled = false,
-  unsubscribeLabel = "Unsubscribe",
-  openExternalLabel = "Open in email provider",
+  unsubscribeLabel = "退订",
+  openExternalLabel = "在邮箱服务商中打开",
   targetCount,
 }: {
   actions: MailCommandActions;
@@ -71,8 +71,8 @@ export function buildMailCommandPalette({
           id: "mail-move-to-inbox",
           label:
             targetCount === 1
-              ? "Move to inbox"
-              : `Move ${targetCount} conversations to inbox`,
+              ? "移到收件箱"
+              : `将 ${targetCount} 个会话移到收件箱`,
           icon: ArchiveRestoreIcon,
           section: "actions",
           priority: 0,
@@ -81,10 +81,7 @@ export function buildMailCommandPalette({
         }
       : {
           id: "mail-archive",
-          label:
-            targetCount === 1
-              ? "Archive conversation"
-              : `Archive ${targetCount} conversations`,
+          label: targetCount === 1 ? "归档会话" : `归档 ${targetCount} 个会话`,
           icon: ArchiveIcon,
           shortcut: "E",
           section: "actions",
@@ -97,7 +94,7 @@ export function buildMailCommandPalette({
   if (targetCount === 1 && actions.forward) {
     commands.push({
       id: "mail-forward",
-      label: "Forward",
+      label: "转发",
       icon: ForwardIcon,
       shortcut: getShortcutHint("forward"),
       section: "actions",
@@ -110,7 +107,7 @@ export function buildMailCommandPalette({
   if (actions.label) {
     commands.push({
       id: "mail-label",
-      label: "Label",
+      label: "标签",
       icon: TagIcon,
       shortcut: getShortcutHint("label"),
       section: "actions",
@@ -123,7 +120,7 @@ export function buildMailCommandPalette({
   if (actions.addToSplit) {
     commands.push({
       id: "mail-add-to-split",
-      label: "Add senders to split",
+      label: "将发件人添加到拆分",
       icon: SplitIcon,
       section: "actions",
       priority: 3,
@@ -135,7 +132,7 @@ export function buildMailCommandPalette({
   if (actions.move) {
     commands.push({
       id: "mail-move",
-      label: "Move",
+      label: "移动",
       icon: FolderInputIcon,
       shortcut: getShortcutHint("move"),
       section: "actions",
@@ -148,7 +145,8 @@ export function buildMailCommandPalette({
   if (hasUnread && actions.markRead) {
     commands.push({
       id: "mail-mark-read",
-      label: targetCount === 1 ? "Mark as read" : `Mark ${targetCount} as read`,
+      label:
+        targetCount === 1 ? "标为已读" : `将 ${targetCount} 个会话标为已读`,
       icon: MailOpenIcon,
       section: "actions",
       priority: 1,
@@ -161,7 +159,7 @@ export function buildMailCommandPalette({
     commands.push({
       id: "mail-mark-unread",
       label:
-        targetCount === 1 ? "Mark as unread" : `Mark ${targetCount} as unread`,
+        targetCount === 1 ? "标为未读" : `将 ${targetCount} 个会话标为未读`,
       icon: MailIcon,
       shortcut: getShortcutHint("markUnread"),
       section: "actions",
@@ -175,7 +173,7 @@ export function buildMailCommandPalette({
     commands.push({
       id: "mail-snooze",
       label:
-        targetCount === 1 ? "Snooze" : `Snooze ${targetCount} conversations`,
+        targetCount === 1 ? "稍后提醒" : `将 ${targetCount} 个会话稍后提醒`,
       icon: Clock3Icon,
       shortcut: getShortcutHint("snooze"),
       section: "actions",
@@ -189,7 +187,7 @@ export function buildMailCommandPalette({
   if (targetCount === 1 && actions.translate) {
     commands.push({
       id: "mail-translate",
-      label: "Translate",
+      label: "翻译",
       icon: LanguagesIcon,
       shortcut: getShortcutHint("translate"),
       section: "actions",
@@ -202,7 +200,7 @@ export function buildMailCommandPalette({
   if (targetCount === 1 && actions.comment) {
     commands.push({
       id: "mail-comment",
-      label: "Comment",
+      label: "评论",
       icon: MessageSquareIcon,
       shortcut: getShortcutHint("openTeamComments"),
       section: "actions",
@@ -215,10 +213,7 @@ export function buildMailCommandPalette({
   if (actions.trash) {
     commands.push({
       id: "mail-delete",
-      label:
-        targetCount === 1
-          ? "Delete conversation"
-          : `Delete ${targetCount} conversations`,
+      label: targetCount === 1 ? "删除会话" : `删除 ${targetCount} 个会话`,
       icon: Trash2Icon,
       shortcut: "#",
       section: "actions",
@@ -231,7 +226,7 @@ export function buildMailCommandPalette({
   if (actions.markSpam) {
     commands.push({
       id: "mail-mark-spam",
-      label: "Mark as spam",
+      label: "标为垃圾邮件",
       icon: ShieldAlertIcon,
       shortcut: getShortcutHint("markSpam"),
       section: "actions",
@@ -259,9 +254,7 @@ export function buildMailCommandPalette({
     commands.push({
       id: "mail-auto-archive",
       shortcut: getShortcutHint("toggleAutoArchive"),
-      label: isAutoArchived
-        ? "Disable auto archive"
-        : "Auto archive future emails",
+      label: isAutoArchived ? "关闭自动归档" : "自动归档未来的邮件",
       icon: isAutoArchived ? ArchiveRestoreIcon : ArchiveIcon,
       section: "actions",
       priority: 13,
@@ -285,13 +278,13 @@ export function buildMailCommandPalette({
   }
 
   if (actions.star) {
-    const actionLabel = allStarred ? "Unstar" : "Star";
+    const actionLabel = allStarred ? "取消星标" : "加星标";
     commands.push({
       id: "mail-star",
       label:
         targetCount === 1
           ? actionLabel
-          : `${actionLabel} ${targetCount} conversations`,
+          : `将 ${targetCount} 个会话${actionLabel}`,
       icon: StarIcon,
       shortcut: getShortcutHint("star"),
       section: "actions",

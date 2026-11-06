@@ -19,15 +19,13 @@ export function SelectAllCheckbox({
 
   return (
     <Tooltip
-      content={allSelected ? "Deselect all conversations" : undefined}
+      content={allSelected ? "取消选择所有会话" : undefined}
       shortcuts={
-        allSelected
-          ? undefined
-          : [{ id: "selectAll", label: "Select all conversations" }]
+        allSelected ? undefined : [{ id: "selectAll", label: "选择所有会话" }]
       }
     >
       <Checkbox
-        aria-label="Select all conversations"
+        aria-label="选择所有会话"
         checked={allSelected}
         className={cn(mailCheckboxClassName, "shrink-0")}
         disabled={threadCount === 0}
@@ -44,16 +42,16 @@ export function SelectAllCheckbox({
 }
 
 /**
- * Shared by the row checkboxes so select-all lines up with them and matches.
- * Keyed on `aria-checked` because a wrapping tooltip trigger overwrites
- * `data-state`. Checked is a blue outline and tick, not a fill, to stay light.
+ * 行复选框共用此项样式，让全选与行选择对齐且外观一致。
+ * 以 `aria-checked` 为键，因为外层提示触发器会覆盖 `data-state`。
+ * 选中态使用蓝色描边和勾选标记而非填充，以保持轻量。
  */
 export const mailCheckboxClassName =
   "size-3.5 rounded border-input aria-checked:border-primary aria-checked:bg-transparent aria-checked:text-primary data-[state=checked]:bg-transparent data-[state=checked]:text-primary [&_svg]:size-2.5";
 
 /**
- * Row checkboxes are revealed on hover and get an invisible hit area that
- * reaches past the box, so a near miss selects instead of opening the thread.
+ * 行复选框在悬停时显示，并具有超出方框的不可见点击区域，
+ * 这样略微点偏时仍会选中，而不会打开会话。
  */
 export function getMailRowCheckboxClassName(visible: boolean) {
   return cn(

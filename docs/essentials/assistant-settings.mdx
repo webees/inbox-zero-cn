@@ -1,101 +1,101 @@
 ---
-title: 'Assistant Settings'
-description: 'Control drafting, reminders, writing style, knowledge, and safety settings for your AI assistant.'
+title: '助手设置'
+description: '控制你的 AI 助手的起草、提醒、写作风格、知识和安全设置。'
 icon: 'sliders'
 ---
 
-Open **Assistant** in the sidebar and select the **Settings** tab to control how the assistant drafts, learns, and notifies you. Settings apply to the currently selected email account, so review them separately when you connect multiple accounts.
+打开侧边栏中的**助手**并选择**设置**标签页，以控制助手如何起草、学习和通知你。设置作用于当前选中的邮箱账号，因此当你连接多个账号时，请分别检查它们。
 
-## Drafting controls
+## 起草控制
 
-### Auto draft replies
+### 自动起草回复
 
-Enable this to create replies in your Drafts folder for messages that need a response. The assistant does not send these drafts automatically.
+启用后会为需要回复的邮件在你的草稿文件夹中创建回复。助手不会自动发送这些草稿。
 
-### Draft confidence
+### 起草置信度
 
-Choose how certain the assistant must be before it prepares a draft:
+选择助手在准备草稿前需要有多确定：
 
-- **All emails**: draft whenever an email needs a reply, even when uncertain.
-- **Standard**: skip drafting when the assistant is unsure how to respond.
-- **High confidence**: draft only when it is very sure of the appropriate reply.
+- **所有邮件**：只要邮件需要回复就起草，即使不确定也起草。
+- **标准**：当助手不确定如何回复时跳过起草。
+- **高置信度**：只在非常确定合适的回复时才起草。
 
-Use a stricter setting when correctness is more important than draft coverage.
+当正确性比草稿覆盖率更重要时，请使用更严格的设置。
 
-## Updates
+## 更新
 
-### Follow-up reminders
+### 跟进提醒
 
-Enable reminders for messages where someone has not replied to you or where you have not replied. In **Configure**, set the delays and choose whether the assistant should prepare a follow-up draft.
+为那些对方尚未回复你、或你尚未回复的邮件启用提醒。在**配置**中设置延迟时间，并选择助手是否应准备一封跟进草稿。
 
-### Digest
+### 摘要
 
-Schedule a daily summary of newsletter emails and choose which rules contribute to it. Digests require the **Plus plan or higher**. You can route a digest to a connected chat provider from [Channels](/essentials/channels).
+安排每日简报邮件汇总，并选择哪些规则为其贡献内容。摘要需要 **Plus 套餐或更高版本**。你可以从[渠道](/essentials/channels)把摘要路由到已连接的聊天服务商。
 
-## Your voice
+## 你的语气
 
-### Writing style
+### 写作风格
 
-Describe your typical length, formality, greetings, and other stylistic habits. This guidance is used when drafting replies in your voice.
+描述你通常的篇幅、正式程度、问候语以及其他风格习惯。在按你的口吻起草回复时，会使用这些指引。
 
-### Personal instructions
+### 个人说明
 
-Add stable information about yourself and how you want the assistant to handle email. Keep instructions general and durable; use assistant rules for specific matching conditions and actions.
+添加关于你自己的稳定信息，以及你希望助手如何处理邮件。请让说明保持通用且持久；具体的匹配条件和操作请使用助手规则。
 
-### Email signature
+### 邮件签名
 
-Configure the signature appended to drafted messages.
+配置附加到已起草邮件末尾的签名。
 
-## Knowledge and learning
+## 知识与学习
 
-### Draft knowledge base
+### 起草知识库
 
-Store facts that can help the assistant answer recurring questions. This control is available only while auto draft replies are enabled.
+存储能帮助助手回答反复出现的问题的事实。此控件仅在自动起草回复启用时可用。
 
-### Learned patterns
+### 学习到的模式
 
-Inbox Zero learns when senders or email types consistently match the same rule. Open **Learned patterns** to view, edit, or remove those associations. Remove a pattern when it starts routing a sender incorrectly.
+Inbox Zero 会在发件人或邮件类型持续匹配同一条规则时进行学习。打开**学习到的模式**可查看、编辑或移除这些关联。当某个模式开始把某位发件人错误地路由时，请移除它。
 
-## Advanced settings
+## 高级设置
 
-### Sync to browser extension
+### 同步到浏览器扩展
 
-Sync label-based assistant rules to the Inbox Zero Tabs extension as Gmail tabs. This requires the configured Inbox Zero Tabs extension and a Chromium browser, and it applies to Gmail rather than Outlook. Select the label rules you want before starting the sync.
+把基于标签的助手规则同步到 Inbox Zero Tabs 扩展，作为 Gmail 标签页。这需要已配置的 Inbox Zero Tabs 扩展和 Chromium 浏览器，且适用于 Gmail 而非 Outlook。开始同步前请先选择你要的标签规则。
 
-### Multi-rule selection
+### 多规则选择
 
-Allow the assistant to select multiple custom rules for one message.
+允许助手为一封邮件选择多条自定义规则。
 
-### Include referral signature
+### 包含推荐签名
 
-Optionally append an Inbox Zero referral link to generated drafts.
+可选择在生成的草稿末尾附加一个 Inbox Zero 推荐链接。
 
-### Allow hidden links in AI drafts
+### 允许 AI 草稿中的隐藏链接
 
-This permits anchor text such as “click here” instead of displaying the full URL. It reads more naturally, but it hides where a link leads. Leave it off when transparent links are important.
+这会允许「点击这里」之类的锚文本，而不是显示完整 URL。它读起来更自然，但隐藏了链接指向何处。当透明链接很重要时，请保持关闭。
 
-### Sensitive data protection
+### 敏感数据保护
 
-Choose how credentials and card numbers are handled before an AI request:
+选择在发起 AI 请求前如何处理凭据和卡号：
 
-- **Off**: send content without scanning.
-- **Redact**: hide detected credentials and card numbers, then send the remaining content to AI.
-- **Block**: skip the AI request when sensitive data is detected.
+- **关闭**：不扫描直接发送内容。
+- **打码**：隐藏检测到的凭据和卡号，然后把剩余内容发送给 AI。
+- **阻止**：检测到敏感数据时跳过 AI 请求。
 
-## Troubleshooting
+## 故障排查
 
-### A setting is missing
+### 缺少某个设置
 
-Some settings depend on your plan or email provider. Auto-draft controls appear only while auto-drafting is enabled, Digest requires the Plus plan, and extension sync requires the Inbox Zero Tabs extension.
+有些设置取决于你的套餐或邮件服务商。自动起草控件仅在自动起草启用时出现，摘要需要 Plus 套餐，而扩展同步需要 Inbox Zero Tabs 扩展。
 
-### Drafts do not sound like me
+### 草稿听起来不像我
 
-Update **Writing style**, **Personal instructions**, and **Email signature**, then review the Draft knowledge base for stale facts. Editing generated drafts also helps the assistant learn over time.
+更新**写作风格**、**个人说明**和**邮件签名**，然后检查起草知识库中是否有过时的事实。编辑生成的草稿也有助于助手随时间学习。
 
-### Too few or too many drafts are created
+### 创建的草稿太少或太多
 
-Adjust **Draft confidence**. Also review the rules that determine whether a message needs a reply and remove incorrect learned patterns.
+调整**起草置信度**。同时检查那些判断邮件是否需要回复的规则，并移除错误的学习到的模式。
 
-### Follow-up reminders are missing
+### 缺少跟进提醒
 
-Confirm that at least one reminder delay is set, then run the scan from **Configure**. If reminders should arrive in chat, also verify the route on [Channels](/essentials/channels).
+确认至少设置了一个提醒延迟，然后从**配置**运行扫描。如果提醒应出现在聊天中，还要在[渠道](/essentials/channels)上核实路由。

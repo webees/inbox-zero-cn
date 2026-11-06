@@ -25,17 +25,17 @@ export function FilingStatusCell({
     return (
       <span className="flex items-center gap-2 text-muted-foreground">
         <LoaderIcon className="size-4 animate-spin" />
-        <span>Analyzing...</span>
+        <span>分析中...</span>
       </span>
     );
   }
 
   if (status === "skipped") {
-    const tooltipContent = `Skipped — ${skipReason || "Doesn't match preferences"}`;
+    const tooltipContent = `已跳过 — ${skipReason || "不符合偏好"}`;
     return (
       <Tooltip content={tooltipContent}>
         <span className="flex items-center gap-1.5 text-muted-foreground italic">
-          Skipped
+          已跳过
           <InfoIcon className="size-3.5 flex-shrink-0" />
         </span>
       </Tooltip>
@@ -43,7 +43,7 @@ export function FilingStatusCell({
   }
 
   if (status === "error") {
-    const errorMessage = error || "Failed to file";
+    const errorMessage = error || "归档失败";
     return (
       <Tooltip content={errorMessage}>
         <span className="flex items-center gap-1.5 text-destructive">
