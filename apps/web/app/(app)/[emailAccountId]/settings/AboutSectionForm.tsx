@@ -61,7 +61,7 @@ const AboutSectionForm = ({
     saveAboutAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: t`Your profile has been updated!` });
+        toastSuccess({ description: t`你的资料已更新！` });
         onSuccess();
       },
       onError: (error) => {
@@ -85,13 +85,13 @@ const AboutSectionForm = ({
         label=""
         registerProps={register("about")}
         error={errors.about}
-        placeholder={t`My name is Alex Smith. I'm the founder of Acme.
+        placeholder={t`我叫 Alex Smith，是 Acme 的创始人。
 
-- If I'm CC'd, it's not To Reply
-- Emails from jane@accounting.com aren't Notifications`}
+- 如果我在抄送中，这就不属于待回复
+- 来自 jane@accounting.com 的邮件不属于通知`}
       />
       <Button type="submit" className="mt-8" loading={isExecuting}>
-        <Trans>Save</Trans>
+        <Trans>保存</Trans>
       </Button>
     </form>
   );

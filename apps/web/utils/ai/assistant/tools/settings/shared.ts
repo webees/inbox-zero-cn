@@ -61,26 +61,16 @@ const scheduledCheckInsConfigSchema = z
       value.cronExpression != null ||
       value.messagingChannelId != null ||
       value.prompt !== undefined,
-    { message: "At least one scheduled check-ins field must be provided." },
+    { message: "至少需要提供一项定期检查字段" },
   )
-  .describe("Scheduled check-ins configuration payload.");
+  .describe("定期检查配置载荷");
 
 const draftKnowledgeUpdateSchema = z
   .object({
-    title: z
-      .string()
-      .trim()
-      .min(1)
-      .max(200)
-      .describe("Draft knowledge item title."),
-    content: z
-      .string()
-      .trim()
-      .min(1)
-      .max(20_000)
-      .describe("Draft knowledge item content."),
+    title: z.string().trim().min(1).max(200).describe("草稿知识条目标题"),
+    content: z.string().trim().min(1).max(20_000).describe("草稿知识条目内容"),
   })
-  .describe("Existing draft knowledge base item to update.");
+  .describe("要更新的现有草稿知识库条目");
 
 export const settingsPathSchema = z
   .enum([
@@ -428,47 +418,40 @@ type ScheduledCheckInsSnapshotSource = {
 const readOnlyCapabilities = [
   {
     path: "assistant.writingStyle",
-    title: "Writing style",
-    reason:
-      "Readable in chat, but writes are not yet exposed through updateAssistantSettings.",
+    title: "写作风格",
+    reason: "可在聊天中读取，但尚不支持通过 updateAssistantSettings 写入",
   },
   {
     path: "assistant.signature",
-    title: "Personal signature",
-    reason:
-      "Readable in chat, but writes are not yet exposed through updateAssistantSettings.",
+    title: "个人签名",
+    reason: "可在聊天中读取，但尚不支持通过 updateAssistantSettings 写入",
   },
   {
     path: "assistant.referralSignature.enabled",
-    title: "Referral signature",
-    reason:
-      "Readable in chat, but writes are not yet exposed through updateAssistantSettings.",
+    title: "推荐签名",
+    reason: "可在聊天中读取，但尚不支持通过 updateAssistantSettings 写入",
   },
   {
     path: "assistant.followUp.awaitingReplyDays",
-    title: "Follow-up (awaiting reply days)",
-    reason:
-      "Readable in chat, but writes are not yet exposed through updateAssistantSettings.",
+    title: "跟进（等待回复天数）",
+    reason: "可在聊天中读取，但尚不支持通过 updateAssistantSettings 写入",
   },
   {
     path: "assistant.followUp.needsReplyDays",
-    title: "Follow-up (needs reply days)",
-    reason:
-      "Readable in chat, but writes are not yet exposed through updateAssistantSettings.",
+    title: "跟进（需要回复天数）",
+    reason: "可在聊天中读取，但尚不支持通过 updateAssistantSettings 写入",
   },
   {
     path: "assistant.followUp.autoDraftEnabled",
-    title: "Follow-up auto-draft",
-    reason:
-      "Readable in chat, but writes are not yet exposed through updateAssistantSettings.",
+    title: "跟进自动草稿",
+    reason: "可在聊天中读取，但尚不支持通过 updateAssistantSettings 写入",
   },
   {
     path: "assistant.digest",
-    title: "Digest configuration",
-    reason:
-      "Readable in chat, but writes are not yet exposed through updateAssistantSettings.",
+    title: "邮件摘要配置",
+    reason: "可在聊天中读取，但尚不支持通过 updateAssistantSettings 写入",
     description:
-      "All included rules are combined into one account-level digest. When email delivery is enabled, it is sent automatically to delivery.destinationEmail; there is no separate recipient setting. The scheduled time makes the digest eligible, while estimatedNextDeliveryAt accounts for the dispatch interval.",
+      "所有包含的规则会合并为一封账号级邮件摘要。启用邮件投递后，摘要会自动发送到 delivery.destinationEmail，没有单独的收件人设置。计划时间决定摘要何时符合发送条件，estimatedNextDeliveryAt 则计入发送间隔",
   },
 ] as const;
 
@@ -498,7 +481,7 @@ export async function executeUpdateAssistantSettings({
 }) {
   try {
     const existing = await loadAccountSettingsSnapshot(emailAccountId);
-    if (!existing) return { error: "Email account not found" };
+    if (!existing) return { error: "找不到邮箱账号" };
 
     const normalizedChanges = dedupeSettingsChanges(changes);
     const data: {
@@ -540,7 +523,7 @@ export async function executeUpdateAssistantSettings({
         const existingItem = draftKnowledgeByTitle.get(change.value.title);
         if (!existingItem) {
           return {
-            error: `Draft knowledge item "${change.value.title}" does not exist. Use addToKnowledgeBase to create a new entry.`,
+            error: `草稿知识条目“${change.value.title}”不存在，请使用 addToKnowledgeBase 创建新条目`,
           };
         }
 
@@ -630,7 +613,7 @@ export async function executeUpdateAssistantSettings({
         }
 
         if (!hasScheduledCheckInsPremium) {
-          return { error: "Premium is required for scheduled check-ins." };
+          return { error: "定期检查需要高级版" };
         }
       }
 
@@ -669,7 +652,7 @@ export async function executeUpdateAssistantSettings({
     if (appliedChanges.length === 0) {
       return {
         success: true,
-        message: "No setting changes were needed.",
+        message: "无需更改设置",
         appliedChanges: [],
       };
     }
@@ -729,9 +712,9 @@ export async function executeUpdateAssistantSettings({
       appliedChanges,
     };
   } catch (error) {
-    logger.error("Failed to update assistant settings", { error });
+    logger.error("更新 AI 助手设置失败", { error });
     return {
-      error: "Failed to update assistant settings",
+      error: "更新 AI 助手设置失败",
     };
   }
 }
@@ -745,7 +728,7 @@ export function getUpdateAssistantSettingsValidationError(error: z.ZodError) {
     })
     .join("; ");
 
-  return `Invalid settings update payload. ${issueSummary}. Use a writable path from getAssistantCapabilities.`;
+  return `设置更新载荷无效：${issueSummary}。请使用 getAssistantCapabilities 中的可写路径`;
 }
 
 function dedupeSettingsChanges(
@@ -827,49 +810,49 @@ export function getWritableCapabilities(snapshot: AccountSettingsSnapshot) {
   return [
     {
       path: "assistant.multiRuleSelection.enabled",
-      title: "Multi-rule selection",
+      title: "多规则选择",
       canRead: true,
       canWrite: true,
       value: snapshot.multiRuleSelectionEnabled,
     },
     {
       path: "assistant.meetingBriefs.enabled",
-      title: "Meeting briefs enabled",
+      title: "已启用会议简报",
       canRead: true,
       canWrite: true,
       value: snapshot.meetingBriefingsEnabled,
     },
     {
       path: "assistant.meetingBriefs.minutesBefore",
-      title: "Meeting briefs minutes before",
+      title: "会议简报提前分钟数",
       canRead: true,
       canWrite: true,
       value: snapshot.meetingBriefingsMinutesBefore,
     },
     {
       path: "assistant.meetingBriefs.sendEmail",
-      title: "Meeting briefs email delivery",
+      title: "会议简报邮件投递",
       canRead: true,
       canWrite: true,
       value: snapshot.meetingBriefsSendEmail,
     },
     {
       path: "assistant.attachmentFiling.enabled",
-      title: "Auto-file attachments enabled",
+      title: "已启用自动归档附件",
       canRead: true,
       canWrite: true,
       value: snapshot.filingEnabled,
     },
     {
       path: "assistant.attachmentFiling.prompt",
-      title: "Auto-file attachments prompt",
+      title: "自动归档附件提示词",
       canRead: true,
       canWrite: true,
       value: snapshot.filingPrompt,
     },
     {
       path: "assistant.scheduledCheckIns",
-      title: "Scheduled check-ins",
+      title: "定期检查",
       canRead: true,
       canWrite: true,
       value: snapshot.scheduledCheckIns,
@@ -877,7 +860,7 @@ export function getWritableCapabilities(snapshot: AccountSettingsSnapshot) {
     },
     {
       path: "assistant.draftKnowledgeBase",
-      title: "Draft knowledge base",
+      title: "草稿知识库",
       canRead: true,
       canWrite: true,
       value: {

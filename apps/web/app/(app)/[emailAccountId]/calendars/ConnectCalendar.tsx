@@ -47,7 +47,7 @@ export function ConnectCalendar({
       });
 
       if (!response.ok) {
-        throw new Error("Failed to initiate Google calendar connection");
+        throw new Error("启动 Google 日历连接失败");
       }
 
       const data: GetCalendarAuthUrlResponse = await response.json();
@@ -61,8 +61,8 @@ export function ConnectCalendar({
         extra: { context: "Google Calendar OAuth initiation" },
       });
       toastError({
-        title: t`Error initiating Google calendar connection`,
-        description: t`Please try again or contact support`,
+        title: t`启动 Google 日历连接时出错`,
+        description: t`请重试或联系支持团队`,
       });
       setIsConnectingGoogle(false);
     }
@@ -82,7 +82,7 @@ export function ConnectCalendar({
       });
 
       if (!response.ok) {
-        throw new Error("Failed to initiate Microsoft calendar connection");
+        throw new Error("启动 Microsoft 日历连接失败");
       }
 
       const data: GetCalendarAuthUrlResponse = await response.json();
@@ -96,8 +96,8 @@ export function ConnectCalendar({
         extra: { context: "Microsoft Calendar OAuth initiation" },
       });
       toastError({
-        title: t`Error initiating Microsoft calendar connection`,
-        description: t`Please try again or contact support`,
+        title: t`启动 Microsoft 日历连接时出错`,
+        description: t`请重试或联系支持团队`,
       });
       setIsConnectingMicrosoft(false);
     }
@@ -118,7 +118,7 @@ export function ConnectCalendar({
           height={16}
           unoptimized
         />
-        {isConnectingGoogle ? t`Connecting...` : t`Add Google Calendar`}
+        {isConnectingGoogle ? t`正在连接……` : t`添加 Google 日历`}
       </Button>
 
       <Button
@@ -134,7 +134,7 @@ export function ConnectCalendar({
           height={16}
           unoptimized
         />
-        {isConnectingMicrosoft ? t`Connecting...` : t`Add Outlook Calendar`}
+        {isConnectingMicrosoft ? t`正在连接……` : t`添加 Outlook 日历`}
       </Button>
     </div>
   );

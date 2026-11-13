@@ -49,22 +49,22 @@ const RDS_INSTANCE_OPTIONS = [
   {
     value: "db.t3.micro",
     label: "db.t3.micro  (~$12/mo)",
-    hint: "1 vCPU, 1GB RAM - good for 1-5 users",
+    hint: "1 vCPU、1GB 内存——适合 1-5 位用户",
   },
   {
     value: "db.t3.small",
     label: "db.t3.small  (~$24/mo)",
-    hint: "2 vCPU, 2GB RAM - good for 5-20 users",
+    hint: "2 vCPU、2GB 内存——适合 5-20 位用户",
   },
   {
     value: "db.t3.medium",
     label: "db.t3.medium (~$48/mo)",
-    hint: "2 vCPU, 4GB RAM - good for 20-100 users",
+    hint: "2 vCPU、4GB 内存——适合 20-100 位用户",
   },
   {
     value: "db.t3.large",
     label: "db.t3.large  (~$96/mo)",
-    hint: "2 vCPU, 8GB RAM - good for 100+ users",
+    hint: "2 vCPU、8GB 内存——适合 100+ 位用户",
   },
 ];
 
@@ -72,17 +72,17 @@ const REDIS_INSTANCE_OPTIONS = [
   {
     value: "cache.t4g.micro",
     label: "cache.t4g.micro  (~$12/mo)",
-    hint: "0.5 GiB - good for <100 users",
+    hint: "0.5 GiB——适合 <100 位用户",
   },
   {
     value: "cache.t4g.small",
     label: "cache.t4g.small  (~$24/mo)",
-    hint: "1.37 GiB - good for 100-500 users",
+    hint: "1.37 GiB——适合 100-500 位用户",
   },
   {
     value: "cache.t4g.medium",
     label: "cache.t4g.medium (~$48/mo)",
-    hint: "3.09 GiB - good for 500+ users",
+    hint: "3.09 GiB——适合 500+ 位用户",
   },
 ];
 
@@ -90,23 +90,23 @@ const APP_NAME = "inbox-zero";
 const SERVICE_NAME = "inbox-zero-ecs";
 const ENVIRONMENT_NAME_REGEX = /^[a-z][a-z0-9-]*$/;
 const ENVIRONMENT_NAME_ERROR =
-  "Must start with a letter and contain only lowercase letters, numbers, and hyphens";
+  "必须以字母开头，且只能包含小写字母、数字和连字符";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Main Setup Function
 // ═══════════════════════════════════════════════════════════════════════════
 
 export async function runAwsSetup(options: AwsSetupOptions) {
-  p.intro("AWS Copilot Setup for Inbox Zero");
+  p.intro("Inbox Zero 的 AWS Copilot 设置");
 
   const environmentError = validateEnvironmentName(options.environment);
   if (environmentError) {
-    p.log.error(`Invalid environment name: ${environmentError}`);
+    p.log.error(`无效的环境名称：${environmentError}`);
     process.exit(1);
   }
   const nonInteractive = options.yes === true;
   if (nonInteractive) {
-    p.log.info("Running in non-interactive mode with defaults");
+    p.log.info("以非交互模式运行并使用默认值");
   }
 
   let bedrockCredentials = nonInteractive
@@ -118,31 +118,31 @@ export async function runAwsSetup(options: AwsSetupOptions) {
 
   const workspaceDir = getCopilotWorkspaceDir();
   if (workspaceDir && workspaceDir !== process.cwd()) {
-    p.log.info(`Using Copilot workspace: ${workspaceDir}`);
+    p.log.info(`使用 Copilot 工作区：${workspaceDir}`);
     process.chdir(workspaceDir);
   }
 
   // Step 1: Check AWS prerequisites
   const spinner = p.spinner();
-  spinner.start("Checking prerequisites...");
+  spinner.start("正在检查前置条件...");
 
   const awsPrereqs = checkAwsPrerequisites();
 
   if (!awsPrereqs.awsCliInstalled) {
-    spinner.stop("AWS CLI not found");
+    spinner.stop("未找到 AWS CLI");
     p.log.error(
-      "The AWS CLI is not installed.\n" +
-        "Please install it from: https://aws.amazon.com/cli/\n" +
-        "After installation, run: aws configure",
+      "未安装 AWS CLI。\n" +
+        "请从此处安装：https://aws.amazon.com/cli/\n" +
+        "安装后运行：aws configure",
     );
     process.exit(1);
   }
 
   if (!awsPrereqs.copilotInstalled) {
-    spinner.stop("AWS Copilot CLI not found");
+    spinner.stop("未找到 AWS Copilot CLI");
     p.log.error(
-      "The AWS Copilot CLI is not installed.\n" +
-        "Please install it from: https://aws.github.io/copilot-cli/docs/getting-started/install/",
+      "未安装 AWS Copilot CLI。\n" +
+        "请从此处安装：https://aws.github.io/copilot-cli/docs/getting-started/install/",
     );
     process.exit(1);
   }
@@ -152,19 +152,17 @@ export async function runAwsSetup(options: AwsSetupOptions) {
   const gcloudAvailable =
     gcloudPrereqs.installed && gcloudPrereqs.authenticated;
 
-  spinner.stop("Prerequisites checked");
+  spinner.stop("前置条件检查完成");
 
-  p.log.success("AWS CLI installed");
-  p.log.success("Copilot CLI installed");
+  p.log.success("已安装 AWS CLI");
+  p.log.success("已安装 Copilot CLI");
   if (gcloudAvailable) {
-    p.log.success("gcloud CLI configured");
+    p.log.success("gcloud CLI 已配置");
   } else {
-    p.log.warn(
-      "gcloud CLI not configured - you'll need to run 'inbox-zero setup-google' separately",
-    );
+    p.log.warn("gcloud CLI 未配置 - 你需要单独运行 'inbox-zero setup-google'");
   }
 
-  // Step 2: Get AWS profile
+  // 第 2 步：获取 AWS 配置文件
   let profile = options.profile;
 
   if (!profile) {
@@ -172,99 +170,99 @@ export async function runAwsSetup(options: AwsSetupOptions) {
 
     if (availableProfiles.length === 0) {
       p.log.error(
-        "No AWS profiles found. Please configure AWS credentials first:\n" +
+        "未找到 AWS 配置文件。请先配置 AWS 凭据：\n" +
           "  aws configure --profile inbox-zero",
       );
       process.exit(1);
     }
 
     if (availableProfiles.length === 1 || nonInteractive) {
-      // Use first profile (usually "default") in non-interactive mode
+      // 在非交互模式下使用第一个配置文件（通常是 "default"）
       profile = availableProfiles.includes("default")
         ? "default"
         : availableProfiles[0];
-      p.log.info(`Using AWS profile: ${profile}`);
+      p.log.info(`使用 AWS 配置文件：${profile}`);
     } else {
       const profileChoice = await p.select({
-        message: "Select AWS profile:",
+        message: "选择 AWS 配置文件：",
         options: availableProfiles.map((pr) => ({
           value: pr,
           label: pr,
-          hint: pr === "default" ? "default profile" : undefined,
+          hint: pr === "default" ? "默认配置文件" : undefined,
         })),
       });
 
       if (p.isCancel(profileChoice)) {
-        p.cancel("Setup cancelled.");
+        p.cancel("设置已取消。");
         process.exit(0);
       }
 
       profile = profileChoice as string;
     }
   } else {
-    p.log.info(`Using AWS profile: ${profile}`);
+    p.log.info(`使用 AWS 配置文件：${profile}`);
   }
 
-  // Validate the profile works
-  spinner.start("Validating AWS credentials...");
+  // 验证该配置文件可用
+  spinner.start("正在验证 AWS 凭据...");
   const credentialsValid = validateAwsCredentials(profile);
   if (!credentialsValid) {
-    spinner.stop("Invalid AWS credentials");
+    spinner.stop("AWS 凭据无效");
     p.log.error(
-      `Could not validate credentials for profile '${profile}'.\n` +
-        "Please ensure:\n" +
-        "1. You're using an IAM user (not root account)\n" +
-        "2. The credentials are correctly configured\n" +
-        "3. Run: aws configure --profile " +
+      `无法验证配置文件 '${profile}' 的凭据。\n` +
+        "请确认：\n" +
+        "1. 你使用的是 IAM 用户（而非根账户）\n" +
+        "2. 凭据已正确配置\n" +
+        "3. 运行：aws configure --profile " +
         profile,
     );
     process.exit(1);
   }
-  spinner.stop("AWS credentials validated");
+  spinner.stop("AWS 凭据已验证");
 
-  // Step 3: Get AWS region
+  // 第 3 步：获取 AWS 区域
   let region =
     options.region || awsPrereqs.region || getRegionForProfile(profile);
 
   if (!region) {
     if (nonInteractive) {
       region = "us-east-1";
-      p.log.info(`Using region: ${region}`);
+      p.log.info(`使用区域：${region}`);
     } else {
       const regionInput = await p.text({
-        message: "AWS Region:",
+        message: "AWS 区域：",
         placeholder: "us-east-1",
         initialValue: "us-east-1",
       });
 
       if (p.isCancel(regionInput)) {
-        p.cancel("Setup cancelled.");
+        p.cancel("设置已取消。");
         process.exit(0);
       }
 
       region = regionInput || "us-east-1";
     }
   } else {
-    p.log.info(`Using region: ${region}`);
+    p.log.info(`使用区域：${region}`);
   }
 
-  // Step 4: Get environment name
+  // 第 4 步：获取环境名称
   let envName = options.environment;
 
   if (!envName) {
     if (nonInteractive) {
       envName = "production";
-      p.log.info(`Using environment: ${envName}`);
+      p.log.info(`使用环境：${envName}`);
     } else {
       const envInput = await p.text({
-        message: "Environment name (e.g., production, staging, dev):",
+        message: "环境名称（例如 production、staging、dev）：",
         placeholder: "production",
         initialValue: "production",
         validate: (v) => validateEnvironmentName(v),
       });
 
       if (p.isCancel(envInput)) {
-        p.cancel("Setup cancelled.");
+        p.cancel("设置已取消。");
         process.exit(0);
       }
 
@@ -272,89 +270,89 @@ export async function runAwsSetup(options: AwsSetupOptions) {
     }
   }
 
-  // Step 6: Select RDS instance size
+  // 第 6 步：选择 RDS 实例规格
   let rdsSize: string;
   if (nonInteractive) {
     rdsSize = "db.t3.micro";
-    p.log.info(`Using RDS instance: ${rdsSize}`);
+    p.log.info(`使用 RDS 实例：${rdsSize}`);
   } else {
     const rdsSizeChoice = await p.select({
-      message: "Select RDS PostgreSQL instance size:",
+      message: "选择 RDS PostgreSQL 实例规格：",
       options: RDS_INSTANCE_OPTIONS,
     });
 
     if (p.isCancel(rdsSizeChoice)) {
-      p.cancel("Setup cancelled.");
+      p.cancel("设置已取消。");
       process.exit(0);
     }
     rdsSize = rdsSizeChoice as string;
   }
 
-  // Step 7: Get domain (optional)
+  // 第 7 步：获取域名（可选）
   let domain: string | undefined;
   if (nonInteractive) {
     domain = undefined;
-    p.log.info("Domain: (none)");
+    p.log.info("域名：（无）");
   } else {
     const domainInput = await p.text({
-      message: "Domain for your app (optional, press Enter to skip):",
+      message: "你的应用域名（可选，按 Enter 跳过）：",
       placeholder: "app.example.com",
     });
 
     if (p.isCancel(domainInput)) {
-      p.cancel("Setup cancelled.");
+      p.cancel("设置已取消。");
       process.exit(0);
     }
 
     domain = domainInput || undefined;
   }
 
-  // Step 8: Ask about webhook gateway (for firewalled deployments)
+  // 第 8 步：询问是否启用 Webhook 网关（用于防火墙受限的部署）
   let useWebhookGateway: boolean;
   if (nonInteractive) {
     useWebhookGateway = false;
-    p.log.info("Webhook gateway: No");
+    p.log.info("Webhook 网关：否");
   } else {
     const webhookChoice = await p.confirm({
-      message: "Enable webhook gateway for firewalled deployment?",
+      message: "为防火墙受限的部署启用 Webhook 网关？",
       initialValue: false,
     });
 
     if (p.isCancel(webhookChoice)) {
-      p.cancel("Setup cancelled.");
+      p.cancel("设置已取消。");
       process.exit(0);
     }
     useWebhookGateway = webhookChoice;
   }
 
-  // Step 8.5: Ask about Redis (for subscriptions/real-time features)
+  // 第 8.5 步：询问是否启用 Redis（用于订阅/实时功能）
   let enableRedis: boolean;
   let redisSize: string;
 
   if (nonInteractive) {
     enableRedis = true;
     redisSize = "cache.t4g.micro";
-    p.log.info(`Redis: Yes (${redisSize})`);
+    p.log.info(`Redis：是（${redisSize}）`);
   } else {
     const redisChoice = await p.confirm({
-      message: "Enable Redis for real-time features?",
+      message: "为实时功能启用 Redis？",
       initialValue: true,
     });
 
     if (p.isCancel(redisChoice)) {
-      p.cancel("Setup cancelled.");
+      p.cancel("设置已取消。");
       process.exit(0);
     }
     enableRedis = redisChoice;
 
     if (enableRedis) {
       const redisSizeChoice = await p.select({
-        message: "Select Redis instance size:",
+        message: "选择 Redis 实例规格：",
         options: REDIS_INSTANCE_OPTIONS,
       });
 
       if (p.isCancel(redisSizeChoice)) {
-        p.cancel("Setup cancelled.");
+        p.cancel("设置已取消。");
         process.exit(0);
       }
       redisSize = redisSizeChoice as string;
@@ -363,7 +361,7 @@ export async function runAwsSetup(options: AwsSetupOptions) {
     }
   }
 
-  // Step 9: Google OAuth credentials (required)
+  // 第 9 步：Google OAuth 凭据（必填）
   let configureGoogle = false;
   let googleConfig: { projectId: string } | null = null;
   let googleOAuth: { clientId: string; clientSecret: string } | null = null;
@@ -373,8 +371,8 @@ export async function runAwsSetup(options: AwsSetupOptions) {
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
     if (!clientId || !clientSecret) {
       p.log.error(
-        "Missing GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET.\n" +
-          "In non-interactive mode, set these env vars before running:\n" +
+        "缺少 GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET。\n" +
+          "在非交互模式下，运行前请设置这些环境变量：\n" +
           "GOOGLE_CLIENT_ID=... GOOGLE_CLIENT_SECRET=... inbox-zero setup-aws --yes",
       );
       process.exit(1);
@@ -382,29 +380,29 @@ export async function runAwsSetup(options: AwsSetupOptions) {
     googleOAuth = { clientId, clientSecret };
   } else {
     p.note(
-      "Google OAuth credentials are required for the app to start.\n" +
-        "Create them at: https://console.cloud.google.com/apis/credentials",
-      "Google OAuth Required",
+      "应用启动需要 Google OAuth 凭据。\n" +
+        "创建地址：https://console.cloud.google.com/apis/credentials",
+      "需要 Google OAuth",
     );
 
     const oauthInput = await p.group(
       {
         clientId: () =>
           p.text({
-            message: "Google Client ID:",
+            message: "Google 客户端 ID：",
             placeholder: "123456789012-abc.apps.googleusercontent.com",
-            validate: (v) => (v ? undefined : "Client ID is required"),
+            validate: (v) => (v ? undefined : "客户端 ID 为必填项"),
           }),
         clientSecret: () =>
           p.text({
-            message: "Google Client Secret:",
+            message: "Google 客户端密钥：",
             placeholder: "GOCSPX-...",
-            validate: (v) => (v ? undefined : "Client Secret is required"),
+            validate: (v) => (v ? undefined : "客户端密钥为必填项"),
           }),
       },
       {
         onCancel: () => {
-          p.cancel("Setup cancelled.");
+          p.cancel("设置已取消。");
           process.exit(0);
         },
       },
@@ -416,39 +414,39 @@ export async function runAwsSetup(options: AwsSetupOptions) {
     };
   }
 
-  // Step 10: Ask about Google Cloud integration if gcloud is available
+  // 第 10 步：如果 gcloud 可用，询问是否配置 Google Cloud 集成
   if (gcloudAvailable && !nonInteractive) {
     const integrateGoogle = await p.confirm({
-      message: "gcloud detected. Configure Google Cloud in the same flow?",
+      message: "检测到 gcloud。是否在同一步骤中配置 Google Cloud？",
       initialValue: true,
     });
 
     if (!p.isCancel(integrateGoogle) && integrateGoogle) {
       configureGoogle = true;
 
-      // Get Google project ID
+      // 获取 Google 项目 ID
       let projectId = gcloudPrereqs.projectId;
       if (!projectId) {
         const projectInput = await p.text({
-          message: "Google Cloud project ID:",
+          message: "Google Cloud 项目 ID：",
           placeholder: "my-project-123",
-          validate: (v) => (v ? undefined : "Project ID is required"),
+          validate: (v) => (v ? undefined : "项目 ID 为必填项"),
         });
 
         if (p.isCancel(projectInput)) {
-          p.cancel("Setup cancelled.");
+          p.cancel("设置已取消。");
           process.exit(0);
         }
 
         projectId = projectInput;
       } else {
-        p.log.info(`Using Google Cloud project: ${projectId}`);
+        p.log.info(`使用 Google Cloud 项目：${projectId}`);
       }
 
       googleConfig = { projectId };
     }
   } else if (nonInteractive) {
-    p.log.info("Google integration: Skipped (non-interactive mode)");
+    p.log.info("Google 集成：已跳过（非交互模式）");
   }
 
   const configuredPubsubTopic = process.env.GOOGLE_PUBSUB_TOPIC_NAME;
@@ -462,10 +460,10 @@ export async function runAwsSetup(options: AwsSetupOptions) {
   );
   const topicSource = configuredPubsubTopic
     ? "GOOGLE_PUBSUB_TOPIC_NAME"
-    : "The Pub/Sub topic derived from the app domain";
+    : "从应用域名推导出的 Pub/Sub 主题";
   if (!pubsubTopic) {
     throw new Error(
-      `${topicSource} must be projects/PROJECT_ID/topics/TOPIC_ID`,
+      `${topicSource} 必须是 projects/PROJECT_ID/topics/TOPIC_ID`,
     );
   }
   const topicId = pubsubTopic[2];
@@ -474,7 +472,7 @@ export async function runAwsSetup(options: AwsSetupOptions) {
     topicId.startsWith("goog")
   ) {
     throw new Error(
-      `${topicSource} must use a 3–255 character topic ID starting with a letter, containing only letters, numbers, -_.~+%, and not starting with goog`,
+      `${topicSource} 使用的主题 ID 必须为 3–255 个字符，以字母开头，只能包含字母、数字、-_.~+%，且不能以 goog 开头`,
     );
   }
   const pubsubSubscriptionName = `${topicId}-${APP_NAME}-${envName}-subscription`;
@@ -484,29 +482,29 @@ export async function runAwsSetup(options: AwsSetupOptions) {
     pubsubSubscriptionName.length > 255
   ) {
     throw new Error(
-      "The generated Pub/Sub subscription name exceeds 255 characters; choose a shorter topic ID or environment name",
+      "生成的 Pub/Sub 订阅名称超过 255 个字符；请选择更短的主题 ID 或环境名称",
     );
   }
   if (googleConfig && pubsubTopic[1] !== googleConfig.projectId) {
     throw new Error(
-      "GOOGLE_PUBSUB_TOPIC_NAME must belong to the selected Google Cloud project",
+      "GOOGLE_PUBSUB_TOPIC_NAME 必须属于所选的 Google Cloud 项目",
     );
   }
 
-  // Step 11: Select LLM provider
+  // 第 11 步：选择 LLM 服务提供商
   let llmProvider: string;
   let llmApiKey = "";
   let llmEnvVar = "";
 
   if (nonInteractive) {
-    // Explicit runtime credentials are validated before provisioning.
+    // 显式运行时凭据会在预配前进行验证。
     llmProvider = "bedrock";
     llmEnvVar = "BEDROCK_REGION";
     llmApiKey = region;
-    p.log.info("LLM provider: AWS Bedrock");
+    p.log.info("LLM 服务提供商：AWS Bedrock");
   } else {
     const llmChoice = await p.select({
-      message: "LLM Provider:",
+      message: "LLM 服务提供商：",
       options: [
         { value: "anthropic", label: "Anthropic (Claude)" },
         { value: "openai", label: "OpenAI (GPT)" },
@@ -514,31 +512,29 @@ export async function runAwsSetup(options: AwsSetupOptions) {
         {
           value: "openrouter",
           label: "OpenRouter",
-          hint: "access multiple models",
+          hint: "访问多个模型",
         },
         {
           value: "aigateway",
           label: "Vercel AI Gateway",
-          hint: "access multiple models",
+          hint: "访问多个模型",
         },
         { value: "bedrock", label: "AWS Bedrock" },
-        { value: "groq", label: "Groq", hint: "fast inference" },
-        { value: "cerebras", label: "Cerebras", hint: "fast inference" },
+        { value: "groq", label: "Groq", hint: "快速推理" },
+        { value: "cerebras", label: "Cerebras", hint: "快速推理" },
       ],
     });
 
     if (p.isCancel(llmChoice)) {
-      p.cancel("Setup cancelled.");
+      p.cancel("设置已取消。");
       process.exit(0);
     }
 
     llmProvider = llmChoice as string;
 
-    // Get LLM API key
+    // 获取 LLM API 密钥
     if (llmProvider === "bedrock") {
-      p.log.info(
-        "Configure Bedrock credentials with access to the selected models.",
-      );
+      p.log.info("配置可访问所选模型的 Bedrock 凭据。");
       bedrockCredentials = await getBedrockCredentials(false);
       llmEnvVar = "BEDROCK_REGION";
       llmApiKey = region;
@@ -570,16 +566,16 @@ export async function runAwsSetup(options: AwsSetupOptions) {
       const { url } = apiKeyMap[llmProvider];
       llmEnvVar = "LLM_API_KEY";
 
-      p.log.info(`Get your API key at: ${url}`);
+      p.log.info(`在此获取 API 密钥：${url}`);
 
       const apiKeyInput = await p.text({
-        message: `${llmProvider.charAt(0).toUpperCase() + llmProvider.slice(1)} API Key:`,
+        message: `${llmProvider.charAt(0).toUpperCase() + llmProvider.slice(1)} API 密钥：`,
         placeholder: "sk-...",
-        validate: (v) => (v ? undefined : "API key is required"),
+        validate: (v) => (v ? undefined : "API 密钥为必填项"),
       });
 
       if (p.isCancel(apiKeyInput)) {
-        p.cancel("Setup cancelled.");
+        p.cancel("设置已取消。");
         process.exit(0);
       }
 
@@ -593,32 +589,32 @@ export async function runAwsSetup(options: AwsSetupOptions) {
   // ═══════════════════════════════════════════════════════════════════════════
 
   p.note(
-    `Configuration Summary:
-• AWS Profile: ${profile}
-• AWS Region: ${region}
-• Environment: ${envName}
-• VPC: Copilot-managed
-• RDS Instance: ${rdsSize}
-• Redis: ${enableRedis ? `Yes (${redisSize})` : "No"}
-• Domain: ${domain || "(none)"}
-• Webhook Gateway: ${useWebhookGateway ? "Yes" : "No"}
-• Google Integration: ${configureGoogle ? "Yes" : "No"}
-• LLM Provider: ${llmProvider}`,
-    "Ready to Deploy",
+    `配置摘要：
+• AWS 配置文件：${profile}
+• AWS 区域：${region}
+• 环境：${envName}
+• VPC：由 Copilot 管理
+• RDS 实例：${rdsSize}
+• Redis：${enableRedis ? `是（${redisSize}）` : "否"}
+• 域名：${domain || "（无）"}
+• Webhook 网关：${useWebhookGateway ? "是" : "否"}
+• Google 集成：${configureGoogle ? "是" : "否"}
+• LLM 服务提供商：${llmProvider}`,
+    "准备部署",
   );
 
   if (!nonInteractive) {
     const confirmDeploy = await p.confirm({
-      message: "Proceed with deployment? This will create AWS resources.",
+      message: "是否继续部署？此操作将创建 AWS 资源。",
       initialValue: true,
     });
 
     if (p.isCancel(confirmDeploy) || !confirmDeploy) {
-      p.cancel("Deployment cancelled.");
+      p.cancel("部署已取消。");
       process.exit(0);
     }
   } else {
-    p.log.info("Proceeding with deployment (non-interactive mode)...");
+    p.log.info("继续部署（非交互模式）...");
   }
 
   // Set environment variables for all subsequent commands
@@ -630,16 +626,16 @@ export async function runAwsSetup(options: AwsSetupOptions) {
   };
 
   // Step 12: Update addons.parameters.yml with RDS and Redis configuration
-  spinner.start("Updating infrastructure configuration...");
+  spinner.start("正在更新基础设施配置...");
   updateAddonsParameters({
     rdsInstanceClass: rdsSize as string,
     enableRedis,
     redisInstanceClass: redisSize,
   });
-  spinner.stop("Infrastructure configuration updated");
+  spinner.stop("基础设施配置已更新");
 
   // Step 13: Generate and store secrets in SSM
-  spinner.start("Generating secrets...");
+  spinner.start("正在生成密钥...");
 
   const pubsubVerificationToken = generateSecret(32);
   const secrets: SecretConfig[] = [
@@ -675,54 +671,52 @@ export async function runAwsSetup(options: AwsSetupOptions) {
     secrets.push({ name: llmEnvVar, value: llmApiKey });
   }
 
-  spinner.stop("Secrets generated");
+  spinner.stop("密钥已生成");
 
   // Step 14: Initialize Copilot app (if not already done)
-  spinner.start("Initializing Copilot application...");
+  spinner.start("正在初始化 Copilot 应用...");
 
   const appInitResult = initCopilotApp(domain, env);
   if (!appInitResult.success) {
-    spinner.stop("Failed to initialize app");
-    p.log.error(appInitResult.error || "Unknown error");
+    spinner.stop("初始化应用失败");
+    p.log.error(appInitResult.error || "未知错误");
     process.exit(1);
   }
 
-  spinner.stop("Copilot application initialized");
+  spinner.stop("Copilot 应用已初始化");
 
   // Step 15: Initialize environment
-  spinner.start(`Initializing ${envName} environment...`);
+  spinner.start(`正在初始化 ${envName} 环境...`);
 
   const envInitResult = initCopilotEnv(envName, profile, env);
   if (!envInitResult.success) {
-    spinner.stop("Failed to initialize environment");
-    p.log.error(envInitResult.error || "Unknown error");
+    spinner.stop("初始化环境失败");
+    p.log.error(envInitResult.error || "未知错误");
     process.exit(1);
   }
 
-  spinner.stop(`${envName} environment initialized`);
+  spinner.stop(`${envName} 环境已初始化`);
 
   // Step 16: Store secrets in SSM
-  spinner.start("Storing secrets in AWS SSM...");
+  spinner.start("正在将密钥存储到 AWS SSM...");
 
   for (const secret of secrets) {
     const ssmResult = storeSecretInSsm(secret.name, secret.value, envName, env);
     if (!ssmResult.success) {
-      spinner.stop(`Failed to store secret: ${secret.name}`);
-      p.log.error(ssmResult.error || "Unknown error");
+      spinner.stop(`存储密钥失败：${secret.name}`);
+      p.log.error(ssmResult.error || "未知错误");
       // Continue with other secrets
     }
   }
 
-  spinner.stop("Secrets stored in SSM");
+  spinner.stop("密钥已存储到 SSM");
 
   // Step 17: Webhook gateway is stored in templates/ and only copied to addons/ when needed
   // This avoids the chicken-and-egg problem (webhook gateway needs HTTPS listener from service)
   // We'll copy it after the service is deployed if the user wants it
 
   // Step 18: Deploy environment (creates VPC, RDS)
-  spinner.start(
-    `Deploying ${envName} environment (this may take 10-15 minutes)...`,
-  );
+  spinner.start(`正在部署 ${envName} 环境（可能需要 10-15 分钟）...`);
 
   let envDeployResult = deployCopilotEnv(envName, env);
 
@@ -731,11 +725,9 @@ export async function runAwsSetup(options: AwsSetupOptions) {
     !envDeployResult.success &&
     envDeployResult.error?.includes("not authorized to perform: sts:AssumeRole")
   ) {
-    spinner.stop("Detected orphaned environment registration");
-    p.log.warn(
-      "Found stale environment registration from a previous failed deployment.",
-    );
-    p.log.info("Cleaning up and retrying...");
+    spinner.stop("检测到孤立的环境注册");
+    p.log.warn("发现来自上次失败部署的过期环境注册。");
+    p.log.info("正在清理并重试...");
 
     const cleaned = cleanupOrphanedEnvironment(APP_NAME, envName, env);
     if (cleaned) {
@@ -754,124 +746,122 @@ export async function runAwsSetup(options: AwsSetupOptions) {
       }
 
       // Re-init app first (workspace was deleted)
-      spinner.start("Re-initializing application...");
+      spinner.start("正在重新初始化应用...");
       initCopilotApp(domain, env);
-      spinner.stop("Application re-initialized");
+      spinner.stop("应用已重新初始化");
 
       // Re-init environment
-      spinner.start("Re-initializing environment...");
+      spinner.start("正在重新初始化环境...");
       initCopilotEnv(envName, profile, env);
-      spinner.stop("Environment re-initialized");
+      spinner.stop("环境已重新初始化");
 
-      spinner.start(
-        `Deploying ${envName} environment (this may take 10-15 minutes)...`,
-      );
+      spinner.start(`正在部署 ${envName} 环境（可能需要 10-15 分钟）...`);
       envDeployResult = deployCopilotEnv(envName, env);
     }
   }
 
   if (!envDeployResult.success) {
-    spinner.stop("Failed to deploy environment");
-    p.log.error(envDeployResult.error || "Unknown error");
+    spinner.stop("部署环境失败");
+    p.log.error(envDeployResult.error || "未知错误");
     p.note(
-      `Common issues:
-• CloudFormation stack in ROLLBACK state (delete via AWS Console)
-• IAM permission issues (ensure using IAM user, not root)
-• Network/timeout issues (retry the command)`,
-      "Troubleshooting",
+      `常见问题：
+• CloudFormation 堆栈处于 ROLLBACK 状态（请通过 AWS 控制台删除）
+• IAM 权限问题（请确保使用 IAM 用户而非根账户）
+• 网络/超时问题（重试该命令）`,
+      "故障排除",
     );
     process.exit(1);
   }
 
-  spinner.stop(`${envName} environment deployed`);
+  spinner.stop(`${envName} 环境已部署`);
 
   // Step 18.25: Ensure database URL parameters
-  spinner.start("Ensuring database URL parameters...");
+  spinner.start("正在确保数据库 URL 参数...");
   const dbUrlResult = ensureDatabaseUrlParameters(APP_NAME, envName, env);
   if (!dbUrlResult.success) {
-    spinner.stop("Database URL setup failed");
-    p.log.warn(dbUrlResult.error || "Unable to set database URL parameters");
+    spinner.stop("数据库 URL 设置失败");
+    p.log.warn(dbUrlResult.error || "无法设置数据库 URL 参数");
   } else {
-    spinner.stop("Database URL parameters ensured");
+    spinner.stop("数据库 URL 参数已确保");
   }
 
   // Step 18.3: Ensure Redis URL parameter (if Redis enabled)
   if (enableRedis) {
-    spinner.start("Ensuring Redis URL parameter...");
+    spinner.start("正在确保 Redis URL 参数...");
     const redisUrlResult = ensureRedisUrlParameter(APP_NAME, envName, env);
     if (!redisUrlResult.success) {
-      spinner.stop("Redis URL setup failed");
-      p.log.warn(redisUrlResult.error || "Unable to set Redis URL parameter");
+      spinner.stop("Redis URL 设置失败");
+      p.log.warn(redisUrlResult.error || "无法设置 Redis URL 参数");
     } else {
-      spinner.stop("Redis URL parameter ensured");
+      spinner.stop("Redis URL 参数已确保");
     }
   }
 
   // Step 18.5: Update service manifest with dynamic secrets
-  spinner.start("Updating service manifest with secrets...");
+  spinner.start("正在使用密钥更新服务清单...");
   updateServiceManifestSecrets({
     llmEnvVar,
     hasGoogleOAuth: !!googleOAuth,
     enableRedis,
   });
-  spinner.stop("Service manifest updated");
+  spinner.stop("服务清单已更新");
 
   // Step 18.6: Update service manifest variables (base URL + LLM provider)
   const initialBaseUrl = domain ? `https://${domain}` : "http://localhost";
-  spinner.start("Updating service manifest variables...");
+  spinner.start("正在更新服务清单变量...");
   updateServiceManifestVariables({
     baseUrl: initialBaseUrl,
     defaultLlms,
   });
-  spinner.stop("Service manifest variables updated");
+  spinner.stop("服务清单变量已更新");
 
   // Step 18.7: Update service manifest HTTP config (domain/redirect)
-  spinner.start("Updating service manifest HTTP settings...");
+  spinner.start("正在更新服务清单 HTTP 设置...");
   updateServiceManifestHttp({ domain });
-  spinner.stop("Service manifest HTTP settings updated");
+  spinner.stop("服务清单 HTTP 设置已更新");
 
   // Step 19: Initialize and deploy service
-  spinner.start("Initializing service...");
+  spinner.start("正在初始化服务...");
 
   const svcInitResult = initCopilotService(env);
   if (!svcInitResult.success) {
-    spinner.stop("Failed to initialize service");
-    p.log.error(svcInitResult.error || "Unknown error");
+    spinner.stop("初始化服务失败");
+    p.log.error(svcInitResult.error || "未知错误");
     process.exit(1);
   }
 
-  spinner.stop("Service initialized");
+  spinner.stop("服务已初始化");
 
-  spinner.start("Deploying service (this may take 5-10 minutes)...");
+  spinner.start("正在部署服务（可能需要 5-10 分钟）...");
 
   const svcDeployResult = deployCopilotService(envName, env);
   if (!svcDeployResult.success) {
-    spinner.stop("Failed to deploy service");
-    p.log.error(svcDeployResult.error || "Unknown error");
+    spinner.stop("部署服务失败");
+    p.log.error(svcDeployResult.error || "未知错误");
     process.exit(1);
   }
 
-  spinner.stop("Service deployed");
+  spinner.stop("服务已部署");
 
   // Step 19.5: Update base URL from service endpoint if no domain
   if (!domain) {
     const serviceUrl = getServiceUrl(envName, env);
     if (serviceUrl) {
-      spinner.start("Updating base URL to service endpoint...");
+      spinner.start("正在将基础 URL 更新为服务端点...");
       updateServiceManifestVariables({
         baseUrl: serviceUrl,
         defaultLlms,
       });
-      spinner.stop("Base URL updated");
+      spinner.stop("基础 URL 已更新");
 
-      spinner.start("Redeploying service with updated base URL...");
+      spinner.start("正在使用更新后的基础 URL 重新部署服务...");
       const baseUrlDeployResult = deployCopilotService(envName, env);
       if (!baseUrlDeployResult.success) {
-        spinner.stop("Failed to redeploy service with base URL");
-        p.log.error(baseUrlDeployResult.error || "Unknown error");
+        spinner.stop("使用基础 URL 重新部署服务失败");
+        p.log.error(baseUrlDeployResult.error || "未知错误");
         process.exit(1);
       }
-      spinner.stop("Service redeployed with updated base URL");
+      spinner.stop("服务已使用更新后的基础 URL 重新部署");
 
       resetServiceManifestVariables();
     }
@@ -880,7 +870,7 @@ export async function runAwsSetup(options: AwsSetupOptions) {
   // Step 20: Deploy webhook gateway addon (only if user requested it)
   let webhookUrl = "";
   if (useWebhookGateway) {
-    spinner.start("Adding webhook gateway addon...");
+    spinner.start("正在添加 Webhook 网关插件...");
 
     const copilotRoot = findCopilotRoot();
     const addonsPath = findAddonsPath();
@@ -916,16 +906,14 @@ export async function runAwsSetup(options: AwsSetupOptions) {
           writeFileSync(paramsPath, paramsContent);
         }
 
-        spinner.stop("Webhook gateway addon added");
+        spinner.stop("Webhook 网关插件已添加");
 
         // Redeploy environment to include webhook gateway
-        spinner.start(
-          "Deploying webhook gateway (this may take a few minutes)...",
-        );
+        spinner.start("正在部署 Webhook 网关（可能需要几分钟）...");
         const webhookDeployResult = deployCopilotEnv(envName, env);
         if (!webhookDeployResult.success) {
-          spinner.stop("Failed to deploy webhook gateway");
-          p.log.error(webhookDeployResult.error || "Unknown error");
+          spinner.stop("部署 Webhook 网关失败");
+          p.log.error(webhookDeployResult.error || "未知错误");
           // Clean up - remove the addon so it doesn't fail next time
           spawnSync("rm", [addonPath]);
           // Remove the parameters we added
@@ -938,15 +926,15 @@ export async function runAwsSetup(options: AwsSetupOptions) {
             writeFileSync(paramsPath, paramsContent);
           }
         } else {
-          spinner.stop("Webhook gateway deployed");
+          spinner.stop("Webhook 网关已部署");
           // Get the webhook URL from CloudFormation outputs
           webhookUrl = getWebhookUrl(APP_NAME, envName, env);
         }
       } else {
-        spinner.stop("Webhook gateway template not found");
+        spinner.stop("未找到 Webhook 网关模板");
         p.log.warn(
-          `Template not found at ${templatePath}.\n` +
-            "You can manually add the webhook gateway later.",
+          `未找到模板：${templatePath}。\n` +
+            "你可以稍后手动添加 Webhook 网关。",
         );
       }
     }
@@ -954,7 +942,7 @@ export async function runAwsSetup(options: AwsSetupOptions) {
 
   // Step 21: Configure Google Pub/Sub if integrated
   if (configureGoogle && googleConfig && webhookUrl) {
-    spinner.start("Configuring Google Cloud Pub/Sub...");
+    spinner.start("正在配置 Google Cloud Pub/Sub...");
 
     const pubsubResult = await setupGooglePubSub({
       subscriptionName: pubsubSubscriptionName,
@@ -965,13 +953,13 @@ export async function runAwsSetup(options: AwsSetupOptions) {
     });
 
     if (!pubsubResult.success) {
-      spinner.stop("Failed to configure Pub/Sub");
+      spinner.stop("配置 Pub/Sub 失败");
       p.log.warn(
-        "Pub/Sub setup failed. You can configure it manually:\n" +
+        "Pub/Sub 设置失败。你可以手动配置：\n" +
           `inbox-zero setup-google --webhook-url "${webhookUrl}"`,
       );
     } else {
-      spinner.stop("Google Pub/Sub configured");
+      spinner.stop("Google Pub/Sub 已配置");
     }
   }
 
@@ -981,52 +969,50 @@ export async function runAwsSetup(options: AwsSetupOptions) {
 
   const appUrl = domain
     ? `https://${domain}`
-    : "(check Copilot output for URL)";
+    : "（请查看 Copilot 输出获取 URL）";
 
   const summary = [
-    `✓ RDS PostgreSQL (${rdsSize}) deployed`,
+    `✓ RDS PostgreSQL（${rdsSize}）已部署`,
     enableRedis
-      ? `✓ ElastiCache Redis (${redisSize}) deployed`
-      : "✗ Redis (not enabled)",
-    "✓ Secrets stored in SSM",
-    "✓ ECS service deployed",
+      ? `✓ ElastiCache Redis（${redisSize}）已部署`
+      : "✗ Redis（未启用）",
+    "✓ 密钥已存储到 SSM",
+    "✓ ECS 服务已部署",
     useWebhookGateway && webhookUrl
-      ? `✓ Webhook gateway: ${webhookUrl}`
+      ? `✓ Webhook 网关：${webhookUrl}`
       : useWebhookGateway
-        ? "! Webhook gateway deployment needs attention"
-        : "✗ Webhook gateway (not enabled)",
+        ? "! Webhook 网关部署需要处理"
+        : "✗ Webhook 网关（未启用）",
     configureGoogle && webhookUrl
-      ? "✓ Google Pub/Sub configured"
+      ? "✓ Google Pub/Sub 已配置"
       : configureGoogle
-        ? "! Google Pub/Sub needs manual setup"
-        : "✗ Google integration (not configured)",
+        ? "! Google Pub/Sub 需要手动设置"
+        : "✗ Google 集成（未配置）",
   ].join("\n");
 
-  p.note(summary, "Deployment Complete");
+  p.note(summary, "部署完成");
 
   // Next steps
   const nextSteps: string[] = [];
 
   if (!configureGoogle) {
     nextSteps.push(
-      `Run Google setup:\n  inbox-zero setup-google${webhookUrl ? ` --webhook-url "${webhookUrl}"` : ""}`,
+      `运行 Google 设置：\n  inbox-zero setup-google${webhookUrl ? ` --webhook-url "${webhookUrl}"` : ""}`,
     );
   }
 
   if (!domain) {
-    nextSteps.push(
-      "Get your app URL:\n  copilot svc show --name inbox-zero-ecs",
-    );
+    nextSteps.push("获取应用 URL：\n  copilot svc show --name inbox-zero-ecs");
   }
 
   nextSteps.push(
-    "View logs:\n  copilot svc logs --follow",
-    "Check status:\n  copilot svc status",
+    "查看日志：\n  copilot svc logs --follow",
+    "检查状态：\n  copilot svc status",
   );
 
-  p.note(nextSteps.join("\n\n"), "Next Steps");
+  p.note(nextSteps.join("\n\n"), "后续步骤");
 
-  p.outro(`App URL: ${appUrl}`);
+  p.outro(`应用 URL：${appUrl}`);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1069,7 +1055,7 @@ export function validateEnvironmentName(
   environment: string | undefined,
 ): string | undefined {
   if (environment === undefined) return;
-  if (!environment) return "Environment name is required";
+  if (!environment) return "环境名称为必填项";
   if (!ENVIRONMENT_NAME_REGEX.test(environment)) {
     return ENVIRONMENT_NAME_ERROR;
   }
@@ -1459,7 +1445,7 @@ function updateServiceManifestHttp(config: { domain?: string }): void {
   if (httpBlockMatch) {
     const insertLines = config.domain
       ? `  alias: ${config.domain}\n  redirect_to_https: true\n`
-      : "  # alias: YOUR_DOMAIN  # Uncomment and set if using a custom domain\n  # redirect_to_https: true  # Enable when using a domain with HTTPS\n";
+      : "  # alias: YOUR_DOMAIN  # 若使用自定义域名，取消注释并设置\n  # redirect_to_https: true  # 使用带 HTTPS 的域名时启用\n";
     content = content.replace(
       /http:\n\s+path: '\/'\n/,
       `http:\n  path: '/'\n${insertLines}`,
@@ -1479,7 +1465,7 @@ function resetServiceManifestVariables(): void {
   let content = readFileSync(manifestPath, "utf-8");
   content = content.replace(
     /^\s*NEXT_PUBLIC_BASE_URL:.*$/m,
-    "  NEXT_PUBLIC_BASE_URL: # YOUR_DOMAIN, e.g. https://www.getinboxzero.com (with http or https)",
+    "  NEXT_PUBLIC_BASE_URL: # 你的域名，例如 https://www.getinboxzero.com（带 http 或 https）",
   );
   content = content.replace(/^\s*DEFAULT_LLM_PROVIDER:.*\n?/m, "");
   content = content.replace(/^\s*DEFAULT_LLM_MODEL:.*\n?/m, "");
@@ -1556,7 +1542,7 @@ function initCopilotApp(
   ) {
     return {
       success: false,
-      error: result.stderr?.toString() || "Failed to initialize app",
+      error: result.stderr?.toString() || "初始化应用失败",
     };
   }
 
@@ -1587,7 +1573,7 @@ function initCopilotEnv(
   ) {
     return {
       success: false,
-      error: result.stderr?.toString() || "Failed to initialize environment",
+      error: result.stderr?.toString() || "初始化环境失败",
     };
   }
 
@@ -1647,8 +1633,8 @@ function deployCopilotEnv(
       return {
         success: false,
         error:
-          `Environment manifest not found at ${manifestPath}.\n` +
-          `Try running: copilot env show -n ${envName} --manifest > ${manifestPath}`,
+          `未找到环境清单：${manifestPath}。\n` +
+          `尝试运行：copilot env show -n ${envName} --manifest > ${manifestPath}`,
       };
     }
   }
@@ -1678,11 +1664,11 @@ function deployCopilotEnv(
       success: false,
       error:
         stderrOutput ||
-        "Environment deployment failed. Check the output above for details.\n" +
-          "Common issues:\n" +
-          "- CloudFormation stack in ROLLBACK state (delete via AWS Console)\n" +
-          "- IAM permission issues (ensure using IAM user, not root)\n" +
-          "- Network/timeout issues (retry the command)",
+        "环境部署失败。请查看上方输出了解详情。\n" +
+          "常见问题：\n" +
+          "- CloudFormation 堆栈处于 ROLLBACK 状态（请通过 AWS 控制台删除）\n" +
+          "- IAM 权限问题（请确保使用 IAM 用户而非根账户）\n" +
+          "- 网络/超时问题（重试该命令）",
     };
   }
 
@@ -1716,7 +1702,7 @@ function initCopilotService(env: NodeJS.ProcessEnv): {
   ) {
     return {
       success: false,
-      error: result.stderr?.toString() || "Failed to initialize service",
+      error: result.stderr?.toString() || "初始化服务失败",
     };
   }
 
@@ -1736,7 +1722,7 @@ function deployCopilotService(
   if (result.status !== 0) {
     return {
       success: false,
-      error: "Service deployment failed",
+      error: "服务部署失败",
     };
   }
 

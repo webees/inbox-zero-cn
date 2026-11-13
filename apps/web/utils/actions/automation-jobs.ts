@@ -73,7 +73,7 @@ export const toggleAutomationJobAction = actionClient
           emailAccountId,
           messagingChannelId: existingJob.messagingChannelId,
         });
-        if (!channel) throw new SafeError("Messaging channel not found");
+        if (!channel) throw new SafeError("未找到消息渠道");
 
         const validationError = await prepareAutomationMessagingChannel({
           channel,
@@ -122,7 +122,7 @@ export const saveAutomationJobAction = actionClient
       try {
         validateAutomationCronExpression(cronExpression);
       } catch {
-        throw new SafeError("Invalid schedule");
+        throw new SafeError("计划无效");
       }
 
       const channel = await getAutomationMessagingChannel({
@@ -131,11 +131,11 @@ export const saveAutomationJobAction = actionClient
       });
 
       if (!channel) {
-        throw new SafeError("Messaging channel not found");
+        throw new SafeError("未找到消息渠道");
       }
 
       if (!isSupportedAutomationMessagingProvider(channel.provider)) {
-        throw new SafeError("Messaging provider is not supported");
+        throw new SafeError("不支持的消息服务商");
       }
 
       const existingJob = await prisma.automationJob.findUnique({
@@ -219,10 +219,10 @@ export const triggerTestCheckInAction = actionClient
     });
 
     if (!job) {
-      throw new SafeError("No active check-in configured");
+      throw new SafeError("未配置有效的定时检查");
     }
     if (!job.enabled) {
-      throw new SafeError("No active check-in configured");
+      throw new SafeError("未配置有效的定时检查");
     }
 
     const channel = job.messagingChannel;
@@ -288,9 +288,7 @@ async function getDefaultMessagingChannel(emailAccountId: string) {
   );
 
   if (!channel) {
-    throw new SafeError(
-      "Connect a supported messaging channel before enabling proactive updates",
-    );
+    throw new SafeError("启用主动更新前，请先连接支持的消息渠道");
   }
 
   return channel;
@@ -339,10 +337,10 @@ async function prepareAutomationMessagingChannel({
   logger: Parameters<typeof upsertSlackRoute>[0]["logger"];
 }) {
   if (!isSupportedAutomationMessagingProvider(channel.provider)) {
-    return "Messaging provider is not supported";
+    return "不支持的消息服务商";
   }
   if (!isMessagingChannelOperational(channel)) {
-    return "Messaging channel is not connected";
+    return "消息渠道未连接";
   }
 
   if (
@@ -366,7 +364,7 @@ async function prepareAutomationMessagingChannel({
     channel,
     routes: channel.routes,
   });
-  if (!route) return "Select a messaging destination first";
+  if (!route) return "请先选择一个消息目标";
 
   return null;
 }

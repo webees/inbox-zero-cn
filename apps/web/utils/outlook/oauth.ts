@@ -44,8 +44,8 @@ type MicrosoftOidcUserInfo = {
 };
 
 /**
- * `oid` is the Entra object id, assigned per directory object and the claim
- * better-auth keys Microsoft accounts on. `sub` is pairwise per application.
+ * `oid` 是 Entra 对象 id，按目录对象分配，也是
+ * better-auth 用于标识 Microsoft 账号的声明。`sub` 是按应用两两配对的。
  */
 export type MicrosoftIdTokenClaims = {
   oid: string | null;
@@ -152,8 +152,8 @@ export async function fetchMicrosoftOidcUserInfo(accessToken: string) {
 }
 
 /**
- * The token endpoint is reached directly over TLS, so its id_token is trusted
- * without re-verifying the signature, the same way better-auth reads it.
+ * token 端点通过 TLS 直接访问，因此其 id_token 可信，
+ * 无需重新验证签名，与 better-auth 读取它的方式相同。
  */
 export function decodeMicrosoftIdTokenClaims(
   idToken: string | null | undefined,

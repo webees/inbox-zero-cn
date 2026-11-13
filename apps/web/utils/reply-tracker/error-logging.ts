@@ -1,9 +1,4 @@
-import {
-  captureException,
-  isHandledUserKeyError,
-  isKnownApiError,
-  SafeError,
-} from "@/utils/error";
+import { captureException, SafeError } from "@/utils/error";
 import { logErrorWithDedupe } from "@/utils/log-error-with-dedupe";
 import type { Logger } from "@/utils/logger";
 
@@ -29,13 +24,8 @@ export async function logReplyTrackerError({
   capture,
 }: LogReplyTrackerErrorArgs) {
   // SafeErrors are expected account states (usage limits, blocked content,
-  // unavailable model settings), known provider errors (throttling, revoked
-  // access, deleted items) are provider states, and handled user-key errors are
-  // the user's own broken AI key or model. None are bugs to report.
-  const isExpected =
-    error instanceof SafeError ||
-    isKnownApiError(error) ||
-    isHandledUserKeyError(error);
+  // unavailable model settings), not bugs to report.
+  const isExpected = error instanceof SafeError;
 
   await logErrorWithDedupe({
     logger,

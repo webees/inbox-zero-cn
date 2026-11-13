@@ -33,11 +33,11 @@ import { getLabelTree, type SidebarLabel } from "./label-tree";
 import { splitLabelsByListVisibility } from "./label-visibility";
 
 const GMAIL_CATEGORY_NAMES: Record<string, MessageDescriptor> = {
-  CATEGORY_PERSONAL: msg`Personal`,
-  CATEGORY_SOCIAL: msg`Social`,
-  CATEGORY_PROMOTIONS: msg`Promotions`,
-  CATEGORY_UPDATES: msg`Updates`,
-  CATEGORY_FORUMS: msg`Forums`,
+  CATEGORY_PERSONAL: msg`个人`,
+  CATEGORY_SOCIAL: msg`社交`,
+  CATEGORY_PROMOTIONS: msg`促销`,
+  CATEGORY_UPDATES: msg`更新`,
+  CATEGORY_FORUMS: msg`论坛`,
 };
 
 export function LabelPickerDialog({
@@ -48,7 +48,7 @@ export function LabelPickerDialog({
 }: {
   threadKeys: string[];
   onClose: () => void;
-  /** Queues the change and resolves with the thread keys it was queued for. */
+  /** 将变更加入队列，并以已排队的会话键完成。 */
   onApply: (
     threadKeys: string[],
     target: { kind: "label" | "folder"; id: string },
@@ -58,7 +58,7 @@ export function LabelPickerDialog({
   const { t, i18n } = useLingui();
   const { emailAccountId, provider } = useAccount();
   const isMove = mode === "move";
-  // Outlook categories don't change where a message lives, so moves target real folders.
+  // Outlook 类别不会改变邮件所在位置，因此移动操作以真实文件夹为目标。
   const isFolderMove = isMove && isMicrosoftProvider(provider);
   const {
     userLabels,
@@ -153,8 +153,8 @@ export function LabelPickerDialog({
         error instanceof Error
           ? error.message
           : isMove
-            ? t`Couldn't move conversations. Please try again.`
-            : t`Couldn't apply label. Please try again.`,
+            ? t`无法移动会话。请重试。`
+            : t`无法应用标签。请重试。`,
       );
     } finally {
       pending.current = false;
@@ -176,17 +176,13 @@ export function LabelPickerDialog({
         onEscapeKeyDown={(event) => event.stopPropagation()}
       >
         <DialogTitle className="sr-only">
-          {isMove ? (
-            <Trans>Move conversations</Trans>
-          ) : (
-            <Trans>Label conversations</Trans>
-          )}
+          {isMove ? <Trans>移动会话</Trans> : <Trans>为会话添加标签</Trans>}
         </DialogTitle>
         <Command className="[&_[cmdk-input-wrapper]>svg]:hidden">
           <CommandInput
-            aria-label={isFolderMove ? t`Search folders` : t`Search labels`}
+            aria-label={isFolderMove ? t`搜索文件夹` : t`搜索标签`}
             className="pr-8"
-            placeholder={isMove ? t`Move to…` : t`Label as…`}
+            placeholder={isMove ? t`移动到…` : t`添加标签…`}
             value={search}
             onValueChange={setSearch}
             disabled={isPending}
@@ -198,9 +194,9 @@ export function LabelPickerDialog({
             <CommandList aria-busy={isPending}>
               <CommandEmpty>
                 {isFolderMove ? (
-                  <Trans>No matching folders.</Trans>
+                  <Trans>没有匹配的文件夹。</Trans>
                 ) : (
-                  <Trans>No matching labels.</Trans>
+                  <Trans>没有匹配的标签。</Trans>
                 )}
               </CommandEmpty>
               <CommandGroup>
@@ -222,7 +218,7 @@ export function LabelPickerDialog({
                     disabled={isPending}
                   >
                     <span className="break-all">
-                      <Trans>Create “{name}”</Trans>
+                      <Trans>创建“{name}”</Trans>
                     </span>
                   </CommandItem>
                 )}
@@ -237,7 +233,7 @@ export function LabelPickerDialog({
           >
             <Loader2Icon aria-hidden className="size-4 animate-spin" />
             <span className="sr-only">
-              {isMove ? <Trans>Moving…</Trans> : <Trans>Applying label…</Trans>}
+              {isMove ? <Trans>正在移动…</Trans> : <Trans>正在应用标签…</Trans>}
             </span>
           </div>
         )}

@@ -115,7 +115,7 @@ async function sendEmail({
   });
 
   if (!emailAccount) {
-    logger.error("Email account not found");
+    logger.error("未找到邮箱账号");
     return { success: false };
   }
 
@@ -130,15 +130,15 @@ async function sendEmail({
     });
 
     if (skipReason) {
-      logger.info("Skipping inbox health email", { skipReason });
+      logger.info("跳过收件箱健康报告邮件", { skipReason });
       return { success: true, skipped: skipReason };
     }
   }
 
   if (!emailAccount.account.refresh_token) {
-    logger.warn("Skipping inbox health email: account has no refresh token");
+    logger.warn("跳过收件箱健康报告邮件：账号没有刷新令牌");
     await startNextInboxHealthWindow(emailAccountId);
-    return { success: false, message: "Account has no refresh token" };
+    return { success: false, message: "账号没有刷新令牌" };
   }
 
   let emailProvider: Awaited<ReturnType<typeof createEmailProvider>>;
@@ -157,7 +157,7 @@ async function sendEmail({
     const issue = classifyEmailAccountProviderIssue({ error, provider });
     if (!issue) throw error;
 
-    logger.warn("Skipping inbox health email: provider action required", {
+    logger.warn("跳过收件箱健康报告邮件：需要服务商操作", {
       provider,
       reason: issue.reason,
     });

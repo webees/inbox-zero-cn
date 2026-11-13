@@ -1,42 +1,42 @@
 ---
-title: "Vercel Deployment"
-description: "Deploy Inbox Zero on Vercel using Neon and Upstash integrations"
+title: "Vercel 部署"
+description: "使用 Neon 和 Upstash 集成在 Vercel 上部署 Inbox Zero"
 ---
 
-This guide covers a managed setup on Vercel using the Neon and Upstash integrations.
-To use other databases, see [Environment Variables](/hosting/environment-variables) for more details.
+本指南介绍使用 Neon 和 Upstash 集成在 Vercel 上进行托管部署。
+如需使用其他数据库，请参阅[环境变量](/hosting/environment-variables)了解更多详情。
 
-## 1. Fast path with the CLI
+## 1. 使用 CLI 的快捷方式
 
-If you have the Inbox Zero CLI installed, the fastest path is:
+如果你已安装 Inbox Zero CLI，最快的方式是：
 
 ```bash
 inbox-zero setup-vercel
 ```
 
-The command will:
+该命令会：
 
-- link `apps/web` to a Vercel project
-- provision Neon and Upstash Redis through Vercel Marketplace integrations
-- generate the required app secrets
-- seed the Vercel environment variables
-- optionally trigger `vercel deploy --prod`
+- 将 `apps/web` 链接到一个 Vercel 项目
+- 通过 Vercel Marketplace 集成预配 Neon 和 Upstash Redis
+- 生成所需的应用密钥
+- 写入 Vercel 环境变量
+- （可选）触发 `vercel deploy --prod`
 
-If you already provisioned one of the integrations, rerun with `--skip-neon` or `--skip-upstash`.
+如果你已预配其中一个集成，请使用 `--skip-neon` 或 `--skip-upstash` 重新运行。
 
-## 2. Deploy on Vercel manually
+## 2. 手动在 Vercel 上部署
 
-Click here to deploy on Vercel:
+点击此处部署到 Vercel：
 
-[![Deploy on Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Felie222%2Finbox-zero&root-directory=apps%2Fweb&env=AUTH_SECRET%2CINTERNAL_API_KEY%2CEMAIL_ENCRYPT_SECRET%2CEMAIL_ENCRYPT_SALT%2CMICROSOFT_WEBHOOK_CLIENT_STATE%2CDEFAULT_LLMS%2CLLM_API_KEY)
+[![部署到 Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Felie222%2Finbox-zero&root-directory=apps%2Fweb&env=AUTH_SECRET%2CINTERNAL_API_KEY%2CEMAIL_ENCRYPT_SECRET%2CEMAIL_ENCRYPT_SALT%2CMICROSOFT_WEBHOOK_CLIENT_STATE%2CDEFAULT_LLMS%2CLLM_API_KEY)
 
 <Warning>
-  The deploy button only pre-fills the secrets listed below. Your first Vercel build
-  will usually fail until a Postgres database is attached and `DATABASE_URL` exists.
-  That is expected. Create a free Neon database from Vercel Storage, then redeploy.
+  部署按钮只会预填下面列出的密钥。在你附加 Postgres 数据库并存在 `DATABASE_URL` 之前，
+  首次 Vercel 构建通常会失败。
+  这是预期情况。请从 Vercel Storage 创建一个免费的 Neon 数据库，然后重新部署。
 </Warning>
 
-Set the following environment variables:
+设置以下环境变量：
 
 ```bash
 AUTH_SECRET= # https://generate-secret.vercel.app/32
@@ -50,57 +50,57 @@ DEFAULT_LLMS= # provider:model, e.g. openai:gpt-6-luna
 LLM_API_KEY=
 ```
 
-For secret generation you can also use `openssl rand -base64 32` on macOS or Linux.
+在 macOS 或 Linux 上，你也可以使用 `openssl rand -base64 32` 生成密钥。
 
-To find your LLM API key, see [LLM Setup](/hosting/llm-setup).
+要获取你的 LLM API 密钥，请参阅 [LLM 设置](/hosting/llm-setup)。
 
 <Tip>
-  For the full list of environment variables, see [Environment Variables](/hosting/environment-variables). We will set more environment variables later in the guide.
+  完整的环境变量列表请参阅[环境变量](/hosting/environment-variables)。我们会在本指南后面设置更多环境变量。
 </Tip>
 
-## 3. Neon PostgreSQL Database in Vercel
+## 3. 在 Vercel 中创建 Neon PostgreSQL 数据库
 
-Neon is a PostgreSQL database provider that offers a free tier which is enough for personal use cases.
+Neon 是一个 PostgreSQL 数据库服务商，其免费套餐足以满足个人使用场景。
 
-1. In your Vercel project, open `Storage`.
-2. Click `Create Database`.
-3. Click `Neon`.
+1. 在你的 Vercel 项目中，打开 `Storage`。
+2. 点击 `Create Database`。
+3. 点击 `Neon`。
 
-Vercel injects Neon connection variables automatically.
+Vercel 会自动注入 Neon 连接变量。
 
-After Neon is connected, Vercel adds `DATABASE_URL`. Redeploy after that first-time setup.
+连接 Neon 后，Vercel 会添加 `DATABASE_URL`。完成这个初次设置后请重新部署。
 
-![Neon option in Vercel Storage.](/images/self-hosting/vercel/neon.png)
+![Vercel Storage 中的 Neon 选项。](/images/self-hosting/vercel/neon.png)
 
-## 4. Upstash Redis Database in Vercel
+## 4. 在 Vercel 中创建 Upstash Redis 数据库
 
-Upstash is a Redis database provider that offers a free tier which is enough for personal use cases.
+Upstash 是一个 Redis 数据库服务商，其免费套餐足以满足个人使用场景。
 
-1. In your Vercel project, open `Storage`.
-2. Click `Create Database`.
-3. Click `Upstash`.
+1. 在你的 Vercel 项目中，打开 `Storage`。
+2. 点击 `Create Database`。
+3. 点击 `Upstash`。
 
-Vercel injects Upstash connection variables automatically.
+Vercel 会自动注入 Upstash 连接变量。
 
-## 5. Set other environment variables
+## 5. 设置其他环境变量
 
-Once Vercel assigns your project domain (for example `https://your-project.vercel.app`), set:
+当 Vercel 分配你的项目域名后（例如 `https://your-project.vercel.app`），设置：
 
-Go to Project `Settings` -> `Environment Variables` and add:
+前往项目 `Settings` -> `Environment Variables` 并添加：
 
 ```bash
 NEXT_PUBLIC_BASE_URL=https://your-project.vercel.app
 ```
 
-Set Google or Microsoft environment variables based on the guides:
+根据指南设置 Google 或 Microsoft 环境变量：
 
 - [Google OAuth](/hosting/google-oauth)
 - [Microsoft OAuth](/hosting/microsoft-oauth)
 - [Google PubSub](/hosting/google-pubsub)
 
-## 6. Redeploy and verify
+## 6. 重新部署并验证
 
-1. Trigger a new Vercel deploy.
-2. Confirm build completes.
-3. Visit your project domain and verify it works.
-4. Sign in and connect an email account.
+1. 触发一次新的 Vercel 部署。
+2. 确认构建完成。
+3. 访问你的项目域名并验证其正常工作。
+4. 登录并连接一个邮箱账号。

@@ -130,7 +130,7 @@ describe("env LLM compatibility conversion", () => {
     process.env.UNSUBSCRIBE_WORKER_URL = "https://worker.example.com";
     delete process.env.UNSUBSCRIBE_WORKER_SECRET;
     await expect(import("./env")).rejects.toThrow(
-      "UNSUBSCRIBE_WORKER_SECRET is required when UNSUBSCRIBE_WORKER_URL is set.",
+      "设置 UNSUBSCRIBE_WORKER_URL 时必须提供 UNSUBSCRIBE_WORKER_SECRET。",
     );
   });
 

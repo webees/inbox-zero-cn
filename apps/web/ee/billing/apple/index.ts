@@ -627,9 +627,9 @@ export async function syncAppleSubscriptionToDb({
   logger: Logger;
   verifiedTransaction?: JWSTransactionDecodedPayload | null;
 } & AppleLookupReference) {
-  // A signed transaction is a point-in-time snapshot that a client can replay
-  // after a refund, so only the local emulator (which has no App Store Server
-  // API) may use it directly. Everywhere else Apple's live status is the truth.
+  // 已签名的交易是某一时刻的快照，客户端可以在退款后重放它，因此只有本地
+  // 模拟器（它没有 App Store Server API）可以直接使用它。在其他任何地方，
+  // Apple 的实时状态才是准绳。
   const state =
     verifiedTransaction && isAppleLocalTestingEnabled()
       ? stateFromDecodedTransaction({
@@ -645,15 +645,11 @@ export async function syncAppleSubscriptionToDb({
         });
 
   if (!isAppleEnvironmentAllowed(state.environment)) {
-    throw new SafeError(
-      "Sandbox Apple subscriptions cannot grant production access",
-    );
+    throw new SafeError("沙盒 Apple 订阅无法授予生产环境访问权限");
   }
 
   if (!state.tier) {
-    throw new SafeError(
-      `Apple product ${state.productId} is not mapped to a premium tier`,
-    );
+    throw new SafeError(`Apple 产品 ${state.productId} 未映射到任何高级版套餐`);
   }
 
   const premiumRecord = await resolvePremiumRecord({

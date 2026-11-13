@@ -53,14 +53,14 @@ export function CalendarInvitation({ messageId }: { messageId: string }) {
     status = t`Your response will update your calendar and notify the organizer.`;
   if (submitted) {
     status = submitted.calendarSynced
-      ? t`Response sent and calendar updated.`
-      : t`Response emailed to the organizer. Calendar sync wasn’t confirmed.`;
+      ? t`回复已发送，日历已更新`
+      : t`回复已通过邮件发送给组织者，日历同步未确认`;
   }
-  if (isExecuting) status = t`Sending response…`;
+  if (isExecuting) status = t`正在发送回复…`;
   return (
     <section
       className="mb-4 rounded-lg border bg-muted/30 p-4"
-      aria-label={t`Calendar invitation`}
+      aria-label={t`日历邀请`}
     >
       <LoadingContent loading={isLoading} error={error}>
         {invitation && (
@@ -81,7 +81,7 @@ export function CalendarInvitation({ messageId }: { messageId: string }) {
                 </p>
                 {invitation.recurring && (
                   <p className="text-sm text-muted-foreground">
-                    <Trans>Recurring invitation</Trans>
+                    <Trans>重复邀请</Trans>
                   </p>
                 )}
               </div>
@@ -108,13 +108,13 @@ export function CalendarInvitation({ messageId }: { messageId: string }) {
 
             <fieldset className="flex flex-wrap gap-2">
               <legend className="sr-only">
-                <Trans>Your response</Trans>
+                <Trans>你的回复</Trans>
               </legend>
               {(
                 [
-                  ["accepted", t`Yes`],
-                  ["declined", t`No`],
-                  ["tentative", t`Maybe`],
+                  ["accepted", t`是`],
+                  ["declined", t`否`],
+                  ["tentative", t`可能`],
                 ] as const
               ).map(([value, label]) => (
                 <Button

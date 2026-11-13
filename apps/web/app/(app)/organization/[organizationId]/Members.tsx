@@ -75,7 +75,7 @@ export function Members({ organizationId }: { organizationId: string }) {
   );
   const [pendingMemberId, setPendingMemberId] = useState<string | null>(null);
 
-  // Create a Map for O(1) lookups instead of O(n) Array.find for each member
+  // 创建 Map，以 O(1) 查找代替为每位成员执行 O(n) 的 Array.find
   const executedRulesStatsMap = useMemo(() => {
     if (!executedRulesData?.memberCounts) return new Map();
 
@@ -129,9 +129,9 @@ export function Members({ organizationId }: { organizationId: string }) {
       handleAction(
         memberId,
         () => removeMemberAction({ memberId }),
-        t`Error removing member`,
-        t`Member removed successfully`,
-        t`Failed to remove member`,
+        t`移除成员时出错`,
+        t`成员已成功移除`,
+        t`移除成员失败`,
       ),
     [handleAction, t],
   );
@@ -141,9 +141,9 @@ export function Members({ organizationId }: { organizationId: string }) {
       handleAction(
         null,
         () => cancelInvitationAction({ invitationId }),
-        t`Error cancelling invitation`,
-        t`Invitation cancelled successfully`,
-        t`Failed to cancel invitation`,
+        t`取消邀请时出错`,
+        t`邀请已成功取消`,
+        t`取消邀请失败`,
       ),
     [handleAction, t],
   );
@@ -154,9 +154,9 @@ export function Members({ organizationId }: { organizationId: string }) {
       return handleAction(
         memberId,
         () => updateMemberRoleAction({ memberId, role }),
-        t`Error updating role`,
-        t`Role updated to ${roleLabel}`,
-        t`Failed to update role`,
+        t`更新角色时出错`,
+        t`角色已更新为 ${roleLabel}`,
+        t`更新角色失败`,
       );
     },
     [handleAction, t, i18n],
@@ -167,9 +167,9 @@ export function Members({ organizationId }: { organizationId: string }) {
       handleAction(
         memberId,
         () => transferOwnershipAction({ organizationId, memberId }),
-        t`Error transferring ownership`,
-        t`Ownership transferred successfully`,
-        t`Failed to transfer ownership`,
+        t`转移所有权时出错`,
+        t`所有权已成功转移`,
+        t`转移所有权失败`,
       ),
     [handleAction, organizationId, t],
   );
@@ -181,7 +181,7 @@ export function Members({ organizationId }: { organizationId: string }) {
       <div>
         <div className="flex justify-between items-center">
           <TypographyH3>
-            <Trans>Members ({memberCount})</Trans>
+            <Trans>成员（{memberCount}）</Trans>
           </TypographyH3>
           {isAdmin && (
             <InviteMemberModal
@@ -221,7 +221,7 @@ export function Members({ organizationId }: { organizationId: string }) {
             data.pendingInvitations.length === 0) && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">
-                <Trans>No members found in your organization.</Trans>
+                <Trans>你的组织中未找到成员</Trans>
               </p>
             </div>
           )}
@@ -229,9 +229,7 @@ export function Members({ organizationId }: { organizationId: string }) {
         {data?.pendingInvitations && data.pendingInvitations.length > 0 && (
           <div className="space-y-4 mt-8">
             <TypographyH3>
-              <Trans>
-                Pending Invitations ({data.pendingInvitations.length})
-              </Trans>
+              <Trans>待处理邀请（{data.pendingInvitations.length}）</Trans>
             </TypographyH3>
             <div className="space-y-2">
               {data.pendingInvitations.map((invitation) => (
@@ -323,7 +321,7 @@ function MemberCard({
             </TooltipTrigger>
             <TooltipContent>
               <p>
-                <Trans>Joined at: {joinedAt}</Trans>
+                <Trans>加入时间：{joinedAt}</Trans>
               </p>
             </TooltipContent>
           </Tooltip>
@@ -345,13 +343,13 @@ function MemberCard({
                   <DropdownMenuItem asChild>
                     <Link href={`/${member.emailAccount.id}/stats`}>
                       <BarChart3 className="mr-2 size-4" />
-                      <Trans>Analytics</Trans>
+                      <Trans>分析</Trans>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href={`/${member.emailAccount.id}/usage`}>
                       <BarChartIcon className="mr-2 size-4" />
-                      <Trans>Usage</Trans>
+                      <Trans>用量</Trans>
                     </Link>
                   </DropdownMenuItem>
                 </>
@@ -360,7 +358,7 @@ function MemberCard({
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger disabled={isPending}>
                     <ShieldIcon className="mr-2 size-4" />
-                    <Trans>Role</Trans>
+                    <Trans>角色</Trans>
                   </DropdownMenuSubTrigger>
                   <DropdownMenuSubContent>
                     <DropdownMenuRadioGroup
@@ -374,10 +372,10 @@ function MemberCard({
                         value="member"
                         disabled={isPending}
                       >
-                        <Trans>Member</Trans>
+                        <Trans>成员</Trans>
                       </DropdownMenuRadioItem>
                       <DropdownMenuRadioItem value="admin" disabled={isPending}>
-                        <Trans>Admin</Trans>
+                        <Trans>管理员</Trans>
                       </DropdownMenuRadioItem>
                     </DropdownMenuRadioGroup>
                   </DropdownMenuSubContent>
@@ -394,12 +392,12 @@ function MemberCard({
                       disabled={isPending}
                     >
                       <CrownIcon className="mr-2 size-4" />
-                      <Trans>Transfer ownership</Trans>
+                      <Trans>转移所有权</Trans>
                     </DropdownMenuItem>
                   }
-                  title={t`Transfer ownership`}
-                  description={t`Transfer organization ownership to ${memberName}? You will become an admin.`}
-                  confirmText={t`Transfer`}
+                  title={t`转移所有权`}
+                  description={t`要将组织所有权转移给 ${memberName} 吗？你将成为管理员`}
+                  confirmText={t`转移`}
                   onConfirm={() => onTransferOwnership(member.id)}
                 />
               )}
@@ -409,7 +407,7 @@ function MemberCard({
                 className="text-red-600 hover:!bg-red-50 hover:!text-red-600"
               >
                 <TrashIcon className="mr-2 size-4" />
-                <Trans>Remove</Trans>
+                <Trans>移除</Trans>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -417,7 +415,9 @@ function MemberCard({
       }
     >
       <div className="flex flex-wrap items-center gap-2">
-        <p className="font-medium">{member.emailAccount.name || t`No name`}</p>
+        <p className="font-medium">
+          {member.emailAccount.name || t`未设置姓名`}
+        </p>
         <Badge
           variant={
             hasOrganizationAdminRole(member.role) ? "default" : "secondary"
@@ -444,8 +444,8 @@ function MemberCard({
             <span className="text-xs text-muted-foreground">
               <Plural
                 value={executedRulesCount}
-                one="# assistant processed email"
-                other="# assistant processed emails"
+                one="助手已处理 # 封邮件"
+                other="助手已处理 # 封邮件"
               />
             </span>
           </>
@@ -510,7 +510,7 @@ function PendingInvitationCard({
             </TooltipTrigger>
             <TooltipContent>
               <p>
-                <Trans>Expires at: {expiresAt}</Trans>
+                <Trans>过期时间：{expiresAt}</Trans>
               </p>
             </TooltipContent>
           </Tooltip>
@@ -523,14 +523,14 @@ function PendingInvitationCard({
           onClick={() => onCancel(invitation.id)}
         >
           <XIcon className="size-4 mr-2" />
-          <Trans>Cancel</Trans>
+          <Trans>取消</Trans>
         </Button>
       }
     >
       <div className="flex items-center space-x-3">
         <p className="font-medium">{invitation.email}</p>
         <Badge variant="outline" className="text-xs">
-          <Trans>Pending</Trans>
+          <Trans>待处理</Trans>
         </Badge>
         {invitation.role && (
           <Badge variant="secondary" className="text-xs">
@@ -540,7 +540,7 @@ function PendingInvitationCard({
       </div>
       <div className="flex items-center space-x-3 mt-1">
         <span className="text-xs text-muted-foreground">
-          <Trans>Invited by {inviterName}</Trans>
+          <Trans>邀请人：{inviterName}</Trans>
         </span>
       </div>
     </CardWrapper>
@@ -548,9 +548,9 @@ function PendingInvitationCard({
 }
 
 const ROLE_LABELS: Record<string, MessageDescriptor> = {
-  owner: msg`Owner`,
-  admin: msg`Admin`,
-  member: msg`Member`,
+  owner: msg`所有者`,
+  admin: msg`管理员`,
+  member: msg`成员`,
 };
 
 function getRoleLabel(role: string, i18n: I18n) {
@@ -578,37 +578,35 @@ const ACTIVITY_BADGE: Record<
   }
 > = {
   active: {
-    label: msg`Active`,
+    label: msg`活跃`,
     variant: "green",
     tooltip: ({ lastProcessedEmailAt }, i18n) =>
       formatLastProcessed(lastProcessedEmailAt, i18n),
   },
   disconnected: {
-    label: msg`Disconnected`,
+    label: msg`已断开连接`,
     variant: "red",
     tooltip: ({ disconnectedAt }, i18n) => {
-      if (!disconnectedAt) return i18n._(msg`Email account is disconnected.`);
+      if (!disconnectedAt) return i18n._(msg`邮箱账号已断开连接`);
       const relativeDate = formatRelativeDate(disconnectedAt, i18n);
-      return i18n._(msg`Email account disconnected ${relativeDate}.`);
+      return i18n._(msg`邮箱账号已于 ${relativeDate}断开连接`);
     },
   },
   hidden: {
-    label: msg`Activity hidden`,
+    label: msg`活动已隐藏`,
     variant: "outline",
-    tooltip: (_dates, i18n) =>
-      i18n._(msg`This member has not allowed org admin analytics.`),
+    tooltip: (_dates, i18n) => i18n._(msg`该成员未允许组织管理员进行分析`),
   },
   inactive: {
-    label: msg`No activity in ${RECENT_ACTIVITY_HOURS}h`,
+    label: msg`${RECENT_ACTIVITY_HOURS} 小时内无活动`,
     variant: "secondary",
     tooltip: ({ lastProcessedEmailAt }, i18n) =>
       formatLastProcessed(lastProcessedEmailAt, i18n),
   },
   none: {
-    label: msg`No activity yet`,
+    label: msg`暂无活动`,
     variant: "secondary",
-    tooltip: (_dates, i18n) =>
-      i18n._(msg`No assistant-processed email found for this account.`),
+    tooltip: (_dates, i18n) => i18n._(msg`未找到该账号中由助手处理的邮件`),
   },
 };
 
@@ -617,14 +615,14 @@ function formatLastProcessed(
   i18n: I18n,
 ) {
   const relativeDate = formatRelativeDate(date, i18n);
-  return i18n._(msg`Last processed email ${relativeDate}.`);
+  return i18n._(msg`最近处理的邮件：${relativeDate}`);
 }
 
 function formatRelativeDate(
   date: Date | string | null | undefined,
   i18n: I18n,
 ) {
-  if (!date) return i18n._(msg`unknown`);
+  if (!date) return i18n._(msg`未知`);
 
   return formatDistanceToNow(new Date(date), {
     addSuffix: true,

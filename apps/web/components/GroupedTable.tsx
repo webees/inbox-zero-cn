@@ -406,25 +406,25 @@ function GroupRow({
             <Button variant="ghost" size="xs">
               <MoreVerticalIcon className="size-4" />
               <span className="sr-only">
-                <Trans>More</Trans>
+                <Trans>更多</Trans>
               </span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={onEditCategory}>
               <PencilIcon className="mr-2 size-4" />
-              <Trans>Edit</Trans>
+              <Trans>编辑</Trans>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={onRemoveAllFromCategory}>
               <BookmarkXIcon className="mr-2 size-4" />
-              <Trans>Remove All From Category</Trans>
+              <Trans>从分类中全部移除</Trans>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
         <Button variant="outline" size="xs" onClick={onArchiveAll}>
           <ArchiveIcon className="mr-2 size-4" />
-          <Trans>Archive all</Trans>
+          <Trans>全部归档</Trans>
         </Button>
       </TableCell>
     </TableRow>
@@ -445,7 +445,7 @@ function SenderRows({
       <TableRow>
         <TableCell colSpan={COLUMNS}>
           <MessageText>
-            <Trans>This category is empty</Trans>
+            <Trans>此分类为空</Trans>
           </MessageText>
         </TableCell>
       </TableRow>
@@ -512,7 +512,7 @@ function ExpandedRows({
     return (
       <TableRow>
         <TableCell colSpan={COLUMNS}>
-          <Trans>Error loading emails</Trans>
+          <Trans>加载邮件时出错</Trans>
         </TableCell>
       </TableRow>
     );
@@ -522,7 +522,7 @@ function ExpandedRows({
     return (
       <TableRow>
         <TableCell colSpan={COLUMNS}>
-          <Trans>No emails found</Trans>
+          <Trans>未找到邮件</Trans>
         </TableCell>
       </TableRow>
     );
@@ -576,7 +576,7 @@ function ArchiveStatusCell({
     case "pending":
       return (
         <span className="text-muted-foreground">
-          <Trans>Queued</Trans>
+          <Trans>已排队</Trans>
         </span>
       );
     case "processing":
@@ -584,7 +584,7 @@ function ArchiveStatusCell({
         <span className="text-blue-500">
           {status.threadsTotal
             ? `${status.threadsTotal - status.threadIds.length} / ${status.threadsTotal}`
-            : t`Archiving...`}
+            : t`正在归档...`}
         </span>
       );
     case "completed":
@@ -593,18 +593,18 @@ function ArchiveStatusCell({
           {status.threadsTotal ? (
             <Plural
               value={status.threadsTotal}
-              one="Archived #"
-              other="Archived #"
+              one="已归档 # 封"
+              other="已归档 # 封"
             />
           ) : (
-            <Trans>Archived</Trans>
+            <Trans>已归档</Trans>
           )}
         </span>
       );
     case "failed":
       return (
         <span className="text-red-500">
-          <Trans>Failed</Trans>
+          <Trans>失败</Trans>
         </span>
       );
     default:

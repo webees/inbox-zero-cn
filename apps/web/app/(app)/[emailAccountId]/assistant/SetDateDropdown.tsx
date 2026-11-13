@@ -39,7 +39,7 @@ export function SetDateDropdown({
           {value ? (
             i18n.date(value, { dateStyle: "long" })
           ) : (
-            <span>{placeholder || <Trans>Set a date</Trans>}</span>
+            <span>{placeholder || <Trans>设置日期</Trans>}</span>
           )}
           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
         </Button>

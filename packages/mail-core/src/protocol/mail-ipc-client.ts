@@ -6,7 +6,7 @@ import { MAIL_IPC_PROTOCOL_VERSION } from "./mail-ipc";
 export function createMailIpcClient(
   invoke: (payload: unknown) => Promise<unknown>,
   options: {
-    /** Observations subscribe to snapshots the host pushes when data changes. */
+    /** 观察器订阅数据变化时宿主推送的快照。 */
     push: MailIpcPushTransport;
     requestId?: () => string;
     provider?: "google" | "microsoft";
@@ -31,7 +31,7 @@ export function createMailIpcClient(
       result?: unknown;
     };
     if (response?.status !== "ok") {
-      throw new Error(`Mail engine ${method} failed`);
+      throw new Error(`邮件引擎 ${method} 执行失败`);
     }
     return response.result as never;
   }

@@ -88,9 +88,7 @@ export async function aiGenerateMeetingBriefing({
   });
 
   if (Object.keys(searchTools).length === 0) {
-    logger.info(
-      "No search tools configured - will use existing email/meeting context only",
-    );
+    logger.info("未配置搜索工具，将仅使用现有邮件/会议上下文");
   }
 
   const availableSearchTools = ["perplexitySearch", "webSearch"].filter(
@@ -104,7 +102,7 @@ export async function aiGenerateMeetingBriefing({
 
   const generateText = createGenerateText({
     emailAccount,
-    label: "Meeting Briefing",
+    label: "会议简报",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "full" },
   });
@@ -122,7 +120,7 @@ export async function aiGenerateMeetingBriefing({
         ) || stepResult.steps.length > MAX_AGENT_STEPS,
       onStepEnd: async ({ toolCalls }) => {
         if (toolCalls.length > 0) {
-          logger.info("Tool calls", {
+          logger.info("工具调用", {
             tools: toolCalls.map((call) => call.toolName),
           });
         }
@@ -137,7 +135,7 @@ export async function aiGenerateMeetingBriefing({
           description: FINALIZE_BRIEFING_DESCRIPTION,
           inputSchema: briefingSchema,
           execute: async (briefing) => {
-            logger.info("Finalizing briefing", {
+            logger.info("正在完成会议简报", {
               guestCount: briefing.guests.length,
             });
             result = briefing;
@@ -151,9 +149,7 @@ export async function aiGenerateMeetingBriefing({
   }
 
   if (!result) {
-    logger.warn(
-      "Agent did not finalize briefing, generating fallback from guest list",
-    );
+    logger.warn("智能体未完成会议简报，正在根据参会人列表生成备用内容");
     return generateFallbackBriefing(briefingData.externalGuests);
   }
 
@@ -168,7 +164,7 @@ function generateFallbackBriefing(
     guests: guests.map((guest) => ({
       name: guest.name || guest.email.split("@")[0],
       email: guest.email,
-      bullets: ["Research incomplete - meeting guest"],
+      bullets: ["调研未完成，参会人"],
     })),
   };
 }
@@ -188,14 +184,14 @@ async function buildSearchTools({
   const tools: ToolSet = {};
   let mcpCleanup: (() => Promise<void>) | null = null;
 
-  // Perplexity search (if configured)
+  // Perplexity 搜索（如果已配置）
   const perplexityApiKey = env.PERPLEXITY_API_KEY;
   if (perplexityApiKey) {
     tools.perplexitySearch = tool({
-      description: "Search for information using Perplexity",
+      description: "使用 Perplexity 搜索信息",
       inputSchema: searchInputSchema,
       execute: async ({ query, email, name }) => {
-        logger.info("Perplexity search", { query, email, name });
+        logger.info("Perplexity 搜索", { query, email, name });
 
         const cached = await getCachedResearch(
           emailAccount.userId,
@@ -204,7 +200,7 @@ async function buildSearchTools({
           name,
         );
         if (cached) {
-          logger.info("Using cached Perplexity result", { email });
+          logger.info("使用缓存的 Perplexity 结果", { email });
           return cached;
         }
 
@@ -213,7 +209,7 @@ async function buildSearchTools({
 
           const perplexityGenerateText = createGenerateText({
             emailAccount,
-            label: "Perplexity Search",
+            label: "Perplexity 搜索",
             modelOptions: {
               modelName: model.modelId,
               model,
@@ -230,8 +226,7 @@ async function buildSearchTools({
           });
 
           const text = searchResult.text;
-          if (!text.trim())
-            throw new Error("Empty Perplexity research response");
+          if (!text.trim()) throw new Error("Perplexity 调研响应为空");
 
           setCachedResearch(
             emailAccount.userId,
@@ -240,19 +235,19 @@ async function buildSearchTools({
             name,
             text,
           ).catch((error) => {
-            logger.error("Failed to cache Perplexity result", { error });
+            logger.error("缓存 Perplexity 结果失败", { error });
           });
 
           return text;
         } catch (error) {
-          logger.error("Perplexity search failed", { error, query });
-          return "Search failed. Try another search tool.";
+          logger.error("Perplexity 搜索失败", { error, query });
+          return "搜索失败，请尝试其他搜索工具。";
         }
       },
     });
   }
 
-  // Web search (OpenAI, Google, or OpenRouter - if configured)
+  // 网络搜索（OpenAI、Google 或 OpenRouter，如果已配置）
   const resolvedWebSearchModelOptions = getModelForUseCase(
     emailAccount.user,
     LlmUseCase.MeetingWebSearch,
@@ -276,19 +271,19 @@ async function buildSearchTools({
     });
   }
 
-  // MCP tools (CRM, databases, etc.)
+  // MCP 工具（CRM、数据库等）
   try {
     const mcpResult = await createMcpToolsForAgent(emailAccount.id);
     mcpCleanup = mcpResult.cleanup; // Always assign cleanup to avoid connection leaks
     const mcpToolCount = Object.keys(mcpResult.tools).length;
     if (mcpToolCount > 0) {
       Object.assign(tools, mcpResult.tools);
-      logger.info("MCP tools added for meeting briefs", {
+      logger.info("已为会议简报添加 MCP 工具", {
         toolCount: mcpToolCount,
       });
     }
   } catch (error) {
-    logger.warn("Failed to load MCP tools for meeting briefs", { error });
+    logger.warn("加载会议简报的 MCP 工具失败", { error });
   }
 
   return {
@@ -313,10 +308,10 @@ function createWebSearchTool({
   const { providerName, tools: searchTools, providerOptions } = webSearchConfig;
 
   return tool({
-    description: "Search the web for information",
+    description: "在网上搜索信息",
     inputSchema: searchInputSchema,
     execute: async ({ query, email, name }) => {
-      logger.info(`Web search (${providerName})`, { query, email, name });
+      logger.info(`网络搜索 (${providerName})`, { query, email, name });
 
       const cached = await getCachedResearch(
         emailAccount.userId,
@@ -325,14 +320,14 @@ function createWebSearchTool({
         name,
       );
       if (cached) {
-        logger.info("Using cached web search result", { email });
+        logger.info("使用缓存的网络搜索结果", { email });
         return cached;
       }
 
       try {
         const webGenerateText = createGenerateText({
           emailAccount,
-          label: "Web Search",
+          label: "网络搜索",
           modelOptions,
           promptHardening: { trust: "untrusted", level: "full" },
         });
@@ -353,13 +348,13 @@ function createWebSearchTool({
           name,
           text,
         ).catch((error) => {
-          logger.error("Failed to cache web search result", { error });
+          logger.error("缓存网络搜索结果失败", { error });
         });
 
         return text;
       } catch (error) {
-        logger.error("Web search failed", { error, query });
-        return "Search failed. Try another search tool.";
+        logger.error("网络搜索失败", { error, query });
+        return "搜索失败，请尝试其他搜索工具";
       }
     },
   });
@@ -451,7 +446,7 @@ function formatGuestContext(guest: GuestContextForPrompt): string {
     return `<guest>
 ${guestHeader}
 
-<no_prior_context>No email or meeting history was retrieved for this guest.</no_prior_context>
+<no_prior_context>未获取到该参会人的邮件或会议历史。</no_prior_context>
 </guest>
 `;
   }

@@ -13,10 +13,10 @@ export function RuleNotFoundState() {
     <Empty className="min-h-56 border">
       <EmptyHeader>
         <EmptyTitle>
-          <Trans>Rule not found</Trans>
+          <Trans>未找到规则</Trans>
         </EmptyTitle>
         <EmptyDescription>
-          <Trans>This rule no longer exists. It may have been deleted.</Trans>
+          <Trans>此规则已不存在，可能已被删除。</Trans>
         </EmptyDescription>
       </EmptyHeader>
     </Empty>

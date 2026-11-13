@@ -89,7 +89,7 @@ it("fails honestly when the full conversation exceeds its message cap", async ()
   ]);
   await expect(
     getThread("thread", client, logger, { complete: true }),
-  ).rejects.toThrow("message limit");
+  ).rejects.toThrow("Conversation exceeds the offline snapshot message limit");
 });
 it("does not infer an empty attachment inventory from a missing expansion", async () => {
   const { client, api } = fixture([
@@ -136,7 +136,7 @@ it("rejects repeated attachment metadata continuation", async () => {
   ]);
   await expect(
     getThread("thread", client, logger, { complete: true }),
-  ).rejects.toThrow("repeated");
+  ).rejects.toThrow("Invalid or repeated conversation continuation");
 });
 
 it("cancels folder and category decoration with the explicit snapshot signal", async () => {

@@ -9,13 +9,13 @@ export interface CalendarTokens {
 
 export interface CalendarOAuthProvider {
   /**
-   * Exchange OAuth code for tokens and get user email
+   * 用 OAuth code 交换令牌并获取用户邮箱
    */
   exchangeCodeForTokens(code: string): Promise<CalendarTokens>;
   name: "google" | "microsoft";
 
   /**
-   * Sync calendars for this provider
+   * 同步该服务商的日历
    */
   syncCalendars(
     connectionId: string,

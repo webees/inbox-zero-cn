@@ -136,7 +136,7 @@ describe("attachment transfer scheduling", () => {
     const download = vi.fn();
     await expect(
       queueAttachmentDownload({ priority: "speculative", download }),
-    ).rejects.toThrow("coordination unavailable");
+    ).rejects.toThrow("协调不可用");
     expect(download).not.toHaveBeenCalled();
   });
 });

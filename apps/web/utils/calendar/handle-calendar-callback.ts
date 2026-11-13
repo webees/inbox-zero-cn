@@ -23,7 +23,7 @@ import {
 import { CALENDAR_STATE_COOKIE_NAME } from "./constants";
 
 /**
- * Unified handler for calendar OAuth callbacks
+ * 日历 OAuth 回调的统一处理器
  */
 export async function handleCalendarCallback(
   request: NextRequest,
@@ -33,7 +33,7 @@ export async function handleCalendarCallback(
   let redirectHeaders = new Headers();
 
   try {
-    // Step 1: Validate OAuth callback parameters
+    // 步骤 1：校验 OAuth 回调参数
     const {
       code,
       response,
@@ -42,10 +42,10 @@ export async function handleCalendarCallback(
     } = await validateOAuthCallback(request, logger);
     redirectHeaders = response.headers;
 
-    // Step 1.5: Check for duplicate OAuth code processing
+    // 步骤 1.5：检查重复的 OAuth code 处理
     const cachedResult = await getOAuthCodeResult(code);
     if (cachedResult) {
-      logger.info("OAuth code already processed, returning cached result");
+      logger.info("OAuth code 已处理过，返回缓存结果");
       const cachedRedirectUrl = new URL(finalRedirectUrl);
       for (const [key, value] of Object.entries(cachedResult.params)) {
         cachedRedirectUrl.searchParams.set(key, value);
@@ -60,7 +60,7 @@ export async function handleCalendarCallback(
 
     const acquiredLock = await acquireOAuthCodeLock(code);
     if (!acquiredLock) {
-      logger.info("OAuth code is being processed by another request");
+      logger.info("OAuth code 正由另一个请求处理中");
       const lockRedirectUrl = new URL(finalRedirectUrl);
       response.cookies.delete(CALENDAR_STATE_COOKIE_NAME);
       return redirectWithMessage(
@@ -72,7 +72,7 @@ export async function handleCalendarCallback(
 
     const { emailAccountId } = calendarState;
 
-    // Step 4: Verify user owns this email account
+    // 步骤 4：验证用户拥有此邮箱账号
     await verifyEmailAccountAccess(
       emailAccountId,
       logger,
@@ -80,11 +80,11 @@ export async function handleCalendarCallback(
       response.headers,
     );
 
-    // Step 5: Exchange code for tokens and get email
+    // 步骤 5：用 code 交换令牌并获取邮箱
     const { accessToken, refreshToken, expiresAt, email } =
       await provider.exchangeCodeForTokens(code);
 
-    // Step 6: Check if connection already exists
+    // 步骤 6：检查连接是否已存在
     const existingConnection = await checkExistingConnection(
       emailAccountId,
       provider.name,
@@ -110,7 +110,7 @@ export async function handleCalendarCallback(
       );
     }
 
-    // Step 7: Create calendar connection
+    // 步骤 7：创建日历连接
     const connection = await createCalendarConnection({
       provider: provider.name,
       email,
@@ -120,7 +120,7 @@ export async function handleCalendarCallback(
       expiresAt,
     });
 
-    // Step 8: Sync calendars
+    // 步骤 8：同步日历
     await provider.syncCalendars(
       connection.id,
       accessToken,
@@ -129,14 +129,14 @@ export async function handleCalendarCallback(
       expiresAt,
     );
 
-    logger.info("Calendar connected successfully", {
+    logger.info("日历连接成功", {
       emailAccountId,
       email,
       provider: provider.name,
       connectionId: connection.id,
     });
 
-    // Cache the successful result
+    // 缓存成功结果
     await setOAuthCodeResult(code, { message: "calendar_connected" });
 
     return redirectWithMessage(
@@ -145,13 +145,13 @@ export async function handleCalendarCallback(
       redirectHeaders,
     );
   } catch (error) {
-    // Clear the OAuth code lock on error
+    // 出错时清除 OAuth code 锁
     const searchParams = request.nextUrl.searchParams;
     const code = searchParams.get("code");
     if (code) {
       await clearOAuthCode(code);
     }
-    // Handle redirect errors
+    // 处理重定向错误
     if (error instanceof RedirectError) {
       if (error.redirectUrl.searchParams.get("error")) {
         return NextResponse.redirect(error.redirectUrl, {
@@ -166,10 +166,10 @@ export async function handleCalendarCallback(
       );
     }
 
-    // Handle all other errors
-    logger.error("Error in calendar callback", { error });
+    // 处理所有其他错误
+    logger.error("日历回调出错", { error });
 
-    // Try to build a redirect URL, fallback to /calendars
+    // 尝试构建重定向 URL，回退到 /calendars
     const errorRedirectUrl = new URL("/calendars", env.NEXT_PUBLIC_BASE_URL);
     return redirectWithError(
       errorRedirectUrl,

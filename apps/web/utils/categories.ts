@@ -1,50 +1,47 @@
 export const defaultCategory = {
-  // Primary categories - used in rules and bulk archive UI
+  // 主要类别 - 用于规则和批量归档 UI
   OTHER: {
-    name: "Other",
+    name: "其他",
     enabled: true,
-    description: "Senders that don't fit any other category",
+    description: "不符合任何其他类别的发件人",
   },
   NEWSLETTER: {
-    name: "Newsletter",
+    name: "订阅简报",
     enabled: true,
-    description:
-      "Recurring editorial content, digests, and informational updates sent on a regular schedule",
+    description: "定期发送的编辑内容、邮件摘要和信息更新",
   },
   MARKETING: {
-    name: "Marketing",
+    name: "营销推广",
     enabled: true,
-    description:
-      "Promotional content, product launches, and marketing campaigns",
+    description: "推广内容、产品发布和营销活动",
   },
   RECEIPT: {
-    name: "Receipt",
+    name: "收据",
     enabled: true,
-    description:
-      "Purchase confirmations, order receipts, and payment confirmations",
+    description: "购买确认、订单收据和付款确认",
   },
   NOTIFICATION: {
-    name: "Notification",
+    name: "通知",
     enabled: true,
-    description: "Automated alerts, system notifications, and status updates",
+    description: "自动提醒、系统通知和状态更新",
   },
-  // TODO: Secondary categories for future two-round categorization
-  // These would refine "Other" senders for analytics purposes.
-  // Implementation: After primary categorization, if result is "Other",
-  // make a second AI call with only secondary categories.
-  // See: aiCategorizeSendersTwoRound in ai-categorize-senders.ts (commented out)
+  // TODO: 未来两轮分类的次要类别
+  // 这些类别会为分析目的进一步细分 "Other" 发件人。
+  // 实现方式：主分类完成后，如果结果是 "Other"，
+  // 再用仅包含次要类别的第二次 AI 调用。
+  // 参见：ai-categorize-senders.ts 中的 aiCategorizeSendersTwoRound（已注释掉）
   //
-  // BANKING: { name: "Banking", enabled: false, description: "Financial institutions, banks, and payment services" },
-  // LEGAL: { name: "Legal", enabled: false, description: "Legal notices, contracts, and legal communications" },
-  // INVESTOR: { name: "Investor", enabled: false, description: "VCs, stock alerts, portfolio updates, cap table tools" },
-  // PERSONAL: { name: "Personal", enabled: false, description: "Personal communications from friends and family" },
-  // WORK: { name: "Work", enabled: false, description: "Professional contacts and work-related communications" },
-  // TRAVEL: { name: "Travel", enabled: false, description: "Airlines, hotels, booking services" },
-  // SUPPORT: { name: "Support", enabled: false, description: "Customer service and support" },
-  // EVENTS: { name: "Events", enabled: false, description: "Event invitations and reminders" },
-  // EDUCATIONAL: { name: "Educational", enabled: false, description: "Educational institutions and courses" },
-  // HEALTH: { name: "Health", enabled: false, description: "Healthcare providers and medical services" },
-  // GOVERNMENT: { name: "Government", enabled: false, description: "Government agencies and official communications" },
+  // BANKING: { name: "Banking", enabled: false, description: "金融机构、银行和支付服务" },
+  // LEGAL: { name: "Legal", enabled: false, description: "法律通知、合同和法律通信" },
+  // INVESTOR: { name: "Investor", enabled: false, description: "风投、股票提醒、投资组合更新、股权管理工具" },
+  // PERSONAL: { name: "Personal", enabled: false, description: "来自朋友和家人的私人通信" },
+  // WORK: { name: "Work", enabled: false, description: "职业联系人和工作相关的通信" },
+  // TRAVEL: { name: "Travel", enabled: false, description: "航空公司、酒店、预订服务" },
+  // SUPPORT: { name: "Support", enabled: false, description: "客户服务与支持" },
+  // EVENTS: { name: "Events", enabled: false, description: "活动邀请和提醒" },
+  // EDUCATIONAL: { name: "Educational", enabled: false, description: "教育机构和课程" },
+  // HEALTH: { name: "Health", enabled: false, description: "医疗机构和医疗服务" },
+  // GOVERNMENT: { name: "Government", enabled: false, description: "政府机构和官方通信" },
 } as const;
 
 export type SenderCategoryKey = keyof typeof defaultCategory;

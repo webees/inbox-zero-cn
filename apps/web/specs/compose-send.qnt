@@ -15,14 +15,8 @@
  *               knows about. Fast, and wrong (see README).
  *   "reconcile" Send queues at once. With no save in flight it sends through
  *               the known draft; with one in flight it sends its own content
- *               and the device removes the draft once the save lands and
- *               delivery is confirmed. Undo keeps the draft.
- *   "server"    As "reconcile", but the server removes the draft, so a tab
- *               that closes cannot leave it behind. Each draft save records
- *               the session's draft and then checks whether the session was
- *               sent; each delivered send marks the session sent and then
- *               removes the recorded draft. Whichever lands second sees the
- *               other's record.
+ *               and removes the draft once the save lands and delivery is
+ *               confirmed. Undo keeps the draft.
  *
  * Mailbox calls are modelled as a request that is applied by the provider at
  * some point and answered later, or never answered if the tab closes.
@@ -67,12 +61,6 @@ module composeSend {
   // Whether the device removed the session's draft because of this send.
   var draftRemovedForSend: bool
   var tabOpen: bool
-  // Server records ("server" mode): the session's draft, whether the session
-  // has been sent, and the delivered send's cleanup ("none" | "marked" |
-  // "done").
-  var sessionDraft: int
-  var sessionSent: bool
-  var serverCleanup: str
 
   // --- helpers -------------------------------------------------------------
 
@@ -134,35 +122,7 @@ module composeSend {
       unchangedExcept_drafts_save_nextDraftId,
     }
 
-  // In "server" mode the save's server handler records the session's draft
-  // and checks the sent flag before it answers.
-  val answeredPhase = if (MODE == "server") "answered" else "applied"
-
-  val canRecordSessionDraft = MODE == "server" and save.phase == "applied"
-  action RecordSessionDraft = all {
-    canRecordSessionDraft,
-    sessionDraft' = if (save.create) save.newId else save.target,
-    save' = save.setPhase("recorded"),
-    unchangedExcept_save_sessionDraft,
-  }
-
-  val canCheckSessionSent = MODE == "server" and save.phase == "recorded"
-  action CheckSessionSent =
-    if (sessionSent and drafts.keys().contains(sessionDraft)) all {
-      canCheckSessionSent,
-      drafts' = removeDraft(drafts, sessionDraft),
-      draftRemovedForSend' = true,
-      save' = save.setPhase("answered"),
-      unchangedExcept_drafts_draftRemovedForSend_save,
-    } else all {
-      canCheckSessionSent,
-      drafts' = drafts,
-      draftRemovedForSend' = draftRemovedForSend,
-      save' = save.setPhase("answered"),
-      unchangedExcept_drafts_draftRemovedForSend_save,
-    }
-
-  val canReceiveSave = save.phase == answeredPhase and tabOpen
+  val canReceiveSave = save.phase == "applied" and tabOpen
   action ReceiveSave = all {
     canReceiveSave,
     knownDraft' = if (save.create) save.newId else knownDraft,
@@ -172,7 +132,7 @@ module composeSend {
   }
 
   // With the tab gone nobody records the answer.
-  val canLoseSave = save.phase == answeredPhase and not(tabOpen)
+  val canLoseSave = save.phase == "applied" and not(tabOpen)
   action LoseSave = all {
     canLoseSave,
     save' = save.setPhase("idle"),
@@ -195,7 +155,7 @@ module composeSend {
       composer' = "waiting",
       autosavePaused' = true,
       unchangedExcept_composer_autosavePaused,
-    } else if (MODE.in(Set("reconcile", "server")) and saveInFlight) all {
+    } else if (MODE == "reconcile" and saveInFlight) all {
       canClickSend,
       composer' = "closed",
       autosavePaused' = true,
@@ -234,7 +194,6 @@ module composeSend {
   // landed and the provider confirmed delivery. A send that is still pending
   // keeps being watched until it ends.
   val canDiscard = and {
-    MODE == "reconcile",
     tabOpen,
     cleanupDraft,
     send.status == "delivered",
@@ -253,7 +212,6 @@ module composeSend {
 
   // Nothing left to remove: the save never created a draft.
   val canFinishCleanup = and {
-    MODE == "reconcile",
     tabOpen, cleanupDraft, send.status == "delivered",
     save.phase == "idle", knownDraft == NONE,
   }
@@ -293,37 +251,6 @@ module composeSend {
     discard' = discard.setPhase("idle"),
     unchangedExcept_drafts_discard,
   }
-
-  // After delivering a send that replaced a saving draft, the server marks
-  // the session sent and then removes whatever draft the session recorded.
-  val canMarkSessionSent = and {
-    MODE == "server",
-    cleanupDraft,
-    send.status == "delivered",
-    serverCleanup == "none",
-  }
-  action MarkSessionSent = all {
-    canMarkSessionSent,
-    sessionSent' = true,
-    serverCleanup' = "marked",
-    unchangedExcept_sessionSent_serverCleanup,
-  }
-
-  val canRemoveSessionDraft = serverCleanup == "marked"
-  action RemoveSessionDraft =
-    if (drafts.keys().contains(sessionDraft)) all {
-      canRemoveSessionDraft,
-      drafts' = removeDraft(drafts, sessionDraft),
-      draftRemovedForSend' = true,
-      serverCleanup' = "done",
-      unchangedExcept_drafts_draftRemovedForSend_serverCleanup,
-    } else all {
-      canRemoveSessionDraft,
-      drafts' = drafts,
-      draftRemovedForSend' = draftRemovedForSend,
-      serverCleanup' = "done",
-      unchangedExcept_drafts_draftRemovedForSend_serverCleanup,
-    }
 
   // The undo hold ends at a time unrelated to any save in flight.
   val canEndHold = send.status == "held"
@@ -412,14 +339,10 @@ module composeSend {
     discard' = { phase: "idle", target: NONE },
     tabOpen' = true,
     draftRemovedForSend' = false,
-    sessionDraft' = NONE,
-    sessionSent' = false,
-    serverCleanup' = "none",
   }
 
   action step = any {
-    Type, StartSave, ApplySave, RecordSessionDraft, CheckSessionSent,
-    ReceiveSave, LoseSave, MarkSessionSent, RemoveSessionDraft,
+    Type, StartSave, ApplySave, ReceiveSave, LoseSave,
     ClickSend, QueueAfterWait, Undo, Discard, FinishCleanup, ForgetSentDraft,
     CloseTab, ApplyDiscard, EndHold, SendMessage, RejectSend,
     UpdateDraftForSend, SendDraft, RejectSendDraft,
@@ -428,8 +351,7 @@ module composeSend {
   // Nothing but the user can move the system: every request has been
   // answered and every pending cleanup has run.
   val quiescent = not(or {
-    canStartSave, canApplySave, canRecordSessionDraft, canCheckSessionSent,
-    canReceiveSave, canLoseSave, canMarkSessionSent, canRemoveSessionDraft,
+    canStartSave, canApplySave, canReceiveSave, canLoseSave,
     canQueueAfterWait, canDiscard, canFinishCleanup, canForgetSentDraft,
     canApplyDiscard, canEndHold, canSendMessage, canUpdateDraftForSend,
     canSendDraft,
@@ -489,213 +411,95 @@ module composeSend {
   action keep_discard = discard' = discard
   action keep_tabOpen = tabOpen' = tabOpen
   action keep_draftRemovedForSend = draftRemovedForSend' = draftRemovedForSend
-  action keep_sessionDraft = sessionDraft' = sessionDraft
-  action keep_sessionSent = sessionSent' = sessionSent
-  action keep_serverCleanup = serverCleanup' = serverCleanup
 
   action unchangedExcept_typed = all {
     keep_saved, keep_composer, keep_autosavePaused, keep_knownDraft, keep_save,
     keep_drafts, keep_nextDraftId, keep_delivered, keep_send, keep_cleanupDraft,
     keep_discard, keep_tabOpen,
     keep_draftRemovedForSend,
-    keep_sessionDraft,
-    keep_sessionSent,
-    keep_serverCleanup,
   }
   action unchangedExcept_save = all {
     keep_typed, keep_saved, keep_composer, keep_autosavePaused, keep_knownDraft,
     keep_drafts, keep_nextDraftId, keep_delivered, keep_send, keep_cleanupDraft,
     keep_discard, keep_tabOpen,
     keep_draftRemovedForSend,
-    keep_sessionDraft,
-    keep_sessionSent,
-    keep_serverCleanup,
   }
   action unchangedExcept_drafts_save_nextDraftId = all {
     keep_typed, keep_saved, keep_composer, keep_autosavePaused, keep_knownDraft,
     keep_delivered, keep_send, keep_cleanupDraft, keep_discard, keep_tabOpen,
     keep_draftRemovedForSend,
-    keep_sessionDraft,
-    keep_sessionSent,
-    keep_serverCleanup,
   }
   action unchangedExcept_knownDraft_saved_save = all {
     keep_typed, keep_composer, keep_autosavePaused, keep_drafts, keep_nextDraftId,
     keep_delivered, keep_send, keep_cleanupDraft, keep_discard, keep_tabOpen,
     keep_draftRemovedForSend,
-    keep_sessionDraft,
-    keep_sessionSent,
-    keep_serverCleanup,
   }
   action unchangedExcept_composer_autosavePaused = all {
     keep_typed, keep_saved, keep_knownDraft, keep_save, keep_drafts,
     keep_nextDraftId, keep_delivered, keep_send, keep_cleanupDraft, keep_discard,
     keep_tabOpen,
     keep_draftRemovedForSend,
-    keep_sessionDraft,
-    keep_sessionSent,
-    keep_serverCleanup,
   }
   action unchangedExcept_composer_autosavePaused_send_cleanupDraft = all {
     keep_typed, keep_saved, keep_knownDraft, keep_save, keep_drafts,
     keep_nextDraftId, keep_delivered, keep_discard, keep_tabOpen,
     keep_draftRemovedForSend,
-    keep_sessionDraft,
-    keep_sessionSent,
-    keep_serverCleanup,
   }
   action unchangedExcept_composer_send_cleanupDraft = all {
     keep_typed, keep_saved, keep_autosavePaused, keep_knownDraft, keep_save,
     keep_drafts, keep_nextDraftId, keep_delivered, keep_discard, keep_tabOpen,
     keep_draftRemovedForSend,
-    keep_sessionDraft,
-    keep_sessionSent,
-    keep_serverCleanup,
   }
   action unchangedExcept_discard_knownDraft_cleanupDraft = all {
     keep_typed, keep_saved, keep_composer, keep_autosavePaused, keep_save,
     keep_drafts, keep_nextDraftId, keep_delivered, keep_send, keep_tabOpen,
-    keep_sessionDraft,
-    keep_sessionSent,
-    keep_serverCleanup,
   }
   action unchangedExcept_cleanupDraft = all {
     keep_typed, keep_saved, keep_composer, keep_autosavePaused, keep_knownDraft,
     keep_save, keep_drafts, keep_nextDraftId, keep_delivered, keep_send,
     keep_discard, keep_tabOpen,
     keep_draftRemovedForSend,
-    keep_sessionDraft,
-    keep_sessionSent,
-    keep_serverCleanup,
   }
   action unchangedExcept_knownDraft = all {
     keep_typed, keep_saved, keep_composer, keep_autosavePaused, keep_save,
     keep_drafts, keep_nextDraftId, keep_delivered, keep_send, keep_cleanupDraft,
     keep_discard, keep_tabOpen,
     keep_draftRemovedForSend,
-    keep_sessionDraft,
-    keep_sessionSent,
-    keep_serverCleanup,
   }
   action unchangedExcept_tabOpen_composer = all {
     keep_typed, keep_saved, keep_autosavePaused, keep_knownDraft, keep_save,
     keep_drafts, keep_nextDraftId, keep_delivered, keep_send, keep_cleanupDraft,
     keep_discard,
     keep_draftRemovedForSend,
-    keep_sessionDraft,
-    keep_sessionSent,
-    keep_serverCleanup,
   }
   action unchangedExcept_drafts_discard = all {
     keep_typed, keep_saved, keep_composer, keep_autosavePaused, keep_knownDraft,
     keep_save, keep_nextDraftId, keep_delivered, keep_send, keep_cleanupDraft,
     keep_tabOpen,
     keep_draftRemovedForSend,
-    keep_sessionDraft,
-    keep_sessionSent,
-    keep_serverCleanup,
   }
   action unchangedExcept_send = all {
     keep_typed, keep_saved, keep_composer, keep_autosavePaused, keep_knownDraft,
     keep_save, keep_drafts, keep_nextDraftId, keep_delivered, keep_cleanupDraft,
     keep_discard, keep_tabOpen,
     keep_draftRemovedForSend,
-    keep_sessionDraft,
-    keep_sessionSent,
-    keep_serverCleanup,
   }
   action unchangedExcept_delivered_send = all {
     keep_typed, keep_saved, keep_composer, keep_autosavePaused, keep_knownDraft,
     keep_save, keep_drafts, keep_nextDraftId, keep_cleanupDraft, keep_discard,
     keep_tabOpen,
     keep_draftRemovedForSend,
-    keep_sessionDraft,
-    keep_sessionSent,
-    keep_serverCleanup,
   }
   action unchangedExcept_drafts_send = all {
     keep_typed, keep_saved, keep_composer, keep_autosavePaused, keep_knownDraft,
     keep_save, keep_nextDraftId, keep_delivered, keep_cleanupDraft, keep_discard,
     keep_tabOpen,
     keep_draftRemovedForSend,
-    keep_sessionDraft,
-    keep_sessionSent,
-    keep_serverCleanup,
   }
   action unchangedExcept_delivered_drafts_send = all {
     keep_typed, keep_saved, keep_composer, keep_autosavePaused, keep_knownDraft,
     keep_save, keep_nextDraftId, keep_cleanupDraft, keep_discard, keep_tabOpen,
     keep_draftRemovedForSend,
-    keep_sessionDraft,
-    keep_sessionSent,
-    keep_serverCleanup,
-  }
-
-  action unchangedExcept_save_sessionDraft = all {
-    keep_typed,
-    keep_saved,
-    keep_composer,
-    keep_autosavePaused,
-    keep_knownDraft,
-    keep_drafts,
-    keep_nextDraftId,
-    keep_delivered,
-    keep_send,
-    keep_cleanupDraft,
-    keep_discard,
-    keep_tabOpen,
-    keep_draftRemovedForSend,
-    keep_sessionSent,
-    keep_serverCleanup,
-  }
-  action unchangedExcept_drafts_draftRemovedForSend_save = all {
-    keep_typed,
-    keep_saved,
-    keep_composer,
-    keep_autosavePaused,
-    keep_knownDraft,
-    keep_nextDraftId,
-    keep_delivered,
-    keep_send,
-    keep_cleanupDraft,
-    keep_discard,
-    keep_tabOpen,
-    keep_sessionDraft,
-    keep_sessionSent,
-    keep_serverCleanup,
-  }
-  action unchangedExcept_sessionSent_serverCleanup = all {
-    keep_typed,
-    keep_saved,
-    keep_composer,
-    keep_autosavePaused,
-    keep_knownDraft,
-    keep_save,
-    keep_drafts,
-    keep_nextDraftId,
-    keep_delivered,
-    keep_send,
-    keep_cleanupDraft,
-    keep_discard,
-    keep_tabOpen,
-    keep_draftRemovedForSend,
-    keep_sessionDraft,
-  }
-  action unchangedExcept_drafts_draftRemovedForSend_serverCleanup = all {
-    keep_typed,
-    keep_saved,
-    keep_composer,
-    keep_autosavePaused,
-    keep_knownDraft,
-    keep_save,
-    keep_nextDraftId,
-    keep_delivered,
-    keep_send,
-    keep_cleanupDraft,
-    keep_discard,
-    keep_tabOpen,
-    keep_sessionDraft,
-    keep_sessionSent,
   }
 }
 
@@ -713,12 +517,4 @@ module reconcileSend {
 
 module reconcileSendTabCloses {
   import composeSend(MODE = "reconcile", TAB_CAN_CLOSE = true).*
-}
-
-module serverSend {
-  import composeSend(MODE = "server", TAB_CAN_CLOSE = false).*
-}
-
-module serverSendTabCloses {
-  import composeSend(MODE = "server", TAB_CAN_CLOSE = true).*
 }

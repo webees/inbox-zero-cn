@@ -80,9 +80,8 @@ export async function saveComposeDraft({
 }
 
 /**
- * After a send that replaced its compose session's draft is delivered,
- * marks the session sent and removes every draft it saved. A save that lands
- * later sees the mark and removes its own draft. Safe to repeat.
+ * 替换撰写会话草稿的发送操作送达后，将会话标记为已发送，并移除其保存的所有
+ * 草稿。之后落地的保存操作会看到该标记并移除自己的草稿。可安全重复执行。
  */
 export async function discardDraftReplacedBySend({
   emailAccountId,
@@ -97,8 +96,7 @@ export async function discardDraftReplacedBySend({
   const kept: string[] = [];
   for (const draftId of draftIds)
     if (!(await discardWithRetry({ draftId, provider }))) kept.push(draftId);
-  if (kept.length)
-    throw new Error(`Could not remove ${kept.length} replaced draft(s)`);
+  if (kept.length) throw new Error(`无法移除 ${kept.length} 个被替换的草稿`);
 }
 
 export async function discardComposeDraft({
@@ -116,12 +114,10 @@ export async function discardComposeDraft({
     (await provider.deleteDraft(reference.id, reference.version))
   )
     return;
-  // Something else, such as the mail engine's own discard, may have deleted
-  // it meanwhile; only a draft that is still there has really changed.
+  // 其他操作（例如邮件引擎自身的丢弃）可能在此期间已将其删除；只有仍然存在的
+  // 草稿才确实发生了变化。
   if (await provider.getDraft(draftId))
-    throw new SafeError(
-      "The mailbox draft changed. Reopen it before discarding.",
-    );
+    throw new SafeError("邮箱草稿已发生变化。请重新打开后再丢弃。");
 }
 
 export async function sendComposeDraft({

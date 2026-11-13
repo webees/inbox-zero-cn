@@ -13,7 +13,7 @@ declare global {
 
 const ipc = window.inboxZeroDesktop;
 if (!ipc?.mailEngine) {
-  throw new Error("Desktop mail engine IPC is unavailable");
+  throw new Error("桌面邮件引擎 IPC 不可用");
 }
 
 const client = createMailIpcClient(ipc.mailEngine, {
@@ -27,8 +27,7 @@ const client = createMailIpcClient(ipc.mailEngine, {
 const root = document.getElementById("root");
 if (root) {
   startLocalMailApp(root, client).catch((error: unknown) => {
-    root.textContent =
-      error instanceof Error ? error.message : "Mail failed to start";
+    root.textContent = error instanceof Error ? error.message : "邮件启动失败";
   });
 }
 

@@ -18,10 +18,10 @@ import { hasOrganizationAdminRole } from "@/utils/organizations/roles";
 import { AccessDenied } from "@/components/AccessDenied";
 
 const selectOptions = [
-  { label: "Last week", value: "7" },
-  { label: "Last month", value: "30" },
-  { label: "Last 3 months", value: "90" },
-  { label: "All time", value: "0" },
+  { label: "上周", value: "7" },
+  { label: "上个月", value: "30" },
+  { label: "过去 3 个月", value: "90" },
+  { label: "全部时间", value: "0" },
 ];
 const defaultSelected = selectOptions[1];
 

@@ -15,12 +15,12 @@ type DraftAutosaveSession = {
 
 const sessions = new Map<string, DraftAutosaveSession>();
 const MAX_CLOSED_SAVE_FAILURES = 5;
-// Saves retry every few seconds, so a one-off failure (a dropped request when
-// the tab wakes up) fixes itself before the user needs to know about it.
+// 保存会每隔几秒重试，因此偶发失败（例如标签页唤醒时请求被丢弃）会在用户
+// 需要知晓之前自行恢复。
 const FAILURES_BEFORE_ERROR = 3;
 
-// Thrown by `save` when retrying can never succeed, such as when the draft no
-// longer exists in the mailbox. Autosave stops and shows the message at once.
+// 当重试永远无法成功时由 `save` 抛出，例如草稿已不在邮箱中。自动保存会
+// 立即停止并显示该消息。
 export class DraftAutosaveHaltedError extends Error {
   constructor(message: string) {
     super(message);
@@ -39,7 +39,7 @@ export function useProviderDraftAutosave<T>({
   sessionKey?: string;
   getContent: () => T | undefined;
   save: (content: T) => Promise<void>;
-  /** Spaces out timed saves; closing, hiding, or going online still save. */
+  /** 拉长定时保存的间隔；关闭、隐藏页面或恢复联网时仍会保存。 */
   minIntervalMs?: number;
 }) {
   const [error, setError] = useState("");
@@ -57,7 +57,7 @@ export function useProviderDraftAutosave<T>({
   const consecutiveFailures = useRef(0);
   const cleanup = useRef<() => void>(() => {});
 
-  // Edits made before saving is enabled are saved once it is.
+  // 在启用保存之前所做的编辑，会在启用后保存。
   const capture = useCallback(() => {
     if (!paused.current) dirty.current = true;
   }, []);

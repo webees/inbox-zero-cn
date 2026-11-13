@@ -15,7 +15,7 @@ it("shares a byte budget across pages and cancels an oversized response", async 
     },
   });
   await expect(readCompleteThreadJson(source, budget)).rejects.toThrow(
-    "byte limit",
+    "字节上限",
   );
   expect(canceled).toBe(true);
 });
@@ -25,7 +25,7 @@ it("cannot claim a completed snapshot after its page budget is exhausted", async
       remainingBytes: 100,
       remainingPages: 0,
     }),
-  ).rejects.toThrow("page limit");
+  ).rejects.toThrow("页数上限");
 });
 it("cancels a stalled provider response when the caller aborts", async () => {
   let canceled = false;

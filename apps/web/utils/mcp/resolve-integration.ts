@@ -37,7 +37,7 @@ export async function resolveMcpIntegration({
     return { ...builtIn, isCustom: false };
   }
 
-  // A custom server is only resolvable by the email account that registered it
+  // 自定义服务器只能由注册它的邮箱账号解析
   const custom = await prisma.mcpIntegration.findFirst({
     where: { name, emailAccountId },
     select: {

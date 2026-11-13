@@ -28,7 +28,7 @@ export interface RowProps {
   hasUnsubscribeAccess: boolean;
   item: Newsletter;
   labels: EmailLabel[];
-  // biome-ignore lint/suspicious/noExplicitAny: existing loose external shape
+  // biome-ignore lint/suspicious/noExplicitAny: 现有的宽松外部结构
   mutate: () => Promise<any>;
   onOpenNewsletter: (row: Newsletter) => void;
   onSelectRow: () => void;

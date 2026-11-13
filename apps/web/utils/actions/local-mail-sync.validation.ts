@@ -59,7 +59,7 @@ export const localMailSyncBody = z
       !("after" in request) ||
       request.before === undefined ||
       request.before > request.after,
-    { message: "Mail sync bounds must define a nonempty range" },
+    { message: "邮件同步范围必须定义非空区间" },
   );
 
 export type LocalMailSyncRequest = z.infer<typeof localMailSyncBody>;

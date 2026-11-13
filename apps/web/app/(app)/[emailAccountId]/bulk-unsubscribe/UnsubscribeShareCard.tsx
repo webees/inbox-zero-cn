@@ -14,23 +14,22 @@ export const UnsubscribeShareCard = forwardRef<
   }
 >(function UnsubscribeShareCard({ senderCount, yearlyEmails, className }, ref) {
   const { i18n } = useLingui();
-  // Lead with the future emails avoided (the real win); fall back to the
-  // sender count when we can't project a yearly figure.
+  // 优先展示未来省下的邮件（真正的收益）；无法预测年度数据时回退到发件人数量。
   const hero = yearlyEmails
     ? {
         number: yearlyEmails,
         label: (
           <Plural
             value={yearlyEmails}
-            one="fewer email a year"
-            other="fewer emails a year"
+            one="每年少收一封邮件"
+            other="每年少收 # 封邮件"
           />
         ),
         caption: (
           <Plural
             value={senderCount}
-            one="after unsubscribing from # sender"
-            other="after unsubscribing from # senders"
+            one="退订了 # 个发件人后"
+            other="退订了 # 个发件人后"
           />
         ),
       }
@@ -39,8 +38,8 @@ export const UnsubscribeShareCard = forwardRef<
         label: (
           <Plural
             value={senderCount}
-            one="sender unsubscribed"
-            other="senders unsubscribed"
+            one="个发件人已退订"
+            other="个发件人已退订"
           />
         ),
         caption: null,
@@ -54,7 +53,7 @@ export const UnsubscribeShareCard = forwardRef<
         className,
       )}
     >
-      {/* Decorative glow + sparkles to make the card feel celebratory */}
+      {/* 装饰性光晕与闪光，让卡片更有庆祝氛围 */}
       <div className="pointer-events-none absolute -right-12 -top-16 size-44 rounded-full bg-sky-300/25 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-20 -left-12 size-52 rounded-full bg-indigo-400/25 blur-3xl" />
       <SparklesIcon className="pointer-events-none absolute right-7 top-7 size-6 text-white/50" />
@@ -79,7 +78,7 @@ export const UnsubscribeShareCard = forwardRef<
       )}
 
       <div className="relative mt-7 text-sm font-medium text-white/70">
-        <Trans>Cleaned up with {BRAND_NAME}</Trans>
+        <Trans>使用 {BRAND_NAME} 清理</Trans>
       </div>
     </div>
   );

@@ -39,7 +39,7 @@ export function SearchForm({
       <Input
         type="text"
         name="search"
-        placeholder="Search emails..."
+        placeholder="搜索邮件..."
         registerProps={register("q")}
         error={errors.q}
         className="flex-1"

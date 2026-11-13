@@ -64,7 +64,7 @@ export function EndTrialButton({
     if (result?.data?.status === "active") {
       toast.success(t`Your paid plan is active.`);
     } else {
-      toast.message(t`Your trial has ended.`);
+      toast.message(t`你的试用已结束。`);
     }
 
     await Promise.all([
@@ -93,13 +93,13 @@ export function EndTrialButton({
           className={className}
           Icon={showIcon ? CreditCardIcon : undefined}
         >
-          <Trans>Start paid plan now</Trans>
+          <Trans>立即开始付费套餐</Trans>
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            <Trans>End your free trial and pay now?</Trans>
+            <Trans>结束免费试用并立即付款？</Trans>
           </AlertDialogTitle>
           <LoadingContent loading={isLoading} error={error}>
             {preview && (
@@ -108,37 +108,36 @@ export function EndTrialButton({
                   <p>
                     {cadence ? (
                       <Trans>
-                        We will charge your card{" "}
+                        我们将立即从你的银行卡扣款{" "}
                         <span className="font-semibold text-foreground">
                           {amount}
                         </span>{" "}
-                        immediately for the {planName} plan, billed {cadence}.
+                        ，用于 {planName} 套餐，按{cadence}计费。
                       </Trans>
                     ) : (
                       <Trans>
-                        We will charge your card{" "}
+                        我们将立即从你的银行卡扣款{" "}
                         <span className="font-semibold text-foreground">
                           {amount}
                         </span>{" "}
-                        immediately for the {planName} plan.
+                        ，用于 {planName} 套餐。
                       </Trans>
                     )}
                   </p>
                   {trialEndDate && (
                     <p>
                       <Trans>
-                        You do not need to do this to keep using Inbox Zero.
-                        Your trial already includes every paid feature and runs
-                        free until {trialEndDate}, when the same charge happens
-                        automatically.
+                        你无需这样做也能继续使用 Inbox
+                        Zero。你的试用已包含所有付费功能，并免费持续到{" "}
+                        {trialEndDate}，届时将自动进行相同的扣款。
                       </Trans>
                     </p>
                   )}
                   <p>
                     <Trans>
-                      Want a different plan or to pay monthly?{" "}
+                      想选择其他套餐或按月付款？
                       <Link href="/premium" className="underline">
-                        Change your plan first
+                        先更改你的套餐
                       </Link>
                       .
                     </Trans>
@@ -150,14 +149,18 @@ export function EndTrialButton({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>
-            <Trans>Keep my free trial</Trans>
+            <Trans>保留免费试用</Trans>
           </AlertDialogCancel>
           <Button
             loading={endingTrial}
             disabled={!preview || isValidating}
             onClick={endTrial}
           >
-            {amount ? <Trans>Pay {amount} now</Trans> : <Trans>Pay now</Trans>}
+            {amount ? (
+              <Trans>立即支付 {amount}</Trans>
+            ) : (
+              <Trans>立即支付</Trans>
+            )}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -169,8 +172,8 @@ const billingCadence: Record<
   NonNullable<GetTrialPreviewResponse["interval"]>,
   MessageDescriptor
 > = {
-  day: msg`daily`,
-  week: msg`weekly`,
-  month: msg`monthly`,
-  year: msg`yearly`,
+  day: msg`每日`,
+  week: msg`每周`,
+  month: msg`每月`,
+  year: msg`每年`,
 };

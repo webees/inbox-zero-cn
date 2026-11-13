@@ -122,7 +122,7 @@ describe("Recall webhook route", () => {
     const data = mockPrisma.meetingRecording.updateMany.mock.calls[0]?.[0]
       ?.data as { status: string; failureReason: string };
     expect(data.status).toBe(MeetingRecordingStatus.FAILED);
-    expect(data.failureReason).toMatch(/declined/i);
+    expect(data.failureReason).toMatch(/拒绝/);
   });
 
   it("keeps recoverable media live when a fatal event follows recording", async () => {

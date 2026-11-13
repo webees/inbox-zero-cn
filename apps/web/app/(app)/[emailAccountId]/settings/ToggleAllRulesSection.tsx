@@ -41,7 +41,7 @@ export function ToggleAllRulesSection({
     toggleAllRulesAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: t`All rules disabled` });
+        toastSuccess({ description: t`所有规则已禁用` });
         mutate();
       },
       onError: (error) => {
@@ -58,37 +58,37 @@ export function ToggleAllRulesSection({
       <Item size="sm">
         <ItemContent>
           <ItemTitle>
-            <Trans>Disable All Rules</Trans>
+            <Trans>禁用所有规则</Trans>
           </ItemTitle>
         </ItemContent>
         <ItemActions>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button size="sm" variant="outline" disabled={isExecuting}>
-                <Trans>Disable All</Trans>
+                <Trans>全部禁用</Trans>
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>
-                  <Trans>Disable all rules?</Trans>
+                  <Trans>禁用所有规则？</Trans>
                 </AlertDialogTitle>
                 <AlertDialogDescription>
                   <Trans>
-                    This will disable all AI rules for this account. You can
-                    re-enable individual rules from the Rules page.
+                    这将禁用此账号的所有 AI
+                    规则。你可以在规则页面重新启用单条规则。
                   </Trans>
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>
-                  <Trans>Cancel</Trans>
+                  <Trans>取消</Trans>
                 </AlertDialogCancel>
                 <AlertDialogAction
                   type="button"
                   onClick={() => execute({ enabled: false })}
                 >
-                  <Trans>Disable All</Trans>
+                  <Trans>全部禁用</Trans>
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

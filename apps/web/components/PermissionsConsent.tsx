@@ -43,28 +43,28 @@ export function PermissionsConsent() {
   return (
     <div className="flex flex-col items-center justify-center">
       <PageHeading className="text-center">
-        <Trans>We are missing permissions 😔</Trans>
+        <Trans>缺少权限 😔</Trans>
       </PageHeading>
 
       <TypographyP className="mx-auto mt-4 max-w-prose text-center">
         {isMicrosoft
-          ? t`Your Microsoft account is connected, but ${BRAND_NAME} is missing one or more required Microsoft 365 permissions.`
-          : t`You must sign in and give access to all permissions for ${BRAND_NAME} to work.`}
+          ? t`你的 Microsoft 账号已连接，但 ${BRAND_NAME} 缺少一项或多项所需的 Microsoft 365 权限。`
+          : t`你必须登录并授予所有权限，${BRAND_NAME} 才能正常运行。`}
       </TypographyP>
 
       {isMicrosoft && (
         <TypographyP className="mx-auto mt-3 max-w-prose text-center text-muted-foreground">
           <Trans>
-            If your organization restricts user consent, ask your Microsoft 365
-            admin to approve {BRAND_NAME} and then reconnect your account.
+            如果你的组织限制用户授权，请让 Microsoft 365 管理员批准 {BRAND_NAME}
+            ， 然后重新连接你的账号。
           </Trans>
         </TypographyP>
       )}
       {provider === "google" && (
         <TypographyP className="mx-auto mt-3 max-w-prose text-center text-muted-foreground">
           <Trans>
-            Reconnect your account and tick every checkbox on Google&apos;s
-            permissions screen, including Gmail access.
+            重新连接你的账号，并在 Google 权限页面上勾选所有复选框，包括 Gmail
+            访问权限。
           </Trans>
         </TypographyP>
       )}
@@ -75,16 +75,16 @@ export function PermissionsConsent() {
         loading={isReconnecting}
         disabled={isReconnecting || accountLoading || !provider}
       >
-        <Trans>Reconnect account</Trans>
+        <Trans>重新连接账号</Trans>
       </Button>
 
       <p className="mt-8 text-center text-muted-foreground">
         <Trans>
-          Having trouble?{" "}
+          遇到问题？{" "}
           <Link href="/logout" className="underline hover:text-primary">
-            Sign out
+            退出登录
           </Link>{" "}
-          and sign back in again.
+          然后重新登录。
         </Trans>
       </p>
 

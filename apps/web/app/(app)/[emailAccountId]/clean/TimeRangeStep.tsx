@@ -26,7 +26,7 @@ export function TimeRangeStep() {
   return (
     <div className="text-center">
       <TypographyH3>
-        <Trans>Which emails would you like to process?</Trans>
+        <Trans>你想处理哪些邮件？</Trans>
       </TypographyH3>
 
       <ButtonListSurvey
@@ -42,12 +42,12 @@ export function TimeRangeStep() {
 }
 
 const timeRangeOptions = [
-  { value: "0", label: msg`All emails` },
-  { value: "1", label: msg`Older than 1 day` },
-  { value: "3", label: msg`Older than 3 days` },
-  { value: "7", label: msg`Older than 1 week`, recommended: true },
-  { value: "14", label: msg`Older than 2 weeks` },
-  { value: "30", label: msg`Older than 1 month` },
-  { value: "90", label: msg`Older than 3 months` },
-  { value: "365", label: msg`Older than 1 year` },
+  { value: "0", label: msg`所有邮件` },
+  { value: "1", label: msg`早于 1 天` },
+  { value: "3", label: msg`早于 3 天` },
+  { value: "7", label: msg`早于 1 周`, recommended: true },
+  { value: "14", label: msg`早于 2 周` },
+  { value: "30", label: msg`早于 1 个月` },
+  { value: "90", label: msg`早于 3 个月` },
+  { value: "365", label: msg`早于 1 年` },
 ];

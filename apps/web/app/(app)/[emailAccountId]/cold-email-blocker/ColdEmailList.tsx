@@ -49,10 +49,10 @@ export function ColdEmailList() {
     markNotColdEmailAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: t`Marked not cold email!` });
+        toastSuccess({ description: t`已标记为非冷邮件！` });
       },
       onError: () => {
-        toastError({ description: t`Error marking not cold email!` });
+        toastError({ description: t`标记为非冷邮件时出错！` });
       },
     },
   );
@@ -79,7 +79,7 @@ export function ColdEmailList() {
                   onClick={markNotColdEmailSelected}
                   loading={isExecuting}
                 >
-                  <Trans>Mark Not Cold Email</Trans>
+                  <Trans>标记为非冷邮件</Trans>
                 </Button>
               </div>
             </div>
@@ -91,26 +91,24 @@ export function ColdEmailList() {
                 <TableHead className="text-center">
                   <Checkbox
                     label={
-                      isAllSelected
-                        ? t`Deselect all cold emails`
-                        : t`Select all cold emails`
+                      isAllSelected ? t`取消选择所有冷邮件` : t`选择所有冷邮件`
                     }
                     checked={isAllSelected}
                     onChange={onToggleSelectAll}
                   />
                 </TableHead>
                 <TableHead>
-                  <Trans>Email</Trans>
+                  <Trans>邮件</Trans>
                 </TableHead>
                 <TableHead>
-                  <Trans>AI Reason</Trans>
+                  <Trans>AI 原因</Trans>
                 </TableHead>
                 <TableHead>
-                  <Trans>Date</Trans>
+                  <Trans>日期</Trans>
                 </TableHead>
                 <TableHead>
                   <span className="sr-only">
-                    <Trans>Actions</Trans>
+                    <Trans>操作</Trans>
                   </span>
                 </TableHead>
               </TableRow>
@@ -164,7 +162,7 @@ function Row({
     <TableRow key={row.id}>
       <TableCell className="text-center">
         <Checkbox
-          label={t`Select ${fromEmail}`}
+          label={t`选择 ${fromEmail}`}
           checked={selected.get(row.id) || false}
           onChange={() => onToggleSelect(row.id)}
         />
@@ -197,7 +195,7 @@ function Row({
             }}
             loading={isExecuting}
           >
-            <Trans>Not cold email</Trans>
+            <Trans>非冷邮件</Trans>
           </Button>
         </div>
       </TableCell>
@@ -214,11 +212,11 @@ function NoColdEmails() {
     toggleRuleAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: t`Cold email blocker enabled!` });
+        toastSuccess({ description: t`冷邮件拦截已启用！` });
         mutateRules();
       },
       onError: () => {
-        toastError({ description: t`Error enabling cold email blocker` });
+        toastError({ description: t`启用冷邮件拦截时出错` });
       },
     },
   );
@@ -227,11 +225,11 @@ function NoColdEmails() {
     return (
       <div className="mb-10">
         <EnableFeatureCard
-          title={t`Cold Email Blocker`}
-          description={t`Our AI identifies cold outreach from senders you've never communicated with before. You can customize the prompt after enabling.`}
+          title={t`冷邮件拦截`}
+          description={t`我们的 AI 会识别你从未联系过的发件人发来的冷邮件。启用后可以自定义提示词。`}
           imageSrc="/images/illustrations/calling-help.svg"
-          imageAlt={t`Cold email blocker`}
-          buttonText={t`Enable`}
+          imageAlt={t`冷邮件拦截`}
+          buttonText={t`启用`}
           onEnable={async () => {
             await enableColdEmailBlocker({
               systemType: SystemType.COLD_EMAIL,
@@ -247,8 +245,8 @@ function NoColdEmails() {
   return (
     <div className="p-2">
       <AlertBasic
-        title={t`No cold emails!`}
-        description={t`We haven't marked any of your emails as cold emails yet!`}
+        title={t`没有冷邮件！`}
+        description={t`我们还没有将你的任何邮件标记为冷邮件！`}
       />
     </div>
   );

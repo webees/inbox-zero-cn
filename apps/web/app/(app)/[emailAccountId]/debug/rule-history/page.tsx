@@ -23,19 +23,17 @@ export default function RuleHistorySelectPage() {
   const { data, isLoading, error } = useRules();
 
   if (isLoading) {
-    return (
-      <LoadingContent loading={isLoading}>Loading rules...</LoadingContent>
-    );
+    return <LoadingContent loading={isLoading}>正在加载规则…</LoadingContent>;
   }
 
   if (error) {
     return (
       <div className="container mx-auto p-4">
-        <PageHeading>Rule History</PageHeading>
+        <PageHeading>规则历史</PageHeading>
         <Alert variant="destructive" className="mt-4">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            Error loading rules: {error.error || "Unknown error"}
+            加载规则出错：{error.error || "未知错误"}
           </AlertDescription>
         </Alert>
       </div>
@@ -46,10 +44,10 @@ export default function RuleHistorySelectPage() {
 
   return (
     <div className="container mx-auto p-4">
-      <PageHeading>Select Rule to View History</PageHeading>
+      <PageHeading>选择要查看历史的规则</PageHeading>
 
       {rules.length === 0 ? (
-        <p className="mt-4 text-muted-foreground">No rules found.</p>
+        <p className="mt-4 text-muted-foreground">未找到规则。</p>
       ) : (
         <div className="mt-4 space-y-4">
           {rules.map((rule) => (
@@ -61,7 +59,7 @@ export default function RuleHistorySelectPage() {
                     {rule.systemType && (
                       <Badge variant="secondary">{rule.systemType}</Badge>
                     )}
-                    {!rule.enabled && <Badge variant="outline">Disabled</Badge>}
+                    {!rule.enabled && <Badge variant="outline">已禁用</Badge>}
                   </div>
                 </div>
                 {rule.instructions && (
@@ -78,7 +76,7 @@ export default function RuleHistorySelectPage() {
                       `/debug/rule-history/${rule.id}`,
                     )}
                   >
-                    View History
+                    查看历史
                   </Link>
                 </Button>
               </CardContent>

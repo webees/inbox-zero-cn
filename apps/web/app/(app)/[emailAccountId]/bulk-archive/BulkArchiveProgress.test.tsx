@@ -59,7 +59,7 @@ describe("BulkArchiveProgress", () => {
       expect.objectContaining({
         totalItems: 8,
         remainingItems: 0,
-        completedText: "Archiving complete! 8 senders processed!",
+        completedText: "归档完成！已处理 8 个发件人！",
       }),
     );
   });
@@ -82,7 +82,7 @@ describe("BulkArchiveProgress", () => {
     expect(mockProgressPanel).toHaveBeenCalledWith(
       expect.objectContaining({
         remainingItems: 0,
-        completedText: "Archiving finished: 6 succeeded, 2 failed.",
+        completedText: "归档完成：6 个成功，2 个失败。",
       }),
     );
   });

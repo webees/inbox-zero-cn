@@ -164,7 +164,7 @@ export function useComposeSend({
         pendingRecipients: pendingRecipientsRef.current,
       });
       if (!recipients.to) {
-        toastError({ description: t`Enter a valid recipient email address.` });
+        toastError({ description: t`请输入有效的收件人邮箱地址` });
         return;
       }
 
@@ -177,7 +177,7 @@ export function useComposeSend({
       );
       if (failedAttachment) {
         toastError({
-          description: t`${failedAttachment.filename} isn't attached. Remove it or attach it again before sending.`,
+          description: t`${failedAttachment.filename} 未附加成功，发送前请移除或重新附加`,
         });
         return;
       }

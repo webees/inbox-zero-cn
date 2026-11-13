@@ -10,9 +10,8 @@ const OTP_SUBJECT_PATTERNS = [
   /\b(?:code|pin) (?:for|to) (?:log|sign) in\b/i,
 ] as const;
 
-// Digits (optionally split into two groups, or behind a short prefix like
-// "G-") or a mixed letters-and-digits token. Neighbouring punctuation that
-// continues a number rules out prices, times, dates, and phone numbers.
+// 数字（可选拆成两组，或带有类似 "G-" 的短前缀），或字母与数字混合的
+// 令牌。紧邻且延续数字的标点会排除价格、时间、日期和电话号码。
 const OTP_CODE_PATTERN =
   /(?<![\w.,/$€£#+-]|\d[ -]|\d:|\) )(?:[A-Z]{1,3}-)?(\d{3,4}[ -]\d{3,4}|\d{4,8}|(?=[A-Z\d]*\d)(?=[A-Z\d]*[A-Z])[A-Z\d]{6,8})(?![\w%]|[.,:/ -]\d)/g;
 const YEAR_PATTERN = /^(?:19|20)\d{2}$/;
@@ -23,7 +22,7 @@ export function isOtpSubject(subject: string): boolean {
   return OTP_SUBJECT_PATTERNS.some((pattern) => pattern.test(subject));
 }
 
-/** The code to paste, from the first of the texts that contains one. */
+/** 要粘贴的验证码，取自第一个包含验证码的文本。 */
 export function extractOtpCode(texts: string[]): string | null {
   for (const text of texts) {
     for (const match of text.matchAll(OTP_CODE_PATTERN)) {

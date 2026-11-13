@@ -1,52 +1,52 @@
 ---
-title: "Microsoft Teams Integration Setup"
-description: "Set up the Teams bot for Inbox Zero assistant chat."
+title: "Microsoft Teams 集成设置"
+description: "为 Inbox Zero 助手聊天设置 Teams 机器人。"
 ---
 
-This guide is for self-hosted deployments that want to enable Teams chat with the Inbox Zero assistant.
+本指南面向希望启用与 Inbox Zero 助手进行 Teams 聊天的自托管部署。
 
-## What Teams currently supports
+## Teams 目前支持的功能
 
-- AI assistant chat in **direct messages** with the Inbox Zero bot
-- Account linking with one-time `/connect <code>` commands
-- Direct-message delivery for meeting briefs, follow-up reminders, email digests, filing alerts, and rule notifications configured from **Channels**
+- 与 Inbox Zero 机器人进行**私信**中的 AI 助手聊天
+- 通过一次性的 `/connect <code>` 命令关联账号
+- 通过**频道（Channels）**配置的会议简报、后续跟进提醒、邮件摘要、归档提醒和规则通知，均通过私信发送
 
-Currently not supported on Teams:
+Teams 目前不支持：
 
-- Delivery into Teams channels; automated notifications are delivered in the linked bot DM
-- One-click draft editing and sending inside Teams; review or send those drafts in Inbox Zero
+- 向 Teams 频道投递；自动通知会发送到已关联机器人的私信中
+- 在 Teams 内一键编辑和发送草稿；请在 Inbox Zero 中审阅或发送这些草稿
 
-## 1. Create an Azure Bot resource
+## 1. 创建 Azure Bot 资源
 
-1. Go to [portal.azure.com](https://portal.azure.com)
-2. Click **Create a resource**, search for **Azure Bot**, and select it
-3. Click **Create** and fill in:
-   - **Bot handle**: a unique identifier for your bot
-   - **Subscription**: your Azure subscription
-   - **Resource group**: create new or use existing
-   - **Pricing tier**: F0 (free) for testing
-   - **Type of App**: Single Tenant (recommended) or Multi Tenant
-   - **Creation type**: Use existing Microsoft App ID or create a new one
-4. Click **Review + create**, then **Create**
+1. 前往 [portal.azure.com](https://portal.azure.com)
+2. 点击 **创建资源**，搜索 **Azure Bot**，然后选择它
+3. 点击 **创建**，并填写：
+   - **机器人句柄（Bot handle）**：你的机器人的唯一标识符
+   - **订阅（Subscription）**：你的 Azure 订阅
+   - **资源组（Resource group）**：新建或使用现有资源组
+   - **定价层（Pricing tier）**：测试时使用 F0（免费）
+   - **应用类型（Type of App）**：单租户（推荐）或多租户
+   - **创建类型（Creation type）**：使用现有的 Microsoft 应用 ID 或新建一个
+4. 点击 **审阅 + 创建**，然后点击 **创建**
 
-You can reuse the same Microsoft App ID you already use for Outlook OAuth. We recommend a separate app registration for Teams bot traffic so bot credentials and permissions are isolated from email OAuth.
+你可以复用已经用于 Outlook OAuth 的同一个 Microsoft 应用 ID。我们建议为 Teams 机器人流量使用单独的应用注册，以便机器人凭据和权限与邮件 OAuth 隔离。
 
-## 2. Get your app credentials
+## 2. 获取你的应用凭据
 
-From your new Bot resource:
+在你的新 Bot 资源中：
 
-1. Go to **Configuration**
-2. Copy **Microsoft App ID** — this is your `TEAMS_BOT_APP_ID`
-3. Click **Manage Password** (next to Microsoft App ID)
-4. In the App Registration page, go to **Certificates & secrets**
-5. Click **New client secret**, add a description, choose an expiry, click **Add**
-6. Copy the **Value** immediately (it's only shown once) — this is your `TEAMS_BOT_APP_PASSWORD`
-7. Go to **Overview** and copy **Directory (tenant) ID** — this is your `TEAMS_BOT_APP_TENANT_ID`
+1. 前往 **配置**
+2. 复制 **Microsoft App ID** —— 这就是你的 `TEAMS_BOT_APP_ID`
+3. 点击 **管理密码**（在 Microsoft App ID 旁边）
+4. 在应用注册页面中，前往 **证书和密码**
+5. 点击 **新建客户端密码**，添加描述，选择有效期，点击 **添加**
+6. 立即复制 **值**（它只会显示一次）—— 这就是你的 `TEAMS_BOT_APP_PASSWORD`
+7. 前往 **概述** 并复制 **目录（租户）ID** —— 这就是你的 `TEAMS_BOT_APP_TENANT_ID`
 
-## 3. Set the messaging endpoint
+## 3. 设置消息传递终结点
 
-1. In your Azure Bot resource, go to **Configuration**
-2. Set **Messaging endpoint** to:
+1. 在你的 Azure Bot 资源中，前往 **配置**
+2. 将 **消息传递终结点** 设为：
 
 ```text
 https://<your-domain>/api/teams/events
@@ -54,16 +54,16 @@ https://<your-domain>/api/teams/events
 
 3. Click **Apply**
 
-## 4. Enable the Teams channel
+## 4. 启用 Teams 频道
 
-1. In your Azure Bot resource, go to **Channels**
-2. Click **Microsoft Teams**
-3. Accept the terms of service
-4. Click **Apply**
+1. 在你的 Azure Bot 资源中，前往 **频道**
+2. 点击 **Microsoft Teams**
+3. 接受服务条款
+4. 点击 **应用**
 
-## 5. Create and upload the Teams app package
+## 5. 创建并上传 Teams 应用包
 
-Create a `manifest.json` file with your bot details:
+创建一个包含机器人详细信息的 `manifest.json` 文件：
 
 ```json
 {
@@ -73,18 +73,18 @@ Create a `manifest.json` file with your bot details:
   "id": "<your-app-id>",
   "packageName": "com.yourcompany.inboxzero",
   "developer": {
-    "name": "Your Company",
+    "name": "你的公司",
     "websiteUrl": "https://your-domain.com",
     "privacyUrl": "https://your-domain.com/privacy",
     "termsOfUseUrl": "https://your-domain.com/terms"
   },
   "name": {
     "short": "Inbox Zero",
-    "full": "Inbox Zero Assistant"
+    "full": "Inbox Zero 助手"
   },
   "description": {
-    "short": "Manage email with Inbox Zero for Microsoft Teams",
-    "full": "Manage email with your Inbox Zero AI assistant in Microsoft Teams. An active Inbox Zero account is required. Sign up or get started at https://your-domain.com. For help, visit https://your-domain.com/docs/essentials/channels or contact support@your-domain.com. AI-generated content may be inaccurate and should be reviewed before use. Report objectionable AI-generated content to support@your-domain.com."
+    "short": "使用 Inbox Zero 管理 Microsoft Teams 中的邮件",
+    "full": "在 Microsoft Teams 中使用你的 Inbox Zero AI 助手管理邮件。需要拥有有效的 Inbox Zero 账号。请在 https://your-domain.com 注册或开始使用。如需帮助，请访问 https://your-domain.com/docs/essentials/channels 或联系 support@your-domain.com。AI 生成的内容可能不准确，使用前请先审阅。如需举报令人反感 AI 生成内容，请联系 support@your-domain.com。"
   },
   "icons": {
     "outline": "outline.png",
@@ -101,13 +101,13 @@ Create a `manifest.json` file with your bot details:
         {
           "scopes": ["personal"],
           "commands": [
-            { "title": "connect", "description": "Link an Inbox Zero account with a connect code" },
-            { "title": "switch", "description": "List or switch linked Inbox Zero accounts" },
-            { "title": "help", "description": "Show help and supported commands" },
-            { "title": "cleanup", "description": "Help clean up your inbox" },
-            { "title": "summary", "description": "Summarize what needs attention" },
-            { "title": "draftreply", "description": "Draft a reply to an urgent email" },
-            { "title": "followups", "description": "Show emails that need a follow-up" }
+            { "title": "connect", "description": "使用连接码关联 Inbox Zero 账号" },
+            { "title": "switch", "description": "列出或切换已关联的 Inbox Zero 账号" },
+            { "title": "help", "description": "显示帮助和受支持的命令" },
+            { "title": "cleanup", "description": "帮助清理你的收件箱" },
+            { "title": "summary", "description": "汇总需要关注的事项" },
+            { "title": "draftreply", "description": "为紧急邮件起草回复" },
+            { "title": "followups", "description": "显示需要后续跟进的邮件" }
           ]
         }
       ]
@@ -118,64 +118,64 @@ Create a `manifest.json` file with your bot details:
 }
 ```
 
-Replace `<your-app-id>` with your `TEAMS_BOT_APP_ID` and `your-domain.com` with your actual domain.
+将 `<your-app-id>` 替换为你的 `TEAMS_BOT_APP_ID`，并将 `your-domain.com` 替换为你实际的域名。
 
-You'll also need two matching icon files: a 32×32 `outline.png` and a 192×192 `color.png`. The outline icon must use a white symbol on a transparent background, contain no extra padding, and depict the same symbol as the color icon. Zip those three files together.
+你还需要两个匹配的图标文件：一个 32×32 的 `outline.png` 和一个 192×192 的 `color.png`。轮廓图标必须在透明背景上使用白色符号，不包含额外内边距，并且描绘与彩色图标相同的符号。将这三个文件一起打包为 zip。
 
-**To install for testing (sideloading):**
+**为测试安装（旁加载）：**
 
-1. In Teams, click **Apps** in the sidebar
-2. Click **Manage your apps** → **Upload an app**
-3. Click **Upload a custom app** and select your zip file
+1. 在 Teams 中，点击侧边栏中的 **应用**
+2. 点击 **管理你的应用** → **上传应用**
+3. 点击 **上传自定义应用** 并选择你的 zip 文件
 
-**For organization-wide deployment:**
+**面向组织范围的部署：**
 
-1. Go to the [Teams Admin Center](https://admin.teams.microsoft.com)
-2. Go to **Teams apps** → **Manage apps**
-3. Click **Upload new app** and select your zip file
-4. Use **Setup policies** to control who can access the app
+1. 前往 [Teams 管理中心](https://admin.teams.microsoft.com)
+2. 前往 **Teams 应用** → **管理应用**
+3. 点击 **上传新应用** 并选择你的 zip 文件
+4. 使用 **设置策略** 控制谁可以访问该应用
 
-## 6. Set environment variables
+## 6. 设置环境变量
 
-Set these in `apps/web/.env` (or your deployment env):
+在 `apps/web/.env`（或你的部署环境）中设置这些变量：
 
 ```bash
 TEAMS_BOT_APP_ID=
 TEAMS_BOT_APP_PASSWORD=
-TEAMS_BOT_APP_TENANT_ID=      # required for the single-tenant Teams bot
+TEAMS_BOT_APP_TENANT_ID=      # 单租户 Teams 机器人必需
 ```
 
-If `TEAMS_BOT_APP_ID`, `TEAMS_BOT_APP_PASSWORD`, or `TEAMS_BOT_APP_TENANT_ID` is missing, the Teams connect option is hidden in the UI and `/api/teams/events` returns `503`.
+如果缺少 `TEAMS_BOT_APP_ID`、`TEAMS_BOT_APP_PASSWORD` 或 `TEAMS_BOT_APP_TENANT_ID`，UI 中会隐藏 Teams 连接选项，并且 `/api/teams/events` 会返回 `503`。
 
-## 7. Connect a user account from Inbox Zero
+## 7. 从 Inbox Zero 连接用户账号
 
-Each Inbox Zero email account links to a Teams user via a connect code:
+每个 Inbox Zero 邮箱账号都会通过连接码关联到一个 Teams 用户：
 
-1. In Inbox Zero, go to **Settings** → **Connected Apps**
-2. Click **Connect Teams**
-3. Copy the generated command: `/connect <code>`
-4. Open a DM with the Inbox Zero bot in Teams
-5. Send the command
+1. 在 Inbox Zero 中，前往 **设置** → **已连接的应用**
+2. 点击 **连接 Teams**
+3. 复制生成的命令：`/connect <code>`
+4. 在 Teams 中打开与 Inbox Zero 机器人的私信
+5. 发送该命令
 
-After linking, the user can chat with the assistant in that DM.
+关联后，用户就可以在该私信中与助手聊天。
 
-## 8. Validate end-to-end
+## 8. 端到端验证
 
-Quick checks:
+快速检查：
 
-1. `POST /api/teams/events` returns `200` for valid bot activity
-2. Before linking, `Hello` returns account setup guidance and `/help` lists supported commands
-3. An unknown slash command points the user to `/help`
-4. Sending `/connect <code>` in the bot DM links the account
-5. `/summary`, `/cleanup`, `/draftreply`, and `/followups` return useful responses after linking
+1. 对于有效的机器人活动，`POST /api/teams/events` 返回 `200`
+2. 关联前，`Hello` 会返回账号设置指引，`/help` 会列出受支持的命令
+3. 未知的斜杠命令会引导用户使用 `/help`
+4. 在机器人私信中发送 `/connect <code>` 会关联账号
+5. 关联后，`/summary`、`/cleanup`、`/draftreply` 和 `/followups` 会返回有用的响应
 
-If linking fails, generate a new code — codes are one-time and expire after 10 minutes.
+如果关联失败，请生成新的连接码 —— 连接码是一次性的，并在 10 分钟后过期。
 
 <Tip>
 
-You can also set up most of this integration with the Azure CLI (`az`) instead of clicking through the Azure portal. If you already have `az` installed and are logged in, an agentic coding tool like Claude Code or Codex can usually create the Entra app registration, client secret, resource group, Azure Bot resource, messaging endpoint, and Teams channel for you. You will still need to complete the browser-authenticated steps yourself, such as accepting Teams channel terms if prompted and uploading/installing the Teams app package.
+你也可以使用 Azure CLI（`az`）设置本集成的大部分内容，而无须在 Azure 门户中逐项点击。如果你已安装 `az` 并已登录，像 Claude Code 或 Codex 这样的代理式编码工具通常可以为你创建 Entra 应用注册、客户端密钥、资源组、Azure Bot 资源、消息传递终结点和 Teams 频道。你仍需要自行完成需要浏览器身份验证的步骤，例如在提示时接受 Teams 频道条款，以及上传/安装 Teams 应用包。
 
-Example prompt:
+示例提示词：
 
 ```text
 Use Azure CLI to set up the Microsoft Teams integration for Inbox Zero. Create a single-tenant Entra app registration with a client secret, create an Azure Bot resource on the F0 tier, point it at https://<your-domain>/api/teams/events, enable the Teams channel, and then tell me exactly which environment variables and manual Azure/Teams UI steps are left for me to complete.

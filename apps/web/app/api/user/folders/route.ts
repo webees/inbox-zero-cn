@@ -10,7 +10,7 @@ export const GET = withEmailProvider("user/folders", async (request) => {
 
   if (!isMicrosoftProvider(emailProvider.name)) {
     return NextResponse.json(
-      { error: "Only Microsoft email providers are supported" },
+      { error: "仅支持 Microsoft 邮箱服务商" },
       { status: 400 },
     );
   }

@@ -148,10 +148,7 @@ async function rewriteHtmlWithProxy(html: string) {
   if (!response.ok) return;
 
   const data = await response.json();
-  // Without a signing secret the server returns the HTML unchanged, so its
-  // images would still point straight at the sender.
-  if (data?.remoteAssetsProxied !== true) return;
-  return typeof data.html === "string" ? data.html : undefined;
+  return typeof data?.html === "string" ? data.html : undefined;
 }
 
 const REMOTE_URL_PATTERN = /(?:https?:)?\/\//i;

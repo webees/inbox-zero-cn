@@ -77,7 +77,7 @@ function getView({
     if (scope.folderId) return { kind: "folder", name };
     return { kind: "mailbox", name };
   }
-  if (!activeSplit) return { kind: "mailbox", name: "Inbox" };
+  if (!activeSplit) return { kind: "mailbox", name: "收件箱" };
 
   return {
     kind: "split",

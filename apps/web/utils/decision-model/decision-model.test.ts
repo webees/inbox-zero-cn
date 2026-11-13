@@ -151,7 +151,7 @@ describe("runDecisionModel", () => {
         label: "test",
         logger,
       }),
-    ).rejects.toThrow("blocked by your account settings");
+    ).rejects.toThrow("检测到敏感内容，因此该 AI 请求已被你的账号设置阻止。");
     expect(doDecide).not.toHaveBeenCalled();
   });
 

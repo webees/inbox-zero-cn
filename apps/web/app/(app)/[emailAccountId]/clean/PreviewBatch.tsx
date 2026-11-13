@@ -52,38 +52,36 @@ export function PreviewBatch({ job }: { job: CleanupJob }) {
     <CardGreen className="mb-4">
       <CardHeader>
         <CardTitle>
-          <Trans>Preview run</Trans>
+          <Trans>预览运行</Trans>
         </CardTitle>
         {/* <CardDescription>
-          We processed {total} emails. {archived} were{" "}
-          {job.action === CleanAction.ARCHIVE ? "archived" : "marked as read"}.
+          我们处理了 {total} 封邮件。其中 {archived} 封已{" "}
+          {job.action === CleanAction.ARCHIVE ? "归档" : "标记为已读"}。
         </CardDescription> */}
         <CardDescription>
           <Plural
             value={PREVIEW_RUN_COUNT}
-            one="We're cleaning up # email so you can see how it works."
-            other="We're cleaning up # emails so you can see how it works."
+            one="我们正在清理 # 封邮件，让你了解它的工作方式。"
+            other="我们正在清理 # 封邮件，让你了解它的工作方式。"
           />
         </CardDescription>
         <CardDescription>
           {job.action === CleanAction.ARCHIVE ? (
-            <Trans>
-              To undo any, hover over the "Archive" badge and click undo.
-            </Trans>
+            <Trans>如需撤销，请将鼠标悬停在“归档”徽章上并点击撤销。</Trans>
           ) : (
             <Trans>
-              To undo any, hover over the "Mark as read" badge and click undo.
+              如需撤销，请将鼠标悬停在“标记为已读”徽章上并点击撤销。
             </Trans>
           )}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex items-center gap-4">
         <Button onClick={handleRunOnFullInbox} loading={isLoading}>
-          <Trans>Run on Full Inbox</Trans>
+          <Trans>在完整收件箱上运行</Trans>
         </Button>
         {/* {disableRunOnFullInbox && (
           <CardDescription className="font-semibold">
-            All emails have been processed
+            所有邮件都已处理完毕
           </CardDescription>
         )} */}
       </CardContent>

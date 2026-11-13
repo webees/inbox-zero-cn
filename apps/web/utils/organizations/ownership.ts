@@ -5,10 +5,10 @@ const ORGANIZATION_OWNER_CONSTRAINT_NAME = "organization_must_have_owner";
 const MEMBER_EMAIL_ACCOUNT_FK_CONSTRAINT_NAME = "Member_emailAccountId_fkey";
 
 export const DELETE_EMAIL_ACCOUNT_REQUIRES_OWNER_TRANSFER_ERROR =
-  "Transfer organization ownership before deleting this email account.";
+  "删除此邮箱账号前，请先转移组织所有权。";
 
 export const DELETE_ACCOUNT_REQUIRES_OWNER_TRANSFER_ERROR =
-  "Transfer organization ownership before deleting your account.";
+  "删除你的账号前，请先转移组织所有权。";
 
 export async function getDeletedAccountOwnershipImpact(
   emailAccountIds: string[],
@@ -21,8 +21,8 @@ export async function getDeletedAccountOwnershipImpact(
     };
   }
 
-  // Ownerless organizations have no owner row to discover, so start from every
-  // deleted membership.
+  // 无主组织没有可发现的 owner 行，因此从每一条
+  // 已删除的成员关系开始。
   const memberships = await prisma.member.findMany({
     where: {
       emailAccountId: { in: [...deletedEmailAccountIds] },

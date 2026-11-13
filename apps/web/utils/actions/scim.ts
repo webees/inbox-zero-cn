@@ -45,13 +45,12 @@ export const revokeScimCredentialAction = adminActionClient
 
 async function requireScimProvider(providerId: string, emailOtp: boolean) {
   if (!env.SCIM_CREDENTIAL_HASH_SECRET)
-    throw new SafeError("SCIM credential management is not configured");
-  if (emailOtp)
-    throw new SafeError("Sign in with your identity provider to manage SCIM");
+    throw new SafeError("未配置 SCIM 凭证管理");
+  if (emailOtp) throw new SafeError("请使用你的身份提供商登录以管理 SCIM");
   const provider = await prisma.ssoProvider.findUnique({
     where: { providerId },
     select: { organizationId: true },
   });
   if (!provider?.organizationId)
-    throw new SafeError("SCIM requires a registered organization SSO provider");
+    throw new SafeError("SCIM 需要已注册的组织 SSO 服务商");
 }

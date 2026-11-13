@@ -21,7 +21,7 @@ export function LoadStatsButton() {
         ) : (
           <RefreshCcw className="mr-2 hidden h-4 w-4 sm:block" />
         )}
-        {isLoading ? <Trans>Loading more...</Trans> : <Trans>Load more</Trans>}
+        {isLoading ? <Trans>正在加载更多...</Trans> : <Trans>加载更多</Trans>}
       </Button>
     </div>
   );

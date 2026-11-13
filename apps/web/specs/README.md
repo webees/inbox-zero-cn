@@ -1,69 +1,55 @@
-# Formal models
+# 形式化模型
 
-Small [Quint](https://quint-lang.org) models of client behaviour where
-concurrency makes example-based tests unreliable: several requests in flight,
-undo, retries, and a tab that can close at any point. A model states the
-properties the product promises and lets a checker explore every interleaving
-of the modelled steps.
+用小型 [Quint](https://quint-lang.org) 模型描述客户端行为：当并发使基于示例的测试
+不可靠时，例如多个请求同时进行、撤销、重试，以及标签页随时可能关闭。模型声明产品
+承诺的性质，并让检查器探索建模步骤的所有交错执行。
 
-A model checks the design, not the code. When you change the code a model
-describes, update the model in the same change.
+模型检查的是设计，而非代码。当你修改某个模型所描述的代码时，请在同一次变更中
+更新该模型。
 
-## `compose-send.qnt`: Send while a draft save is in flight
+## `compose-send.qnt`：草稿正在保存时发送
 
-The composer mirrors its text to a mailbox draft every few seconds. Send used
-to wait for any draft save already in flight, which held the composer open for
-one or two provider round trips. The model compares four designs:
+编辑器每隔几秒将其文本同步到邮箱草稿。过去，发送会等待任何已在进行的草稿保存，
+这会让编辑器保持打开状态，并经历一到两次服务商往返。该模型比较了三种设计：
 
-| Design | Send waits on the network | Result |
+| 设计 | 发送是否等待网络 | 结果 |
 | --- | --- | --- |
-| `waitForSave`: wait for the save, send through the draft | Yes | All properties hold |
-| `naiveSend`: queue at once, send through the known draft | No | Sends stale text; leaves a draft behind |
-| `reconcileSend`: queue at once; with a save in flight, send the composer's own content, and the device removes the draft once the save lands and the provider confirms delivery | No | Holds while the tab stays open; a tab closed before the save answers leaves the draft behind |
-| `serverSend`: as `reconcileSend`, but the server removes the draft | No | All properties hold, even when the tab closes at any point |
+| `waitForSave`：等待保存完成，通过草稿发送 | 是 | 所有性质均成立 |
+| `naiveSend`：立即加入队列，通过已知草稿发送 | 否 | 发送过时文本；遗留草稿 |
+| `reconcileSend`：立即加入队列；若有保存正在进行，则发送编辑器自身内容，并在保存完成且服务商确认送达后删除草稿 | 否 | 所有性质均成立 |
 
-`useComposeSend.ts`, `compose-draft.ts` and `compose-session-draft.ts`
-implement `serverSend`. Each draft save records the compose session's draft
-and then checks whether the session was sent; each delivered send that
-replaced a saving draft marks the session sent and then removes the recorded
-draft. Whichever of the two lands second sees the other's record, so the draft
-is removed even when the save answers after the send, or never answers
-because the tab closed. In Redis each side's write and read run as one script,
-which is at least as strong as the separate steps the model checks.
+`useComposeSend.ts` 实现了 `reconcileSend`。性质如下（见 `safety`）：
 
-Properties (see `safety`):
+- 回复最多送达一次；
+- 送达的内容就是按下发送时编辑器中的内容；
+- 已送达的发送完成后，不会再遗留对应草稿；
+- 通过撤销恢复的编辑器保留可继续保存的草稿；
+- 服务商拒绝的发送会保留用户的草稿；
+- 同一会话绝不会有两个草稿；
+- 发送时绝不会发现其发送所经的草稿已经消失。
 
-- the reply is delivered at most once;
-- what is delivered is what the composer held when Send was pressed;
-- once a delivered send settles, no draft for it remains;
-- a composer restored by undo keeps a draft it can save to;
-- a send the provider refuses leaves the user's draft in place;
-- a session never has two drafts;
-- a send never finds the draft it was sent through already gone.
+这些是安全性性质。模型不检查活性（即每次发送最终都会到达），也不建模服务商重试
+或不确定的结果；跨重试的重复保护来自引擎的操作 ID，本模型将其视为给定条件。
 
-These are safety properties. The model does not check progress (that every
-send eventually arrives), and it does not model provider retries or uncertain
-outcomes; duplicate protection across retries comes from the engine's
-operation ids, which this model takes as given.
+在保存进行中通过草稿发送是不安全的，因为 `sendComposeDraft` 先用
+`drafts.update` 写入最终文本，然后调用 `drafts.send`。已在进行中的保存可能落在
+这两步之间，服务商随后会发送较早的文本。`naiveSend` 复现了这一点。
 
-Sending through the draft is unsafe while a save is in flight because
-`sendComposeDraft` writes the final text with `drafts.update` and then calls
-`drafts.send`. A save already on its way can land between the two, and the
-provider then sends the earlier text. `naiveSend` reproduces this.
+已接受的权衡（`reconcileSendTabCloses`）：如果标签页在按下发送后、进行中的保存返回前
+关闭，设备就永远无法获知该草稿的 ID，因此已发送回复对应的草稿会留在草稿箱中。
+等待保存虽然能避免这一问题，但会让用户一直停留在加载状态。
 
-## Running
+## 运行
 
 ```sh
-# Random simulation of every design. Part of `pnpm test`; checks that the
-# chosen designs hold and that the model still finds the known bugs.
+# 对每种设计进行随机模拟。属于 `pnpm test` 的一部分；检查
+# 所选设计成立，且模型仍能发现已知缺陷。
 pnpm test specs/compose-send.test.ts
 
-# Exhaustive bounded check of the shipped design with Apalache (Java 17+).
+# 使用 Apalache（Java 17+）对已发布设计进行穷举有界检查。
 pnpm -F inbox-zero-ai test:specs:verify
 ```
 
-The script checks the shipped design with the tab allowed to close, to 16
-steps. That bound reaches the stale-text bug in `naiveSend`
-(`--main=naiveSend --invariant=deliversWhatWasSent`) and the draft left behind
-when the save side skips its check, so it is deep enough for the races the
-model is about.
+该脚本只检查 `reconcileSend`。同样的 14 步边界能在 `naiveSend` 中发现过时文本缺陷
+（`--main=naiveSend --invariant=deliversWhatWasSent`），因此该边界足以触及模型所
+关注的竞态条件。

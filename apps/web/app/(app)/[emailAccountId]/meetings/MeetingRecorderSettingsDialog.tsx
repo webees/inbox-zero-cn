@@ -45,7 +45,7 @@ export function MeetingRecorderSettingsDialog({
     updateMeetingRecorderSettingsAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: t`Settings saved` });
+        toastSuccess({ description: t`设置已保存` });
         mutate();
         mutateUpcoming();
       },
@@ -53,7 +53,7 @@ export function MeetingRecorderSettingsDialog({
         mutate();
         toastError({
           description: getActionErrorMessage(error, {
-            prefix: t`Failed to save settings`,
+            prefix: t`保存设置失败`,
           }),
         });
       },
@@ -72,7 +72,7 @@ export function MeetingRecorderSettingsDialog({
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>
-            <Trans>Notetaker settings</Trans>
+            <Trans>会议记录助手设置</Trans>
           </DialogTitle>
         </DialogHeader>
 
@@ -80,11 +80,11 @@ export function MeetingRecorderSettingsDialog({
           <div className="space-y-6">
             <div className="space-y-2">
               <ItemTitle>
-                <Trans>Which meetings to join</Trans>
+                <Trans>要加入哪些会议</Trans>
               </ItemTitle>
               <RadioCardGroup
                 name="joinRule"
-                ariaLabel={t`Which meetings to join`}
+                ariaLabel={t`要加入哪些会议`}
                 value={data.joinRule}
                 onChange={(joinRule) => {
                   analytics.captureAction("meeting_recorder_setting_changed", {
@@ -104,12 +104,12 @@ export function MeetingRecorderSettingsDialog({
               <Item>
                 <ItemContent>
                   <ItemTitle>
-                    <Trans>Email me the notes</Trans>
+                    <Trans>将会议要点通过邮件发送给我</Trans>
                   </ItemTitle>
                 </ItemContent>
                 <Toggle
                   name="recapEmailEnabled"
-                  ariaLabel={t`Email me the notes`}
+                  ariaLabel={t`将会议要点通过邮件发送给我`}
                   enabled={data.recapEmailEnabled}
                   onChange={(recapEmailEnabled) => {
                     analytics.captureAction(
@@ -124,12 +124,12 @@ export function MeetingRecorderSettingsDialog({
               <Item>
                 <ItemContent>
                   <ItemTitle>
-                    <Trans>Draft a follow-up email</Trans>
+                    <Trans>起草后续邮件</Trans>
                   </ItemTitle>
                 </ItemContent>
                 <Toggle
                   name="followUpDraftEnabled"
-                  ariaLabel={t`Draft a follow-up email`}
+                  ariaLabel={t`起草后续邮件`}
                   enabled={data.followUpDraftEnabled}
                   onChange={(followUpDraftEnabled) => {
                     analytics.captureAction(
@@ -147,7 +147,7 @@ export function MeetingRecorderSettingsDialog({
 
             <div className="flex items-center justify-between gap-4">
               <MutedText>
-                <Trans>Cancels every call it is booked to join.</Trans>
+                <Trans>取消所有已预约加入的通话。</Trans>
               </MutedText>
               <Button
                 variant="outline"
@@ -157,7 +157,7 @@ export function MeetingRecorderSettingsDialog({
                   onClose();
                 }}
               >
-                <Trans>Turn off</Trans>
+                <Trans>关闭</Trans>
               </Button>
             </div>
           </div>

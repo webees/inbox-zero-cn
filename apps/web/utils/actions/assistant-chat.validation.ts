@@ -276,7 +276,7 @@ const assistantChatFilePartSchema = z.object({
     .string()
     .max(6_000_000)
     .refine((url) => /^data:image\/(jpeg|png|webp|gif);base64,/.test(url), {
-      message: "URL must be a base64 data URL with an allowed image MIME type",
+      message: "URL 必须是以 base64 编码且使用允许的图像 MIME 类型的数据 URL",
     }),
   filename: z.string().optional(),
   mediaType: z.enum(["image/jpeg", "image/png", "image/webp", "image/gif"]),
@@ -295,16 +295,15 @@ export const assistantInputSchema = z.object({
     parts: z
       .array(assistantChatMessagePartSchema)
       .refine((parts) => parts.filter((p) => p.type === "file").length <= 5, {
-        message: "Maximum 5 file attachments per message",
+        message: "每条消息最多 5 个文件附件",
       }),
   }),
   context: messageContextSchema.optional(),
-  // Sent with every message from the mail screen; the server records it only
-  // when it changes.
+  // 从邮件界面随每条消息发送；仅在变化时由服务器记录
   mailView: mailViewContextSchema.optional(),
   inlineActions: z.array(inlineEmailActionSchema).max(20).optional(),
-  // Clients that can't render the assistant's inline email card markup would
-  // show it as raw XML, so cards are opt-in per client.
+  // 无法渲染助手内联邮件卡片标记的客户端会将其显示为原始 XML，
+  // 因此卡片按客户端选择性启用
   supportsInlineEmailCards: z.boolean().optional().default(false),
 });
 

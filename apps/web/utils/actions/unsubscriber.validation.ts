@@ -4,14 +4,14 @@ import { NewsletterStatus } from "@/generated/prisma/enums";
 export const setSenderStatusBody = z.object({
   senderEmail: z.string().email(),
   status: z.nativeEnum(NewsletterStatus).nullable(),
-  // Label the sender's mail as well as archiving it. Only used with AUTO_ARCHIVED.
+  // 在归档发件人邮件的同时为其打标签。仅与 AUTO_ARCHIVED 一起使用。
   labelId: z.string().optional(),
   labelName: z.string().optional(),
 });
 export type SetSenderStatusBody = z.infer<typeof setSenderStatusBody>;
 
 export const setSenderStatusRequestBody = setSenderStatusBody.extend({
-  // Archive mail already in the inbox. Only valid with AUTO_ARCHIVED.
+  // 归档已在收件箱中的邮件。仅与 AUTO_ARCHIVED 一起有效。
   archiveExisting: z.boolean().optional(),
 });
 

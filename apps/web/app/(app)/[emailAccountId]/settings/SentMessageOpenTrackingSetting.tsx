@@ -35,7 +35,7 @@ export function SentMessageOpenTrackingSetting({
       },
       onError: createSettingActionErrorHandler({
         mutate,
-        prefix: t`Failed to update read status setting`,
+        prefix: t`更新已读状态设置失败`,
       }),
     },
   );
@@ -61,12 +61,10 @@ export function SentMessageOpenTrackingSetting({
           <Item size="sm">
             <ItemContent>
               <ItemTitle>
-                <Trans>Read status</Trans>
+                <Trans>已读状态</Trans>
               </ItemTitle>
               <ItemDescription>
-                <Trans>
-                  See when recipients open emails you send from the mail client.
-                </Trans>
+                <Trans>查看收件人何时打开你从邮件客户端发送的邮件。</Trans>
               </ItemDescription>
             </ItemContent>
             <ItemActions>
@@ -82,15 +80,15 @@ export function SentMessageOpenTrackingSetting({
           <Item size="sm">
             <ItemContent>
               <ItemTitle>
-                <Trans>Read status</Trans>
+                <Trans>已读状态</Trans>
               </ItemTitle>
               <ItemDescription>
-                <Trans>See when recipients open emails you send.</Trans>
+                <Trans>查看收件人何时打开你发送的邮件。</Trans>
               </ItemDescription>
             </ItemContent>
             <ItemActions>
               <Switch
-                aria-label={t`Toggle read status`}
+                aria-label={t`切换已读状态`}
                 checked={data.sentMessageOpenTrackingEnabled}
                 disabled={isExecuting}
                 onCheckedChange={handleToggle}

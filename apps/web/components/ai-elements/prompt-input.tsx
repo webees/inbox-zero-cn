@@ -1,6 +1,5 @@
 "use client";
 
-import { useLingui } from "@lingui/react/macro";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -43,12 +42,11 @@ export type PromptInputTextareaProps = ComponentProps<
 export const PromptInputTextarea = ({
   onChange,
   className,
-  placeholder,
+  placeholder = "你想了解什么？",
   minHeight = 48,
   maxHeight = 164,
   ...props
 }: PromptInputTextareaProps) => {
-  const { t } = useLingui();
   const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
     if (e.key === "Enter") {
       // Don't submit if IME composition is in progress
@@ -83,7 +81,7 @@ export const PromptInputTextarea = ({
         onChange?.(e);
       }}
       onKeyDown={handleKeyDown}
-      placeholder={placeholder ?? t`What would you like to know?`}
+      placeholder={placeholder}
       minRows={2}
       maxRows={15}
       {...props}

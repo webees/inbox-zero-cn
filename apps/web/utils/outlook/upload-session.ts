@@ -2,26 +2,26 @@ import type { UploadSession } from "@microsoft/microsoft-graph-types";
 import type { Logger } from "@/utils/logger";
 import { withMicrosoftGraphRetry } from "@/utils/outlook/retry";
 
-// Per-request bound so a hung connection stalls the upload for at most this
-// long. Chunk uploads already retry transient failures via
-// `withMicrosoftGraphRetry`.
+// 单请求上限，使挂起的连接最多只会让上传停滞这么
+// 长时间。分块上传已通过
+// `withMicrosoftGraphRetry` 重试瞬时失败。
 const UPLOAD_SESSION_REQUEST_TIMEOUT_MS = 60_000;
 
 /**
- * Uploads a Buffer to a Microsoft Graph upload session in chunks.
+ * 将 Buffer 分块上传到 Microsoft Graph 上传会话。
  *
- * Shared by Outlook attachment uploads and OneDrive file uploads. Both use
- * the same protocol (PUT chunks with Content-Range, resume from
- * `nextExpectedRanges`), but each resource has its own chunk-size constraint:
- * - Outlook attachment sessions: this caller uses 320 KiB chunks
- * - Drive upload sessions: chunks must be multiples of 320 KiB
+ * 由 Outlook 附件上传和 OneDrive 文件上传共享。两者使用
+ * 相同的协议（带 Content-Range 的 PUT 分块，从
+ * `nextExpectedRanges` 恢复），但每种资源有自己的分块大小限制：
+ * - Outlook 附件会话：该调用方使用 320 KiB 分块
+ * - Drive 上传会话：分块必须是 320 KiB 的倍数
  *
- * Returns the final response when it is available. If a retry proves that the
- * final chunk was already accepted after its response was lost, returns a
- * committed result so the caller can recover the created resource.
+ * 在可用时返回最终响应。如果重试证明最终分块在响应丢失后
+ * 已被接受，则返回已提交的结果，以便调用方恢复
+ * 所创建的资源。
  *
- * If any chunk fails, the session is cancelled with a DELETE so Microsoft does
- * not keep it alive for up to 48 hours or surface partial items on retry.
+ * 如果任何分块失败，会话会通过 DELETE 取消，以免 Microsoft
+ * 将其保持活跃长达 48 小时，或在重试时暴露不完整的项目。
  */
 export async function uploadResumableChunks({
   uploadUrl,
@@ -69,7 +69,7 @@ export async function uploadResumableChunks({
       `Failed to ${action}: upload session ended without returning the created item`,
     );
   } catch (error) {
-    // Best-effort cleanup: deleting the session is a documented cancellation.
+    // 尽力清理：删除会话是文档化的取消方式。
     await cancelUploadSession(uploadUrl).catch(() => undefined);
     throw error;
   }
@@ -122,10 +122,10 @@ async function uploadChunk({
   }
 
   if (response.status === 200) {
-    // A 200 is a progress response when it carries nextExpectedRanges, but for
-    // the final range it is answered with the created resource in the body
-    // instead (Microsoft documents the last range as 201 Created or 200 OK).
-    // The body is peeked via a clone so the caller can still read it.
+    // 当 200 携带 nextExpectedRanges 时是进度响应，但对于
+    // 最后一个范围，响应体返回的是所创建的资源
+    // （Microsoft 文档说明最后一个范围为 201 Created 或 200 OK）。
+    // 通过克隆来查看响应体，以便调用方仍能读取它。
     const uploadStatus = (await response.clone().json()) as UploadSessionStatus;
     const nextStart = getNextExpectedRangeStart(
       uploadStatus.nextExpectedRanges,
@@ -145,9 +145,7 @@ async function uploadChunk({
     }
 
     if (typeof uploadStatus.id !== "string" || !uploadStatus.id) {
-      throw new Error(
-        "Upload session returned 200 without nextExpectedRanges or a created item",
-      );
+      throw new Error("上传会话返回 200，但没有 nextExpectedRanges 或已创建项");
     }
 
     return { kind: "complete", response };
@@ -159,7 +157,7 @@ async function uploadChunk({
       uploadStatus.nextExpectedRanges,
     );
     if (typeof nextStart !== "number") {
-      throw new Error("Upload session returned 202 without nextExpectedRanges");
+      throw new Error("上传会话返回 202 但未包含 nextExpectedRanges");
     }
 
     return {
@@ -198,11 +196,11 @@ async function uploadChunk({
   return await throwUploadSessionResponseError(response, action);
 }
 
-// The server reports where to continue via `nextExpectedRanges`, which the
-// docs warn is not guaranteed to list every range. A response that fails to
-// advance, or advances by a partial chunk (one byte at a time would otherwise
-// mean O(n) requests), is not trusted: recover from the session status like a
-// 416 and throw when the server offers no usable range.
+// 服务器通过 `nextExpectedRanges` 报告从哪里继续，文档
+// 警告这并不保证列出每个范围。未能推进，或仅推进了部分
+// 分块（否则一次一字节将意味着 O(n) 次请求）的响应不被
+// 信任：像 416 一样从会话状态恢复，并在服务器未提供
+// 可用范围时抛出错误。
 async function ensureMonotonicProgress({
   nextStart,
   chunkSizeBytes,
@@ -251,7 +249,7 @@ async function resolveResumeRange({
     if (typeof unavailableNextStart === "number") {
       return unavailableNextStart;
     }
-    throw new Error("Upload session status is unavailable");
+    throw new Error("上传会话状态不可用");
   }
 
   const nextStart = getNextExpectedRangeStart(uploadStatus.nextExpectedRanges);
@@ -262,14 +260,12 @@ async function resolveResumeRange({
     return nextStart;
   }
 
-  throw new Error(
-    "Upload session did not make progress (no usable resume range)",
-  );
+  throw new Error("上传会话没有进展（没有可用的续传范围）");
 }
 
-// Only chunk-aligned ranges are trusted: the upload always sends full chunks
-// from chunk-aligned offsets, and documented servers resume from a chunk
-// boundary (or from the end of the file).
+// 仅信任分块对齐的范围：上传始终从分块对齐的偏移
+// 发送完整分块，且文档化的服务器从分块边界（或
+// 文件末尾）恢复。
 function isTrustedProgress(
   nextStart: number,
   start: number,

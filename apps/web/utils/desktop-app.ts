@@ -3,7 +3,7 @@ export type DesktopAuthProvider = "apple" | "google" | "microsoft";
 
 export const DESKTOP_WEB_UPDATE_CHECK_INTERVAL_MS = 15 * 60 * 1000;
 export type InboxZeroDesktopApi = {
-  /** Tells the shell this page hydrated; without it the shell reloads the page. */
+  /** 告知壳层此页面已完成水合；否则壳层会重新加载页面 */
   signalReady?: () => void;
   setUnreadCount?: (count: number) => void;
   openWindow?: (path: string) => Promise<void>;
@@ -21,7 +21,7 @@ export type InboxZeroDesktopApi = {
   onUpdateStatus?: (
     listener: (status: DesktopUpdateStatus) => void,
   ) => () => void;
-  /** True while the app opens the local mailbox, including any migrations. */
+  /** 应用打开本地邮箱（包括执行迁移）期间为 true */
   onMailEngineOpening?: (listener: (opening: boolean) => void) => () => void;
   installUpdate?: () => Promise<void>;
   wipeMailbox?: () => Promise<unknown>;
@@ -40,7 +40,7 @@ type DesktopDurationSummary = {
   maxMs: number;
 };
 
-/** Aggregated since the previous call from any window. */
+/** 自任意窗口上次调用以来聚合的统计数据 */
 export type DesktopHealth = {
   version: string;
   intervalMs: number;

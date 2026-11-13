@@ -6,7 +6,7 @@ export async function closeDesktopMailbox(
   try {
     await owner?.close();
   } catch {
-    // Logout and quit still proceed if the owner is already gone.
+    // 如果所有者已经消失，登出和退出仍然继续。
   }
 }
 

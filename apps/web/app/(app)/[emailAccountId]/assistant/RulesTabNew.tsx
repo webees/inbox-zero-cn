@@ -9,10 +9,7 @@ export function RulesTab() {
     <div>
       <div className="flex items-center mb-2 justify-between gap-2">
         <MutedText className="hidden sm:block">
-          <Trans>
-            Your assistant automatically organizes incoming emails using these
-            rules.
-          </Trans>
+          <Trans>你的助手会自动使用这些规则整理收到的邮件。</Trans>
         </MutedText>
 
         <div className="flex shrink-0 items-center gap-2">

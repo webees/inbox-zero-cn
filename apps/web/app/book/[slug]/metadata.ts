@@ -53,7 +53,7 @@ export function buildBookingLinkPageMetadata(
 }
 
 export function buildBookingLinkTitle(bookingLink: BookingLinkMetadata) {
-  const title = bookingLink.title.trim() || "Meeting";
+  const title = bookingLink.title.trim() || "会议";
   const hostName = bookingLink.hostName?.trim();
 
   return `${title} | ${hostName || BRAND_NAME}`;
@@ -63,7 +63,7 @@ export function buildBookingLinkDescription(bookingLink: BookingLinkMetadata) {
   const description = bookingLink.description?.trim();
   if (description) return description;
 
-  return `${bookingLink.durationMinutes} min meeting`;
+  return `${bookingLink.durationMinutes} 分钟会议`;
 }
 
 function getBookingLinkUrl(slug: string) {

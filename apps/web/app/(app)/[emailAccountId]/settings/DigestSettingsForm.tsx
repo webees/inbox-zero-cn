@@ -203,7 +203,7 @@ function LoadedDigestSettingsForm({
     {
       onError: (error) => {
         toastError({
-          title: t`Error updating digest schedule`,
+          title: t`更新邮件摘要计划时出错`,
           description: getActionErrorMessage(error.error),
         });
       },
@@ -330,14 +330,14 @@ function LoadedDigestSettingsForm({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
             <Label>
-              <Trans>What to include in the digest email</Trans>
+              <Trans>邮件摘要中包含什么</Trans>
             </Label>
             <MutedText className="mt-1">
-              <Trans>Selected rules are combined into one digest email.</Trans>
+              <Trans>选中的规则会合并到一封邮件摘要中</Trans>
             </MutedText>
             <div className="mt-3">
               <MultiSelectFilter
-                title={t`Digest Items`}
+                title={t`摘要项目`}
                 options={digestOptions}
                 selectedValues={selectedDigestItems}
                 setSelectedValues={setSelectedDigestItems}
@@ -348,13 +348,13 @@ function LoadedDigestSettingsForm({
 
           <div>
             <Label>
-              <Trans>Send the digest email</Trans>
+              <Trans>发送邮件摘要</Trans>
             </Label>
 
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
               <FormItem>
                 <Label htmlFor="frequency-select">
-                  <Trans>Every</Trans>
+                  <Trans>每</Trans>
                 </Label>
                 <Select
                   value={watchedValues.schedule}
@@ -363,7 +363,7 @@ function LoadedDigestSettingsForm({
                   <SelectTrigger id="frequency-select">
                     {watchedValues.schedule
                       ? selectedFrequency && i18n._(selectedFrequency.label)
-                      : t`Select...`}
+                      : t`选择...`}
                   </SelectTrigger>
                   <SelectContent>
                     {frequencies.map((f) => (
@@ -378,7 +378,7 @@ function LoadedDigestSettingsForm({
               {watchedValues.schedule !== "daily" && (
                 <FormItem>
                   <Label htmlFor="dayofweek-select">
-                    <Trans>on</Trans>
+                    <Trans>在</Trans>
                   </Label>
                   <Select
                     value={watchedValues.dayOfWeek}
@@ -402,24 +402,23 @@ function LoadedDigestSettingsForm({
 
               <TimePicker
                 id="time-picker"
-                label={t`at`}
+                label={t`于`}
                 value={watchedValues.time}
                 onChange={(value) => setValue("time", value)}
               />
             </div>
             <MutedText className="mt-2">
-              <Trans>Usually sent within 5 minutes.</Trans>
+              <Trans>通常在 5 分钟内发送</Trans>
               {digestStatus.delivery.estimatedNextDeliveryAt && (
                 <>
                   {" "}
                   <Trans>
-                    Next delivery around{" "}
+                    下次发送大约在{" "}
                     {formatDigestDeliveryTime(
                       new Date(digestStatus.delivery.estimatedNextDeliveryAt),
                       digestStatus.delivery.timezone,
                       i18n.locale,
                     )}
-                    .
                   </Trans>
                 </>
               )}
@@ -427,7 +426,7 @@ function LoadedDigestSettingsForm({
           </div>
 
           <Button type="submit" loading={isSubmitting} className="mt-4">
-            <Trans>Save</Trans>
+            <Trans>保存</Trans>
           </Button>
         </form>
 
@@ -462,14 +461,13 @@ function DigestDeliveryChannels({
     updateDigestEmailDeliveryAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: t`Settings saved` });
+        toastSuccess({ description: t`设置已保存` });
         mutate();
         mutateDigestStatus();
       },
       onError: (error) => {
         toastError({
-          description:
-            getActionErrorMessage(error.error) ?? t`Failed to update`,
+          description: getActionErrorMessage(error.error) ?? t`更新失败`,
         });
       },
     },
@@ -479,7 +477,7 @@ function DigestDeliveryChannels({
     <div className="space-y-2 pt-2">
       <div className="flex items-center justify-between gap-3">
         <Label>
-          <Trans>Send digest to email</Trans>
+          <Trans>将邮件摘要发送到邮箱</Trans>
         </Label>
         <Toggle
           name="digestSendEmail"
@@ -566,7 +564,7 @@ function EmailPreview({
       : null,
     async (url: string) => {
       const response = await fetch(url);
-      if (!response.ok) throw new Error("Failed to fetch preview");
+      if (!response.ok) throw new Error("无法获取预览");
       return response.text();
     },
     { keepPreviousData: true },
@@ -575,12 +573,12 @@ function EmailPreview({
   return (
     <div>
       <Label>
-        <Trans>Preview</Trans>
+        <Trans>预览</Trans>
       </Label>
       <div className="mt-3 border rounded-lg overflow-hidden bg-slate-50">
         {selectedDigestNames.length > 0 && htmlContent ? (
           <iframe
-            title={t`Digest preview`}
+            title={t`邮件摘要预览`}
             sandbox=""
             className="w-full min-h-[700px] max-h-[700px] bg-white"
             srcDoc={htmlContent}
@@ -588,7 +586,7 @@ function EmailPreview({
         ) : (
           <div className="text-center text-slate-500 py-8">
             <p>
-              <Trans>Select digest items to see a preview</Trans>
+              <Trans>选择摘要项目以查看预览</Trans>
             </p>
           </div>
         )}

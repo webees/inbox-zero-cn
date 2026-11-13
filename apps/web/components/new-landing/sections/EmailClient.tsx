@@ -24,7 +24,7 @@ export const EMAIL_CLIENT_SECTION_ID = "email-client";
 
 const LAUNCH_VIDEO = {
   playbackId: "1K01tCypmkqhB3OZwCzO9j0202K0089aqXX02tYpgoUzztmc",
-  title: msg`Meet the Inbox Zero email app`,
+  title: msg`认识 Inbox Zero 邮件应用`,
   thumbnailTime: 1.5,
 };
 
@@ -33,18 +33,18 @@ const starterPrice = tiers[0].price.annually;
 const reasons = [
   {
     icon: <Gift className="size-5" />,
-    title: msg`Free to use`,
-    description: msg`The app is free. Add the AI only if you want it.`,
+    title: msg`免费使用`,
+    description: msg`应用免费。只有需要时才添加 AI。`,
   },
   {
     icon: <Repeat className="size-5" />,
-    title: msg`No need to switch`,
-    description: msg`Prefer Gmail or Outlook? The AI works there too.`,
+    title: msg`无需切换`,
+    description: msg`更喜欢 Gmail 或 Outlook？AI 在这些平台同样可用。`,
   },
   {
     icon: <Zap className="size-5" />,
-    title: msg`Less than Superhuman`,
-    description: msg`AI drafts and a sorted inbox from $${starterPrice}/month, less than Superhuman charges.`,
+    title: msg`比 Superhuman 更便宜`,
+    description: msg`AI 起草和整理收件箱每月 $${starterPrice} 起，比 Superhuman 收费更低。`,
   },
 ];
 
@@ -55,12 +55,12 @@ export function EmailClient() {
   return (
     <Section id={EMAIL_CLIENT_SECTION_ID}>
       <SectionHeading>
-        <Trans>Fly through email on desktop and mobile</Trans>
+        <Trans>在桌面端和移动端高效处理邮件</Trans>
       </SectionHeading>
       <SectionSubtitle>
         <Trans>
-          Every Gmail and Outlook account in one inbox, on the web, Mac,
-          Windows, and iPhone. Like Superhuman, but free.
+          在网页、Mac、Windows 和 iPhone 上，将所有 Gmail 和 Outlook
+          邮箱账号集中到一个收件箱。类似 Superhuman，但免费。
         </Trans>
       </SectionSubtitle>
       <SectionContent>
@@ -102,7 +102,7 @@ export function EmailClient() {
           <Button size="lg" asChild>
             <Link href={MAIL_CLIENT_SIGNUP_PATH}>
               <span className="relative z-10">
-                <Trans>Try the email app free</Trans>
+                <Trans>免费试用邮件应用</Trans>
               </span>
             </Link>
           </Button>

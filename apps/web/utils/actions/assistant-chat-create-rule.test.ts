@@ -246,9 +246,7 @@ describe("confirmAssistantCreateRule", () => {
         provider: "google",
         logger,
       }),
-    ).rejects.toThrow(
-      "Rule was created but confirmation state could not be saved. Please refresh and try again.",
-    );
+    ).rejects.toThrow("规则已创建，但确认状态无法保存。请刷新后重试。");
 
     expect(createRuleMock).toHaveBeenCalledTimes(1);
     expect(prisma.chatMessage.updateMany).toHaveBeenCalledTimes(4);

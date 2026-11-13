@@ -36,8 +36,8 @@ export function WritingStyleSetting() {
 
   return (
     <SettingCard
-      title={t`Writing style`}
-      description={t`Define your tone and style.`}
+      title={t`写作风格`}
+      description={t`定义你的语气和风格。`}
       right={
         <LoadingContent
           loading={isLoading}
@@ -46,7 +46,7 @@ export function WritingStyleSetting() {
         >
           <WritingStyleDialog currentWritingStyle={data?.writingStyle || ""}>
             <Button variant="outline" size="sm">
-              {hasWritingStyle ? <Trans>Edit</Trans> : <Trans>Set</Trans>}
+              {hasWritingStyle ? <Trans>编辑</Trans> : <Trans>设置</Trans>}
             </Button>
           </WritingStyleDialog>
         </LoadingContent>
@@ -82,7 +82,7 @@ function WritingStyleDialog({
     {
       onSuccess: () => {
         toastSuccess({
-          description: t`Writing style saved!`,
+          description: t`写作风格已保存！`,
         });
         setOpen(false);
       },
@@ -103,10 +103,10 @@ function WritingStyleDialog({
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>
-            <Trans>Writing style</Trans>
+            <Trans>写作风格</Trans>
           </DialogTitle>
           <DialogDescription>
-            <Trans>Used to draft replies in your voice.</Trans>
+            <Trans>用于以你的语气撰写回复草稿。</Trans>
           </DialogDescription>
         </DialogHeader>
 
@@ -124,16 +124,16 @@ function WritingStyleDialog({
                   className="prose prose-sm dark:prose-invert max-w-none [&_p.is-editor-empty:first-child::before]:pointer-events-none [&_p.is-editor-empty:first-child::before]:float-left [&_p.is-editor-empty:first-child::before]:h-0 [&_p.is-editor-empty:first-child::before]:text-muted-foreground [&_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)]"
                   autofocus={false}
                   preservePastedLineBreaks
-                  placeholder={t`Typical Length: 2-3 sentences
+                  placeholder={t`典型长度：2-3 句话
 
-Formality: Informal but professional
+正式程度：非正式但专业
 
-Common Greeting: Hey,
+常用问候语：嘿，
 
-Notable Traits:
-- Uses contractions frequently
-- Concise and direct responses
-- Minimal closings`}
+显著特点：
+- 经常使用缩略形式
+- 回复简洁直接
+- 结尾简短`}
                 />
               </div>
             )}
@@ -144,7 +144,7 @@ Notable Traits:
             </p>
           )}
           <Button type="submit" className="mt-4" loading={isExecuting}>
-            <Trans>Save</Trans>
+            <Trans>保存</Trans>
           </Button>
         </form>
       </DialogContent>

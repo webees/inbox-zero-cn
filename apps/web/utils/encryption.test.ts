@@ -91,25 +91,21 @@ describe("Encryption Utilities", () => {
     });
 
     it("throws on an unknown version prefix", () => {
-      expect(() => decryptToken("v9:deadbeef")).toThrow(
-        /Unknown encryption version/,
-      );
+      expect(() => decryptToken("v9:deadbeef")).toThrow(/未知的加密版本/);
     });
 
     it("throws when plaintext coincidentally looks like `v1:<hex>` (documented edge case)", () => {
-      // A user whose plaintext value happens to be a valid-looking v1 blob
-      // (e.g. `v1:deadbeefdeadbeef...`) will hit the versioned path and fail
-      // the GCM auth check. This is only reachable for rows that were stored
-      // plaintext *before* encryption was enabled for a field; new writes go
-      // through encrypt() and this exact string would be stored as ciphertext.
+      // 明文值恰好看起来像合法 v1 blob 的用户（例如 `v1:deadbeefdeadbeef...`）
+      // 会进入带版本的路径并无法通过 GCM 认证校验。
+      // 这只对在某个字段启用加密*之前*就已存储的明文行可达；
+      // 新写入会经过 encrypt()，这个确切的字符串会被存储为密文。
       const hexPayload = "00".repeat(32);
       expect(() => decryptToken(`v1:${hexPayload}`)).toThrow();
     });
 
     it("double-encrypted value decrypts one layer at a time", () => {
-      // Guards against future callers accidentally wrapping an already-encrypted
-      // value through the write path a second time. Each decrypt should peel
-      // exactly one layer.
+      // 防止未来的调用者意外地将已加密的值再次经过写入路径包装。
+      // 每次解密应恰好剥离一层。
       const inner = encryptToken("hunter2") as string;
       const outer = encryptToken(inner) as string;
       expect(outer).not.toBe(inner);

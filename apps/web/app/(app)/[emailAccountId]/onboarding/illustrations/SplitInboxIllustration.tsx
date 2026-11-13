@@ -12,65 +12,65 @@ import { SplitTabs } from "@/app/(app)/[emailAccountId]/mail/SplitTabs";
 import { IllustrationWindow } from "@/app/(app)/[emailAccountId]/onboarding/illustrations/IllustrationWindow";
 
 const ALL_SPLIT_ID = "All";
-const splitNames = ["To Reply", "Newsletter", "Calendar", "Receipt"];
-// The tabs the illustration steps through to show a split narrowing the list.
-const cycle = [ALL_SPLIT_ID, "To Reply", "Newsletter"];
+const splitNames = ["待回复", "新闻邮件", "日历", "收据"];
+// 示意图依次切换这些标签页，以展示分类逐步缩小列表范围。
+const cycle = [ALL_SPLIT_ID, "待回复", "新闻邮件"];
 
 const threads = [
   {
     from: "Sarah Chen",
-    subject: msg`Q3 planning: can you review?`,
-    snippet: msg`I put together a first pass at the roadmap and would love your eyes on it`,
-    date: msg`10:24 AM`,
-    label: "To Reply",
+    subject: msg`第三季度规划：你能审核一下吗？`,
+    snippet: msg`我先起草了一版路线图，很想听听你的意见`,
+    date: msg`上午 10:24`,
+    label: "待回复",
     unread: true,
   },
   {
     from: "The Weekly Digest",
-    subject: msg`Five ideas worth stealing this week`,
-    snippet: msg`Plus a deep dive on pricing pages that convert`,
-    date: msg`9:40 AM`,
-    label: "Newsletter",
+    subject: msg`本周值得借鉴的五个点子`,
+    snippet: msg`此外还有一篇关于高转化定价页面的深度分析`,
+    date: msg`上午 9:40`,
+    label: "新闻邮件",
     unread: true,
   },
   {
     from: "Priya Patel",
-    subject: msg`Can we move Thursday's call?`,
-    snippet: msg`Something came up on my end. Would Friday morning work instead?`,
-    date: msg`9:12 AM`,
-    label: "To Reply",
+    subject: msg`我们能把周四的通话改个时间吗？`,
+    snippet: msg`我这边临时有事。改成周五上午可以吗？`,
+    date: msg`上午 9:12`,
+    label: "待回复",
     unread: true,
   },
   {
     from: "Jordan Lee",
-    subject: msg`Invitation: Design sync`,
-    snippet: msg`Thursday 2:00 PM to 2:30 PM. Join with video link`,
-    date: msg`8:55 AM`,
-    label: "Calendar",
+    subject: msg`邀请：设计同步会`,
+    snippet: msg`周四下午 2:00 至 2:30。请通过视频链接加入`,
+    date: msg`上午 8:55`,
+    label: "日历",
     unread: false,
   },
   {
     from: "Acme Billing",
-    subject: msg`Your receipt #2041`,
-    snippet: msg`Thanks for your payment of $49.00. Your receipt is attached`,
-    date: msg`Yesterday`,
-    label: "Receipt",
+    subject: msg`你的收据 #2041`,
+    snippet: msg`感谢你支付 $49.00。收据已附上`,
+    date: msg`昨天`,
+    label: "收据",
     unread: false,
   },
   {
     from: "Product Notes",
-    subject: msg`What we shipped in October`,
-    snippet: msg`Faster search, offline mode, and a new keyboard shortcut sheet`,
-    date: msg`Yesterday`,
-    label: "Newsletter",
+    subject: msg`我们十月发布的新功能`,
+    snippet: msg`更快的搜索、离线模式，以及全新的键盘快捷键一览表`,
+    date: msg`昨天`,
+    label: "新闻邮件",
     unread: false,
   },
   {
     from: "Marcus Wright",
-    subject: msg`Re: Intro to the design team`,
-    snippet: msg`Great to meet you! Happy to share the brand guidelines`,
-    date: msg`Mon`,
-    label: "To Reply",
+    subject: msg`回复：设计团队介绍`,
+    snippet: msg`很高兴认识你！我很乐意分享品牌规范`,
+    date: msg`周一`,
+    label: "待回复",
     unread: false,
   },
 ];
@@ -83,10 +83,10 @@ const countsById = new Map(
 );
 
 const sidebarItems = [
-  { id: "inbox", name: msg`Inbox`, Icon: InboxIcon, count: threads.length },
-  { id: "starred", name: msg`Starred`, Icon: StarIcon, count: null },
-  { id: "sent", name: msg`Sent`, Icon: SendIcon, count: null },
-  { id: "drafts", name: msg`Drafts`, Icon: FileIcon, count: null },
+  { id: "inbox", name: msg`收件箱`, Icon: InboxIcon, count: threads.length },
+  { id: "starred", name: msg`已加星标`, Icon: StarIcon, count: null },
+  { id: "sent", name: msg`已发送`, Icon: SendIcon, count: null },
+  { id: "drafts", name: msg`草稿`, Icon: FileIcon, count: null },
 ];
 
 export function SplitInboxIllustration() {
@@ -107,8 +107,8 @@ export function SplitInboxIllustration() {
       : threads.filter((thread) => thread.label === activeSplitId);
   const splits = [ALL_SPLIT_ID, ...splitNames].map((id) => ({
     id,
-    // Split names are real label names, so only "All" is translated.
-    name: id === ALL_SPLIT_ID ? i18n._(msg`All`) : id,
+    // Split names are real label names, so only "全部" is translated.
+    name: id === ALL_SPLIT_ID ? i18n._(msg`全部`) : id,
     deletable: false,
   }));
 

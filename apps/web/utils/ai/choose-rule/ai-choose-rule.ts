@@ -16,12 +16,7 @@ import type { ClassificationFeedbackItem } from "@/utils/rule/classification-fee
 type GetAiResponseOptions = {
   email: EmailForLLM;
   emailAccount: EmailAccountWithAI;
-  rules: {
-    selectionId: string;
-    name: string;
-    instructions: string;
-    systemType?: string | null;
-  }[];
+  rules: { name: string; instructions: string; systemType?: string | null }[];
   modelType?: ModelType;
   classificationFeedback?: ClassificationFeedbackItem[] | null;
 };
@@ -49,18 +44,10 @@ export async function aiChooseRule<
   if (!rules.length) return { rules: [], reason: "No rules to evaluate" };
 
   const orderedRules = sortRulesByCanonicalOrder(rules);
-  // Schema values bypass prompt redaction, so only generated IDs belong there.
-  const rulesById = new Map<string, T>(
-    orderedRules.map((rule, index) => [`rule-${index + 1}`, rule] as const),
-  );
-  const offeredRules = Array.from(rulesById, ([selectionId, rule]) => ({
-    ...rule,
-    selectionId,
-  }));
 
   const { result: aiResponse } = await getAiResponse({
     email,
-    rules: offeredRules,
+    rules: orderedRules,
     emailAccount,
     modelType,
     classificationFeedback,
@@ -68,8 +55,8 @@ export async function aiChooseRule<
 
   const rulesWithMetadata = aiResponse.matchedRules
     .map((match) => {
-      if (!match.ruleId) return;
-      const rule = rulesById.get(match.ruleId);
+      if (!match.ruleName) return;
+      const rule = findReturnedRule(orderedRules, match.ruleName);
       return rule ? { rule, isPrimary: match.isPrimary } : undefined;
     })
     .filter(isDefined);
@@ -77,7 +64,7 @@ export async function aiChooseRule<
   logAiChooseRuleResult({
     aiResponse,
     logger,
-    rulesById,
+    orderedRules,
     rulesWithMetadata,
   });
 
@@ -88,11 +75,11 @@ export async function aiChooseRule<
     };
   }
 
-  // A claimed match must resolve to an offered ID rather than silently
-  // recording the email as skipped.
+  // The model claimed a match but named no rule we offered (an invented name,
+  // or no name at all). Fail loudly instead of recording the email as skipped.
   if (!rulesWithMetadata.length) {
     throw new Error(
-      `AI rule selection claimed a match but did not resolve to any offered rule (returned ${aiResponse.matchedRules.length} rule ID(s) for ${orderedRules.length} candidate(s))`,
+      `AI 规则选择声称匹配，但没有解析出任何候选规则（返回了 ${aiResponse.matchedRules.length} 个规则名称，候选规则为 ${orderedRules.length} 个）`,
     );
   }
 
@@ -104,7 +91,7 @@ export async function aiChooseRule<
 
 async function getAiResponse(options: GetAiResponseOptions): Promise<{
   result: {
-    matchedRules: { ruleId: string; isPrimary?: boolean }[];
+    matchedRules: { ruleName: string; isPrimary?: boolean }[];
     reasoning: string;
     noMatchFound: boolean;
   };
@@ -122,7 +109,7 @@ async function getAiResponse(options: GetAiResponseOptions): Promise<{
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Choose rule",
+    label: "选择规则",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "full" },
     cacheSystemPrompt: true,
@@ -176,7 +163,7 @@ async function getAiResponseSingleRule({
   2. If the email doesn't match any specific rule but the user has a catch-all rule (like "emails that don't match other criteria"), use that catch-all rule.
   3. Only set "noMatchFound" to true if no user-defined rule can reasonably apply.
   4. Be concise in your reasoning - avoid repetitive explanations.
-  5. Return the rule ID from the list below.
+  5. Provide only the exact rule name from the list below.
   </priority>
 
   <guidelines>
@@ -196,7 +183,7 @@ Respond with a valid JSON object:
 Example response format:
 {
   "reasoning": "This email is a newsletter subscription",
-  "ruleId": "rule-1",
+  "ruleName": "Newsletter",
   "noMatchFound": false
 }`;
 
@@ -214,25 +201,25 @@ ${stringifyEmail(email, 500)}
       reasoning: z
         .string()
         .describe("The reason you chose the rule. Keep it concise"),
-      ruleId: z
-        .enum(rules.map((rule) => rule.selectionId))
+      ruleName: z
+        .string()
         .nullable()
-        .describe("The ID of the rule you want to apply"),
+        .describe("The exact name of the rule you want to apply"),
       noMatchFound: z
         .boolean()
         .describe("True if no match was found, false otherwise"),
     }),
   });
 
-  const hasRuleId = !!aiResponse.object?.ruleId;
+  const hasRuleName = !!aiResponse.object?.ruleName;
 
   return {
     result: {
       matchedRules:
-        hasRuleId && aiResponse.object.ruleId
-          ? [{ ruleId: aiResponse.object.ruleId, isPrimary: true }]
+        hasRuleName && aiResponse.object.ruleName
+          ? [{ ruleName: aiResponse.object.ruleName, isPrimary: true }]
           : [],
-      noMatchFound: aiResponse.object?.noMatchFound ?? !hasRuleId,
+      noMatchFound: aiResponse.object?.noMatchFound ?? !hasRuleName,
       reasoning: aiResponse.object?.reasoning,
     },
     modelOptions,
@@ -257,7 +244,7 @@ async function getAiResponseMultiRule({
   const rulesSection = rules
     .map(
       (rule) =>
-        `<rule>\n<id>${rule.selectionId}</id>\n<name>${rule.name}</name>\n<instructions>${rule.instructions}</instructions>\n</rule>`,
+        `<rule>\n<name>${rule.name}</name>\n<instructions>${rule.instructions}</instructions>\n</rule>`,
     )
     .join("\n");
 
@@ -295,7 +282,7 @@ Respond with a valid JSON object:
 
 Example response format (single rule):
 {
-  "matchedRules": [{ "ruleId": "rule-1", "isPrimary": true }],
+  "matchedRules": [{ "ruleName": "Newsletter", "isPrimary": true }],
   "noMatchFound": false,
   "reasoning": "This is a newsletter subscription"
 }
@@ -303,8 +290,8 @@ Example response format (single rule):
 Example response format (multiple rules):
 {
   "matchedRules": [
-    { "ruleId": "rule-1", "isPrimary": true },
-    { "ruleId": "rule-2", "isPrimary": false }
+    { "ruleName": "To Reply", "isPrimary": true },
+    { "ruleName": "Team Emails", "isPrimary": false }
   ],
   "noMatchFound": false,
   "reasoning": "This email requires a response and is from a team member"
@@ -328,9 +315,7 @@ ${stringifyEmail(email, 500)}
       matchedRules: z
         .array(
           z.object({
-            ruleId: z
-              .enum(rules.map((rule) => rule.selectionId))
-              .describe("The ID of the rule"),
+            ruleName: z.string().describe("The exact name of the rule"),
             isPrimary: z
               .boolean()
               .describe(
@@ -372,48 +357,82 @@ function logAiChooseRuleResult<
 >({
   aiResponse,
   logger,
-  rulesById,
+  orderedRules,
   rulesWithMetadata,
 }: {
   aiResponse: {
-    matchedRules: { ruleId: string; isPrimary?: boolean }[];
+    matchedRules: { ruleName: string; isPrimary?: boolean }[];
     reasoning: string;
     noMatchFound: boolean;
   };
   logger: Logger;
-  rulesById: ReadonlyMap<string, T>;
+  orderedRules: T[];
   rulesWithMetadata: { rule: T; isPrimary?: boolean }[];
 }) {
-  const candidates = Array.from(rulesById.values());
-  const returnedRuleIds = aiResponse.matchedRules
-    .map((match) => match.ruleId)
+  const candidateRuleNames = orderedRules.map((rule) => rule.name);
+  const returnedRuleNames = aiResponse.matchedRules
+    .map((match) => match.ruleName)
     .filter(Boolean);
-  const unresolvedRuleIds = returnedRuleIds.filter(
-    (ruleId) => !rulesById.has(ruleId),
+  const resolvedRuleNames = rulesWithMetadata.map(({ rule }) => rule.name);
+  const unresolvedRuleNames = returnedRuleNames.filter(
+    (ruleName) => !findReturnedRule(orderedRules, ruleName),
   );
+
   const logPayload = {
-    candidateRuleCount: candidates.length,
+    candidateRuleCount: candidateRuleNames.length,
+    candidateRuleNames: joinLogValues(candidateRuleNames),
     candidateSystemTypes: joinLogValues(
-      candidates.map((rule) => rule.systemType ?? "custom"),
+      orderedRules.map((rule) => rule.systemType ?? "custom"),
     ),
-    returnedRuleCount: returnedRuleIds.length,
-    returnedRuleIds: joinLogValues(returnedRuleIds),
-    resolvedRuleCount: rulesWithMetadata.length,
-    unresolvedRuleCount: unresolvedRuleIds.length,
-    unresolvedRuleIds: joinLogValues(unresolvedRuleIds),
+    returnedRuleCount: returnedRuleNames.length,
+    returnedRuleNames: joinLogValues(returnedRuleNames),
+    resolvedRuleCount: resolvedRuleNames.length,
+    resolvedRuleNames: joinLogValues(resolvedRuleNames),
+    unresolvedRuleCount: unresolvedRuleNames.length,
+    unresolvedRuleNames: joinLogValues(unresolvedRuleNames),
     noMatchFound: aiResponse.noMatchFound,
     reasoningPresent: !!aiResponse.reasoning,
   };
-  if (rulesWithMetadata.length === 0) {
+
+  if (resolvedRuleNames.length === 0) {
     logger.warn("AI choose rule returned no usable rule", logPayload);
   } else {
     logger.info("AI choose rule completed", logPayload);
   }
-  if (aiResponse.reasoning)
+
+  if (aiResponse.reasoning) {
     logger.trace("AI choose rule reasoning", {
       reasoning: aiResponse.reasoning,
     });
+  }
 }
+
+// Some models leak JSON syntax into the string value (e.g. `Newsletter',` or
+// `Newsletter», noMatchFound: false}`) or append extra words after the name
+// (e.g. the rule's description), so also accept a rule name followed by
+// whitespace or stray quote/brace/comma characters. The longest name wins so
+// "To Reply Later'," never resolves to "To Reply".
+function findReturnedRule<T extends { name: string }>(
+  rules: T[],
+  returnedName: string,
+): T | undefined {
+  const normalized = returnedName.trim().toLowerCase();
+
+  const exact = rules.find((rule) => rule.name.toLowerCase() === normalized);
+  if (exact) return exact;
+
+  return rules
+    .filter((rule) => {
+      const name = rule.name.toLowerCase();
+      return (
+        normalized.startsWith(name) &&
+        NAME_SUFFIX_BOUNDARY.test(normalized.slice(name.length))
+      );
+    })
+    .sort((a, b) => b.name.length - a.name.length)[0];
+}
+
+const NAME_SUFFIX_BOUNDARY = /^[\s"'`\u00ab\u00bb\u201c\u201d\u2018\u2019}\],]/;
 
 function joinLogValues(values: (string | null | undefined)[]) {
   return values.filter(isDefined).join(", ");
@@ -425,13 +444,11 @@ function formatClassificationFeedback(
   if (!feedback?.length) return "";
 
   const lines = feedback.map((entry) => {
-    const subject = entry.subject
-      ? `"${entry.subject}"`
-      : "(email no longer available)";
+    const subject = entry.subject ? `"${entry.subject}"` : "（邮件已不可用）";
     if (entry.eventType === "LABEL_ADDED") {
       return `- ${subject} → ${entry.ruleName}`;
     }
-    return `- ${subject} removed from ${entry.ruleName}`;
+    return `- ${subject} 已从 ${entry.ruleName} 中移除`;
   });
 
   return `<classification_feedback>
@@ -441,7 +458,7 @@ These are hints from past user actions. Still evaluate the current email on its 
 </classification_feedback>`;
 }
 
-// Per-sender feedback stays out of the system prompt so the prefix is cacheable.
+// 每个发件人的反馈不放入系统提示词，以便前缀可缓存。
 function appendClassificationFeedback(
   feedback: ClassificationFeedbackItem[] | null | undefined,
 ): string {

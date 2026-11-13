@@ -111,7 +111,7 @@ export default function DrivePage() {
         {view === "settings" && (
           <>
             <div className="flex items-center justify-between">
-              <PageHeader title={t`Auto-file attachments`} />
+              <PageHeader title={t`自动归档附件`} />
               <div className="flex items-center gap-3">
                 <DeliveryPopover
                   emailAccountId={emailAccountId}
@@ -122,7 +122,7 @@ export default function DrivePage() {
                 />
                 {!filingEnabled && (
                   <Badge variant="destructive">
-                    <Trans>Paused</Trans>
+                    <Trans>已暂停</Trans>
                   </Badge>
                 )}
                 <Switch
@@ -179,12 +179,12 @@ function DeliveryPopover({
     updateFilingConfirmationEmailAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: t`Settings saved` });
+        toastSuccess({ description: t`设置已保存` });
         onEmailDeliveryUpdated();
       },
       onError: (error) => {
         toastError({
-          description: getActionErrorMessage(error.error, t`Failed to update`),
+          description: getActionErrorMessage(error.error, t`更新失败`),
         });
       },
     },
@@ -205,17 +205,17 @@ function DeliveryPopover({
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm">
-          <Trans>Delivery</Trans>
+          <Trans>发送方式</Trans>
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-80">
         <div className="space-y-3">
           <div>
             <h4 className="text-sm font-medium">
-              <Trans>Delivery</Trans>
+              <Trans>发送方式</Trans>
             </h4>
             <MutedText className="text-xs">
-              <Trans>Choose how filing updates should reach you</Trans>
+              <Trans>选择接收归档更新的方式</Trans>
             </MutedText>
           </div>
 
@@ -224,7 +224,7 @@ function DeliveryPopover({
               <div className="flex items-center gap-2">
                 <MailIcon className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm">
-                  <Trans>Email confirmations</Trans>
+                  <Trans>邮件确认</Trans>
                 </span>
               </div>
               <Toggle
@@ -235,9 +235,7 @@ function DeliveryPopover({
               />
             </div>
             <MutedText className="text-xs">
-              <Trans>
-                Questions that need your input still arrive by email.
-              </Trans>
+              <Trans>需要你提供信息的问题仍会通过电子邮件发送给你。</Trans>
             </MutedText>
           </div>
 
@@ -245,7 +243,7 @@ function DeliveryPopover({
             (configurableChannels.length > 0 || slackAvailable) && (
               <div className="space-y-2 border-t pt-3">
                 <MutedText className="text-xs">
-                  <Trans>Connected apps</Trans>
+                  <Trans>已连接的应用</Trans>
                 </MutedText>
                 {configurableChannels.length > 0 ? (
                   <div className="space-y-2">
@@ -261,14 +259,14 @@ function DeliveryPopover({
                 ) : (
                   <MutedText className="text-xs">
                     <Trans>
-                      Select a destination in{" "}
+                      在{" "}
                       <Link
                         href={prefixPath(emailAccountId, "/channels")}
                         className="underline text-foreground"
                       >
-                        Channels
+                        渠道
                       </Link>{" "}
-                      to enable app notifications.
+                      中选择一个目标，以启用应用通知。
                     </Trans>
                   </MutedText>
                 )}
@@ -277,7 +275,7 @@ function DeliveryPopover({
 
           {isLoading && (
             <MutedText className="text-xs">
-              <Trans>Loading connected apps...</Trans>
+              <Trans>正在加载已连接的应用...</Trans>
             </MutedText>
           )}
         </div>

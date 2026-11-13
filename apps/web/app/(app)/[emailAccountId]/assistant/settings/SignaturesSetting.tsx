@@ -51,11 +51,11 @@ export function SignaturesSetting() {
   return (
     <SettingCard
       title={t`More signatures`}
-      description={t`Switch between signatures when you write, like one per language.`}
+      description={t`写信时可切换不同签名，例如每种语言使用一个签名`}
       right={
         <>
           <Button size="sm" variant="outline" onClick={() => setOpen(true)}>
-            <Trans>Manage</Trans>
+            <Trans>管理</Trans>
           </Button>
           <SignaturesDialog open={open} onOpenChange={setOpen} />
         </>
@@ -80,16 +80,13 @@ export function SignaturesDialog({
       <DialogContent className="max-h-[80vh] max-w-4xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            <Trans>Signatures</Trans>
+            <Trans>签名</Trans>
           </DialogTitle>
           <DialogDescription>
             {needsDefault ? (
-              <Trans>Pick the signature to add to emails you send.</Trans>
+              <Trans>选择要添加到所发邮件中的签名。</Trans>
             ) : (
-              <Trans>
-                Pick one of these instead of your default signature when you
-                compose.
-              </Trans>
+              <Trans>撰写邮件时，可选择其中任一签名替代默认签名。</Trans>
             )}
           </DialogDescription>
         </DialogHeader>
@@ -146,7 +143,7 @@ function SignaturesManager({
     const result = await findSent();
     if (result?.serverError) {
       toastError({
-        title: t`Error searching sent mail`,
+        title: t`搜索已发邮件时出错`,
         description: result.serverError,
       });
       return;
@@ -154,8 +151,8 @@ function SignaturesManager({
     const sentSignatures = result?.data?.signatures ?? [];
     if (sentSignatures.length === 0)
       toastInfo({
-        title: t`No new signatures found`,
-        description: t`Your recent sent mail only uses signatures you have.`,
+        title: t`未找到新签名`,
+        description: t`你最近的已发邮件只使用了现有签名`,
       });
     setFound(sentSignatures);
   };
@@ -165,7 +162,7 @@ function SignaturesManager({
       <div className="flex flex-wrap gap-2">
         <Button size="sm" onClick={() => setEditing({ name: "", html: "" })}>
           <Plus className="mr-2 size-4" />
-          <Trans>Add</Trans>
+          <Trans>添加</Trans>
         </Button>
         <Button
           size="sm"
@@ -174,14 +171,14 @@ function SignaturesManager({
           onClick={handleFind}
         >
           <Search className="mr-2 size-4" />
-          <Trans>Find in sent mail</Trans>
+          <Trans>在已发邮件中查找</Trans>
         </Button>
       </div>
 
       {found.length > 0 && (
         <div className="space-y-2">
           <h4 className="font-medium text-sm">
-            <Trans>Found in your sent mail</Trans>
+            <Trans>在已发邮件中找到</Trans>
           </h4>
           {found.map((item) => (
             <Card key={item.html} className="flex items-start gap-4 p-3">
@@ -191,9 +188,9 @@ function SignaturesManager({
                   className="h-28 min-h-0"
                 />
                 <p className="mt-1 text-muted-foreground text-xs">
-                  {t`Used in ${plural(item.count, {
-                    one: "# recent email",
-                    other: "# recent emails",
+                  {t`用于 ${plural(item.count, {
+                    one: "# 封近期邮件",
+                    other: "# 封近期邮件",
                   })}`}
                 </p>
               </div>
@@ -204,7 +201,7 @@ function SignaturesManager({
                     loading={isSavingDefault}
                     onClick={() => handleUseAsDefault(item.html)}
                   >
-                    <Trans>Use as default</Trans>
+                    <Trans>设为默认</Trans>
                   </Button>
                 )}
                 <Button
@@ -212,7 +209,7 @@ function SignaturesManager({
                   variant="outline"
                   onClick={() => setEditing({ name: "", html: item.html })}
                 >
-                  <Trans>Add</Trans>
+                  <Trans>添加</Trans>
                 </Button>
               </div>
             </Card>
@@ -224,8 +221,7 @@ function SignaturesManager({
         {signatures.length === 0 ? (
           <p className="text-muted-foreground text-sm">
             <Trans>
-              No other signatures yet. Add one, or find the ones you already use
-              in your sent mail.
+              暂无其他签名。你可以添加一个，或在已发邮件中查找已有签名。
             </Trans>
           </p>
         ) : (
@@ -257,14 +253,10 @@ function SignaturesManager({
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>
-              {editing?.id ? (
-                <Trans>Edit signature</Trans>
-              ) : (
-                <Trans>Add signature</Trans>
-              )}
+              {editing?.id ? <Trans>编辑签名</Trans> : <Trans>添加签名</Trans>}
             </DialogTitle>
             <DialogDescription className="sr-only">
-              <Trans>Name the signature and set its content.</Trans>
+              <Trans>为签名命名并设置其内容。</Trans>
             </DialogDescription>
           </DialogHeader>
           {editing && (
@@ -307,12 +299,12 @@ function SignatureRow({
       </div>
       <div className="flex gap-2">
         <Button size="sm" variant="outline" onClick={onEdit}>
-          <Trans>Edit</Trans>
+          <Trans>编辑</Trans>
         </Button>
         <ConfirmDialog
-          title={t`Delete signature`}
-          description={t`Delete ${signature.name}? This cannot be undone.`}
-          confirmText={t`Delete`}
+          title={t`删除签名`}
+          description={t`删除 ${signature.name}？此操作无法撤销。`}
+          confirmText={t`删除`}
           onConfirm={async () => {
             try {
               setIsDeleting(true);
@@ -321,7 +313,7 @@ function SignatureRow({
               });
               if (result?.serverError) {
                 toastError({
-                  title: t`Error deleting signature`,
+                  title: t`删除签名时出错`,
                   description: result.serverError,
                 });
                 return;
@@ -381,7 +373,7 @@ function SignatureForm({
       });
       return;
     }
-    toastSuccess({ description: t`Signature saved` });
+    toastSuccess({ description: t`签名已保存` });
     onSaved(signature.html);
   };
 
@@ -390,8 +382,8 @@ function SignatureForm({
       <Input
         type="text"
         name="name"
-        label={t`Name`}
-        placeholder={t`German`}
+        label={t`名称`}
+        placeholder={t`德语`}
         registerProps={register("name")}
         error={errors.name}
       />
@@ -401,14 +393,14 @@ function SignatureForm({
           autosizeTextarea
           rows={8}
           name="html"
-          label={t`Signature (HTML supported)`}
+          label={t`签名（支持 HTML）`}
           registerProps={register("html")}
           error={errors.html}
         />
         <SignaturePreview signature={watch("html")} />
       </div>
       <Button type="submit" loading={isSubmitting}>
-        <Trans>Save signature</Trans>
+        <Trans>保存签名</Trans>
       </Button>
     </form>
   );

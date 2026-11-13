@@ -103,7 +103,7 @@ export function MailApp({
           type="button"
           onClick={() => host.compose?.()}
         >
-          Compose
+          写邮件
         </button>
       ) : null}
       <button
@@ -111,9 +111,9 @@ export function MailApp({
         type="button"
         onClick={() => setSearch("")}
       >
-        Inbox
+        收件箱
       </button>
-      <div style={styles.sidebarHeading}>Accounts</div>
+      <div style={styles.sidebarHeading}>账号</div>
       {accountList.map((account) => (
         <button
           key={account.id}
@@ -142,7 +142,7 @@ export function MailApp({
         type="button"
         onClick={() => host.openSettings()}
       >
-        Settings
+        设置
       </button>
     </aside>
   );
@@ -156,12 +156,12 @@ export function MailApp({
       bodyStyle={styles.body}
       sidebar={sidebar}
     >
-      <section aria-label="Mailbox" style={styles.listPane}>
+      <section aria-label="邮箱" style={styles.listPane}>
         <header style={styles.toolbar}>
           <label style={styles.searchLabel}>
-            Search
+            搜索
             <input
-              aria-label="Search"
+              aria-label="搜索"
               style={styles.searchInput}
               value={search}
               onChange={(event) => setSearch(event.target.value)}
@@ -175,13 +175,13 @@ export function MailApp({
               client.requestSync(query.accountIds).catch(() => undefined)
             }
           >
-            Sync
+            同步
           </button>
         </header>
         <StatusLine mailbox={mailbox} />
         <MailboxThreadList
           className="mail-thread-list"
-          emptyMessage="No emails in this view"
+          emptyMessage="此视图没有邮件"
           focusedIndex={Math.max(
             0,
             conversations.findIndex(
@@ -318,7 +318,7 @@ function ConversationListRow({
               onArchive();
             }}
           >
-            Archive
+            归档
           </button>
           <button
             type="button"
@@ -327,7 +327,7 @@ function ConversationListRow({
               onMarkRead();
             }}
           >
-            Mark as read
+            标记为已读
           </button>
         </div>
       }
@@ -354,7 +354,7 @@ function ConversationListRow({
       rowRef={rowRef}
       selectionEnabled={false}
       snippet={item.preview}
-      subject={item.subject || "(no subject)"}
+      subject={item.subject || "（无主题）"}
     />
   );
 }
@@ -367,21 +367,21 @@ function StatusLine({
   if (mailbox.data?.connection === "blocked_auth") {
     return (
       <p role="status" style={styles.status}>
-        Reconnect this account to continue syncing.
+        重新连接此账号以继续同步。
       </p>
     );
   }
   if (mailbox.data?.connection === "offline") {
     return (
       <p role="status" style={styles.status}>
-        Waiting to sync. Catch-up will retry automatically.
+        等待同步。补齐将自动重试。
       </p>
     );
   }
   return (
     <p style={styles.status}>
       {mailbox.status === "ready"
-        ? `${mailbox.data?.counts.matchingConversations ?? 0} conversations`
+        ? `${mailbox.data?.counts.matchingConversations ?? 0} 个会话`
         : mailbox.status}
     </p>
   );
@@ -405,13 +405,9 @@ function ConversationReader({
   onMarkRead: (read: boolean) => void;
 }) {
   if (conversation.status === "loading")
-    return <div style={styles.emptyReader}>Loading…</div>;
+    return <div style={styles.emptyReader}>加载中…</div>;
   if (conversation.error)
-    return (
-      <div style={styles.emptyReader}>
-        This conversation could not be loaded.
-      </div>
-    );
+    return <div style={styles.emptyReader}>无法加载此会话。</div>;
 
   const messages = conversation.data?.messages ?? [];
   const header = messages.at(-1);
@@ -429,13 +425,13 @@ function ConversationReader({
       }}
       renderLoadMoreButton={({ disabled, onClick }) => (
         <button disabled={disabled} onClick={onClick} type="button">
-          Next messages
+          下一批邮件
         </button>
       )}
     >
       {onPreviousPage ? (
         <button onClick={onPreviousPage} type="button">
-          Previous messages
+          上一批邮件
         </button>
       ) : null}
       <MailReaderToolbar
@@ -450,12 +446,12 @@ function ConversationReader({
         onBackToInbox={onBack}
         onMarkRead={() => onMarkRead(true)}
         onMarkUnread={() => onMarkRead(false)}
-        subject={header?.metadata.subject || "Conversation"}
+        subject={header?.metadata.subject || "会话"}
       />
       <MailMessageStack
         messages={messages.map((message) => ({
           id: message.key.messageId,
-          subject: message.metadata.subject || "(no subject)",
+          subject: message.metadata.subject || "（无主题）",
           from: message.metadata.from,
           receivedAtMs: message.metadata.receivedAtMs,
           body:

@@ -1,6 +1,7 @@
+import { load } from "cheerio";
 import type { ParsedMessage } from "@/utils/types";
 import { buildReplyQuote } from "@/utils/email/reply-quote";
-import { renderReplyBodyHtml } from "@/utils/email/reply-body-html";
+import { convertNewlinesToBr, escapeHtml } from "@/utils/string";
 
 export const createOutlookReplyContent = ({
   textContent,
@@ -17,7 +18,7 @@ export const createOutlookReplyContent = ({
   const { dirAttribute, quotedHeaderHtml, quotedContentHtml, text } =
     buildReplyQuote({ textContent, message });
   const contentHtml =
-    htmlContent || (textContent ? renderReplyBodyHtml(textContent) : "");
+    htmlContent || (textContent ? renderMixedContentAsHtml(textContent) : "");
 
   const outlookFontStyle =
     "font-family: Aptos, Calibri, Arial, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);";
@@ -34,3 +35,18 @@ export const createOutlookReplyContent = ({
 
   return { text, html };
 };
+
+// 保持 HTML 签名结构完整：仅顶层文本换行。
+function renderMixedContentAsHtml(content: string): string {
+  const $ = load(content, null, false);
+
+  $.root()
+    .contents()
+    .each((_index, node) => {
+      if (node.type !== "text") return;
+
+      $(node).replaceWith(convertNewlinesToBr(escapeHtml(node.data)));
+    });
+
+  return $.root().html() ?? "";
+}

@@ -6,7 +6,7 @@ import {
   createSecondEmailAccount,
   deleteSecondEmailAccount,
 } from "./account-test-helpers";
-import { openMail, requestMailSync } from "./mail-test-helpers";
+import { openMail } from "./mail-test-helpers";
 
 test("exposes engine diagnostics after metadata coverage", async ({
   page,
@@ -151,9 +151,6 @@ test("opens account reconnect from blocked_auth catch-up", async ({
     enumerationRequests += 1;
     await route.continue();
   });
-  // The idle catch-up runs once a minute, as long as this wait, so one that
-  // finished just before the routes went in would leave nothing to block.
-  await requestMailSync(page);
   await expect(
     page.getByRole("heading", {
       name: "Reconnect this account to continue syncing.",
@@ -243,6 +240,11 @@ test("serves two accounts through one owner and takes over when that owner leave
       window.__inboxZeroMailInspect?.read(),
     );
     expect(diagnostics).toMatchObject({ accountId: secondAccount.id });
+    await capturePlaywrightCheckpoint(
+      other,
+      testInfo,
+      "mail-engine-second-account-follower",
+    );
 
     await page.goto("about:blank");
     await expect

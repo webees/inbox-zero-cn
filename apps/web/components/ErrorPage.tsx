@@ -23,7 +23,7 @@ export function ErrorPage(props: {
         <CardContent>
           {props.button || (
             <Button asChild>
-              <Link href="/">Return Home</Link>
+              <Link href="/">返回首页</Link>
             </Button>
           )}
         </CardContent>

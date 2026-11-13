@@ -126,12 +126,10 @@ export function StepWho({
 
       <div className="text-center">
         <PageHeading className="mt-4">
-          <Trans>What do you do?</Trans>
+          <Trans>你的工作是什么？</Trans>
         </PageHeading>
         <TypographyP className="mt-2">
-          <Trans>
-            This helps us set up your inbox the way you actually need it.
-          </Trans>
+          <Trans>这能帮助我们按你的实际需求设置收件箱。</Trans>
         </TypographyP>
       </div>
 
@@ -166,7 +164,7 @@ export function StepWho({
                         validationErrors: result?.validationErrors,
                       },
                       {
-                        prefix: t`We couldn't save that answer, but you can keep going`,
+                        prefix: t`我们无法保存该答案，但你可以继续`,
                       },
                     ),
                   });
@@ -191,7 +189,7 @@ export function StepWho({
                     : {};
                 toastError({
                   description: getActionErrorMessage(actionError, {
-                    prefix: t`We couldn't save that answer, but you can keep going`,
+                    prefix: t`我们无法保存该答案，但你可以继续`,
                   }),
                 });
               });
@@ -244,7 +242,7 @@ export function StepWho({
               <Input
                 name="customRole"
                 type="text"
-                placeholder={t`Enter your role...`}
+                placeholder={t`请输入你的职位……`}
                 registerProps={{
                   value: customRole,
                   onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -265,7 +263,7 @@ export function StepWho({
                 !watchedRole || (watchedRole === "Other" && !customRole.trim())
               }
             >
-              <Trans>Continue</Trans>
+              <Trans>继续</Trans>
               <ArrowRightIcon className="size-4 ml-2" />
             </Button>
           </div>

@@ -146,9 +146,9 @@ async function getWritableProviderForExistingEvent({
   emailAccountId: string;
   logger: Logger;
 }) {
-  // Look up by connection id (unique) instead of (emailAccountId, provider)
-  // — a host can have multiple connections of the same provider, and
-  // calendarIds like "primary" recur across them.
+  // 按连接 id（唯一）查找，而不是 (emailAccountId, provider)
+  // ——一个主机可能有同一服务商的多个连接，而
+  // 像 "primary" 这样的 calendarId 会在它们之间重复出现。
   const connection = await prisma.calendarConnection.findFirst({
     where: { id: providerConnectionId, emailAccountId, isConnected: true },
     select: {
@@ -166,10 +166,10 @@ async function getWritableProviderForExistingEvent({
   });
 
   if (!connection) {
-    throw new SafeError("Calendar connection not found");
+    throw new SafeError("未找到日历连接");
   }
   if (connection.calendars.length === 0) {
-    throw new SafeError("Destination calendar not found");
+    throw new SafeError("未找到目标日历");
   }
 
   return createCalendarEventProvider({
@@ -186,12 +186,12 @@ async function getWritableCalendar({
   emailAccountId: string;
   destinationCalendarId?: string | null;
 }) {
-  // Without an explicit destination, prefer the primary calendar (via
-  // orderBy) but accept any enabled calendar — accounts synced before
-  // Microsoft primary tracking have no primary row.
+  // 没有明确目标时，优先选择主日历（通过
+  // orderBy），但接受任何已启用的日历——在 Microsoft 主日历
+  // 跟踪之前同步的账号没有主日历行。
   const where = destinationCalendarId ? { id: destinationCalendarId } : {};
-  // Availability scans only consider enabled calendars, so writing to a
-  // disabled one would silently bypass conflict detection.
+  // 可用性扫描只考虑已启用的日历，因此写入已禁用
+  // 日历会静默绕过冲突检测。
   const calendar = await prisma.calendar.findFirst({
     where: {
       ...where,
@@ -217,7 +217,7 @@ async function getWritableCalendar({
   });
 
   if (!calendar) {
-    throw new SafeError("Destination calendar not found");
+    throw new SafeError("未找到目标日历");
   }
 
   return calendar;

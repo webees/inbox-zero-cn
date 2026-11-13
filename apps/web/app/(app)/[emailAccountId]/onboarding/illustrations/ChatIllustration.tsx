@@ -15,7 +15,7 @@ export function ChatIllustration() {
         transition={{ duration: 0.4, ease: EASE }}
         className="self-end max-w-[80%] rounded-2xl rounded-br-sm bg-blue-600 px-3 py-2 text-left text-[11px] leading-snug text-white shadow-sm"
       >
-        <Trans>Archive all newsletters from last week</Trans>
+        <Trans>归档上周的所有新闻简报</Trans>
       </motion.div>
 
       <motion.div
@@ -26,7 +26,7 @@ export function ChatIllustration() {
       >
         <div className="rounded-2xl rounded-tl-sm border border-gray-200 bg-white px-3 py-2 text-left shadow-sm dark:border-gray-700 dark:bg-slate-800">
           <div className="text-[11px] leading-snug text-gray-800 dark:text-gray-200">
-            <Trans>Found 12 newsletters from last week. Archiving now.</Trans>
+            <Trans>找到上周的 12 封新闻简报，正在归档。</Trans>
           </div>
           <motion.div
             initial={{ opacity: 0, height: 0 }}
@@ -37,7 +37,7 @@ export function ChatIllustration() {
             <div className="mt-2 flex items-center gap-1.5 rounded-md bg-slate-50 px-2 py-1 dark:bg-slate-900">
               <Mail className="h-3 w-3 text-gray-500" />
               <span className="text-[10px] text-gray-600 dark:text-gray-400">
-                <Trans>12 emails archived</Trans>
+                <Trans>已归档 12 封邮件</Trans>
               </span>
             </div>
           </motion.div>
@@ -53,7 +53,7 @@ export function ChatIllustration() {
         <SlackIcon className="h-3 w-3" />
         <TelegramIcon className="h-3 w-3" />
         <span className="text-[10px] font-medium text-gray-700 dark:text-gray-300">
-          <Trans>Also in Slack and Telegram</Trans>
+          <Trans>也可在 Slack 和 Telegram 中使用</Trans>
         </span>
       </motion.div>
     </div>

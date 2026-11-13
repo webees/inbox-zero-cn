@@ -119,8 +119,14 @@ describe("categorizeWithAi", () => {
       emailAccount,
       sendersWithEmails,
       categories: [
-        { name: "Newsletter", description: "Editorial" },
-        { name: "Receipt", description: "Purchase confirmations" },
+        {
+          name: defaultCategory.NEWSLETTER.name,
+          description: defaultCategory.NEWSLETTER.description,
+        },
+        {
+          name: defaultCategory.RECEIPT.name,
+          description: defaultCategory.RECEIPT.description,
+        },
       ],
     });
 
@@ -130,8 +136,11 @@ describe("categorizeWithAi", () => {
       }),
     );
     expect(result).toEqual([
-      { sender: "newsletter@substack.com", category: "Newsletter" },
-      { sender: "receipt@example.com", category: "Receipt" },
+      {
+        sender: "newsletter@substack.com",
+        category: defaultCategory.NEWSLETTER.name,
+      },
+      { sender: "receipt@example.com", category: defaultCategory.RECEIPT.name },
       { sender: "other@example.com", category: undefined },
     ]);
   });

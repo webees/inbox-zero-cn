@@ -78,7 +78,7 @@ describe("deleteUser", () => {
     ] as Awaited<ReturnType<typeof prisma.organization.findMany>>);
 
     await expect(deleteUser({ userId: "user-1", logger })).rejects.toThrow(
-      "Transfer organization ownership before deleting your account.",
+      "删除你的账号前，请先转移组织所有权。",
     );
 
     expect(prisma.session.deleteMany).not.toHaveBeenCalled();
@@ -333,7 +333,7 @@ describe("deleteUser", () => {
     );
 
     await expect(deleteUser({ userId: "user-1", logger })).rejects.toThrow(
-      "Transfer organization ownership before deleting your account.",
+      "删除你的账号前，请先转移组织所有权。",
     );
   });
 
@@ -361,7 +361,7 @@ describe("deleteUser", () => {
     );
 
     await expect(deleteUser({ userId: "user-1", logger })).rejects.toThrow(
-      "Transfer organization ownership before deleting your account.",
+      "删除你的账号前，请先转移组织所有权。",
     );
   });
 });

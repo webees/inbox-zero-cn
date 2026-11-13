@@ -21,33 +21,30 @@ export function StatsOnboarding() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            <Trans>Welcome to email analytics</Trans>
+            <Trans>欢迎使用邮件分析</Trans>
           </DialogTitle>
           <DialogDescription>
-            <Trans>
-              Get insights from the depths of your email and clean it up it no
-              time.
-            </Trans>
+            <Trans>从海量邮件中获取洞察，并立即清理收件箱。</Trans>
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-2 sm:gap-4">
           <CardBasic className="flex items-center">
             <BarChartBigIcon className="mr-3 h-5 w-5" />
-            <Trans>Visualise your data</Trans>
+            <Trans>可视化你的数据</Trans>
           </CardBasic>
           <CardBasic className="flex items-center">
             <Layers3Icon className="mr-3 h-5 w-5" />
-            <Trans>Understand what's filling up your inbox</Trans>
+            <Trans>了解是什么占满了你的收件箱</Trans>
           </CardBasic>
           <CardBasic className="flex items-center">
             <ArchiveIcon className="mr-3 h-5 w-5" />
-            <Trans>Unsubscribe and bulk archive</Trans>
+            <Trans>退订并批量归档</Trans>
           </CardBasic>
         </div>
         <div>
           <Button className="w-full" onClick={onClose}>
-            <Trans>Get Started</Trans>
+            <Trans>开始使用</Trans>
           </Button>
         </div>
       </DialogContent>

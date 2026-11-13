@@ -72,20 +72,20 @@ export function LearnedPatternsDialog({
             execute({ ruleId });
           }}
         >
-          {label ?? t`View learned patterns`}
+          {label ?? t`查看已学习的模式`}
         </Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-2xl grid-rows-[auto_minmax(0,1fr)] overflow-hidden">
         <DialogHeader>
           <DialogTitle>
-            <Trans>Learned patterns</Trans>
+            <Trans>已学习的模式</Trans>
           </DialogTitle>
           <DialogDescription>
             <Trans>
-              Learned patterns are patterns that the AI has learned from your
-              email history. When a learned pattern is matched other rules
-              conditions are skipped and this rule is automatically selected.
+              已学习的模式是 AI
+              从你的邮件历史中学习到的模式。当匹配到已学习的模式时，
+              其他规则条件会被跳过，并自动选择此规则。
             </Trans>
           </DialogDescription>
         </DialogHeader>

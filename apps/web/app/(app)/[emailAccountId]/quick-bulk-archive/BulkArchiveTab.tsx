@@ -263,7 +263,7 @@ export function BulkArchiveTab() {
             </div>
             <div className="flex-1">
               <h2 className="mb-1 text-xl font-semibold">
-                <Trans>Ready to Clean Up</Trans>
+                <Trans>准备开始清理</Trans>
               </h2>
               <p className="mb-4 text-muted-foreground">
                 <Trans>
@@ -273,8 +273,8 @@ export function BulkArchiveTab() {
                   </span>{" "}
                   <Plural
                     value={totalCount}
-                    one="sender you may want to archive"
-                    other="senders you may want to archive"
+                    one="个可能想归档的发件人"
+                    other="个可能想归档的发件人"
                   />
                 </Trans>
               </p>
@@ -286,8 +286,8 @@ export function BulkArchiveTab() {
                     <span>
                       <Plural
                         value={groupedByConfidence.high.length}
-                        one="# safe to archive"
-                        other="# safe to archive"
+                        one="# 个可安全归档"
+                        other="# 个可安全归档"
                       />
                     </span>
                   </div>
@@ -564,7 +564,7 @@ function ArchiveStatus({
     case "pending":
       return (
         <span className="text-sm text-muted-foreground">
-          <Trans>Queued</Trans>
+          <Trans>已排队</Trans>
         </span>
       );
     case "processing":
@@ -572,7 +572,7 @@ function ArchiveStatus({
         <span className="text-sm text-blue-600">
           {status.threadsTotal
             ? `${status.threadsTotal - status.threadIds.length} / ${status.threadsTotal}`
-            : t`Archiving...`}
+            : t`正在归档...`}
         </span>
       );
     case "completed":
@@ -581,18 +581,18 @@ function ArchiveStatus({
           {status.threadsTotal ? (
             <Plural
               value={status.threadsTotal}
-              one="Archived #"
-              other="Archived #"
+              one="已归档 #"
+              other="已归档 #"
             />
           ) : (
-            <Trans>Archived</Trans>
+            <Trans>已归档</Trans>
           )}
         </span>
       );
     case "failed":
       return (
         <span className="text-sm text-red-600">
-          <Trans>Failed</Trans>
+          <Trans>失败</Trans>
         </span>
       );
     default:
@@ -626,7 +626,7 @@ function ExpandedEmails({
   if (error) {
     return (
       <div className="border-t bg-muted/30 p-4 text-sm text-muted-foreground">
-        <Trans>Error loading emails</Trans>
+        <Trans>加载邮件时出错</Trans>
       </div>
     );
   }
@@ -634,7 +634,7 @@ function ExpandedEmails({
   if (!data?.threads.length) {
     return (
       <div className="border-t bg-muted/30 p-4 text-sm text-muted-foreground">
-        <Trans>No emails found</Trans>
+        <Trans>未找到邮件</Trans>
       </div>
     );
   }

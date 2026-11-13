@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { Trans, useLingui } from "@lingui/react/macro";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { useAction } from "next-safe-action/hooks";
 import { useSWRConfig } from "swr";
@@ -39,7 +38,6 @@ export function RenameChatDialog({
   defaultLabel: string;
   onRenamed: () => void;
 }) {
-  const { t } = useLingui();
   const { emailAccountId } = useAccount();
   const { mutate: globalMutate } = useSWRConfig();
 
@@ -62,7 +60,7 @@ export function RenameChatDialog({
     renameChatAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: t`Chat renamed.` });
+        toastSuccess({ description: "聊天已重命名。" });
         onRenamed();
         globalMutate(`/api/chats/${chatId}`);
         onOpenChange(false);
@@ -70,7 +68,7 @@ export function RenameChatDialog({
       onError: (error) => {
         toastError({
           description: getActionErrorMessage(error.error, {
-            prefix: t`Failed to rename chat`,
+            prefix: "重命名聊天失败",
           }),
         });
       },
@@ -85,9 +83,7 @@ export function RenameChatDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            <Trans>Rename chat</Trans>
-          </DialogTitle>
+          <DialogTitle>重命名聊天</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Input
@@ -104,14 +100,14 @@ export function RenameChatDialog({
               onClick={() => onOpenChange(false)}
               disabled={isExecuting}
             >
-              <Trans>Cancel</Trans>
+              取消
             </Button>
             <Button
               type="submit"
               loading={isExecuting}
               disabled={!isDirty || !isValid}
             >
-              <Trans>Save</Trans>
+              保存
             </Button>
           </DialogFooter>
         </form>

@@ -385,7 +385,7 @@ export class GmailProvider implements EmailProvider {
       maxResults = 100,
     } = options;
 
-    // Build Gmail query string
+    // 构建 Gmail 查询字符串
     const excludeFilters = [
       ...excludeToEmails.map((email) => `-to:${email}`),
       ...excludeFromEmails.map((email) => `-from:${email}`),
@@ -393,7 +393,7 @@ export class GmailProvider implements EmailProvider {
 
     const query = `in:sent ${excludeFilters.join(" ")}`.trim();
 
-    // Use the existing Gmail thread functionality - this returns minimal threads
+    // 使用现有的 Gmail 会话功能——这会返回精简的会话
     const response = await getThreadsWithNextPageToken({
       gmail: this.client,
       q: query,
@@ -402,11 +402,11 @@ export class GmailProvider implements EmailProvider {
       logger: this.logger,
     });
 
-    // Convert minimal threads to EmailThread format (just with id and snippet, no messages)
+    // 将精简会话转换为 EmailThread 格式（仅包含 id 和摘要，不含消息）
     return response.threads.map((thread) => ({
       id: thread.id || "",
       snippet: thread.snippet || "",
-      messages: [], // Empty - consumer will call getThreadMessages(id) if needed
+      messages: [], // 空数组——调用方需要时会调用 getThreadMessages(id)
       historyId: thread.historyId || undefined,
     }));
   }
@@ -532,9 +532,9 @@ export class GmailProvider implements EmailProvider {
         },
       });
 
-      log.info("Message archived successfully");
+      log.info("邮件归档成功");
     } catch (error) {
-      log.error("Failed to archive message", {
+      log.error("归档邮件失败", {
         error,
       });
       throw error;
@@ -637,12 +637,12 @@ export class GmailProvider implements EmailProvider {
         },
       });
     } catch (error) {
-      log.error("Failed to archive messages bulk", { error });
+      log.error("批量归档邮件失败", { error });
       throw error;
     }
   }
 
-  // We don't have permissions for Gmail bulkDelete, so we have to do it one thread at a time
+  // 我们没有 Gmail bulkDelete 权限，因此只能逐个会话处理
   private async archiveMessagesFromSenders(
     senders: string[],
     ownerEmail: string,
@@ -664,9 +664,9 @@ export class GmailProvider implements EmailProvider {
     for (const sender of senders) {
       if (!sender) continue;
 
-      // Archiving removes messages from the `in:inbox` result set, so
-      // archiving while paging shifts later pages and skips messages.
-      // Finish listing first, then archive.
+      // 归档会将邮件从 `in:inbox` 结果集中移除，因此
+      // 边翻页边归档会导致后续页偏移并漏掉邮件。
+      // 先完成列表加载，再进行归档。
       const messages: { id: string; threadId: string }[] = [];
       let nextPageToken: string | undefined;
       try {
@@ -680,9 +680,9 @@ export class GmailProvider implements EmailProvider {
           nextPageToken = page.nextPageToken;
         } while (nextPageToken);
       } catch (error) {
-        log.error("Failed to list messages from sender", { sender, error });
+        log.error("列出该发件人的邮件失败", { sender, error });
         if (!continueOnError) throw error;
-        // archive whatever was listed before the failure
+        // 归档失败前已列出的邮件
       }
 
       const publishedThreadIds = new Set<string>();
@@ -720,7 +720,7 @@ export class GmailProvider implements EmailProvider {
 
           newThreadIds.forEach((threadId) => publishedThreadIds.add(threadId));
         } catch (error) {
-          log.error("Failed to archive messages from sender", {
+          log.error("归档该发件人的邮件失败", {
             sender,
             error,
           });
@@ -729,7 +729,7 @@ export class GmailProvider implements EmailProvider {
       }
     }
 
-    log.info("Completed bulk archive from senders");
+    log.info("已完成按发件人批量归档");
     return archivedMessagesCount;
   }
 
@@ -778,16 +778,16 @@ export class GmailProvider implements EmailProvider {
 
           nextPageToken = token;
         } catch (error) {
-          log.error("Failed to get messages from sender", {
+          log.error("获取该发件人的邮件失败", {
             sender,
             error,
           });
-          // continue processing remaining senders
+          // 继续处理其余发件人
           nextPageToken = undefined;
         }
       } while (nextPageToken);
 
-      // Trash threads one by one (no bulk delete permission in Gmail)
+      // 逐个将会话移入废纸篓（Gmail 没有批量删除权限）
       if (allThreadIds.size > 0) {
         const successfullyTrashedThreadIds = new Set<string>();
 
@@ -796,12 +796,12 @@ export class GmailProvider implements EmailProvider {
             await this.trashThread(threadId, ownerEmail, "automation");
             successfullyTrashedThreadIds.add(threadId);
           } catch (error) {
-            log.error("Failed to trash thread for sender", {
+            log.error("将该发件人的会话移入废纸篓失败", {
               sender,
               threadId,
               error,
             });
-            // Continue processing remaining threads
+            // 继续处理其余会话
           }
         }
 
@@ -834,7 +834,7 @@ export class GmailProvider implements EmailProvider {
 
             await Promise.all(promises);
           } catch (error) {
-            log.error("Failed to track trash operation for sender", {
+            log.error("记录该发件人的移入废纸篓操作失败", {
               sender,
               error,
             });
@@ -843,7 +843,7 @@ export class GmailProvider implements EmailProvider {
       }
     }
 
-    log.info("Completed bulk trash from senders");
+    log.info("已完成按发件人批量移入废纸篓");
   }
 
   async bulkArchiveFromSenders(
@@ -927,14 +927,14 @@ export class GmailProvider implements EmailProvider {
         errorMessage.includes("Requested entity was not found") ||
         errorMessage.includes("labelId not found");
 
-      log.info("Label operation failed, checking fallback", {
+      log.info("标签操作失败，正在检查回退方案", {
         errorMessage,
         isLabelNotFound,
         hasLabelName: Boolean(labelName),
       });
 
       if (isLabelNotFound && labelName) {
-        log.warn("Label not found by ID, trying to get or create by name");
+        log.warn("未找到该 ID 对应的标签，尝试按名称获取或创建");
 
         const label = await getOrCreateLabel({
           gmail: this.client,
@@ -952,11 +952,9 @@ export class GmailProvider implements EmailProvider {
         };
       }
 
-      // Handle case where label was deleted but we don't have the name to recreate it
+      // 处理标签已被删除但缺少名称、无法重新创建的情况
       if (isLabelNotFound && !labelName) {
-        log.warn(
-          "Label was deleted but labelName is not available for recreation. Skipping label action.",
-        );
+        log.warn("标签已被删除，但没有可用于重新创建的名称。跳过标签操作。");
         return {};
       }
 
@@ -1002,7 +1000,7 @@ export class GmailProvider implements EmailProvider {
     replyToMessageId?: string;
     forwardedMessageId?: string;
   }): Promise<{ id: string }> {
-    this.logger.info("Creating Gmail draft", {
+    this.logger.info("正在创建 Gmail 草稿", {
       replyToMessageId: params.replyToMessageId,
       forwardedMessageId: params.forwardedMessageId,
     });
@@ -1018,12 +1016,12 @@ export class GmailProvider implements EmailProvider {
         headerMessageId = originalMessage.headers?.["message-id"] || "";
         parentReferences = originalMessage.headers?.references;
       } catch {
-        this.logger.warn("Could not get original message for threading");
+        this.logger.warn("无法获取用于会话关联的原始邮件");
       }
     }
 
-    // A forward draft holds the forwarded files itself, the same way a sent
-    // forward would, so sending the draft carries them.
+    // 转发草稿自身就包含被转发的文件，与已发送的转发邮件一样，
+    // 因此发送该草稿时会一并带上这些文件。
     let forwardedAttachments: MailAttachment[] = [];
     if (params.forwardedMessageId) {
       const forwarded = await getForwardedMessage(
@@ -1056,7 +1054,7 @@ export class GmailProvider implements EmailProvider {
       message,
     );
 
-    this.logger.info("Gmail draft created", { draftId: result.id });
+    this.logger.info("已创建 Gmail 草稿", { draftId: result.id });
     return { id: result.id || "" };
   }
 
@@ -1071,9 +1069,9 @@ export class GmailProvider implements EmailProvider {
       bcc?: string;
     },
   ): Promise<void> {
-    this.logger.info("Updating Gmail draft", { draftId });
+    this.logger.info("正在更新 Gmail 草稿", { draftId });
     await rewriteGmailDraft({ gmail: this.client, draftId, text: params });
-    this.logger.info("Gmail draft updated", { draftId });
+    this.logger.info("Gmail 草稿已更新", { draftId });
   }
 
   async getDraftAttachments(draftId: string) {
@@ -1142,7 +1140,7 @@ export class GmailProvider implements EmailProvider {
       return { draftId: "" };
     }
 
-    this.logger.info("Creating Gmail draft", {
+    this.logger.info("正在创建 Gmail 草稿", {
       hasExecutedRule: Boolean(executedRule),
       contentLength: args.content?.length,
     });
@@ -1173,7 +1171,7 @@ export class GmailProvider implements EmailProvider {
     }
 
     const draftId = result.data.id || "";
-    this.logger.info("Gmail draft created successfully", {
+    this.logger.info("Gmail 草稿创建成功", {
       draftId,
       gmailMessageId: result.data.message?.id,
     });
@@ -1335,7 +1333,7 @@ export class GmailProvider implements EmailProvider {
       );
     } catch (error) {
       if (extractErrorInfo(error).status !== 404) throw error;
-      this.logger.info("Label was already deleted", { labelId });
+      this.logger.info("标签已被删除", { labelId });
     }
   }
 
@@ -1433,7 +1431,7 @@ export class GmailProvider implements EmailProvider {
     messages: ParsedMessage[];
     nextPageToken?: string;
   }> {
-    // Build query string for date filtering
+    // 构建用于日期筛选的查询字符串
     let query = options.query || "";
 
     if (options.inboxOnly && !query.includes("in:")) {
@@ -1659,7 +1657,7 @@ export class GmailProvider implements EmailProvider {
       !context.emailAccountId ||
       (this.emailAccountId && this.emailAccountId !== context.emailAccountId)
     )
-      throw new Error("Local mail account context mismatch");
+      throw new Error("本地邮件账号上下文不匹配");
     const base = {
       emailAccountId: context.emailAccountId,
       gmail: this.client,
@@ -1753,7 +1751,7 @@ export class GmailProvider implements EmailProvider {
   }
 
   async searchContacts(query: string) {
-    // The Google emulator has no People API, so compose would otherwise 404.
+    // Google 模拟器没有 People API，否则撰写邮件时会返回 404。
     if (isGoogleOauthEmulationEnabled()) return [];
     const client = getContactsClient({ accessToken: this.getAccessToken() });
     return this.withRateLimitTracking("search-contacts", () =>
@@ -1790,13 +1788,13 @@ export class GmailProvider implements EmailProvider {
         maxResults: 1,
       });
       const sent = (response.messages?.length ?? 0) > 0;
-      log.info("Checked for sent reply", { sent });
+      log.info("已检查是否发送过回复", { sent });
       return sent;
     } catch (error) {
-      log.error("Error checking if reply was sent", {
+      log.error("检查是否已发送回复时出错", {
         error,
       });
-      return true; // Default to true on error (safer for TO_REPLY filtering)
+      return true; // 出错时默认返回 true（对 TO_REPLY 过滤更安全）
     }
   }
 
@@ -1812,20 +1810,20 @@ export class GmailProvider implements EmailProvider {
 
     try {
       const query = `from:${senderEmail}`;
-      log.info("Checking received message count");
+      log.info("正在检查已接收邮件数量");
 
-      // Fetch up to the threshold number of message IDs.
+      // 最多获取达到阈值数量的邮件 ID。
       const response = await getMessages(this.client, {
         query,
         maxResults: threshold,
       });
       const count = response.messages?.length ?? 0;
 
-      log.info("Received message count check result", { count });
+      log.info("已检查已接收邮件数量", { count });
       return count;
     } catch (error) {
-      log.error("Error counting received messages", { error });
-      return 0; // Default to 0 on error
+      log.error("统计已接收邮件数量时出错", { error });
+      return 0; // 出错时默认返回 0
     }
   }
 
@@ -1888,8 +1886,8 @@ export class GmailProvider implements EmailProvider {
         }
 
         if (toEmail) {
-          // Gmail doesn't match "to:@domain", only the bare domain, which is
-          // looser, so domain matches are narrowed again below.
+          // Gmail 不会匹配 "to:@domain"，只会匹配裸域名，条件更宽松，
+          // 因此下面会再次收窄域名匹配。
           const recipient = toEmail.trim().replace(/^@/, "");
           queryParts.push(
             `{to:${recipient} cc:${recipient}${options.includeBccRecipients ? ` bcc:${recipient}` : ""}}`,
@@ -2046,9 +2044,9 @@ export class GmailProvider implements EmailProvider {
     nextPageToken?: string;
   }> {
     return this.withRateLimitTracking("search-threads", async () => {
-      // The query is passed through verbatim so Gmail operators (from:,
-      // subject:, has:attachment, ...) work like the Gmail search box.
-      // Spam and trash stay out unless the search is scoped to them.
+      // 查询会原样传入，因此 Gmail 运算符（from:、subject:、has:attachment 等）
+      // 与 Gmail 搜索框中的行为一致。除非搜索明确限定垃圾邮件和废纸篓，
+      // 否则不会包含它们。
       const labelIds = searchLabelIds(options);
       const includeSpamTrash = Boolean(
         options.includeSpamTrash ||
@@ -2158,7 +2156,7 @@ export class GmailProvider implements EmailProvider {
     await unwatchGmail(this.client);
   }
 
-  // Gmail: The first message id in a thread is the threadId
+  // Gmail：会话中的第一条邮件 ID 即 threadId
   isReplyInThread(message: ParsedMessage): boolean {
     return !!(message.id && message.id !== message.threadId);
   }
@@ -2168,7 +2166,7 @@ export class GmailProvider implements EmailProvider {
   }
 
   async getFolders() {
-    this.logger.warn("Getting folders is not supported for Gmail");
+    this.logger.warn("Gmail 不支持获取文件夹");
     return [];
   }
 
@@ -2184,11 +2182,11 @@ export class GmailProvider implements EmailProvider {
   }
 
   async renameFolder(_folderId: string, _name: string): Promise<void> {
-    this.logger.warn("Renaming folders is not supported for Gmail");
+    this.logger.warn("Gmail 不支持重命名文件夹");
   }
 
   async deleteFolder(_folderId: string): Promise<void> {
-    this.logger.warn("Deleting folders is not supported for Gmail");
+    this.logger.warn("Gmail 不支持删除文件夹");
   }
 
   async moveThreadToFolder(
@@ -2196,11 +2194,11 @@ export class GmailProvider implements EmailProvider {
     _ownerEmail: string,
     _folderName: string,
   ): Promise<void> {
-    this.logger.warn("Moving thread to folder is not supported for Gmail");
+    this.logger.warn("Gmail 不支持将会话移动到文件夹");
   }
 
   async getOrCreateFolderIdByName(_folderName: string): Promise<string> {
-    this.logger.warn("Moving to folder is not supported for Gmail");
+    this.logger.warn("Gmail 不支持移动到文件夹");
     return "";
   }
 
@@ -2257,13 +2255,13 @@ export class GmailProvider implements EmailProvider {
         ...sendAs.map((address) => address.email),
       ]);
     } catch (error) {
-      this.logger.warn("Failed to fetch Gmail send-as addresses", { error });
+      this.logger.warn("无法获取 Gmail 发送身份地址", { error });
       return extractUniqueEmailAddresses([userEmail]);
     }
   }
 
-  // Mail the user received at an alias is answered from that alias. Without
-  // a From header Gmail would use the default address instead.
+  // 用户通过别名收到的邮件将从该别名回复。如果缺少 From 请求头，
+  // Gmail 会改用默认地址。
   private async getReplyFromAddress(email: ParsedMessage) {
     try {
       const sendAs = await this.getSendAsAddresses();
@@ -2274,7 +2272,7 @@ export class GmailProvider implements EmailProvider {
       if (!address || address.isDefault) return;
       return formatSendAsAddress(address);
     } catch (error) {
-      this.logger.warn("Failed to resolve the reply send-as address", {
+      this.logger.warn("无法解析回复的发送身份地址", {
         error,
       });
     }

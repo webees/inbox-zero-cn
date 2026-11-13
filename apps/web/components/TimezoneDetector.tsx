@@ -44,7 +44,7 @@ export function TimezoneDetector() {
     updateEmailAccountTimezoneAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: "Timezone updated!" });
+        toastSuccess({ description: "时区已更新！" });
         closeDialog();
       },
       onSettled: () => {
@@ -115,7 +115,7 @@ export function TimezoneDetector() {
   };
 
   const handleKeepCurrent = () => {
-    // Remember this choice so we don't ask again for this timezone combination (for 30 days)
+    // 记住此选择，这样在 30 天内不会再针对此时区组合询问
     const currentTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     analytics.captureAction("timezone_prompt_dismissed", {
       saved_timezone: data?.timezone,
@@ -152,12 +152,11 @@ export function TimezoneDetector() {
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Timezone Change Detected</DialogTitle>
+          <DialogTitle>检测到时区变更</DialogTitle>
           <DialogDescription>
-            Your saved timezone is <strong>{data.timezone}</strong>, but we
-            detected that your current timezone is{" "}
-            <strong>{detectedTimezone}</strong>. Updating also moves your
-            availability hours and booking link to this timezone.
+            你保存的时区是 <strong>{data.timezone}</strong>，但我们
+            检测到你当前的时区是 <strong>{detectedTimezone}</strong>
+            。更新后还会把你的 可用时间和预约链接迁移到该时区。
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -166,10 +165,10 @@ export function TimezoneDetector() {
             onClick={handleKeepCurrent}
             disabled={isExecuting}
           >
-            Keep Current Setting
+            保留当前设置
           </Button>
           <Button onClick={handleUpdateTimezone} loading={isExecuting}>
-            Update to {detectedTimezone}
+            更新为 {detectedTimezone}
           </Button>
         </DialogFooter>
       </DialogContent>

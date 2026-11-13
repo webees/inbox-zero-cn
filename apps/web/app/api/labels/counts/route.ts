@@ -42,19 +42,19 @@ const EMPTY_RESPONSE: CountsResult = {
   anyFailed: true,
 };
 
-// Gmail's system labels the sidebar shows. Archived has no label of its own.
+// 侧边栏展示的 Gmail 系统标签。归档没有自己的标签。
 const SYSTEM_LABELS = [
-  { id: GmailLabel.INBOX, name: "Inbox" },
-  { id: GmailLabel.DRAFT, name: "Drafts" },
-  { id: GmailLabel.SENT, name: "Sent" },
+  { id: GmailLabel.INBOX, name: "收件箱" },
+  { id: GmailLabel.DRAFT, name: "草稿" },
+  { id: GmailLabel.SENT, name: "已发送" },
 ];
 
 const CATEGORY_LABELS = [
-  { id: GmailLabel.PERSONAL, name: "Primary" },
-  { id: GmailLabel.SOCIAL, name: "Social" },
-  { id: GmailLabel.PROMOTIONS, name: "Promotions" },
-  { id: GmailLabel.UPDATES, name: "Updates" },
-  { id: GmailLabel.FORUMS, name: "Forums" },
+  { id: GmailLabel.PERSONAL, name: "主要" },
+  { id: GmailLabel.SOCIAL, name: "社交" },
+  { id: GmailLabel.PROMOTIONS, name: "推广" },
+  { id: GmailLabel.UPDATES, name: "更新" },
+  { id: GmailLabel.FORUMS, name: "论坛" },
 ];
 
 export const GET = withEmailProvider(

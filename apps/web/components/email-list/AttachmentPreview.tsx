@@ -137,20 +137,20 @@ function ImageLightbox({
       }}
     >
       <DialogDescription className="sr-only">
-        <Trans>Attachment preview</Trans>
+        <Trans>附件预览</Trans>
       </DialogDescription>
       <LightboxFrame key={current.url} {...current} onClose={onClose} />
       {hasPrevious ? (
         <LightboxArrow
           side="left"
-          label={t`Previous image`}
+          label={t`上一张图片`}
           onClick={() => onNavigate(-1)}
         />
       ) : null}
       {hasNext ? (
         <LightboxArrow
           side="right"
-          label={t`Next image`}
+          label={t`下一张图片`}
           onClick={() => onNavigate(1)}
         />
       ) : null}
@@ -178,7 +178,7 @@ function LightboxFrame({
             onClick={() => file && saveBlob(file, attachment.filename)}
           >
             <DownloadIcon className="mr-2 size-4" aria-hidden="true" />
-            <Trans>Download</Trans>
+            <Trans>下载</Trans>
           </Button>
         </div>
         <div className="flex min-w-0 items-center gap-2">
@@ -196,7 +196,7 @@ function LightboxFrame({
               size="icon"
               type="button"
               className="text-white hover:bg-white/10 hover:text-white"
-              aria-label={t`Close`}
+              aria-label={t`关闭`}
             >
               <XIcon className="size-5" aria-hidden="true" />
             </Button>
@@ -255,7 +255,7 @@ function DocumentPreviewDialogContent(attachment: AttachmentPreview) {
           {attachment.filename}
         </DialogTitle>
         <DialogDescription className="sr-only">
-          <Trans>Attachment preview</Trans>
+          <Trans>附件预览</Trans>
         </DialogDescription>
         <Button
           variant="outline"
@@ -265,7 +265,7 @@ function DocumentPreviewDialogContent(attachment: AttachmentPreview) {
           onClick={() => file && saveBlob(file, attachment.filename)}
         >
           <DownloadIcon className="mr-2 size-4" aria-hidden="true" />
-          <Trans>Download</Trans>
+          <Trans>下载</Trans>
         </Button>
       </div>
       <div className="flex min-h-0 flex-1 items-center justify-center bg-muted/40 text-muted-foreground text-sm">
@@ -292,15 +292,9 @@ function AttachmentPreviewBody({
   if (error)
     return (
       <p>
-        {error === "too_large" && (
-          <Trans>This file is too large to preview.</Trans>
-        )}
-        {error === "unavailable" && (
-          <Trans>Preview isn't available for this file.</Trans>
-        )}
-        {error === "load_failed" && (
-          <Trans>Couldn't load this attachment.</Trans>
-        )}
+        {error === "too_large" && <Trans>此文件过大，无法预览</Trans>}
+        {error === "unavailable" && <Trans>此文件无法预览</Trans>}
+        {error === "load_failed" && <Trans>无法加载此附件</Trans>}
       </p>
     );
   if (!preview) return <Loader2 className="size-6 animate-spin" />;

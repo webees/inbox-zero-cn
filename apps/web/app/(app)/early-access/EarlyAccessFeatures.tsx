@@ -47,10 +47,10 @@ export function EarlyAccessFeatures() {
     <Card>
       <CardHeader>
         <CardTitle>
-          <Trans>Early access features</Trans>
+          <Trans>早期体验功能</Trans>
         </CardTitle>
         <CardDescription>
-          <Trans>You can enable and disable early access features here.</Trans>
+          <Trans>你可以在此启用或停用早期体验功能。</Trans>
         </CardDescription>
       </CardHeader>
 
@@ -58,10 +58,10 @@ export function EarlyAccessFeatures() {
         <TableHeader>
           <TableRow>
             <TableHead>
-              <Trans>Feature</Trans>
+              <Trans>功能</Trans>
             </TableHead>
             <TableHead className="w-24">
-              <Trans>Enabled</Trans>
+              <Trans>已启用</Trans>
             </TableHead>
           </TableRow>
         </TableHeader>

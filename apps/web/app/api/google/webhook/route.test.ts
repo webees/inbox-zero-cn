@@ -93,7 +93,7 @@ describe("Google webhook route", () => {
     const body = await response.json();
 
     expect(response.status).toBe(503);
-    expect(body).toEqual({ message: "Google webhook is not configured" });
+    expect(body).toEqual({ message: "Google webhook 未配置" });
     expect(processHistoryForUserMock).not.toHaveBeenCalled();
     expect(publishLocalMailHint).not.toHaveBeenCalled();
   });
@@ -107,7 +107,7 @@ describe("Google webhook route", () => {
     const body = await response.json();
 
     expect(response.status).toBe(403);
-    expect(body).toEqual({ message: "Invalid verification token" });
+    expect(body).toEqual({ message: "验证令牌无效" });
     expect(processHistoryForUserMock).not.toHaveBeenCalled();
     expect(publishLocalMailHint).not.toHaveBeenCalled();
   });

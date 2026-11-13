@@ -61,7 +61,7 @@ class StatLoader {
       .then(async (response) => {
         const result = await response.json();
         if (!response.ok || isError(result))
-          throw new Error("Error loading stats.");
+          throw new Error("加载统计数据失败");
       })
       .finally(() => this.#inFlight.delete(key));
     this.#inFlight.set(key, request);
@@ -90,10 +90,10 @@ export function StatLoaderProvider(props: { children: React.ReactNode }) {
           emailAccountId,
           loadBefore: options.loadBefore,
         });
-        if (options.showToast) toastSuccess({ description: "Stats loaded!" });
-      } catch (error) {
         if (options.showToast)
-          toastError({ description: "Error loading stats." });
+          toastSuccess({ description: "统计数据已加载！" });
+      } catch (error) {
+        if (options.showToast) toastError({ description: "加载统计数据失败" });
         throw error;
       } finally {
         setLoadingCounts((counts) => ({
@@ -111,13 +111,13 @@ export function StatLoaderProvider(props: { children: React.ReactNode }) {
       try {
         for (let i = 0; i < batchSize; i++) {
           if (stopLoading) return;
-          console.log("Loading batch", i);
+          console.log("正在加载批次", i);
           await onLoad({ ...options, showToast: false });
         }
-        if (options.showToast) toastSuccess({ description: "Stats loaded!" });
-      } catch {
         if (options.showToast)
-          toastError({ description: "Error loading stats." });
+          toastSuccess({ description: "统计数据已加载！" });
+      } catch {
+        if (options.showToast) toastError({ description: "加载统计数据失败" });
       } finally {
         setStopLoading(false);
       }

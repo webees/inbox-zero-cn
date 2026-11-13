@@ -844,9 +844,7 @@ export function MessagePart({
     const { toolCallId, state } = part;
 
     if (state === "input-available") {
-      return (
-        <BasicToolInfo key={toolCallId} text="Checking matching emails..." />
-      );
+      return <BasicToolInfo key={toolCallId} text="正在检查匹配的邮件..." />;
     }
 
     if (state === "output-available") {
@@ -872,7 +870,7 @@ export function MessagePart({
           key={toolCallId}
           text={
             getOutputField<string>(part.output, "message") ||
-            "No emails matched, so nothing changed."
+            "没有匹配的邮件，未做任何更改。"
           }
         />
       );
@@ -1240,17 +1238,17 @@ function getStartSenderCategorizationSuccessText(
   const totalQueued = getOutputField<number>(output, "totalQueuedSenders") ?? 0;
 
   if (alreadyRunning) {
-    return i18n._(msg`Sender categorization already in progress`);
+    return i18n._(msg`发件人分类已在进行中`);
   }
   if (totalQueued > 0) {
     return i18n._(
-      msg`Categorizing ${plural(totalQueued, {
-        one: "# sender",
-        other: "# senders",
+      msg`正在分类 ${plural(totalQueued, {
+        one: "# 个发件人",
+        other: "# 个发件人",
       })}`,
     );
   }
-  return i18n._(msg`No senders to categorize`);
+  return i18n._(msg`没有可分类的发件人`);
 }
 
 function getSenderCategorizationStatusSuccessText(
@@ -1262,12 +1260,12 @@ function getSenderCategorizationStatusSuccessText(
   const completed = getOutputField<number>(output, "completedItems") ?? 0;
 
   if (status === "completed") {
-    return i18n._(msg`Categorization complete`);
+    return i18n._(msg`分类完成`);
   }
   if (status === "running") {
-    return i18n._(msg`Categorizing senders (${completed} of ${total})`);
+    return i18n._(msg`正在分类发件人（${completed}/${total}）`);
   }
-  return i18n._(msg`Categorization hasn't started`);
+  return i18n._(msg`分类尚未开始`);
 }
 
 function toMessageString(value: unknown): string | null {

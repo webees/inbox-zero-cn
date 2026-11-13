@@ -26,7 +26,7 @@ export async function getAutomationJobMessage({
         logger,
       });
     } catch (error) {
-      logger.warn("Failed to generate automation message from prompt", {
+      logger.warn("无法根据提示词生成自动化消息", {
         error,
       });
       return trimmedPrompt;
@@ -37,15 +37,15 @@ export async function getAutomationJobMessage({
     const stats = await emailProvider.getInboxStats();
 
     if (stats.unread === 0) {
-      return "Your inbox looks clear right now. Want me to keep monitoring and ping again later?";
+      return "你的收件箱现在看起来很清爽。需要我继续监控并在稍后再提醒你吗？";
     }
 
-    return `You currently have ${stats.unread} unread emails. Want to go through them now?`;
+    return `你目前有 ${stats.unread} 封未读邮件。现在要处理它们吗？`;
   } catch (error) {
-    logger.warn("Failed to read inbox stats for automation message", {
+    logger.warn("无法读取收件箱统计以生成自动化消息", {
       error,
     });
 
-    return "I checked in on your inbox. Want to triage emails now?";
+    return "我看了一眼你的收件箱。现在要分类处理邮件吗？";
   }
 }

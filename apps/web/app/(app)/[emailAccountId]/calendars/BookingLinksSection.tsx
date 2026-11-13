@@ -276,7 +276,7 @@ function CalendarBookingLinkForm({
         size="sm"
         className="w-full sm:w-auto"
       >
-        <Trans>Save</Trans>
+        <Trans>保存</Trans>
       </Button>
     </form>
   );
@@ -287,19 +287,17 @@ function EmptyLinkCard({ onCreate }: { onCreate: () => void }) {
     <CardBasic className="px-4 py-4">
       <div className="mb-1 flex items-center gap-2">
         <h3 className="font-medium">
-          <Trans>Booking link</Trans>
+          <Trans>预约链接</Trans>
         </h3>
         <Badge variant="info" size="xs">
-          <Trans>New</Trans>
+          <Trans>新</Trans>
         </Badge>
       </div>
       <p className="mb-4 text-sm text-muted-foreground">
-        <Trans>
-          Create a link people can use to book time on your calendar.
-        </Trans>
+        <Trans>创建一个链接，让其他人可以在你的日历上预约时间。</Trans>
       </p>
       <Button onClick={onCreate} Icon={Zap}>
-        <Trans>Create booking link</Trans>
+        <Trans>创建预约链接</Trans>
       </Button>
     </CardBasic>
   );
@@ -327,9 +325,9 @@ function ActiveLinkCard({
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(publicUrl);
-      toastSuccess({ description: t`Booking link copied` });
+      toastSuccess({ description: t`预约链接已复制` });
     } catch {
-      toastError({ description: t`Failed to copy booking link` });
+      toastError({ description: t`复制预约链接失败` });
     }
   };
 
@@ -339,17 +337,17 @@ function ActiveLinkCard({
         <div>
           <div className="flex items-center gap-2">
             <h3 className="font-medium">
-              <Trans>Booking link</Trans>
+              <Trans>预约链接</Trans>
             </h3>
             {!isActive ? (
               <Badge variant="muted" size="sm">
                 <span className="size-1.5 rounded-full bg-muted-foreground/60" />
-                <Trans>Inactive</Trans>
+                <Trans>未启用</Trans>
               </Badge>
             ) : null}
           </div>
           <p className="text-sm text-muted-foreground">
-            <Trans>Used by our AI to schedule appointments over email.</Trans>
+            <Trans>我们的 AI 会通过邮件用它安排预约。</Trans>
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -357,7 +355,7 @@ function ActiveLinkCard({
             checked={isActive}
             disabled={isToggling}
             onCheckedChange={onToggle}
-            aria-label={t`Toggle booking link`}
+            aria-label={t`切换预约链接`}
           />
           <Button
             variant="outline"
@@ -365,7 +363,7 @@ function ActiveLinkCard({
             Icon={Settings2}
             onClick={onConfigure}
           >
-            <Trans>Configure</Trans>
+            <Trans>配置</Trans>
           </Button>
         </div>
       </div>
@@ -391,8 +389,8 @@ function ActiveLinkCard({
               type="button"
               onClick={handleCopy}
               className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
-              aria-label={t`Copy booking link`}
-              title={t`Copy booking link`}
+              aria-label={t`复制预约链接`}
+              title={t`复制预约链接`}
             >
               <Copy className="size-4" />
             </button>

@@ -8,10 +8,10 @@ export function MeetingBriefsIllustration() {
 
   useEffect(() => {
     const timings = [
-      875, // Stage 1: Email card slides in with header
-      625, // Stage 2: Guest name appears
-      500, // Stage 3: Bullets appear
-      3750, // Pause before reset
+      875, // 阶段 1：邮件卡片随头部滑入
+      625, // 阶段 2：嘉宾姓名出现
+      500, // 阶段 3：要点出现
+      3750, // 重置前暂停
     ];
 
     let timeout: NodeJS.Timeout;
@@ -48,23 +48,23 @@ export function MeetingBriefsIllustration() {
               transition={{ duration: 0.5, ease: "easeOut" }}
               className="w-full max-w-[260px] rounded-lg bg-white shadow-lg dark:bg-slate-800"
             >
-              {/* Email header */}
+              {/* 邮件头部 */}
               <div className="border-b border-gray-100 px-3 py-2 dark:border-gray-700">
                 <div className="text-[11px] font-semibold text-gray-900 dark:text-gray-100">
-                  Briefing for{" "}
+                  简报：{" "}
                   <span className="text-blue-600 dark:text-blue-400">
                     Product Review
                   </span>
                 </div>
                 <div className="text-[10px] text-gray-500 dark:text-gray-400">
-                  Starting at{" "}
+                  开始于{" "}
                   <span className="font-medium text-gray-700 dark:text-gray-300">
                     2:00 PM
                   </span>
                 </div>
               </div>
 
-              {/* Email body */}
+              {/* 邮件正文 */}
               <div className="px-3">
                 <motion.div
                   className="overflow-hidden"
@@ -92,16 +92,14 @@ export function MeetingBriefsIllustration() {
                   transition={{ duration: 0.31, ease: "easeOut" }}
                 >
                   <div className="text-[9px] text-gray-600 dark:text-gray-400">
-                    <span className="text-gray-400">-</span> CEO of Acme Corp,
-                    joined 2019
+                    <span className="text-gray-400">-</span> Acme Corp
+                    首席执行官，2019 年加入
                   </div>
                   <div className="text-[9px] text-gray-600 dark:text-gray-400">
-                    <span className="text-gray-400">-</span> Last met 3 weeks
-                    ago
+                    <span className="text-gray-400">-</span> 最近 3 周前会面
                   </div>
                   <div className="pb-2 text-[9px] text-gray-600 dark:text-gray-400">
-                    <span className="text-gray-400">-</span> Discussed
-                    enterprise pricing
+                    <span className="text-gray-400">-</span> 讨论了企业定价
                   </div>
                 </motion.div>
               </div>

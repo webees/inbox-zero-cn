@@ -24,23 +24,23 @@ export function StepCustomRules({
 
           <div className="text-center mt-4 max-w-lg mx-auto">
             <PageHeading>
-              <Trans>Custom rules</Trans>
+              <Trans>自定义规则</Trans>
             </PageHeading>
             <TypographyP className="mt-2 text-left">
               <Trans>
-                We've set up the basics, but that's just the beginning. Your AI
-                assistant can handle any email workflow you'd give to a human.
+                我们已经设置好基础功能，但这只是开始。凡是能交给人的邮件工作流，都可以交给你的
+                AI 助手处理。
               </Trans>
             </TypographyP>
             <TypographyP className="mt-2 text-left">
-              <Trans>For example:</Trans>
+              <Trans>例如：</Trans>
             </TypographyP>
             <ul className="list-disc list-inside space-y-1 text-left leading-7 text-muted-foreground ">
               <li>
-                <Trans>Forward receipts to your accountant</Trans>
+                <Trans>把收据转发给你的会计</Trans>
               </li>
               <li>
-                <Trans>Label newsletters and archive them after a week</Trans>
+                <Trans>给新闻邮件加标签，并在一周后归档</Trans>
               </li>
             </ul>
           </div>

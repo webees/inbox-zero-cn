@@ -199,7 +199,7 @@ function AccountOptionsDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label={t`Account options`}>
+        <Button variant="ghost" size="icon" aria-label={t`账号选项`}>
           <MoreVertical className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -214,7 +214,7 @@ function AccountOptionsDropdown({
             onClick={(e: MouseEvent<HTMLAnchorElement>) => e.stopPropagation()}
           >
             <Settings className="size-4" />
-            <Trans>Setup</Trans>
+            <Trans>设置</Trans>
           </Link>
         </DropdownMenuItem>
         <ConfirmDialog
@@ -229,16 +229,16 @@ function AccountOptionsDropdown({
               disabled={isExecuting}
             >
               <Trash2 className="size-4" />
-              <Trans>Delete</Trans>
+              <Trans>删除</Trans>
             </DropdownMenuItem>
           }
-          title={t`Delete Account`}
+          title={t`删除账号`}
           description={
             emailAccount.isPrimary
-              ? t`Are you sure you want to delete "${emailAccount.email}"? This is your primary account. You will be logged out and need to log in again. Your oldest remaining account will become your new primary account. All data for "${emailAccount.email}" will be permanently deleted from ${BRAND_NAME}.`
-              : t`Are you sure you want to delete "${emailAccount.email}"? This will delete all data for it on ${BRAND_NAME}.`
+              ? t`确定要删除“${emailAccount.email}”吗？这是你的主账号。你将退出登录并需要重新登录。剩余的最早账号将成为新的主账号。“${emailAccount.email}”的所有数据都将从 ${BRAND_NAME} 永久删除。`
+              : t`确定要删除“${emailAccount.email}”吗？此操作将删除其在 ${BRAND_NAME} 上的所有数据。`
           }
-          confirmText={t`Delete`}
+          confirmText={t`删除`}
           onConfirm={() => {
             execute({ emailAccountId: emailAccount.id });
           }}
@@ -285,22 +285,22 @@ function useAccountNotifications() {
         { title: string; description: string }
       > = {
         account_merged: {
-          title: i18n._(msg`Account merged successfully!`),
-          description: i18n._(msg`Your accounts have been merged.`),
+          title: i18n._(msg`账号合并成功！`),
+          description: i18n._(msg`你的账号已合并。`),
         },
         account_created_and_linked: {
-          title: i18n._(msg`Account added successfully!`),
-          description: i18n._(msg`Your new account has been linked.`),
+          title: i18n._(msg`账号添加成功！`),
+          description: i18n._(msg`你的新账号已关联。`),
         },
         tokens_updated: {
-          title: i18n._(msg`Account reconnected successfully!`),
-          description: i18n._(msg`Your account permissions were refreshed.`),
+          title: i18n._(msg`账号重新连接成功！`),
+          description: i18n._(msg`你的账号权限已刷新。`),
         },
       };
 
       const successMessage = successMessages[successParam] || {
-        title: i18n._(msg`Success`),
-        description: i18n._(msg`Operation completed successfully.`),
+        title: i18n._(msg`成功`),
+        description: i18n._(msg`操作已成功完成。`),
       };
 
       toastSuccess({
@@ -328,133 +328,117 @@ function getAccountErrorMessage(
   i18n: I18n,
 ): AccountNotification {
   const defaultDescription =
-    errorDescription || i18n._(msg`An error occurred. Please try again.`);
+    errorDescription || i18n._(msg`发生错误，请重试。`);
 
   const errorMessages: Record<string, AccountNotification> = {
     account_not_found_for_merge: {
-      title: i18n._(msg`Account not found`),
+      title: i18n._(msg`未找到账号`),
       description: i18n._(
-        msg`This account doesn't exist in ${BRAND_NAME} yet. Please select 'No, it's a new account' instead.`,
+        msg`此账号尚不存在于 ${BRAND_NAME}。请改为选择“不，这是一个新账号”。`,
       ),
       toastDescription: i18n._(
-        msg`This account doesn't exist in ${BRAND_NAME} yet. Please select 'No, it's a new account' instead.`,
+        msg`此账号尚不存在于 ${BRAND_NAME}。请改为选择“不，这是一个新账号”。`,
       ),
     },
     account_already_exists: {
-      title: i18n._(msg`Account already exists`),
+      title: i18n._(msg`账号已存在`),
       description: i18n._(
-        msg`This account is already linked to another ${BRAND_NAME} profile. Sign in to that profile, use a different email account, or contact support if you need help.`,
+        msg`此账号已关联到另一个 ${BRAND_NAME} 个人资料。请登录该资料、使用其他邮箱账号，或联系支持团队寻求帮助。`,
       ),
       toastDescription: i18n._(
-        msg`This account is already linked to another ${BRAND_NAME} profile. Sign in to that profile, use a different email account, or contact support if you need help.`,
+        msg`此账号已关联到另一个 ${BRAND_NAME} 个人资料。请登录该资料、使用其他邮箱账号，或联系支持团队寻求帮助。`,
       ),
     },
     reconnect_account_mismatch: {
-      title: i18n._(msg`Wrong account signed in`),
+      title: i18n._(msg`登录了错误的账号`),
       description: i18n._(
-        msg`You signed in with a different account than the one you were reconnecting. Sign out of that provider, or pick the original account, and try again.`,
+        msg`你登录的账号与要重新连接的账号不同。请退出该提供商，或选择原账号后重试。`,
       ),
       toastDescription: i18n._(
-        msg`You signed in with a different account than the one you were reconnecting. Sign out of that provider, or pick the original account, and try again.`,
+        msg`你登录的账号与要重新连接的账号不同。请退出该提供商，或选择原账号后重试。`,
       ),
     },
     already_linked_to_self: {
-      title: i18n._(msg`Account already linked`),
-      description: i18n._(msg`This account is already linked to your profile.`),
-      toastDescription: i18n._(
-        msg`This account is already linked to your profile.`,
-      ),
+      title: i18n._(msg`账号已关联`),
+      description: i18n._(msg`此账号已关联到你的个人资料。`),
+      toastDescription: i18n._(msg`此账号已关联到你的个人资料。`),
     },
     provider_sign_in_required: {
-      title: i18n._(msg`Provider sign-in required`),
+      title: i18n._(msg`需要登录提供商`),
       description: i18n._(
-        msg`Connecting or reconnecting a mailbox isn't available when you signed in with an email code. Sign in with Google or Microsoft and try again.`,
+        msg`使用邮箱验证码登录时无法连接或重新连接邮箱。请使用 Google 或 Microsoft 登录后重试。`,
       ),
       toastDescription: i18n._(
-        msg`Connecting or reconnecting a mailbox isn't available when you signed in with an email code. Sign in with Google or Microsoft and try again.`,
+        msg`使用邮箱验证码登录时无法连接或重新连接邮箱。请使用 Google 或 Microsoft 登录后重试。`,
       ),
     },
     invalid_state: {
-      title: i18n._(msg`Invalid request`),
-      description: i18n._(
-        msg`The authentication request was invalid. Please try again.`,
-      ),
-      toastDescription: i18n._(
-        msg`The authentication request was invalid. Please try again.`,
-      ),
+      title: i18n._(msg`无效请求`),
+      description: i18n._(msg`认证请求无效，请重试。`),
+      toastDescription: i18n._(msg`认证请求无效，请重试。`),
     },
     invalid_state_format: {
-      title: i18n._(msg`Invalid response from provider`),
+      title: i18n._(msg`提供商返回了无效响应`),
       description: i18n._(
-        msg`We couldn't validate the account authorization response. Please try linking the account again. If the problem continues, contact support.`,
+        msg`我们无法验证账号授权响应。请重新关联账号。如果问题仍然存在，请联系支持团队。`,
       ),
-      toastDescription: i18n._(
-        msg`We couldn't validate the account authorization response. Please try linking the account again.`,
-      ),
+      toastDescription: i18n._(msg`我们无法验证账号授权响应。请重新关联账号。`),
     },
     missing_code: {
-      title: i18n._(msg`Authentication failed`),
-      description: i18n._(
-        msg`Failed to receive authentication code. Please try again.`,
-      ),
-      toastDescription: i18n._(
-        msg`Failed to receive authentication code. Please try again.`,
-      ),
+      title: i18n._(msg`认证失败`),
+      description: i18n._(msg`未能收到认证码，请重试。`),
+      toastDescription: i18n._(msg`未能收到认证码，请重试。`),
     },
     consent_declined: {
-      title: i18n._(msg`Microsoft permissions were not granted`),
+      title: i18n._(msg`未授予 Microsoft 权限`),
       description: i18n._(
-        msg`Microsoft sign-in was canceled before ${BRAND_NAME} received the required permissions. Please try again and complete the consent screen.`,
+        msg`${BRAND_NAME} 收到所需权限前，Microsoft 登录已被取消。请重试并完成同意屏幕。`,
       ),
       toastDescription: i18n._(
-        msg`Microsoft sign-in was canceled before ${BRAND_NAME} received the required permissions. Please try again and complete the consent screen.`,
+        msg`${BRAND_NAME} 收到所需权限前，Microsoft 登录已被取消。请重试并完成同意屏幕。`,
       ),
     },
     admin_consent_required: {
-      title: i18n._(msg`Admin approval required`),
+      title: i18n._(msg`需要管理员批准`),
       description: buildMicrosoftPermissionHelp(
         i18n._(
-          msg`Your Microsoft 365 organization requires admin approval before ${BRAND_NAME} can access this account.`,
+          msg`你的 Microsoft 365 组织需要管理员批准后，${BRAND_NAME} 才能访问此账号。`,
         ),
       ),
       toastDescription: i18n._(
-        msg`Your Microsoft 365 organization requires admin approval before ${BRAND_NAME} can access this account. Ask your Microsoft 365 admin to approve ${BRAND_NAME}, then try again.`,
+        msg`你的 Microsoft 365 组织需要管理员批准后，${BRAND_NAME} 才能访问此账号。请让 Microsoft 365 管理员批准 ${BRAND_NAME}，然后重试。`,
       ),
     },
     invalid_scope_configuration: {
-      title: i18n._(msg`Microsoft app setup needs attention`),
+      title: i18n._(msg`Microsoft 应用设置需要处理`),
       description: buildMicrosoftPermissionHelp(
-        i18n._(msg`Microsoft rejected the requested permissions for this app.`),
+        i18n._(msg`Microsoft 拒绝了此应用请求的权限。`),
       ),
       toastDescription: i18n._(
-        msg`Microsoft rejected the requested permissions for this app. Ask your admin to verify the delegated Microsoft Graph permissions and redirect URLs, then try again.`,
+        msg`Microsoft 拒绝了此应用请求的权限。请让管理员验证委托的 Microsoft Graph 权限和重定向 URL，然后重试。`,
       ),
     },
     consent_incomplete: {
-      title: i18n._(msg`More Microsoft permissions are required`),
+      title: i18n._(msg`需要更多 Microsoft 权限`),
       description: buildMicrosoftPermissionHelp(
         i18n._(
-          msg`Microsoft connected the account, but did not grant all required permissions to ${BRAND_NAME}.`,
+          msg`Microsoft 已连接账号，但未向 ${BRAND_NAME} 授予所有必需权限。`,
         ),
       ),
       toastDescription: i18n._(
-        msg`Microsoft connected the account, but did not grant all required permissions. Reconnect and approve every requested permission. If your organization restricts consent, ask your admin to approve ${BRAND_NAME} first.`,
+        msg`Microsoft 已连接账号，但未授予所有必需权限。请重新连接并批准每一项请求的权限。如果你的组织限制同意操作，请先让管理员批准 ${BRAND_NAME}。`,
       ),
     },
     link_failed: {
-      title: i18n._(msg`Account linking failed`),
-      description:
-        errorDescription ||
-        i18n._(msg`Failed to link account. Please try again.`),
-      toastDescription:
-        errorDescription ||
-        i18n._(msg`Failed to link account. Please try again.`),
+      title: i18n._(msg`账号关联失败`),
+      description: errorDescription || i18n._(msg`关联账号失败，请重试。`),
+      toastDescription: errorDescription || i18n._(msg`关联账号失败，请重试。`),
     },
   };
 
   return (
     errorMessages[errorParam] || {
-      title: i18n._(msg`Error`),
+      title: i18n._(msg`错误`),
       description: defaultDescription,
       toastDescription: defaultDescription,
     }
@@ -466,44 +450,41 @@ function buildMicrosoftPermissionHelp(summary: string) {
     <div className="space-y-3">
       <p>
         <Trans>
-          {summary} This usually means your Microsoft 365 organization allowed
-          sign-in, but did not return all of the permissions needed to finish
-          connecting the account.
+          {summary} 这通常表示你的 Microsoft 365
+          组织允许登录，但未返回完成账号连接所需的全部权限。
         </Trans>
       </p>
       <p>
         <Trans>
-          Ask your Microsoft 365 admin to approve {BRAND_NAME} for the Microsoft
-          Graph permissions below, then try again.
+          请让 Microsoft 365 管理员为 {BRAND_NAME} 批准下方的 Microsoft Graph
+          权限，然后重试。
         </Trans>
       </p>
       <Button asChild size="sm">
         <Link href="/login/microsoft-admin-consent">
-          <Trans>Open Microsoft admin approval</Trans>
+          <Trans>打开 Microsoft 管理员批准</Trans>
         </Link>
       </Button>
       <div>
         <p className="font-medium">
-          <Trans>Email and inbox connection</Trans>
+          <Trans>电子邮件和收件箱连接</Trans>
         </p>
         <PermissionList scopes={MICROSOFT_EMAIL_SCOPES} />
       </div>
       <div>
         <p className="font-medium">
-          <Trans>
-            Additional permissions if you later connect other Microsoft features
-          </Trans>
+          <Trans>稍后连接其他 Microsoft 功能时所需的额外权限</Trans>
         </p>
         <div className="space-y-2">
           <div>
             <p className="font-medium">
-              <Trans>Calendar</Trans>
+              <Trans>日历</Trans>
             </p>
             <PermissionList scopes={CALENDAR_SCOPES} />
           </div>
           <div>
             <p className="font-medium">
-              <Trans>Docs and OneDrive</Trans>
+              <Trans>文档和 OneDrive</Trans>
             </p>
             <PermissionList scopes={MICROSOFT_DRIVE_SCOPES} />
           </div>

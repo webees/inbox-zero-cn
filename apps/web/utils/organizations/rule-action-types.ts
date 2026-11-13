@@ -2,9 +2,9 @@ import { ActionType } from "@/generated/prisma/enums";
 import { env } from "@/env";
 
 export const ORGANIZATION_RULE_ACTION_DISABLED_MESSAGE =
-  "This action is disabled in this deployment.";
+  "此操作在此部署中已禁用。";
 
-// Keep zod-free because client components import this list.
+// 保持不依赖 zod，因为客户端组件会导入此列表。
 export const ORGANIZATION_RULE_ACTION_TYPES = [
   ActionType.LABEL,
   ActionType.ARCHIVE,

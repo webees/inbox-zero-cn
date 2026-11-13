@@ -32,7 +32,7 @@ export function useSlackConnect({
         url: "/api/slack/auth-url",
         emailAccountId,
       });
-      if (!res.ok) throw new Error("Failed to get Slack auth URL");
+      if (!res.ok) throw new Error("获取 Slack 授权 URL 失败");
       const data: GetSlackAuthUrlResponse = await res.json();
 
       if (data.existingWorkspace) {
@@ -41,7 +41,7 @@ export function useSlackConnect({
         });
 
         if (!result?.serverError && !result?.validationErrors) {
-          toastSuccess({ description: "Slack connected" });
+          toastSuccess({ description: "已连接 Slack" });
           onConnected?.();
           return;
         }
@@ -51,18 +51,18 @@ export function useSlackConnect({
             serverError: result?.serverError,
             validationErrors: result?.validationErrors,
           },
-          "Failed to link Slack workspace",
+          "关联 Slack 工作区失败",
         );
 
         if (linkError.includes("Could not find your Slack account")) {
           toastInfo({
-            title: "Email not found in Slack",
-            description: "Redirecting to Slack authorization...",
+            title: "在 Slack 中找不到你的邮箱",
+            description: "正在跳转到 Slack 授权…",
           });
         } else {
           toastInfo({
-            title: "Continue in Slack",
-            description: "Redirecting to Slack authorization...",
+            title: "在 Slack 中继续",
+            description: "正在跳转到 Slack 授权…",
           });
         }
         // Always fall through to OAuth so the user isn't stuck.
@@ -71,11 +71,11 @@ export function useSlackConnect({
       if (data.url) {
         window.open(data.url, "_blank", "noopener,noreferrer");
       } else {
-        throw new Error("No auth URL returned");
+        throw new Error("未返回授权 URL");
       }
     } catch (error) {
       captureException(error, { extra: { context: "Slack connect" } });
-      toastError({ description: "Failed to connect Slack" });
+      toastError({ description: "连接 Slack 失败" });
     } finally {
       connectingRef.current = false;
       setConnecting(false);

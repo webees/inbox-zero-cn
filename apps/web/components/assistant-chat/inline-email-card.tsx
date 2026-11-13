@@ -156,7 +156,7 @@ export function InlineEmailList({ children }: { children?: ReactNode }) {
       );
       const failedCount = results.filter((r) => r?.serverError).length;
       if (failedCount === results.length) {
-        toastError({ description: t`Failed to archive emails` });
+        toastError({ description: t`无法归档邮件` });
         setArchiveAllState("idle");
       } else if (failedCount > 0) {
         markArchived(successfulThreadIds);
@@ -165,10 +165,7 @@ export function InlineEmailList({ children }: { children?: ReactNode }) {
           successfulThreadIds,
         );
         toastSuccess({
-          description: t`Archived ${results.length - failedCount} of ${plural(
-            results.length,
-            { one: "# email", other: "# emails" },
-          )}`,
+          description: t`已归档 ${results.length - failedCount} 封邮件，共 ${results.length} 封`,
         });
         setArchiveAllState("idle");
       } else {
@@ -178,15 +175,12 @@ export function InlineEmailList({ children }: { children?: ReactNode }) {
           successfulThreadIds,
         );
         toastSuccess({
-          description: t`Archived ${plural(remainingArchiveThreadIds.length, {
-            one: "# email",
-            other: "# emails",
-          })}`,
+          description: t`已归档 ${remainingArchiveThreadIds.length} 封邮件`,
         });
         setArchiveAllState("done");
       }
     } catch {
-      toastError({ description: t`Failed to archive emails` });
+      toastError({ description: t`无法归档邮件` });
       setArchiveAllState("idle");
     }
   }
@@ -208,7 +202,7 @@ export function InlineEmailList({ children }: { children?: ReactNode }) {
       );
       const failedCount = results.filter((r) => r?.serverError).length;
       if (failedCount === results.length) {
-        toastError({ description: t`Failed to mark emails as read` });
+        toastError({ description: t`无法将邮件标记为已读` });
         setMarkReadState("idle");
       } else if (failedCount > 0) {
         markRead(successfulThreadIds);
@@ -218,10 +212,7 @@ export function InlineEmailList({ children }: { children?: ReactNode }) {
         );
         const total = results.length;
         toastSuccess({
-          description: t`Marked ${plural(total - failedCount, {
-            one: `# of ${total} as read`,
-            other: `# of ${total} as read`,
-          })}`,
+          description: t`已将 ${total - failedCount} 封邮件标记为已读，共 ${total} 封`,
         });
         setMarkReadState("idle");
       } else {
@@ -231,15 +222,12 @@ export function InlineEmailList({ children }: { children?: ReactNode }) {
           successfulThreadIds,
         );
         toastSuccess({
-          description: t`Marked ${plural(remainingReadThreadIds.length, {
-            one: "# as read",
-            other: "# as read",
-          })}`,
+          description: t`已将 ${remainingReadThreadIds.length} 封邮件标记为已读`,
         });
         setMarkReadState("done");
       }
     } catch {
-      toastError({ description: t`Failed to mark emails as read` });
+      toastError({ description: t`无法将邮件标记为已读` });
       setMarkReadState("idle");
     }
   }
@@ -261,7 +249,7 @@ export function InlineEmailList({ children }: { children?: ReactNode }) {
         >
           <div className="min-w-0">
             <div className="text-sm font-medium">
-              <Trans>Completed emails</Trans>
+              <Trans>已完成的邮件</Trans>
             </div>
             <div className="text-xs text-muted-foreground">
               {formatCompletedSummary({
@@ -278,9 +266,7 @@ export function InlineEmailList({ children }: { children?: ReactNode }) {
         <div className="my-2 overflow-hidden rounded-lg border bg-card shadow-sm">
           {threadIds.length > 0 && (
             <div className="flex items-center justify-end gap-1 border-b px-3 py-1.5">
-              <Tooltip
-                content={archiveAllDone ? t`All archived` : t`Archive all`}
-              >
+              <Tooltip content={archiveAllDone ? t`已全部归档` : t`全部归档`}>
                 <Button
                   variant="ghost"
                   size="iconXs"
@@ -491,7 +477,7 @@ export function InlineEmailCard({
             <DropdownMenu>
               <DropdownMenuTrigger
                 className={iconButtonClass}
-                aria-label={t`More actions`}
+                aria-label={t`更多操作`}
                 onClick={(e) => e.stopPropagation()}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
@@ -512,7 +498,7 @@ export function InlineEmailCard({
                     ) : (
                       <ArchiveIcon className="mr-2 size-4" />
                     )}
-                    {isDone ? <Trans>Archived</Trans> : <Trans>Archive</Trans>}
+                    {isDone ? <Trans>已归档</Trans> : <Trans>归档</Trans>}
                   </DropdownMenuItem>
                 ) : null}
                 <DropdownMenuItem
@@ -525,9 +511,9 @@ export function InlineEmailCard({
                     <MailOpenIcon className="mr-2 size-4" />
                   )}
                   {markReadComplete ? (
-                    <Trans>Marked read</Trans>
+                    <Trans>已标记为已读</Trans>
                   ) : (
-                    <Trans>Mark as read</Trans>
+                    <Trans>标记为已读</Trans>
                   )}
                 </DropdownMenuItem>
                 {opensOnMailScreen ? null : (
@@ -539,9 +525,9 @@ export function InlineEmailCard({
                   >
                     <InfoIcon className="mr-2 size-4" />
                     {showDetails ? (
-                      <Trans>Hide details</Trans>
+                      <Trans>隐藏详情</Trans>
                     ) : (
-                      <Trans>Show details</Trans>
+                      <Trans>显示详情</Trans>
                     )}
                   </DropdownMenuItem>
                 )}
@@ -553,7 +539,7 @@ export function InlineEmailCard({
                       rel="noopener noreferrer"
                     >
                       <ExternalLinkIcon className="mr-2 size-4" />
-                      <Trans>Open in email</Trans>
+                      <Trans>在邮件中打开</Trans>
                     </a>
                   </DropdownMenuItem>
                 ) : null}
@@ -608,7 +594,7 @@ export function InlineEmailDetail({
       <div className="flex items-center justify-between gap-3 border-b px-3 py-2">
         <div className="min-w-0">
           <div className="truncate text-sm font-medium">
-            {meta?.subject || t`Email`}
+            {meta?.subject || t`邮件`}
           </div>
           {meta ? (
             <div className="text-xs text-muted-foreground">
@@ -625,7 +611,7 @@ export function InlineEmailDetail({
           ) : null}
         </div>
         {externalUrl ? (
-          <Tooltip content={t`Open in email`}>
+          <Tooltip content={t`在邮件中打开`}>
             <a
               href={externalUrl}
               target="_blank"
@@ -641,7 +627,7 @@ export function InlineEmailDetail({
         <EmailPreview threadId={threadId} compact />
       ) : (
         <div className="px-3 py-2 text-xs text-muted-foreground">
-          <Trans>No email content found.</Trans>
+          <Trans>未找到邮件内容</Trans>
         </div>
       )}
     </div>
@@ -665,7 +651,7 @@ function InlineEmailCardBody({
     }
     return (
       <span className="min-w-0 flex-1 truncate text-muted-foreground">
-        <Trans>Open email</Trans>
+        <Trans>打开邮件</Trans>
       </span>
     );
   }
@@ -684,7 +670,7 @@ function InlineEmailCardBody({
           <div className="mt-0.5 text-sm text-foreground">{children}</div>
         ) : (
           <div className="mt-0.5 truncate text-[13px] text-muted-foreground">
-            {meta.subject || t`(no subject)`}
+            {meta.subject || t`（无主题）`}
           </div>
         )}
       </div>
@@ -708,9 +694,8 @@ function getCardClass({
   isPreviewed: boolean;
 }) {
   if (inList) return "border-b last:border-b-0";
-  // A gray card sets the email apart from the reply's own text. The border is
-  // an inset ring because the chat's scroll area clips anything drawn outside
-  // a card, and hover tints the card so no row background covers the ring.
+  // 灰色背景将邮件卡片与回复正文区分开。边框使用内嵌圆环，因为聊天滚动区域会裁剪
+  // 卡片外部绘制的内容；悬停时会将卡片背景着色，以避免覆盖圆环。
   const base = "my-1.5 overflow-hidden rounded-lg ring-1 ring-inset";
   return isPreviewed
     ? `${base} bg-primary/10 ring-primary/40`
@@ -725,7 +710,7 @@ function getRowStateClass({
   inList: boolean;
 }) {
   if (isDone) return "line-through opacity-50";
-  // A standalone card handles its own hover; see getCardClass.
+  // 独立卡片自行处理悬停效果；请参阅 getCardClass。
   return inList ? "hover:bg-muted/50" : "";
 }
 
@@ -772,7 +757,7 @@ function EmailPreview({
   if (error) {
     return (
       <div className="px-3 py-2 text-xs text-muted-foreground">
-        <Trans>Could not load email content: {error.error}</Trans>
+        <Trans>无法加载邮件内容：{error.error}</Trans>
       </div>
     );
   }
@@ -780,7 +765,7 @@ function EmailPreview({
   if (!data?.thread?.messages?.length) {
     return (
       <div className="px-3 py-2 text-xs text-muted-foreground">
-        <Trans>No email content found.</Trans>
+        <Trans>未找到邮件内容</Trans>
       </div>
     );
   }
@@ -795,7 +780,7 @@ function EmailPreview({
     >
       {lastMessage.textHtml ? (
         <HtmlEmail
-          // A newer message is a different email, not an update of this one.
+          // 较新的消息是一封不同的邮件，而不是这封邮件的更新。
           key={lastMessage.id}
           emailAccountId={emailAccountId}
           html={lastMessage.textHtml}

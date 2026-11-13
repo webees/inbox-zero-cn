@@ -8,7 +8,7 @@ export async function readRequestJson(
   } catch {
     return {
       response: NextResponse.json(
-        { error: "Invalid JSON body", isKnownError: true },
+        { error: "无效的 JSON 请求体", isKnownError: true },
         { status: 400 },
       ),
     };

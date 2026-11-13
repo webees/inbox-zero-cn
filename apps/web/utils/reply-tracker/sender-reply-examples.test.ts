@@ -1,8 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import {
-  collectSenderReplyExamples,
-  getSenderHistoryMessages,
-} from "./sender-reply-examples";
+import { collectSenderReplyExamples } from "./sender-reply-examples";
 import type { EmailProvider } from "@/utils/email/types";
 import type { EmailAccountWithAI } from "@/utils/llms/types";
 import { createTestLogger } from "@/__tests__/helpers";
@@ -16,7 +13,6 @@ describe("collectSenderReplyExamples", () => {
       messages: [
         createMessage({
           id: "current-message",
-          threadId: "current-thread",
           from: "user@example.com",
           to: "sender@example.com",
           textPlain: "Current thread reply should not be included.",
@@ -74,17 +70,12 @@ describe("collectSenderReplyExamples", () => {
       ],
     });
 
-    const senderHistoryMessages = await getSenderHistoryMessages({
+    const result = await collectSenderReplyExamples({
       emailAccount: createEmailAccount(),
       emailProvider: provider,
       senderEmail: "sender@example.com",
-      currentThreadId: "current-thread",
+      currentMessageIds: new Set(["current-message"]),
       logger,
-    });
-    const result = collectSenderReplyExamples({
-      emailProvider: provider,
-      senderEmail: "sender@example.com",
-      senderHistoryMessages,
     });
 
     expect(provider.getThreadsWithParticipant).toHaveBeenCalledWith({
@@ -112,13 +103,13 @@ function createMockProvider({
   messages: ParsedMessage[];
 }): EmailProvider {
   return {
-    getThreadsWithParticipant: vi.fn().mockResolvedValue(
-      [...new Set(messages.map((message) => message.threadId))].map((id) => ({
-        id,
-        messages: messages.filter((message) => message.threadId === id),
+    getThreadsWithParticipant: vi.fn().mockResolvedValue([
+      {
+        id: "thread-1",
+        messages,
         snippet: "",
-      })),
-    ),
+      },
+    ]),
     isSentMessage: vi.fn((message: ParsedMessage) =>
       message.labelIds?.includes("SENT"),
     ),
@@ -141,7 +132,6 @@ function createEmailAccount(): EmailAccountWithAI {
 
 function createMessage({
   id,
-  threadId = "thread-1",
   from,
   to,
   textPlain,
@@ -149,7 +139,6 @@ function createMessage({
   internalDate,
 }: {
   id: string;
-  threadId?: string;
   from: string;
   to: string;
   textPlain: string;
@@ -158,7 +147,7 @@ function createMessage({
 }): ParsedMessage {
   return {
     id,
-    threadId,
+    threadId: "thread-1",
     internalDate,
     date: internalDate,
     historyId: "history-id",

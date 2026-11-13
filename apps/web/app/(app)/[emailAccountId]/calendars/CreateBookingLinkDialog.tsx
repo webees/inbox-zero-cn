@@ -91,15 +91,15 @@ export function CreateBookingLinkDialog({
   };
 
   return (
-    <BookingLinkDialog title={t`Create booking link`} onClose={onClose}>
+    <BookingLinkDialog title={t`创建预约链接`} onClose={onClose}>
       {hasConnectedCalendar ? (
         <>
           <div className="space-y-5 px-6 py-5">
             <Input
               type="text"
               name="title"
-              label={t`What guests see`}
-              placeholder={t`15 min intro`}
+              label={t`访客看到的内容`}
+              placeholder={t`15 分钟介绍`}
               registerProps={{
                 value: title,
                 onChange: (event: ChangeEvent<HTMLInputElement>) =>
@@ -110,7 +110,7 @@ export function CreateBookingLinkDialog({
             <Input
               type="text"
               name="slug"
-              label={t`Link URL`}
+              label={t`链接 URL`}
               leftText={publicUrlPrefix}
               placeholder={t`your-name`}
               registerProps={{
@@ -121,7 +121,7 @@ export function CreateBookingLinkDialog({
             />
 
             <div>
-              <Label name="duration" label={t`Duration`} />
+              <Label name="duration" label={t`时长`} />
               <div className="mt-1 grid grid-cols-4 gap-2">
                 {DURATION_OPTIONS.map((option) => {
                   const active = option === duration;
@@ -136,7 +136,7 @@ export function CreateBookingLinkDialog({
                         active && "border-primary ring-1 ring-primary",
                       )}
                     >
-                      {t`${option} min`}
+                      {t`${option} 分钟`}
                     </Button>
                   );
                 })}
@@ -144,7 +144,7 @@ export function CreateBookingLinkDialog({
             </div>
 
             <div>
-              <Label name="destinationCalendarId" label={t`Add events to`} />
+              <Label name="destinationCalendarId" label={t`将事件添加到`} />
               <Select
                 name="destinationCalendarId"
                 value={destinationCalendarId}
@@ -177,8 +177,8 @@ export function CreateBookingLinkDialog({
               autosizeTextarea
               rows={3}
               name="description"
-              label={t`Description (optional)`}
-              placeholder={t`Tell guests what to expect.`}
+              label={t`描述（可选）`}
+              placeholder={t`告诉访客可以期待什么。`}
               registerProps={{
                 value: description,
                 onChange: (event: ChangeEvent<HTMLTextAreaElement>) =>
@@ -189,14 +189,14 @@ export function CreateBookingLinkDialog({
 
           <BookingLinkDialogFooter>
             <Button variant="outline" onClick={onClose}>
-              <Trans>Cancel</Trans>
+              <Trans>取消</Trans>
             </Button>
             <Button
               onClick={handleCreate}
               loading={isCreating}
               disabled={!title.trim() || normalizedSlug.length < 3}
             >
-              <Trans>Create</Trans>
+              <Trans>创建</Trans>
             </Button>
           </BookingLinkDialogFooter>
         </>
@@ -204,13 +204,13 @@ export function CreateBookingLinkDialog({
         <>
           <div className="px-6 py-5">
             <p className="text-sm text-muted-foreground">
-              <Trans>Connect your calendar to create a booking link.</Trans>
+              <Trans>连接日历以创建预约链接。</Trans>
             </p>
           </div>
 
           <BookingLinkDialogFooter>
             <Button variant="outline" onClick={onClose}>
-              <Trans>Close</Trans>
+              <Trans>关闭</Trans>
             </Button>
           </BookingLinkDialogFooter>
         </>

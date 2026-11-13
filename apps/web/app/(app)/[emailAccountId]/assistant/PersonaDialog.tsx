@@ -20,7 +20,7 @@ export function PersonaDialog({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent>
         <DialogTitle className="text-lg font-medium">
-          <Trans>Choose a persona</Trans>
+          <Trans>选择用户画像</Trans>
         </DialogTitle>
 
         <ButtonList

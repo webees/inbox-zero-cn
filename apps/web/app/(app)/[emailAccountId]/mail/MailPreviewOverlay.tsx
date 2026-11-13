@@ -97,7 +97,7 @@ export function MailPreviewOverlay({
   return (
     <section
       ref={sectionRef}
-      aria-label={t`Email from chat`}
+      aria-label={t`来自聊天的邮件`}
       className="absolute inset-0 z-30 flex flex-col bg-background"
     >
       <div className="flex items-center gap-1 border-b bg-muted/40 px-3 py-1.5">
@@ -105,14 +105,15 @@ export function MailPreviewOverlay({
         <span className="text-muted-foreground text-xs">
           {position.index !== -1 && position.threadIds.length > 1 ? (
             <Trans>
-              From chat · {position.index + 1} of {position.threadIds.length}
+              来自聊天 · 第 {position.index + 1} 封，共{" "}
+              {position.threadIds.length} 封
             </Trans>
           ) : (
-            <Trans>From chat</Trans>
+            <Trans>来自聊天</Trans>
           )}
         </span>
         <Button
-          aria-label={t`Previous email from chat`}
+          aria-label={t`上一封来自聊天的邮件`}
           className="ml-1"
           disabled={!previous}
           Icon={ChevronUpIcon}
@@ -121,7 +122,7 @@ export function MailPreviewOverlay({
           variant="ghost"
         />
         <Button
-          aria-label={t`Next email from chat`}
+          aria-label={t`下一封来自聊天的邮件`}
           disabled={!next}
           Icon={ChevronDownIcon}
           onClick={() => next && onNavigate(next)}
@@ -130,10 +131,10 @@ export function MailPreviewOverlay({
         />
         <div className="ml-auto flex items-center gap-1">
           <Button size="xs-2" variant="ghost" onClick={onOpenInReader}>
-            <Trans>Open in reader</Trans>
+            <Trans>在阅读器中打开</Trans>
           </Button>
           <Button
-            aria-label={t`Close email`}
+            aria-label={t`关闭邮件`}
             size="iconXs"
             variant="ghost"
             Icon={XIcon}

@@ -142,13 +142,12 @@ export function OrgRuleDialog({
     if (result?.serverError || result?.validationErrors) {
       toastError({
         description:
-          result.serverError ||
-          t`There was an error saving the rule. Please check the fields and try again.`,
+          result.serverError || t`保存规则时出错。请检查各字段后重试。`,
       });
       return;
     }
 
-    toastSuccess({ description: editing ? t`Rule updated` : t`Rule created` });
+    toastSuccess({ description: editing ? t`规则已更新` : t`规则已创建` });
     onSuccess();
   });
 
@@ -163,15 +162,13 @@ export function OrgRuleDialog({
         <DialogHeader>
           <DialogTitle>
             {editing ? (
-              <Trans>Edit organization rule</Trans>
+              <Trans>编辑组织规则</Trans>
             ) : (
-              <Trans>New organization rule</Trans>
+              <Trans>新建组织规则</Trans>
             )}
           </DialogTitle>
           <DialogDescription>
-            <Trans>
-              This rule applies to every member of your organization.
-            </Trans>
+            <Trans>此规则适用于组织的所有成员。</Trans>
           </DialogDescription>
         </DialogHeader>
 
@@ -180,18 +177,18 @@ export function OrgRuleDialog({
             <Input
               type="text"
               name="name"
-              label={t`Name`}
+              label={t`名称`}
               registerProps={register("name", {
-                required: t`Please enter a name`,
+                required: t`请输入名称`,
               })}
               error={errors.name}
-              placeholder={t`e.g. Label invoices`}
+              placeholder={t`例如：为发票添加标签`}
             />
 
             <RuleSectionCard
               icon={InboxIcon}
               color="blue"
-              title={t`When I get an email`}
+              title={t`当我收到邮件时`}
             >
               <ConditionSteps
                 conditionFields={conditionFields}
@@ -207,7 +204,7 @@ export function OrgRuleDialog({
               />
             </RuleSectionCard>
 
-            <RuleSectionCard icon={ZapIcon} color="green" title={t`Then`}>
+            <RuleSectionCard icon={ZapIcon} color="green" title={t`然后`}>
               <OrgActionSteps
                 fields={actionFields}
                 register={register}
@@ -221,19 +218,18 @@ export function OrgRuleDialog({
 
             <Collapsible open={isAdvancedOpen} onOpenChange={setIsAdvancedOpen}>
               <CollapsibleHeading>
-                <Trans>Advanced options</Trans>
+                <Trans>高级选项</Trans>
               </CollapsibleHeading>
               <CollapsibleContent>
                 <div className="rounded-md border">
                   <div className="flex items-center justify-between gap-4 px-4 py-3">
                     <div>
                       <p className="text-sm font-medium">
-                        <Trans>Apply to threads</Trans>
+                        <Trans>应用于会话</Trans>
                       </p>
                       <p className="text-sm text-muted-foreground">
                         <Trans>
-                          Run on every reply in a conversation, not just the
-                          first message.
+                          对会话中的每条回复运行，而不只是第一条消息。
                         </Trans>
                       </p>
                     </div>
@@ -253,14 +249,10 @@ export function OrgRuleDialog({
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={onClose}>
-                <Trans>Cancel</Trans>
+                <Trans>取消</Trans>
               </Button>
               <Button type="submit" loading={isSubmitting}>
-                {editing ? (
-                  <Trans>Save rule</Trans>
-                ) : (
-                  <Trans>Create rule</Trans>
-                )}
+                {editing ? <Trans>保存规则</Trans> : <Trans>创建规则</Trans>}
               </Button>
             </DialogFooter>
           </form>

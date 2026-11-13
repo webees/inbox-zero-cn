@@ -51,7 +51,7 @@ export function Combobox(props: {
       <PopoverContent className="w-full p-0 sm:w-[500px]">
         <Command>
           <CommandInput
-            placeholder="Search..."
+            placeholder="搜索..."
             value={props.onSearch ? props.search : undefined}
             onValueChange={props.onSearch}
           />

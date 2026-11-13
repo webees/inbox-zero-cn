@@ -11,7 +11,7 @@ const logger = createScopedLogger("llms/model-usage-guard");
 const TRIAL_AI_LIMIT_NOTIFICATION_TTL_SECONDS = 60 * 24 * 60 * 60;
 
 export const TRIAL_AI_LIMIT_REACHED_MESSAGE =
-  "Your trial has reached the AI usage limit. Start your paid plan now to continue using AI automation.";
+  "你的试用已达到 AI 使用上限。立即开通付费套餐以继续使用 AI 自动化。";
 
 type TrialAiUsageLimitStatus =
   | { status: "allowed" }

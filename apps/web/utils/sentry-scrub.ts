@@ -17,11 +17,10 @@ const REDACT_KEYS = new Set<string>(
   ].map(normalizeRedactionFieldName),
 );
 
-// Sentry is a third party. Before sending an event, redact PII/secrets from the
-// fields where captureException context and request data land. We redact (not
-// hash) so this stays client- and edge-safe (no node:crypto). event.user.email
-// is intentionally left alone: it is the authenticated user's own email, which
-// the logging policy allows.
+// Sentry 是第三方。在发送事件之前，从 captureException 上下文和请求数据
+// 所落入的字段中脱敏 PII/密钥。我们采用脱敏（而非哈希），以便在客户端和
+// 边缘环境中保持安全（不依赖 node:crypto）。event.user.email 有意保留：
+// 它是已认证用户自己的邮箱，日志策略允许记录。
 export function scrubSentryEvent<T extends Event>(event: T): T {
   if (event.extra) event.extra = redactPii(event.extra);
   if (event.contexts) event.contexts = redactPii(event.contexts);
@@ -34,11 +33,10 @@ export function scrubSentryEvent<T extends Event>(event: T): T {
   return event;
 }
 
-// Wired into Sentry.init as beforeSend / beforeSendTransaction across all
-// runtimes. scrubSentryEvent is generic over the event type, so it instantiates
-// to ErrorEvent / TransactionEvent at each call site (both share the scrubbed
-// fields). Aliased rather than re-typed to avoid importing TransactionEvent,
-// which @sentry/nextjs does not re-export.
+// 在所有运行时中作为 beforeSend / beforeSendTransaction 接入 Sentry.init。
+// scrubSentryEvent 对事件类型是泛型的，因此会在每个调用点实例化为
+// ErrorEvent / TransactionEvent（两者共享被脱敏的字段）。使用别名而不是
+// 重新声明类型，以避免导入 @sentry/nextjs 未再导出的 TransactionEvent。
 export const beforeSend = scrubSentryEvent;
 export const beforeSendTransaction = scrubSentryEvent;
 

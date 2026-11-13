@@ -115,7 +115,7 @@ export function SelectionToolbar({
       }}
     >
       <div
-        aria-label="Selection formatting"
+        aria-label="选区格式"
         className={styles.bubbleToolbar}
         role="toolbar"
       >
@@ -128,28 +128,28 @@ export function SelectionToolbar({
         </ToolbarButton>
         <ToolbarButton
           active={state.italic}
-          label="Italic"
+          label="斜体"
           onPress={() => toggleMark(editor, "italic")}
         >
           <em>I</em>
         </ToolbarButton>
         <ToolbarButton
           active={state.underline}
-          label="Underline"
+          label="下划线"
           onPress={() => toggleMark(editor, "underline")}
         >
           <u>U</u>
         </ToolbarButton>
         <ToolbarButton
           active={state.strike}
-          label="Strikethrough"
+          label="删除线"
           onPress={() => toggleMark(editor, "strike")}
         >
           <s>S</s>
         </ToolbarButton>
         <ToolbarButton
           active={state.link}
-          label="Add or edit link"
+          label="添加或编辑链接"
           onPress={onLink}
         >
           <FormattingIcon kind="link" />
@@ -157,7 +157,7 @@ export function SelectionToolbar({
         <span aria-hidden className={styles.separator} />
         <ToolbarButton
           active={state.bulletList}
-          label="Bulleted list"
+          label="项目符号列表"
           onPress={() =>
             state.bulletList ? editor.removeList() : editor.makeUnorderedList()
           }
@@ -166,7 +166,7 @@ export function SelectionToolbar({
         </ToolbarButton>
         <ToolbarButton
           active={state.orderedList}
-          label="Numbered list"
+          label="编号列表"
           onPress={() =>
             state.orderedList ? editor.removeList() : editor.makeOrderedList()
           }
@@ -175,7 +175,7 @@ export function SelectionToolbar({
         </ToolbarButton>
         <ToolbarButton
           active={state.blockquote}
-          label="Block quote"
+          label="引用"
           onPress={() =>
             state.blockquote
               ? editor.removeQuote()
@@ -187,14 +187,14 @@ export function SelectionToolbar({
         <span aria-hidden className={styles.separator} />
         <ToolbarButton
           active={state.direction === "ltr"}
-          label="Left-to-right text"
+          label="从左到右文字"
           onPress={() => editor.setTextDirection("ltr")}
         >
           <FormattingIcon kind="ltr" />
         </ToolbarButton>
         <ToolbarButton
           active={state.direction === "rtl"}
-          label="Right-to-left text"
+          label="从右到左文字"
           onPress={() => editor.setTextDirection("rtl")}
         >
           <FormattingIcon kind="rtl" />

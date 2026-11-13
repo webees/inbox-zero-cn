@@ -25,20 +25,20 @@ export function Footer({ className, variant = "default" }: FooterProps) {
     const selfHostedFooter = {
       resources: [
         {
-          name: t`Documentation`,
+          name: t`文档`,
           href: "https://docs.getinboxzero.com",
           target: "_blank",
         },
         {
-          name: t`Contact us`,
+          name: t`联系我们`,
           href: `mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}`,
         },
         { name: "GitHub", href: "/github", target: "_blank" },
         { name: "Discord", href: "/discord", target: "_blank" },
       ],
       legal: [
-        { name: t`Terms`, href: "/terms" },
-        { name: t`Privacy`, href: "/privacy" },
+        { name: t`条款`, href: "/terms" },
+        { name: t`隐私`, href: "/privacy" },
       ],
     };
 
@@ -74,7 +74,7 @@ export function Footer({ className, variant = "default" }: FooterProps) {
           </div>
           <p className="mt-6 text-center text-xs leading-5 text-gray-500">
             <Trans>
-              Powered by{" "}
+              由{" "}
               <Link
                 href="https://getinboxzero.com"
                 target="_blank"
@@ -82,7 +82,8 @@ export function Footer({ className, variant = "default" }: FooterProps) {
                 className="hover:text-gray-900"
               >
                 Inbox Zero
-              </Link>
+              </Link>{" "}
+              提供支持
             </Trans>
           </p>
         </div>
@@ -101,37 +102,37 @@ export function Footer({ className, variant = "default" }: FooterProps) {
       <div
         className={cn("overflow-hidden px-6 py-20 sm:py-24 lg:px-8", className)}
       >
-        <nav aria-label="Footer">
+        <nav aria-label="页脚">
           <div className="mt-16 grid grid-cols-2 gap-8 lg:grid-cols-5 xl:col-span-2 xl:mt-0">
             <div>
-              <FooterList title={t`Product`} items={footerNavigation.main} />
+              <FooterList title={t`产品`} items={footerNavigation.main} />
             </div>
             <div>
               <FooterList
-                title={t`Use Cases`}
+                title={t`使用场景`}
                 items={footerNavigation.useCases}
               />
               <div className="mt-6">
                 <FooterList
-                  title={t`Industries`}
+                  title={t`行业`}
                   items={footerNavigation.industries}
                 />
               </div>
             </div>
             <div>
-              <FooterList title={t`Support`} items={footerNavigation.support} />
+              <FooterList title={t`支持`} items={footerNavigation.support} />
               <div className="mt-6">
                 <FooterList
-                  title={t`Free Tools`}
+                  title={t`免费工具`}
                   items={footerNavigation.tools}
                 />
               </div>
             </div>
             <div>
-              <FooterList title={t`Company`} items={footerNavigation.company} />
+              <FooterList title={t`公司`} items={footerNavigation.company} />
             </div>
             <div>
-              <FooterList title={t`Legal`} items={footerNavigation.legal} />
+              <FooterList title={t`法律`} items={footerNavigation.legal} />
               <div className="mt-6">
                 <FooterList
                   title={t`Compare`}

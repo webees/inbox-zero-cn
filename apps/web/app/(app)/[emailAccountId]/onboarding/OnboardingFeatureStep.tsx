@@ -27,7 +27,7 @@ export function OnboardingFeatureStep({
         </TypographyP>
         <div className="flex w-full max-w-xs flex-col gap-2">
           <Button className="w-full" onClick={onNext}>
-            <Trans>Continue</Trans>
+            <Trans>继续</Trans>
             <ArrowRightIcon className="ml-2 size-4" />
           </Button>
         </div>

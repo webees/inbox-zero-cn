@@ -38,20 +38,20 @@ export function SharedConversationList() {
             >
               <span>
                 <span className="block font-medium">
-                  <Trans>Conversation shared by {conversation.publisher}</Trans>
+                  <Trans>{conversation.publisher} 分享的会话</Trans>
                 </span>
                 <span className="text-muted-foreground text-xs">
                   <Plural
                     value={conversation.commentCount}
-                    one="# comment"
-                    other="# comments"
+                    one="# 条评论"
+                    other="# 条评论"
                   />{" "}
                   · {new Date(conversation.updatedAt).toLocaleString()}
                 </span>
               </span>
               {conversation.unread && (
                 <Badge>
-                  <Trans>Unread</Trans>
+                  <Trans>未读</Trans>
                 </Badge>
               )}
             </Link>

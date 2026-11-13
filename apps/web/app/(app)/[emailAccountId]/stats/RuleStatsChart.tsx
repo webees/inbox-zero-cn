@@ -183,7 +183,7 @@ export function RuleStatsChart({ dateRange, title }: RuleStatsChartProps) {
           <p>{title}</p>
           <div className="mt-4 h-72 flex items-center justify-center text-muted-foreground">
             <p>
-              <Trans>No executed rules found for this period.</Trans>
+              <Trans>此时间段内没有已执行的规则。</Trans>
             </p>
           </div>
         </CardBasic>

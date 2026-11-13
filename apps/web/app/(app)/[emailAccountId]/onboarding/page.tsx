@@ -20,8 +20,8 @@ export const maxDuration = 300;
 export async function generateMetadata(): Promise<Metadata> {
   const i18n = await initLingui();
   return {
-    title: getBrandTitle(t(i18n)`Onboarding`),
-    description: t(i18n)`Learn how ${BRAND_NAME} works and get set up.`,
+    title: getBrandTitle(t(i18n)`引导流程`),
+    description: t(i18n)`了解 ${BRAND_NAME} 如何运作并完成设置。`,
     alternates: { canonical: "/onboarding" },
   };
 }

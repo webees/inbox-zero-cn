@@ -172,7 +172,7 @@ export function ConnectedAppsSection({
         emailAccountId,
       });
       if (!res.ok) {
-        throw new Error("Failed to get Slack auth URL");
+        throw new Error("获取 Slack 授权 URL 失败");
       }
       const data: GetSlackAuthUrlResponse = await res.json();
 
@@ -186,13 +186,13 @@ export function ConnectedAppsSection({
       if (data.url) {
         redirectToSafeUrl(data.url, { allowExternal: true });
       } else {
-        throw new Error("No auth URL returned");
+        throw new Error("未返回授权 URL");
       }
     } catch (error) {
       captureException(error, {
-        extra: { context: "Slack OAuth initiation" },
+        extra: { context: "启动 Slack OAuth" },
       });
-      toastError({ description: t`Failed to connect Slack` });
+      toastError({ description: t`连接 Slack 失败` });
       setConnectingSlack(false);
     }
   };
@@ -212,7 +212,7 @@ export function ConnectedAppsSection({
       <Item size="sm">
         <ItemContent>
           <ItemTitle>
-            <Trans>Connected Apps</Trans>
+            <Trans>已连接的应用</Trans>
           </ItemTitle>
         </ItemContent>
         <ItemActions>
@@ -229,8 +229,8 @@ export function ConnectedAppsSection({
                   >
                     <MessagesSquareIcon className="mr-2 h-4 w-4" />
                     {linkStatus === "executing"
-                      ? t`Linking...`
-                      : t`Link to ${existingWorkspace.teamName}`}
+                      ? t`正在链接…`
+                      : t`链接到 ${existingWorkspace.teamName}`}
                   </Button>
                   <button
                     type="button"
@@ -241,7 +241,7 @@ export function ConnectedAppsSection({
                       }
                     }}
                   >
-                    <Trans>Install manually</Trans>
+                    <Trans>手动安装</Trans>
                   </button>
                 </div>
               ) : (
@@ -252,7 +252,7 @@ export function ConnectedAppsSection({
                   onClick={handleConnectSlack}
                 >
                   <MessagesSquareIcon className="mr-2 h-4 w-4" />
-                  {connectingSlack ? t`Connecting...` : t`Connect Slack`}
+                  {connectingSlack ? t`正在连接…` : t`连接 Slack`}
                 </Button>
               ))}
 
@@ -264,7 +264,7 @@ export function ConnectedAppsSection({
                 onClick={() => handleCreateLinkCode("TEAMS")}
               >
                 <MessageCircleIcon className="mr-2 h-4 w-4" />
-                <Trans>Connect Teams</Trans>
+                <Trans>连接 Teams</Trans>
               </Button>
             )}
 
@@ -341,16 +341,13 @@ function ConnectedChannelRow({
       onSuccess: () => {
         const providerName = config?.name ?? channel.provider;
         toastSuccess({
-          description: t`${providerName} disconnected`,
+          description: t`${providerName} 已断开连接`,
         });
         onUpdate();
       },
       onError: (error) => {
         toastError({
-          description: getActionErrorMessage(
-            error.error,
-            t`Failed to disconnect`,
-          ),
+          description: getActionErrorMessage(error.error, t`断开连接失败`),
         });
       },
     },
@@ -398,7 +395,7 @@ function ConnectedChannelRow({
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <Trans>Disconnect</Trans>
+            <Trans>断开连接</Trans>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -429,19 +426,18 @@ function MessagingConnectCodeDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            <Trans>Connect {providerName}</Trans>
+            <Trans>连接 {providerName}</Trans>
           </DialogTitle>
           <DialogDescription>
             <Trans>
-              Send this command in a direct message with the Inbox Zero bot on{" "}
-              {providerName}. The code is one-time use and expires in 10
-              minutes.
+              在 {providerName} 上通过私信向 Inbox Zero
+              机器人发送此命令。该验证码 仅可使用一次，10 分钟后失效。
             </Trans>
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-2">
           <div className="text-xs text-muted-foreground">
-            <Trans>Command</Trans>
+            <Trans>命令</Trans>
           </div>
           <CopyInput value={command} />
         </div>
@@ -449,7 +445,7 @@ function MessagingConnectCodeDialog({
           <div className="pt-1">
             <Button asChild size="sm">
               <a href={botUrl} target="_blank" rel="noopener noreferrer">
-                <Trans>Open Telegram bot</Trans>
+                <Trans>打开 Telegram 机器人</Trans>
               </a>
             </Button>
           </div>

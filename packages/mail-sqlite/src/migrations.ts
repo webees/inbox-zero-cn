@@ -4,7 +4,6 @@ import {
   migrateConversationIndex,
   migrateInboxUnreadExcludesArchive,
   migrateMembershipIndex,
-  migrateMembershipTriggerLookup,
 } from "./conversation-index";
 import { migrateMessageSearchIndex } from "./message-search-index";
 
@@ -417,7 +416,6 @@ export async function migrateMailbox(
   await tx.exec("DROP TABLE IF EXISTS draft_attachments");
   await migrateConversationIndex(tx);
   await migrateMembershipIndex(tx);
-  await migrateMembershipTriggerLookup(tx);
   await migrateInboxUnreadExcludesArchive(tx);
   await migrateMessageSearchIndex(tx);
   await migrateEmptyMeetingInvitationBodies(tx);

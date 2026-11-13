@@ -488,12 +488,12 @@ function createAppWindow(options?: {
   window.on("resize", () => layoutActiveTab(appWindow));
   window.on("focus", () => {
     lastFocused = appWindow;
-    // A BaseWindow does not hand keyboard focus to its views by itself.
+    // BaseWindow 不会自行把键盘焦点交给它的视图
     appWindow.activeTab.contents.focus();
     applyUnreadBadge();
     syncUpdateProgressBar();
   });
-  // The window can take focus before the listener above exists.
+  // 窗口可能在上面的监听器注册前就获得焦点
   if (window.isFocused()) tab.contents.focus();
   if (options?.isMaximized) window.maximize();
   window.on("blur", () => {
@@ -503,8 +503,8 @@ function createAppWindow(options?: {
   window.on("resized", schedulePersistWindows);
   window.on("maximize", schedulePersistWindows);
   window.on("unmaximize", schedulePersistWindows);
-  // Keep the last window alive on macOS so reopening from the dock is instant
-  // instead of a cold page load. Extra windows close for real.
+  // 在 macOS 上保留最后一个窗口，让从程序坞重新打开时立即出现，
+  // 而不是重新冷加载页面。多余的窗口则真正关闭。
   window.on("close", (event) => {
     if (
       process.platform === "darwin" &&
@@ -514,7 +514,7 @@ function createAppWindow(options?: {
       event.preventDefault();
       window.hide();
     } else if (!isQuitting && appWindows.length === 1) {
-      // Persist before the last window is removed so quit/close cannot write [].
+      // 在移除最后一个窗口之前持久化，避免退出/关闭时写入 []。
       persistWindowsNow();
     }
   });
@@ -909,8 +909,8 @@ function reportSignInError(error: unknown) {
 
 function showSignInError(error: unknown) {
   dialog.showErrorBox(
-    "Sign in failed",
-    error instanceof Error ? error.message : "Could not finish signing in",
+    "登录失败",
+    error instanceof Error ? error.message : "无法完成登录",
   );
 }
 

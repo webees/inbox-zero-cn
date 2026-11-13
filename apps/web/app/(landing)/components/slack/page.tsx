@@ -54,118 +54,115 @@ type SlackPreview = {
 
 const slackPreviews: SlackPreview[] = [
   {
-    title: "Channel confirmation",
-    text: "✅ Inbox Zero connected! You can mention <@UAPP123> in this channel to chat about your emails. If you enable meeting briefs or attachment filing notifications, I can send those here too.",
+    title: "频道确认",
+    text: "✅ Inbox Zero 已连接！你可以在本频道中提及 <@UAPP123> 来聊你的邮件。如果你启用了会议简报或附件归档通知，我也可以把它们发送到这里。",
   },
   {
-    title: "Connection onboarding DM",
-    text: "✅ Inbox Zero connected. Next, open Channels in Inbox Zero to choose where messages go. To use a private channel, invite <@UAPP123> there. You can also DM me anytime to chat about your emails.",
+    title: "连接引导私信",
+    text: "✅ Inbox Zero 已连接。接下来，在 Inbox Zero 中打开“频道”来选择消息发送到哪里。要使用私密频道，请把 <@UAPP123> 邀请进去。你也可以随时私信我，聊你的邮件。",
   },
   {
-    title: "Automation channel message",
-    text: "Rule matched: a high priority email needs review.\n\n_Reply with <@UAPP123> to chat about your emails._",
+    title: "自动化频道消息",
+    text: "规则已匹配：一封高优先级邮件需要审核。\n\n_回复 <@UAPP123> 来聊你的邮件。_",
   },
   {
-    title: "Draft reply notification",
+    title: "草稿回复通知",
     blocks: buildSlackRuleNotificationPreviewBlocks({
       actionId: "demo-draft-action",
       actionType: ActionType.DRAFT_MESSAGING_CHANNEL,
       email: {
         headers: {
           from: "Avery Customer <avery.customer@example.com>",
-          subject: "Question about the launch checklist and rollout timeline",
+          subject: "关于上线清单和发布时间线的问题",
         },
-        snippet:
-          "Could you confirm whether the migration checklist includes SSO, billing handoff, and a rollback plan?",
+        snippet: "你能确认迁移清单是否包含 SSO、计费交接和回滚方案吗？",
         textPlain:
-          "Could you confirm whether the migration checklist includes SSO, billing handoff, and a rollback plan? The implementation team also had a few notes from the kickoff.\n\nOn Friday, Jane wrote:\n> We should confirm this covers the rollout checklist.",
+          "你能确认迁移清单是否包含 SSO、计费交接和回滚方案吗？实施团队也有一些启动会上的备注。\n\n周五，Jane 写道：\n> 我们应该确认这覆盖了发布清单。",
       },
       draftContent:
-        "Thanks for sending this over. The checklist covers SSO and billing handoff, and I added a rollback section for the implementation team to review.",
+        "谢谢你发来这个。清单涵盖了 SSO 和计费交接，我还加了一个回滚章节供实施团队审阅。",
       openLink: {
-        label: "Open in Gmail",
+        label: "在 Gmail 中打开",
         url: "https://mail.example.com/thread/demo",
       },
     }) as SlackBlock[],
   },
   {
-    title: "Email notification",
+    title: "邮件通知",
     blocks: buildSlackRuleNotificationPreviewBlocks({
       actionId: "demo-notify-action",
       actionType: ActionType.NOTIFY_MESSAGING_CHANNEL,
       email: {
         headers: {
-          from: "Billing Team <billing@example.com>",
-          subject: "Receipt and account update",
+          from: "计费团队 <billing@example.com>",
+          subject: "收据和账号更新",
         },
         snippet:
-          "Your receipt is attached. Please review the account details and forward this to the finance workspace if everything looks correct.",
+          "你的收据已附上。请检查账号详情，如果一切无误，请把这封邮件转发到财务工作区。",
       },
       openLink: {
-        label: "Open in Gmail",
+        label: "在 Gmail 中打开",
         url: "https://mail.example.com/thread/demo",
       },
     }) as SlackBlock[],
   },
   {
-    title: "Follow-up awaiting reply",
+    title: "等待回复的跟进",
     blocks: buildFollowUpReminderBlocks({
-      subject: "Contract terms and final approval next steps",
+      subject: "合同条款和最终审批的后续步骤",
       counterpartyName: "Jane Partner",
       counterpartyEmail: "jane.partner@example.com",
       trackerType: ThreadTrackerType.AWAITING,
       daysSinceSent: 4,
       snippet:
-        "Wanted to check whether the redlines have landed.\n> On Friday, Jane wrote: We will review this with legal and reply shortly.",
+        "想确认修改稿是否已经发来。\n> 周五，Jane 写道：我们会和法务一起审阅，并尽快回复。",
       threadLink: "https://mail.example.com/thread/awaiting",
-      threadLinkLabel: "Open in Gmail",
+      threadLinkLabel: "在 Gmail 中打开",
       trackerId: "tracker-awaiting",
     }) as SlackBlock[],
   },
   {
-    title: "Follow-up needs reply",
+    title: "需要回复的跟进",
     blocks: buildFollowUpReminderBlocks({
-      subject:
-        "Implementation questions for the migration plan and launch timeline",
+      subject: "关于迁移方案和上线时间线的实施问题",
       counterpartyName: "Alex Customer",
       counterpartyEmail: "alex.customer@example.com",
       trackerType: ThreadTrackerType.NEEDS_REPLY,
       daysSinceSent: 1,
-      snippet:
-        "Could you walk me through the SSO setup and confirm the staging domain before Thursday?",
+      snippet: "你能给我讲讲 SSO 的设置，并在周四之前确认预发布域名吗？",
       trackerId: "tracker-needs-reply",
     }) as SlackBlock[],
   },
   {
-    title: "Digest with overflow",
+    title: "内容溢出的邮件摘要",
     blocks: buildDigestBlocks({
       date: new Date("2026-04-21T09:00:00Z"),
       ruleNames: {
-        newsletters: "Newsletters",
-        receipts: "Receipts",
+        newsletters: "邮件简报",
+        receipts: "收据",
       },
       itemsByRule: {
         newsletters: [
-          { from: "Acme Weekly", subject: "This week in product updates" },
-          { from: "Design Notes", subject: "Five patterns worth saving" },
-          { from: "Morning Brief", subject: "Markets and tech headlines" },
-          { from: "Dev Digest", subject: "TypeScript changes to know" },
-          { from: "Ops Weekly", subject: "Reliability review" },
-          { from: "Product Hunt", subject: "Launches you might like" },
-          { from: "Security Feed", subject: "New dependency advisories" },
+          { from: "Acme Weekly", subject: "本周产品更新" },
+          { from: "Design Notes", subject: "五个值得保存的模式" },
+          { from: "Morning Brief", subject: "市场和科技头条" },
+          { from: "Dev Digest", subject: "值得了解的 TypeScript 变化" },
+          { from: "Ops Weekly", subject: "可靠性评审" },
+          { from: "Product Hunt", subject: "你可能会喜欢的新品发布" },
+          { from: "Security Feed", subject: "新的依赖安全公告" },
         ],
         receipts: [
-          { from: "Stripe", subject: "Your receipt from Example App" },
-          { from: "Cloud Vendor", subject: "Monthly invoice available" },
+          { from: "Stripe", subject: "来自 Example App 的收据" },
+          { from: "Cloud Vendor", subject: "月度账单已生成" },
         ],
       },
     }) as SlackBlock[],
   },
   {
-    title: "Meeting briefing",
+    title: "会议简报",
     blocks: buildMeetingBriefingBlocks({
-      meetingTitle: "Customer implementation review",
-      formattedTime: "Today at 2:00 PM",
+      meetingTitle: "客户实施评审",
+      formattedTime: "今天下午 2:00",
       videoConferenceLink: "https://meet.example.com/customer-review",
       eventUrl: "https://calendar.example.com/event/123",
       briefingContent: {
@@ -174,18 +171,12 @@ const slackPreviews: SlackPreview[] = [
           {
             name: "Jamie Lee",
             email: "jamie@example.com",
-            bullets: [
-              "Leads platform operations for the customer team",
-              "Last thread asked for status and launch risks",
-            ],
+            bullets: ["负责客户团队的平台运营", "上一个会话询问进展和上线风险"],
           },
           {
             name: "Morgan Patel",
             email: "morgan@example.com",
-            bullets: [
-              "Owns security review",
-              "Previously requested SSO documentation",
-            ],
+            bullets: ["负责安全评审", "之前索取过 SSO 文档"],
           },
         ],
         internalTeamMembers: [
@@ -195,7 +186,7 @@ const slackPreviews: SlackPreview[] = [
     }) as SlackBlock[],
   },
   {
-    title: "Document filed",
+    title: "文档已归档",
     blocks: buildDocumentFiledBlocks({
       filename: "invoice-2026-04.pdf",
       folderPath: "Finance/Invoices/2026",
@@ -205,16 +196,15 @@ const slackPreviews: SlackPreview[] = [
     }) as SlackBlock[],
   },
   {
-    title: "Document filing question",
+    title: "文档归档询问",
     blocks: buildDocumentAskBlocks({
       filename: "contract-draft-v2.docx",
       senderEmail: "legal@example.com",
-      reasoning:
-        "This looks like a legal contract, but it mentions two projects.",
+      reasoning: "这看起来是一份法律合同，但提到了两个项目。",
     }) as SlackBlock[],
   },
   {
-    title: "App Home",
+    title: "应用主页",
     blocks: buildAppHomeBlocks().blocks as SlackBlock[],
   },
 ];
@@ -224,11 +214,11 @@ export default function SlackComponentsPage() {
     <Container size="6xl">
       <div className="space-y-8 py-8">
         <div className="space-y-3">
-          <TextLink href="/components">← Components</TextLink>
+          <TextLink href="/components">← 组件</TextLink>
           <div className="space-y-2">
-            <PageHeading>Slack Components</PageHeading>
+            <PageHeading>Slack 组件</PageHeading>
             <PageSubHeading>
-              Storybook-style previews for Slack messages sent by Inbox Zero.
+              Inbox Zero 发送的 Slack 消息的 Storybook 风格预览。
             </PageSubHeading>
           </div>
         </div>
@@ -266,7 +256,7 @@ function SlackPreviewCard({ preview }: { preview: SlackPreview }) {
                 APP
               </span>
               <span className="text-[15px] leading-5 text-[#ababad]">
-                9:41 AM
+                上午 9:41
               </span>
             </div>
             <div className="mt-1 space-y-3 text-[15px] leading-6 text-[#d1d2d3]">
@@ -362,7 +352,7 @@ function SlackButton({ element }: { element: SlackElement }) {
         className="h-9 rounded border border-[#5e6167] bg-transparent px-3 text-sm font-bold text-[#f8f8f8]"
         type="button"
       >
-        {element.placeholder?.text ?? "More"} ▾
+        {element.placeholder?.text ?? "更多"} ▾
       </button>
     );
   }
@@ -493,7 +483,7 @@ function renderSlackLink(part: string, index: number) {
 }
 
 function buttonLabel(element: SlackElement) {
-  return element.text?.text ?? "Button";
+  return element.text?.text ?? "按钮";
 }
 
 function decodeSlackText(text: string) {

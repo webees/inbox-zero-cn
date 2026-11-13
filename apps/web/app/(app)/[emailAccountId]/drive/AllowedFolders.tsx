@@ -122,12 +122,12 @@ function AllowedFoldersContent({
     <Card size="sm">
       <CardHeader>
         <CardTitle>
-          <Trans>Allowed folders</Trans>
+          <Trans>允许的文件夹</Trans>
         </CardTitle>
         <CardDescription>
           <Trans>
-            AI files into these folders and can create subfolders inside them.
-            When none fits, it can create a new folder at the drive root.
+            AI 会将文件归档到这些文件夹中，并可在其中创建子文件夹。
+            如果没有合适的文件夹，它可以在云端硬盘根目录创建新文件夹。
           </Trans>
         </CardDescription>
       </CardHeader>
@@ -136,11 +136,11 @@ function AllowedFoldersContent({
           <AlertBasic
             className="mb-4"
             variant="blue"
-            title={t`Deleted folders detected`}
-            description={t`Removed ${plural(staleFolderCount, {
-              one: "# deleted folder",
-              other: "# deleted folders",
-            })} from your saved list.`}
+            title={t`检测到已删除的文件夹`}
+            description={t`已从保存列表中移除 ${plural(staleFolderCount, {
+              one: "# 个已删除的文件夹",
+              other: "# 个已删除的文件夹",
+            })}。`}
           />
         )}
         {hasFolders ? (
@@ -306,7 +306,7 @@ export function FolderNode({
             className="py-1 text-xs text-muted-foreground italic"
             style={{ paddingLeft: (level + 1) * 16 + 28 }}
           >
-            <Trans>No subfolders</Trans>
+            <Trans>没有子文件夹</Trans>
           </div>
         ) : null}
       </TreeNodeContent>
@@ -333,10 +333,10 @@ export function NoFoldersFound({
             <FolderIcon />
           </EmptyMedia>
           <EmptyTitle>
-            <Trans>No folders found</Trans>
+            <Trans>未找到文件夹</Trans>
           </EmptyTitle>
           <EmptyDescription>
-            <Trans>Create a folder in your drive to get started.</Trans>
+            <Trans>在云端硬盘中创建一个文件夹即可开始。</Trans>
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
@@ -344,7 +344,7 @@ export function NoFoldersFound({
             emailAccountId={emailAccountId}
             driveConnectionId={driveConnectionId}
             onFolderCreated={onFolderCreated}
-            triggerLabel={t`Create folder`}
+            triggerLabel={t`创建文件夹`}
           />
         </EmptyContent>
       </Empty>
@@ -388,7 +388,7 @@ export function CreateFolderDialog({
     async (data) => {
       if (!driveConnectionId) {
         toastError({
-          title: t`Error creating folder`,
+          title: t`创建文件夹时出错`,
           description: t`No drive connection found`,
         });
         return;
@@ -405,7 +405,7 @@ export function CreateFolderDialog({
           description: result.serverError,
         });
       } else {
-        toastSuccess({ description: t`Folder created!` });
+        toastSuccess({ description: t`文件夹已创建！` });
         reset();
         onClose();
         onFolderCreated?.();
@@ -430,25 +430,23 @@ export function CreateFolderDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            <Trans>Create folder</Trans>
+            <Trans>创建文件夹</Trans>
           </DialogTitle>
           <DialogDescription>
-            <Trans>
-              Create a new folder in your drive to organize your files.
-            </Trans>
+            <Trans>在云端硬盘中创建新文件夹以整理文件。</Trans>
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <Input
             type="text"
             name="folderName"
-            label={t`Folder name`}
-            placeholder={t`e.g. Receipts`}
+            label={t`文件夹名称`}
+            placeholder={t`例如：收据`}
             registerProps={register("folderName")}
             error={errors.folderName}
           />
           <Button type="submit" loading={isSubmitting}>
-            <Trans>Create folder</Trans>
+            <Trans>创建文件夹</Trans>
           </Button>
         </form>
       </DialogContent>

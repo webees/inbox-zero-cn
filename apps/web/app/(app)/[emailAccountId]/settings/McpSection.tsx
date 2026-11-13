@@ -142,7 +142,7 @@ function McpAccessItem({
             size="sm"
             onClick={() => setConnectOpen(true)}
           >
-            <Trans>Connect</Trans>
+            <Trans>连接</Trans>
           </Button>
         )}
         <Switch
@@ -159,12 +159,12 @@ function McpAccessItem({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              <Trans>Connect MCP</Trans>
+              <Trans>连接 MCP</Trans>
             </DialogTitle>
             <DialogDescription>
               <Trans>
-                Add this URL in ChatGPT, Claude, or Cursor. You'll be asked to
-                allow access.
+                在 ChatGPT、Claude 或 Cursor 中添加此
+                URL。系统会要求你允许访问。
               </Trans>
             </DialogDescription>
           </DialogHeader>
@@ -175,7 +175,7 @@ function McpAccessItem({
             rel="noopener noreferrer"
             className="text-sm text-muted-foreground underline underline-offset-4"
           >
-            <Trans>Full setup guide</Trans>
+            <Trans>完整设置指南</Trans>
           </a>
         </DialogContent>
       </Dialog>
@@ -198,7 +198,7 @@ function McpConnectionsDialog({
   const { execute: executeReduce, isExecuting: isReducing } = useAction(
     reduceMcpConnectionScopesAction,
     {
-      onSuccess: () => toastSuccess({ description: t`Permissions updated` }),
+      onSuccess: () => toastSuccess({ description: t`权限已更新` }),
       onError: (error) =>
         toastError({ description: getActionErrorMessage(error.error) }),
       onSettled: () => mutate(),
@@ -208,12 +208,12 @@ function McpConnectionsDialog({
     revokeMcpConnectionAction,
     {
       onSuccess: () => {
-        toastSuccess({ description: t`Disconnected` });
+        toastSuccess({ description: t`已断开连接` });
       },
       onError: (error) => {
         toastError({
           description: getActionErrorMessage(error.error, {
-            prefix: t`Failed to disconnect`,
+            prefix: t`断开连接失败`,
           }),
         });
       },
@@ -228,20 +228,18 @@ function McpConnectionsDialog({
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
-          <Trans>MCP apps ({connections.length})</Trans>
+          <Trans>MCP 应用（{connections.length}）</Trans>
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            <Trans>MCP apps</Trans>
+            <Trans>MCP 应用</Trans>
           </DialogTitle>
         </DialogHeader>
         <DialogDescription>
           <Trans>
-            Remove optional access below, or disconnect to remove all access. To
-            add permissions, reconnect from the application and approve the new
-            access.
+            在下方移除可选访问权限，或断开连接以移除所有访问权限。如需添加权限，请从应用重新连接并批准新的访问权限。
           </Trans>
         </DialogDescription>
         <LoadingContent loading={isLoading} error={error}>
@@ -260,12 +258,12 @@ function McpConnectionsDialog({
                     variant="outline"
                     size="sm"
                     disabled={isExecuting}
-                    aria-label={t`Disconnect ${connection.name}`}
+                    aria-label={t`断开 ${connection.name}`}
                     onClick={() =>
                       executeRevoke({ clientId: connection.clientId })
                     }
                   >
-                    <Trans>Disconnect</Trans>
+                    <Trans>断开连接</Trans>
                   </Button>
                 </div>
                 <McpPermissionControls
@@ -308,7 +306,7 @@ function McpPermissionControls({
           >
             <span>{labelText}</span>
             <Switch
-              aria-label={t`${labelText} for ${connection.name}`}
+              aria-label={t`${labelText}（${connection.name}）`}
               checked={granted.includes(scope)}
               disabled={
                 disabled ||
@@ -328,8 +326,8 @@ function McpPermissionControls({
 }
 
 const MCP_PERMISSIONS = [
-  { scope: "mcp:read", label: msg`Read and search mail` },
-  { scope: "mcp:write", label: msg`Drafts, organization, and rules` },
-  { scope: "mcp:send", label: msg`Send email` },
-  { scope: "offline_access", label: msg`Offline access` },
+  { scope: "mcp:read", label: msg`读取和搜索邮件` },
+  { scope: "mcp:write", label: msg`草稿、组织和规则` },
+  { scope: "mcp:send", label: msg`发送邮件` },
+  { scope: "offline_access", label: msg`离线访问` },
 ] as const;

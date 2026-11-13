@@ -189,10 +189,10 @@ export function useComposeSnippets({
         >
           <DialogHeader>
             <DialogTitle>
-              <Trans>Save snippet</Trans>
+              <Trans>保存片段</Trans>
             </DialogTitle>
             <DialogDescription className="sr-only">
-              <Trans>Save a reusable snippet.</Trans>
+              <Trans>保存可重复使用的片段。</Trans>
             </DialogDescription>
           </DialogHeader>
           <SnippetForm

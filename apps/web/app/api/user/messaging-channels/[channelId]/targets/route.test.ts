@@ -76,7 +76,7 @@ describe("GET /api/user/messaging-channels/[channelId]/targets", () => {
     expect(listPrivateChannelsForUser).not.toHaveBeenCalled();
     expect(body).toEqual({
       targets: [],
-      error: "Please reconnect Slack before configuring notifications.",
+      error: "请先重新连接 Slack，再配置通知。",
     });
   });
 });

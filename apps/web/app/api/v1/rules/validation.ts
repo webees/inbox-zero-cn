@@ -25,7 +25,7 @@ const conditionSchema = z
       !!condition.static?.to?.trim() ||
       !!condition.static?.subject?.trim(),
     {
-      message: "A rule must include at least one condition",
+      message: "规则必须至少包含一个条件",
     },
   );
 
@@ -66,8 +66,8 @@ const actionSchema = z
       .nullish(),
     delayInMinutes: z
       .number()
-      .min(1, "Minimum supported delay is 1 minute")
-      .max(NINETY_DAYS_MINUTES, "Maximum supported delay is 90 days")
+      .min(1, "支持的最短延迟为 1 分钟")
+      .max(NINETY_DAYS_MINUTES, "支持的最长延迟为 90 天")
       .nullish(),
   })
   .superRefine((action, ctx) => {
@@ -79,14 +79,14 @@ const actionSchema = z
       ctx,
       path: ["fields", "to"],
       sendEmailMessage:
-        "SEND_EMAIL requires a recipient in fields.to. Use REPLY for auto-responses.",
-      forwardMessage: "FORWARD requires a recipient in fields.to.",
+        "SEND_EMAIL 需要在 fields.to 中提供收件人。自动回复请使用 REPLY。",
+      forwardMessage: "FORWARD 需要在 fields.to 中提供收件人。",
     });
     addMissingActionFieldIssue({
       actionType: action.type,
       requiredActionType: ActionType.LABEL,
       fieldValue: action.fields?.label,
-      message: "LABEL requires a value in fields.label.",
+      message: "LABEL 需要在 fields.label 中提供值。",
       path: ["fields", "label"],
       ctx,
     });
@@ -94,7 +94,7 @@ const actionSchema = z
       actionType: action.type,
       requiredActionType: ActionType.CALL_WEBHOOK,
       fieldValue: action.fields?.webhookUrl,
-      message: "CALL_WEBHOOK requires a value in fields.webhookUrl.",
+      message: "CALL_WEBHOOK 需要在 fields.webhookUrl 中提供值。",
       path: ["fields", "webhookUrl"],
       ctx,
     });
@@ -102,7 +102,7 @@ const actionSchema = z
       actionType: action.type,
       requiredActionType: ActionType.MOVE_FOLDER,
       fieldValue: action.fields?.folderName,
-      message: "MOVE_FOLDER requires a value in fields.folderName.",
+      message: "MOVE_FOLDER 需要在 fields.folderName 中提供值。",
       path: ["fields", "folderName"],
       ctx,
     });
@@ -110,8 +110,7 @@ const actionSchema = z
       actionType: action.type,
       requiredActionType: ActionType.DRAFT_MESSAGING_CHANNEL,
       fieldValue: action.messagingChannelId,
-      message:
-        "DRAFT_MESSAGING_CHANNEL requires a value in messagingChannelId.",
+      message: "DRAFT_MESSAGING_CHANNEL 需要在 messagingChannelId 中提供值。",
       path: ["messagingChannelId"],
       ctx,
     });
@@ -119,8 +118,7 @@ const actionSchema = z
       actionType: action.type,
       requiredActionType: ActionType.NOTIFY_MESSAGING_CHANNEL,
       fieldValue: action.messagingChannelId,
-      message:
-        "NOTIFY_MESSAGING_CHANNEL requires a value in messagingChannelId.",
+      message: "NOTIFY_MESSAGING_CHANNEL 需要在 messagingChannelId 中提供值。",
       path: ["messagingChannelId"],
       ctx,
     });

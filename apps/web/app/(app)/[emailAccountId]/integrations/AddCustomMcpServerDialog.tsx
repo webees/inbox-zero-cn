@@ -77,11 +77,11 @@ export function AddCustomMcpServerDialog() {
           });
         } catch (error) {
           toastError({
-            title: t`Error connecting to the server`,
+            title: t`连接服务器时出错`,
             description:
               error instanceof Error && error.message
                 ? error.message
-                : t`Please try again or contact support if the issue persists.`,
+                : t`请重试；如果问题仍然存在，请联系支持人员。`,
           });
         }
       },
@@ -95,18 +95,16 @@ export function AddCustomMcpServerDialog() {
     <Dialog open={isOpen} onOpenChange={onToggle}>
       <DialogTrigger asChild>
         <Button variant="outline">
-          <Trans>Add custom server</Trans>
+          <Trans>添加自定义服务器</Trans>
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            <Trans>Add custom server</Trans>
+            <Trans>添加自定义服务器</Trans>
           </DialogTitle>
           <DialogDescription>
-            <Trans>
-              Connect your own remote MCP server so drafts can read from it.
-            </Trans>
+            <Trans>连接你自己的远程 MCP 服务器，让草稿可以从中读取内容。</Trans>
           </DialogDescription>
         </DialogHeader>
 
@@ -114,15 +112,15 @@ export function AddCustomMcpServerDialog() {
           <Input
             type="text"
             name="displayName"
-            label={t`Name`}
-            placeholder={t`Knowledge base`}
+            label={t`名称`}
+            placeholder={t`知识库`}
             registerProps={register("displayName")}
             error={errors.displayName}
           />
           <Input
             type="text"
             name="serverUrl"
-            label={t`Server URL`}
+            label={t`服务器 URL`}
             placeholder="https://mcp.example.com/mcp"
             registerProps={register("serverUrl")}
             error={errors.serverUrl}
@@ -130,7 +128,7 @@ export function AddCustomMcpServerDialog() {
 
           <div className="space-y-1">
             <label className="font-medium text-sm" htmlFor="authType">
-              <Trans>Authentication</Trans>
+              <Trans>身份验证</Trans>
             </label>
             <Controller
               name="authType"
@@ -143,10 +141,10 @@ export function AddCustomMcpServerDialog() {
                   <SelectContent>
                     <SelectItem value="oauth">OAuth</SelectItem>
                     <SelectItem value="api-token">
-                      <Trans>API key</Trans>
+                      <Trans>API 密钥</Trans>
                     </SelectItem>
                     <SelectItem value="none">
-                      <Trans>None</Trans>
+                      <Trans>无</Trans>
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -158,22 +156,19 @@ export function AddCustomMcpServerDialog() {
             <Input
               type="password"
               name="apiKey"
-              label={t`API key`}
+              label={t`API 密钥`}
               registerProps={register("apiKey")}
               error={errors.apiKey}
             />
           )}
 
           <MutedText>
-            <Trans>
-              Read-only tools are enabled automatically. Other tools stay off
-              until you turn them on.
-            </Trans>
+            <Trans>只读工具会自动启用。其他工具在你开启前保持关闭。</Trans>
           </MutedText>
 
           <DialogFooter>
             <Button type="submit" loading={isExecuting}>
-              <Trans>Add server</Trans>
+              <Trans>添加服务器</Trans>
             </Button>
           </DialogFooter>
         </form>

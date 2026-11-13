@@ -34,10 +34,10 @@ export function Integrations() {
           <TableHeader>
             <TableRow>
               <TableHead>
-                <Trans>Name</Trans>
+                <Trans>名称</Trans>
               </TableHead>
               <TableHead>
-                <Trans>Connection</Trans>
+                <Trans>连接</Trans>
               </TableHead>
               <TableHead />
             </TableRow>
@@ -55,7 +55,7 @@ export function Integrations() {
               <TableRow>
                 <TableCell colSpan={3}>
                   <TypographyP>
-                    <Trans>No integrations found</Trans>
+                    <Trans>未找到集成</Trans>
                   </TypographyP>
                 </TableCell>
               </TableRow>

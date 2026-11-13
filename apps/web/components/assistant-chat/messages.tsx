@@ -1,4 +1,3 @@
-import { Trans } from "@lingui/react/macro";
 import { Fragment, useMemo, type ReactNode } from "react";
 import { Overview } from "./overview";
 import { MessagePart } from "./message-part";
@@ -125,9 +124,7 @@ export function Messages({
                     <MessageContent variant="flat">
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <Loader />
-                        <span>
-                          <Trans>Thinking...</Trans>
-                        </span>
+                        <span>Thinking...</span>
                       </div>
                     </MessageContent>
                   </Message>

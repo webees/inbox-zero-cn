@@ -4,7 +4,7 @@ import { generateSecret } from "./utils";
 import { setupPubSubSubscription } from "./google-pubsub";
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Types
+// 类型
 // ═══════════════════════════════════════════════════════════════════════════
 
 interface GcloudPrerequisites {
@@ -26,106 +26,105 @@ export interface GoogleSetupOptions {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Main Setup Function
+// 主设置函数
 // ═══════════════════════════════════════════════════════════════════════════
 
 export async function runGoogleSetup(options: GoogleSetupOptions) {
-  p.intro("Google Cloud Setup for Inbox Zero");
+  p.intro("Inbox Zero 的 Google Cloud 设置");
 
-  // Step 1: Check prerequisites
+  // 步骤 1：检查前置条件
   const spinner = p.spinner();
-  spinner.start("Checking gcloud CLI...");
+  spinner.start("正在检查 gcloud CLI...");
 
   const prereqs = checkGcloudPrerequisites();
 
   if (!prereqs.installed) {
-    spinner.stop("gcloud CLI not found");
+    spinner.stop("未找到 gcloud CLI");
     p.log.error(
-      "The gcloud CLI is not installed.\n" +
-        "Please install it from: https://cloud.google.com/sdk/docs/install\n" +
-        "After installation, run: gcloud auth login",
+      "未安装 gcloud CLI。\n" +
+        "请从以下地址安装：https://cloud.google.com/sdk/docs/install\n" +
+        "安装后运行：gcloud auth login",
     );
     process.exit(1);
   }
 
-  spinner.stop("gcloud CLI found");
+  spinner.stop("已找到 gcloud CLI");
 
-  // Step 2: Ensure authentication
+  // 步骤 2：确保认证
   if (!prereqs.authenticated) {
-    p.log.warn("You are not authenticated with gcloud.");
+    p.log.warn("你尚未通过 gcloud 认证。");
     const authenticate = await p.confirm({
-      message: "Would you like to authenticate now?",
+      message: "要现在进行认证吗？",
       initialValue: true,
     });
 
     if (p.isCancel(authenticate) || !authenticate) {
-      p.cancel("Setup cancelled. Run 'gcloud auth login' manually first.");
+      p.cancel("已取消设置。请先手动运行 'gcloud auth login'。");
       process.exit(0);
     }
 
-    p.log.info("Opening browser for authentication...");
+    p.log.info("正在打开浏览器进行认证...");
     spawnSync("gcloud", ["auth", "login"], { stdio: "inherit" });
   }
 
-  // Step 3: Get project ID
+  // 步骤 3：获取项目 ID
   let projectId = options.projectId || prereqs.projectId;
 
   if (!projectId) {
     const inputProjectId = await p.text({
-      message: "Enter your Google Cloud project ID:",
+      message: "请输入你的 Google Cloud 项目 ID：",
       placeholder: "my-project-123",
-      validate: (v) => (v ? undefined : "Project ID is required"),
+      validate: (v) => (v ? undefined : "必须填写项目 ID"),
     });
 
     if (p.isCancel(inputProjectId)) {
-      p.cancel("Setup cancelled.");
+      p.cancel("已取消设置。");
       process.exit(0);
     }
 
     projectId = inputProjectId;
   } else {
-    p.log.info(`Using project: ${projectId}`);
+    p.log.info(`正在使用项目：${projectId}`);
   }
 
-  // Step 4: Get domain (needed for OAuth redirect URIs and Pub/Sub webhook)
+  // 步骤 4：获取域名（OAuth 重定向 URI 和 Pub/Sub webhook 需要）
   let domain = options.domain;
 
   if (!domain) {
     const inputDomain = await p.text({
-      message:
-        "Enter your app domain (for OAuth redirects and Pub/Sub webhook):",
+      message: "请输入你的应用域名（用于 OAuth 重定向和 Pub/Sub webhook）：",
       placeholder: "app.example.com",
       validate: (v) => {
-        if (!v) return; // Allow empty for localhost development
-        if (!v.includes(".")) return "Enter a valid domain";
+        if (!v) return; // 允许留空以便本地开发
+        if (!v.includes(".")) return "请输入有效的域名";
         return;
       },
     });
 
     if (p.isCancel(inputDomain)) {
-      p.cancel("Setup cancelled.");
+      p.cancel("已取消设置。");
       process.exit(0);
     }
 
     domain = inputDomain || undefined;
   }
 
-  // Step 5: Enable required APIs
+  // 步骤 5：启用所需 API
   spinner.start(
-    "Enabling Google Cloud APIs (Gmail, People, Calendar, Drive, Pub/Sub)...",
+    "正在启用 Google Cloud API（Gmail、People、Calendar、Drive、Pub/Sub）...",
   );
 
   const apiResult = enableGoogleApis(projectId);
 
   if (!apiResult.success) {
-    spinner.stop("Failed to enable APIs");
-    p.log.error(apiResult.error || "Unknown error");
+    spinner.stop("启用 API 失败");
+    p.log.error(apiResult.error || "未知错误");
     process.exit(1);
   }
 
-  spinner.stop("APIs enabled successfully");
+  spinner.stop("已成功启用 API");
 
-  // Step 6: OAuth Consent Screen guidance (if not skipped)
+  // 步骤 6：OAuth 同意屏幕指引（如果未跳过）
   let clientId = "";
   let clientSecret = "";
 
@@ -133,27 +132,27 @@ export async function runGoogleSetup(options: GoogleSetupOptions) {
     const consentUrl = `https://console.cloud.google.com/apis/credentials/consent?project=${projectId}`;
 
     p.note(
-      `Before creating OAuth credentials, you need to configure the consent screen.
+      `创建 OAuth 凭据前，你需要配置同意屏幕。
 
-Steps:
-1. Click "Get Started" if the banner is shown
-2. User type:
-   - "Internal" — Google Workspace only, all org members can sign in
-   - "External" — any Google account (including personal Gmail)
-     You'll need to add yourself as a test user (step 7)
-3. App name: "Inbox Zero" (or your preferred name)
-4. User support email: Your email
-5. Developer contact: Your email
-6. Click "Save and Continue" through the scopes section
-7. If External: add your email as a test user
-8. Complete the wizard
+步骤：
+1. 如果显示横幅，点击 "Get Started"
+2. 用户类型：
+   - "Internal" — 仅限 Google Workspace，所有组织成员都可登录
+   - "External" — 任意 Google 账号（包括个人 Gmail）
+     你需要把自己添加为测试用户（步骤 7）
+3. 应用名称："Inbox Zero"（或你偏好的名称）
+4. 用户支持邮箱：你的邮箱
+5. 开发者联系方式：你的邮箱
+6. 在权限范围部分依次点击 "Save and Continue"
+7. 如果选择 External：将你的邮箱添加为测试用户
+8. 完成向导
 
-The console will open in your browser.`,
-      "OAuth Consent Screen",
+控制台将在你的浏览器中打开。`,
+      "OAuth 同意屏幕",
     );
 
     const openConsent = await p.confirm({
-      message: "Open OAuth consent screen in browser?",
+      message: "在浏览器中打开 OAuth 同意屏幕吗？",
       initialValue: true,
     });
 
@@ -162,17 +161,15 @@ The console will open in your browser.`,
     }
 
     const consentDone = await p.confirm({
-      message: "Have you completed the consent screen setup?",
+      message: "你已完成同意屏幕设置吗？",
       initialValue: false,
     });
 
     if (p.isCancel(consentDone) || !consentDone) {
-      p.log.warn(
-        "You can continue, but OAuth won't work until the consent screen is configured.",
-      );
+      p.log.warn("你可以继续，但在配置同意屏幕之前 OAuth 无法正常工作。");
     }
 
-    // Step 7: OAuth Credentials guidance
+    // 步骤 7：OAuth 凭据指引
     const credentialsUrl = `https://console.cloud.google.com/apis/credentials/oauthclient?project=${projectId}`;
     const redirectUris = domain
       ? `   - https://${domain}/api/auth/callback/google
@@ -185,21 +182,21 @@ The console will open in your browser.`,
    - http://localhost:3000/api/google/drive/callback`;
 
     p.note(
-      `Now create OAuth 2.0 credentials:
+      `现在创建 OAuth 2.0 凭据：
 
-1. Select "Web application" as the application type
-2. Name: "Inbox Zero" (or your preferred name)
-3. Add Authorized redirect URIs:
+1. 选择 "Web application" 作为应用类型
+2. 名称："Inbox Zero"（或你偏好的名称）
+3. 添加已获授权的重定向 URI：
 ${redirectUris}
-4. Click "Create"
-5. Copy the Client ID and Client Secret
+4. 点击 "Create"
+5. 复制 Client ID 和 Client Secret
 
-The console will open in your browser.`,
-      "OAuth Credentials",
+控制台将在你的浏览器中打开。`,
+      "OAuth 凭据",
     );
 
     const openCredentials = await p.confirm({
-      message: "Open OAuth credentials page in browser?",
+      message: "在浏览器中打开 OAuth 凭据页面吗？",
       initialValue: true,
     });
 
@@ -211,25 +208,25 @@ The console will open in your browser.`,
       {
         clientId: () =>
           p.text({
-            message: "Paste your Google Client ID:",
+            message: "粘贴你的 Google Client ID：",
             placeholder: "123456789012-abc.apps.googleusercontent.com",
             validate: (v) => {
-              if (!v) return; // Allow empty to skip
+              if (!v) return; // 允许留空以跳过
               if (!v.endsWith(".apps.googleusercontent.com")) {
-                return "Client ID should end with .apps.googleusercontent.com";
+                return "Client ID 应以 .apps.googleusercontent.com 结尾";
               }
               return;
             },
           }),
         clientSecret: () =>
           p.text({
-            message: "Paste your Google Client Secret:",
+            message: "粘贴你的 Google Client Secret：",
             placeholder: "GOCSPX-...",
           }),
       },
       {
         onCancel: () => {
-          p.cancel("Setup cancelled.");
+          p.cancel("已取消设置。");
           process.exit(0);
         },
       },
@@ -239,7 +236,7 @@ The console will open in your browser.`,
     clientSecret = oauthInput.clientSecret || "";
   }
 
-  // Step 8: Pub/Sub setup (automated)
+  // 步骤 8：Pub/Sub 设置（自动化）
   const topicName = "inbox-zero-emails";
   const subscriptionName = "inbox-zero-subscription";
   const verificationToken = generateSecret(32);
@@ -250,18 +247,18 @@ The console will open in your browser.`,
     const webhookUrl = `https://${domain}/api/google/webhook?token=${verificationToken}`;
     topicFullName = `projects/${projectId}/topics/${topicName}`;
 
-    spinner.start("Creating Pub/Sub topic...");
+    spinner.start("正在创建 Pub/Sub 主题...");
 
     const topicResult = setupPubSubTopic(projectId, topicName);
 
     if (!topicResult.success) {
-      spinner.stop("Failed to create Pub/Sub topic");
-      p.log.error(topicResult.error || "Unknown error");
-      p.log.warn("You can set up Pub/Sub manually later.");
+      spinner.stop("创建 Pub/Sub 主题失败");
+      p.log.error(topicResult.error || "未知错误");
+      p.log.warn("你可以稍后手动设置 Pub/Sub。");
     } else {
-      spinner.stop("Pub/Sub topic created with Gmail permissions");
+      spinner.stop("已创建具有 Gmail 权限的 Pub/Sub 主题");
 
-      spinner.start("Creating Pub/Sub push subscription...");
+      spinner.start("正在创建 Pub/Sub 推送订阅...");
 
       const subResult = setupPubSubSubscription(
         projectId,
@@ -271,20 +268,20 @@ The console will open in your browser.`,
       );
 
       if (!subResult.success) {
-        spinner.stop("Failed to create subscription");
-        p.log.error(subResult.error || "Unknown error");
+        spinner.stop("创建订阅失败");
+        p.log.error(subResult.error || "未知错误");
         p.log.warn(
-          "You can create the subscription manually:\n" +
+          "你可以手动创建订阅：\n" +
             `gcloud pubsub subscriptions create ${subscriptionName} --topic=${topicName} --push-endpoint="${webhookUrl}" --project=${projectId}`,
         );
       } else {
-        spinner.stop("Pub/Sub subscription created");
+        spinner.stop("已创建 Pub/Sub 订阅");
         pubsubSuccess = true;
       }
     }
   }
 
-  // Step 9: Output environment variables
+  // 步骤 9：输出环境变量
   const envVars: string[] = [];
 
   if (clientId) {
@@ -293,53 +290,50 @@ The console will open in your browser.`,
   if (clientSecret) {
     envVars.push(`GOOGLE_CLIENT_SECRET=${clientSecret}`);
   }
-  // Always output Pub/Sub vars when attempted (even if failed) so user can complete manual setup
+  // 即使失败也始终输出 Pub/Sub 变量（尝试过就输出），以便用户完成手动设置
   if (!options.skipPubsub && domain) {
     envVars.push(`GOOGLE_PUBSUB_TOPIC_NAME=${topicFullName}`);
     envVars.push(`GOOGLE_PUBSUB_VERIFICATION_TOKEN=${verificationToken}`);
   }
 
   if (envVars.length > 0) {
-    p.note(
-      `Add these to your .env file:\n\n${envVars.join("\n")}`,
-      "Environment Variables",
-    );
+    p.note(`将这些添加到你的 .env 文件：\n\n${envVars.join("\n")}`, "环境变量");
   }
 
-  // Summary
+  // 摘要
   const summary = [
-    "✓ APIs enabled (Gmail, People, Calendar, Drive, Pub/Sub)",
+    "✓ 已启用 API（Gmail、People、Calendar、Drive、Pub/Sub）",
     options.skipOauth
-      ? "✗ OAuth setup skipped"
+      ? "✗ 已跳过 OAuth 设置"
       : clientId
-        ? "✓ OAuth credentials configured"
-        : "! OAuth credentials not provided",
+        ? "✓ 已配置 OAuth 凭据"
+        : "! 未提供 OAuth 凭据",
     options.skipPubsub
-      ? "✗ Pub/Sub setup skipped"
+      ? "✗ 已跳过 Pub/Sub 设置"
       : !domain
-        ? "! Pub/Sub setup skipped (no domain provided)"
+        ? "! 已跳过 Pub/Sub 设置（未提供域名）"
         : pubsubSuccess
-          ? "✓ Pub/Sub topic and subscription created"
-          : "! Pub/Sub setup incomplete (env vars provided for manual setup)",
+          ? "✓ 已创建 Pub/Sub 主题和订阅"
+          : "! Pub/Sub 设置未完成（已提供环境变量以便手动设置）",
   ].join("\n");
 
-  p.note(summary, "Setup Summary");
+  p.note(summary, "设置摘要");
 
-  p.outro("Google Cloud setup complete!");
+  p.outro("Google Cloud 设置完成！");
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Helper Functions
+// 辅助函数
 // ═══════════════════════════════════════════════════════════════════════════
 
 function checkGcloudPrerequisites(): GcloudPrerequisites {
-  // Check if gcloud is installed
+  // 检查是否已安装 gcloud
   const versionResult = spawnSync("gcloud", ["--version"], { stdio: "pipe" });
   if (versionResult.status !== 0) {
     return { installed: false, authenticated: false, projectId: null };
   }
 
-  // Check authentication
+  // 检查认证
   const authResult = spawnSync("gcloud", ["auth", "list", "--format=json"], {
     stdio: "pipe",
   });
@@ -353,7 +347,7 @@ function checkGcloudPrerequisites(): GcloudPrerequisites {
     }
   }
 
-  // Get current project ID
+  // 获取当前项目 ID
   const projectResult = spawnSync(
     "gcloud",
     ["config", "get-value", "project"],
@@ -385,7 +379,7 @@ function enableGoogleApis(projectId: string): SetupResult {
   if (result.status !== 0) {
     return {
       success: false,
-      error: result.stderr?.toString() || "Failed to enable APIs",
+      error: result.stderr?.toString() || "启用 API 失败",
     };
   }
 
@@ -393,25 +387,25 @@ function enableGoogleApis(projectId: string): SetupResult {
 }
 
 function setupPubSubTopic(projectId: string, topicName: string): SetupResult {
-  // Create topic
+  // 创建主题
   const createResult = spawnSync(
     "gcloud",
     ["pubsub", "topics", "create", topicName, "--project", projectId],
     { stdio: "pipe" },
   );
 
-  // Ignore "already exists" error
+  // 忽略 "already exists" 错误
   if (
     createResult.status !== 0 &&
     !createResult.stderr?.toString().includes("ALREADY_EXISTS")
   ) {
     return {
       success: false,
-      error: createResult.stderr?.toString() || "Failed to create topic",
+      error: createResult.stderr?.toString() || "创建主题失败",
     };
   }
 
-  // Grant Gmail service account publish permissions
+  // 授予 Gmail 服务账号发布权限
   const bindingResult = spawnSync(
     "gcloud",
     [
@@ -430,7 +424,7 @@ function setupPubSubTopic(projectId: string, topicName: string): SetupResult {
   if (bindingResult.status !== 0) {
     return {
       success: false,
-      error: bindingResult.stderr?.toString() || "Failed to add IAM binding",
+      error: bindingResult.stderr?.toString() || "添加 IAM 绑定失败",
     };
   }
 
@@ -445,6 +439,6 @@ function openBrowser(url: string): void {
       : platform === "win32"
         ? "start"
         : "xdg-open";
-  // Windows 'start' is a shell built-in, not an executable
+  // Windows 的 'start' 是 shell 内置命令，不是可执行文件
   spawnSync(cmd, [url], { stdio: "pipe", shell: platform === "win32" });
 }

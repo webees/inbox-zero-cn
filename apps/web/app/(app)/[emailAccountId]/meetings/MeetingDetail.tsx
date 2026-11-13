@@ -121,7 +121,7 @@ export function MeetingDetail({
         <DialogHeader>
           <div className="flex items-start justify-between gap-3 pr-8">
             <div className="space-y-1.5">
-              <DialogTitle>{data?.eventTitle ?? t`Meeting`}</DialogTitle>
+              <DialogTitle>{data?.eventTitle ?? t`会议`}</DialogTitle>
               {data && (
                 <DialogDescription>
                   {formatMeetingTimeRange(i18n, data.startTime, data.endTime)}
@@ -135,7 +135,7 @@ export function MeetingDetail({
                     type="button"
                     variant="ghost"
                     size="icon"
-                    aria-label={t`Meeting options`}
+                    aria-label={t`会议选项`}
                   >
                     <MoreHorizontalIcon className="size-4" />
                   </Button>
@@ -146,7 +146,7 @@ export function MeetingDetail({
                     onSelect={() => setIsDeleteOpen(true)}
                   >
                     <Trash2Icon className="mr-2 size-4" />
-                    <Trans>Delete notes</Trans>
+                    <Trans>删除记录</Trans>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -162,7 +162,7 @@ export function MeetingDetail({
           {state === "recording-failed" && (
             <Alert variant="destructive">
               <AlertTitle>
-                <Trans>This meeting was not recorded</Trans>
+                <Trans>此会议未被录制</Trans>
               </AlertTitle>
               <AlertDescription>
                 {data?.recording?.failureReason}
@@ -173,12 +173,11 @@ export function MeetingDetail({
           {state === "processing-failed" && (
             <Alert variant="destructive">
               <AlertTitle>
-                <Trans>The notes could not be written</Trans>
+                <Trans>无法生成会议记录</Trans>
               </AlertTitle>
               <AlertDescription>
                 <Trans>
-                  The recording is there, but summarizing it kept failing. The
-                  transcript is still available below.
+                  录制内容已存在，但摘要一直生成失败。你仍可在下方查看转录文本。
                 </Trans>
               </AlertDescription>
             </Alert>
@@ -187,49 +186,43 @@ export function MeetingDetail({
           {state === "notes-unavailable" && (
             <Alert>
               <AlertTitle>
-                <Trans>No summary was created</Trans>
+                <Trans>未创建摘要</Trans>
               </AlertTitle>
               <AlertDescription>
                 {transcript?.length
-                  ? t`The transcript is still available below.`
-                  : t`No usable transcript was available for this meeting.`}
+                  ? t`你仍可在下方查看转录文本。`
+                  : t`此会议没有可用的转录文本。`}
               </AlertDescription>
             </Alert>
           )}
 
           {state === "processing" && (
             <MutedText>
-              <Trans>
-                The recording is being processed. Notes will appear here when
-                they are ready.
-              </Trans>
+              <Trans>正在处理录制内容。记录生成后将显示在此处。</Trans>
             </MutedText>
           )}
 
           {state === "not-recorded" && (
             <MutedText>
-              <Trans>This meeting has not been recorded yet.</Trans>
+              <Trans>此会议尚未录制。</Trans>
             </MutedText>
           )}
 
           {!summary && state === "notes" && (
             <MutedText>
-              <Trans>The summary is still being written.</Trans>
+              <Trans>摘要仍在生成中。</Trans>
             </MutedText>
           )}
 
           {summary && (
             <>
-              <DetailSection title={t`Summary`}>
+              <DetailSection title={t`摘要`}>
                 <p className="text-sm leading-relaxed">{summary.overview}</p>
-                <SummaryList
-                  items={summary.keyDecisions}
-                  title={t`Decisions`}
-                />
+                <SummaryList items={summary.keyDecisions} title={t`决策`} />
               </DetailSection>
 
               {summary.actionItems.length > 0 && (
-                <DetailSection title={t`Action items`}>
+                <DetailSection title={t`行动项`}>
                   <ul className="space-y-2">
                     {summary.actionItems.map((item, index) => (
                       <li
@@ -271,13 +264,12 @@ export function MeetingDetail({
                 <div className="flex items-center gap-2">
                   <MailPlusIcon className="size-4 text-blue-600 dark:text-blue-400" />
                   <span className="text-sm font-medium">
-                    <Trans>Follow-up draft is ready</Trans>
+                    <Trans>跟进草稿已准备好</Trans>
                   </span>
                 </div>
                 <MutedText>
                   <Trans>
-                    It is sitting in your drafts, addressed to the other
-                    attendees. Nothing was sent for you.
+                    它已保存在你的草稿箱中，收件人为其他参会者。系统未为你发送任何内容。
                   </Trans>
                 </MutedText>
                 <Button asChild variant="outline" size="sm">
@@ -291,7 +283,7 @@ export function MeetingDetail({
                       )
                     }
                   >
-                    <Trans>Go to drafts</Trans>
+                    <Trans>前往草稿箱</Trans>
                   </a>
                 </Button>
               </CardContent>
@@ -304,14 +296,10 @@ export function MeetingDetail({
                 <CollapsibleTrigger className="group flex w-full items-center gap-3 p-4 text-left hover:bg-accent/50">
                   <TextQuoteIcon className="size-4 shrink-0 text-muted-foreground" />
                   <span className="text-sm font-medium">
-                    <Trans>Transcript</Trans>
+                    <Trans>转录文本</Trans>
                   </span>
                   <span className="flex-1 text-sm text-muted-foreground">
-                    <Plural
-                      value={transcript.length}
-                      one="# line"
-                      other="# lines"
-                    />
+                    <Plural value={transcript.length} one="# 行" other="# 行" />
                   </span>
                   <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
                 </CollapsibleTrigger>
@@ -335,7 +323,7 @@ export function MeetingDetail({
 
           {recapSentAt && (
             <MutedText className="text-xs">
-              <Trans>Notes emailed {recapSentAt}</Trans>
+              <Trans>记录已于 {recapSentAt} 通过电子邮件发送</Trans>
             </MutedText>
           )}
         </LoadingContent>
@@ -344,19 +332,18 @@ export function MeetingDetail({
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
-                <Trans>Delete meeting notes?</Trans>
+                <Trans>删除会议记录？</Trans>
               </AlertDialogTitle>
               <AlertDialogDescription>
                 <Trans>
-                  The summary and transcript will be permanently deleted from
-                  Inbox Zero. Recap emails already sent and follow-up drafts in
-                  your mailbox will remain.
+                  摘要和转录文本将从 Inbox Zero
+                  中永久删除。已发送的回顾邮件和邮箱中的跟进草稿将保留。
                 </Trans>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel disabled={isDeleting}>
-                <Trans>Cancel</Trans>
+                <Trans>取消</Trans>
               </AlertDialogCancel>
               <AlertDialogAction
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
@@ -366,11 +353,7 @@ export function MeetingDetail({
                   if (meetingId) deleteNotes({ meetingId });
                 }}
               >
-                {isDeleting ? (
-                  <Trans>Deleting...</Trans>
-                ) : (
-                  <Trans>Delete</Trans>
-                )}
+                {isDeleting ? <Trans>正在删除...</Trans> : <Trans>删除</Trans>}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

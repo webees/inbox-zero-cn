@@ -35,15 +35,15 @@ export const GET = withEmailAccount(
     });
 
     if (!integrationConfig) {
-      logger.warn("MCP auth URL rejected: unknown integration");
-      throw new SafeError(`Integration ${integration} not found`);
+      logger.warn("MCP 授权 URL 被拒绝：未知集成");
+      throw new SafeError(`未找到集成 ${integration}`);
     }
 
     if (integrationConfig.provider) {
       const provider = getIntegrationProvider(integrationConfig.provider.id);
       if (!provider.isConfigured()) {
-        logger.warn("MCP auth URL rejected: provider is not configured");
-        throw new SafeError(`Integration ${integration} is not available`);
+        logger.warn("MCP 授权 URL 被拒绝：服务商未配置");
+        throw new SafeError(`集成 ${integration} 不可用`);
       }
 
       try {
@@ -53,7 +53,7 @@ export const GET = withEmailAccount(
           callbackUrl: `${env.NEXT_PUBLIC_BASE_URL}/api/mcp/${integration}/provider-callback`,
         });
 
-        logger.info("Generated provider connect URL");
+        logger.info("已生成服务商连接 URL");
 
         const response = NextResponse.json<GetMcpAuthUrlResponse>({ url });
         response.cookies.set(
@@ -67,16 +67,16 @@ export const GET = withEmailAccount(
         );
         return response;
       } catch (error) {
-        logger.error("Failed to generate provider connect URL", { error });
-        throw new SafeError("Failed to generate authorization URL");
+        logger.error("生成服务商连接 URL 失败", { error });
+        throw new SafeError("生成授权 URL 失败");
       }
     }
 
     if (integrationConfig.authType !== "oauth") {
-      logger.warn("MCP auth URL rejected: integration is not OAuth", {
+      logger.warn("MCP 授权 URL 被拒绝：集成不支持 OAuth", {
         authType: integrationConfig.authType,
       });
-      throw new SafeError(`Integration ${integration} does not support OAuth`);
+      throw new SafeError(`集成 ${integration} 不支持 OAuth`);
     }
 
     try {
@@ -94,12 +94,12 @@ export const GET = withEmailAccount(
         state,
       });
 
-      logger.info("Generated MCP auth URL");
+      logger.info("已生成 MCP 授权 URL");
 
       // Set secure cookies for state and PKCE verifier
       const response = NextResponse.json<GetMcpAuthUrlResponse>({ url });
 
-      const maxAge = 60 * 10; // 10 minutes
+      const maxAge = 60 * 10; // 10 分钟
 
       response.cookies.set(getMcpStateCookieName(integration), state, {
         ...oauthStateCookieOptions,
@@ -113,8 +113,8 @@ export const GET = withEmailAccount(
 
       return response;
     } catch (error) {
-      logger.error("Failed to generate MCP auth URL", { error });
-      throw new SafeError("Failed to generate authorization URL");
+      logger.error("生成 MCP 授权 URL 失败", { error });
+      throw new SafeError("生成授权 URL 失败");
     }
   },
 );

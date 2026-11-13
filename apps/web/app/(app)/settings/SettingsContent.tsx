@@ -161,7 +161,7 @@ export function SettingsContent() {
       {!env.NEXT_PUBLIC_AI_MODEL_SETTINGS_DISABLED && (
         <SettingsGroup
           icon={<SparklesIcon className="size-5" />}
-          title={t`AI Model`}
+          title={t`AI 模型`}
         >
           <ItemCard className="p-4">
             <ModelSection />
@@ -174,7 +174,7 @@ export function SettingsContent() {
         </SettingsGroup>
       )}
 
-      <SettingsGroup icon={<UserIcon className="size-5" />} title={t`Account`}>
+      <SettingsGroup icon={<UserIcon className="size-5" />} title={t`账号`}>
         <ItemCard>
           {env.NEXT_PUBLIC_EXTERNAL_API_ENABLED && <McpSection />}
           <EmailOtpSection hasMultipleAccounts={emailAccounts.length > 1} />
@@ -185,13 +185,13 @@ export function SettingsContent() {
           <Item size="sm">
             <ItemContent>
               <ItemTitle>
-                <Trans>Beta Features</Trans>
+                <Trans>测试功能</Trans>
               </ItemTitle>
             </ItemContent>
             <ItemActions>
               <Button asChild size="sm" variant="outline">
                 <Link href="/early-access">
-                  <Trans>Open</Trans>
+                  <Trans>打开</Trans>
                 </Link>
               </Button>
             </ItemActions>
@@ -206,7 +206,7 @@ export function SettingsContent() {
         env.NEXT_PUBLIC_EXTERNAL_API_ENABLED) && (
         <SettingsGroup
           icon={<WebhookIcon className="size-5" />}
-          title={t`Developer`}
+          title={t`开发者`}
         >
           <ItemCard>
             {env.NEXT_PUBLIC_WEBHOOK_ACTION_ENABLED !== false && (

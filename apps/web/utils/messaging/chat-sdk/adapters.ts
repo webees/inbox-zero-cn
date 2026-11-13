@@ -74,7 +74,7 @@ function createMessagingAdapterRegistry(): MessagingAdapterRegistry {
 
   if (!Object.keys(adapters).length) {
     throw new Error(
-      "No messaging adapters configured. Configure Slack, Teams, or Telegram credentials.",
+      "未配置任何消息适配器。请配置 Slack、Teams 或 Telegram 凭据。",
     );
   }
 

@@ -21,17 +21,17 @@ export const RESERVED_BOOKING_SLUGS = new Set([
 const slugSchema = z
   .string()
   .trim()
-  .min(3, "Slug must be at least 3 characters")
-  .max(64, "Slug must be 64 characters or fewer")
+  .min(3, "Slug 至少需要 3 个字符")
+  .max(64, "Slug 最多 64 个字符")
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
-    message: "Use lowercase letters, numbers, and hyphens",
+    message: "请使用小写字母、数字和连字符",
   })
   .refine((slug) => !RESERVED_BOOKING_SLUGS.has(slug), {
-    message: "This slug is reserved",
+    message: "该 Slug 已被保留",
   });
 
 const timezoneSchema = z.string().refine(isValidTimeZone, {
-  message: "Use a valid IANA timezone",
+  message: "请使用有效的 IANA 时区",
 });
 
 const locationTypeSchema = z.nativeEnum(BookingLinkLocationType);
@@ -40,7 +40,7 @@ const positiveMinutesSchema = z.coerce.number().int().positive();
 const nonNegativeMinutesSchema = z.coerce.number().int().nonnegative();
 
 export const createBookingLinkBody = z.object({
-  title: z.string().trim().min(1, "Title is required").max(120),
+  title: z.string().trim().min(1, "标题为必填项").max(120),
   slug: slugSchema,
   description: z.string().trim().max(1000).optional().or(z.literal("")),
   durationMinutes: positiveMinutesSchema.max(24 * 60).default(30),
@@ -86,7 +86,7 @@ export const bookingWindowBody = z
       .max(24 * 60),
   })
   .refine((window) => window.endMinutes > window.startMinutes, {
-    message: "End time must be after start time",
+    message: "结束时间必须晚于开始时间",
     path: ["endMinutes"],
   });
 export type BookingWindowBody = z.infer<typeof bookingWindowBody>;
@@ -109,7 +109,7 @@ const bookingWindowsSchema = z
         if (sorted[i].startMinutes < sorted[i - 1].endMinutes) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: "Availability windows on the same day must not overlap",
+            message: "同一天的可预约时间窗口不能重叠",
           });
           return;
         }

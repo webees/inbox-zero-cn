@@ -100,7 +100,7 @@ export function ActionAttachmentsField({
     <div className="border-t pt-3">
       <div className="flex items-center gap-2">
         <span className="text-sm font-medium">
-          <Trans>Attachments</Trans>
+          <Trans>附件</Trans>
         </span>
         {isConnected && totalCount > 0 && (
           <Badge variant="secondary" className="tabular-nums">
@@ -117,9 +117,7 @@ export function ActionAttachmentsField({
           <HardDriveIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
           <div className="min-w-0">
             <p className="text-sm text-muted-foreground">
-              <Trans>
-                Connect your cloud storage to attach files to your emails.
-              </Trans>
+              <Trans>连接你的云存储，以便将文件作为附件添加到邮件中</Trans>
             </p>
             <Button
               asChild
@@ -128,7 +126,7 @@ export function ActionAttachmentsField({
               className="mt-1 h-auto p-0 text-sm"
             >
               <Link href={`/${emailAccountId}/drive`}>
-                <Trans>Connect Drive</Trans>
+                <Trans>连接云盘</Trans>
               </Link>
             </Button>
           </div>
@@ -143,7 +141,7 @@ export function ActionAttachmentsField({
             onClick={() => hasAttachments && setIsExpanded(!isExpanded)}
           >
             <span className="font-medium">
-              <Trans>Always attach</Trans>
+              <Trans>始终附带</Trans>
             </span>
             {hasAttachments && (
               <>
@@ -166,9 +164,9 @@ export function ActionAttachmentsField({
           <AttachmentSourcePickerDialog
             value={value}
             onChange={onChange}
-            triggerLabel={t`Select files`}
-            title={t`Select files to always attach`}
-            description={t`Choose files that this rule should always attach after you save.`}
+            triggerLabel={t`选择文件`}
+            title={t`选择要始终附带的文件`}
+            description={t`选择保存此规则后应始终附带的文件`}
             allowFolderSelection={false}
           />
         </div>
@@ -184,7 +182,7 @@ export function ActionAttachmentsField({
             }
           >
             <span className="font-medium">
-              <Trans>AI-selected sources</Trans>
+              <Trans>AI 选择的来源</Trans>
             </span>
             {hasAiSources && (
               <>
@@ -281,10 +279,10 @@ function AttachmentSourcePickerDialog({
         />
         <DialogFooter>
           <Button type="button" variant="outline" onClick={cancelPicker}>
-            <Trans>Cancel</Trans>
+            <Trans>取消</Trans>
           </Button>
           <Button type="button" onClick={savePicker}>
-            <Trans>Save</Trans>
+            <Trans>保存</Trans>
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -556,7 +554,7 @@ function SourceList({
             className="ml-2 shrink-0"
             onClick={() => onRemove(source)}
           >
-            <Trans>Remove</Trans>
+            <Trans>移除</Trans>
           </Button>
         </div>
       ))}

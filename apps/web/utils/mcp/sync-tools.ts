@@ -8,7 +8,7 @@ import prisma from "@/utils/prisma";
 import type { Logger } from "@/utils/logger";
 import type { Prisma } from "@/generated/prisma/client";
 
-// Custom servers have no curated allowlist, so cap what a single server can store
+// 自定义服务器没有精选的允许列表，因此限制单个服务器可存储的数量
 const MAX_CUSTOM_TOOLS = 50;
 const MAX_CUSTOM_TOOL_DESCRIPTION_LENGTH = 1000;
 
@@ -59,8 +59,8 @@ export async function syncMcpTools(
       storedToolsCount: tools.length,
     });
 
-    // Replace stored tools, preserving the user's enable/disable choices for
-    // tools that already existed
+    // 替换已存储的工具，同时保留用户对
+    // 已存在工具的启用/禁用选择
     const existingEnabledByName = new Map(
       mcpConnection.tools.map((tool) => [tool.name, tool.isEnabled]),
     );
@@ -86,7 +86,7 @@ export async function syncMcpTools(
         : []),
     ]);
 
-    logger.info("Successfully synced MCP tools", {
+    logger.info("已成功同步 MCP 工具", {
       connectionId: mcpConnection.id,
       toolsStored: tools.length,
     });
@@ -100,11 +100,10 @@ export async function syncMcpTools(
       })),
     };
   } catch (error) {
-    logger.error("Failed to sync MCP tools", { error });
+    logger.error("同步 MCP 工具失败", { error });
 
     throw new Error(
-      `Failed to sync tools: ${error instanceof Error ? error.message : "Unknown error"}`,
-      { cause: error },
+      `同步工具失败：${error instanceof Error ? error.message : "未知错误"}`,
     );
   }
 }
@@ -122,8 +121,8 @@ function buildBuiltInTools(
     writeToolNames.includes(tool.name),
   );
 
-  // Everything that isn't a write tool is a read tool, narrowed to the
-  // config's allowlist when it declares one
+  // 所有非写入工具都是读取工具，并在配置声明允许列表时
+  // 收窄到该允许列表
   const allowedToolNames = integration.allowedTools;
   let readTools = allTools.filter(
     (tool) =>
@@ -131,8 +130,8 @@ function buildBuiltInTools(
       (!allowedToolNames || allowedToolNames.includes(tool.name)),
   );
 
-  // Pipedream exposes a changing tool catalog. Require both its annotation
-  // and the operation name to indicate a read before storing the tool.
+  // Pipedream 暴露的工具目录会变化。在存储工具之前，要求其注解
+  // 和操作名称都表明这是读取操作。
   if (integration.filterWriteTools) {
     const beforeCount = readTools.length;
     readTools = readTools.filter(
@@ -172,15 +171,15 @@ function buildCustomTools(
     });
   }
 
-  // Keep annotated read-only tools when the cap drops the rest: they are the
-  // only ones that start enabled
+  // 当数量上限裁掉其余工具时保留被标注为只读的工具：它们是
+  // 唯一默认启用的工具
   const prioritized = [
     ...allTools.filter((tool) => tool.readOnlyHint === true),
     ...allTools.filter((tool) => tool.readOnlyHint !== true),
   ];
 
-  // Custom tools never run as rule actions, so they are never write tools.
-  // Only tools the server annotates as read-only start enabled.
+  // 自定义工具从不作为规则动作运行，因此它们绝不是写入工具。
+  // 只有服务器标注为只读的工具才会默认启用。
   return prioritized.slice(0, MAX_CUSTOM_TOOLS).map((tool) => ({
     ...tool,
     description: tool.description?.slice(0, MAX_CUSTOM_TOOL_DESCRIPTION_LENGTH),
@@ -189,7 +188,7 @@ function buildCustomTools(
   }));
 }
 
-// Read-only action verbs - check if the second segment matches
+// 只读动作动词——检查第二段是否匹配
 const READ_ONLY_ACTIONS = [
   "get",
   "retrieve",
@@ -206,8 +205,8 @@ const READ_ONLY_ACTIONS = [
 ];
 
 /**
- * Checks if a tool name indicates a read-only operation.
- * Tool names follow pattern: "app-action-target" (e.g., "slack_v2-list-channels")
+ * 检查工具名称是否表示只读操作。
+ * 工具名称遵循模式："app-action-target"（例如 "slack_v2-list-channels"）
  */
 export function isReadOnlyTool(toolName: string): boolean {
   const parts = toolName.toLowerCase().split("-");

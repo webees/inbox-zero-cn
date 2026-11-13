@@ -90,7 +90,7 @@ The current date is ${formatDateForLLM(new Date())}.`;
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Bulk inbox action filter",
+    label: "批量收件箱操作筛选",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "compact" },
   });

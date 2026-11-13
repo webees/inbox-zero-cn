@@ -1,8 +1,5 @@
 "use client";
 
-import type { I18n } from "@lingui/core";
-import { msg } from "@lingui/core/macro";
-import { Trans, useLingui } from "@lingui/react/macro";
 import { Badge } from "@/components/ui/badge";
 import {
   Collapsible,
@@ -40,16 +37,16 @@ export type ToolHeaderProps = {
   className?: string;
 };
 
-const getStatusBadge = (status: ToolUIPart["state"], i18n: I18n) => {
-  const labels = {
-    "input-streaming": msg`Pending`,
-    "input-available": msg`Running`,
-    "approval-requested": msg`Approval Requested`,
-    "approval-responded": msg`Approval Responded`,
-    "output-available": msg`Completed`,
-    "output-error": msg`Error`,
-    "output-denied": msg`Denied`,
-  } satisfies Record<ToolUIPart["state"], unknown>;
+const getStatusBadge = (status: ToolUIPart["state"]) => {
+  const labels: Record<ToolUIPart["state"], string> = {
+    "input-streaming": "待处理",
+    "input-available": "运行中",
+    "approval-requested": "等待批准",
+    "approval-responded": "已批准",
+    "output-available": "已完成",
+    "output-error": "错误",
+    "output-denied": "已拒绝",
+  };
 
   const icons: Record<ToolUIPart["state"], React.ReactNode> = {
     "input-streaming": <CircleIcon className="size-4" />,
@@ -64,7 +61,7 @@ const getStatusBadge = (status: ToolUIPart["state"], i18n: I18n) => {
   return (
     <Badge className="gap-1.5 rounded-full text-xs" variant="secondary">
       {icons[status]}
-      {i18n._(labels[status])}
+      {labels[status]}
     </Badge>
   );
 };
@@ -75,28 +72,24 @@ export const ToolHeader = ({
   type,
   state,
   ...props
-}: ToolHeaderProps) => {
-  const { i18n } = useLingui();
-
-  return (
-    <CollapsibleTrigger
-      className={cn(
-        "flex w-full items-center justify-between gap-4 p-3",
-        className,
-      )}
-      {...props}
-    >
-      <div className="flex items-center gap-2">
-        <WrenchIcon className="size-4 text-muted-foreground" />
-        <span className="font-medium text-sm">
-          {title ?? type.split("-").slice(1).join("-")}
-        </span>
-        {getStatusBadge(state, i18n)}
-      </div>
-      <ChevronDownIcon className="size-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
-    </CollapsibleTrigger>
-  );
-};
+}: ToolHeaderProps) => (
+  <CollapsibleTrigger
+    className={cn(
+      "flex w-full items-center justify-between gap-4 p-3",
+      className,
+    )}
+    {...props}
+  >
+    <div className="flex items-center gap-2">
+      <WrenchIcon className="size-4 text-muted-foreground" />
+      <span className="font-medium text-sm">
+        {title ?? type.split("-").slice(1).join("-")}
+      </span>
+      {getStatusBadge(state)}
+    </div>
+    <ChevronDownIcon className="size-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+  </CollapsibleTrigger>
+);
 
 export type ToolContentProps = ComponentProps<typeof CollapsibleContent>;
 
@@ -117,7 +110,7 @@ export type ToolInputProps = ComponentProps<"div"> & {
 export const ToolInput = ({ className, input, ...props }: ToolInputProps) => (
   <div className={cn("space-y-2 overflow-hidden p-4", className)} {...props}>
     <h4 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-      <Trans>Parameters</Trans>
+      参数
     </h4>
     <div className="rounded-md bg-muted/50">
       <CodeBlock code={JSON.stringify(input, null, 2)} language="json" />
@@ -153,7 +146,7 @@ export const ToolOutput = ({
   return (
     <div className={cn("space-y-2 p-4", className)} {...props}>
       <h4 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-        {errorText ? <Trans>Error</Trans> : <Trans>Result</Trans>}
+        {errorText ? "错误" : "结果"}
       </h4>
       <div
         className={cn(

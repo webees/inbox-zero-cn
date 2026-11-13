@@ -101,7 +101,7 @@ describe("Google invitation responses", () => {
       data: { items: [{ ...event, status: "cancelled" }] },
     });
     await expect(google.findInvitationEvent(invitation)).rejects.toThrow(
-      "cancelled",
+      "This event has been cancelled.",
     );
   });
 
@@ -133,7 +133,7 @@ describe("Google invitation responses", () => {
       data: { items: [{ ...event, sequence: 3 }] },
     });
     await expect(google.findInvitationEvent(invitation)).rejects.toThrow(
-      "latest invitation",
+      "This invitation has changed. Please respond to the latest invitation in your calendar.",
     );
     expect(mocks.patch).not.toHaveBeenCalled();
   });
@@ -151,7 +151,9 @@ describe("Microsoft invitation responses", () => {
   it("rejects stale Outlook revisions", async () => {
     await expect(
       microsoft.findInvitationEvent({ ...invitation, sequence: 1 }),
-    ).rejects.toThrow("latest invitation");
+    ).rejects.toThrow(
+      "This invitation has changed. Please respond to the latest invitation in your calendar.",
+    );
   });
 
   it("uses email fallback when Outlook cannot verify the revision", async () => {
@@ -166,7 +168,7 @@ describe("Microsoft invitation responses", () => {
       value: [{ id: "event", isCancelled: true }],
     });
     await expect(microsoft.findInvitationEvent(invitation)).rejects.toThrow(
-      "cancelled",
+      "This event has been cancelled.",
     );
   });
 

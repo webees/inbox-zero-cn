@@ -83,25 +83,25 @@ export function BillingSection() {
         <Item size="sm">
           <ItemContent>
             <ItemTitle>
-              <Trans>{getPremiumTierName(tier)} plan</Trans>
+              <Trans>{getPremiumTierName(tier)} 套餐</Trans>
             </ItemTitle>
             {hasAppleSubscription ? (
               <ItemDescription>
                 <Trans>
-                  This subscription is billed through Apple. Manage or cancel it
-                  from your iPhone or iPad subscription settings.
+                  此订阅通过 Apple 计费。请在 iPhone 或 iPad 的订阅设置中管理或
+                  取消。
                 </Trans>
               </ItemDescription>
             ) : isLegacyStripePlan ? (
               <ItemDescription>
                 <Trans>
-                  You&apos;re on grandfathered Stripe pricing. The current plan
-                  prices shown elsewhere in the app are for new subscriptions.
+                  你使用的是旧版 Stripe 价格。应用其他位置显示的当前套餐价格
+                  适用于新订阅。
                 </Trans>
               </ItemDescription>
             ) : premium.stripeSubscriptionStatus === "trialing" ? (
               <ItemDescription>
-                <Trans>Free trial</Trans>
+                <Trans>免费试用</Trans>
               </ItemDescription>
             ) : null}
           </ItemContent>
@@ -109,7 +109,7 @@ export function BillingSection() {
             {!hasAppleSubscription && (
               <Button asChild variant="outline" size="sm">
                 <Link href="/premium">
-                  <Trans>Change plan</Trans>
+                  <Trans>更改套餐</Trans>
                 </Link>
               </Button>
             )}
@@ -124,20 +124,20 @@ export function BillingSection() {
         <Item size="sm">
           <ItemContent>
             <ItemTitle>
-              <Trans>{getPremiumTierName(premium.tier)} plan</Trans>
+              <Trans>{getPremiumTierName(premium.tier)} 套餐</Trans>
             </ItemTitle>
             {/* Customers can't pause or resume in the Stripe portal, so a
                 paused subscription is resumed by support. */}
             <ItemDescription>
               <Trans>
-                Paused. Contact{" "}
+                已暂停。请联系{" "}
                 <a
                   href={`mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}`}
                   className="underline"
                 >
                   {env.NEXT_PUBLIC_SUPPORT_EMAIL}
                 </a>{" "}
-                to resume it.
+                以恢复订阅。
               </Trans>
             </ItemDescription>
           </ItemContent>
@@ -149,14 +149,14 @@ export function BillingSection() {
         <Item size="sm">
           <ItemContent>
             <ItemTitle>
-              <Trans>No active plan</Trans>
+              <Trans>无有效套餐</Trans>
             </ItemTitle>
           </ItemContent>
           <ItemActions>
             {premium && <ViewInvoicesButton premium={premium} />}
             <Button asChild variant="outline" size="sm">
               <Link href="/premium">
-                <Trans>Upgrade</Trans>
+                <Trans>升级</Trans>
               </Link>
             </Button>
           </ItemActions>
@@ -169,17 +169,15 @@ export function BillingSection() {
           <Item size="sm">
             <ItemContent>
               <ItemTitle>
-                <Trans>Email paid invoices</Trans>
+                <Trans>通过邮件发送已付发票</Trans>
               </ItemTitle>
               <ItemDescription>
-                <Trans>
-                  Automatically send each Stripe invoice to the billing email.
-                </Trans>
+                <Trans>自动将每张 Stripe 发票发送至账单邮箱。</Trans>
               </ItemDescription>
             </ItemContent>
             <ItemActions>
               <Switch
-                aria-label={t`Email paid Stripe invoices`}
+                aria-label={t`通过邮件发送已付的 Stripe 发票`}
                 checked={premium.stripeInvoiceEmailsEnabled}
                 disabled={isExecuting}
                 onCheckedChange={handleInvoiceEmailToggle}

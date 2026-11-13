@@ -25,12 +25,12 @@ export const ONE_WEEK_MINUTES = ONE_DAY_MINUTES * 7;
 export const NINETY_DAYS_MINUTES = ONE_DAY_MINUTES * 90;
 
 /**
- * Formats a date into a short string.
- * - If the date is today, returns the time (e.g., "3:44 PM").
- * - If the date is this year, returns the date (e.g., "JUL 5").
- * - Otherwise includes the year (e.g., "JUL 5, 2024").
- * - Optionally returns the date part in lowercase (e.g., "jul 5").
- * - Uses the runtime locale unless `locale` is given (pass the UI locale).
+ * 将日期格式化为短字符串。
+ * - 如果日期是今天，则返回时间（例如 "3:44 PM"）。
+ * - 如果日期在今年，则返回日期（例如 "JUL 5"）。
+ * - 否则包含年份（例如 "JUL 5, 2024"）。
+ * - 可选择以小写形式返回日期部分（例如 "jul 5"）。
+ * - 除非提供了 `locale`，否则使用运行时区域设置（传入 UI 区域设置）。
  */
 export function formatShortDate(
   date: Date,
@@ -50,30 +50,28 @@ export function formatShortDate(
 }
 
 /**
- * Labels a date for grouping an email list into sections. The sections are
- * deliberately coarse so a list only ever carries a handful of headings.
- * - Today and yesterday get their own sections.
- * - The rest of the past week is one "Last 7 days" section.
- * - Older days in the current month are one "Earlier this month" section.
- * - Earlier dates are labelled by month (e.g. "August", or "August 2024").
- * - A date ahead of today keeps its own day, so a sender with a skewed clock
- *   is never filed under a section that has already passed.
+ * 为邮件列表分组的日期添加标签。分组刻意保持粗粒度，因此列表只会带有少量标题。
+ * - 今天和昨天各自拥有独立分组。
+ * - 过去一周的其余日期归入一个 "Last 7 days" 分组。
+ * - 本月较早的日期归入一个 "Earlier this month" 分组。
+ * - 更早的日期按月份添加标签（例如 "August" 或 "August 2024"）。
+ * - 晚于今天的日期保留其自身的日期，因此时钟偏差的发件人永远不会被归入已经过去的分组。
  */
 export function formatDateGroupLabel(
   date: Date,
   i18n: I18n,
   now: Date = new Date(),
 ) {
-  if (isSameDay(date, now)) return i18n._(msg`Today`);
-  if (isSameDay(date, subDays(now, 1))) return i18n._(msg`Yesterday`);
+  if (isSameDay(date, now)) return i18n._(msg`今天`);
+  if (isSameDay(date, subDays(now, 1))) return i18n._(msg`昨天`);
   if (date > now)
     return formatGroupDate(date, i18n, {
       month: "long",
       day: "numeric",
       year: "numeric",
     });
-  if (date >= startOfDay(subDays(now, 6))) return i18n._(msg`Last 7 days`);
-  if (isSameMonth(date, now)) return i18n._(msg`Earlier this month`);
+  if (date >= startOfDay(subDays(now, 6))) return i18n._(msg`过去 7 天`);
+  if (isSameMonth(date, now)) return i18n._(msg`本月早些时候`);
   if (isSameYear(date, now))
     return formatGroupDate(date, i18n, { month: "long" });
   return formatGroupDate(date, i18n, { month: "long", year: "numeric" });
@@ -86,7 +84,7 @@ export function formatDayAtTime(date: Date, i18n: I18n) {
     day: "numeric",
   });
   const time = i18n.date(date, { hour: "numeric", minute: "2-digit" });
-  return i18n._(msg`${day} at ${time}`);
+  return i18n._(msg`${day} ${time}`);
 }
 
 export function dateToSeconds(date: Date) {
@@ -102,11 +100,11 @@ export function internalDateToDate(
     return fallbackToNow ? new Date() : new Date(Number.NaN);
   }
 
-  // First try to parse as a regular date string (for ISO strings like "2025-06-19T21:46:31Z")
+  // 首先尝试按普通日期字符串解析（例如 "2025-06-19T21:46:31Z" 这样的 ISO 字符串）
   let date = new Date(internalDate);
   if (!Number.isNaN(date.getTime())) return date;
 
-  // Fallback to the old behavior for numeric timestamps
+  // 对于数字时间戳，回退到旧行为
   date = new Date(+internalDate);
   if (Number.isNaN(date.getTime())) {
     return fallbackToNow ? new Date() : new Date(Number.NaN);

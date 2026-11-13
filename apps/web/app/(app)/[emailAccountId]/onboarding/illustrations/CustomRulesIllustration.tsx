@@ -12,31 +12,31 @@ import { getActionIcon } from "@/utils/action-display";
 
 const rules = [
   {
-    instruction: msg`Forward receipts and invoices to my accountant`,
+    instruction: msg`把收据和发票转发给我的会计`,
     actions: [
-      { type: ActionType.LABEL, text: "Receipt" },
+      { type: ActionType.LABEL, text: msg`收据` },
       { type: ActionType.FORWARD, text: "accountant@example.com" },
     ],
   },
   {
-    instruction: msg`Label newsletters and archive them after a week`,
+    instruction: msg`给新闻邮件加标签，并在一周后归档`,
     actions: [
-      { type: ActionType.LABEL, text: "Newsletter" },
-      { type: ActionType.ARCHIVE, text: msg`Archive after 7 days` },
+      { type: ActionType.LABEL, text: msg`新闻邮件` },
+      { type: ActionType.ARCHIVE, text: msg`7 天后归档` },
     ],
   },
   {
-    instruction: msg`Draft replies to customer questions using our help docs`,
+    instruction: msg`根据我们的帮助文档起草对客户问题的回复`,
     actions: [
-      { type: ActionType.LABEL, text: "Support" },
-      { type: ActionType.DRAFT_EMAIL, text: msg`Draft reply` },
+      { type: ActionType.LABEL, text: msg`支持` },
+      { type: ActionType.DRAFT_EMAIL, text: msg`起草回复` },
     ],
   },
   {
-    instruction: msg`Let me know in Slack when an investor emails`,
+    instruction: msg`有投资人发邮件时在 Slack 通知我`,
     actions: [
-      { type: ActionType.LABEL, text: "Investors" },
-      { type: ActionType.NOTIFY_MESSAGING_CHANNEL, text: msg`Notify in Slack` },
+      { type: ActionType.LABEL, text: msg`投资人` },
+      { type: ActionType.NOTIFY_MESSAGING_CHANNEL, text: msg`在 Slack 中通知` },
     ],
   },
 ];
@@ -83,7 +83,7 @@ export function CustomRulesIllustration() {
           className="flex items-center gap-3 rounded-xl border border-dashed border-border bg-card py-2.5 pr-2.5 pl-4"
         >
           <span className="flex-1 truncate text-sm text-muted-foreground">
-            <Trans>Archive shipping updates once they're delivered</Trans>
+            <Trans>物流更新送达后即归档</Trans>
           </span>
           <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
             <ArrowUpIcon className="size-4" />

@@ -69,7 +69,7 @@ export function useSignatureSidebarCard(): {
             <p className="font-medium text-sm leading-tight">{title}</p>
           </div>
           <button
-            aria-label={t`Dismiss`}
+            aria-label={t`关闭`}
             className="shrink-0 rounded p-1 text-muted-foreground transition-colors hover:bg-muted"
             onClick={dismiss}
             type="button"
@@ -83,7 +83,7 @@ export function useSignatureSidebarCard(): {
           variant="outline"
           onClick={() => setOpen(true)}
         >
-          <Trans>Add</Trans>
+          <Trans>添加</Trans>
         </Button>
       </Card>
     ),

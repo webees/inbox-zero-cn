@@ -15,7 +15,7 @@ export async function clearLocalMailAccountState(emailAccountId: string) {
   clearMarkReadSenderStatuses(emailAccountId);
   const client = getActiveMailClient();
   if (!client) {
-    throw new Error("Mail engine is not ready to remove this mailbox.");
+    throw new Error("邮件引擎尚未准备好移除该邮箱。");
   }
   await client.purgeAccount(emailAccountId);
 }

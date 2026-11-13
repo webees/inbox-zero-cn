@@ -84,8 +84,8 @@ export function SplitPickerDialog({
     const splitName = split.name;
     toast.success(
       added
-        ? t`Added ${plural(added, { one: "# sender", other: "# senders" })} to ${splitName}`
-        : t`${splitName} already includes ${plural(senderCount, { one: "this sender", other: "these senders" })}`,
+        ? t`已将 ${plural(added, { one: "# 个发件人", other: "# 个发件人" })}添加到 ${splitName}`
+        : t`${splitName} 已包含${plural(senderCount, { one: "此发件人", other: "这些发件人" })}`,
     );
     onApplied(split.id);
   };
@@ -104,22 +104,22 @@ export function SplitPickerDialog({
         onEscapeKeyDown={(event) => event.stopPropagation()}
       >
         <DialogTitle className="sr-only">
-          <Trans>Add senders to split</Trans>
+          <Trans>向拆分添加发件人</Trans>
         </DialogTitle>
         <Command className="[&_[cmdk-input-wrapper]>svg]:hidden">
           <CommandInput
-            aria-label={t`Search splits`}
+            aria-label={t`搜索拆分`}
             className="pr-8"
             disabled={isPending || isLoadingSendAs || !senderCount}
             placeholder={
               isLoadingSendAs || senderCount
-                ? t`Add ${plural(senderCount, { one: "# sender", other: "# senders" })} to…`
-                : t`No senders to add`
+                ? t`添加 ${plural(senderCount, { one: "# 个发件人", other: "# 个发件人" })}到…`
+                : t`没有可添加的发件人`
             }
           />
           <CommandList aria-busy={isPending || isLoadingSendAs}>
             <CommandEmpty>
-              <Trans>No matching splits.</Trans>
+              <Trans>没有匹配的拆分。</Trans>
             </CommandEmpty>
             <CommandGroup>
               {splits.map((split) => {
@@ -137,7 +137,7 @@ export function SplitPickerDialog({
                     <span className="flex-1 break-all">{split.name}</span>
                     {eligible ? null : (
                       <span className="shrink-0 text-muted-foreground text-xs">
-                        <Trans>Matches all conditions</Trans>
+                        <Trans>匹配所有条件</Trans>
                       </span>
                     )}
                   </CommandItem>
@@ -153,7 +153,7 @@ export function SplitPickerDialog({
           >
             <Loader2Icon aria-hidden className="size-4 animate-spin" />
             <span className="sr-only">
-              <Trans>Adding senders…</Trans>
+              <Trans>正在添加发件人…</Trans>
             </span>
           </div>
         )}

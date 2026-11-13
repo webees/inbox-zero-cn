@@ -55,7 +55,7 @@ export function normalizeContentId(value: string | null | undefined) {
   try {
     normalized = decodeURIComponent(normalized);
   } catch {
-    // Keep the original value when a sender used malformed URL encoding.
+    // 当发件人使用了格式错误的 URL 编码时保留原始值。
   }
 
   normalized = normalized.trim().replace(/^<|>$/g, "").trim();

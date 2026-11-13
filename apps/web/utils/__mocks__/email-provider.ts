@@ -42,7 +42,7 @@ export const createMockEmailProvider = (
   getThread: vi.fn().mockResolvedValue({
     id: "thread1",
     messages: [],
-    snippet: "Test thread snippet",
+    snippet: "测试会话摘要",
   }),
   getLabels: vi.fn().mockResolvedValue([]),
   getLabelById: vi.fn().mockResolvedValue(null),
@@ -60,15 +60,15 @@ export const createMockEmailProvider = (
     headers: {
       from: "test@example.com",
       to: "user@example.com",
-      subject: "Test",
+      subject: "测试",
       date: new Date().toISOString(),
     },
-    snippet: "Test message",
+    snippet: "测试邮件",
     historyId: "12345",
-    subject: "Test",
+    subject: "测试",
     date: new Date().toISOString(),
-    textPlain: "Test content",
-    textHtml: "<p>Test content</p>",
+    textPlain: "测试内容",
+    textHtml: "<p>测试内容</p>",
     attachments: [],
     inline: [],
     labelIds: [],
@@ -79,6 +79,7 @@ export const createMockEmailProvider = (
   getSentThreadsExcluding: vi.fn().mockResolvedValue([]),
   getThreadMessages: vi.fn().mockResolvedValue([]),
   getThreadMessagesInInbox: vi.fn().mockResolvedValue([]),
+  getPreviousConversationMessages: vi.fn().mockResolvedValue([]),
   archiveThread: vi.fn().mockResolvedValue(undefined),
   archiveThreadWithLabel: vi.fn().mockResolvedValue(undefined),
   bulkArchiveThreads: vi.fn().mockResolvedValue({
@@ -119,13 +120,13 @@ export const createMockEmailProvider = (
   updateDraft: vi.fn().mockResolvedValue(undefined),
   createLabel: vi
     .fn()
-    .mockResolvedValue({ id: "label1", name: "Test Label", type: "user" }),
+    .mockResolvedValue({ id: "label1", name: "测试标签", type: "user" }),
   deleteLabel: vi.fn().mockResolvedValue(undefined),
   getDefaultLabelColor: vi.fn(getGmailDefaultLabelColor),
   updateLabel: vi.fn().mockResolvedValue(undefined),
   getOrCreateInboxZeroLabel: vi
     .fn()
-    .mockResolvedValue({ id: "label1", name: "Test Label", type: "user" }),
+    .mockResolvedValue({ id: "label1", name: "测试标签", type: "user" }),
   getOriginalMessage: vi.fn().mockResolvedValue(null),
   getFiltersList: vi.fn().mockResolvedValue([]),
   getForwardingAddresses: vi.fn().mockResolvedValue([]),

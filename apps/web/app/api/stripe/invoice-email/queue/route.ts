@@ -7,7 +7,7 @@ export const POST = createForwardingQueueHandler({
   loggerScope: "stripe/invoice-email/queue",
   schema: stripeInvoiceEmailBody,
   path: "/api/stripe/invoice-email",
-  invalidPayloadMessage: "Invalid Stripe invoice email queue payload",
+  invalidPayloadMessage: "无效的 Stripe 发票邮件队列负载",
   visibilityTimeoutSeconds: 55,
   getLoggerContext: ({ invoiceId }) => ({ invoiceId }),
 });

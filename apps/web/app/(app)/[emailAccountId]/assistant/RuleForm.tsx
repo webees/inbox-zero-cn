@@ -509,7 +509,7 @@ export function RuleForm({
 
         <Collapsible open={isAdvancedOpen} onOpenChange={setIsAdvancedOpen}>
           <CollapsibleHeading>
-            <Trans>Advanced options</Trans>
+            <Trans>高级选项</Trans>
           </CollapsibleHeading>
           <CollapsibleContent>
             {isAdvancedOpen ? (
@@ -652,7 +652,7 @@ export function RuleForm({
                         }
                       }}
                     >
-                      <Trans>Delete</Trans>
+                      <Trans>删除</Trans>
                     </Button>
                   </AdvancedRow>
                 )}
@@ -664,7 +664,7 @@ export function RuleForm({
         <div className="flex justify-end space-x-2 !mt-6">
           {onCancel && (
             <Button variant="outline" size="sm" onClick={onCancel}>
-              <Trans>Cancel</Trans>
+              <Trans>取消</Trans>
             </Button>
           )}
 
@@ -675,11 +675,11 @@ export function RuleForm({
               loading={isSubmitting}
               disabled={isDeleting}
             >
-              <Trans>Save</Trans>
+              <Trans>保存</Trans>
             </Button>
           ) : (
             <Button type="submit" size="sm" loading={isSubmitting}>
-              <Trans>Create</Trans>
+              <Trans>创建</Trans>
             </Button>
           )}
         </div>
@@ -730,7 +730,7 @@ function NotifyChannelRow({
       >
         <Button asChild variant="outline" size="sm">
           <Link href={channelsPath}>
-            <Trans>Connect</Trans>
+            <Trans>连接</Trans>
           </Link>
         </Button>
       </AdvancedRow>
@@ -769,7 +769,7 @@ function NotifyChannelRow({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="off">
-            <Trans>Off</Trans>
+            <Trans>关闭</Trans>
           </SelectItem>
           {showGroups
             ? Array.from(channelsByProvider.entries()).map(

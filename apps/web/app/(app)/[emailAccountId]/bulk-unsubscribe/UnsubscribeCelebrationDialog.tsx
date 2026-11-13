@@ -105,8 +105,8 @@ export function UnsubscribeCelebrationDialog({
           <DialogTitle>
             <Plural
               value={senderCount}
-              one="You unsubscribed from # sender"
-              other="You unsubscribed from # senders"
+              one="你已成功退订 # 个发件人"
+              other="你已成功退订 # 个发件人"
             />
           </DialogTitle>
           {emailCount > 0 && (
@@ -136,7 +136,7 @@ export function UnsubscribeCelebrationDialog({
             disabled={!shareParams}
           >
             <TwitterIcon className="mr-2 size-4" />
-            <Trans>Share on X</Trans>
+            <Trans>分享到 X</Trans>
           </Button>
           <Button
             variant="outline"
@@ -145,7 +145,7 @@ export function UnsubscribeCelebrationDialog({
             disabled={!shareParams}
           >
             <LinkedinIcon className="mr-2 size-4" />
-            <Trans>Share on LinkedIn</Trans>
+            <Trans>分享到 LinkedIn</Trans>
           </Button>
           <Button
             variant="outline"
@@ -154,7 +154,7 @@ export function UnsubscribeCelebrationDialog({
             disabled={!shareLink}
           >
             <CopyIcon className="mr-2 size-4" />
-            <Trans>Copy link</Trans>
+            <Trans>复制链接</Trans>
           </Button>
         </div>
       </DialogContent>

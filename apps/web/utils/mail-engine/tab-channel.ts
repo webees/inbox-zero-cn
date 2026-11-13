@@ -132,7 +132,7 @@ export function bindTabMailOwner(input: {
       input.bus.post({
         type: "error",
         id: message.id,
-        message: `unsupported method ${message.method}`,
+        message: `不支持的方法 ${message.method}`,
       });
       return;
     }
@@ -320,7 +320,6 @@ export function createTabFollowerClient(input: {
       call("submitConversations", [payload]) as never,
     saveDraft: (payload) => call("saveDraft", [payload]) as never,
     readDraft: (payload) => call("readDraft", [payload]) as never,
-    listDrafts: (accountId) => call("listDrafts", [accountId]) as never,
     submitSend: (payload) => call("submitSend", [payload]) as never,
     cancelOperation: (payload) => call("cancelOperation", [payload]) as never,
     requestSync: (accountIds) =>
@@ -352,8 +351,8 @@ export function createBroadcastTabBus(channel: BroadcastChannel): TabMailBus {
       try {
         channel.postMessage(message);
       } catch {
-        // Owner/follower effects close the channel on unmount; pending
-        // hello/observe replies must not throw into React.
+        // 卸载时，所有者/跟随者副作用会关闭通道；待处理的
+        // hello/observe 回复不能抛入 React。
       }
     },
     subscribe(listener) {

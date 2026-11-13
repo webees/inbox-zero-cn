@@ -78,7 +78,7 @@ export async function createLabel({
   logger: Logger;
 }) {
   const sanitizedName = sanitizeOutlookCategoryName(name);
-  if (!sanitizedName) throw new Error("Label name cannot be empty");
+  if (!sanitizedName) throw new Error("标签名称不能为空");
 
   try {
     const outlookColor =
@@ -101,18 +101,18 @@ export async function createLabel({
   } catch (error) {
     let { errorMessage } = extractErrorInfo(error);
     if (!errorMessage) {
-      errorMessage = error instanceof Error ? error.message : "Unknown error";
+      errorMessage = error instanceof Error ? error.message : "未知错误";
     }
     if (
       errorMessage.includes("already exists") ||
       errorMessage.includes("conflict with the current state")
     ) {
-      logger.warn("Label already exists", { name: sanitizedName });
+      logger.warn("标签已存在", { name: sanitizedName });
       const label = await getLabel({ client, name: sanitizedName });
       if (label) return label;
-      throw new Error("Label conflict but not found");
+      throw new Error("标签存在冲突，但未找到");
     }
-    throw new Error(`Failed to create Outlook category: ${errorMessage}`);
+    throw new Error(`创建 Outlook 类别失败：${errorMessage}`);
   }
 }
 
@@ -445,7 +445,7 @@ export async function archiveThread({
           }),
         logger,
       ),
-    failureMessage: "Failed to move message to folder",
+    failureMessage: "无法将邮件移动到文件夹",
     continueOnError: true,
   });
 
@@ -461,23 +461,23 @@ export async function archiveThread({
     publishPromise,
   ]);
 
-  // Handle publish errors as non-fatal (just log)
+  // 将发布错误视为非致命错误（仅记录日志）
   if (publishResult.status === "rejected") {
-    logger.error("Failed to publish action to move thread to folder", {
+    logger.error("无法发布将会话移动到文件夹的操作", {
       folderId,
       threadId,
       error: publishResult.reason,
     });
   }
 
-  // Handle archive errors
+  // 处理归档错误
   if (archiveResult.status === "rejected") {
     const error = archiveResult.reason;
     if (error.message?.includes("Requested entity was not found")) {
-      logger.warn("Thread not found", { threadId, userEmail: ownerEmail });
-      return { status: 404, message: "Thread not found" };
+      logger.warn("未找到会话", { threadId, userEmail: ownerEmail });
+      return { status: 404, message: "未找到会话" };
     }
-    logger.error("Failed to move thread to folder", {
+    logger.error("无法将会话移动到文件夹", {
       folderId,
       threadId,
       error,
@@ -489,18 +489,15 @@ export async function archiveThread({
 }
 
 const SOURCE_FOLDER_LABELS = {
-  archive: "Archive",
-  deleteditems: "Deleted items",
+  archive: "归档",
+  deleteditems: "已删除邮件",
 } as const;
 
 /**
- * Moves a conversation's messages out of one well-known folder and into the
- * inbox.
+ * 将一段会话中的邮件从一个已知文件夹移入收件箱。
  *
- * Scoping to a source folder is what keeps the sent and deleted messages of the
- * same conversation where they are. Outlook has no thread-level state to
- * restore, so the source folder is the only signal for which messages the user
- * actually meant.
+ * 限定源文件夹可以避免把同一会话中的已发送和已删除邮件也一并移动。Outlook
+ * 没有可恢复的会话级状态，因此源文件夹是判断用户实际意图的唯一依据。
  */
 async function moveThreadFromFolderToInbox({
   client,
@@ -518,12 +515,11 @@ async function moveThreadFromFolderToInbox({
   });
   const sourceFolderId = folderIds[WELL_KNOWN_FOLDERS[sourceFolder]];
 
-  // Without the source folder we can't tell the messages apart from the sent
-  // and deleted ones in the same conversation, and moving those into the inbox
-  // would be worse than failing.
+  // 没有源文件夹时，无法区分同一会话中的已发送和已删除邮件；把那些邮件移入
+  // 收件箱比直接失败更糟。
   if (!sourceFolderId) {
     throw new Error(
-      `${SOURCE_FOLDER_LABELS[sourceFolder]} folder not found, cannot move thread to inbox`,
+      `未找到${SOURCE_FOLDER_LABELS[sourceFolder]}文件夹，无法将会话移入收件箱`,
     );
   }
 
@@ -548,7 +544,7 @@ async function moveThreadFromFolderToInbox({
             .post({ destinationId: WELL_KNOWN_FOLDERS.inbox }),
         logger,
       ),
-    failureMessage: "Failed to move message back to inbox",
+    failureMessage: "无法将邮件移回收件箱",
   });
 }
 

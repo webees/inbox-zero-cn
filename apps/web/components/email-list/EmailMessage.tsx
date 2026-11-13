@@ -108,15 +108,13 @@ export function EmailMessage({
   /** Absent when the thread has a single message, which never collapses. */
   onToggle?: () => void;
   /**
-   * Keeps the message open once a composer opens in it. Otherwise a newer
-   * message arriving would collapse it and hide the reply being written.
+   * 编辑器打开后保持消息展开。否则，新消息到达会将其折叠，并隐藏正在编写的回复。
    */
   onExpand?: () => void;
   onSendSuccess: (messageId: string, threadId: string) => void;
   onMarkDone?: () => void;
   /**
-   * A saved draft shown in this message was discarded. Only wired up by
-   * parents for which that discard empties the conversation.
+   * 此消息中显示的已保存草稿已被丢弃。仅由会在丢弃后清空会话的父组件接入。
    */
   onDraftDiscarded?: () => void;
   onOpenSenderContext?: (message: ThreadMessage) => void;
@@ -125,22 +123,21 @@ export function EmailMessage({
   onSelect?: () => void;
   onNavigateMessage?: (direction: -1 | 1) => void;
   sentMessageOpen?: SentMessageOpenState;
-  /** For a reply the provider hasn't sent yet: the message replies thread on. */
+  /** 对于提供商尚未发送的回复：此消息继续回复该会话。 */
   replyAnchor?: ThreadMessage;
-  /** Keeps a composer's draft when this message's id changes under it. */
+  /** 当此消息的 ID 在其下方变化时，保留编辑器的草稿。 */
   composerSessionMessageId?: string;
-  /** A reply or forward from this message just left its composer. */
+  /** 来自此邮件的回复或转发刚刚离开其编辑器。 */
   onReplySent?: () => void;
-  /** Hides a send's message as soon as it can reach the thread, before its composer hands off to it. */
+  /** 发送的消息一旦能到达会话，就在其编辑器交接前将其隐藏。 */
   concealSentReply?: (operationId: string) => () => void;
   /**
-   * Resolves once a queued send's message is ready in the thread, so its
-   * composer can stay up until then instead of leaving a gap.
+   * 当排队发送的消息在会话中就绪后完成，使其编辑器可以保持打开，而不是留下空白。
    */
   awaitSentReply?: (operationId: string) => Promise<void>;
-  /** The send this message came from, while it is outgoing or after it syncs. */
+  /** 此消息所来自的发送操作，在其发送期间或同步之后。 */
   sendOperationId?: string;
-  /** Laid out but invisible, so its body loads before it replaces the composer that sent it. */
+  /** 已布局但不可见，以便其正文在替换发送它的编辑器前加载。 */
   concealed?: boolean;
 }) {
   const { emailAccountId } = useAccount();
@@ -151,8 +148,7 @@ export function EmailMessage({
   );
   const translation = getMessageTranslation(threadTranslation, message.id);
   const showTranslation = Boolean(translation && !translation.showOriginal);
-  // `null` follows `defaultComposeMode`, which the reader's Reply button flips
-  // long after this message mounted.
+  // `null` 沿用 `defaultComposeMode`，阅读器的回复按钮会在此消息挂载很久后切换它。
   const [composeOverride, setComposeOverride] = useState<
     ReplyDraftMode | "closed" | null
   >(null);
@@ -192,9 +188,8 @@ export function EmailMessage({
       getReplyDraftSessionId(draft.sessionMessageId, "reply") !==
         poppedOutDraftSessionId,
   );
-  // A new reply's autosave can sync back as a mailbox draft before the thread
-  // knows the open composer saved it. Once open, the new reply keeps the
-  // editor instead of being swapped for that copy mid-sentence.
+  // 新回复的自动保存可能会在会话得知打开的编辑器已保存它之前，作为邮箱草稿同步回来。
+  // 一旦打开，新回复会保留编辑器，而不会在编辑到一半时被那份副本替换。
   const [newReplyOpen, setNewReplyOpen] = useState(false);
   const isNewReply =
     composeMode === "reply" && (newReplyOpen || visibleDrafts.length === 0);
@@ -394,7 +389,7 @@ export function EmailMessage({
           {!isDraftRow && threadTranslation?.loading && (
             <p className="mb-3 flex items-center gap-1.5 text-muted-foreground text-xs">
               <LoadingMiniSpinner />
-              Translating…
+              正在翻译…
             </p>
           )}
           {!isDraftRow && translation && (
@@ -633,7 +628,7 @@ function MessageHeader({
               <EmailDetails message={message}>
                 <Button
                   aria-expanded
-                  aria-label="Hide details"
+                  aria-label="隐藏详情"
                   onClick={toggleDetails}
                   size="iconXs"
                   variant="ghostMuted"
@@ -645,7 +640,7 @@ function MessageHeader({
           ) : (
             <button
               aria-expanded={false}
-              aria-label="Show details"
+              aria-label="显示详情"
               className="group/details flex min-w-0 items-center gap-2 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
               onClick={toggleDetails}
               type="button"
@@ -655,7 +650,7 @@ function MessageHeader({
               {recipients && (
                 <span className="hidden min-w-0 shrink-[999] truncate text-muted-foreground text-sm sm:block">
                   <Trans>
-                    to{" "}
+                    收件人{" "}
                     <span className="font-medium text-foreground">
                       {recipients}
                     </span>
@@ -666,9 +661,9 @@ function MessageHeader({
             </button>
           )}
           {canResearchSender && (
-            <Tooltip content="View public profile">
+            <Tooltip content="查看公开资料">
               <Button
-                aria-label={`View public profile for ${senderName}`}
+                aria-label={`查看 ${senderName} 的公开资料`}
                 className="transition-opacity focus-visible:opacity-100 group-hover/message:opacity-100 sm:opacity-0"
                 onClick={(event) => {
                   event.stopPropagation();
@@ -694,7 +689,7 @@ function MessageHeader({
 
       {hasDraft &&
         (!expanded || message.labelIds?.includes(GmailLabel.DRAFT)) && (
-          <span className="shrink-0 text-primary text-xs">Draft</span>
+          <span className="shrink-0 text-primary text-xs">草稿</span>
         )}
 
       <div className="ml-auto flex shrink-0 items-center gap-2">
@@ -709,18 +704,18 @@ function MessageHeader({
                     variant="ghostMuted"
                   >
                     <ReplyIcon className="size-3.5" />
-                    <span className="sr-only">Reply</span>
+                    <span className="sr-only">回复</span>
                   </Button>
                 </Tooltip>
                 {canReplyAll && (
-                  <Tooltip content="Reply all">
+                  <Tooltip content="全部回复">
                     <Button
                       onClick={compose(onReplyAll)}
                       size="iconXs"
                       variant="ghostMuted"
                     >
                       <ReplyAllIcon className="size-3.5" />
-                      <span className="sr-only">Reply all</span>
+                      <span className="sr-only">全部回复</span>
                     </Button>
                   </Tooltip>
                 )}
@@ -731,7 +726,7 @@ function MessageHeader({
                     variant="ghostMuted"
                   >
                     <ForwardIcon className="size-3.5" />
-                    <span className="sr-only">Forward</span>
+                    <span className="sr-only">转发</span>
                   </Button>
                 </Tooltip>
               </>
@@ -806,8 +801,8 @@ function ReplyPanel({
   const { popOutReply } = useComposeModal();
   const [handingOffSend, setHandingOffSend] = useState(false);
   const handoffStarted = useRef(false);
-  // Also set on unmount: undo can restore a new composer in this one's place,
-  // and a late handoff must not close it.
+  // 卸载时也会设置：撤销操作可能会在原位置恢复一个新的编辑器，
+  // 延迟的交接不能将其关闭。
   const closed = useRef(false);
   useEffect(() => {
     closed.current = false;
@@ -827,22 +822,22 @@ function ReplyPanel({
   );
 
   const replyRef = useRef<HTMLDivElement>(null);
-  // A forward owns its original source once composing starts. A later cache
-  // fallback must not replace that source or discard the unsent editor state.
+  // 开始撰写后，转发会保留其原始来源。后续的缓存回退
+  // 不能替换该来源，也不能丢弃尚未发送的编辑器状态。
   const [forwardSource, setForwardSource] = useState<ParsedMessage>();
   if (composeMode === "forward" && bodyAvailable && !forwardSource)
     setForwardSource(message);
-  // Once open, the composer and its local draft own the reply. A saved draft
-  // that sync brings back before its body loads must not replace them.
+  // 打开后，编辑器和其本地草稿拥有此回复。同步在正文加载前
+  // 找回的已保存草稿不能替换它们。
   const [draftSource, setDraftSource] = useState<ParsedMessage>();
   if (draftMessage && draftBodyAvailable && !draftSource)
     setDraftSource(draftMessage);
 
-  // scroll to the reply panel when it first opens
+  // 回复面板首次打开时滚动到该面板
   useEffect(() => {
     if (!autoScroll || !replyRef.current) return;
 
-    // Wait for the reply panel layout before scrolling.
+    // 滚动前等待回复面板完成布局。
     const scrollTimeout = setTimeout(() => {
       replyRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
     }, 500);
@@ -891,7 +886,7 @@ function ReplyPanel({
       }).then(
         () => null,
         (error: unknown) =>
-          error instanceof Error ? error.message : "Failed to discard draft",
+          error instanceof Error ? error.message : "无法丢弃草稿",
       );
       const composeSession = onStartDiscard();
       if (!composeSession) return false;
@@ -902,7 +897,7 @@ function ReplyPanel({
         onRestoreCompose(composeSession);
         return false;
       }
-      // Without the engine nothing else drops the discarded draft from view.
+      // 没有引擎时，没有其他机制会将已丢弃的草稿从视图中移除。
       if (!client) refetch();
       onDraftDiscarded?.();
       return true;
@@ -932,10 +927,10 @@ function ReplyPanel({
     return (
       <div className="mt-5 flex gap-2">
         <Button onClick={refetch} size="sm" variant="outline">
-          Load message to forward
+          加载要转发的邮件
         </Button>
         <Button onClick={onCloseCompose} size="sm" variant="ghost">
-          Cancel
+          取消
         </Button>
       </div>
     );
@@ -951,23 +946,23 @@ function ReplyPanel({
         draftSessionId={draftSessionId}
         onSubmitting={concealSentReply}
         onClose={(queuedOperationId?: string) => {
-          // An offline send closes again once queued; the handoff closes it.
+          // 离线发送在排队后会再次关闭；交接时会将其关闭。
           if (handoffStarted.current) return;
-          // Before the handoff, so this message stays open once the sent
-          // reply below it is the newest.
+          // 在交接前调用，这样当新发送的回复成为最新消息时，
+          // 此消息仍会保持打开。
           onSent?.();
           if (!queuedOperationId || !awaitSentReply) {
             closeAfterSend();
             return;
           }
-          // Closing now would leave the thread without the reply until the
-          // sent message's body has loaded.
+          // 现在关闭会导致在已发送消息的正文加载完成前，
+          // 会话中没有这条回复。
           handoffStarted.current = true;
           setHandingOffSend(true);
           awaitSentReply(queuedOperationId).then(closeAfterSend);
         }}
         onRestore={() => {
-          // Undo restores a fresh composer, which needs this one closed first.
+          // 撤销会恢复一个新的编辑器，需要先关闭这个编辑器。
           if (handoffStarted.current) closeAfterSend();
           onRestore?.();
         }}
@@ -1006,7 +1001,7 @@ function resolveComposeMode(
 ) {
   if (override === "closed") return;
   const mode = override ?? defaultComposeMode;
-  // A popped-out reply is written in its own window, not inline.
+  // 弹出式回复在其自己的窗口中撰写，而不是在行内撰写。
   if (mode && isPoppedOut(mode)) return;
   return mode;
 }
@@ -1032,19 +1027,19 @@ const prepareReplyingToEmail = ({
       : undefined;
 
   return {
-    // If following an email from yourself, use original recipients, otherwise reply to sender
+    // 如果跟进的是自己发送的邮件，则使用原始收件人，否则回复发件人
     to: sentFromUser ? message.headers.to : replyTo,
     fromHint: getFromHint(message),
-    // If following an email from yourself, don't add "Re:" prefix
+    // 如果跟进的是自己发送的邮件，则不加“Re:”前缀
     subject: sentFromUser
       ? message.headers.subject
       : formatReplySubject(message.headers.subject),
     headerMessageId: threadOn.headers["message-id"] || undefined,
     messageId: threadOn.id || undefined,
     threadId: threadOn.threadId || undefined,
-    // Keep original CC
+    // 保留原始抄送
     cc: replyAllCc ? formatCcList(replyAllCc) : message.headers.cc,
-    // Keep original BCC if available
+    // 如果可用，保留原始密送
     bcc: sentFromUser ? message.headers.bcc : "",
     references: threadOn.headers.references,
     draftHtml: "",
@@ -1061,7 +1056,7 @@ const prepareForwardingEmail = (
   subject: forwardEmailSubject(message.headers.subject),
   headerMessageId: undefined,
   threadId: message.threadId || undefined,
-  // The provider has no copy of an unsent message to forward from.
+  // 提供商没有尚未发送消息的副本可供转发。
   forwardedMessageId: unsent ? undefined : message.id || undefined,
   forwardedAttachments: message.attachments?.map((attachment) => ({
     id: attachment.attachmentId,
@@ -1099,8 +1094,8 @@ function prepareDraftReplyEmail(draft: ParsedMessage): ReplyingToEmail {
   };
 }
 
-// Follow-ups to the user's own mail keep its sender; replies to received mail
-// go out from whichever of the user's addresses it was sent to.
+// 跟进用户自己发送的邮件时保留其发件人；回复收到的邮件时
+// 从该邮件被发送到的用户地址之一发出。
 function getFromHint(message: ParsedMessage) {
   if (message.labelIds?.includes("SENT")) return message.headers.from;
   return [message.headers.to, message.headers.cc].filter(Boolean).join(", ");
@@ -1119,9 +1114,9 @@ function TranslationNotice({
 }) {
   const { emailAccountId } = useAccount();
   const translateThread = useTranslateThread();
-  let status = "Showing original";
+  let status = "正在显示原文";
   if (!showOriginal) {
-    status = languageName ? `Translated from ${languageName}` : "Translated";
+    status = languageName ? `已从${languageName}翻译` : "已翻译";
   }
 
   return (
@@ -1140,7 +1135,7 @@ function TranslationNotice({
         }}
         type="button"
       >
-        {showOriginal ? "Show translation" : "Show original"}
+        {showOriginal ? "显示译文" : "显示原文"}
       </button>
     </p>
   );
@@ -1154,12 +1149,12 @@ function MessageBodyLoading() {
       role="status"
     >
       <LoadingMiniSpinner />
-      Loading message…
+      正在加载邮件…
     </p>
   );
 }
 
-// Plain-text bodies render in the page, so their selection is the window's.
+// 纯文本正文在页面中渲染，因此其选区来自窗口。
 function getSelectedText(container: HTMLElement) {
   const selection = window.getSelection();
   if (!selection || selection.isCollapsed) return;

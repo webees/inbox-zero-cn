@@ -115,17 +115,13 @@ export function KnowledgeForm({
         !hasFullAccess &&
         knowledgeItemsCount >= KNOWLEDGE_BASIC_MAX_ITEMS && (
           <AlertWithButton
-            title={t`Upgrade to add more knowledge base entries`}
-            description={
-              <Trans>
-                Switch to the Plus plan to add more knowledge base entries.
-              </Trans>
-            }
+            title={t`升级以添加更多知识库条目`}
+            description={<Trans>切换到 Plus 套餐以添加更多知识库条目</Trans>}
             icon={<CrownIcon className="h-4 w-4" />}
             button={
               <Button asChild>
                 <Link href="/premium">
-                  <Trans>Upgrade</Trans>
+                  <Trans>升级</Trans>
                 </Link>
               </Button>
             }
@@ -136,7 +132,7 @@ export function KnowledgeForm({
       <Input
         type="text"
         name="title"
-        label={t`Title`}
+        label={t`标题`}
         registerProps={register("title")}
         error={errors.title}
       />
@@ -145,7 +141,7 @@ export function KnowledgeForm({
           htmlFor="content"
           className={cn(errors.content && "text-destructive")}
         >
-          <Trans>Content (supports markdown)</Trans>
+          <Trans>内容（支持 Markdown）</Trans>
         </Label>
         <Controller
           name="content"
@@ -169,7 +165,7 @@ export function KnowledgeForm({
         )}
       </div>
       <Button type="submit" loading={isSubmitting}>
-        {editingItem ? <Trans>Update</Trans> : <Trans>Create</Trans>}
+        {editingItem ? <Trans>更新</Trans> : <Trans>创建</Trans>}
       </Button>
     </form>
   );

@@ -4,6 +4,7 @@ import {
   mkdirSync,
   readFileSync,
   rmSync,
+  truncateSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
@@ -37,6 +38,26 @@ describe("Playwright gallery artifact limits", () => {
       readFileSync(path.join(root, "gallery", "manifest.json"), "utf8"),
     );
     expect(manifest.screenshots).toHaveLength(156);
+  });
+
+  it("rejects excessive file counts before decoding screenshots", () => {
+    for (let index = 0; index < 501; index++) {
+      writeFileSync(path.join(root, "results", `${index}.png`), "invalid");
+    }
+    const result = generateGallery();
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain("最大为 500");
+  });
+
+  it("rejects excessive total bytes before reading or decoding screenshots", () => {
+    for (let index = 0; index < 8; index++) {
+      const file = path.join(root, "results", `${index}.png`);
+      writeFileSync(file, "");
+      truncateSync(file, 15 * 1024 * 1024);
+    }
+    const result = generateGallery();
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain("超过截图总大小上限");
   });
 });
 

@@ -64,11 +64,11 @@ export function History() {
             />
           ) : (
             <AlertBasic
-              title={t`No history`}
+              title={t`暂无历史记录`}
               description={
                 ruleId === "all"
-                  ? t`No emails have been processed yet.`
-                  : t`No emails have been processed for this rule.`
+                  ? t`尚未处理任何邮件。`
+                  : t`尚未为此规则处理任何邮件。`
               }
             />
           )}
@@ -151,9 +151,7 @@ function HistoryThread({
             <Button
               variant="ghost"
               size="iconSm"
-              aria-label={
-                expanded ? t`Collapse conversation` : t`Expand conversation`
-              }
+              aria-label={expanded ? t`收起会话` : t`展开会话`}
               aria-expanded={expanded}
               onClick={() => setExpanded((value) => !value)}
             >
@@ -229,11 +227,11 @@ function ThreadHistory({
                 disabled={page === 1}
                 onClick={() => setPage((value) => value - 1)}
               >
-                <Trans>Previous messages</Trans>
+                <Trans>上一页邮件</Trans>
               </Button>
               <span className="text-sm text-muted-foreground">
                 <Trans>
-                  Page {page} of {data.totalPages}
+                  第 {page} 页，共 {data.totalPages} 页
                 </Trans>
               </span>
               <Button
@@ -242,7 +240,7 @@ function ThreadHistory({
                 disabled={page >= data.totalPages}
                 onClick={() => setPage((value) => value + 1)}
               >
-                <Trans>Next messages</Trans>
+                <Trans>下一页邮件</Trans>
               </Button>
             </div>
           )}
@@ -299,14 +297,14 @@ function HistoryMessageRow({
                 <Badge color="blue">
                   <Plural
                     value={messageCount}
-                    one="# message handled"
-                    other="# messages handled"
+                    one="已处理 # 封邮件"
+                    other="已处理 # 封邮件"
                   />
                 </Badge>
               ) : null}
               {!result.executedRules[0]?.automated && (
                 <Badge color="yellow">
-                  <Trans>Applied manually</Trans>
+                  <Trans>已手动应用</Trans>
                 </Badge>
               )}
             </div>
@@ -364,7 +362,7 @@ function EmailCell({
 
   return (
     <span className="text-sm text-muted-foreground">
-      <Trans>Email unavailable</Trans>
+      <Trans>邮件不可用</Trans>
     </span>
   );
 }
@@ -395,7 +393,7 @@ function RuleCell({
         <Skeleton className="h-9 w-16" />
       ) : (
         <Button variant="outline" size="sm" disabled>
-          <Trans>Fix</Trans>
+          <Trans>修复</Trans>
         </Button>
       )}
     </div>
@@ -430,9 +428,9 @@ function groupByDate(items: ExecutedRuleResult[]) {
 }
 
 function formatDateGroupLabel(date: Date | null, i18n: I18n) {
-  if (!date) return i18n._(msg`Unknown date`);
-  if (isToday(date)) return i18n._(msg`Today`);
-  if (isYesterday(date)) return i18n._(msg`Yesterday`);
+  if (!date) return i18n._(msg`未知日期`);
+  if (isToday(date)) return i18n._(msg`今天`);
+  if (isYesterday(date)) return i18n._(msg`昨天`);
   if (date.getFullYear() === new Date().getFullYear()) {
     return i18n.date(date, { weekday: "long", month: "short", day: "numeric" });
   }

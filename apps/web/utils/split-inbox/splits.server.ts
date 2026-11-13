@@ -31,8 +31,7 @@ export async function createMailSplit({
   matchAll: boolean;
   filters: MailSplitFilterDraft[];
 }) {
-  // The id is chosen up front so the split and its conditions can be written in
-  // one transaction without a round trip in between.
+  // 提前选定 id，这样拆分及其条件可以在一次事务中写入，中间无需往返查询。
   const splitId = randomUUID();
 
   const [, results] = await prisma.$transaction([
@@ -84,8 +83,8 @@ export async function createMailSplit({
       FROM split_state
       LEFT JOIN inserted ON TRUE
     `,
-    // Guarded on the split existing, so a rejected insert above (limit reached,
-    // duplicate name) can't leave conditions pointing at nothing.
+    // 以拆分存在为前置条件，因此上方被拒绝的插入（达到上限或名称重复）不会留下指向空的
+    // 条件。
     prisma.$executeRaw`
       INSERT INTO "MailSplitFilter" ("id", "kind", "value", "order", "mailSplitId")
       SELECT
@@ -149,7 +148,7 @@ export async function removeLabelFromMailSplits({
   ]);
 }
 
-/** Reorder only the selected slots so hidden splits keep their positions. */
+/** 仅重排选中的位置，使隐藏的拆分保持原位。 */
 export async function reorderMailSplits({
   emailAccountId,
   ids,
@@ -202,20 +201,20 @@ export async function createMailSplitOrThrow({
     });
 
     if (!result) {
-      throw new SafeError("Could not create split. Please try again.");
+      throw new SafeError("无法创建拆分，请重试。");
     }
     if (result.status !== "created") {
       if (result.status === "duplicate") {
-        throw new SafeError(`You already have a "${name}" split.`);
+        throw new SafeError(`你已有名为“${name}”的拆分。`);
       }
-      throw new SafeError(`You can only have ${MAX_MAIL_SPLITS} splits.`);
+      throw new SafeError(`最多只能有 ${MAX_MAIL_SPLITS} 个拆分。`);
     }
 
     const { status: _, ...split } = result;
     return split;
   } catch (error) {
     if (isDuplicateError(error, "name")) {
-      throw new SafeError(`You already have a "${name}" split.`);
+      throw new SafeError(`你已有名为“${name}”的拆分。`);
     }
     throw error;
   }
@@ -233,9 +232,8 @@ export async function addSendersToMailSplit({
   const result = await planSenderAdditions({ emailAccountId, id, senders });
   if (!result.added.length) return { added: 0 };
 
-  // Appended under the account lock rather than replacing the list read above,
-  // so an edit that lands in between (a builder save, another add) isn't undone.
-  // The duplicate and limit guards are re-checked against the locked rows.
+  // 在账号锁内追加，而不是替换上方读取的列表，因此其间发生的编辑（构建器保存、另一次添加）
+  // 不会被撤销。重复和上限检查会针对已锁定的行重新执行。
   const rows = toFilterRows(
     result.added.map((value) => ({ kind: MailSplitFilterKind.FROM, value })),
   );
@@ -256,7 +254,7 @@ export async function addSendersToMailSplit({
             AND existing."kind" = 'FROM'
             AND (
               lower(existing."value") = additions."value"
-              -- Mirrors matchesSenderFilter: "@domain" covers every address there.
+              -- 与 matchesSenderFilter 保持一致：其中的“@domain”覆盖该域下的所有地址。
               OR (
                 left(existing."value", 1) = '@'
                 AND right(additions."value", length(existing."value")) = lower(existing."value")
@@ -269,9 +267,8 @@ export async function addSendersToMailSplit({
         split_state.next_order + ROW_NUMBER() OVER (ORDER BY additions."order") - 1, ${id}
       FROM additions CROSS JOIN split_state
       WHERE EXISTS (
-          -- Mirrors canAddSendersToSplit against the locked rows, so a split
-          -- changed to "match all" of several conditions since the read above
-          -- isn't widened into "match any".
+          -- 针对已锁定的行与 canAddSendersToSplit 保持一致，因此自上方读取以来，
+          -- 若拆分被改为多个条件的“匹配全部”，不会被放宽为“匹配任意”。
           SELECT 1 FROM "MailSplit" split
           WHERE split."id" = ${id} AND split."emailAccountId" = ${emailAccountId}
             AND split_state.count > 0
@@ -286,8 +283,8 @@ export async function addSendersToMailSplit({
         )
         AND split_state.count + (SELECT COUNT(*) FROM additions) <= ${MAX_SPLIT_FILTERS}
     `,
-    // Several conditions under "match all" would match nothing. Only applies
-    // when this request added a sender, so a skipped insert changes nothing.
+    // “匹配全部”下的多个条件将匹配不到任何邮件。仅在本次请求添加了发件人时适用，
+    // 因此跳过的插入不会改变任何内容。
     prisma.$executeRaw`
       UPDATE "MailSplit"
       SET "matchAll" = false, "updatedAt" = CURRENT_TIMESTAMP
@@ -301,8 +298,8 @@ export async function addSendersToMailSplit({
     `,
   ]);
 
-  // The locked guards skipped everything: re-plan against the split as it is
-  // now, so a split edited in between reports why rather than "already added".
+  // 已锁定的检查跳过了所有内容：基于拆分当前状态重新规划，让其间被编辑过的拆分
+  // 报告原因，而不是“已添加”。
   if (!added) await planSenderAdditions({ emailAccountId, id, senders });
   return { added };
 }
@@ -327,18 +324,16 @@ async function planSenderAdditions({
       },
     },
   });
-  if (!split) throw new SafeError("Split not found");
+  if (!split) throw new SafeError("未找到拆分");
 
   const result = addSendersToSplitFilters(split, senders);
   if (result.status === "incompatible") {
     throw new SafeError(
-      `"${split.name}" only shows mail matching all of its conditions, so edit it to add senders.`,
+      `“${split.name}”只显示匹配其全部条件的邮件，请编辑它以添加发件人。`,
     );
   }
   if (result.status === "limit") {
-    throw new SafeError(
-      `A split can have at most ${MAX_SPLIT_FILTERS} conditions.`,
-    );
+    throw new SafeError(`一个拆分最多可有 ${MAX_SPLIT_FILTERS} 个条件。`);
   }
   return result;
 }
@@ -351,18 +346,16 @@ export async function updateMailSplit({
   matchAll,
 }: UpdateMailSplitBody & { emailAccountId: string }) {
   try {
-    // One transaction so a split can never end up renamed but still
-    // carrying its old conditions. Filters are replaced wholesale rather
-    // than diffed: the builder hands back the conditions it is showing, so
-    // anything missing from that list was removed.
+    // 使用单个事务，确保拆分不会出现已重命名却仍携带旧条件的情况。条件会被整体替换，
+    // 而不是进行差异比较：构建器返回它当前显示的条件，因此列表中缺失的条件即已被删除。
     const [, { count }] = await prisma.$transaction([
       lockMailSplits(emailAccountId),
       prisma.mailSplit.updateMany({
         where: { id, emailAccountId },
         data: { name, matchAll },
       }),
-      // Scoped through the split's owner, so another account's id can't
-      // reach these rows even though `id` is caller-supplied.
+      // 通过拆分的所有者限定范围，因此即使 `id` 由调用方提供，其他账号的 id 也无法触及
+      // 这些行。
       prisma.mailSplitFilter.deleteMany({
         where: { mailSplitId: id, mailSplit: { emailAccountId } },
       }),
@@ -382,10 +375,10 @@ export async function updateMailSplit({
             )
           `,
     ]);
-    if (!count) throw new SafeError("Split not found");
+    if (!count) throw new SafeError("未找到拆分");
   } catch (error) {
     if (isDuplicateError(error, "name")) {
-      throw new SafeError(`You already have a "${name}" split.`);
+      throw new SafeError(`你已有名为“${name}”的拆分。`);
     }
     throw error;
   }
@@ -395,12 +388,12 @@ export async function deleteMailSplit({
   emailAccountId,
   id,
 }: DeleteMailSplitBody & { emailAccountId: string }) {
-  // deleteMany rather than delete so another account's id can never be removed
+  // 使用 deleteMany 而非 delete，确保绝不会移除其他账号的 id
   const [, { count }] = await prisma.$transaction([
     lockMailSplits(emailAccountId),
     prisma.mailSplit.deleteMany({
       where: { id, emailAccountId, filters: { some: {} } },
     }),
   ]);
-  if (!count) throw new SafeError("Split not found or cannot be removed");
+  if (!count) throw new SafeError("未找到拆分或该拆分无法删除");
 }

@@ -118,7 +118,7 @@ describe("ensureEmailAccountsWatched", () => {
       {
         emailAccountId: "email-account-id",
         status: "error",
-        message: "Failed to set up watch for this account.",
+        message: "无法为此账号设置邮件监控。",
         errorDetails: "invalid_grant: token has been expired or revoked",
       },
     ]);

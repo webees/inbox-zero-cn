@@ -118,19 +118,16 @@ export function SetUpCategories({
       <Card className="m-4">
         <CardHeader>
           <CardTitle>
-            <Trans>Set up sender categories</Trans>
+            <Trans>设置发件人分类</Trans>
           </CardTitle>
           <CardDescription className="max-w-sm">
-            <Trans>
-              Automatically categorize senders for bulk archiving and AI
-              assistant.
-            </Trans>
+            <Trans>自动为批量归档和 AI 助手对发件人进行分类</Trans>
           </CardDescription>
         </CardHeader>
 
         <CardContent>
           <TypographyH4>
-            <Trans>Choose categories</Trans>
+            <Trans>选择分类</Trans>
           </TypographyH4>
 
           <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6">
@@ -166,7 +163,7 @@ export function SetUpCategories({
                 children: (
                   <>
                     <PenIcon className="mr-2 size-4" />
-                    <Trans>Add your own</Trans>
+                    <Trans>添加自定义分类</Trans>
                   </>
                 ),
               }}
@@ -191,7 +188,7 @@ export function SetUpCategories({
 
                 if (result?.serverError) {
                   toastError({
-                    description: t`There was an error saving the categories. ${result.serverError}`,
+                    description: t`保存分类时出错 ${result.serverError}`,
                   });
                   return;
                 }
@@ -201,9 +198,9 @@ export function SetUpCategories({
             >
               <TagsIcon className="mr-2 h-4 w-4" />
               {existingCategories.length > 0 ? (
-                <Trans>Save</Trans>
+                <Trans>保存</Trans>
               ) : (
-                <Trans>Create categories</Trans>
+                <Trans>创建分类</Trans>
               )}
             </Button>
           </div>
@@ -256,13 +253,13 @@ function CategoryCard({
           <Button size="iconSm" variant="ghost" onClick={onEdit}>
             <PenIcon className="size-4" />
             <span className="sr-only">
-              <Trans>Edit</Trans>
+              <Trans>编辑</Trans>
             </span>
           </Button>
           <Button size="iconSm" variant="ghost" onClick={onRemove}>
             <TrashIcon className="size-4" />
             <span className="sr-only">
-              <Trans>Remove</Trans>
+              <Trans>移除</Trans>
             </span>
           </Button>
         </div>
@@ -270,7 +267,7 @@ function CategoryCard({
         <Button size="iconSm" variant="outline" onClick={onAdd}>
           <PlusIcon className="size-4" />
           <span className="sr-only">
-            <Trans>Add</Trans>
+            <Trans>添加</Trans>
           </span>
         </Button>
       )}

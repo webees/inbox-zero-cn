@@ -16,31 +16,31 @@ type TelegramUserProfilePhotos = {
 export const TELEGRAM_BOT_COMMANDS: TelegramBotCommand[] = [
   {
     command: "connect",
-    description: "Link your Inbox Zero account with /connect <code>",
+    description: "使用 /connect <code> 关联你的 Inbox Zero 账号",
   },
   {
     command: "switch",
-    description: "Switch between linked inbox accounts",
+    description: "在已关联的邮箱账号之间切换",
   },
   {
     command: "help",
-    description: "Show bot commands and prompt shortcuts",
+    description: "查看机器人命令与提示词快捷方式",
   },
   {
     command: "cleanup",
-    description: "Help me clean up my inbox today",
+    description: "帮我清理今天的收件箱",
   },
   {
     command: "summary",
-    description: "Summarize what needs attention today",
+    description: "总结今天需要关注的事项",
   },
   {
     command: "draftreply",
-    description: "Draft a reply to my most urgent unread email",
+    description: "为我最紧急的未读邮件撰写回复草稿",
   },
   {
     command: "followups",
-    description: "Show emails I should follow up on this week",
+    description: "显示本周我应该跟进的邮件",
   },
 ];
 
@@ -86,7 +86,7 @@ async function setTelegramProfilePhotoIfMissing({
   const imageResponse = await fetch(profilePhotoUrl, { cache: "no-store" });
   if (!imageResponse.ok) {
     throw new Error(
-      `Failed to fetch Telegram profile photo URL (status ${imageResponse.status})`,
+      `获取 Telegram 头像 URL 失败（状态码 ${imageResponse.status}）`,
     );
   }
 

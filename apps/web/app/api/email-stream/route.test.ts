@@ -164,7 +164,7 @@ describe("email-stream route", () => {
 
     expect(response.status).toBe(404);
     expect(await response.json()).toEqual({
-      error: "Cleaner is not enabled",
+      error: "未启用清理功能",
       isKnownError: true,
     });
     expect(subscriberState.subscriber.psubscribe).not.toHaveBeenCalled();

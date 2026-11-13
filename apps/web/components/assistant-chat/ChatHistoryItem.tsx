@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Trans, useLingui } from "@lingui/react/macro";
 import { MoreHorizontalIcon, PencilIcon, Trash2Icon } from "lucide-react";
 import {
   DropdownMenu,
@@ -23,7 +22,6 @@ export function ChatHistoryItem({
   onRename: () => void;
   onDelete: () => void;
 }) {
-  const { t, i18n } = useLingui();
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -35,13 +33,13 @@ export function ChatHistoryItem({
           if (menuOpen) e.preventDefault();
         }}
       >
-        <span className="truncate">{getChatHistoryLabel(chat, i18n)}</span>
+        <span className="truncate">{getChatHistoryLabel(chat)}</span>
       </DropdownMenuItem>
       <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen} modal={false}>
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            aria-label={t`Chat options`}
+            aria-label="聊天选项"
             className={
               "absolute right-1 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded-sm text-muted-foreground transition-opacity hover:bg-accent hover:text-foreground focus:opacity-100 focus:outline-none " +
               (menuOpen
@@ -71,7 +69,7 @@ export function ChatHistoryItem({
             }}
           >
             <PencilIcon className="mr-2 size-4" />
-            <Trans>Rename</Trans>
+            重命名
           </DropdownMenuItem>
           <DropdownMenuItem
             onSelect={(e) => {
@@ -82,7 +80,7 @@ export function ChatHistoryItem({
             className="text-destructive focus:text-destructive"
           >
             <Trash2Icon className="mr-2 size-4" />
-            <Trans>Delete</Trans>
+            删除
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

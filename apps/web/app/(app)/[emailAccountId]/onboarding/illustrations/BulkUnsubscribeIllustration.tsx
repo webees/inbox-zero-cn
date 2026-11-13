@@ -26,7 +26,7 @@ const senders: {
 }[] = [
   {
     id: 1,
-    name: msg`Daily Deals`,
+    name: msg`每日优惠`,
     color: "bg-red-100 text-red-600",
     icon: Tag,
     rotate: -3,
@@ -34,7 +34,7 @@ const senders: {
   },
   {
     id: 2,
-    name: msg`Newsletter`,
+    name: msg`新闻简报`,
     color: "bg-orange-100 text-orange-600",
     icon: Newspaper,
     rotate: 2,
@@ -42,7 +42,7 @@ const senders: {
   },
   {
     id: 3,
-    name: msg`Promo Alert`,
+    name: msg`促销提醒`,
     color: "bg-yellow-100 text-yellow-600",
     icon: Megaphone,
     rotate: -1.5,
@@ -50,7 +50,7 @@ const senders: {
   },
   {
     id: 4,
-    name: msg`Weekly Digest`,
+    name: msg`每周摘要`,
     color: "bg-purple-100 text-purple-600",
     icon: Calendar,
     rotate: 2.5,
@@ -58,7 +58,7 @@ const senders: {
   },
   {
     id: 5,
-    name: msg`Updates`,
+    name: msg`更新`,
     color: "bg-pink-100 text-pink-600",
     icon: Bell,
     rotate: -2,
@@ -91,7 +91,7 @@ export function BulkUnsubscribeIllustration() {
       <div className="relative z-10 flex h-[160px] w-[150px] flex-col rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-slate-800">
         <div className="border-b border-gray-100 px-3 py-2 dark:border-gray-700">
           <div className="text-[10px] font-medium text-gray-600 dark:text-gray-300">
-            <Trans>Inbox</Trans>
+            <Trans>收件箱</Trans>
           </div>
         </div>
         <div className="relative flex-1 p-2">
@@ -205,7 +205,7 @@ export function BulkUnsubscribeIllustration() {
       <div className="relative z-10 flex h-[160px] w-[150px] flex-col rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-slate-800">
         <div className="border-b border-gray-100 px-3 py-2 dark:border-gray-700">
           <div className="text-[10px] font-medium text-gray-600 dark:text-gray-300">
-            <Trans>Archived</Trans>
+            <Trans>已归档</Trans>
           </div>
         </div>
         <motion.div
@@ -222,7 +222,7 @@ export function BulkUnsubscribeIllustration() {
             animate={{ scale: 1 }}
             className="text-[11px] font-medium text-gray-600 dark:text-gray-300"
           >
-            {t`${plural(archivedEmailCount, { one: "# email", other: "# emails" })}`}
+            {t`${plural(archivedEmailCount, { one: "# 封邮件", other: "# 封邮件" })}`}
           </motion.div>
         </motion.div>
       </div>

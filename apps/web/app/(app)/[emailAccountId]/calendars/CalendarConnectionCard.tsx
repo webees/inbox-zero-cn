@@ -50,14 +50,14 @@ interface CalendarConnectionCardProps {
 const getProviderInfo = (provider: string) => {
   const providers = {
     microsoft: {
-      name: "Microsoft Calendar",
+      name: "Microsoft 日历",
       icon: "/images/product/outlook-calendar.svg",
-      alt: "Microsoft Calendar",
+      alt: "Microsoft 日历",
     },
     google: {
-      name: "Google Calendar",
+      name: "Google 日历",
       icon: "/images/product/google-calendar.svg",
-      alt: "Google Calendar",
+      alt: "Google 日历",
     },
   };
 
@@ -84,10 +84,9 @@ export function CalendarConnectionCard({
   });
 
   const enabledCount = enabledCalendars.length;
-  // English keeps "calendars" for one too: e2e specs select "1 of 1 calendars".
   const selectedSummary = t`${plural(calendars.length, {
-    one: `${enabledCount} of # calendars selected for availability`,
-    other: `${enabledCount} of # calendars selected for availability`,
+    one: `已选择 # 个日历中的 ${enabledCount} 个用于显示可预约时间`,
+    other: `已选择 # 个日历中的 ${enabledCount} 个用于显示可预约时间`,
   })}`;
 
   const { execute: executeDisconnect, isExecuting: isDisconnecting } =
@@ -97,11 +96,7 @@ export function CalendarConnectionCard({
   );
 
   const handleDisconnect = async () => {
-    if (
-      confirm(
-        t`Are you sure you want to disconnect this calendar? This will remove all associated calendars.`,
-      )
-    ) {
+    if (confirm(t`确定要断开此日历吗？这将移除所有关联的日历。`)) {
       executeDisconnect({ connectionId: connection.id });
       mutate();
     }
@@ -172,7 +167,7 @@ export function CalendarConnectionCard({
                   <div className="flex shrink-0 items-center gap-1 text-red-600">
                     <XCircle className="h-3 w-3" />
                     <span className="text-xs">
-                      <Trans>Disconnected</Trans>
+                      <Trans>已断开连接</Trans>
                     </span>
                   </div>
                 )}
@@ -184,7 +179,7 @@ export function CalendarConnectionCard({
               <DropdownMenuTrigger asChild>
                 <Button
                   type="button"
-                  aria-label={t`Calendar options`}
+                  aria-label={t`日历选项`}
                   disabled={isDisconnecting}
                   variant="ghostMuted"
                   size="iconSm"
@@ -201,7 +196,7 @@ export function CalendarConnectionCard({
                   className="text-destructive focus:text-destructive"
                 >
                   <Trash2Icon className="mr-2 size-4" />
-                  <Trans>Disconnect</Trans>
+                  <Trans>断开连接</Trans>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

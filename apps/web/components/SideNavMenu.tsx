@@ -92,12 +92,12 @@ export function SideNavMenu({
                 ) : null}
                 {item.new && (
                   <Badge variant="green" className="ml-auto text-[10px]">
-                    <Trans>New!</Trans>
+                    <Trans>新功能！</Trans>
                   </Badge>
                 )}
                 {item.beta && (
                   <Badge variant="secondary" className="ml-auto text-[10px]">
-                    <Trans>Beta</Trans>
+                    <Trans>测试版</Trans>
                   </Badge>
                 )}
               </Link>

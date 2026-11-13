@@ -43,8 +43,8 @@ import { createSearchParams } from "@/utils/url";
 type Newsletter = NewsletterStatsResponse["newsletters"][number];
 
 const EMAIL_VIEWS = [
-  { value: "all", label: msg`All` },
-  { value: "inbox", label: msg`In inbox` },
+  { value: "all", label: msg`全部` },
+  { value: "inbox", label: msg`收件箱中` },
 ] as const;
 
 export function SenderPanel({
@@ -140,7 +140,7 @@ function SenderPanelContent({
               onClick={() => setOpenThreadId(undefined)}
             >
               <ArrowLeftIcon className="mr-1.5 size-4" />
-              <Trans>All emails</Trans>
+              <Trans>全部邮件</Trans>
             </Button>
             <ThreadContent
               threadId={openThreadId}
@@ -150,9 +150,9 @@ function SenderPanelContent({
         ) : (
           <>
             <div className="mx-4 grid grid-cols-3 divide-x rounded-lg border sm:mx-6">
-              <Stat label={t`Emails`} value={newsletter.value} />
+              <Stat label={t`邮件`} value={newsletter.value} />
               <Stat
-                label={t`Read`}
+                label={t`已读`}
                 value={`${readPercentage}%`}
                 className={
                   isLowReadRate
@@ -160,7 +160,7 @@ function SenderPanelContent({
                     : undefined
                 }
               />
-              <Stat label={t`In inbox`} value={newsletter.inboxEmails} />
+              <Stat label={t`收件箱中`} value={newsletter.inboxEmails} />
             </div>
 
             <div className="px-4 pt-5 sm:px-6">
@@ -172,7 +172,7 @@ function SenderPanelContent({
 
             <div className="flex items-center justify-between gap-3 px-4 pt-5 pb-2 sm:px-6">
               <h3 className="text-sm font-semibold">
-                <Trans>Emails</Trans>
+                <Trans>邮件</Trans>
               </h3>
               <div className="inline-flex h-10 items-center rounded-md bg-muted p-1 text-muted-foreground">
                 {EMAIL_VIEWS.map((view) => (

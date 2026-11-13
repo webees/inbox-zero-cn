@@ -45,21 +45,19 @@ export const callWebhook = async (
       error instanceof SafeError &&
       error.message === WEBHOOK_ACTION_DISABLED_MESSAGE
     ) {
-      logger.info(
-        "Skipping webhook action because webhook actions are disabled",
-      );
+      logger.info("跳过 webhook 操作，因为 webhook 操作已禁用");
       return;
     }
 
     throw error;
   }
 
-  if (!url) throw new Error("Webhook URL is required");
+  if (!url) throw new Error("需要提供 webhook URL");
 
-  // Validate URL to prevent SSRF attacks
+  // 验证 URL 以防止 SSRF 攻击
   const validation = await validateWebhookUrl(url);
   if (!validation.valid) {
-    logger.warn("Webhook URL validation failed", {
+    logger.warn("Webhook URL 验证失败", {
       url,
       error: validation.error,
     });
@@ -70,7 +68,7 @@ export const callWebhook = async (
     where: { id: userId },
     select: { webhookSecret: true },
   });
-  if (!user) throw new Error("User not found");
+  if (!user) throw new Error("未找到用户");
 
   const requestBody = JSON.stringify(payload);
 
@@ -82,22 +80,22 @@ export const callWebhook = async (
     });
 
     if (response.blocked) {
-      logger.warn("Webhook request blocked after DNS revalidation", { url });
+      logger.warn("DNS 重新验证后 webhook 请求被阻止", { url });
       return;
     }
 
     if (response.ok) {
-      logger.info("Webhook called", { url, statusCode: response.statusCode });
+      logger.info("已调用 webhook", { url, statusCode: response.statusCode });
       return;
     }
 
-    logger.warn("Webhook call rejected", {
+    logger.warn("webhook 调用被拒绝", {
       url,
       statusCode: response.statusCode,
     });
   } catch (error) {
-    logger.error("Webhook call failed", { error, url });
-    // Don't throw the error since we want to continue execution
+    logger.error("webhook 调用失败", { error, url });
+    // 不抛出该错误，因为我们希望继续执行
     logger.info("Continuing after webhook timeout/error");
   }
 };
@@ -150,7 +148,7 @@ async function sendWebhookRequest({
     );
 
     request.setTimeout(WEBHOOK_REQUEST_TIMEOUT_MS, () => {
-      request.destroy(new Error("Webhook request timed out"));
+      request.destroy(new Error("webhook 请求超时"));
     });
 
     request.on("error", reject);

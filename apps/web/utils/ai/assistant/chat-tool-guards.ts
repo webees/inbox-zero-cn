@@ -82,7 +82,7 @@ export function guardChatTools<TTools extends ToolSet>(
             toolName,
           });
           return hideToolErrorFromUser({
-            error: `This exact ${toolName} call already failed earlier in this response: ${previousFailure} Do not repeat it unchanged. Change the input, try a different approach, or tell the user why it could not be done.`,
+            error: `本次响应中，完全相同的 ${toolName} 调用此前已经失败：${previousFailure} 不要原样重复该调用。请更改输入、尝试其他方法，或告诉用户为什么无法完成。`,
           });
         }
 
@@ -120,23 +120,22 @@ export function guardChatTools<TTools extends ToolSet>(
 
 function formatToolInputError(toolName: string, error: unknown) {
   const issues = getValidationIssues(error);
-  if (!issues.length) return `Invalid ${toolName} input`;
+  if (!issues.length) return `${toolName} 的输入无效`;
 
   const details = issues
     .slice(0, MAX_REPORTED_ISSUES)
     .map(formatValidationIssue)
     .join("; ");
 
-  return `Invalid ${toolName} input: ${details}`;
+  return `${toolName} 的输入无效：${details}`;
 }
 
 function isObject(value: unknown): value is object {
   return typeof value === "object" && value !== null;
 }
 
-// Models mis-copy long provider IDs. Only IDs that already reached the model
-// in this chat can be real, so anything else is a transcription error.
-// Compared exactly: an ID with stray whitespace would reach the provider as-is.
+// 模型可能会错误复制较长的服务商 ID。只有本次对话中已经传给模型的 ID 才可能是真实的，
+// 因此其他 ID 都是转写错误。进行精确比较：带有多余空白字符的 ID 会原样传给服务商。
 function findEmailIdProblems(input: unknown, messages: ModelMessage[]) {
   if (!isObject(input)) return null;
 
@@ -158,9 +157,8 @@ function findEmailIdProblems(input: unknown, messages: ModelMessage[]) {
 
   const { seenIds, threadIds, messageIds } = collectSeenIds(messages);
   const unseen = idsToCheck.filter(({ id }) => !seenIds.has(id));
-  // A tool result listed this ID only as a message, so it was passed where a
-  // thread ID belongs. Archive and trash treat an unknown thread as already
-  // handled, so this would otherwise "succeed" without changing anything.
+  // 工具结果只将该 ID 列为消息 ID，却被传到了应填写会话 ID 的位置。归档和垃圾箱会把未知会话
+  // 视为已处理，因此否则该操作会“成功”却不做任何更改。
   const messageIdsAsThreads = idsToCheck.filter(
     ({ field, id }) =>
       field.startsWith("threadId") && messageIds.has(id) && !threadIds.has(id),
@@ -174,15 +172,15 @@ function formatEmailIdProblems(
   toolName: string,
   problems: NonNullable<ReturnType<typeof findEmailIdProblems>>,
 ) {
-  const sentences = [`${toolName} was not run.`];
+  const sentences = [`${toolName} 未运行。`];
   if (problems.unseen.length) {
     sentences.push(
-      `${problems.unseen.map(({ label }) => label).join(", ")} did not appear in any earlier tool result or user message in this chat, so it is likely mistyped. Copy IDs exactly from an earlier result, or search again to get them.`,
+      `${problems.unseen.map(({ label }) => label).join(", ")} 未出现在本次对话中任何先前的工具结果或用户消息里，因此可能是输入错误。请从先前结果中精确复制 ID，或重新搜索以获取 ID。`,
     );
   }
   if (problems.messageIdsAsThreads.length) {
     sentences.push(
-      `${problems.messageIdsAsThreads.map(({ label }) => label).join(", ")} is a messageId, not a threadId. Use the threadId from the same result.`,
+      `${problems.messageIdsAsThreads.map(({ label }) => label).join(", ")} 是 messageId，而不是 threadId。请使用同一结果中的 threadId。`,
     );
   }
   return sentences.join(" ");

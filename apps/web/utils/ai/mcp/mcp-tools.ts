@@ -73,7 +73,7 @@ export async function createMcpToolsForAgent(
       });
 
       if (!integrationConfig) {
-        logger.warn("Integration config not found", {
+        logger.warn("未找到集成配置", {
           integration: integration.name,
         });
         continue;
@@ -89,7 +89,7 @@ export async function createMcpToolsForAgent(
 
         const mcpTools = await mcpClient.tools();
 
-        // Filter to only enabled tools
+        // 只保留已启用的工具
         const enabledToolNames = connection.tools.map((tool) => tool.name);
         const filteredTools = Object.fromEntries(
           Object.entries(mcpTools).filter(([toolName]) =>
@@ -98,19 +98,19 @@ export async function createMcpToolsForAgent(
         );
 
         toolsByIntegration.set(integration.id, {
-          // Custom names carry a 32-char id; a short slice keeps prefixed tool
-          // names within provider length limits
+          // 自定义名称带有 32 个字符的 id；截取较短片段可确保带前缀的工具名
+          // 不超过服务商长度限制
           toolPrefix: integrationConfig.isCustom
             ? integration.name.slice(0, CUSTOM_INTEGRATION_PREFIX.length + 8)
             : integration.name,
           tools: filteredTools,
         });
       } catch (error) {
-        logger.error("Failed to create MCP client for integration", {
+        logger.error("为集成创建 MCP 客户端失败", {
           error,
           integration: integration.name,
         });
-        // Continue with other integrations
+        // 继续处理其他集成
       }
     }
 
@@ -128,14 +128,14 @@ export async function createMcpToolsForAgent(
             try {
               await client.close();
             } catch (error) {
-              logger.warn("Error closing MCP client", { error });
+              logger.warn("关闭 MCP 客户端时出错", { error });
             }
           }),
         );
       },
     };
   } catch (error) {
-    logger.error("Failed to create MCP tools for agent", { error });
+    logger.error("为代理创建 MCP 工具失败", { error });
     return {
       tools: {},
       cleanup: async () => {},
@@ -144,11 +144,11 @@ export async function createMcpToolsForAgent(
 }
 
 /**
- * Merges tools from multiple integrations, adding integration prefix only when there are naming conflicts.
+ * 合并多个集成中的工具，仅在命名冲突时添加集成前缀。
  *
- * @param toolsByIntegration - Map of integration tools grouped by integration
- * @param reservedToolNames - Names owned by non-MCP tools in the same tool set
- * @returns Merged tools with prefixes added only for conflicting names
+ * @param toolsByIntegration - 按集成分组的集成工具映射
+ * @param reservedToolNames - 同一工具集中由非 MCP 工具占用的名称
+ * @returns 合并后的工具，仅对冲突名称添加前缀
  */
 function mergeToolsWithConflictResolution(
   toolsByIntegration: Map<
@@ -161,7 +161,7 @@ function mergeToolsWithConflictResolution(
   const allTools: Record<string, unknown> = {};
   const toolNameToIntegrations = new Map<string, string[]>();
 
-  // Build a map of tool names to their integrations
+  // 构建工具名称到其所属集成的映射
   for (const [_, { toolPrefix, tools }] of toolsByIntegration) {
     for (const toolName of Object.keys(tools)) {
       if (!toolNameToIntegrations.has(toolName)) {
@@ -171,7 +171,7 @@ function mergeToolsWithConflictResolution(
     }
   }
 
-  // Merge tools, prefixing only when there's a conflict
+  // 合并工具，仅在存在冲突时添加前缀
   for (const [__, { toolPrefix, tools }] of toolsByIntegration) {
     for (const [toolName, toolDef] of Object.entries(tools)) {
       const integrationsWithThisTool = toolNameToIntegrations.get(toolName)!;
@@ -182,9 +182,9 @@ function mergeToolsWithConflictResolution(
           ? `${toolPrefix}-${toolName}`
           : toolName;
 
-      // One invalid name would fail the whole model call, not just this tool
+      // 一个无效名称会导致整个模型调用失败，而不只是这个工具
       if (!isValidMcpToolName(finalToolName)) {
-        logger.warn("Skipping MCP tool with an unsupported name", {
+        logger.warn("跳过名称不受支持的 MCP 工具", {
           toolPrefix,
           nameLength: finalToolName.length,
         });

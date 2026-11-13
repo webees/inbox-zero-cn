@@ -19,16 +19,16 @@ export function buildShareText({
     const yearly = i18n.number(yearlyEmails);
     return i18n._(
       msg`I just unsubscribed from ${plural(senderCount, {
-        one: "# email list",
-        other: "# email lists",
-      })} with Inbox Zero — that's ~${yearly} fewer emails a year. ${link}`,
+        one: "# 个邮件列表",
+        other: "# 个邮件列表",
+      })} 使用 Inbox Zero 退订后 — 每年少收约 ${yearly} 封邮件。${link}`,
     );
   }
   return i18n._(
     msg`I just unsubscribed from ${plural(senderCount, {
-      one: "# email list",
-      other: "# email lists",
-    })} with Inbox Zero. ${link}`,
+      one: "# 个邮件列表",
+      other: "# 个邮件列表",
+    })} 使用 Inbox Zero 退订后。${link}`,
   );
 }
 
@@ -40,9 +40,8 @@ export function buildLinkedInShareUrl(params: ShareParams): string {
   return `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(buildShareText(params))}`;
 }
 
-// Projects how many emails these senders would have sent over a year, based on
-// how often they emailed during the selected range. This future saving is the
-// real win, not the handful of emails from the past few months.
+// 根据这些发件人在所选时间段内的发信频率，预测他们一年会发多少封邮件。
+// 真正有价值的是未来省下的邮件，而不是过去几个月的少量邮件。
 export function projectYearlyEmails({
   emailCount,
   dateRange,
@@ -70,20 +69,20 @@ export function buildCelebrationSubline({
   if (yearlyEmails != null) {
     return i18n._(
       msg`At their current pace, that's about ${plural(yearlyEmails, {
-        one: "# fewer email",
-        other: "# fewer emails",
-      })} a year.`,
+        one: "每年少收 # 封邮件",
+        other: "每年少收 # 封邮件",
+      })}。`,
     );
   }
   if (emailCount > 0) {
     return i18n._(
       msg`That's ${plural(emailCount, {
-        one: "# email",
-        other: "# emails",
-      })} you won't get again.`,
+        one: "# 封邮件",
+        other: "# 封邮件",
+      })} 不会再收到。`,
     );
   }
-  return i18n._(msg`Those senders won't reach your inbox again.`);
+  return i18n._(msg`这些发件人不会再打扰你的收件箱。`);
 }
 
 function roundEstimate(value: number): number {

@@ -28,7 +28,7 @@ export function MeetingsList({
   return (
     <div>
       <TypographyH3>
-        <Trans>Recorded</Trans>
+        <Trans>已录制</Trans>
       </TypographyH3>
 
       <LoadingContent
@@ -43,7 +43,7 @@ export function MeetingsList({
                 <MicIcon />
               </EmptyMedia>
               <EmptyTitle>
-                <Trans>No meetings recorded yet</Trans>
+                <Trans>尚未录制任何会议</Trans>
               </EmptyTitle>
             </EmptyHeader>
           </Empty>
@@ -61,7 +61,7 @@ export function MeetingsList({
               >
                 {meeting.followUpDraftId && (
                   <Badge variant="secondary">
-                    <Trans>Draft ready</Trans>
+                    <Trans>草稿已就绪</Trans>
                   </Badge>
                 )}
               </MeetingListItem>

@@ -153,7 +153,7 @@ export function DriveSetup() {
                 });
                 setFilingStates((prev) => ({
                   ...prev,
-                  [key]: { status: "error", error: t`Unknown error` },
+                  [key]: { status: "error", error: t`未知错误` },
                 }));
               }
             })
@@ -175,11 +175,9 @@ export function DriveSetup() {
       onError: (err) => {
         analytics.captureAction("auto_file_preview_failed");
         toastError({
-          title: t`Error fetching preview`,
+          title: t`获取预览时出错`,
           description:
-            err instanceof Error
-              ? err.message
-              : t`Failed to load recent attachments. Please try again.`,
+            err instanceof Error ? err.message : t`加载近期附件失败。请重试。`,
         });
         setUserPhase("setup");
       },
@@ -222,36 +220,36 @@ export function DriveSetup() {
       }
 
       analytics.captureAction("auto_file_enabled");
-      toastSuccess({ description: t`Auto-filing started!` });
+      toastSuccess({ description: t`自动归档已开始！` });
       await mutateEmail();
     } catch (error) {
       analytics.captureAction("auto_file_enable_failed", {
         reason: "exception",
       });
       toastError({
-        title: t`Error starting auto-filing`,
+        title: t`启动自动归档时出错`,
         description:
           error instanceof Error
             ? error.message
-            : t`An unexpected error occurred while starting auto-filing.`,
+            : t`启动自动归档时发生意外错误。`,
       });
       setUserPhase("previewing");
     }
   }, [analytics, emailAccountId, mutateEmail, t]);
 
-  const driveName = providerInfo?.name || t`drive`;
+  const driveName = providerInfo?.name || t`云端硬盘`;
 
   return (
     <div className="mx-auto max-w-2xl py-8">
       <div className="text-center">
         <TypographyH3>
-          <Trans>Let's set up auto-filing</Trans>
+          <Trans>开始设置自动归档</Trans>
         </TypographyH3>
         <SectionDescription className="mx-auto mt-3 max-w-xl">
           <Trans>
-            We'll file attachments from your emails into your {driveName}.
+            我们会将电子邮件中的附件归档到你的 {driveName} 中。
             <br />
-            Just tell us where and how.
+            只需告诉我们归档到哪里以及如何归档。
           </Trans>
         </SectionDescription>
       </div>
@@ -261,10 +259,7 @@ export function DriveSetup() {
           <DriveConnectionCard connection={connection} />
         ) : (
           <TypographyP>
-            <Trans>
-              No drive connection found. Please connect your drive to continue
-              setup.
-            </Trans>
+            <Trans>未找到云端硬盘连接。请连接你的云端硬盘以继续设置。</Trans>
           </TypographyP>
         )}
       </div>
@@ -351,12 +346,10 @@ function NoAttachmentsMessage({
   return (
     <div className="text-center">
       <MutedText className="mb-4">
-        <Trans>
-          We couldn't find recent emails with attachments to preview.
-        </Trans>
+        <Trans>我们未找到可预览的近期带附件邮件。</Trans>
       </MutedText>
       <Button onClick={onSkip} loading={isStarting}>
-        <Trans>Start auto-filing anyway</Trans>
+        <Trans>仍然开始自动归档</Trans>
       </Button>
     </div>
   );
@@ -405,33 +398,33 @@ function PreviewResults({
 
   function getStatusMessage() {
     if (!allComplete) {
-      return t`Filing your ${plural(attachments.length, {
-        one: "# most recent attachment",
-        other: "# most recent attachments",
+      return t`正在归档你最近的 ${plural(attachments.length, {
+        one: "# 个附件",
+        other: "# 个附件",
       })}...`;
     }
     if (filedCount === 0) {
-      return t`Skipped ${plural(skippedCount, {
-        one: "# attachment",
-        other: "# attachments",
-      })} (didn't match your filing preferences):`;
+      return t`已跳过 ${plural(skippedCount, {
+        one: "# 个附件",
+        other: "# 个附件",
+      })}（不符合你的归档偏好）：`;
     }
     if (skippedCount > 0) {
-      return t`Filed ${plural(filedCount, {
-        one: "# attachment",
-        other: "# attachments",
-      })}, ${plural(skippedCount, { one: "skipped #", other: "skipped #" })}:`;
+      return t`已归档 ${plural(filedCount, {
+        one: "# 个附件",
+        other: "# 个附件",
+      })}，已跳过 ${plural(skippedCount, { one: "# 个", other: "# 个" })}：`;
     }
-    return t`Filed ${plural(filedCount, {
-      one: "# attachment",
-      other: "# attachments",
-    })}:`;
+    return t`已归档 ${plural(filedCount, {
+      one: "# 个附件",
+      other: "# 个附件",
+    })}：`;
   }
 
   return (
     <div>
       <TypographyH4>
-        <Trans>3. See it in action</Trans>
+        <Trans>3. 查看实际效果</Trans>
       </TypographyH4>
       <MutedText className="mt-1">{statusMessage}</MutedText>
 
@@ -440,13 +433,13 @@ function PreviewResults({
           <TableHeader>
             <TableRow>
               <TableHead>
-                <Trans>File</Trans>
+                <Trans>文件</Trans>
               </TableHead>
               <TableHead>
-                <Trans>Folder</Trans>
+                <Trans>文件夹</Trans>
               </TableHead>
               <TableHead className="w-[100px] text-right">
-                <Trans>Correct?</Trans>
+                <Trans>是否正确？</Trans>
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -470,7 +463,7 @@ function PreviewResults({
       </div>
 
       <p className="mt-3 text-center text-xs text-muted-foreground">
-        <Trans>Your feedback helps us learn</Trans>
+        <Trans>你的反馈有助于我们改进</Trans>
       </p>
 
       <div className="mt-6 flex flex-col items-center gap-2">
@@ -480,15 +473,14 @@ function PreviewResults({
           disabled={anyFiling}
         >
           {anyFiling ? (
-            <Trans>Processing...</Trans>
+            <Trans>正在处理...</Trans>
           ) : (
-            <Trans>Looks good, start auto-filing</Trans>
+            <Trans>看起来不错，开始自动归档</Trans>
           )}
         </Button>
         <p className="text-xs text-muted-foreground">
           <Trans>
-            You'll get an email each time we file something. Reply to correct
-            us.
+            每次归档内容时你都会收到一封电子邮件。如有错误，请回复邮件纠正。
           </Trans>
         </p>
       </div>
@@ -688,7 +680,7 @@ function FilingRow({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>
-                  <Trans>Which folder does this file belong in?</Trans>
+                  <Trans>此文件应归入哪个文件夹？</Trans>
                 </DropdownMenuLabel>
                 {otherFolders.map((folder) => (
                   <DropdownMenuItem
@@ -703,7 +695,7 @@ function FilingRow({
                 <DropdownMenuItem
                   onClick={() => setVote(voteBeforeDropdownRef.current)}
                 >
-                  <Trans>Cancel</Trans>
+                  <Trans>取消</Trans>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -924,7 +916,7 @@ function SetupRulesForm({
           reason: "server_error",
         });
         toastError({
-          title: t`Error saving rules`,
+          title: t`保存规则时出错`,
           description: result.serverError,
         });
       } else {
@@ -950,17 +942,17 @@ function SetupRulesForm({
   return (
     <div>
       <h3 className="text-lg font-semibold">
-        <Trans>2. Describe how you organize</Trans>
+        <Trans>2. 描述你的归档方式</Trans>
       </h3>
       <MutedText className="mt-1">
-        <Trans>Tell us in plain English</Trans>
+        <Trans>用自然语言告诉我们</Trans>
       </MutedText>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-3">
         <Input
           type="textarea"
           name="filingPrompt"
-          placeholder={t`Contracts go to Transactions by property address.
-Receipts go to Receipts by month.`}
+          placeholder={t`合同按房产地址归档到 Transactions。
+收据按月份归档到 Receipts。`}
           registerProps={register("filingPrompt")}
           error={errors.filingPrompt}
           autosizeTextarea
@@ -977,9 +969,9 @@ Receipts go to Receipts by month.`}
               loading={isLoading}
             >
               {isLoading ? (
-                <Trans>Finding recent attachments...</Trans>
+                <Trans>正在查找近期附件...</Trans>
               ) : (
-                <Trans>Preview with my recent emails</Trans>
+                <Trans>使用我的近期邮件进行预览</Trans>
               )}
             </Button>
           </div>

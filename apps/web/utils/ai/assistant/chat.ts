@@ -535,7 +535,7 @@ function formatFixRuleResultContext({
     return `- ${ruleName}: ${reason}`;
   }
 
-  return `- ${ruleName}: ${reason}\n  Structured match details:\n${structuredDetails.map((detail) => `  - ${detail}`).join("\n")}`;
+  return `- ${ruleName}: ${reason}\n  结构化匹配详情：\n${structuredDetails.map((detail) => `  - ${detail}`).join("\n")}`;
 }
 
 function formatSerializedMatchMetadata(
@@ -546,14 +546,14 @@ function formatSerializedMatchMetadata(
   return matchMetadata.map((matchReason) => {
     switch (matchReason.type) {
       case "STATIC":
-        return "Matched by static sender, recipient, or subject conditions.";
+        return "匹配静态发件人、收件人或主题条件";
       case "AI":
-        return "Matched by AI instructions.";
+        return "匹配 AI 指令";
       case "PRESET":
-        return `Matched preset classification ${matchReason.systemType}.`;
+        return `匹配预设分类 ${matchReason.systemType}`;
       case "LEARNED_PATTERN": {
-        const qualifier = matchReason.groupItem.exclude ? "exclude" : "include";
-        return `${matchReason.group.name} learned pattern ${qualifier} on ${matchReason.groupItem.type}: ${matchReason.groupItem.value}`;
+        const qualifier = matchReason.groupItem.exclude ? "排除" : "包含";
+        return `${matchReason.group.name} 学习到的模式${qualifier}（${matchReason.groupItem.type}）：${matchReason.groupItem.value}`;
       }
     }
   });
@@ -563,11 +563,11 @@ function formatFixRuleExpectedOutcome(context: MessageContext) {
   if (context.type !== "fix-rule") return "";
 
   if (context.expected === "none") {
-    return "No rule should be applied";
+    return "不应应用任何规则";
   }
 
   if (context.expected !== "new") {
-    return `Should match the "${context.expected.name}" rule`;
+    return `应匹配规则“${context.expected.name}”`;
   }
 
   const matchedRuleNames = context.results
@@ -575,10 +575,10 @@ function formatFixRuleExpectedOutcome(context: MessageContext) {
     .filter((ruleName): ruleName is string => Boolean(ruleName));
 
   if (!matchedRuleNames.length) {
-    return "The user wants new rule behavior because the current behavior was wrong. Create a new rule only if no existing rule can be safely updated without causing overlap.";
+    return "用户希望采用新的规则行为，因为当前行为有误。仅当没有现有规则可以在不产生重叠的情况下安全更新时，才创建新规则。";
   }
 
-  return `The user wants new rule behavior for this email. This email already matched ${matchedRuleNames.map((name) => `"${name}"`).join(", ")}. Treat that as intent about the desired behavior, not as an instruction to duplicate a matching rule. Prefer updating the matched rule when it already covers the sender or domain scope, and create a new rule only if no existing rule can be safely updated without causing overlap.`;
+  return `用户希望为此邮件采用新的规则行为。此邮件已匹配 ${matchedRuleNames.map((name) => `“${name}”`).join("、")}。请将此视为对期望行为的意图，而不是要求复制匹配规则的指令。如果已匹配的规则已覆盖该发件人或域名范围，优先更新它；仅当没有现有规则可以在不产生重叠的情况下安全更新时，才创建新规则。`;
 }
 
 function getChatProviderOptionsForCaching({ chatId }: { chatId?: string }) {
@@ -721,16 +721,16 @@ function getEmailCapabilitiesPolicy({
   const draftReplyLines = draftReplyActionsEnabled
     ? emailSendToolsEnabled
       ? [
-          '- For rules, prefer "draft a reply" actions over "reply" actions.',
-          "- When the user wants to send or draft right now in chat, use the email tools instead of a rule.",
+          "- 对于规则，优先使用“起草回复”操作，而非“回复”操作",
+          "- 当用户希望在聊天中立即发送或起草邮件时，使用邮件工具而不是规则",
         ]
       : [
-          "- Draft reply rule actions are available for automation.",
-          "- Do not treat rule-based draft actions as a substitute for disabled chat send tools unless the user explicitly asks for automation.",
+          "- 规则中的起草回复操作可用于自动化",
+          "- 除非用户明确要求自动化，否则不要将基于规则的起草操作视为已禁用聊天发送工具的替代方案",
         ]
     : [
-        "- Draft reply rule actions are disabled in this environment.",
-        "- Do not create or suggest draft-reply automation.",
+        "- 此环境中已禁用规则中的起草回复操作",
+        "- 不要创建或建议起草回复自动化",
       ];
 
   return ["Email capabilities:", ...emailSendingLines, ...draftReplyLines].join(

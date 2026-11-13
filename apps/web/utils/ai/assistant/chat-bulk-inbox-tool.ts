@@ -96,7 +96,7 @@ const outlookBulkInboxInputSchema = z
       ),
     {
       message:
-        "query, fromEmail, readState, categoryName, or folderName is required",
+        "必须提供 query、fromEmail、readState、categoryName 或 folderName 中的至少一项",
     },
   );
 
@@ -108,11 +108,11 @@ type BulkInboxToolOptions = {
 };
 
 const description = (searchToolTerms: string) =>
-  `Apply one action to every email that matches a search, across all result pages, as a background job. Use this instead of paging searchInbox and calling manageInbox when the cleanup covers more than one search page or "all" emails of some kind. For a handful of emails already found, use manageInbox.
+  `以后台任务方式，对所有搜索结果页中匹配搜索条件的每封邮件执行同一个操作。当清理范围超过一页搜索结果或涉及某类"全部"邮件时，请使用此工具，而不是分页调用 searchInbox 再调用 manageInbox。对于已经找到的少量邮件，请使用 manageInbox。
 
-Before calling, search to check the ${searchToolTerms} returns the intended emails, and ask the user about anything unclear. Add instruction when the search alone cannot separate which emails qualify. Only use trash_threads when the user explicitly asks to delete or trash.
+调用前请先搜索，确认${searchToolTerms}返回的是目标邮件，并向用户询问任何不明确之处。当仅靠搜索无法区分符合条件的邮件时，请添加 instruction。仅在用户明确要求删除或移至废纸篓时使用 trash_threads。
 
-Nothing changes when this is called: it shows the user a card with an estimate and examples, and the user confirms there before the job starts. Once confirmed, the job's progress and totals appear in later context; report those numbers, not estimates.`;
+调用此工具时不会产生任何更改：它会向用户显示一张包含预估数量和示例的卡片，用户需在该卡片中确认后任务才会开始。确认后，任务的进度和总数会出现在后续上下文中；请报告这些数字，而不是预估值。`;
 
 const gmailBulkInboxTool = (options: BulkInboxToolOptions) =>
   tool({
@@ -173,7 +173,7 @@ async function prepareBulkInboxAction({
   labelName?: string;
   instruction?: string;
 }) {
-  logger.info("Tracking tool call", { tool: "bulk_inbox_action", email });
+  logger.info("正在跟踪工具调用", { tool: "bulk_inbox_action", email });
   posthogCaptureEvent(email, "AI Assistant Chat Tool Call", {
     tool: "bulk_inbox_action",
   });
@@ -181,8 +181,8 @@ async function prepareBulkInboxAction({
   if (action === "label_threads" && !labelName) {
     return hideToolErrorFromUser({
       error: isGoogleProvider(provider)
-        ? "labelName is required for label_threads."
-        : "applyCategoryName is required for categorize_threads.",
+        ? "label_threads 需要 labelName。"
+        : "categorize_threads 需要 applyCategoryName。",
     });
   }
 
@@ -202,9 +202,9 @@ async function prepareBulkInboxAction({
             // A bulk write must hit exactly the label the user named.
             matchNestedLabels: false,
             missingLabelError: (name) =>
-              `"${name}" does not exist. Create it first if the user wants it.`,
+              `“${name}”不存在，如果用户需要，请先创建它。`,
           }).catch((error: unknown) => ({
-            error: error instanceof Error ? error.message : "Label not found",
+            error: error instanceof Error ? error.message : "未找到标签",
           }))
         : null;
     if (label && "error" in label) return hideToolErrorFromUser(label);
@@ -239,7 +239,7 @@ async function prepareBulkInboxAction({
       return {
         success: true,
         estimatedThreadCount: 0,
-        message: "No emails match this search, so there is nothing to do.",
+        message: "没有邮件符合此搜索条件，因此无需执行操作。",
       };
     }
 
@@ -256,7 +256,7 @@ async function prepareBulkInboxAction({
       return {
         success: true,
         estimatedThreadCount: 0,
-        message: `None of the ${preview.checkedCount} emails checked match "${instruction}", so nothing was prepared and nothing changed.`,
+        message: `已检查的 ${preview.checkedCount} 封邮件均不符合“${instruction}”，因此未准备任何操作，也未做任何更改。`,
       };
     }
 

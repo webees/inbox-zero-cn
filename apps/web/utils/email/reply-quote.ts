@@ -33,7 +33,7 @@ export function buildReplyQuote({
 export function formatReplyQuotedHeader(
   headers: Pick<ParsedMessage["headers"], "date" | "from">,
 ) {
-  return `On ${formatEmailDate(new Date(headers.date))}, ${headers.from} wrote:`;
+  return `在 ${formatEmailDate(new Date(headers.date))}，${headers.from} 写道：`;
 }
 
 export function formatEmailDate(date: Date): string {
@@ -44,12 +44,12 @@ export function formatEmailDate(date: Date): string {
   const hour = date.getHours();
   const minute = date.getMinutes();
 
-  // Format: "Thu, 6 Feb 2025 at 23:23"
-  return `${weekday}, ${day} ${month} ${year} at ${hour}:${minute.toString().padStart(2, "0")}`;
+  // 格式："Thu, 6 Feb 2025 23:23"
+  return `${weekday}, ${day} ${month} ${year} ${hour}:${minute.toString().padStart(2, "0")}`;
 }
 
 function detectTextDirection(text: string): "ltr" | "rtl" {
-  // Basic RTL detection - checks for RTL characters at the start of the text
+  // 基本的 RTL 检测——检查文本开头是否有 RTL 字符
   const rtlRegex =
     /[\u0591-\u07FF\u200F\u202B\u202E\uFB1D-\uFDFD\uFE70-\uFEFC]/;
   return rtlRegex.test(text.trim().charAt(0)) ? "rtl" : "ltr";

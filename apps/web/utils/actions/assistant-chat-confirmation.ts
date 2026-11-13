@@ -281,9 +281,7 @@ export async function confirmAssistantCreateRuleForAccount({
             error: persistError,
             ruleId: existingRule.id,
           });
-          throw new SafeError(
-            "Rule was created but confirmation state could not be saved. Please refresh and try again.",
-          );
+          throw new SafeError("规则已创建，但无法保存确认状态。请刷新后重试。");
         }
 
         return {
@@ -307,7 +305,7 @@ export async function confirmAssistantCreateRuleForAccount({
     });
     logger.error("Failed to confirm assistant create rule", { error });
     throw new SafeError(
-      error instanceof Error ? error.message : "Failed to create rule",
+      error instanceof Error ? error.message : "创建规则失败",
     );
   }
 
@@ -327,9 +325,7 @@ export async function confirmAssistantCreateRuleForAccount({
       error: persistError,
       ruleId: rule.id,
     });
-    throw new SafeError(
-      "Rule was created but confirmation state could not be saved. Please refresh and try again.",
-    );
+    throw new SafeError("规则已创建，但无法保存确认状态。请刷新后重试。");
   }
 
   return {
@@ -1222,7 +1218,7 @@ async function findChatMessageForPendingAction({
 
     if (hintedChatMessage && matchParts(hintedChatMessage.parts)) {
       if (attemptCount > 1) {
-        logger.info(`${logPrefix} resolved after persistence wait`, {
+        logger.info(`${logPrefix} 在等待持久化后已解析`, {
           chatId,
           requestedChatMessageId: chatMessageId,
           resolvedChatMessageId: hintedChatMessage.id,
@@ -1253,7 +1249,7 @@ async function findChatMessageForPendingAction({
 
     if (matchingMessages.length === 1) {
       if (attemptCount > 1) {
-        logger.info(`${logPrefix} resolved after persistence wait`, {
+        logger.info(`${logPrefix} 在等待持久化后已解析`, {
           chatId,
           requestedChatMessageId: chatMessageId,
           resolvedChatMessageId: matchingMessages[0].id,
@@ -1261,7 +1257,7 @@ async function findChatMessageForPendingAction({
           lookupAttempts: attemptCount,
         });
       } else if (chatMessageId && matchingMessages[0].id !== chatMessageId) {
-        logger.warn(`${logPrefix} resolved pending action by tool lookup`, {
+        logger.warn(`${logPrefix} 通过工具查找已解析待处理操作`, {
           chatId,
           requestedChatMessageId: chatMessageId,
           resolvedChatMessageId: matchingMessages[0].id,
@@ -1271,7 +1267,7 @@ async function findChatMessageForPendingAction({
     }
 
     if (matchingMessages.length > 1) {
-      logger.warn(`${logPrefix} found multiple pending action matches`, {
+      logger.warn(`${logPrefix} 找到多个待处理操作匹配项`, {
         chatId,
         requestedChatMessageId: chatMessageId,
         matchedChatMessageIds: matchingMessages.map((message) => message.id),
@@ -1290,7 +1286,7 @@ async function findChatMessageForPendingAction({
       continue;
     }
 
-    logger.warn(`${logPrefix} pending action not found`, {
+    logger.warn(`${logPrefix} 未找到待处理操作`, {
       chatId,
       requestedChatMessageId: chatMessageId,
       hintedMessageFound: Boolean(hintedChatMessage),

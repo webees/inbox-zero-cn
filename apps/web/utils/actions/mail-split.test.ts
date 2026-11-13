@@ -70,7 +70,7 @@ describe("mail split actions", () => {
   it("reports when a protected split cannot be removed", async () => {
     prisma.$transaction.mockResolvedValue([[], { count: 0 }] as never);
     const result = await deleteMailSplitAction(EMAIL_ACCOUNT_ID, { id: "all" });
-    expect(result?.serverError).toBe("Split not found or cannot be removed");
+    expect(result?.serverError).toBe("未找到拆分或该拆分无法删除");
   });
 
   it("creates splits behind an account-scoped database lock", async () => {
@@ -117,7 +117,7 @@ describe("mail split actions", () => {
       filters: [UNREAD_FILTER],
     });
 
-    expect(result?.serverError).toBe("You can only have 14 splits.");
+    expect(result?.serverError).toBe("最多只能有 14 个拆分。");
   });
 
   it("returns a user-safe error when a split name already exists", async () => {
@@ -133,7 +133,7 @@ describe("mail split actions", () => {
       filters: [UNREAD_FILTER],
     });
 
-    expect(result?.serverError).toBe('You already have a "Unread" split.');
+    expect(result?.serverError).toBe("你已有名为“Unread”的拆分。");
   });
 
   it("handles a duplicate-name constraint race with a safe error", async () => {
@@ -145,7 +145,7 @@ describe("mail split actions", () => {
       filters: [UNREAD_FILTER],
     });
 
-    expect(result?.serverError).toBe('You already have a "Unread" split.');
+    expect(result?.serverError).toBe("你已有名为“Unread”的拆分。");
   });
 
   it("rejects a condition that needs a value but has none", async () => {
@@ -201,7 +201,7 @@ describe("mail split actions", () => {
     });
 
     expect(result?.serverError).toBe(
-      "I couldn't find filters in that — name a sender, label or category.",
+      "我没能从中找到筛选条件——请指明发件人、标签或分类。",
     );
   });
 
@@ -215,7 +215,7 @@ describe("mail split actions", () => {
       filters: [UNREAD_FILTER],
     });
 
-    expect(result?.serverError).toBe('You already have a "Unread" split.');
+    expect(result?.serverError).toBe("你已有名为“Unread”的拆分。");
   });
 
   it("replaces an edited split's conditions in the same locked transaction", async () => {

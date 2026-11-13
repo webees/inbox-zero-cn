@@ -12,9 +12,6 @@ import {
   WrenchIcon,
   XIcon,
 } from "lucide-react";
-import type { I18n } from "@lingui/core";
-import { msg } from "@lingui/core/macro";
-import { Trans, useLingui } from "@lingui/react/macro";
 import { Messages } from "./messages";
 import { PreviewAttachment } from "./preview-attachment";
 import { Button } from "@/components/ui/button";
@@ -67,7 +64,6 @@ export function Chat({
   open: boolean;
   onClose?: () => void;
 }) {
-  const { t, i18n } = useLingui();
   const analytics = useProductAnalytics("assistant_chat");
   const {
     chat,
@@ -241,7 +237,7 @@ export function Chat({
       <PromptInputTextarea
         data-testid="chat-input"
         value={input}
-        placeholder={t`Ask me anything`}
+        placeholder="有什么可以帮你的"
         onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
           setInput(e.currentTarget.value)
         }
@@ -282,12 +278,12 @@ export function Chat({
             });
           }}
         />
-        <Tooltip content={t`Attach images`}>
+        <Tooltip content="添加图片">
           <Button
             type="button"
             variant="ghostMuted"
             size="icon"
-            aria-label={t`Attach images`}
+            aria-label="添加图片"
             className="size-9 rounded-full"
             onClick={() => {
               analytics.captureAction("chat_attach_button_clicked", {
@@ -350,14 +346,12 @@ export function Chat({
         />
       ) : (
         <NewChatView
-          greeting={context ? null : getGreeting(firstName, i18n)}
-          suggestions={
-            context ? [] : CHAT_EXAMPLES.map((example) => i18n._(example))
-          }
+          greeting={context ? null : getGreeting(firstName)}
+          suggestions={context ? [] : CHAT_EXAMPLES}
           inputArea={inputArea}
-          onSuggestionClick={(text, index) => {
+          onSuggestionClick={(text) => {
             analytics.captureAction("chat_suggestion_clicked", {
-              suggestion_index: index,
+              suggestion_index: CHAT_EXAMPLES.indexOf(text),
             });
             submitTextMessage(text).catch(() => undefined);
             saveDraftInput("");
@@ -408,9 +402,9 @@ function ChatMessagesView({
 }
 
 const CHAT_EXAMPLES = [
-  msg`Help me handle my inbox today`,
-  msg`Clean up my inbox`,
-  msg`Suggest rules I should add`,
+  "Help me handle my inbox today",
+  "Clean up my inbox",
+  "Suggest rules I should add",
 ];
 
 function NewChatView({
@@ -422,7 +416,7 @@ function NewChatView({
   greeting: string | null;
   suggestions: string[];
   inputArea: React.ReactNode;
-  onSuggestionClick: (text: string, index: number) => void;
+  onSuggestionClick: (text: string) => void;
 }) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-[var(--chat-px)]">
@@ -434,13 +428,13 @@ function NewChatView({
         ) : null}
         {inputArea}
         <div className="mt-3 flex flex-wrap justify-center gap-2">
-          {suggestions.map((example, index) => (
+          {suggestions.map((example) => (
             <Button
               key={example}
               variant="outline"
               size="sm"
               className="rounded-full"
-              onClick={() => onSuggestionClick(example, index)}
+              onClick={() => onSuggestionClick(example)}
             >
               {example}
             </Button>
@@ -470,32 +464,27 @@ function ChatTopBar({
 }
 
 function NewChatButton() {
-  const { t } = useLingui();
   const { setNewChat } = useChat();
 
   return (
-    <Tooltip content={t`Start a new conversation`}>
+    <Tooltip content="开始新对话">
       <Button variant="ghost" size="icon" onClick={setNewChat}>
         <PlusIcon className="size-5" />
-        <span className="sr-only">
-          <Trans>New Chat</Trans>
-        </span>
+        <span className="sr-only">新对话</span>
       </Button>
     </Tooltip>
   );
 }
 
 function CloseChatButton({ onClose }: { onClose: () => void }) {
-  const { t } = useLingui();
-
   return (
-    <Tooltip content={t`Close assistant`}>
+    <Tooltip content="关闭助手">
       <Button
         type="button"
         variant="ghost"
         size="icon"
         onClick={onClose}
-        aria-label={t`Close assistant`}
+        aria-label="关闭助手"
       >
         <XIcon className="size-5" aria-hidden="true" />
       </Button>
@@ -504,7 +493,6 @@ function CloseChatButton({ onClose }: { onClose: () => void }) {
 }
 
 function ChatHistoryDropdown() {
-  const { t, i18n } = useLingui();
   const [shouldLoadChats, setShouldLoadChats] = useState(false);
   const [open, setOpen] = useState(false);
   const [renameTarget, setRenameTarget] = useState<ChatHistoryEntry | null>(
@@ -525,7 +513,7 @@ function ChatHistoryDropdown() {
           if (value) setShouldLoadChats(true);
         }}
       >
-        <Tooltip content={t`View previous conversations`}>
+        <Tooltip content="View previous conversations">
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
@@ -537,9 +525,7 @@ function ChatHistoryDropdown() {
               }}
             >
               <HistoryIcon className="size-5" />
-              <span className="sr-only">
-                <Trans>Chat History</Trans>
-              </span>
+              <span className="sr-only">Chat History</span>
             </Button>
           </DropdownMenuTrigger>
         </Tooltip>
@@ -553,13 +539,11 @@ function ChatHistoryDropdown() {
                 className="flex items-center justify-center"
               >
                 <Loader2 className="mr-2 size-4 animate-spin" />
-                <Trans>Loading chats...</Trans>
+                正在加载对话…
               </DropdownMenuItem>
             }
             errorComponent={
-              <DropdownMenuItem disabled>
-                <Trans>Error loading chats</Trans>
-              </DropdownMenuItem>
+              <DropdownMenuItem disabled>加载对话时出错</DropdownMenuItem>
             }
           >
             {data && data.chats.length > 0 ? (
@@ -582,9 +566,7 @@ function ChatHistoryDropdown() {
                 />
               ))
             ) : (
-              <DropdownMenuItem disabled>
-                <Trans>No previous chats found</Trans>
-              </DropdownMenuItem>
+              <DropdownMenuItem disabled>未找到历史对话</DropdownMenuItem>
             )}
           </LoadingContent>
         </DropdownMenuContent>
@@ -597,9 +579,7 @@ function ChatHistoryDropdown() {
         }}
         chatId={renameTarget?.id ?? ""}
         currentName={renameTarget?.name ?? ""}
-        defaultLabel={
-          renameTarget ? getChatHistoryLabel(renameTarget, i18n) : ""
-        }
+        defaultLabel={renameTarget ? getChatHistoryLabel(renameTarget) : ""}
         onRenamed={mutate}
       />
       <DeleteChatDialog
@@ -608,7 +588,7 @@ function ChatHistoryDropdown() {
           if (!value) setDeleteTarget(null);
         }}
         chatId={deleteTarget?.id ?? ""}
-        label={deleteTarget ? getChatHistoryLabel(deleteTarget, i18n) : ""}
+        label={deleteTarget ? getChatHistoryLabel(deleteTarget) : ""}
         onDeleted={() => {
           if (deleteTarget && chatId === deleteTarget.id) setChatId(null);
           mutate();
@@ -642,7 +622,7 @@ function ChatSendError({
             className="h-auto shrink-0 px-1.5 py-0.5 text-destructive hover:text-destructive"
             onClick={onNewChat}
           >
-            <Trans>New chat</Trans>
+            新对话
           </Button>
         ) : null}
       </div>
@@ -657,7 +637,6 @@ function ChatContextChip({
   context: MessageContext;
   onRemove: () => void;
 }) {
-  const { t } = useLingui();
   const { subject, from } = context.message.headers;
   const Icon = context.type === "fix-rule" ? WrenchIcon : MailIcon;
 
@@ -670,7 +649,7 @@ function ChatContextChip({
         <Icon className="size-4 shrink-0 text-muted-foreground" />
         <div className="min-w-0 flex-1 leading-tight">
           <div className="truncate text-sm font-medium">
-            {subject || t`(no subject)`}
+            {subject || "（无主题）"}
           </div>
           <div className="truncate text-xs text-muted-foreground">
             {extractNameFromEmail(from)}
@@ -680,7 +659,7 @@ function ChatContextChip({
           type="button"
           variant="ghost"
           size="iconXs"
-          aria-label={t`Remove email from chat`}
+          aria-label="从对话中移除邮件"
           className="shrink-0 text-muted-foreground"
           onClick={onRemove}
         >
@@ -691,26 +670,13 @@ function ChatContextChip({
   );
 }
 
-function getGreeting(firstName: string | undefined, i18n: I18n): string {
+function getGreeting(firstName: string | undefined): string {
   const hour = new Date().getHours();
-  if (hour < 5) {
-    return firstName
-      ? i18n._(msg`Hey there, ${firstName}`)
-      : i18n._(msg`Hey there`);
-  }
-  if (hour < 12) {
-    return firstName
-      ? i18n._(msg`Good morning, ${firstName}`)
-      : i18n._(msg`Good morning`);
-  }
-  if (hour < 18) {
-    return firstName
-      ? i18n._(msg`Good afternoon, ${firstName}`)
-      : i18n._(msg`Good afternoon`);
-  }
-  return firstName
-    ? i18n._(msg`Good evening, ${firstName}`)
-    : i18n._(msg`Good evening`);
+  const name = firstName ? `, ${firstName}` : "";
+  if (hour < 5) return `Hey there${name}`;
+  if (hour < 12) return `Good morning${name}`;
+  if (hour < 18) return `Good afternoon${name}`;
+  return `Good evening${name}`;
 }
 
 const DRAFT_INPUT_STORAGE_KEY = "input";

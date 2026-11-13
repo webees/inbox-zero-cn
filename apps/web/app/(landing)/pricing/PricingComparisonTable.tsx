@@ -19,97 +19,97 @@ const features: {
   professional: FeatureValue;
 }[] = [
   {
-    name: msg`Sorts & labels emails`,
+    name: msg`整理邮件并添加标签`,
     starter: true,
     plus: true,
     professional: true,
   },
   {
-    name: msg`Drafts replies in your voice`,
+    name: msg`以你的语气起草回复`,
     starter: true,
     plus: true,
     professional: true,
   },
   {
-    name: msg`Blocks cold emails`,
+    name: msg`拦截冷邮件`,
     starter: true,
     plus: true,
     professional: true,
   },
   {
-    name: msg`Bulk unsubscribe`,
+    name: msg`批量退订`,
     starter: true,
     plus: true,
     professional: true,
   },
   {
-    name: msg`Bulk archive`,
+    name: msg`批量归档`,
     starter: true,
     plus: true,
     professional: true,
   },
   {
-    name: msg`Email analytics`,
+    name: msg`邮件分析`,
     starter: true,
     plus: true,
     professional: true,
   },
   {
-    name: msg`Pre-meeting briefings`,
+    name: msg`会议前简报`,
     starter: true,
     plus: true,
     professional: true,
   },
   {
-    name: msg`AI meeting notetaker`,
+    name: msg`AI 会议记录助手`,
     starter: false,
     plus: true,
     professional: true,
   },
   {
-    name: msg`Email digests`,
+    name: msg`邮件摘要`,
     starter: false,
     plus: true,
     professional: true,
   },
   {
-    name: msg`Slack integration`,
+    name: msg`Slack 集成`,
     starter: false,
     plus: true,
     professional: true,
   },
   {
-    name: msg`App integrations (Notion, Stripe, and more)`,
+    name: msg`应用集成（Notion、Stripe 等）`,
     starter: false,
     plus: true,
     professional: true,
   },
   {
-    name: msg`Auto-file attachments`,
+    name: msg`自动归档附件`,
     starter: false,
     plus: true,
     professional: true,
   },
   {
-    name: msg`Knowledge base`,
-    starter: msg`Limited`,
-    plus: msg`Unlimited`,
-    professional: msg`Unlimited`,
+    name: msg`知识库`,
+    starter: msg`受限`,
+    plus: msg`无限制`,
+    professional: msg`无限制`,
   },
   {
-    name: msg`Team-wide analytics`,
-    starter: false,
-    plus: false,
-    professional: true,
-  },
-  {
-    name: msg`Priority support`,
+    name: msg`团队范围分析`,
     starter: false,
     plus: false,
     professional: true,
   },
   {
-    name: msg`Dedicated onboarding manager`,
+    name: msg`优先支持`,
+    starter: false,
+    plus: false,
+    professional: true,
+  },
+  {
+    name: msg`专属引导流程经理`,
     starter: false,
     plus: false,
     professional: true,
@@ -138,7 +138,7 @@ export function PricingComparisonTable() {
   return (
     <Section>
       <SectionHeading>
-        <Trans>Compare plans</Trans>
+        <Trans>比较套餐</Trans>
       </SectionHeading>
       <SectionContent>
         <CardWrapper>
@@ -147,7 +147,7 @@ export function PricingComparisonTable() {
               <thead>
                 <tr className="border-b border-[#E7E7E780]">
                   <th className="py-4 px-6 text-sm font-medium text-gray-500">
-                    <Trans>Feature</Trans>
+                    <Trans>功能</Trans>
                   </th>
                   {tierHeaders.map(({ name, price }) => (
                     <th
@@ -158,7 +158,7 @@ export function PricingComparisonTable() {
                         {name}
                       </div>
                       <div className="text-xs text-gray-500 mt-0.5">
-                        <Trans>{price}/mo</Trans>
+                        <Trans>{price}/月</Trans>
                       </div>
                     </th>
                   ))}

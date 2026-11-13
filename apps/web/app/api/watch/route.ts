@@ -11,7 +11,7 @@ export const GET = withAuth("watch", async (request) => {
 
   if (emailAccountCount === 0) {
     return NextResponse.json(
-      { message: "No email accounts found for this user." },
+      { message: "未找到该用户的邮箱账号" },
       { status: 404 },
     );
   }

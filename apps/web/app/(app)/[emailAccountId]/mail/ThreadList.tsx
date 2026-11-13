@@ -76,7 +76,7 @@ export type ThreadListProps = {
 
 export const ThreadList = memo(function ThreadList({
   threads,
-  emptyMessage = <Trans>No emails in this view</Trans>,
+  emptyMessage = <Trans>此视图中没有邮件</Trans>,
   layout,
   expandedPreview,
   userEmail,
@@ -163,8 +163,8 @@ export const ThreadList = memo(function ThreadList({
       emptyMessage={emptyMessage}
       focusedIndex={focusedIndex}
       getGroupLabel={getGroupLabel}
-      todayGroupLabel={i18n._(msg`Today`)}
-      listLabel={i18n._(msg`Conversations`)}
+      todayGroupLabel={i18n._(msg`今天`)}
+      listLabel={i18n._(msg`会话`)}
       getKey={getListThreadKey}
       groupHeaderClassName={groupHeaderClassName}
       isLoadingMore={isLoadingMore}
@@ -173,13 +173,13 @@ export const ThreadList = memo(function ThreadList({
       listKey={listKey}
       loadMoreButton={
         <Button onClick={onLoadMore} size="sm" variant="outline">
-          <Trans>Load more</Trans>
+          <Trans>加载更多</Trans>
         </Button>
       }
       loadingMoreIndicator={
         <div className="flex items-center gap-2 text-muted-foreground text-xs">
           <LoadingMiniSpinner />
-          <Trans>Loading more</Trans>
+          <Trans>正在加载更多</Trans>
         </div>
       }
       onLoadMore={onLoadMore}

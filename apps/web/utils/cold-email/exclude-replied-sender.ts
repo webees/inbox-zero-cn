@@ -9,16 +9,16 @@ import type { EmailProvider } from "@/utils/email/types";
 import { isRuleGeneratedMessage } from "@/utils/ai/rule-generated-message";
 
 /**
- * Writing to someone means they are not a cold emailer, so drop the learned
- * cold email pattern that says otherwise.
+ * 主动给某人写信意味着对方不是冷邮件发送者，因此丢弃那条
+ * 与之相反的已学习冷邮件模式。
  *
- * A learned pattern short-circuits rule matching before the AI ever runs (see
- * `isColdEmail`), so a sender left pinned never gets a reply draft again,
- * however often the two of you write.
+ * 已学习的模式会在 AI 运行之前短路规则匹配（参见
+ * `isColdEmail`），因此被固定的发件人将再也无法获得回复草稿，
+ * 无论你们通信多频繁。
  *
- * This clears the pattern only. The thread the user replied to keeps whatever
- * label or folder the blocker already gave it; the "Not a cold email" button
- * remains the way to undo that.
+ * 这只会清除该模式。用户回复过的会话会保留阻止器
+ * 已赋予它的标签或文件夹；"不是冷邮件"按钮
+ * 仍是撤销该操作的方式。
  */
 export async function excludeRepliedSendersFromColdEmail({
   emailAccountId,
@@ -38,7 +38,7 @@ export async function excludeRepliedSendersFromColdEmail({
       messageId: message.id,
     })
   ) {
-    logger.info("Keeping cold email pattern for rule-generated message");
+    logger.info("为规则生成的消息保留冷邮件模式");
     return;
   }
 
@@ -69,8 +69,8 @@ export async function excludeRepliedSendersFromColdEmail({
 
   if (!senderAddresses.length) return;
 
-  // Matched case-insensitively because senders are pinned using the casing of
-  // whichever From header arrived first.
+  // 以不区分大小写的方式匹配，因为发件人是按最先到达的
+  // 那封邮件的 From 头大小写被固定的。
   const candidates = await prisma.groupItem.findMany({
     where: {
       groupId,
@@ -86,20 +86,20 @@ export async function excludeRepliedSendersFromColdEmail({
   if (!candidates.length) return;
 
   for (const { value } of candidates) {
-    // Written through saveLearnedPattern so exclusion keeps one owner, and keyed
-    // on the stored value so it claims the existing row rather than adding one.
+    // 通过 saveLearnedPattern 写入，使排除项只有一个归属，并按
+    // 存储值建立键，从而认领已有行而不是新增一行。
     await saveLearnedPattern({
       emailAccountId,
       from: value,
       ruleId: coldEmailRule.id,
       exclude: true,
       source: GroupItemSource.USER,
-      reason: "Excluded automatically: you replied to this sender",
+      reason: "已自动排除：你回复过该发件人",
       logger,
     });
   }
 
-  logger.info("Excluded replied sender from cold email blocker", {
+  logger.info("已将回复过的发件人从冷邮件拦截中排除", {
     count: candidates.length,
   });
 }

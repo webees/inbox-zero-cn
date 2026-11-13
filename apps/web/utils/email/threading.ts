@@ -1,6 +1,6 @@
 /**
- * Build RFC 5322 compliant email threading headers.
- * References = parent's References + parent's Message-ID
+ * 构建符合 RFC 5322 的邮件会话头。
+ * References = 父级的 References + 父级的 Message-ID
  * https://datatracker.ietf.org/doc/html/rfc5322#appendix-A.2
  */
 export function buildThreadingHeaders(options: {

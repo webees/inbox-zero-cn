@@ -11,10 +11,8 @@ import {
   getCalendarAvailabilityErrorLogContext,
 } from "../availability-error";
 
-// Google answers only this many calendars per free/busy request and returns
-// tooManyCalendarsRequested for the rest, even though the documented
-// calendarExpansionMax is 50.
-const MAX_FREEBUSY_CALENDARS = 20;
+// Google rejects calendars beyond this per request with tooManyCalendarsRequested.
+const MAX_FREEBUSY_CALENDARS = 50;
 
 async function fetchGoogleCalendarBusyPeriods({
   calendarClient,

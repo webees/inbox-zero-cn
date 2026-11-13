@@ -95,7 +95,7 @@ export function UpcomingMeetings({
   return (
     <>
       <TypographyH3>
-        <Trans>Upcoming Meetings</Trans>
+        <Trans>即将开始的会议</Trans>
       </TypographyH3>
 
       <LoadingContent loading={isLoading} error={error}>
@@ -106,7 +106,7 @@ export function UpcomingMeetings({
                 <CalendarIcon />
               </EmptyMedia>
               <EmptyTitle>
-                <Trans>No upcoming calendar events found</Trans>
+                <Trans>未找到即将开始的日历事件</Trans>
               </EmptyTitle>
             </EmptyHeader>
           </Empty>
@@ -132,12 +132,12 @@ export function UpcomingMeetings({
                           Icon={SendIcon}
                           loading={sendingEventId === event.id}
                         >
-                          <Trans>Send test brief</Trans>
+                          <Trans>发送测试简报</Trans>
                         </Button>
                       }
-                      title={t`Send test brief?`}
-                      description={t`This will send you a briefing email for this meeting now. Use this to verify briefs are working correctly.`}
-                      confirmText={t`Send`}
+                      title={t`发送测试简报？`}
+                      description={t`这将立即向你发送此会议的简报邮件。可用于验证简报功能是否正常工作。`}
+                      confirmText={t`发送`}
                       onConfirm={() => handleSendTestBrief(event)}
                     />
                   </ItemActions>
@@ -163,13 +163,13 @@ function SendHistoryLink() {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="link" className="h-auto p-0 text-muted-foreground">
-          <Trans>View send history →</Trans>
+          <Trans>查看发送历史 →</Trans>
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            <Trans>Send History</Trans>
+            <Trans>发送历史</Trans>
           </DialogTitle>
         </DialogHeader>
 
@@ -185,7 +185,7 @@ function SendHistoryLink() {
                   <CalendarIcon />
                 </EmptyMedia>
                 <EmptyTitle>
-                  <Trans>No briefings have been sent yet</Trans>
+                  <Trans>尚未发送任何简报</Trans>
                 </EmptyTitle>
               </EmptyHeader>
             </Empty>

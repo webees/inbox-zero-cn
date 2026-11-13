@@ -27,10 +27,10 @@ import { toastError } from "@/components/Toast";
 import { redirectToSafeUrl } from "@/utils/redirect";
 
 const PRICING_FEATURES = [
-  msg`Briefs for every external meeting`,
-  msg`Google Calendar & Outlook`,
-  msg`LinkedIn & web research`,
-  msg`Sent 1-24 hours before (you choose)`,
+  msg`每场外部会议都有简报`,
+  msg`Google 日历和 Outlook`,
+  msg`LinkedIn 和网络调研`,
+  msg`提前 1-24 小时发送（由你选择）`,
 ];
 
 export function StepReady() {
@@ -51,13 +51,13 @@ export function StepReady() {
       });
 
       if (!result?.data?.url) {
-        toastError({ description: t`Error creating checkout session` });
+        toastError({ description: t`创建结账会话时出错` });
         return;
       }
 
       redirectToSafeUrl(result.data.url, { allowExternal: true });
     } catch {
-      toastError({ description: t`Error creating checkout session` });
+      toastError({ description: t`创建结账会话时出错` });
     } finally {
       setLoading(false);
     }
@@ -73,13 +73,10 @@ export function StepReady() {
 
       <div className="text-center">
         <PageHeading className="mt-4">
-          <Trans>Ready to walk into every meeting prepared?</Trans>
+          <Trans>准备好充分准备地参加每一场会议了吗？</Trans>
         </PageHeading>
         <TypographyP className="mt-2 max-w-lg mx-auto">
-          <Trans>
-            You'll get a brief like this before every external meeting,
-            automatically.
-          </Trans>
+          <Trans>每场外部会议前，你都会自动收到一份这样的简报。</Trans>
         </TypographyP>
       </div>
 
@@ -90,7 +87,7 @@ export function StepReady() {
         >
           <div className="ml-1">
             <DiscountBadge>
-              <Trans>2 months free!</Trans>
+              <Trans>免费 2 个月！</Trans>
             </DiscountBadge>
           </div>
         </PricingFrequencyToggle>
@@ -99,22 +96,22 @@ export function StepReady() {
           <div className="flex items-center justify-between mb-5">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Meeting Briefs Pro
+                会议简报专业版
               </p>
               <p className="text-3xl font-bold text-foreground mt-1">
                 ${frequency.value === "annually" ? "7.50" : "9"}
                 <span className="text-base font-normal text-muted-foreground">
-                  <Trans>/month</Trans>
+                  <Trans>/月</Trans>
                 </span>
               </p>
               <p className="text-sm text-muted-foreground mt-1">
                 {frequency.value === "annually"
-                  ? t`billed annually ($90/year)`
-                  : t`billed monthly`}
+                  ? t`按年计费（每年 $90）`
+                  : t`按月计费`}
               </p>
             </div>
             <div className="rounded-full border border-green-200 bg-green-50 px-3 py-1.5 text-sm font-semibold text-green-700">
-              <Trans>7-day free trial</Trans>
+              <Trans>7 天免费试用</Trans>
             </div>
           </div>
 
@@ -138,7 +135,7 @@ export function StepReady() {
           onClick={handleCheckout}
           loading={loading}
         >
-          <Trans>Start Free Trial</Trans>
+          <Trans>开始免费试用</Trans>
           <ChevronRightIcon className="ml-2 h-4 w-4" />
         </Button>
 
@@ -154,7 +151,7 @@ export function StepReady() {
                 rel="noopener noreferrer"
               >
                 <ExternalLinkIcon className="mr-2 h-4 w-4" />
-                <Trans>View test brief in Gmail</Trans>
+                <Trans>在 Gmail 中查看测试简报</Trans>
               </Link>
             </Button>
           )}

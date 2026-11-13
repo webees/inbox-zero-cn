@@ -145,7 +145,7 @@ export function ActionSteps({
   return (
     <RuleSteps
       onAdd={() => append({ type: ActionType.LABEL })}
-      addButtonLabel={t`Add Action`}
+      addButtonLabel={t`添加操作`}
       addButtonDisabled={false}
     >
       {visibleActionGroups.map(({ primaryIndex, draftMessagingIndexes }) => (
@@ -625,12 +625,12 @@ function ActionCard({
                   {expandedFields ? (
                     <>
                       <ChevronDownIcon className="h-3.5 w-3.5" />
-                      <Trans>Hide extra fields</Trans>
+                      <Trans>隐藏额外字段</Trans>
                     </>
                   ) : (
                     <>
                       <ChevronRightIcon className="h-3.5 w-3.5" />
-                      <Trans>Show all fields</Trans>
+                      <Trans>显示所有字段</Trans>
                     </>
                   )}
                 </Button>
@@ -815,16 +815,13 @@ function ActionCard({
     <>
       {isNotifySender ? (
         <MutedText className="px-1 h-full flex items-center">
-          {t`Sends an automated notification from ${BRAND_NAME} informing the sender their email was filtered as cold outreach.`}
+          {t`从 ${BRAND_NAME} 发送自动通知，告知发件人其邮件已被归类为冷邮件。`}
         </MutedText>
       ) : isDraftReplyActionType(rawActionType) ? (
         <Card className="p-4 space-y-4">
           {isDraftEmailWithoutManualContent ? (
             <MutedText className="px-1">
-              <Trans>
-                Our AI generates a draft reply from your email history and
-                knowledge base.
-              </Trans>
+              <Trans>我们的 AI 会根据你的邮件历史和知识库生成回复草稿。</Trans>
             </MutedText>
           ) : (
             <>
@@ -910,13 +907,13 @@ function ActionCard({
     <>
       {showDeliveryActions ? (
         <DropdownMenuItem onClick={() => setDeliveryDialogOpen(true)}>
-          {deliverySummary ? t`Delivery options` : t`Configure delivery`}
+          {deliverySummary ? t`投递选项` : t`配置投递`}
         </DropdownMenuItem>
       ) : null}
       {showAttachmentsAction ? (
         <DropdownMenuItem onClick={() => setAttachmentsDialogOpen(true)}>
           <PaperclipIcon className="mr-2 size-4" />
-          <Trans>Configure attachments</Trans>
+          <Trans>配置附件</Trans>
         </DropdownMenuItem>
       ) : null}
     </>
@@ -1027,7 +1024,7 @@ function DraftReplyReviewChannelsSection({
       <div className="space-y-3">
         <div className="flex items-center gap-2 text-sm">
           <span className="font-medium text-foreground">
-            <Trans>Draft to</Trans>
+            <Trans>草稿发送至</Trans>
           </span>
         </div>
 
@@ -1046,14 +1043,14 @@ function DraftReplyReviewChannelsSection({
                 selectedMessagingChannelIds,
               })
             }
-            aria-label={t`Toggle email draft delivery`}
+            aria-label={t`切换邮件草稿投递`}
           />
           <div className="min-w-0">
             <Trans>
               <span className="font-medium text-foreground">Email</span>
               <span className="text-muted-foreground">
                 {" "}
-                — Draft appears in your inbox
+                — 草稿会出现在收件箱中
               </span>
             </Trans>
           </div>
@@ -1098,7 +1095,7 @@ function DraftReplyReviewChannelsSection({
                       nextSelectedMessagingChannelIds,
                   });
                 }}
-                aria-label={t`Toggle ${channelLabel} draft delivery`}
+                aria-label={t`切换 ${channelLabel} 草稿投递`}
               />
               <span className="font-medium text-foreground">
                 {channelLabel}
@@ -1178,11 +1175,11 @@ function IntegrationArgFields({
       {!isConnected ? (
         <div className="space-y-3">
           <MutedText className="px-1">
-            {t`${displayName} isn't connected. Connect it to use this action.`}
+            {t`${displayName} 尚未连接，连接后才能使用此操作。`}
           </MutedText>
           <Button asChild size="sm" variant="outline">
             <Link href={prefixPath(emailAccountId, "/integrations")}>
-              {t`Connect ${displayName}`}
+              {t`连接 ${displayName}`}
             </Link>
           </Button>
         </div>
@@ -1402,8 +1399,8 @@ function MessagingChannelField({
                   <SelectValue
                     placeholder={
                       messagingChannels.length > 0
-                        ? t`Choose a destination`
-                        : t`No connected destinations`
+                        ? t`选择投递目标`
+                        : t`没有已连接的目标`
                     }
                   />
                 </SelectTrigger>
@@ -1411,7 +1408,7 @@ function MessagingChannelField({
               <SelectContent>
                 {includeEmailOption ? (
                   <SelectItem value="email">
-                    <Trans>Email</Trans>
+                    <Trans>邮件</Trans>
                   </SelectItem>
                 ) : null}
                 {messagingChannels.map((channel) => (
@@ -1639,13 +1636,13 @@ function VariableExamplesDialog() {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline" size="xs" className="ml-auto">
-          <Trans>See examples</Trans>
+          <Trans>查看示例</Trans>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            <Trans>Variable Examples</Trans>
+            <Trans>变量示例</Trans>
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-6 py-4">

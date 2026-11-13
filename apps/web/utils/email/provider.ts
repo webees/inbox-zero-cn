@@ -46,7 +46,7 @@ export async function createEmailProvider({
       logger,
     });
   } catch (error) {
-    logger.warn("Failed to create email provider", {
+    logger.warn("创建邮件服务商失败", {
       error,
       provider: rateLimitProvider,
       source: "create-email-provider",
@@ -63,7 +63,7 @@ export async function createEmailProvider({
       flushReason: "provider-create-error",
       provider: rateLimitProvider,
     }).catch((loggingError) => {
-      logger.warn("Failed to flush provider creation failure log", {
+      logger.warn("刷新服务商创建失败日志失败", {
         error: loggingError,
         provider: rateLimitProvider,
         source: "create-email-provider",
@@ -95,7 +95,7 @@ function withProviderFailureLogging(
         try {
           failedAccessToken = target.getAccessToken();
         } catch {
-          // The operation may still refresh a missing cached access token.
+          // 该操作仍可能刷新缺失的缓存访问令牌。
         }
         try {
           const result = value.apply(target, args);
@@ -134,7 +134,7 @@ async function logProviderOperationFailureSafely(
   try {
     await logProviderOperationFailure(input);
   } catch (loggingError) {
-    input.logger.warn("Failed to log provider operation failure", {
+    input.logger.warn("记录服务商操作失败时出错", {
       error: loggingError,
       emailAccountId: input.emailAccountId,
       provider: input.provider,
@@ -158,7 +158,7 @@ async function logProviderOperationFailure({
   operation: string;
   failedAccessToken?: string;
 }) {
-  logger.warn("Email provider operation failed", {
+  logger.warn("邮件服务商操作失败", {
     error,
     emailAccountId,
     provider,
@@ -196,7 +196,7 @@ async function recordProviderIssueSafely({
     operation,
     failedAccessToken,
   }).catch((recordError) => {
-    logger.warn("Failed to record provider issue", {
+    logger.warn("记录服务商问题失败", {
       error: recordError,
       emailAccountId,
       provider,

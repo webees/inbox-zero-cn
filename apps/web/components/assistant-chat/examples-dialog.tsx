@@ -1,7 +1,7 @@
 "use client";
 
+import { useLingui } from "@lingui/react/macro";
 import { useState } from "react";
-import { Trans, useLingui } from "@lingui/react/macro";
 import {
   Dialog,
   DialogContent,
@@ -35,7 +35,7 @@ export function ExamplesDialog({
   open,
   onOpenChange,
 }: ExamplesDialogProps) {
-  const { t, i18n } = useLingui();
+  const { i18n } = useLingui();
   const { provider } = useAccount();
   const personas = getPersonas(provider, i18n);
   const [internalOpen, setInternalOpen] = useState(false);
@@ -68,8 +68,7 @@ export function ExamplesDialog({
       const selectedRules = selectedExamples.map((index) =>
         convertMentionsToLabels(persona.promptArray[index]),
       );
-      const rulesList = selectedRules.map((rule) => `- ${rule}`).join("\n");
-      const formattedPrompt = `${t`Add the following rules:`}\n${rulesList}`;
+      const formattedPrompt = `Add the following rules:\n${selectedRules.map((rule) => `- ${rule}`).join("\n")}`;
       setInput(formattedPrompt);
     }
 
@@ -100,17 +99,11 @@ export function ExamplesDialog({
                 onClick={handleBackToPersonas}
               >
                 <ArrowLeftIcon className="size-4" />
-                <span className="sr-only">
-                  <Trans>Back to personas</Trans>
-                </span>
+                <span className="sr-only">返回用户画像</span>
               </Button>
             )}
             <DialogTitle>
-              {selectedPersona ? (
-                <Trans>Choose examples</Trans>
-              ) : (
-                <Trans>Choose persona</Trans>
-              )}
+              {selectedPersona ? "选择示例" : "选择用户画像"}
             </DialogTitle>
           </div>
         </DialogHeader>
@@ -158,7 +151,7 @@ export function ExamplesDialog({
                   variant="default"
                 >
                   <PlusIcon className="size-4" />
-                  <Trans>Add Selected ({selectedExamples.length})</Trans>
+                  Add Selected ({selectedExamples.length})
                 </Button>
               </div>
             )}

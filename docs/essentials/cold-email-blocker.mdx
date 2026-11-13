@@ -1,47 +1,47 @@
 ---
-title: 'Cold Email Blocker'
-description: 'Block cold emails and protect your inbox from spam using AI filters.'
+title: '冷邮件拦截器'
+description: '使用 AI 过滤器拦截冷邮件，保护你的收件箱免受垃圾邮件侵扰。'
 icon: 'shield-check'
 ---
 
-Cold Email Blocker keeps unsolicited sales pitches and outreach out of your inbox before you ever see them. The AI recognizes cold emails that traditional spam filters miss, while anyone who has emailed you before always gets through.
+冷邮件拦截器在你看到之前，就把未经请求的推销和陌生开发邮件挡在收件箱之外。AI 能识别传统垃圾邮件过滤器漏掉的冷邮件，而曾经给你发过邮件的任何人都能通过。
 
-Open the account menu at the bottom of the left sidebar and select **Cold Email Blocker**, or visit [Cold Email Blocker](https://www.getinboxzero.com/cold-email-blocker). The menu item appears for Google accounts. On Outlook, manage cold email through the **Cold Email** rule in the Assistant, described below.
+打开左侧边栏底部的账号菜单，选择**冷邮件拦截器**，或访问[冷邮件拦截器](https://www.getinboxzero.com/cold-email-blocker)。该菜单项会为 Google 账号显示。在 Outlook 上，请通过助手里的**冷邮件**规则管理冷邮件，详见下文。
 
 <iframe
   src="https://player.mux.com/E29tx0001FmSQqASvIM7r87P9Pro3cq0202AiZ8rOKzsyJM?metadata-video-title=Cold%20Email%20Blocker%20walkthrough&accent-color=%233b82f6"
-  title="Cold Email Blocker walkthrough"
+  title="冷邮件拦截器演示"
   style={{ width: "100%", border: "none", aspectRatio: "16/9" }}
   loading="lazy"
   allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
   allowFullScreen
 ></iframe>
 
-## Choose What Happens to Cold Emails
+## 选择冷邮件如何处理
 
-Cold email handling is controlled by the **Cold Email** rule in the Assistant. To change it, open the **Settings** tab on the Cold Email Blocker page and click **Go to Assistant Rules**, then edit the **Cold Email** rule.
+冷邮件的处理由助手中的**冷邮件**规则控制。要更改它，请打开冷邮件拦截器页面上的**设置**标签页，点击**前往助手规则**，然后编辑**冷邮件**规则。
 
-By default, the rule's actions are:
+默认情况下，该规则的操作是：
 
-- **Gmail**: Label cold emails `Cold Email`, archive them, and notify the sender.
-- **Outlook**: Move cold emails to a `Cold Email` folder.
+- **Gmail**：给冷邮件打上 `Cold Email` 标签、归档它们并通知发件人。
+- **Outlook**：把冷邮件移动到 `Cold Email` 文件夹。
 
-Change or remove these actions to adjust what happens. For example, remove the archive action to keep cold emails in your inbox with a label.
+更改或移除这些操作即可调整处理方式。例如，移除归档操作即可让冷邮件带标签留在你的收件箱中。
 
-The rule's prompt decides what counts as a cold email. The default works for most people, but you can edit it in the rule. Giving examples of what you do and don't consider a cold email works well.
+该规则的提示词决定什么算作冷邮件。默认提示词对大多数人适用，但你可以在规则中编辑它。举出你认为算和不算冷邮件的例子效果很好。
 
-Cold email detection applies only to new emails as they arrive; it does not reprocess older mail.
+冷邮件检测只作用于新到达的邮件；它不会重新处理较早的邮件。
 
-### Notify Sender
+### 通知发件人
 
-The **Notify sender** action emails the cold sender to let them know their email was filtered and suggests they try another way to reach you. To stop these emails, remove the **Notify sender** action from the rule. On self-hosted instances, the action is only added when outgoing email is configured.
+**通知发件人**操作会向冷邮件发件人发邮件，告知其邮件已被过滤，并建议他们尝试其他方式联系你。要停止发送这些邮件，请从规则中移除**通知发件人**操作。在自托管实例上，只有在配置了外发邮件时才会添加该操作。
 
-## Review Cold Emails
+## 查看冷邮件
 
-The **Cold Emails** tab lists the emails that were detected as cold. If a sender was flagged by mistake, click **Not cold email** on the row, or select several rows and click **Mark Not Cold Email**. Inbox Zero stops flagging that sender as cold. If your Cold Email rule applies a label (the default on Gmail), Inbox Zero also removes it from up to 500 of that sender's conversations, including archived ones. Emails stay where they are: archived emails stay archived, and on Outlook, emails stay in the `Cold Email` folder. Move them back yourself if you want them in your inbox.
+**冷邮件**标签页列出被检测为冷邮件的邮件。如果某位发件人被误判，请点击该行上的**不是冷邮件**，或选择多行并点击**标记为不是冷邮件**。Inbox Zero 会停止把该发件人标记为冷邮件。如果你的冷邮件规则应用了标签（Gmail 上的默认行为），Inbox Zero 还会从该发件人最多 500 个会话中移除它，包括已归档的会话。邮件会留在原处：已归档的邮件保持归档，在 Outlook 上邮件会留在 `Cold Email` 文件夹中。如果你想让它们回到收件箱，请自行移动。
 
-Senders you've rejected appear on the **Marked Not Cold** tab.
+被你拒绝的发件人会出现在**标记为不是冷邮件**标签页中。
 
-## Testing
+## 测试
 
-Open the **Test** tab to paste in an email or test against previous emails to see if they would be marked as cold.
+打开**测试**标签页，粘贴一封邮件或针对之前的邮件进行测试，看看它们是否会被标记为冷邮件。

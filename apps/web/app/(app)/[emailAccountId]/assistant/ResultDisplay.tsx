@@ -102,7 +102,7 @@ function ResultDisplay({
         {rule
           ? rule.name
           : status === ExecutedRuleStatus.SKIPPED
-            ? i18n._(msg`No match found`)
+            ? i18n._(msg`未找到匹配项`)
             : i18n._(EXECUTED_RULE_STATUS_LABELS[status])}
         <EyeIcon className="ml-1.5 size-3.5 shrink-0 opacity-70" />
       </Badge>
@@ -131,7 +131,7 @@ export function ResultDisplayContent({ result }: { result: RunRulesResult }) {
             <Badge color="blue">{conditionTypesToString(rule, i18n)}</Badge>
           </>
         ) : (
-          status === ExecutedRuleStatus.SKIPPED && <Trans>No match found</Trans>
+          status === ExecutedRuleStatus.SKIPPED && <Trans>未找到匹配项</Trans>
         )}
       </div>
       <div className="mt-2">
@@ -145,7 +145,7 @@ export function ResultDisplayContent({ result }: { result: RunRulesResult }) {
               ruleDialog.onOpen({ ruleId: rule.id });
             }}
           >
-            <Trans>View matching rule</Trans>
+            <Trans>查看匹配的规则</Trans>
           </Button>
         )}
       </div>
@@ -154,7 +154,7 @@ export function ResultDisplayContent({ result }: { result: RunRulesResult }) {
         {result.actionItems?.length ? (
           <>
             <div className="font-medium text-sm mb-1">
-              <Trans>Actions:</Trans>
+              <Trans>操作：</Trans>
             </div>
             <RuleActions
               actions={
@@ -177,7 +177,7 @@ export function ResultDisplayContent({ result }: { result: RunRulesResult }) {
           </>
         ) : (
           <div className="text-muted-foreground text-sm">
-            <Trans>No actions taken</Trans>
+            <Trans>未执行任何操作</Trans>
           </div>
         )}
       </div>
@@ -200,7 +200,7 @@ export function ResultDisplayContent({ result }: { result: RunRulesResult }) {
         reasonDisplay.actionFailureMessages.length > 0) && (
         <div className="mt-4 space-y-2 bg-muted p-2 rounded-md">
           <div className="font-medium text-sm">
-            <Trans>Reason for choosing this rule:</Trans>
+            <Trans>选择此规则的原因：</Trans>
           </div>
           {!!reasonDisplay.reason && (
             <MessageText className="whitespace-pre-wrap break-words">
@@ -210,7 +210,7 @@ export function ResultDisplayContent({ result }: { result: RunRulesResult }) {
           {reasonDisplay.actionFailureMessages.length > 0 && (
             <div className="space-y-1">
               <div className="font-medium text-sm">
-                <Trans>Action issues:</Trans>
+                <Trans>操作问题：</Trans>
               </div>
               <ul className="list-disc space-y-1 pl-4 text-sm text-slate-700 dark:text-foreground">
                 {reasonDisplay.actionFailureMessages.map((message) => (
@@ -393,12 +393,12 @@ const EXECUTED_RULE_STATUS_LABELS: Record<
   ExecutedRuleStatus,
   MessageDescriptor
 > = {
-  [ExecutedRuleStatus.APPLIED]: msg`Applied`,
-  [ExecutedRuleStatus.APPLYING]: msg`Applying`,
-  [ExecutedRuleStatus.REJECTED]: msg`Rejected`,
-  [ExecutedRuleStatus.PENDING]: msg`Pending`,
-  [ExecutedRuleStatus.SKIPPED]: msg`Skipped`,
-  [ExecutedRuleStatus.ERROR]: msg`Error`,
+  [ExecutedRuleStatus.APPLIED]: msg`已应用`,
+  [ExecutedRuleStatus.APPLYING]: msg`应用中`,
+  [ExecutedRuleStatus.REJECTED]: msg`已拒绝`,
+  [ExecutedRuleStatus.PENDING]: msg`待处理`,
+  [ExecutedRuleStatus.SKIPPED]: msg`已跳过`,
+  [ExecutedRuleStatus.ERROR]: msg`错误`,
 };
 
 const ACTION_FAILURE_MESSAGES: Partial<
@@ -408,36 +408,35 @@ const ACTION_FAILURE_MESSAGES: Partial<
   >
 > = {
   [ActionType.DRAFT_MESSAGING_CHANNEL]: {
-    fallback: msg`The draft reply action could not be completed.`,
+    fallback: msg`草稿回复操作无法完成`,
     codes: {
-      MESSAGING_DELIVERY_FAILED: msg`The draft reply could not be sent to the messaging channel.`,
-      MISSING_MESSAGING_CHANNEL: msg`The draft reply action needs a messaging channel.`,
+      MESSAGING_DELIVERY_FAILED: msg`草稿回复无法发送到消息渠道`,
+      MISSING_MESSAGING_CHANNEL: msg`草稿回复操作需要消息渠道`,
     },
   },
   [ActionType.NOTIFY_MESSAGING_CHANNEL]: {
-    fallback: msg`The messaging channel notification could not be completed.`,
+    fallback: msg`消息渠道通知无法完成`,
     codes: {
-      MESSAGING_DELIVERY_FAILED: msg`The messaging channel notification could not be sent.`,
-      MISSING_MESSAGING_CHANNEL: msg`The messaging channel notification needs a channel.`,
+      MESSAGING_DELIVERY_FAILED: msg`消息渠道通知无法发送`,
+      MISSING_MESSAGING_CHANNEL: msg`消息渠道通知需要指定渠道`,
     },
   },
   [ActionType.NOTIFY_SENDER]: {
-    fallback: msg`The sender notification could not be completed.`,
+    fallback: msg`发件人通知无法完成`,
     codes: {
-      RESEND_NOT_CONFIGURED: msg`The sender notification could not be sent because email sending is not configured.`,
-      MISSING_SENDER_EMAIL: msg`The sender notification could not be sent because the sender email could not be found.`,
-      SEND_FAILED: msg`The sender notification could not be sent.`,
+      RESEND_NOT_CONFIGURED: msg`由于未配置邮件发送，发件人通知无法发送`,
+      MISSING_SENDER_EMAIL: msg`由于找不到发件人邮箱，发件人通知无法发送`,
+      SEND_FAILED: msg`发件人通知无法发送`,
     },
   },
-  // Only the action type and error code survive in the stored reason, so this
-  // copy stays integration-neutral. The executor records a message naming the
-  // integration alongside it.
+  // 存储的原因中只保留操作类型和错误代码，因此这段文案保持与具体集成无关。
+  // 执行器会在旁边记录一条指明集成名称的消息。
   [ActionType.INTEGRATION]: {
-    fallback: msg`The integration action could not be completed.`,
+    fallback: msg`集成操作无法完成`,
     codes: {
-      INTEGRATION_NOT_CONNECTED: msg`The integration isn't connected. Connect it on the Integrations page.`,
-      MISSING_INTEGRATION_ARGS: msg`The integration action could not run because a required field was empty.`,
-      INTEGRATION_CALL_FAILED: msg`The integration action could not be completed.`,
+      INTEGRATION_NOT_CONNECTED: msg`此集成尚未连接，请在集成页面连接`,
+      MISSING_INTEGRATION_ARGS: msg`由于必填字段为空，集成操作无法运行`,
+      INTEGRATION_CALL_FAILED: msg`集成操作无法完成`,
     },
   },
 };
@@ -449,7 +448,7 @@ function getActionFailureMessage(
   const entry = Object.hasOwn(ACTION_FAILURE_MESSAGES, actionType)
     ? ACTION_FAILURE_MESSAGES[actionType as ActionType]
     : undefined;
-  if (!entry) return msg`An action could not be completed.`;
+  if (!entry) return msg`某项操作无法完成`;
   return Object.hasOwn(entry.codes, errorCode)
     ? entry.codes[errorCode]
     : entry.fallback;

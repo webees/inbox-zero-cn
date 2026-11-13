@@ -1,7 +1,7 @@
 import { redis } from "@/utils/redis";
 
 // Long enough to upload 15 MB on a slow connection; Gmail keeps the session
-// for about a week, so ours always expires first.
+// 大约一周，因此我们的总是先过期。
 const UPLOAD_TTL_SECONDS = 60 * 60;
 
 type DraftAttachmentUpload = {
@@ -36,7 +36,7 @@ export async function deleteDraftAttachmentUpload(
   await redis.del(uploadKey(emailAccountId, uploadId));
 }
 
-// The account is part of the key, so another account's upload id finds nothing.
+// 账号是键的一部分，因此另一个账号的上传 id 找不到任何内容。
 function uploadKey(emailAccountId: string, uploadId: string) {
   return `draft-attachment-upload:${emailAccountId}:${uploadId}`;
 }

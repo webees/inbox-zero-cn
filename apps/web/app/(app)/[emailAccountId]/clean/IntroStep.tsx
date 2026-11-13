@@ -27,7 +27,7 @@ export function IntroStep({
       <div className="text-center">
         <Image
           src="/images/illustrations/home-office.svg"
-          alt={t`clean up`}
+          alt={t`清理`}
           width={200}
           height={200}
           className="mx-auto dark:brightness-90 dark:invert"
@@ -35,12 +35,12 @@ export function IntroStep({
         />
 
         <TypographyH3 className="mt-2">
-          <Trans>Let's get your inbox cleaned up in 5 minutes</Trans>
+          <Trans>用 5 分钟清理你的收件箱</Trans>
         </TypographyH3>
 
         {unhandledCount === null ? (
           <SectionDescription className="mx-auto mt-2 max-w-prose">
-            <Trans>Checking your inbox...</Trans>
+            <Trans>正在检查你的收件箱...</Trans>
           </SectionDescription>
         ) : (
           <>
@@ -48,21 +48,19 @@ export function IntroStep({
               {cleanAction === CleanAction.ARCHIVE ? (
                 <Plural
                   value={unhandledCount}
-                  one="You have # unarchived email in your inbox."
-                  other="You have # unarchived emails in your inbox."
+                  one="你的收件箱中有 # 封未归档邮件。"
+                  other="你的收件箱中有 # 封未归档邮件。"
                 />
               ) : (
                 <Plural
                   value={unhandledCount}
-                  one="You have # unread email in your inbox."
-                  other="You have # unread emails in your inbox."
+                  one="你的收件箱中有 # 封未读邮件。"
+                  other="你的收件箱中有 # 封未读邮件。"
                 />
               )}
             </SectionDescription>
             <SectionDescription className="mx-auto mt-2 max-w-prose">
-              <Trans>
-                Let's clean up your inbox while keeping important emails safe.
-              </Trans>
+              <Trans>在确保重要邮件安全的同时，清理你的收件箱。</Trans>
             </SectionDescription>
           </>
         )}
@@ -78,7 +76,7 @@ export function IntroStep({
             }}
             disabled={unhandledCount === null}
           >
-            <Trans>Next</Trans>
+            <Trans>下一步</Trans>
           </Button>
         </div>
       </div>

@@ -1,4 +1,3 @@
-import { Trans, useLingui } from "@lingui/react/macro";
 import { MessageCircleIcon } from "lucide-react";
 import type { ChangeEvent } from "react";
 import { useMemo, useState } from "react";
@@ -48,7 +47,6 @@ export function FixWithChat({
   message: ParsedMessage;
   results: FixWithChatResult[];
 }) {
-  const { t } = useLingui();
   const { data, isLoading, error } = useRules();
   const { isModalOpen, setIsModalOpen } = useModal();
   const [selectedRuleId, setSelectedRuleId] = useState<string | null>(null);
@@ -60,8 +58,8 @@ export function FixWithChat({
 
   const selectedRuleName = useMemo(() => {
     if (!data) return null;
-    if (selectedRuleId === NEW_RULE_ID) return "New rule";
-    if (selectedRuleId === NONE_RULE_ID) return "None";
+    if (selectedRuleId === NEW_RULE_ID) return "新规则";
+    if (selectedRuleId === NONE_RULE_ID) return "无";
     return data.find((r) => r.id === selectedRuleId)?.name ?? null;
   }, [data, selectedRuleId]);
 
@@ -77,19 +75,19 @@ export function FixWithChat({
 
     if (selectedRuleId === CONST_NEW_RULE_ID) {
       input = explanation?.trim()
-        ? `Create a new rule for emails like this: ${explanation.trim()}`
-        : "Create a new rule for emails like this: ";
+        ? `为这样的邮件创建一条新规则：${explanation.trim()}`
+        : "为这样的邮件创建一条新规则：";
     } else if (selectedRuleId === CONST_NONE_RULE_ID) {
       input = explanation?.trim()
-        ? `This email shouldn't have matched any rule because ${explanation.trim()}`
-        : "This email shouldn't have matched any rule because ";
+        ? `这封邮件不应匹配任何规则，因为 ${explanation.trim()}`
+        : "这封邮件不应匹配任何规则，因为 ";
     } else {
       const rulePart = selectedRuleName
-        ? `the "${selectedRuleName}" rule`
-        : "a different rule";
+        ? `“${selectedRuleName}”规则`
+        : "另一条规则";
       input = explanation?.trim()
-        ? `This email should have matched ${rulePart} because ${explanation.trim()}`
-        : `This email should have matched ${rulePart} because `;
+        ? `这封邮件本应匹配${rulePart}，因为 ${explanation.trim()}`
+        : `这封邮件本应匹配${rulePart}，因为 `;
     }
 
     const context: MessageContext = {
@@ -132,7 +130,7 @@ export function FixWithChat({
     setOpen((arr) => [...arr, "chat-sidebar"]);
     setIsModalOpen(false);
 
-    // Reset state
+    // 重置状态
     setSelectedRuleId(null);
     setExplanation("");
     setShowExplanation(false);
@@ -141,7 +139,7 @@ export function FixWithChat({
   const handleClose = (open: boolean) => {
     setIsModalOpen(open);
     if (!open) {
-      // Reset state when closing
+      // 关闭时重置状态
       setSelectedRuleId(null);
       setExplanation("");
       setShowExplanation(false);
@@ -153,15 +151,13 @@ export function FixWithChat({
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
           <MessageCircleIcon className="mr-2 size-4" />
-          <Trans>Fix</Trans>
+          修复
         </Button>
       </DialogTrigger>
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            <Trans>Improve Rules</Trans>
-          </DialogTitle>
+          <DialogTitle>改进规则</DialogTitle>
         </DialogHeader>
 
         <LoadingContent loading={isLoading} error={error}>
@@ -174,23 +170,21 @@ export function FixWithChat({
           ) : data && showExplanation ? (
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">
-                  <Trans>Selected rule:</Trans>
-                </span>
+                <span className="text-sm font-medium">选中的规则：</span>
                 <Badge variant="secondary">
                   {selectedRuleId === NEW_RULE_ID
-                    ? t`✨ New rule`
+                    ? "✨ 新规则"
                     : selectedRuleId === NONE_RULE_ID
-                      ? t`❌ None`
+                      ? "❌ 无"
                       : data.find((r) => r.id === selectedRuleId)?.name ||
-                        t`Unknown`}
+                        "未知"}
                 </Badge>
               </div>
 
               <div>
                 <Label
                   name="explanation"
-                  label={t`Why should this rule have been applied? (optional)`}
+                  label="为什么本应应用此规则？（可选）"
                 />
                 <Textarea
                   id="explanation"
@@ -205,10 +199,7 @@ export function FixWithChat({
                   autoFocus
                 />
                 <p id="explanation-help" className="mt-1 text-xs text-gray-500">
-                  <Trans>
-                    Providing an explanation helps the AI understand your intent
-                    better
-                  </Trans>
+                  提供说明有助于 AI 更好地理解你的意图
                 </p>
               </div>
 
@@ -221,11 +212,9 @@ export function FixWithChat({
                     setExplanation("");
                   }}
                 >
-                  <Trans>Back</Trans>
+                  返回
                 </Button>
-                <Button onClick={handleSubmit}>
-                  <Trans>Next</Trans>
-                </Button>
+                <Button onClick={handleSubmit}>下一步</Button>
               </div>
             </div>
           ) : null}
@@ -244,27 +233,23 @@ function RuleMismatch({
   rules: RulesResponse;
   onSelectExpectedRuleId: (ruleId: string | null) => void;
 }) {
-  const { t } = useLingui();
-
   return (
     <div>
-      <Label name="matchedRule" label={t`Matched:`} />
+      <Label name="matchedRule" label="已匹配：" />
       <div className="mt-1">
         {results.length > 0 ? (
           <ResultsDisplay results={results} />
         ) : (
-          <p>
-            <Trans>No rule matched</Trans>
-          </p>
+          <p>没有匹配的规则</p>
         )}
       </div>
       <div className="mt-4">
         <ButtonList
-          title={t`Which rule did you expect it to match?`}
-          emptyMessage={t`You haven't created any rules yet!`}
+          title="你期望它匹配哪条规则？"
+          emptyMessage="你还没有创建任何规则！"
           items={[
-            { id: NONE_RULE_ID, name: t`❌ None` },
-            { id: NEW_RULE_ID, name: t`✨ New rule` },
+            { id: NONE_RULE_ID, name: "❌ 无" },
+            { id: NEW_RULE_ID, name: "✨ 新规则" },
             ...rules,
           ]}
           onSelect={onSelectExpectedRuleId}

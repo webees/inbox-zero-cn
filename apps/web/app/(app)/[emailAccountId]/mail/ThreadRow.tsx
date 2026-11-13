@@ -126,7 +126,7 @@ export const ThreadRow = memo(function ThreadRow({
                 className="size-3.5 shrink-0 text-muted-foreground"
               />
               <span className="sr-only">
-                <Trans>Has attachment</Trans>
+                <Trans>有附件</Trans>
               </span>
             </>
           ) : null}

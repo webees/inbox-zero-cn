@@ -3,7 +3,7 @@ import { createScopedLogger } from "@/utils/logger";
 
 const logger = createScopedLogger("mcp-server-url");
 
-// Production ignores overrides to prevent redirecting bearer tokens.
+// 生产环境会忽略覆盖项，以防止重定向 bearer 令牌。
 export function getMcpServerUrl(integration: {
   name: string;
   serverUrl?: string;

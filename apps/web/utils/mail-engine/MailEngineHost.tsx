@@ -44,8 +44,6 @@ import {
 import { isMicrosoftProvider } from "@/utils/email/provider-types";
 import { fetchEmailAccounts } from "@/utils/fetch-email-accounts";
 import { followMailboxChanges } from "@/utils/mail-engine/follow-mailbox-changes";
-import { hydrateReplyDrafts } from "@/utils/mail-engine/reply-drafts";
-import { captureException } from "@/utils/error";
 import { browserMailEngineCapabilities } from "@/utils/mail-engine/worker-protocol";
 import {
   MAIL_ENGINE_TAB_CHANNEL,
@@ -125,19 +123,17 @@ export function MailCoverageGate({ children }: { children: ReactNode }) {
             <AlertCircle className="text-destructive" />
           </EmptyMedia>
           <EmptyTitle>
-            {status.failed
-              ? "Mail couldn’t start"
-              : "This browser doesn’t support Mail"}
+            {status.failed ? "邮件功能无法启动" : "此浏览器不支持邮件功能"}
           </EmptyTitle>
           <EmptyDescription>
             {status.failed
-              ? "Try again. If this continues, use a non-private window and an up-to-date browser."
-              : "Mail requires a browser with persistent file storage (OPFS) and web workers. Use an up-to-date browser in a non-private window."}
+              ? "请重试。如果问题持续，请使用非隐私窗口和最新版本的浏览器。"
+              : "邮件功能需要支持持久化文件存储（OPFS）和 Web Worker 的浏览器。请使用非隐私窗口中的最新版本浏览器。"}
           </EmptyDescription>
         </EmptyHeader>
         {status.failed && (
           <Button variant="outline" onClick={status.retry}>
-            Retry
+            重试
           </Button>
         )}
       </Empty>
@@ -221,13 +217,6 @@ function MailEngineRuntimeInner({ children }: { children: ReactNode }) {
       setActiveMailClient(visible);
       setFailed(false);
       setClient(visible);
-      // The list marks unsaved replies as drafts from this, not only once
-      // their threads are opened.
-      // A client torn down or replaced mid-read fails the read; not a bug.
-      hydrateReplyDrafts(emailAccountId).catch((error) => {
-        if (!abort.signal.aborted && published === next)
-          captureException(error);
-      });
     }
 
     if (mode === "desktop-ipc") {

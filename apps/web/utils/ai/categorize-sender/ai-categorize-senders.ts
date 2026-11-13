@@ -109,7 +109,7 @@ Provide accurate categorizations to help users efficiently manage their inbox.`;
             )
             .join("")}
           </recent_emails>`
-      : "<recent_emails>No emails available</recent_emails>"
+      : "<recent_emails>暂无邮件</recent_emails>"
   }
 </sender>`,
     )
@@ -140,7 +140,7 @@ ${formatCategoriesForPrompt(categories)}
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Categorize senders bulk",
+    label: "批量分类发件人",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "compact" },
   });
@@ -157,7 +157,7 @@ ${formatCategoriesForPrompt(categories)}
     senders.map((s) => s.emailAddress),
   );
 
-  // filter out any senders that don't have a valid category
+  // 过滤掉没有有效分类的发件人
   const results = matchedSenders.map((r) => {
     if (!categories.find((c) => c.name === r.category)) {
       return {

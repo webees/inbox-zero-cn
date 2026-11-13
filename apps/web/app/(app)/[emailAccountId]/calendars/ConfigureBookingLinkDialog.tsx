@@ -70,7 +70,7 @@ export function ConfigureBookingLinkDialog({
 
   return (
     <BookingLinkDialog
-      title={t`Configure booking link`}
+      title={t`配置预约链接`}
       description={publicUrl}
       onClose={onClose}
       navigation={
@@ -80,13 +80,13 @@ export function ConfigureBookingLinkDialog({
               active={tab === "general"}
               onClick={() => setTab("general")}
             >
-              <Trans>General</Trans>
+              <Trans>常规</Trans>
             </TabButton>
             <TabButton
               active={tab === "advanced"}
               onClick={() => setTab("advanced")}
             >
-              <Trans>Advanced</Trans>
+              <Trans>高级</Trans>
             </TabButton>
           </div>
         </div>
@@ -244,7 +244,7 @@ function GeneralTab({
         <Input
           type="text"
           name="slug"
-          label={t`Link URL`}
+          label={t`链接 URL`}
           leftText={publicUrlPrefix}
           placeholder="elie"
           registerProps={{
@@ -255,7 +255,7 @@ function GeneralTab({
         />
 
         <div>
-          <Label name="duration" label={t`Duration`} />
+          <Label name="duration" label={t`时长`} />
           <div className="mt-1 grid grid-cols-4 gap-2">
             {DURATION_OPTIONS.map((option) => {
               const active = option === duration;
@@ -270,7 +270,7 @@ function GeneralTab({
                     active && "border-primary ring-1 ring-primary",
                   )}
                 >
-                  {t`${option} min`}
+                  {t`${option} 分钟`}
                 </Button>
               );
             })}
@@ -280,10 +280,10 @@ function GeneralTab({
         <Item variant="outline">
           <ItemContent>
             <ItemTitle>
-              <Trans>Minimum notice</Trans>
+              <Trans>最短提前通知时间</Trans>
             </ItemTitle>
             <ItemDescription>
-              <Trans>Block new bookings this many hours into the future.</Trans>
+              <Trans>在未来这么多小时内阻止新的预约。</Trans>
             </ItemDescription>
           </ItemContent>
           <ItemActions>
@@ -293,7 +293,7 @@ function GeneralTab({
               min={0}
               max={365 * 24}
               step={0.25}
-              rightText={t`hours`}
+              rightText={t`小时`}
               className="w-24 tabular-nums"
               registerProps={{
                 value: minimumNoticeHours,
@@ -376,7 +376,7 @@ function AdvancedTab({
 
   const handleDelete = async () => {
     const confirmed = window.confirm(
-      t`Delete this booking link permanently? This cannot be undone.`,
+      t`要永久删除此预约链接吗？此操作无法撤销。`,
     );
     if (!confirmed) return;
 
@@ -384,14 +384,12 @@ function AdvancedTab({
       const result = await deleteLink({ id: link.id });
       if (hasActionResultError(result)) return;
 
-      toastSuccess({ description: t`Booking link deleted` });
+      toastSuccess({ description: t`预约链接已删除` });
       onSaved();
     } catch (error) {
       toastError({
         description:
-          error instanceof Error
-            ? error.message
-            : t`Failed to delete booking link`,
+          error instanceof Error ? error.message : t`删除预约链接失败`,
       });
     }
   };
@@ -402,12 +400,10 @@ function AdvancedTab({
         <Item variant="outline">
           <ItemContent>
             <ItemTitle>
-              <Trans>Delete booking link</Trans>
+              <Trans>删除预约链接</Trans>
             </ItemTitle>
             <ItemDescription>
-              <Trans>
-                Permanently remove this booking link and its booking history.
-              </Trans>
+              <Trans>永久移除此预约链接及其预约历史。</Trans>
             </ItemDescription>
           </ItemContent>
           <ItemActions>
@@ -417,7 +413,7 @@ function AdvancedTab({
               loading={isDeleting}
               Icon={Trash2}
             >
-              <Trans>Delete</Trans>
+              <Trans>删除</Trans>
             </Button>
           </ItemActions>
         </Item>
@@ -425,7 +421,7 @@ function AdvancedTab({
 
       <BookingLinkDialogFooter>
         <Button variant="outline" onClick={onSaved}>
-          <Trans>Close</Trans>
+          <Trans>关闭</Trans>
         </Button>
       </BookingLinkDialogFooter>
     </>
@@ -443,10 +439,10 @@ function DialogFooter({
   return (
     <BookingLinkDialogFooter>
       <Button variant="outline" onClick={onSaved}>
-        <Trans>Cancel</Trans>
+        <Trans>取消</Trans>
       </Button>
       <Button onClick={onSave} loading={loading}>
-        <Trans>Save</Trans>
+        <Trans>保存</Trans>
       </Button>
     </BookingLinkDialogFooter>
   );

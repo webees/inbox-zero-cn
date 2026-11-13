@@ -14,7 +14,7 @@ export function UpgradeToPlusButton({ tooltip }: { tooltip: string }) {
       <Tooltip content={tooltip}>
         <Button variant="outline" size="sm" onClick={openModal}>
           <CrownIcon className="mr-2 h-4 w-4" />
-          <Trans>Upgrade</Trans>
+          <Trans>升级</Trans>
         </Button>
       </Tooltip>
       <PremiumModal />

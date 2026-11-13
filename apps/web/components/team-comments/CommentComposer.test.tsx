@@ -23,12 +23,12 @@ describe("CommentComposer", () => {
 
     fireEvent.change(composer, { target: { value: "@Ja" } });
     fireEvent.click(screen.getAllByRole("option")[1]);
-    expect(screen.getByText(/also share/)).toBeTruthy();
+    expect(screen.getByText(/也会共享/)).toBeTruthy();
 
     fireEvent.change(composer, { target: { value: "" } });
     fireEvent.change(composer, { target: { value: "@Jane hi" } });
 
-    expect(screen.queryByText(/also share/)).toBeNull();
+    expect(screen.queryByText(/也会共享/)).toBeNull();
     fireEvent.keyDown(composer, { key: "Enter", ctrlKey: true });
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({ mentionedMemberIds: [] }),

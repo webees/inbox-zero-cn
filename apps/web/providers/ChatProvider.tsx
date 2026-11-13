@@ -48,8 +48,8 @@ import {
 
 const logger = createClientLogger("assistant-chat");
 
-const CHAT_SEND_FAILED_MESSAGE = msg`We couldn't send your message. Please try again.`;
-const CHAT_ACCOUNT_MISMATCH_MESSAGE = msg`That chat belongs to another email account, so we started a new one. Send your message again.`;
+const CHAT_SEND_FAILED_MESSAGE = msg`无法发送你的消息，请重试。`;
+const CHAT_ACCOUNT_MISMATCH_MESSAGE = msg`该对话属于另一个邮箱账号，因此我们已开始一个新对话。请重新发送你的消息。`;
 
 export type Attachment = {
   id: string;
@@ -71,12 +71,11 @@ type ChatSendError = {
 };
 
 type PendingChatRequest = {
-  // The server saved the message once it answered OK; a later failure is
-  // shown in the reply rather than reported as unsent.
+  // 服务器返回 OK 即表示消息已保存；后续失败会在回复中显示，而不是报告为未发送。
   accepted?: boolean;
   attachmentCount: number;
   chatId: string;
-  // Set by onError when the message never reached the server.
+  // 消息从未到达服务器时由 onError 设置。
   sendError?: Error;
   textLength: number;
 };
@@ -122,28 +121,28 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [inlineActions, setInlineActions] = useState<InlineEmailAction[]>([]);
   const inlineActionsRef = useRef(inlineActions);
   const pendingInlineActionsRef = useRef<InlineEmailAction[] | null>(null);
-  // Read at send time only, so screen changes don't re-render the chat.
+  // 只在发送时读取，因此页面切换不会重新渲染对话。
   const mailViewRef = useRef<MailViewContext | null>(null);
   const mailScreenActionHandlerRef = useRef<
     ((action: MailScreenAction) => void) | null
   >(null);
-  // A resumed run replays its tool results; each split is shown only once.
+  // 恢复的运行会重放工具结果；每个分组只显示一次。
   const shownSplitCallIdsRef = useRef(new Set<string>());
   const pendingRequestRef = useRef<PendingChatRequest | null>(null);
   const pendingRequestContextRef = useRef<MessageContext | null>(null);
   const previousChatIdRef = useRef(chatId);
   const previousEmailAccountIdRef = useRef<string | null>(null);
-  // After an explicit stop, don't reattach until the user sends again.
+  // 明确停止后，直到用户再次发送前都不要重新连接。
   const stoppedRef = useRef(false);
-  // A send failed or dropped mid-reply; the run may still be going server-side.
+  // 发送失败或在回复中途断开；服务端可能仍在运行。
   const interruptedRef = useRef(false);
   const resumingRef = useRef(false);
   const resumedStreamIdRef = useRef<string | null>(null);
   const messagesAtHideRef = useRef<unknown>(null);
 
-  // useChat replaces (and stops) its Chat whenever `id` changes, so a new chat
-  // needs its id before the first send adopts it into the URL. Rotate once
-  // adopted so clearing chatId later starts a fresh chat.
+  // 每当 `id` 变化时，useChat 都会替换（并停止）其 Chat，因此新对话
+  // 需要在首次发送将其采用到 URL 之前拥有自己的 id。采用后轮换一次，
+  // 这样之后清空 chatId 时会开始一个新对话。
   const [draftChatId, setDraftChatId] = useState(generateUUID);
   if (chatId === draftChatId) setDraftChatId(generateUUID());
 
@@ -181,7 +180,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       fetch: async (input, init) => {
         const request = pendingRequestRef.current;
         const response = await fetch(input, init);
-        // Reconnects share this fetch; only the send POST saves the message.
+        // 重连会共享这次 fetch；只有发送 POST 会保存消息。
         if (response.ok && request && init?.method === "POST")
           request.accepted = true;
         return response;
@@ -199,12 +198,11 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         };
       },
     }),
-    // messages: initialMessages, // NOTE: couldn't get this to work
+    // messages: initialMessages, // 注意：没能让这个生效
     experimental_throttle: 100,
     generateId: generateUUID,
-    // Fires only for streamed calls, not for history. A resumed run replays
-    // from its first chunk, so its calls are skipped rather than re-applied
-    // over whatever the user did on the screen since.
+    // 仅对流式调用触发，不针对历史记录。恢复的运行会从其第一个分块开始重放，
+    // 因此会跳过这些调用，而不是在用户于页面上所做的操作之上重新应用。
     onToolCall: ({ toolCall }) => {
       if (toolCall.dynamic || toolCall.toolName !== "controlMailScreen") return;
       if (resumingRef.current) return;
@@ -217,15 +215,15 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       pendingRequestRef.current = null;
       pendingRequestContextRef.current = null;
       const splitChange = getSplitInboxChange(message);
-      // An abort is a stop or a reattach, which refetch once the server has
-      // saved the reply; refetching now would drop the partial one shown.
+      // 中断可能是停止或重新连接，它们会在服务器保存回复后重新获取；
+      // 现在重新获取会丢失当前显示的部分回复。
       await Promise.all([
         mutate("/api/user/rules"),
         splitChange ? mutate("/api/mail/settings") : Promise.resolve(),
         chatId && !isAbort ? mutate(`/api/chats/${chatId}`) : Promise.resolve(),
       ]);
-      // Showing the split is the preview: the user sees what it catches and
-      // can ask for a change or a delete.
+      // 显示分组就是预览：用户可以看到它匹配了什么，
+      // 并可以要求修改或删除。
       const shown = splitChange?.shown;
       if (shown && !shownSplitCallIdsRef.current.has(shown.toolCallId)) {
         shownSplitCallIdsRef.current.add(shown.toolCallId);
@@ -239,7 +237,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     onError: (error) => {
       if (resumingRef.current) {
         interruptedRef.current = true;
-        logger.warn("Assistant chat resume failed", {
+        logger.warn("AI 助手对话恢复失败", {
           chatId: chatId ?? chat.id,
           errorName: error.name,
         });
@@ -251,13 +249,13 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       if (document.visibilityState === "visible" && !isAccountMismatch)
         resumeActiveRun();
 
-      // The server already has the message once it accepts the request, so a
-      // dropped connection is reattached rather than reported as unsent.
+      // 服务器接受请求后就已经拥有该消息，因此连接断开时会重新连接，
+      // 而不是报告为未发送。
       if (chat.status === "streaming" || pendingRequestRef.current?.accepted) {
         pendingInlineActionsRef.current = null;
         pendingRequestRef.current = null;
         pendingRequestContextRef.current = null;
-        logger.warn("Assistant chat stream interrupted", {
+        logger.warn("AI 助手对话流已中断", {
           chatId: chatId ?? chat.id,
           errorName: error.name,
         });
@@ -285,12 +283,12 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       pendingRequestContextRef.current = null;
 
       if (isAccountMismatch) {
-        logger.warn("Assistant chat belongs to another email account", {
+        logger.warn("AI 助手对话属于另一个邮箱账号", {
           chatId: pendingRequest?.chatId ?? chatId ?? chat.id,
           emailAccountId,
         });
-        // The unsent message goes back in the input, so a fresh chat lets the
-        // user send it again instead of failing on every retry.
+        // 未发送的消息会回到输入框中，因此新对话可以让用户重新发送，
+        // 而不是每次重试都失败。
         const newChatId = generateUUID();
         setChatId(newChatId);
         showSendError({
@@ -318,21 +316,21 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const isRunActive =
     chat.status === "submitted" || chat.status === "streaming";
 
-  // The URL can carry a chat from another account (e.g. an old link). Sending
-  // to it can never succeed, so start a fresh chat in its place.
+  // URL 可能带有另一个账号的对话（例如旧链接）。向它发送
+  // 永远不会成功，因此改为开始一个新对话。
   const isLoadedChatFromOtherAccount =
     chatLoadError?.info?.errorCode === CHAT_ACCOUNT_MISMATCH_ERROR_CODE;
   useEffect(() => {
-    // A send already in flight fails with the same mismatch and recovers in
-    // onError; switching chats now would abort it and drop the unsent message.
+    // 已在进行的发送会以相同的不匹配错误失败，并在 onError 中恢复；
+    // 此时切换对话会中止它并丢失未发送的消息。
     if (!chatId || !isLoadedChatFromOtherAccount || isRunActive) return;
-    logger.warn("Assistant chat belongs to another email account", {
+    logger.warn("AI 助手对话属于另一个邮箱账号", {
       chatId,
       emailAccountId,
     });
     const newChatId = generateUUID();
     setChatId(newChatId);
-    // Keep showing why a send that just ended failed.
+    // 继续显示刚刚结束的发送失败原因。
     setSendError((current) =>
       current?.chatId === chatId ? { ...current, chatId: newChatId } : current,
     );
@@ -352,9 +350,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     const handled = handledDataRef.current;
     if (handled?.chatId === chat.id && handled.data === data) return;
     handledDataRef.current = { chatId: chat.id, data };
-    // The reply is saved only when the run ends, so data fetched mid-run (e.g.
-    // on window focus) is behind the local messages. onFinish refetches once
-    // the run ends, which brings in the saved reply.
+    // 回复只在运行结束时保存，因此运行中途获取的数据（例如窗口聚焦时）
+    // 会落后于本地消息。运行结束时 onFinish 会重新获取，从而载入已保存的回复。
     if (isRunActive) return;
     chat.setMessages(data ? convertToUIMessages(data) : []);
   }, [chat.id, chat.setMessages, data, isRunActive]);
@@ -365,7 +362,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     resumingRef.current = true;
     interruptedRef.current = false;
     try {
-      // Drop a stalled request first so two streams never write the reply.
+      // 先丢弃停滞的请求，确保两个流永远不会同时写入回复。
       await chat.stop();
       await chat.resumeStream();
     } finally {
@@ -374,8 +371,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     await mutate(`/api/chats/${chatId}`);
   }, [chat.resumeStream, chat.stop, chatId, mutate]);
 
-  // Reattach to a reply still running for this chat, e.g. after a reload or
-  // when opening the chat mid-run, once its saved messages are shown.
+  // 当已保存的消息显示后，重新连接到此对话仍在进行的回复，例如在刷新后
+  // 或在运行中途打开对话时。
   const activeStreamId = data?.activeStreamId ?? null;
   useEffect(() => {
     if (!activeStreamId || resumedStreamIdRef.current === activeStreamId)
@@ -387,8 +384,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     resumeActiveRun();
   }, [activeStreamId, chat.messages, chat.status, resumeActiveRun]);
 
-  // Mobile browsers drop the connection of a backgrounded tab while the reply
-  // keeps running, so reattach when the tab comes back.
+  // 移动端浏览器会在回复继续进行时断开后台标签页的连接，
+  // 因此当标签页恢复时重新连接。
   useEffect(() => {
     const onVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
@@ -472,7 +469,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       ).length;
 
       if (textLength > ASSISTANT_CHAT_MAX_TEXT_LENGTH) {
-        logger.warn("Assistant chat input rejected", {
+        logger.warn("AI 助手对话输入被拒绝", {
           attachmentCount,
           chatId: chatId ?? chat.id,
           emailAccountId,
@@ -508,9 +505,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         setInlineActions([]);
       }
 
-      // sendMessage resolves even when the request fails (it reports through
-      // onError), so reject here to let callers keep the unsent message.
-      // Aborts and drops after streaming began are not send failures.
+      // 即使请求失败，sendMessage 也会解析（它通过 onError 报告），
+      // 因此在此处拒绝，以便调用方保留未发送的消息。
+      // 流式传输开始后的中止和断开不算发送失败。
       const sendPromise = chat
         .sendMessage(
           { role: "user", parts },
@@ -556,8 +553,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // The reply's message id is its stream id; sending it keeps a late stop
-    // from cancelling a newer reply.
+    // 回复的消息 ID 就是其流 ID；发送它可避免迟到的停止操作取消更新的回复。
     const lastMessage = chat.messages.at(-1);
     const activeStreamId =
       lastMessage?.role === "assistant" &&
@@ -577,9 +573,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const response = await stopRequest;
-      if (!response.ok) throw new Error(`Status ${response.status}`);
+      if (!response.ok) throw new Error(`状态码 ${response.status}`);
     } catch (error) {
-      logger.warn("Failed to stop assistant chat run", {
+      logger.warn("停止 AI 助手对话运行失败", {
         chatId,
         errorName: error instanceof Error ? error.name : "UnknownError",
       });
@@ -693,12 +689,12 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 export function useChat(): ChatContextType {
   const context = useContext(ChatContext);
   if (context === undefined) {
-    throw new Error("useChat must be used within a ChatProvider");
+    throw new Error("useChat 必须在 ChatProvider 内使用");
   }
   return context;
 }
 
-// NOTE: not sure why we don't just use the default from AI SDK
+// 注意：不清楚为什么我们不直接使用 AI SDK 的默认值
 function generateUUID(): string {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0;
@@ -743,7 +739,7 @@ function reportChatRequestError({
   fallbackChatId: string;
   request: PendingChatRequest | null;
 }) {
-  logger.error("Assistant chat request failed", {
+  logger.error("AI 助手对话请求失败", {
     attachmentCount: request?.attachmentCount ?? 0,
     chatId: request?.chatId ?? fallbackChatId,
     emailAccountId,
@@ -774,7 +770,7 @@ function isChatAccountMismatchError(error: unknown) {
 function getChatSendErrorMessage(error: unknown, i18n: I18n) {
   const statusCode = getErrorStatusCode(error);
   const serverMessage = getChatRequestErrorBody(error)?.error;
-  // 4xx responses explain what the user can do; 5xx bodies are not for users.
+  // 4xx 响应说明用户可以做什么；5xx 响应正文不适合展示给用户。
   if (
     statusCode !== null &&
     statusCode < 500 &&
@@ -806,8 +802,7 @@ function getChatRequestErrorBody(
 }
 
 /**
- * Whether the assistant changed splits in this reply, and the last split it
- * created or edited, which a later delete of another split doesn't hide.
+ * 此回复中助手是否更改了拆分，以及它创建或编辑的最后一个拆分；后续删除其他拆分不会将其隐藏。
  */
 function getSplitInboxChange(
   message: ChatMessage,
@@ -827,5 +822,5 @@ function getSplitInboxChange(
 
 function getMaxTextLengthMessage(i18n: I18n) {
   const maxLength = i18n.number(ASSISTANT_CHAT_MAX_TEXT_LENGTH);
-  return i18n._(msg`Messages can be up to ${maxLength} characters.`);
+  return i18n._(msg`消息最多可达 ${maxLength} 个字符。`);
 }

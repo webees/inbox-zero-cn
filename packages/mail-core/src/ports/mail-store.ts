@@ -7,7 +7,6 @@ import type {
   DraftReadResult,
   DraftSaveResult,
   SaveDraft,
-  StoredDraft,
   SubmitSend,
 } from "../drafts";
 import type {
@@ -349,7 +348,6 @@ export interface MailStore {
   /** Indexes one short batch of stored bodies missing from local search. */
   indexSearchBacklog(): Promise<{ remaining: boolean }>;
   inspect(input?: MailStoreInspectionInput): Promise<MailStoreInspection>;
-  listDrafts(accountId: string): Promise<StoredDraft[]>;
   purgeAccount(accountId: string): Promise<LocalRevision>;
   readAccountSyncStates(): Promise<AccountSyncState[]>;
   readBootstrapScan(input: {

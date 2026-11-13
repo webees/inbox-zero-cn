@@ -40,9 +40,9 @@ export function LabelsSubMenu({
       ) : (
         <DropdownMenuItem>
           {isOutlook ? (
-            <Trans>You don't have any categories yet.</Trans>
+            <Trans>你还没有任何类别。</Trans>
           ) : (
-            <Trans>You don't have any labels yet.</Trans>
+            <Trans>你还没有任何标签。</Trans>
           )}
         </DropdownMenuItem>
       )}

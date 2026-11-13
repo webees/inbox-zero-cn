@@ -73,8 +73,8 @@ export function StartedInMinutes({ title, subtitle }: StartedInMinutesProps) {
           </BlurFade>
           <BlurFade delay={0.25} inView>
             <DisplayCard
-              title={t`Organizes your inbox exactly how you want it`}
-              description={t`Smart categories set up automatically. Use our categories or create your own.`}
+              title={t`按你想要的方式整理收件箱`}
+              description={t`智能分类会自动设置。使用我们的分类，或创建你自己的分类。`}
               icon={
                 <Badge variant="dark-gray" size="sm" icon={<AutoOrganize />}>
                   <Trans>STEP 2</Trans>
@@ -86,30 +86,30 @@ export function StartedInMinutes({ title, subtitle }: StartedInMinutesProps) {
               <div className="flex flex-col gap-2 scale-[110%]">
                 <div className="flex gap-2">
                   <Badge variant="purple" icon={<Newsletter />}>
-                    <Trans>Newsletter</Trans>
+                    <Trans>新闻邮件</Trans>
                   </Badge>
                   <Badge variant="dark-blue" icon={<Envelope />}>
-                    <Trans>To Reply</Trans>
+                    <Trans>待回复</Trans>
                   </Badge>
                   <Badge variant="green" icon={<Megaphone />}>
-                    <Trans>Marketing</Trans>
+                    <Trans>营销</Trans>
                   </Badge>
                   <Badge variant="yellow" icon={<Calendar />}>
-                    <Trans>Calendar</Trans>
+                    <Trans>日历</Trans>
                   </Badge>
                 </div>
                 <div className="flex gap-2">
                   <Badge variant="red" icon={<Bell />}>
-                    <Trans>Notification</Trans>
+                    <Trans>通知</Trans>
                   </Badge>
                   <Badge variant="light-blue" icon={<SnowFlake />}>
-                    <Trans>Cold Email</Trans>
+                    <Trans>冷邮件</Trans>
                   </Badge>
                   <Badge variant="orange" icon={<Team />}>
-                    <Trans>Team</Trans>
+                    <Trans>团队</Trans>
                   </Badge>
                   <Badge variant="pink" icon={<Fire />}>
-                    <Trans>Urgent</Trans>
+                    <Trans>紧急</Trans>
                   </Badge>
                 </div>
               </div>
@@ -117,8 +117,8 @@ export function StartedInMinutes({ title, subtitle }: StartedInMinutesProps) {
           </BlurFade>
           <BlurFade delay={0.25 * 2} inView>
             <DisplayCard
-              title={t`Pre-drafted replies based on your email history and calendar`}
-              description={t`Every email you get needing a reply will have a pre-written draft.`}
+              title={t`根据你的邮件历史和日历预先生成草稿回复`}
+              description={t`每封需要回复的邮件都会有一份预先写好的草稿。`}
               icon={
                 <Badge variant="dark-gray" size="sm" icon={<SparkleBlue />}>
                   <Trans>STEP 3</Trans>

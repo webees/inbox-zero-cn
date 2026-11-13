@@ -294,18 +294,18 @@ function Checklist({
         );
 
         if (result?.serverError || result?.validationErrors) {
-          toastError({ description: t`Failed to skip this step` });
+          toastError({ description: t`跳过此步骤失败` });
           return;
         }
 
         onSetupProgressChanged(stepKey);
       } catch (error) {
-        logger.warn("Setup step dismissal failed", {
+        logger.warn("跳过引导步骤失败", {
           stepKey,
-          error: error instanceof Error ? error.message : "Unknown error",
+          error: error instanceof Error ? error.message : "未知错误",
         });
         toastError({
-          description: t`Failed to skip this step. Please try again.`,
+          description: t`跳过此步骤失败。请重试。`,
         });
       } finally {
         setPendingStep(null);
@@ -323,12 +323,12 @@ function Checklist({
       <div className="border-b border-border p-4">
         <div className="flex items-center justify-between">
           <h2 className="font-semibold text-foreground">
-            <Trans>Complete your setup</Trans>
+            <Trans>完成你的设置</Trans>
           </h2>
           <div className="flex items-center gap-3">
             <span className="text-sm text-muted-foreground hidden sm:block">
               <Trans>
-                {completedCount} of {totalSteps} completed
+                已完成 {completedCount}/{totalSteps}
               </Trans>
             </span>
             <div className="h-2 w-32 overflow-hidden rounded-full bg-muted">
@@ -344,10 +344,10 @@ function Checklist({
       <StepItem
         href={getOnboardingStepHref(emailAccountId, STEP_KEYS.LABELS)}
         icon={<BotIcon size={18} />}
-        title={t`Set up your Personal Assistant`}
-        timeEstimate={t`5 minutes`}
+        title={t`设置你的个人助手`}
+        timeEstimate={t`5 分钟`}
         completed={isAiAssistantConfigured}
-        actionText={t`Set up`}
+        actionText={t`设置`}
         onMarkDone={() => handleMarkStepDone("aiAssistant")}
         showMarkDone
         markDoneDisabled={pendingStep !== null}

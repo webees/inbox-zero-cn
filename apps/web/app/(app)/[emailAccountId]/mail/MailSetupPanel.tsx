@@ -36,16 +36,16 @@ import {
 type Step = "layout" | "tabs" | "all" | "default" | "bundles";
 
 const STEP_QUESTIONS: Record<Step, MessageDescriptor> = {
-  layout: msg`How do you want to read email?`,
-  tabs: msg`Which tabs do you want?`,
-  all: msg`What should All show?`,
-  default: msg`Which tab should open first?`,
-  bundles: msg`Bundle low-priority email?`,
+  layout: msg`您希望如何阅读邮件？`,
+  tabs: msg`您需要哪些标签页？`,
+  all: msg`“全部”应显示什么内容？`,
+  default: msg`应优先打开哪个标签页？`,
+  bundles: msg`是否合并低优先级邮件？`,
 };
 
 /**
- * Floats over the mail client rather than covering it, and every choice saves
- * as it's made, so the inbox behind the card is the preview.
+ * 悬浮在邮件客户端上方而不是将其覆盖；每个选择都会即时保存，
+ * 因此卡片后的收件箱就是预览。
  */
 export function MailSetupPanel({
   splits,
@@ -59,7 +59,7 @@ export function MailSetupPanel({
   canHideFromAll,
   supportsStarred,
 }: {
-  /** The tabs as shown, including Other. */
+  /** 当前显示的标签页，包括“其他”。 */
   splits: MailSplit[];
   layout: MailLayoutMode;
   bundleInbox: boolean;
@@ -103,13 +103,13 @@ export function MailSetupPanel({
         ),
       ).map(({ name, filters }) => ({ name, filters })),
       {
-        name: "Unread",
+        name: "未读",
         filters: [{ kind: MailSplitFilterKind.UNREAD, value: null }],
       },
       ...(supportsStarred
         ? [
             {
-              name: "Starred",
+              name: "已加星标",
               filters: [{ kind: MailSplitFilterKind.STARRED, value: null }],
             },
           ]
@@ -117,8 +117,8 @@ export function MailSetupPanel({
     ],
     [rules, supportsStarred],
   );
-  // Name and matchAll must match too, so a custom tab that happens to share
-  // the filters is never the one a switch deletes.
+  // 名称和 matchAll 也必须匹配，以免开关误删
+  // 恰好共享相同筛选条件的自定义标签页。
   const findTabSplit = ({ name, filters }: (typeof tabChoices)[number]) =>
     settings?.splits.find(
       (split) =>
@@ -135,7 +135,7 @@ export function MailSetupPanel({
 
   const goTo = (index: number) => {
     setStepIndex(index);
-    // These steps change what the inbox tab shows, so show it.
+    // 这些步骤会改变收件箱标签页的内容，因此切换到该标签页。
     if ((steps[index] === "all" || steps[index] === "bundles") && allSplit)
       onSelectSplit(allSplit.id);
   };
@@ -153,10 +153,10 @@ export function MailSetupPanel({
       if (result?.serverError || result?.validationErrors)
         toast.error(getActionErrorMessage(result));
     } catch {
-      toast.error(t`Couldn't save that`);
+      toast.error(t`无法保存该设置`);
     } finally {
-      // Also drops an optimistic switch state the server never saved. The
-      // lock holds until then so the next click reads fresh settings.
+      // 同时丢弃服务器从未保存的乐观开关状态。
+      // 在此之前保持锁定，确保下次点击读取最新设置。
       await mutateSettings().catch(() => undefined);
       setBusyId(null);
     }
@@ -248,7 +248,7 @@ export function MailSetupPanel({
                 )}
               >
                 <LayoutSketch mode={mode} />
-                {mode === "list" ? <Trans>List</Trans> : <Trans>Split</Trans>}
+                {mode === "list" ? <Trans>列表</Trans> : <Trans>分类</Trans>}
               </button>
             ))}
           </div>
@@ -280,14 +280,14 @@ export function MailSetupPanel({
             ))
           ) : (
             <p className="px-2 py-1.5 text-muted-foreground">
-              <Trans>No tabs yet</Trans>
+              <Trans>暂无标签页</Trans>
             </p>
           ))}
 
         {step === "default" && (
           <fieldset>
             <legend className="sr-only">
-              <Trans>Default tab</Trans>
+              <Trans>默认标签页</Trans>
             </legend>
             {splits.map((split) => (
               <label
@@ -354,7 +354,7 @@ export function MailSetupPanel({
       <footer className="flex justify-end gap-2 border-t px-4 py-3">
         {stepIndex > 0 && (
           <Button size="sm" variant="ghost" onClick={() => goTo(stepIndex - 1)}>
-            <Trans>Back</Trans>
+            <Trans>上一步</Trans>
           </Button>
         )}
         <Button
@@ -362,7 +362,7 @@ export function MailSetupPanel({
           variant="gradient"
           onClick={() => (isLastStep ? onClose() : goTo(stepIndex + 1))}
         >
-          {isLastStep ? <Trans>Done</Trans> : <Trans>Next</Trans>}
+          {isLastStep ? <Trans>完成</Trans> : <Trans>下一步</Trans>}
         </Button>
       </footer>
     </section>

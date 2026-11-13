@@ -114,28 +114,28 @@ export const footerNavigation = {
     { name: msg`OpenClaw Skill`, href: "/openclaw" },
   ],
   company: [
-    { name: msg`About`, href: "/about" },
-    { name: msg`Affiliates`, href: "/affiliates", target: "_blank" },
-    { name: msg`Blog`, href: "/blog" },
-    { name: msg`Case Studies`, href: "/case-studies" },
+    { name: msg`关于`, href: "/about" },
+    { name: msg`推广计划`, href: "/affiliates", target: "_blank" },
+    { name: msg`博客`, href: "/blog" },
+    { name: msg`客户案例`, href: "/case-studies" },
     { name: msg`Twitter`, href: "/twitter", target: "_blank" },
     { name: msg`GitHub`, href: "/github", target: "_blank" },
     { name: msg`Discord`, href: "/discord", target: "_blank" },
-    { name: msg`OSS Friends`, href: "/oss-friends" },
-    ...(HAS_BRAND_KIT ? [{ name: msg`Brand Kit`, href: "/brand" }] : []),
-    { name: msg`Email Blaster`, href: "/game" },
+    { name: msg`开源伙伴`, href: "/oss-friends" },
+    ...(HAS_BRAND_KIT ? [{ name: msg`品牌素材`, href: "/brand" }] : []),
+    { name: msg`邮件轰炸机`, href: "/game" },
     {
-      name: msg`Bot Directory`,
+      name: msg`机器人目录`,
       href: "https://botdirectory.ai",
       target: "_blank",
     },
     { name: msg`Rakazo`, href: "https://rakazo.com", target: "_blank" },
   ],
   legal: [
-    { name: msg`Terms`, href: "/terms" },
-    { name: msg`Privacy`, href: "/privacy" },
+    { name: msg`服务条款`, href: "/terms" },
+    { name: msg`隐私政策`, href: "/privacy" },
     {
-      name: msg`SOC2 Compliant`,
+      name: msg`符合 SOC2`,
       href: "https://security.getinboxzero.com",
       target: "_blank",
     },
@@ -181,21 +181,21 @@ export const footerNavigation = {
   ],
 };
 
-// Simple footer for self-hosted deployments
+// 自托管部署使用的简洁页脚
 const selfHostedFooter = {
   resources: [
     {
-      name: msg`Documentation`,
+      name: msg`文档`,
       href: "https://docs.getinboxzero.com",
       target: "_blank",
     },
-    { name: msg`Contact us`, href: `mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}` },
+    { name: msg`联系我们`, href: `mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}` },
     { name: msg`GitHub`, href: "/github", target: "_blank" },
     { name: msg`Discord`, href: "/discord", target: "_blank" },
   ],
   legal: [
-    { name: msg`Terms`, href: "/terms" },
-    { name: msg`Privacy`, href: "/privacy" },
+    { name: msg`服务条款`, href: "/terms" },
+    { name: msg`隐私政策`, href: "/privacy" },
   ],
 };
 
@@ -237,7 +237,7 @@ export function Footer() {
           </div>
           <p className="mt-6 text-center text-xs leading-5 text-gray-500">
             <Trans>
-              Powered by{" "}
+              由{" "}
               <Link
                 href="https://getinboxzero.com"
                 target="_blank"
@@ -245,7 +245,8 @@ export function Footer() {
                 className="hover:text-gray-900"
               >
                 Inbox Zero
-              </Link>
+              </Link>{" "}
+              提供支持
             </Trans>
           </p>
         </div>
@@ -256,7 +257,7 @@ export function Footer() {
   return (
     <footer className="relative">
       <div className="mx-auto max-w-7xl overflow-hidden px-6 py-20 sm:py-24 lg:px-8">
-        <nav aria-label="Footer">
+        <nav aria-label="页脚">
           <div className="mt-16 grid grid-cols-2 gap-8 lg:grid-cols-5 xl:col-span-2 xl:mt-0">
             <div>
               <FooterList title={t`Product`} items={footerNavigation.main} />

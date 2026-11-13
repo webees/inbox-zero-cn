@@ -71,7 +71,7 @@ describe("uploadResumableChunks", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     await expect(upload(Buffer.alloc(4))).rejects.toThrow(
-      "Upload session returned 200 without nextExpectedRanges or a created item",
+      "上传会话返回 200，但没有 nextExpectedRanges 或已创建项",
     );
     expect(getCallsByMethod(fetchMock, "DELETE")).toHaveLength(1);
   });
@@ -202,7 +202,7 @@ describe("uploadResumableChunks", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     await expect(upload(Buffer.alloc(8))).rejects.toThrow(
-      "Upload session did not make progress",
+      "上传会话没有进展（没有可用的续传范围）",
     );
     expect(getCallsByMethod(fetchMock, "PUT")).toHaveLength(1);
     expect(getCallsByMethod(fetchMock, "GET")).toHaveLength(1);

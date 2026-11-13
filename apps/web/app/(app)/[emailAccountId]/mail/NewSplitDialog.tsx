@@ -52,7 +52,7 @@ const FIELDS = [
   { kind: MailSplitFilterKind.OLDER_THAN, label: msg`Older than` },
 ] as const;
 
-/** `name` matches library splits and is sent to the AI; `label` is shown. */
+/** `name` 匹配分类库中的分类并发送给 AI；`label` 用于展示。 */
 export type SplitChoice = {
   id: string;
   name: string;
@@ -72,9 +72,9 @@ export type NewSplitDialogProps = {
   onOpenChange: (open: boolean) => void;
   labels: SplitChoice[];
   categories: SplitChoice[];
-  /** Splits already on the tab strip, so the library can show what's on. */
+  /** 标签栏中已有的分类，便于分类库显示哪些已启用。 */
   existingSplits: ExistingSplit[];
-  /** Set when the dialog was opened to change a split rather than add one. */
+  /** 对话框用于修改而非新增分类时设置。 */
   editing: ExistingSplit | null;
   supportsStarred: boolean;
   onCreate: (split: {
@@ -103,10 +103,10 @@ export type NewSplitDialogProps = {
 };
 
 const EXAMPLES = [
-  msg`unread mail from my accountant`,
-  msg`receipts from Stripe`,
-  msg`notifications I have not read`,
-  msg`anything awaiting my reply`,
+  msg`来自我的会计的未读邮件`,
+  msg`来自 Stripe 的收据`,
+  msg`我尚未阅读的通知`,
+  msg`任何等待我回复的内容`,
 ];
 
 export function NewSplitDialog({
@@ -200,9 +200,8 @@ export function NewSplitDialog({
   );
 
   /**
-   * A new row starts on a field this account can actually fill in — seeding
-   * "Has label" on an account with no labels would open the builder on a
-   * condition that can't be saved.
+   * 新行从该账号实际可填写的字段开始——在没有标签的账号上
+   * 预置“有标签”会让构建器打开一个无法保存的条件。
    */
   const newCondition = useCallback((): MailSplitFilterDraft => {
     if (labels.length) return defaultCondition(MailSplitFilterKind.LABEL);
@@ -355,7 +354,7 @@ export function NewSplitDialog({
           {(mode !== "library" || detail) && (
             <Button
               type="button"
-              aria-label={t`Back`}
+              aria-label={t`返回`}
               onClick={() => {
                 if (detail) setDetail(null);
                 else {
@@ -373,11 +372,11 @@ export function NewSplitDialog({
             {detail ? detail.name : title}
           </DialogTitle>
           <DialogDescription className="sr-only">
-            <Trans>Add a filtered tab to your inbox.</Trans>
+            <Trans>为你的收件箱添加一个筛选标签页。</Trans>
           </DialogDescription>
           <Button
             type="button"
-            aria-label={t`Close`}
+            aria-label={t`关闭`}
             onClick={close}
             variant="ghostMuted"
             size="icon2xs"
@@ -392,7 +391,7 @@ export function NewSplitDialog({
           <div className="flex min-h-0 flex-1 overflow-hidden">
             <div className="flex w-[142px] shrink-0 flex-col gap-0.5 overflow-y-auto border-border border-r bg-sidebar p-2 scrollbar-thin">
               <div className="px-2 pt-0.5 pb-1.5 font-medium text-[11px] text-muted-foreground">
-                <Trans>Category</Trans>
+                <Trans>类别</Trans>
               </div>
               {[YOUR_SPLITS, ...SPLIT_LIBRARY_CATEGORIES].map((option) => (
                 <button
@@ -407,7 +406,7 @@ export function NewSplitDialog({
                       : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                   )}
                 >
-                  {option === YOUR_SPLITS ? t`Your splits` : option}
+                  {option === YOUR_SPLITS ? t`你的分类` : option}
                 </button>
               ))}
             </div>
@@ -492,7 +491,7 @@ export function NewSplitDialog({
                         <button
                           type="button"
                           disabled={isBusy || !split.filters.length}
-                          aria-label={t`Edit the ${split.name} split`}
+                          aria-label={t`编辑“${split.name}”分类`}
                           onClick={() => onEdit(split.id)}
                           className="min-w-0 flex-1 truncate rounded text-left font-medium text-[13px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         >
@@ -501,7 +500,7 @@ export function NewSplitDialog({
                         <Button
                           variant="ghostMuted"
                           size="iconXs"
-                          aria-label={t`Move ${split.name} up`}
+                          aria-label={t`将“${split.name}”上移`}
                           disabled={
                             isBusy ||
                             split.id === "all" ||
@@ -517,7 +516,7 @@ export function NewSplitDialog({
                         <Button
                           variant="ghostMuted"
                           size="iconXs"
-                          aria-label={t`Move ${split.name} down`}
+                          aria-label={t`将“${split.name}”下移`}
                           disabled={
                             isBusy ||
                             split.id === "all" ||
@@ -533,7 +532,7 @@ export function NewSplitDialog({
                           variant="ghostMuted"
                           size="iconXs"
                           disabled={isBusy || !split.filters.length}
-                          aria-label={t`Turn off the ${split.name} split`}
+                          aria-label={t`关闭“${split.name}”分类`}
                           onClick={() => removeSplit(split.id)}
                         >
                           <XIcon className="size-3.5" />
@@ -543,7 +542,7 @@ export function NewSplitDialog({
                   </ul>
                 ) : (
                   <p className="text-muted-foreground text-xs leading-relaxed">
-                    <Trans>Splits you build yourself land here.</Trans>
+                    <Trans>你自行创建的分类会显示在这里。</Trans>
                   </p>
                 )
               ) : (
@@ -635,7 +634,7 @@ export function NewSplitDialog({
               className="mt-3 inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-primary text-xs hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <PlusIcon className="size-3.5" />
-              <Trans>Add condition</Trans>
+              <Trans>添加条件</Trans>
             </button>
           </div>
         ) : (
@@ -645,7 +644,7 @@ export function NewSplitDialog({
               rows={3}
               value={prompt}
               onChange={(event) => setPrompt(event.target.value)}
-              placeholder={t`Describe what should land in this split…`}
+              placeholder={t`描述哪些邮件应归入此分类…`}
               maxLength={300}
               className="resize-none rounded-xl text-[13.5px]"
             />
@@ -690,17 +689,17 @@ export function NewSplitDialog({
                     detail,
                     libraryFiltersFor(detail, labels, categories) ?? [],
                   )
-                    ? t`Turn off split`
-                    : t`Turn on split`}
+                    ? t`关闭分类`
+                    : t`开启分类`}
                 </Button>
               </>
             ) : mode === "build" ? (
               <>
                 <span className="shrink-0 text-muted-foreground text-xs">
-                  <Trans>Split name</Trans>
+                  <Trans>分类名称</Trans>
                 </span>
                 <Input
-                  aria-label={t`Split name`}
+                  aria-label={t`分类名称`}
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   onKeyDown={(event) => {
@@ -708,7 +707,7 @@ export function NewSplitDialog({
                     event.preventDefault();
                     save();
                   }}
-                  placeholder={describedName || t`Name this split`}
+                  placeholder={describedName || t`为此分类命名`}
                   maxLength={60}
                   className="h-8 w-[190px] shrink-0 text-xs"
                 />
@@ -719,7 +718,7 @@ export function NewSplitDialog({
                   disabled={!conditions.length || isBusy}
                   onClick={save}
                 >
-                  {editing ? t`Save changes` : t`Add split`}
+                  {editing ? t`保存更改` : t`添加分类`}
                 </Button>
               </>
             ) : mode === "describe" ? (
@@ -734,10 +733,10 @@ export function NewSplitDialog({
                   {isBusy ? (
                     <>
                       <Loader2Icon className="mr-1.5 size-3.5 animate-spin" />
-                      <Trans>Building…</Trans>
+                      <Trans>正在创建…</Trans>
                     </>
                   ) : (
-                    <Trans>Build it</Trans>
+                    <Trans>创建</Trans>
                   )}
                 </Button>
               </>
@@ -807,7 +806,7 @@ function LibraryTile({
       </button>
       <button
         type="button"
-        aria-label={t`What the ${entry.name} split does`}
+        aria-label={t`“${entry.name}”分类的作用`}
         onClick={onInfo}
         className="hidden size-4.5 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-focus-within:flex group-hover:flex"
       >
@@ -816,9 +815,7 @@ function LibraryTile({
       <button
         type="button"
         aria-label={
-          on
-            ? t`Turn off the ${entry.name} split`
-            : t`Turn on the ${entry.name} split`
+          on ? t`关闭“${entry.name}”分类` : t`开启“${entry.name}”分类`
         }
         onClick={onToggle}
         disabled={disabled}
@@ -842,7 +839,7 @@ function LibraryDetail({ entry }: { entry: SplitLibraryEntry }) {
     <div className="min-h-0 flex-1 overflow-y-auto scrollbar-thin">
       <div className="p-4">
         <div className="mb-2 font-medium text-[11px] text-muted-foreground">
-          <Trans>Definition</Trans>
+          <Trans>定义</Trans>
         </div>
         <div className="flex flex-col gap-1.5">
           {libraryDefinition(entry).map((row) => (

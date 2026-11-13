@@ -34,8 +34,8 @@ export function CleanHistory() {
                 <MutedText>
                   <Plural
                     value={job._count.threads}
-                    one="# email processed"
-                    other="# emails processed"
+                    one="已处理 # 封邮件"
+                    other="已处理 # 封邮件"
                   />
                 </MutedText>
               </div>
@@ -44,7 +44,7 @@ export function CleanHistory() {
         </div>
       ) : (
         <MutedText className="p-4 text-center">
-          <Trans>No history yet</Trans>
+          <Trans>暂无历史记录</Trans>
         </MutedText>
       )}
     </LoadingContent>

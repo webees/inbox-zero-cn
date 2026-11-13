@@ -101,28 +101,28 @@ export const useNavigation = () => {
   const manageItems: NavItem[] = useMemo(
     () => [
       {
-        name: "Chat",
-        label: msg`Chat`,
+        name: "聊天",
+        label: msg`聊天`,
         href: prefixPath(currentEmailAccountId, "/assistant"),
         icon: MessageSquareIcon,
       },
       {
-        name: "Rules",
-        label: msg`Rules`,
+        name: "规则",
+        label: msg`规则`,
         href: prefixPath(currentEmailAccountId, "/automation"),
         icon: SparklesIcon,
       },
       {
-        name: "Channels",
-        label: msg`Channels`,
+        name: "频道",
+        label: msg`频道`,
         href: prefixPath(currentEmailAccountId, "/channels"),
         icon: MessagesSquareIcon,
       },
       ...(showMeetingRecorder
         ? [
             {
-              name: "Meetings",
-              label: msg`Meetings`,
+              name: "会议",
+              label: msg`会议`,
               href: prefixPath(currentEmailAccountId, "/meetings"),
               icon: MicIcon,
             },
@@ -135,28 +135,28 @@ export const useNavigation = () => {
   const cleanupItems: NavItem[] = useMemo(
     () => [
       {
-        name: "Bulk Unsubscribe",
-        label: msg`Bulk Unsubscribe`,
+        name: "批量退订",
+        label: msg`批量退订`,
         href: prefixPath(currentEmailAccountId, "/bulk-unsubscribe"),
         icon: MailsIcon,
       },
       {
-        name: "Bulk Archive",
-        label: msg`Bulk Archive`,
+        name: "批量归档",
+        label: msg`批量归档`,
         href: prefixPath(currentEmailAccountId, "/bulk-archive"),
         icon: ArchiveIcon,
       },
       {
-        name: "Analytics",
-        label: msg`Analytics`,
+        name: "分析",
+        label: msg`分析`,
         href: prefixPath(currentEmailAccountId, "/stats"),
         icon: BarChartBigIcon,
       },
       ...(isGoogleProvider(provider) && showCleaner
         ? [
             {
-              name: "Deep Clean",
-              label: msg`Deep Clean`,
+              name: "深度清理",
+              label: msg`深度清理`,
               href: prefixPath(currentEmailAccountId, "/clean"),
               icon: BrushIcon,
               beta: true,
@@ -170,16 +170,16 @@ export const useNavigation = () => {
   const moreItems: NavItem[] = useMemo(
     () => [
       {
-        name: "Calendars",
-        label: msg`Calendars`,
+        name: "日历",
+        label: msg`日历`,
         href: prefixPath(currentEmailAccountId, "/calendars"),
         icon: CalendarIcon,
       },
       ...(showMeetingBriefs
         ? [
             {
-              name: "Meeting Briefs",
-              label: msg`Meeting Briefs`,
+              name: "会议简报",
+              label: msg`会议简报`,
               href: prefixPath(currentEmailAccountId, "/briefs"),
               icon: FileTextIcon,
             },
@@ -189,8 +189,8 @@ export const useNavigation = () => {
         ? []
         : [
             {
-              name: "Attachments",
-              label: msg`Attachments`,
+              name: "附件",
+              label: msg`附件`,
               href: prefixPath(currentEmailAccountId, "/drive"),
               icon: HardDriveIcon,
               new: false,
@@ -199,8 +199,8 @@ export const useNavigation = () => {
       ...(showIntegrations
         ? [
             {
-              name: "Integrations",
-              label: msg`Integrations`,
+              name: "集成",
+              label: msg`集成`,
               href: prefixPath(currentEmailAccountId, "/integrations"),
               icon: ZapIcon,
             },
@@ -209,8 +209,8 @@ export const useNavigation = () => {
       ...(hasTeam
         ? [
             {
-              name: "Discussions",
-              label: msg`Discussions`,
+              name: "讨论",
+              label: msg`讨论`,
               href: TEAM_HREF,
               icon: Users2Icon,
               count: teamUnreadCount ?? undefined,
@@ -237,8 +237,8 @@ export const useNavigation = () => {
 
 const getTheAppLinks: NavItem[] = [
   {
-    name: "Get the app",
-    label: msg`Get the app`,
+    name: "获取应用",
+    label: msg`获取应用`,
     icon: SmartphoneIcon,
     href: "/download",
     target: "_blank",
@@ -247,26 +247,26 @@ const getTheAppLinks: NavItem[] = [
 
 const topMailLinks: NavItem[] = [
   {
-    name: "Inbox",
-    label: msg`Inbox`,
+    name: "收件箱",
+    label: msg`收件箱`,
     icon: InboxIcon,
     href: "?type=inbox",
   },
   {
-    name: "Drafts",
-    label: msg`Drafts`,
+    name: "草稿",
+    label: msg`草稿`,
     icon: FileIcon,
     href: "?type=draft",
   },
   {
-    name: "Sent",
-    label: msg`Sent`,
+    name: "已发送",
+    label: msg`已发送`,
     icon: SendIcon,
     href: "?type=sent",
   },
   {
-    name: "Archived",
-    label: msg`Archived`,
+    name: "已归档",
+    label: msg`已归档`,
     icon: ArchiveIcon,
     href: "?type=archive",
   },
@@ -274,32 +274,32 @@ const topMailLinks: NavItem[] = [
 
 const bottomMailLinks: NavItem[] = [
   {
-    name: "Personal",
-    label: msg`Personal`,
+    name: "个人",
+    label: msg`个人`,
     icon: PersonStandingIcon,
     href: "?type=CATEGORY_PERSONAL",
   },
   {
-    name: "Social",
-    label: msg`Social`,
+    name: "社交",
+    label: msg`社交`,
     icon: Users2Icon,
     href: "?type=CATEGORY_SOCIAL",
   },
   {
-    name: "Updates",
-    label: msg`Updates`,
+    name: "更新",
+    label: msg`更新`,
     icon: AlertCircleIcon,
     href: "?type=CATEGORY_UPDATES",
   },
   {
-    name: "Forums",
-    label: msg`Forums`,
+    name: "论坛",
+    label: msg`论坛`,
     icon: MessagesSquareIcon,
     href: "?type=CATEGORY_FORUMS",
   },
   {
-    name: "Promotions",
-    label: msg`Promotions`,
+    name: "推广",
+    label: msg`推广`,
     icon: RatioIcon,
     href: "?type=CATEGORY_PROMOTIONS",
   },
@@ -326,8 +326,8 @@ export function SideNav({
       showMailNav
         ? [
             {
-              name: "Back",
-              label: msg`Back`,
+              name: "返回",
+              label: msg`返回`,
               href: "/automation",
               icon: ArrowLeftIcon,
             },
@@ -344,7 +344,7 @@ export function SideNav({
         <AppSidebarHeader
           active="assistant"
           emailAccountId={navigation.emailAccountId}
-          // The phone sheet always shows the full sidebar.
+          // 手机端抽屉始终显示完整侧边栏。
           collapsed={!isMobile && !state.includes("left-sidebar")}
         />
         <AccountSwitcher />
@@ -360,13 +360,13 @@ export function SideNav({
             <>
               <SidebarGroup>
                 <SidebarGroupLabel>
-                  <Trans>Manage</Trans>
+                  <Trans>管理</Trans>
                 </SidebarGroupLabel>
                 <SideNavMenu items={navigation.manageItems} activeHref={path} />
               </SidebarGroup>
               <SidebarGroup>
                 <SidebarGroupLabel>
-                  <Trans>Cleanup</Trans>
+                  <Trans>清理</Trans>
                 </SidebarGroupLabel>
                 <SideNavMenu
                   items={navigation.cleanupItems}
@@ -387,7 +387,7 @@ export function SideNav({
                       <ChevronRightIcon className="size-3.5" />
                     )}
                     <span>
-                      <Trans>Tools</Trans>
+                      <Trans>工具</Trans>
                     </span>
                   </button>
                 </SidebarGroupLabel>
@@ -461,7 +461,7 @@ function MailNav({ path }: { path: string }) {
             >
               <PenIcon className="size-4" />
               <span className="truncate font-semibold">
-                <Trans>Compose</Trans>
+                <Trans>撰写邮件</Trans>
               </span>
               <CommandShortcut>C</CommandShortcut>
             </SidebarMenuButton>
@@ -478,7 +478,7 @@ function MailNav({ path }: { path: string }) {
       {isGoogleProvider(provider) && (
         <SidebarGroup>
           <SidebarGroupLabel>
-            <Trans>Categories</Trans>
+            <Trans>分类</Trans>
           </SidebarGroupLabel>
           <SideNavMenu
             items={markActiveType(bottomMailLinks, activeType)}
@@ -496,11 +496,7 @@ function MailNav({ path }: { path: string }) {
             <SideNavMenu items={labelNavItems} activeHref={path} />
           ) : (
             <div className="px-3 py-2 text-xs text-muted-foreground">
-              {isOutlook ? (
-                <Trans>No categories</Trans>
-              ) : (
-                <Trans>No labels</Trans>
-              )}
+              {isOutlook ? <Trans>无分类</Trans> : <Trans>无标签</Trans>}
             </div>
           )}
 
@@ -518,7 +514,7 @@ function MailNav({ path }: { path: string }) {
                   <ChevronRightIcon className="mr-1 size-4" />
                 )}
                 <span>
-                  <Trans>More</Trans>
+                  <Trans>更多</Trans>
                 </span>
               </button>
 

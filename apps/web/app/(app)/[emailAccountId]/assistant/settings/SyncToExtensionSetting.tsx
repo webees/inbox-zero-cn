@@ -138,16 +138,16 @@ export function SyncToExtensionSetting() {
         const summary = parts.join(", ");
         toast.success(t`Synced tabs to extension: ${summary}`);
       } else {
-        toast.error(t`Failed to sync tabs to extension`);
+        toast.error(t`将标签页同步到扩展程序失败`);
       }
       setOpen(false);
     } catch (error) {
       if (error instanceof Error && error.message === "not_chrome") {
-        toast.error(t`Syncing to extension requires a Chromium browser`);
+        toast.error(t`同步到扩展程序需要使用 Chromium 浏览器`);
       } else {
-        toast.error(t`Inbox Zero Tabs extension not found. Install it first.`, {
+        toast.error(t`未找到 Inbox Zero 标签页扩展程序。请先安装。`, {
           action: {
-            label: t`Install`,
+            label: t`安装`,
             onClick: () => window.open(EXTENSION_URL, "_blank"),
           },
         });
@@ -161,28 +161,28 @@ export function SyncToExtensionSetting() {
 
   return (
     <SettingCard
-      title={t`Sync to browser extension`}
-      description={t`Sync your rules to the Inbox Zero Tabs browser extension. Each label rule becomes a tab in Gmail.`}
+      title={t`同步到浏览器扩展程序`}
+      description={t`将你的规则同步到 Inbox Zero 标签页浏览器扩展程序。每个标签规则都会成为 Gmail 中的一个标签页。`}
       right={
         <Dialog open={open} onOpenChange={handleOpenChange}>
           <DialogTrigger asChild>
             <Button variant="outline" size="sm">
-              <Trans>Sync</Trans>
+              <Trans>同步</Trans>
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>
-                <Trans>Sync tabs to extension</Trans>
+                <Trans>将标签页同步到扩展程序</Trans>
               </DialogTitle>
               <DialogDescription>
-                <Trans>Select which label rules to sync as Gmail tabs.</Trans>
+                <Trans>选择要同步为 Gmail 标签页的标签规则。</Trans>
               </DialogDescription>
             </DialogHeader>
 
             {allTabs.length === 0 ? (
               <p className="py-4 text-sm text-muted-foreground">
-                <Trans>No rules with label actions found.</Trans>
+                <Trans>未找到包含标签操作的规则。</Trans>
               </p>
             ) : (
               <div className="space-y-2 py-2">
@@ -218,7 +218,7 @@ export function SyncToExtensionSetting() {
                 loading={isSyncing}
                 disabled={selectedTabs.length === 0}
               >
-                {t`Sync ${plural(selectedTabs.length, { one: "# tab", other: "# tabs" })}`}
+                {t`同步 ${plural(selectedTabs.length, { one: "# 个标签页", other: "# 个标签页" })}`}
               </Button>
             </DialogFooter>
           </DialogContent>

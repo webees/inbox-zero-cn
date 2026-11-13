@@ -10,13 +10,13 @@ export function TestActionButton() {
       onClick={async () => {
         try {
           const res = await testAction();
-          alert(`Action completed: ${res}`);
+          alert(`操作已完成：${res}`);
         } catch (error) {
-          alert(`Action failed: ${error}`);
+          alert(`操作失败：${error}`);
         }
       }}
     >
-      Test Action
+      测试操作
     </Button>
   );
 }

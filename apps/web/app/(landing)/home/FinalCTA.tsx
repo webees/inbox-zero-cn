@@ -10,18 +10,14 @@ export function FinalCTA() {
     <PatternBanner
       title={
         <Trans>
-          Get back an hour a day.
+          每天找回一小时。
           <br />
-          Start using {BRAND_NAME}.
+          开始使用 {BRAND_NAME}。
         </Trans>
       }
-      subtitle={t`Less time in your inbox. More time for what actually matters.`}
+      subtitle={t`减少收件箱时间，把更多时间留给真正重要的事。`}
     >
-      <CallToAction
-        text={t`Get started for free`}
-        buttonSize="lg"
-        className="mt-6"
-      />
+      <CallToAction text={t`免费开始使用`} buttonSize="lg" className="mt-6" />
     </PatternBanner>
   );
 }

@@ -51,8 +51,7 @@ describe("getCalendarClientWithRefresh", () => {
 
     await expect(refreshExpiredCalendarClient()).rejects.toMatchObject({
       name: "SafeError",
-      safeMessage:
-        "Your Microsoft calendar authorization has expired. Please reconnect your calendar.",
+      safeMessage: "你的 Microsoft 日历授权已过期。请重新连接你的日历。",
     });
 
     expect(prisma.calendarConnection.updateMany).toHaveBeenCalledWith({

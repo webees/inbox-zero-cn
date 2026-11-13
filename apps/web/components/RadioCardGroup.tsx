@@ -8,14 +8,14 @@ type RadioCardOption<T extends string> = {
 };
 
 /**
- * A one-of-N choice laid out as a card of rows, for decisions where the
- * options should all be visible rather than hidden behind a Select.
+ * 以行卡片形式呈现的 N 选一选择，适用于需要让所有选项
+ * 都可见而非隐藏在 Select 后面的决策。
  *
- * Labels only, by design — a description under every option reads as noise.
- * If an option needs explaining, the label is wrong.
+ * 按设计只使用标签 — 每个选项下方都加描述会显得嘈杂。
+ * 如果某个选项需要解释，那说明标签本身有问题。
  *
- * Built on native radios: arrow-key navigation and a single tab stop come for
- * free.
+ * 基于原生单选按钮构建：方向键导航和单个 Tab 停靠点
+ * 都是天然具备的。
  */
 export function RadioCardGroup<T extends string>({
   name,
@@ -25,7 +25,7 @@ export function RadioCardGroup<T extends string>({
   options,
   disabled,
 }: {
-  /** Must be unique on the page; groups the underlying radio inputs. */
+  /** 必须在页面上唯一；用于将底层单选输入分组。 */
   name: string;
   ariaLabel: string;
   value: T;

@@ -93,6 +93,7 @@ vi.mock("@/utils/ai/assistant/compact", async (importActual) => {
     shouldCompact: mockShouldCompact,
     compactMessages: mockCompactMessages,
     extractMemories: mockExtractMemories,
+    RECENT_MESSAGES_TO_KEEP: 20,
   };
 });
 
@@ -152,7 +153,6 @@ describe("chat route rule freshness persistence", () => {
       compactedMessages: [],
       summary: "",
       compactedCount: 0,
-      recentUserMessageCount: 0,
     });
     mockExtractMemories.mockResolvedValue([]);
     mockBuildInlineEmailActionSystemMessage.mockReturnValue(null);
@@ -180,17 +180,13 @@ describe("chat route rule freshness persistence", () => {
       emailAccountId: "email-account-id",
       lastSeenRulesRevision: 2,
       messages: [],
-      actionTotals: [],
       compactions: [],
     });
     prisma.chat.create.mockResolvedValue(null);
     prisma.chatCompaction.create.mockResolvedValue({
       id: "compaction-1",
     } as any);
-    prisma.chatMessage.create.mockResolvedValue({
-      id: "message-1",
-      createdAt: new Date("2026-03-27T12:00:00.000Z"),
-    });
+    prisma.chatMessage.create.mockResolvedValue({ id: "message-1" });
     prisma.chatMessage.createMany.mockResolvedValue({ count: 1 });
     prisma.chat.update.mockResolvedValue({ id: "chat-1" } as any);
     prisma.chat.updateMany.mockResolvedValue({ count: 1 });
@@ -269,7 +265,6 @@ describe("chat route rule freshness persistence", () => {
       id: "chat-1",
       emailAccountId: "other-email-account-id",
       messages: [],
-      actionTotals: [],
       compactions: [],
     } as any);
 
@@ -303,7 +298,6 @@ describe("chat route rule freshness persistence", () => {
       emailAccountId: "email-account-id",
       lastSeenRulesRevision: null,
       messages: [],
-      actionTotals: [],
       compactions: [],
     });
     mockAiProcessAssistantChat.mockImplementationOnce(async (args) => {
@@ -507,7 +501,6 @@ describe("chat route rule freshness persistence", () => {
           createdAt: new Date("2026-03-27T10:00:00.000Z"),
         },
       ],
-      actionTotals: [],
       compactions: [],
     });
 
@@ -539,7 +532,6 @@ describe("chat route rule freshness persistence", () => {
           createdAt: new Date("2026-03-27T10:00:00.000Z"),
         },
       ],
-      actionTotals: [],
       compactions: [],
     });
 
@@ -571,7 +563,6 @@ describe("chat route rule freshness persistence", () => {
           createdAt: new Date("2026-03-27T10:00:00.000Z"),
         },
       ],
-      actionTotals: [],
       compactions: [],
     });
 
@@ -590,7 +581,6 @@ describe("chat route rule freshness persistence", () => {
       emailAccountId: "email-account-id",
       lastSeenRulesRevision: null,
       messages: [],
-      actionTotals: [],
       compactions: [
         {
           id: "compaction-0",
@@ -619,81 +609,6 @@ describe("chat route rule freshness persistence", () => {
     );
   });
 
-  it.each([
-    {
-      name: "the oldest kept stored user message",
-      recentUserMessageCount: 2,
-      inlineActions: undefined,
-      expected: "user-3",
-    },
-    {
-      name: "the same message when a hidden inline-action message was kept too",
-      recentUserMessageCount: 3,
-      inlineActions: [{ type: "archive_threads", threadIds: ["thread-1"] }],
-      expected: "user-3",
-    },
-    {
-      name: "the new message when only it was kept",
-      recentUserMessageCount: 1,
-      inlineActions: undefined,
-      expected: "new",
-    },
-  ])("saves the compaction boundary at $name", async ({
-    recentUserMessageCount,
-    inlineActions,
-    expected,
-  }) => {
-    const storedMessages = [1, 2, 3].flatMap((turn) => [
-      {
-        id: `user-${turn}`,
-        role: "user",
-        parts: [{ type: "text", text: `Question ${turn}` }],
-        createdAt: new Date(`2026-03-27T0${turn}:00:00.000Z`),
-      },
-      {
-        id: `assistant-${turn}`,
-        role: "assistant",
-        parts: [{ type: "text", text: `Answer ${turn}` }],
-        createdAt: new Date(`2026-03-27T0${turn}:30:00.000Z`),
-      },
-    ]);
-    const newMessageCreatedAt = new Date("2026-03-27T09:00:00.000Z");
-    prisma.chat.findUnique.mockResolvedValueOnce({
-      id: "chat-1",
-      emailAccountId: "email-account-id",
-      lastSeenRulesRevision: null,
-      messages: storedMessages,
-      actionTotals: [],
-      compactions: [],
-    });
-    prisma.chatMessage.create.mockResolvedValueOnce({
-      id: "user-message-1",
-      createdAt: newMessageCreatedAt,
-    });
-    mockBuildInlineEmailActionSystemMessage.mockReturnValue(
-      inlineActions ? "Archived threads (1): thread-1" : null,
-    );
-    mockShouldCompact.mockReturnValueOnce(true);
-    mockCompactMessages.mockResolvedValueOnce({
-      compactedMessages: [{ role: "user", content: "Summary" }],
-      summary: "Summary",
-      compactedCount: 4,
-      recentUserMessageCount,
-    });
-
-    await POST(createRequest("Next question", { inlineActions }));
-
-    const expectedCreatedAt =
-      expected === "new"
-        ? newMessageCreatedAt
-        : storedMessages.find((m) => m.id === expected)?.createdAt;
-    expect(prisma.chatCompaction.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        compactedBeforeCreatedAt: expectedCreatedAt,
-      }),
-    });
-  });
-
   it("extracts and persists memories from the pre-compaction conversation stream", async () => {
     const compactedBeforeCreatedAt = new Date("2026-03-27T09:00:00.000Z");
     const recentMessageCreatedAt = new Date("2026-03-27T10:00:00.000Z");
@@ -715,7 +630,6 @@ describe("chat route rule freshness persistence", () => {
           createdAt: recentMessageCreatedAt,
         },
       ],
-      actionTotals: [],
       compactions: [
         {
           id: "compaction-0",
@@ -761,7 +675,6 @@ describe("chat route rule freshness persistence", () => {
       ],
       summary: "Compacted summary",
       compactedCount: 2,
-      recentUserMessageCount: 1,
     });
     mockExtractMemories.mockResolvedValueOnce([
       {

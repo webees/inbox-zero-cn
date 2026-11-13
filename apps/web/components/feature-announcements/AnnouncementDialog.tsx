@@ -100,7 +100,7 @@ export function AnnouncementContent({
         {announcement.link && (
           <Button size="lg" asChild>
             <Link href={announcement.link} onClick={onClose}>
-              {announcement.linkLabel ?? "View"}
+              {announcement.linkLabel ?? "查看"}
             </Link>
           </Button>
         )}

@@ -16,7 +16,7 @@ type NativeNotification = {
   close(): void;
 };
 
-// Keep the baseline in the main process so renderer reloads do not replay mail.
+// 把基准保留在主进程，这样渲染进程重新加载时不会重放邮件通知。
 export function createMailNotificationTracker(startedAt = Date.now()) {
   const seen = new Map<string, number>();
 
@@ -64,7 +64,7 @@ export function createMailNotificationTracker(startedAt = Date.now()) {
         id: message.id,
         threadId: message.threadId,
         title: senderName(message.from),
-        body: cleanText(message.subject) || "(no subject)",
+        body: cleanText(message.subject) || "（无主题）",
       });
     }
     return notifications;

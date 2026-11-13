@@ -62,7 +62,7 @@ export async function decideRelevantReplyMemories({
       })),
     },
     questions,
-    label: "Reply memory selection",
+    label: "回复记忆选择",
     logger,
   });
 

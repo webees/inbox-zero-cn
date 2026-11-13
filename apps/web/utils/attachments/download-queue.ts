@@ -17,7 +17,7 @@ export async function queueAttachmentDownload<T>({
 }): Promise<T> {
   signal?.throwIfAborted();
   if (!navigator.locks?.request)
-    return Promise.reject(new Error("Attachment coordination unavailable"));
+    return Promise.reject(new Error("附件协调不可用"));
 
   const controller = new AbortController();
   return new Promise<T>((resolve, reject) => {

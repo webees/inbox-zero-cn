@@ -21,7 +21,7 @@ export default async function WelcomeRedirectPage(props: {
     },
   });
 
-  // Session exists but user doesn't - invalid state, log out
+  // 会话存在但用户不存在——状态无效，退出登录
   if (!user) redirect("/logout");
   if (searchParams.force) redirect("/onboarding");
   if (user.completedOnboardingAt) {

@@ -61,7 +61,7 @@ export function Hero({
           <HeroReveal delay={0.125 * 8}>
             <div className="mb-12 flex items-center justify-center gap-2">
               <Paragraph color="light" size="sm">
-                <Trans>Works with</Trans>
+                <Trans>适用于</Trans>
               </Paragraph>
               <Outlook />
               <Gmail />
@@ -88,7 +88,7 @@ export function HeroVideoPlayer({ video }: { video?: HeroVideo }) {
         />
         <Image
           src={thumbnail.src}
-          alt={video?.title ?? t`an organized inbox`}
+          alt={video?.title ?? t`井然有序的收件箱`}
           width={thumbnail.width}
           height={thumbnail.height}
           sizes="(min-width: 1280px) 1152px, (min-width: 1024px) calc(100vw - 64px), calc(100vw - 48px)"

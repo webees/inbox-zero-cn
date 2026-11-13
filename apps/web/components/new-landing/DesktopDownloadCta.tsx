@@ -31,7 +31,7 @@ type NavigatorWithUserAgentData = Navigator & {
   };
 };
 
-/** Used by the marketing `/download` page cloned into this Next app at build time. */
+/** 供构建时克隆到当前 Next 应用中的营销 `/download` 页面使用。 */
 export function DesktopDownloadCta({
   downloads,
   buttonSize = "lg",
@@ -82,8 +82,8 @@ export function DesktopDownloadCta({
               <span className="relative z-10 flex items-center gap-2">
                 <Smartphone className="size-4" />
                 {mobileStore.store === "app-store"
-                  ? t`Download on the App Store`
-                  : t`Get it on Google Play`}
+                  ? t`从 App Store 下载`
+                  : t`从 Google Play 获取`}
               </span>
             </a>
           </Button>
@@ -97,8 +97,8 @@ export function DesktopDownloadCta({
                   <Monitor className="size-4" />
                 )}
                 {ctas.primary.kind === "mac"
-                  ? t`Download for Mac`
-                  : t`Download for Windows`}
+                  ? t`下载 Mac 版`
+                  : t`下载 Windows 版`}
               </span>
             </a>
           </Button>
@@ -107,14 +107,14 @@ export function DesktopDownloadCta({
             <a href={GITHUB_RELEASES_URL}>
               <span className="relative z-10 flex items-center gap-2">
                 <Download className="size-4" />
-                <Trans>View desktop releases</Trans>
+                <Trans>查看桌面版发布</Trans>
               </span>
             </a>
           </Button>
         )}
         <Button variant="secondary-two" size={buttonSize} asChild>
           <button type="button" onClick={() => scrollToSection("downloads")}>
-            <Trans>Other platforms</Trans>
+            <Trans>其他平台</Trans>
           </button>
         </Button>
       </div>

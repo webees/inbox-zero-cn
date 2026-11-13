@@ -21,69 +21,64 @@ const pricingFaqs: {
   answerText: MessageDescriptor;
 }[] = [
   {
-    question: msg`Can I try ${BRAND_NAME} for free?`,
-    answerText: msg`Yes. The email app is free to use. The AI plans include a 7-day free trial.`,
+    question: msg`可以免费试用 ${BRAND_NAME} 吗？`,
+    answerText: msg`可以。邮件应用可免费使用。AI 套餐包含 7 天免费试用。`,
   },
   {
-    question: msg`Can I switch between plans?`,
-    answerText: msg`Yes, you can upgrade or downgrade at any time. Changes take effect immediately and billing is prorated.`,
+    question: msg`可以在不同套餐之间切换吗？`,
+    answerText: msg`可以，你随时可以升级或降级套餐。更改立即生效，费用按比例计算。`,
   },
   {
-    question: msg`What payment methods do you accept?`,
-    answerText: msg`We accept all major credit cards through Stripe.`,
+    question: msg`支持哪些付款方式？`,
+    answerText: msg`我们通过 Stripe 接受所有主流信用卡。`,
   },
   {
-    question: msg`Do you offer annual discounts?`,
-    answerText: msg`Yes! Save up to 20% by choosing annual billing on any plan.`,
+    question: msg`是否提供年付折扣？`,
+    answerText: msg`提供！任何套餐选择年付最高可节省 20%。`,
   },
   {
-    question: msg`Do you offer discounts for students, nonprofits, or open-source projects?`,
+    question: msg`是否为学生、非营利组织或开源项目提供折扣？`,
     answer: (
       <span>
         <Trans>
-          Yes! Send us an{" "}
-          <Anchor href={`mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}`}>
-            email
-          </Anchor>{" "}
-          and we'll set up a discounted plan for you.
+          提供！请发送{" "}
+          <Anchor href={`mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}`}>邮件</Anchor>{" "}
+          给我们，我们会为你设置折扣套餐。
         </Trans>
       </span>
     ),
-    answerText: msg`Yes! Send us an email and we'll set up a discounted plan for you.`,
+    answerText: msg`提供！请发送邮件给我们，我们会为你设置折扣套餐。`,
   },
   {
-    question: msg`What happens if I cancel?`,
-    answerText: msg`You can cancel anytime. Your subscription will remain active until the end of the billing period.`,
+    question: msg`如果取消订阅会怎样？`,
+    answerText: msg`你可以随时取消。订阅将保持有效，直到当前计费周期结束。`,
   },
   {
-    question: msg`Do you offer refunds?`,
+    question: msg`是否提供退款？`,
     answer: (
       <span>
         <Trans>
-          Yes, if you don't think we provided you with value send us an{" "}
-          <Anchor href={`mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}`}>
-            email
-          </Anchor>{" "}
-          within 14 days of upgrading and we'll refund you.
+          可以。如果你认为我们没有为你提供价值，请在升级后 14 天内发送{" "}
+          <Anchor href={`mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}`}>邮件</Anchor>{" "}
+          给我们，我们会为你退款。
         </Trans>
       </span>
     ),
-    answerText: msg`Yes, if you don't think we provided you with value send us an email within 14 days of upgrading and we'll refund you.`,
+    answerText: msg`可以。如果你认为我们没有为你提供价值，请在升级后 14 天内发送邮件给我们，我们会为你退款。`,
   },
   {
-    question: msg`Need a custom plan for your enterprise?`,
+    question: msg`企业需要定制套餐吗？`,
     answer: (
       <span>
         <Trans>
           <Anchor href="https://www.getinboxzero.com/sales">
-            Contact our sales team
+            联系我们的销售团队
           </Anchor>{" "}
-          for custom pricing, SSO, SCIM, on-premise deployment, and dedicated
-          support.
+          获取定制价格、SSO、SCIM、本地部署和专属支持。
         </Trans>
       </span>
     ),
-    answerText: msg`Contact our sales team for custom pricing, SSO, SCIM, on-premise deployment, and dedicated support.`,
+    answerText: msg`联系我们的销售团队，获取定制价格、SSO、SCIM、本地部署和专属支持。`,
   },
 ];
 
@@ -107,7 +102,7 @@ export function PricingFAQs() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingFaqJsonLd) }}
       />
       <SectionHeading>
-        <Trans>Pricing FAQ</Trans>
+        <Trans>套餐常见问题</Trans>
       </SectionHeading>
       <SectionContent>
         <CardWrapper>

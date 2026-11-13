@@ -10,8 +10,8 @@ import { getHistory } from "@/utils/gmail/history";
 import { extractErrorInfo, withGmailRetry } from "@/utils/gmail/retry";
 import type { Logger } from "@/utils/logger";
 
-// Archive, read, and star are label events. Gmail does not treat archive as
-// messagesDeleted, so mailbox delta sync must ask for labelRemoved explicitly.
+// 归档、已读和星标都是标签事件。Gmail 不将归档视为
+// messagesDeleted，因此邮箱增量同步必须显式请求 labelRemoved。
 const GMAIL_MAILBOX_HISTORY_TYPES = [
   "messageAdded",
   "messageDeleted",
@@ -35,7 +35,7 @@ export async function getGmailMailboxSyncPage({
   limit: number;
 }): Promise<MailboxSyncPage> {
   if (!cursor) {
-    if (!after) throw new Error("after is required for initial mailbox sync");
+    if (!after) throw new Error("初始邮箱同步需要 after");
     return getGmailSnapshotPage({
       gmail,
       accessToken,
@@ -154,8 +154,8 @@ export function getGmailMailboxChangeIds(history: gmail_v1.Schema$History[]): {
     for (const change of record.messagesDeleted ?? []) {
       if (change.message?.id) deletedIds.add(change.message.id);
     }
-    // Typed arrays can be omitted; the summary `messages` list still names
-    // every affected id so current labels can be written to the cache.
+    // 类型化数组可能被省略；摘要 `messages` 列表仍会列出
+    // 每个受影响的 id，以便将当前标签写入缓存。
     for (const message of record.messages ?? []) {
       if (message.threadId) changedThreadIds.add(message.threadId);
       if (message.id) upsertIds.add(message.id);
@@ -193,7 +193,7 @@ async function getGmailSnapshotPage({
       })
     ).data.historyId;
   if (!snapshotHistoryId) {
-    throw new Error("Gmail did not return a mailbox history ID");
+    throw new Error("Gmail 未返回邮箱历史 ID");
   }
 
   const response = await withGmailRetry(

@@ -132,7 +132,7 @@ function emitAuditEvent({
   try {
     recordAuditEvent(event);
   } catch {
-    // Audit logging must not affect the database operation.
+    // 审计日志不得影响数据库操作。
   }
 }
 

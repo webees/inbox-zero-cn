@@ -105,7 +105,7 @@ export function OrgRules({ organizationId }: { organizationId: string }) {
   const onDelete = async (rule: OrgRule) => {
     const ruleName = rule.name;
     const confirmed = confirm(
-      t`Delete "${ruleName}"? This removes the rule for all organization members.`,
+      t`删除“${ruleName}”吗？这将为所有组织成员移除该规则。`,
     );
     if (!confirmed) return;
 
@@ -117,7 +117,7 @@ export function OrgRules({ organizationId }: { organizationId: string }) {
       toastError({ description: result.serverError });
       return;
     }
-    toastSuccess({ description: t`Rule deleted` });
+    toastSuccess({ description: t`规则已删除` });
     mutate();
   };
 
@@ -126,18 +126,15 @@ export function OrgRules({ organizationId }: { organizationId: string }) {
       <div className="flex items-center justify-between">
         <div>
           <TypographyH3>
-            <Trans>Organization rules</Trans>
+            <Trans>组织规则</Trans>
           </TypographyH3>
           <MutedText className="mt-1">
-            <Trans>
-              Rules you create here are applied to every member of your
-              organization.
-            </Trans>
+            <Trans>在此创建的规则会应用于组织中的每一位成员。</Trans>
           </MutedText>
         </div>
         <Button size="sm" onClick={() => ruleDialog.onOpen({})}>
           <PlusIcon className="mr-2 size-4" />
-          <Trans>New rule</Trans>
+          <Trans>新建规则</Trans>
         </Button>
       </div>
 
@@ -148,16 +145,16 @@ export function OrgRules({ organizationId }: { organizationId: string }) {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-16">
-                    <Trans>Enabled</Trans>
+                    <Trans>已启用</Trans>
                   </TableHead>
                   <TableHead>
-                    <Trans>Name</Trans>
+                    <Trans>名称</Trans>
                   </TableHead>
                   <TableHead>
-                    <Trans>Actions</Trans>
+                    <Trans>操作</Trans>
                   </TableHead>
                   <TableHead>
-                    <Trans>Enabled for</Trans>
+                    <Trans>适用范围</Trans>
                   </TableHead>
                   <TableHead className="w-10" />
                 </TableRow>
@@ -191,8 +188,8 @@ export function OrgRules({ organizationId }: { organizationId: string }) {
                     <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
                       <Plural
                         value={memberCount}
-                        one={`${rule._count.memberRules} / # member`}
-                        other={`${rule._count.memberRules} / # members`}
+                        one={`${rule._count.memberRules} / # 位成员`}
+                        other={`${rule._count.memberRules} / # 位成员`}
                       />
                     </TableCell>
                     <TableCell>
@@ -205,7 +202,7 @@ export function OrgRules({ organizationId }: { organizationId: string }) {
                           >
                             <MoreHorizontalIcon className="size-4" />
                             <span className="sr-only">
-                              <Trans>Toggle menu</Trans>
+                              <Trans>切换菜单</Trans>
                             </span>
                           </Button>
                         </DropdownMenuTrigger>
@@ -214,12 +211,12 @@ export function OrgRules({ organizationId }: { organizationId: string }) {
                             onClick={() => ruleDialog.onOpen({ rule })}
                           >
                             <PenIcon className="mr-2 size-4" />
-                            <Trans>Edit</Trans>
+                            <Trans>编辑</Trans>
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem onClick={() => onDelete(rule)}>
                             <Trash2Icon className="mr-2 size-4" />
-                            <Trans>Delete</Trans>
+                            <Trans>删除</Trans>
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -231,11 +228,11 @@ export function OrgRules({ organizationId }: { organizationId: string }) {
           ) : (
             <Empty>
               <EmptyDescription>
-                <Trans>No organization rules yet.</Trans>
+                <Trans>暂无组织规则。</Trans>
               </EmptyDescription>
               <Button size="sm" onClick={() => ruleDialog.onOpen({})}>
                 <PlusIcon className="mr-2 size-4" />
-                <Trans>Create your first rule</Trans>
+                <Trans>创建你的第一条规则</Trans>
               </Button>
             </Empty>
           )}

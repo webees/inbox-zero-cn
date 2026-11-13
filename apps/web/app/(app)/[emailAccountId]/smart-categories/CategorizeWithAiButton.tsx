@@ -75,22 +75,20 @@ export function CategorizeWithAiButton({
                     | undefined,
                 ) => {
                   if (!data) {
-                    return t`Categorization started.`;
+                    return t`分类已开始。`;
                   }
 
                   return data.totalUncategorizedSenders
                     ? t`${plural(data.totalUncategorizedSenders, {
-                        one: "Categorizing # sender...",
-                        other: "Categorizing # senders...",
+                        one: "正在分类 # 个发件人...",
+                        other: "正在分类 # 个发件人...",
                       })}`
-                    : t`No more senders to categorize right now.`;
+                    : t`目前没有需要分类的发件人了。`;
                 },
                 error: (err: unknown) => {
                   const message =
-                    err instanceof Error
-                      ? err.message
-                      : t`An unknown error occurred.`;
-                  return t`Error categorizing senders: ${message}`;
+                    err instanceof Error ? err.message : t`发生了未知错误。`;
+                  return t`分类发件人时出错：${message}`;
                 },
               },
             );
@@ -100,7 +98,7 @@ export function CategorizeWithAiButton({
           {buttonProps?.children || (
             <>
               <SparklesIcon className="mr-2 size-4" />
-              <Trans>Categorize</Trans>
+              <Trans>智能分类</Trans>
             </>
           )}
         </Button>
@@ -123,9 +121,7 @@ function CategorizeWithAiButtonTooltip({
 
   if (hasAiAccess) {
     return (
-      <Tooltip
-        content={t`Categorize thousands of senders. This will take a few minutes.`}
-      >
+      <Tooltip content={t`为数千个发件人分类，这需要几分钟。`}>
         {children}
       </Tooltip>
     );

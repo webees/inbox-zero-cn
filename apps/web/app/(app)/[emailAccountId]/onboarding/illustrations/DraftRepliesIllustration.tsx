@@ -46,7 +46,7 @@ export function DraftRepliesIllustration() {
                 Sarah Chen
               </span>
               <span className="text-[9px] text-gray-400">
-                <Trans>10:30 AM</Trans>
+                <Trans>上午 10:30</Trans>
               </span>
             </div>
           </div>
@@ -54,8 +54,7 @@ export function DraftRepliesIllustration() {
 
         <div className="px-3 pb-2 text-left text-[10px] leading-relaxed text-gray-700 dark:text-gray-300">
           <Trans>
-            Hi John, I wanted to follow up on the project timeline. When would
-            be a good time to discuss the next steps?
+            你好 John，我想跟进一下项目时间线。什么时候方便讨论下一步？
           </Trans>
         </div>
       </motion.div>
@@ -85,7 +84,7 @@ export function DraftRepliesIllustration() {
             className="text-left text-[10px] leading-relaxed text-gray-800 dark:text-gray-200"
           >
             <p>
-              <Trans>Hi Sarah,</Trans>
+              <Trans>你好 Sarah，</Trans>
             </p>
           </motion.div>
 
@@ -97,12 +96,11 @@ export function DraftRepliesIllustration() {
           >
             <p>
               <Trans>
-                Thanks for reaching out! I&apos;d be happy to discuss the
-                project timeline. How about tomorrow at 2pm?
+                感谢你的联系！我很乐意讨论项目时间线。明天下午 2 点怎么样？
               </Trans>
             </p>
             <p className="mt-1">
-              <Trans>Best, John</Trans>
+              <Trans>祝好，John</Trans>
             </p>
           </motion.div>
         </div>
@@ -113,7 +111,7 @@ export function DraftRepliesIllustration() {
         >
           <div className="flex items-center gap-1">
             <span className="rounded bg-blue-600 px-2.5 py-0.5 text-[9px] font-medium text-white">
-              <Trans>Send</Trans>
+              <Trans>发送</Trans>
             </span>
             <div className="ml-1 flex items-center">
               <span className="rounded p-0.5 text-gray-400">

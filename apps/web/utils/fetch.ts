@@ -1,8 +1,8 @@
 import { EMAIL_ACCOUNT_HEADER } from "@/utils/config";
 
 /**
- * A wrapper around the native fetch function that automatically adds the
- * EMAIL_ACCOUNT_HEADER if an emailAccountId is provided.
+ * 对原生 fetch 函数的封装，在提供 emailAccountId 时
+ * 自动加上 EMAIL_ACCOUNT_HEADER。
  */
 export const fetchWithAccount = async ({
   url,

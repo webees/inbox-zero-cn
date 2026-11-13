@@ -17,12 +17,12 @@ export async function sendColdEmailNotification({
   logger: Logger;
 }): Promise<{ success: boolean; error?: string }> {
   if (!env.RESEND_API_KEY) {
-    logger.warn("Resend not configured, skipping cold email notification");
-    return { success: false, error: "Resend not configured" };
+    logger.warn("未配置 Resend，跳过冷邮件通知");
+    return { success: false, error: "未配置 Resend" };
   }
 
   const subject = formatReplySubject(originalSubject);
-  logger.trace("Sending cold email notification", { senderEmail });
+  logger.trace("正在发送冷邮件通知", { senderEmail });
 
   try {
     const result = await sendColdEmailNotificationViaResend({
@@ -36,18 +36,18 @@ export async function sendColdEmailNotification({
       },
     });
 
-    logger.info("Cold email notification sent", {
+    logger.info("冷邮件通知已发送", {
       messageId: result.data?.id,
     });
 
     return { success: true };
   } catch (error) {
-    logger.error("Error sending cold email notification", {
+    logger.error("发送冷邮件通知时出错", {
       error,
     });
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error.message : "未知错误",
     };
   }
 }

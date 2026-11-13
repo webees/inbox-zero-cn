@@ -1,5 +1,5 @@
-// crypto.randomUUID is only defined in secure contexts (HTTPS/localhost), so
-// self-hosted deployments served over plain HTTP need the manual v4 fallback.
+// crypto.randomUUID 仅在安全上下文（HTTPS/localhost）中定义，
+// 因此通过纯 HTTP 提供的自托管部署需要手动 v4 回退。
 export function randomUuid(): string {
   if (typeof crypto.randomUUID === "function") return crypto.randomUUID();
   const bytes = crypto.getRandomValues(new Uint8Array(16));

@@ -110,8 +110,8 @@ export function StepInviteTeam({
     if (errorCount > 0) {
       toastError({
         description: t`${plural(errorCount, {
-          one: "Failed to send # invitation",
-          other: "Failed to send # invitations",
+          one: "发送 # 份邀请失败",
+          other: "发送 # 份邀请失败",
         })}`,
       });
     }
@@ -137,10 +137,10 @@ export function StepInviteTeam({
 
       <div className="text-center mt-4">
         <PageHeading>
-          <Trans>Invite your team</Trans>
+          <Trans>邀请你的团队</Trans>
         </PageHeading>
         <TypographyP className="mt-2 max-w-lg mx-auto">
-          <Trans>Add more anytime from settings.</Trans>
+          <Trans>随时可以在设置中添加更多。</Trans>
         </TypographyP>
 
         <form onSubmit={onSubmit}>
@@ -152,7 +152,7 @@ export function StepInviteTeam({
                 name={`emails.${i}.email`}
                 registerProps={register(`emails.${i}.email`, {
                   validate: (v) =>
-                    !v || isValidEmail(v) || t`Enter a valid email`,
+                    !v || isValidEmail(v) || t`请输入有效的邮箱地址`,
                 })}
                 placeholder="name@company.com"
                 error={errors.emails?.[i]?.email}
@@ -167,7 +167,7 @@ export function StepInviteTeam({
               loading={isSubmitting}
               disabled={filledEmailCount === 0}
             >
-              <Trans>Send invites</Trans>
+              <Trans>发送邀请</Trans>
               <ArrowRightIcon className="size-4 ml-2" />
             </Button>
             <Button
@@ -184,7 +184,7 @@ export function StepInviteTeam({
               }}
               disabled={isSubmitting}
             >
-              <Trans>Skip</Trans>
+              <Trans>跳过</Trans>
             </Button>
           </div>
         </form>

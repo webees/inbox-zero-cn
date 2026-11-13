@@ -19,8 +19,8 @@ type LookupCallback = (
 ) => void;
 
 /**
- * Built-in integrations point at endpoints we control, so they use the default
- * fetch. User-registered servers go through the guarded one.
+ * 内置集成指向我们控制的端点，因此使用默认的
+ * fetch。用户注册的服务器则走受保护的版本。
  */
 export function getMcpFetch(
   integration: ResolvedMcpIntegration,
@@ -29,8 +29,8 @@ export function getMcpFetch(
 }
 
 /**
- * The URL policy for user-registered MCP servers, checked both when a server is
- * added and on every request to it. Returns why the URL is refused, if it is.
+ * 用户注册的 MCP 服务器的 URL 策略，在服务器被添加时
+ * 以及每次向它发起请求时都会检查。若 URL 被拒绝，则返回原因。
  */
 export function getCustomMcpServerUrlError(url: string): string | null {
   const allowPrivateIps = env.MCP_ALLOW_PRIVATE_IPS;
@@ -40,7 +40,7 @@ export function getCustomMcpServerUrlError(url: string): string | null {
   }
 
   if (!isSafeExternalHttpUrl(url, { allowPrivateIps })) {
-    return "That server URL is not a public address";
+    return "该服务器 URL 不是公网地址";
   }
 
   return null;
@@ -56,13 +56,13 @@ const publicOnlyAgent = new Agent({
 });
 
 /**
- * Fetch for user-registered MCP servers. Every URL here is user controlled, so
- * the target is re-checked (undici skips the lookup hook for IP literals),
- * hostname connections are pinned to addresses that passed the SSRF guard, and
- * redirects are refused because they would skip both checks.
+ * 面向用户注册的 MCP 服务器的 fetch。此处每个 URL 都由用户控制，因此
+ * 会重新检查目标（undici 对 IP 字面量会跳过 lookup 钩子），
+ * 主机名连接会被固定到通过 SSRF 防护的地址，并且
+ * 重定向会被拒绝，因为重定向会跳过这两项检查。
  *
- * Uses undici's own fetch because the pinned-DNS dispatcher comes from the
- * undici package, which Node's global fetch rejects across versions.
+ * 使用 undici 自带的 fetch，因为固定 DNS 的 dispatcher 来自
+ * undici 包，而 Node 的全局 fetch 在不同版本间会拒绝它。
  */
 const safeMcpFetch: FetchLike = async (url, init) => {
   const target = url.toString();
@@ -141,6 +141,6 @@ function safeHost(url: string) {
   try {
     return new URL(url).host;
   } catch {
-    return "the server";
+    return "服务器";
   }
 }

@@ -279,7 +279,7 @@ export function SplitTabs({
                       aria-label={split.name}
                       aria-current={active ? "true" : undefined}
                       aria-description={
-                        countLabel ? t`${countLabel} in this view` : undefined
+                        countLabel ? t`此视图中有 ${countLabel}` : undefined
                       }
                       className={cn(
                         "relative flex shrink-0 select-none items-center gap-1.5 whitespace-nowrap py-2 text-sm focus-visible:outline-none",
@@ -318,7 +318,7 @@ export function SplitTabs({
                   <ContextMenuContent className="w-44">
                     {onEdit && (
                       <ContextMenuItem onSelect={() => onEdit(split.id)}>
-                        <Trans>Edit filters and name</Trans>
+                        <Trans>编辑筛选条件和名称</Trans>
                       </ContextMenuItem>
                     )}
                     {onToggleBundle && split.bundleEligible && (
@@ -328,14 +328,14 @@ export function SplitTabs({
                           onToggleBundle(split.id, checked)
                         }
                       >
-                        <Trans>Bundle in Inbox</Trans>
+                        <Trans>在收件箱中合并</Trans>
                       </ContextMenuCheckboxItem>
                     )}
                     <ContextMenuItem
                       className="text-destructive focus:text-destructive"
                       onSelect={() => onDelete(split.id)}
                     >
-                      <Trans>Turn off split</Trans>
+                      <Trans>关闭拆分</Trans>
                     </ContextMenuItem>
                   </ContextMenuContent>
                 </ContextMenu>

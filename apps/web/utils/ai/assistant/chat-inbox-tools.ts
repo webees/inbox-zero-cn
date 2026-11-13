@@ -386,13 +386,13 @@ export const startSenderCategorizationTool = ({
         }
 
         if (error instanceof SafeError) {
-          logger.warn("Unable to start sender categorization", { error });
+          logger.warn("无法启动发件人分类", { error });
           return { error: error.message };
         }
 
-        logger.error("Failed to start sender categorization", { error });
+        logger.error("启动发件人分类失败", { error });
         return {
-          error: "Failed to start sender categorization",
+          error: "启动发件人分类失败",
         };
       }
     },
@@ -434,9 +434,9 @@ export const getSenderCategorizationStatusTool = ({
         const progress = await getCategorizationProgress({ emailAccountId });
         return getCategorizationStatusSnapshot(progress);
       } catch (error) {
-        logger.error("Failed to load sender categorization status", { error });
+        logger.error("加载发件人分类状态失败", { error });
         return {
-          error: "Failed to load sender categorization status",
+          error: "加载发件人分类状态失败",
         };
       }
     },
@@ -897,7 +897,7 @@ export const readAttachmentTool = ({
             mimeType: resolvedMimeType,
             contentAvailable: false,
             message:
-              "This attachment type cannot be read as text. Only PDF, DOCX, plain text, CSV, and HTML are supported.",
+              "此附件类型无法作为文本读取，仅支持 PDF、DOCX、纯文本、CSV 和 HTML",
           };
         }
 
@@ -920,7 +920,7 @@ export const readAttachmentTool = ({
             mimeType: resolvedMimeType,
             size: attachment.size,
             contentAvailable: false,
-            message: "Failed to extract text from this attachment.",
+            message: "无法从此附件中提取文本",
           };
         }
 
@@ -933,8 +933,8 @@ export const readAttachmentTool = ({
           truncated: extracted.truncated,
         };
       } catch (error) {
-        logger.error("Failed to read attachment", { error });
-        return { error: "Failed to read attachment" };
+        logger.error("读取附件失败", { error });
+        return { error: "读取附件失败" };
       }
     },
   });
@@ -950,7 +950,7 @@ const threadIdsSchema = z
   .transform((ids) => [...new Set(ids)]);
 
 const SENDER_EMAILS_HINT =
-  "No sender-level action was taken. If you only meant the emails already shown, use archive_threads with threadIds instead.";
+  "未对发件人执行操作。如果你只想处理已显示的邮件，请改用 archive_threads 并传入 threadIds。";
 
 const senderEmailsSchema = z
   .array(
@@ -1830,7 +1830,7 @@ async function runThreadActionsInParallel({
       try {
         await runAction(threadId);
       } catch (error) {
-        // Models often pass a message ID where a thread ID belongs.
+        // 模型经常把消息 ID 当作会话 ID 传入
         const resolvedThreadId = isThreadNotFoundError(error)
           ? await findThreadIdForMessageId(emailProvider, threadId)
           : null;

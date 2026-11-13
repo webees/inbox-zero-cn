@@ -35,12 +35,10 @@ export function ActivityLog({
   return (
     <div className="w-full min-w-0 rounded-lg border bg-muted overflow-hidden">
       <div className="flex items-center justify-between border-b px-3 py-2">
-        <h3 className="text-sm font-medium">
-          {title ?? t`Processing Activity`}
-        </h3>
+        <h3 className="text-sm font-medium">{title ?? t`处理活动`}</h3>
         {processingCount > 0 && !paused && (
           <span className="text-xs text-muted-foreground">
-            <Trans>{processingCount} processing</Trans>
+            <Trans>正在处理 {processingCount} 封</Trans>
           </span>
         )}
       </div>
@@ -49,7 +47,7 @@ export function ActivityLog({
           {entries.length === 0 && loading && (
             <div className="flex items-center gap-2 px-2 py-3 text-xs text-muted-foreground">
               <LoaderIcon className="h-3.5 w-3.5 animate-spin" />
-              <Trans>Fetching emails...</Trans>
+              <Trans>正在获取邮件...</Trans>
             </div>
           )}
           {entries.map((entry) => (
@@ -93,7 +91,7 @@ function ActivityLogRow({
             )}
             {!entry.ruleName && isCompleted && (
               <Badge color="yellow">
-                <Trans>No match</Trans>
+                <Trans>无匹配</Trans>
               </Badge>
             )}
           </span>

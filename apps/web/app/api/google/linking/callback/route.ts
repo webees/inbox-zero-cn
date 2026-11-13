@@ -8,10 +8,7 @@ import { getLinkingOAuth2Client } from "@/utils/gmail/client";
 import { GOOGLE_LINKING_STATE_COOKIE_NAME } from "@/utils/gmail/constants";
 import { withError } from "@/utils/middleware";
 import { validateOAuthCallback } from "@/utils/oauth/callback-validation";
-import {
-  createAccountLinkingRedirect,
-  createTokensUpdatedRedirect,
-} from "@/utils/oauth/account-linking-redirect";
+import { createAccountLinkingRedirect } from "@/utils/oauth/account-linking-redirect";
 import {
   hashOAuthAuditIdentifier,
   logOAuthLinkingCallbackValidation,
@@ -93,14 +90,6 @@ export const GET = withError("google/linking/callback", async (request) => {
     logger.info("OAuth code already processed, returning cached result", {
       targetUserId,
     });
-    if (cachedResult.params.success === "tokens_updated") {
-      return createTokensUpdatedRedirect({
-        userId: targetUserId,
-        reconnectEmailAccountId,
-        stateCookieName: GOOGLE_LINKING_STATE_COOKIE_NAME,
-        logger,
-      });
-    }
     return createAccountLinkingRedirect({
       query: cachedResult.params,
       stateCookieName: GOOGLE_LINKING_STATE_COOKIE_NAME,
@@ -210,7 +199,6 @@ export const GET = withError("google/linking/callback", async (request) => {
         logger,
         success: "tokens_updated",
         targetUserId,
-        reconnectEmailAccountId,
       });
     }
 
@@ -248,7 +236,6 @@ export const GET = withError("google/linking/callback", async (request) => {
             logger,
             success: "tokens_updated",
             targetUserId,
-            reconnectEmailAccountId,
           });
         }
       }
@@ -341,7 +328,6 @@ export const GET = withError("google/linking/callback", async (request) => {
         logger,
         success: "account_created_and_linked",
         targetUserId,
-        reconnectEmailAccountId,
       });
     }
 
@@ -374,7 +360,6 @@ export const GET = withError("google/linking/callback", async (request) => {
         logger,
         success: "tokens_updated",
         targetUserId,
-        reconnectEmailAccountId,
       });
     }
 
@@ -425,7 +410,6 @@ export const GET = withError("google/linking/callback", async (request) => {
       logger,
       success: successMessage,
       targetUserId,
-      reconnectEmailAccountId,
     });
   } catch (error) {
     await clearOAuthCode(code);
@@ -451,13 +435,11 @@ async function completeGoogleAccountLinking({
   logger,
   success,
   targetUserId,
-  reconnectEmailAccountId,
 }: {
   code: string;
   logger: Parameters<typeof handleOAuthCallbackError>[0]["logger"];
   success: "account_created_and_linked" | "account_merged" | "tokens_updated";
   targetUserId: string;
-  reconnectEmailAccountId: string | null;
 }) {
   await setOAuthCodeResult(code, { success });
 
@@ -478,15 +460,6 @@ async function completeGoogleAccountLinking({
         );
       }),
   );
-
-  if (success === "tokens_updated") {
-    return createTokensUpdatedRedirect({
-      userId: targetUserId,
-      reconnectEmailAccountId,
-      stateCookieName: GOOGLE_LINKING_STATE_COOKIE_NAME,
-      logger,
-    });
-  }
 
   return createAccountLinkingRedirect({
     query: { success },
@@ -539,14 +512,14 @@ async function getGoogleProfilePayload({
 }) {
   if (isGoogleOauthEmulationEnabled()) {
     if (!tokens.access_token) {
-      throw new SafeError("Missing access_token from Google response");
+      throw new SafeError("Google 响应中缺少 access_token");
     }
 
     return fetchGoogleOpenIdProfile(tokens.access_token);
   }
 
   if (!tokens.id_token) {
-    throw new SafeError("Missing id_token from Google response");
+    throw new SafeError("Google 响应中缺少 id_token");
   }
 
   try {
@@ -556,17 +529,15 @@ async function getGoogleProfilePayload({
     });
     const payload = ticket.getPayload();
     if (!payload) {
-      throw new SafeError(
-        "Could not get payload from verified ID token ticket.",
-      );
+      throw new SafeError("无法从已验证的 ID token 票据中获取 payload。");
     }
 
     return payload;
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    logger.error("ID token verification failed using googleAuth:", {
+    const message = error instanceof Error ? error.message : "未知错误";
+    logger.error("使用 googleAuth 验证 ID token 失败：", {
       error,
     });
-    throw new SafeError(`ID token verification failed: ${message}`);
+    throw new SafeError(`ID token 验证失败：${message}`);
   }
 }

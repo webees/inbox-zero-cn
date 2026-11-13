@@ -162,7 +162,7 @@ export const createRuleActionSchema = (
       ctx.addIssue({
         code: "custom",
         path: ["fields", requiredField],
-        message: `${action.type} requires fields.${requiredField}.`,
+        message: `${action.type} 需要字段 fields.${requiredField}`,
       });
     }) as z.ZodType<RuleAction>;
 };
@@ -175,12 +175,12 @@ export const createRuleSchema = (
     name: z
       .string()
       .describe(
-        "A short, concise name for the rule (preferably a single word). For example: 'Marketing', 'Newsletters', 'Urgent', 'Receipts'. Avoid verbose names like 'Archive and label marketing emails'.",
+        "规则的简短名称（最好是一个词）。例如：'营销'、'新闻简报'、'紧急'、'收据'。避免使用过于冗长的名称，例如 '归档并为营销邮件添加标签'。",
       ),
     condition: conditionSchema,
     actions: z
       .array(createRuleActionSchema(provider, integrationActionsEnabled))
-      .describe("The actions to take"),
+      .describe("要执行的操作"),
   });
 
 export type CreateRuleSchema = z.infer<ReturnType<typeof createRuleSchema>>;

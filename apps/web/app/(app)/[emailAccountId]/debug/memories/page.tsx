@@ -16,16 +16,16 @@ import { useAccount } from "@/providers/EmailAccountProvider";
 import { prefixPath } from "@/utils/path";
 
 const REPLY_MEMORY_KIND_LABELS: Record<ReplyMemoryKind, string> = {
-  FACT: "Fact",
-  PREFERENCE: "Preference",
-  PROCEDURE: "Procedure",
+  FACT: "事实",
+  PREFERENCE: "偏好",
+  PROCEDURE: "流程",
 };
 
 const REPLY_MEMORY_SCOPE_LABELS: Record<ReplyMemoryScopeType, string> = {
-  GLOBAL: "Global",
-  SENDER: "Sender",
-  DOMAIN: "Domain",
-  TOPIC: "Topic",
+  GLOBAL: "全局",
+  SENDER: "发件人",
+  DOMAIN: "域名",
+  TOPIC: "主题",
 };
 
 export default function DebugMemoriesPage() {
@@ -36,30 +36,27 @@ export default function DebugMemoriesPage() {
 
   return (
     <PageWrapper>
-      <PageHeading>Memories Debug</PageHeading>
+      <PageHeading>记忆调试</PageHeading>
 
       <LoadingContent loading={isLoading} error={error}>
         <div className="mt-6 space-y-6">
           <div className="grid gap-3 sm:grid-cols-3">
-            <MemoryCountCard label="Total memories" count={data?.totalCount} />
+            <MemoryCountCard label="记忆总数" count={data?.totalCount} />
+            <MemoryCountCard label="聊天记忆" count={data?.chatMemoryCount} />
             <MemoryCountCard
-              label="Chat memories"
-              count={data?.chatMemoryCount}
-            />
-            <MemoryCountCard
-              label="Drafting reply memories"
+              label="起草回复记忆"
               count={data?.replyMemoryCount}
             />
           </div>
 
           <MemorySection
-            title="Chat memories"
-            emptyMessage="No chat memories stored yet."
+            title="聊天记忆"
+            emptyMessage="尚未存储聊天记忆。"
             items={data?.chatMemories}
             renderItem={(memory) => (
               <div key={memory.id} className="rounded-lg border p-3">
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="secondary">Chat</Badge>
+                  <Badge variant="secondary">聊天</Badge>
                   <span className="text-xs text-muted-foreground">
                     {new Date(memory.createdAt).toLocaleString()}
                   </span>
@@ -73,7 +70,7 @@ export default function DebugMemoriesPage() {
                     )}
                     className="mt-2 inline-block text-xs underline hover:text-foreground"
                   >
-                    View chat
+                    查看聊天
                   </Link>
                 )}
               </div>
@@ -81,8 +78,8 @@ export default function DebugMemoriesPage() {
           />
 
           <MemorySection
-            title="Drafting reply memories"
-            emptyMessage="No drafting reply memories stored yet."
+            title="起草回复记忆"
+            emptyMessage="尚未存储起草回复记忆。"
             items={data?.replyMemories}
             renderItem={(memory) => (
               <div key={memory.id} className="rounded-lg border p-3">
@@ -92,20 +89,19 @@ export default function DebugMemoriesPage() {
                     {formatScope(memory.scopeType, memory.scopeValue)}
                   </Badge>
                   {memory.isLearnedStyleEvidence && (
-                    <Badge variant="outline">Learned style</Badge>
+                    <Badge variant="outline">已学习风格</Badge>
                   )}
                   <span className="text-xs text-muted-foreground">
-                    {memory._count.sources}{" "}
-                    {memory._count.sources === 1 ? "source" : "sources"}
+                    {memory._count.sources} 个来源
                   </span>
                 </div>
                 <p className="mt-2 text-sm">{memory.content}</p>
                 <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
                   <span>
-                    Created {new Date(memory.createdAt).toLocaleString()}
+                    创建于 {new Date(memory.createdAt).toLocaleString()}
                   </span>
                   <span>
-                    Updated {new Date(memory.updatedAt).toLocaleString()}
+                    更新于 {new Date(memory.updatedAt).toLocaleString()}
                   </span>
                 </div>
               </div>

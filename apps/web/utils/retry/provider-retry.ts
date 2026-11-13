@@ -2,8 +2,8 @@ import pRetry, { type RetryContext } from "p-retry";
 import type { Logger } from "@/utils/logger";
 import { sleep } from "@/utils/sleep";
 
-// "rate-limit-only" is for non-idempotent writes: network, server, and conflict
-// failures are ambiguous because the write may already have succeeded.
+// "rate-limit-only" 用于非幂等写入：网络、服务器和冲突
+// 失败是有歧义的，因为写入可能已经成功。
 export type ProviderRetryPolicy = "all" | "rate-limit-only";
 
 interface ProviderRetryDecision {
@@ -37,13 +37,13 @@ export async function withProviderRetry<T>(
       const { retryable, isRateLimit, delayMs, logFields } = classify(attempt);
 
       if (!retryable || (retryPolicy === "rate-limit-only" && !isRateLimit)) {
-        logger.warn("Non-retryable error encountered", {
+        logger.warn("遇到不可重试的错误", {
           error: attempt.error,
           ...logFields,
           retryPolicy,
         });
-        // Throwing the attempt context would hand callers p-retry's wrapper
-        // instead of the provider error, so error classifiers would never match.
+        // 抛出尝试上下文会把 p-retry 的包装错误交给调用方
+        // 而不是服务商错误，这样错误分类器就永远无法匹配。
         throw attempt.error;
       }
 
@@ -56,13 +56,10 @@ export async function withProviderRetry<T>(
         retryPolicy,
       };
 
-      logger.warn(`${providerName} error. Will retry`, retryLogFields);
+      logger.warn(`${providerName} 出错，将重试`, retryLogFields);
 
       if (delayMs > maxBlockingDelayMs) {
-        logger.warn(
-          "Aborting retry due to long backoff in serverless",
-          retryLogFields,
-        );
+        logger.warn("在无服务器环境中因退避时间过长而中止重试", retryLogFields);
         throw attempt.error;
       }
 
@@ -74,9 +71,9 @@ export async function withProviderRetry<T>(
 }
 
 /**
- * Parses a Retry-After header given as delta-seconds or an HTTP-date.
- * Returns undefined when the header is missing, unparseable, or already in the
- * past, so callers can fall back to their own backoff.
+ * 解析以 delta-seconds 或 HTTP-date 形式给出的 Retry-After 头。
+ * 当该头缺失、无法解析，或已经处于
+ * 过去时返回 undefined，以便调用方回退到自己的退避策略。
  */
 export function getRetryAfterDelayMs(
   retryAfterHeader: string | undefined,

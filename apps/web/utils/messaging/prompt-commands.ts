@@ -5,10 +5,10 @@ const HELP_COMMAND_REGEX = /^\/help(?:@[A-Za-z0-9_]+)?\s*$/i;
 const TELEGRAM_START_COMMAND_REGEX = /^\/start(?:@[A-Za-z0-9_]+)?(?:\s+.*)?$/i;
 
 export const PROMPT_COMMANDS: Record<string, string> = {
-  cleanup: "Help me clean up my inbox today.",
-  summary: "Summarize what needs attention in my inbox today.",
-  draftreply: "Draft a response to my most urgent unread email.",
-  followups: "Which emails should I follow up on this week?",
+  cleanup: "帮我清理一下今天的收件箱。",
+  summary: "总结一下今天我的收件箱里有哪些需要处理的事项。",
+  draftreply: "为我最紧急的未读邮件起草一封回复。",
+  followups: "这周我应该跟进哪些邮件？",
 };
 
 const ACCOUNT_COMMAND_LINES = [
@@ -33,10 +33,9 @@ const SUPPORTED_COMMANDS = new Set([
 ]);
 
 const PLATFORM_INTRO: Record<MessagingPlatform, string> = {
-  telegram: "I can help you manage your inbox from this Telegram DM.",
-  teams:
-    "I can help you manage your inbox from this Microsoft Teams direct message.",
-  slack: "I can help you manage your inbox from Slack.",
+  telegram: "我可以帮你通过这个 Telegram 私信管理收件箱。",
+  teams: "我可以帮你通过这个 Microsoft Teams 私信管理收件箱。",
+  slack: "我可以帮你通过 Slack 管理收件箱。",
 };
 
 type HelpTextOptions = {
@@ -73,7 +72,7 @@ export function getHelpText(
 
   return [
     PLATFORM_INTRO[platform],
-    "An active Inbox Zero account is required.",
+    "需要一个处于有效状态的 Inbox Zero 账号。",
     `Get started: ${normalizedBaseUrl}/channels`,
     `Help: ${normalizedBaseUrl}/docs/essentials/channels`,
     `Contact support: ${supportEmail}`,

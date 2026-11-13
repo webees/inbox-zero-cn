@@ -121,15 +121,13 @@ export function MailSearchSuggestionList({
           )}
           id={suggestionOptionId(id, index)}
           key={`${suggestion.kind}:${suggestion.query}`}
-          // Selecting on mousedown keeps the input focused, which is what
-          // holds the list open long enough for the click to land.
+          // 在 mousedown 时选中可保持输入框聚焦，从而让列表保持打开以完成点击。
           onMouseDown={(event) => {
             event.preventDefault();
             onSelect(suggestion);
           }}
           role="option"
-          // Focus stays on the input; aria-activedescendant conveys the
-          // highlighted option.
+          // 焦点保持在输入框，通过 aria-activedescendant 指示高亮选项。
           tabIndex={-1}
         >
           {suggestion.kind === "recent" ? (
@@ -174,11 +172,11 @@ export function MailSearchHint() {
   return (
     <div className="absolute top-full right-0 left-0 z-20 mt-1 flex items-center justify-between gap-3 rounded-lg border border-border bg-popover px-3 py-2 text-muted-foreground text-sm shadow-md">
       <span className="min-w-0 truncate">
-        <Trans>Search by sender, subject, or any words in the email</Trans>
+        <Trans>按发件人、主题或邮件中的任意词语搜索</Trans>
       </span>
       <span className="flex shrink-0 items-center gap-1.5 text-xs">
         <Trans>
-          <Kbd>Esc</Kbd> to close
+          按 <Kbd>Esc</Kbd> 关闭
         </Trans>
       </span>
     </div>

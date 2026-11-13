@@ -35,12 +35,12 @@ export function ConnectDrive() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to initiate Google Drive connection");
+        throw new Error("无法发起 Google Drive 连接");
       }
 
       const data: GetDriveAuthUrlResponse = await response.json();
 
-      if (!data?.url) throw new Error("Invalid auth URL");
+      if (!data?.url) throw new Error("无效的认证 URL");
 
       redirectToSafeUrl(data.url, { allowExternal: true });
     } catch (error) {
@@ -48,8 +48,8 @@ export function ConnectDrive() {
         extra: { context: "Google Drive OAuth initiation" },
       });
       toastError({
-        title: t`Error initiating Google Drive connection`,
-        description: t`Please try again or contact support`,
+        title: t`发起 Google Drive 连接时出错`,
+        description: t`请重试或联系支持团队`,
       });
       setIsConnectingGoogle(false);
     }
@@ -65,12 +65,12 @@ export function ConnectDrive() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to initiate OneDrive connection");
+        throw new Error("无法发起 OneDrive 连接");
       }
 
       const data: GetDriveAuthUrlResponse = await response.json();
 
-      if (!data?.url) throw new Error("Invalid auth URL");
+      if (!data?.url) throw new Error("无效的认证 URL");
 
       redirectToSafeUrl(data.url, { allowExternal: true });
     } catch (error) {
@@ -78,8 +78,8 @@ export function ConnectDrive() {
         extra: { context: "OneDrive OAuth initiation" },
       });
       toastError({
-        title: t`Error initiating OneDrive connection`,
-        description: t`Please try again or contact support`,
+        title: t`发起 OneDrive 连接时出错`,
+        description: t`请重试或联系支持团队`,
       });
       setIsConnectingMicrosoft(false);
     }
@@ -103,9 +103,9 @@ export function ConnectDrive() {
             unoptimized
           />
           {isConnectingGoogle ? (
-            <Trans>Connecting...</Trans>
+            <Trans>连接中...</Trans>
           ) : (
-            <Trans>Add Google Drive</Trans>
+            <Trans>添加 Google Drive</Trans>
           )}
         </Button>
 
@@ -124,9 +124,9 @@ export function ConnectDrive() {
             unoptimized
           />
           {isConnectingMicrosoft ? (
-            <Trans>Connecting...</Trans>
+            <Trans>连接中...</Trans>
           ) : (
-            <Trans>Add OneDrive</Trans>
+            <Trans>添加 OneDrive</Trans>
           )}
         </Button>
       </div>
@@ -135,7 +135,7 @@ export function ConnectDrive() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              <Trans>Connect Google Drive</Trans>
+              <Trans>连接 Google Drive</Trans>
             </DialogTitle>
           </DialogHeader>
 
@@ -143,12 +143,10 @@ export function ConnectDrive() {
             <div className="flex items-center justify-between gap-4 rounded-md border p-3">
               <div>
                 <p className="text-sm font-medium">
-                  <Trans>Standard</Trans>
+                  <Trans>标准</Trans>
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  <Trans>
-                    You&apos;ll need to create new folders for filing
-                  </Trans>
+                  <Trans>你需要为归档创建新文件夹</Trans>
                 </p>
               </div>
               <Button
@@ -161,17 +159,17 @@ export function ConnectDrive() {
                 disabled={isConnectingGoogle}
                 loading={isConnectingGoogle}
               >
-                <Trans>Connect</Trans>
+                <Trans>连接</Trans>
               </Button>
             </div>
 
             <div className="flex items-center justify-between gap-4 rounded-md border p-3">
               <div>
                 <p className="text-sm font-medium">
-                  <Trans>Full access</Trans>
+                  <Trans>完全访问权限</Trans>
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  <Trans>Use your existing folders</Trans>
+                  <Trans>使用现有文件夹</Trans>
                 </p>
               </div>
               <Button
@@ -184,7 +182,7 @@ export function ConnectDrive() {
                 disabled={isConnectingGoogle}
                 loading={isConnectingGoogle}
               >
-                <Trans>Connect</Trans>
+                <Trans>连接</Trans>
               </Button>
             </div>
           </div>

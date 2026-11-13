@@ -40,13 +40,13 @@ export function AllAccountsSelectionDialog({
   const { execute, isExecuting } = useAction(updateAllAccountsSelectionAction, {
     onSuccess: async () => {
       await onSaved();
-      toastSuccess({ description: t`All Accounts updated` });
+      toastSuccess({ description: t`所有账号已更新` });
       onClose();
     },
     onError: (error) => {
       toastError({
         description: getActionErrorMessage(error.error, {
-          prefix: t`Couldn't update All Accounts`,
+          prefix: t`无法更新所有账号`,
         }),
       });
     },
@@ -57,10 +57,10 @@ export function AllAccountsSelectionDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            <Trans>Choose accounts</Trans>
+            <Trans>选择账号</Trans>
           </DialogTitle>
           <DialogDescription>
-            <Trans>Choose which accounts appear in All Accounts.</Trans>
+            <Trans>选择哪些账号会显示在所有账号中。</Trans>
           </DialogDescription>
         </DialogHeader>
 
@@ -113,7 +113,7 @@ export function AllAccountsSelectionDialog({
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose} disabled={isExecuting}>
-            <Trans>Cancel</Trans>
+            <Trans>取消</Trans>
           </Button>
           <Button
             loading={isExecuting}
@@ -121,7 +121,7 @@ export function AllAccountsSelectionDialog({
               execute({ emailAccountIds: [...selectedAccountIds] })
             }
           >
-            <Trans>Save</Trans>
+            <Trans>保存</Trans>
           </Button>
         </DialogFooter>
       </DialogContent>

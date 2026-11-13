@@ -7,7 +7,7 @@ describe("mapRulesToExtensionTabs", () => {
   it("maps extension-supported labels to built-in tabs", () => {
     const rules = [
       getRule("sync github", [getAction({ label: "GitHub" })]),
-      getRule("sync team", [getAction({ label: "Team" })]),
+      getRule("sync team", [getAction({ label: "团队" })]),
       getRule("sync stripe", [getAction({ label: "Stripe" })]),
     ];
 
@@ -15,7 +15,7 @@ describe("mapRulesToExtensionTabs", () => {
       {
         type: "enable_default",
         tabId: "team",
-        displayLabel: "Team",
+        displayLabel: "团队",
       },
       {
         type: "enable_default",
@@ -46,30 +46,30 @@ describe("mapRulesToExtensionTabs", () => {
 
   it("normalizes built-in labels before lookup and dedupe", () => {
     const rules = [
-      getRule("sync lowercase team", [getAction({ label: " team " })]),
-      getRule("skip duplicate team", [getAction({ label: "TEAM" })]),
+      getRule("sync lowercase team", [getAction({ label: " 团队 " })]),
+      getRule("skip duplicate team", [getAction({ label: "团队" })]),
     ];
 
     expect(mapRulesToExtensionTabs(rules)).toEqual([
       {
         type: "enable_default",
         tabId: "team",
-        displayLabel: "Team",
+        displayLabel: "团队",
       },
     ]);
   });
 
   it("dedupes built-in labels that only differ by punctuation", () => {
     const rules = [
-      getRule("sync follow up", [getAction({ label: "Follow up" })]),
-      getRule("skip duplicate follow-up", [getAction({ label: "Follow-up" })]),
+      getRule("sync follow up", [getAction({ label: "跟进" })]),
+      getRule("skip duplicate follow-up", [getAction({ label: "跟进-" })]),
     ];
 
     expect(mapRulesToExtensionTabs(rules)).toEqual([
       {
         type: "enable_default",
         tabId: "follow-up",
-        displayLabel: "Follow-up",
+        displayLabel: "跟进",
       },
     ]);
   });
@@ -109,16 +109,16 @@ describe("mapRulesToExtensionTabs", () => {
 
     expect(mapRulesToExtensionTabs(rules)).toEqual([
       {
+        type: "enable_default",
+        tabId: "github",
+        displayLabel: "GitHub",
+      },
+      {
         type: "add_custom",
         label: "Newsletter",
         icon: "🏷️",
         query: "label:newsletter",
         displayLabel: "Newsletter",
-      },
-      {
-        type: "enable_default",
-        tabId: "github",
-        displayLabel: "GitHub",
       },
     ]);
   });

@@ -10,16 +10,3 @@ export function getPlaywrightSpecPathFromTargetName(targetName: string): string;
 export function batchPlaywrightTargets(
   targets: ReadonlyArray<{ name: string; path: string }>,
 ): Array<{ name: string; paths: string[]; timeoutMinutes: number }>;
-
-export function assignPlaywrightProviders(
-  batches: ReadonlyArray<{
-    name: string;
-    paths: string[];
-    timeoutMinutes: number;
-  }>,
-): Array<{
-  name: string;
-  paths: string[];
-  timeoutMinutes: number;
-  provider: "google" | "microsoft";
-}>;

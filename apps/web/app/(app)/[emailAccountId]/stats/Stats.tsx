@@ -25,19 +25,19 @@ import { CardBasic } from "@/components/ui/card";
 import { useProductAnalytics } from "@/hooks/useProductAnalytics";
 
 const selectOptions = [
-  { label: "Last week", value: "7" },
-  { label: "Last month", value: "30" },
-  { label: "Last 3 months", value: "90" },
-  { label: "Last year", value: "365" },
-  { label: "All", value: "0" },
+  { label: "上周", value: "7" },
+  { label: "上个月", value: "30" },
+  { label: "过去 3 个月", value: "90" },
+  { label: "去年", value: "365" },
+  { label: "全部", value: "0" },
 ];
 const defaultSelected = selectOptions[1];
 
 const groupByLabels = {
-  day: msg`Group by day`,
-  week: msg`Group by week`,
-  month: msg`Group by month`,
-  year: msg`Group by year`,
+  day: msg`按天分组`,
+  week: msg`按周分组`,
+  month: msg`按月分组`,
+  year: msg`按年分组`,
 };
 
 export function Stats() {
@@ -166,20 +166,17 @@ export function Stats() {
             refreshInterval={refreshInterval}
           />
         </ErrorBoundary>
-        <ErrorBoundary fallback={<SectionError title={t`Response Time`} />}>
+        <ErrorBoundary fallback={<SectionError title={t`响应时间`} />}>
           <ResponseTimeAnalytics
             dateRange={dateRange}
             refreshInterval={refreshInterval}
           />
         </ErrorBoundary>
-        <ErrorBoundary fallback={<SectionError title={t`Rule Stats`} />}>
-          <RuleStatsChart
-            dateRange={dateRange}
-            title={t`Assistant processed emails`}
-          />
+        <ErrorBoundary fallback={<SectionError title={t`规则统计`} />}>
+          <RuleStatsChart dateRange={dateRange} title={t`AI 助手处理的邮件`} />
         </ErrorBoundary>
         {isAccountOwner && (
-          <ErrorBoundary fallback={<SectionError title={t`Email Actions`} />}>
+          <ErrorBoundary fallback={<SectionError title={t`邮件操作`} />}>
             <EmailActionsAnalytics />
           </ErrorBoundary>
         )}
@@ -193,7 +190,7 @@ function SectionError({ title }: { title: string }) {
   return (
     <CardBasic>
       <p className="text-muted-foreground">
-        <Trans>Unable to load {title}. Please try refreshing the page.</Trans>
+        <Trans>无法加载{title}。请尝试刷新页面</Trans>
       </p>
     </CardBasic>
   );

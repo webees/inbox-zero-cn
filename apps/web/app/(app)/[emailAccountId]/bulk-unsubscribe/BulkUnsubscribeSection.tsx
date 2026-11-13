@@ -90,39 +90,39 @@ const filterOptions: {
   separatorAfter?: boolean;
 }[] = [
   {
-    label: msg`To review`,
+    label: msg`待审核`,
     value: "unhandled",
     icon: <InboxIcon className="size-4" />,
   },
   {
-    label: msg`All senders`,
+    label: msg`所有发件人`,
     value: "all",
     icon: <ListIcon className="size-4" />,
     separatorAfter: true,
   },
   {
-    label: msg`Unsubscribed`,
+    label: msg`已退订`,
     value: "unsubscribed",
     icon: <MailXIcon className="size-4" />,
   },
   {
-    label: msg`Auto-archived`,
+    label: msg`自动归档`,
     value: "autoArchived",
     icon: <ArchiveIcon className="size-4" />,
   },
   {
-    label: msg`Kept`,
+    label: msg`已保留`,
     value: "approved",
     icon: <ThumbsUpIcon className="size-4" />,
   },
 ];
 
 const selectOptions = [
-  { label: "Last week", value: "7" },
-  { label: "Last month", value: "30" },
-  { label: "Last 3 months", value: "90" },
-  { label: "Last year", value: "365" },
-  { label: "All", value: "0" },
+  { label: "上周", value: "7" },
+  { label: "上个月", value: "30" },
+  { label: "过去 3 个月", value: "90" },
+  { label: "去年", value: "365" },
+  { label: "全部", value: "0" },
 ];
 const defaultSelected = selectOptions[2];
 
@@ -401,19 +401,18 @@ export function BulkUnsubscribe() {
     <PageWrapper>
       <div className="flex items-start justify-between gap-4">
         <PageHeader
-          title={t`Bulk Unsubscriber`}
+          title={t`批量退订`}
           video={{
-            title: t`Getting started with Bulk Unsubscribe`,
+            title: t`批量退订入门`,
             description: (
               <Trans>
-                Learn how to quickly bulk unsubscribe from and archive unwanted
-                emails. You can read more in our{" "}
+                了解如何快速批量退订并归档不想要的邮件。你可以在我们的{" "}
                 <TextLink
                   href="https://docs.getinboxzero.com/essentials/bulk-email-unsubscriber"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  help center
+                  帮助中心
                 </TextLink>
                 .
               </Trans>
@@ -427,8 +426,8 @@ export function BulkUnsubscribe() {
       <DismissibleVideoCard
         className="my-4"
         icon={<ArchiveIcon className="size-5" />}
-        title={t`Getting started with Bulk Unsubscribe`}
-        description={t`Learn how to use the Bulk Unsubscribe to unsubscribe from and archive unwanted emails.`}
+        title={t`批量退订入门`}
+        description={t`了解如何使用批量退订来退订并归档不想要的邮件。`}
         muxPlaybackId="qxP8P5aKm7k7I01seCEMP1ZepHQAmdKCcW02x1fM7xQm00"
         storageKey="bulk-unsubscribe-onboarding-video"
         videoAnalytics={{
@@ -448,7 +447,7 @@ export function BulkUnsubscribe() {
               <span className="flex items-center">
                 {selectedFilter?.icon}
                 <span className="ml-2">
-                  {selectedFilter ? i18n._(selectedFilter.label) : t`All`}
+                  {selectedFilter ? i18n._(selectedFilter.label) : t`全部`}
                 </span>
               </span>
               <ChevronDown className="ml-2 h-4 w-4 text-gray-400" />
@@ -483,7 +482,7 @@ export function BulkUnsubscribe() {
                   }}
                   onSelect={(event) => event.preventDefault()}
                 >
-                  <Trans>Include senders without an unsubscribe link</Trans>
+                  <Trans>包含没有退订链接的发件人</Trans>
                 </DropdownMenuCheckboxItem>
               </>
             )}
@@ -514,14 +513,14 @@ export function BulkUnsubscribe() {
                     {isSuggestedMode ? (
                       <Plural
                         value={suggestedRows.length}
-                        one="Showing # suggested"
-                        other="Showing # suggested"
+                        one="显示 # 个推荐"
+                        other="显示 # 个推荐"
                       />
                     ) : (
                       <Plural
                         value={suggestedRows.length}
-                        one="Select # suggested"
-                        other="Select # suggested"
+                        one="选择 # 个推荐"
+                        other="选择 # 个推荐"
                       />
                     )}
                   </span>
@@ -530,8 +529,8 @@ export function BulkUnsubscribe() {
               <TooltipContent>
                 <p className="max-w-xs">
                   {isSuggestedMode
-                    ? t`Click to show all senders`
-                    : t`Senders you get a lot of email from but rarely open`}
+                    ? t`点击显示所有发件人`
+                    : t`经常给你发邮件但你很少打开的发件人`}
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -550,12 +549,12 @@ export function BulkUnsubscribe() {
                 htmlFor="archive-on-unsubscribe"
                 className="cursor-pointer select-none"
               >
-                <Trans>Archive on unsubscribe</Trans>
+                <Trans>退订时归档</Trans>
               </label>
             </div>
           </TooltipTrigger>
           <TooltipContent>
-            <Trans>Also archive existing emails when you unsubscribe</Trans>
+            <Trans>退订时同时归档现有邮件</Trans>
           </TooltipContent>
         </Tooltip>
       </div>
@@ -609,14 +608,14 @@ export function BulkUnsubscribe() {
                     <>
                       <ChevronsUpIcon className="h-4 w-4" />
                       <span className="ml-2">
-                        <Trans>Show less</Trans>
+                        <Trans>收起</Trans>
                       </span>
                     </>
                   ) : (
                     <>
                       <ChevronsDownIcon className="h-4 w-4" />
                       <span className="ml-2">
-                        <Trans>Show more</Trans>
+                        <Trans>显示更多</Trans>
                       </span>
                     </>
                   )}
@@ -663,7 +662,7 @@ function ScanOlderEmailsButton() {
           className="shrink-0"
           onClick={() => onLoadBatch({ loadBefore: true, showToast: true })}
           disabled={isLoading}
-          aria-label={t`Scan older emails`}
+          aria-label={t`扫描更早的邮件`}
         >
           {isLoading ? (
             <Loader2Icon className="size-4 animate-spin" />
@@ -673,7 +672,7 @@ function ScanOlderEmailsButton() {
         </Button>
       </TooltipTrigger>
       <TooltipContent>
-        {isLoading ? t`Scanning older emails…` : t`Scan older emails`}
+        {isLoading ? t`正在扫描更早的邮件…` : t`扫描更早的邮件`}
       </TooltipContent>
     </Tooltip>
   );
@@ -692,7 +691,7 @@ function EmptyState({
     return (
       <div className="flex flex-col items-center justify-center px-4 py-14">
         <h3 className="font-title text-xl font-medium">
-          <Trans>Only senders without an unsubscribe link are left</Trans>
+          <Trans>只剩下没有退订链接的发件人</Trans>
         </h3>
         <Button
           variant="outline"
@@ -700,7 +699,7 @@ function EmptyState({
           className="mt-4"
           onClick={onIncludeLinkless}
         >
-          <Trans>Show them</Trans>
+          <Trans>显示它们</Trans>
         </Button>
       </div>
     );
@@ -710,16 +709,16 @@ function EmptyState({
     <div className="flex flex-col items-center justify-center px-4 py-14">
       <h3 className="font-title text-xl font-medium">
         {isReviewView ? (
-          <Trans>Nothing left to review</Trans>
+          <Trans>没有需要审核的内容了</Trans>
         ) : (
-          <Trans>No senders found</Trans>
+          <Trans>未找到发件人</Trans>
         )}
       </h3>
       <p className="mt-1.5 text-center text-sm text-muted-foreground">
         {isReviewView ? (
-          <Trans>New senders will show up here as they arrive.</Trans>
+          <Trans>新的发件人到达后会显示在这里。</Trans>
         ) : (
-          <Trans>Try a different filter or date range.</Trans>
+          <Trans>试试其他筛选条件或日期范围。</Trans>
         )}
       </p>
     </div>

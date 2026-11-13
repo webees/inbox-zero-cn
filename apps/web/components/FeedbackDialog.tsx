@@ -32,7 +32,7 @@ export function FeedbackSidebarButton() {
 
   return (
     <SidebarMenuButton
-      tooltip={t`Feedback`}
+      tooltip={t`反馈`}
       sidebarName="left-sidebar"
       className="h-9 font-semibold"
       aria-haspopup="dialog"
@@ -40,7 +40,7 @@ export function FeedbackSidebarButton() {
     >
       <MessageSquarePlusIcon />
       <span>
-        <Trans>Feedback</Trans>
+        <Trans>反馈</Trans>
       </span>
     </SidebarMenuButton>
   );
@@ -62,14 +62,14 @@ export function FeedbackDialog() {
 
   const { execute, isExecuting } = useAction(submitFeedbackAction, {
     onSuccess: () => {
-      toastSuccess({ description: t`Thanks for your feedback!` });
+      toastSuccess({ description: t`感谢你的反馈！` });
       reset();
       setOpen(false);
     },
     onError: (error) => {
       toastError({
         description: getActionErrorMessage(error.error, {
-          prefix: t`Failed to submit feedback`,
+          prefix: t`提交反馈失败`,
         }),
       });
     },
@@ -89,12 +89,11 @@ export function FeedbackDialog() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            <Trans>Send feedback</Trans>
+            <Trans>发送反馈</Trans>
           </DialogTitle>
           <DialogDescription>
             <Trans>
-              Tell us what you like, what is confusing, or what you want us to
-              build next.
+              告诉我们你喜欢什么、哪里令人困惑，或者你希望我们接下来开发什么。
             </Trans>
           </DialogDescription>
         </DialogHeader>
@@ -104,7 +103,7 @@ export function FeedbackDialog() {
             name="feedback"
             autosizeTextarea
             rows={5}
-            placeholder={t`What's on your mind?`}
+            placeholder={t`你在想什么？`}
             registerProps={register("feedback")}
             error={errors.feedback}
           />
@@ -115,10 +114,10 @@ export function FeedbackDialog() {
               onClick={() => handleOpenChange(false)}
               disabled={isExecuting}
             >
-              <Trans>Cancel</Trans>
+              <Trans>取消</Trans>
             </Button>
             <Button type="submit" loading={isExecuting}>
-              <Trans>Submit</Trans>
+              <Trans>提交</Trans>
             </Button>
           </DialogFooter>
         </form>

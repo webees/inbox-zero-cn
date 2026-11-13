@@ -24,7 +24,7 @@ export function SharedEmptyState() {
           <SharedThreadIllustration />
         </EmptyMedia>
         <EmptyTitle>
-          <Trans>No discussions yet</Trans>
+          <Trans>暂无讨论</Trans>
         </EmptyTitle>
         <EmptyDescription>
           <Trans>
@@ -35,7 +35,7 @@ export function SharedEmptyState() {
       <EmptyContent>
         <Button asChild variant="outline" size="sm">
           <Link href={prefixPath(emailAccountId, "/mail")}>
-            <Trans>Go to inbox</Trans>
+            <Trans>前往收件箱</Trans>
           </Link>
         </Button>
       </EmptyContent>

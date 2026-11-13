@@ -131,7 +131,7 @@ describe("booking emails", () => {
     expect(resendMocks.sendHostBookingConfirmationEmail).toHaveBeenCalledWith(
       expect.objectContaining({
         emailProps: expect.objectContaining({
-          location: "Microsoft Teams link was not generated",
+          location: "Microsoft Teams 链接未生成",
         }),
       }),
     );

@@ -174,7 +174,7 @@ describe("handleOAuthCallback for custom servers", () => {
         redirectUri: "https://app.example.com/api/mcp/custom_abc/callback",
         emailAccountId: "account-1",
       }),
-    ).rejects.toThrow("removed before the connection completed");
+    ).rejects.toThrow("在连接完成前已被移除");
 
     expect(prisma.mcpIntegration.upsert).not.toHaveBeenCalled();
     expect(prisma.mcpConnection.upsert).not.toHaveBeenCalled();

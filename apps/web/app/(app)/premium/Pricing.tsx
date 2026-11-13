@@ -88,14 +88,14 @@ export default function Pricing(props: PricingProps) {
     <div className="mb-12">
       <div className="mx-auto max-w-2xl text-center lg:max-w-4xl">
         <h2 className="font-title text-base leading-7 text-blue-600">
-          <Trans>Pricing</Trans>
+          <Trans>定价</Trans>
         </h2>
         <p className="mt-2 font-title text-4xl text-gray-900 sm:text-5xl">
-          <Trans>Try for free, affordable paid plans</Trans>
+          <Trans>免费试用，付费套餐价格实惠</Trans>
         </p>
       </div>
       <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-gray-600">
-        <Trans>No hidden fees. Cancel anytime.</Trans>
+        <Trans>无隐藏费用，可随时取消。</Trans>
       </p>
     </div>
   );
@@ -141,14 +141,14 @@ export default function Pricing(props: PricingProps) {
         {isPlanManagedElsewhere ? (
           <AlertBasic
             variant="blue"
-            title={t`Your plan is managed by another account`}
-            description={t`Your access comes from a plan someone else set up. To manage billing yourself, contact ${supportEmail}.`}
+            title={t`你的套餐由其他账号管理`}
+            description={t`你的访问权限来自他人设置的套餐。如需自行管理账单，请联系 ${supportEmail}。`}
           />
         ) : (
           <AlertBasic
             variant="blue"
-            title={t`Billing access restricted`}
-            description={t`Only organization owners and admins can manage billing.`}
+            title={t`账单访问受限`}
+            description={t`只有组织所有者和管理员可以管理账单。`}
           />
         )}
       </div>
@@ -175,7 +175,7 @@ export default function Pricing(props: PricingProps) {
               <Button asChild>
                 <Link href="/setup">
                   <SparklesIcon className="mr-2 h-4 w-4" />
-                  <Trans>Go to app</Trans>
+                  <Trans>前往应用</Trans>
                 </Link>
               </Button>
             )}
@@ -184,8 +184,8 @@ export default function Pricing(props: PricingProps) {
               <div className="mt-2 w-full max-w-2xl basis-full text-left">
                 <AlertBasic
                   variant="blue"
-                  title={t`Managed in the App Store`}
-                  description={t`This subscription is billed by Apple. To change or cancel it, use your iPhone or iPad subscription settings.`}
+                  title={t`由 App Store 管理`}
+                  description={t`此订阅由 Apple 收费。如需变更或取消，请使用你的 iPhone 或 iPad 订阅设置。`}
                 />
               </div>
             )}
@@ -194,8 +194,8 @@ export default function Pricing(props: PricingProps) {
               <div className="mt-2 w-full max-w-2xl basis-full text-left">
                 <AlertBasic
                   variant="blue"
-                  title={t`Grandfathered pricing`}
-                  description={t`You're on a legacy ${legacyTierName} Stripe plan, and your price stays the same. The prices below are for new subscriptions.`}
+                  title={t`保留原有定价`}
+                  description={t`你使用的是旧版 ${legacyTierName} Stripe 套餐，价格保持不变。下方价格适用于新订阅。`}
                 />
               </div>
             )}
@@ -216,7 +216,7 @@ export default function Pricing(props: PricingProps) {
         >
           <div className="ml-1">
             <DiscountBadge>
-              <Trans>Save up to 20%</Trans>
+              <Trans>最高可省 20%</Trans>
             </DiscountBadge>
           </div>
         </PricingFrequencyToggle>
@@ -292,15 +292,14 @@ function PriceTier({
   const hasActiveStripeSubscription =
     !!stripeSubscriptionId &&
     !!stripeSubscriptionStatus &&
-    // A paused subscription is still open in Stripe, so plan changes go
-    // through the portal rather than a new checkout.
+    // 已暂停的订阅在 Stripe 中仍然存在，因此套餐变更要通过客户门户完成，而不是新建结账。
     ["active", "trialing", "paused"].includes(stripeSubscriptionStatus);
 
-  // `text` stays English for analytics; `label` is what the button shows.
+  // `text` 保留英文供分析使用；`label` 是按钮实际显示的文案。
   function getCTA() {
-    if (isCurrentPlan) return { text: "Current plan", label: t`Current plan` };
+    if (isCurrentPlan) return { text: "Current plan", label: t`当前套餐` };
     if (userPremiumTier && !tier.ctaLink) {
-      return { text: "Switch to this plan", label: t`Switch to this plan` };
+      return { text: "Switch to this plan", label: t`切换到此套餐` };
     }
     return {
       text: tier.cta,
@@ -323,7 +322,7 @@ function PriceTier({
           </h3>
           {tier.mostPopular ? (
             <DiscountBadge>
-              <Trans>Popular</Trans>
+              <Trans>热门</Trans>
             </DiscountBadge>
           ) : null}
         </div>
@@ -333,7 +332,7 @@ function PriceTier({
         <p className="mt-6 flex items-baseline gap-x-1">
           {tier.price[frequency.value] === 0 ? (
             <span className="text-4xl font-bold tracking-tight text-gray-900">
-              <Trans>Let's talk</Trans>
+              <Trans>联系我们</Trans>
             </span>
           ) : (
             <>
@@ -341,7 +340,7 @@ function PriceTier({
                 {formatPrice(tier.price[frequency.value])}
               </span>
               <span className="text-sm font-semibold leading-6 text-gray-600">
-                <Trans>/user</Trans>
+                <Trans>/用户</Trans>
               </span>
             </>
           )}
@@ -508,17 +507,17 @@ function PriceTier({
 function ExtraAccountPricing({ price }: { price: number }) {
   const { t } = useLingui();
   const formattedPrice = formatPrice(getExtraAccountPrice(price));
-  const extraAccountPrice = t`${formattedPrice}/mo`;
+  const extraAccountPrice = t`${formattedPrice}/月`;
 
   return (
     <p className="mt-1 flex items-center gap-2 text-sm leading-6 text-gray-600">
       <Plural
         value={INCLUDED_EMAIL_ACCOUNTS_PER_PERSON}
-        one={`# email account included, then ${extraAccountPrice} each`}
-        other={`# email accounts included, then ${extraAccountPrice} each`}
+        one={`包含 # 个邮箱账号，之后每个 ${extraAccountPrice}`}
+        other={`包含 # 个邮箱账号，之后每个 ${extraAccountPrice}`}
       />
       <TooltipExplanation
-        text={t`Connect your personal and work email at no extra cost. Each extra email account is ${extraAccountPrice}. Each team member is billed as a separate user.`}
+        text={t`免费连接你的个人和工作邮箱。每个额外邮箱账号为 ${extraAccountPrice}。每位团队成员按单独用户计费。`}
       />
     </p>
   );

@@ -106,23 +106,23 @@ const CHANNEL_FEATURES: Array<{
 }> = [
   {
     purpose: MessagingRoutePurpose.MEETING_BRIEFS,
-    name: msg`Meeting briefs`,
-    description: msg`Get a summary before your meetings.`,
+    name: msg`会议简报`,
+    description: msg`在会议开始前获取摘要。`,
   },
   {
     purpose: MessagingRoutePurpose.FOLLOW_UPS,
-    name: msg`Follow-up reminders`,
-    description: msg`Get nudged about emails that need a follow-up.`,
+    name: msg`跟进提醒`,
+    description: msg`收到需要跟进的邮件提醒。`,
   },
   {
     purpose: MessagingRoutePurpose.DIGESTS,
-    name: msg`Digests`,
-    description: msg`Receive your scheduled digest in chat.`,
+    name: msg`邮件摘要`,
+    description: msg`在聊天中接收定时邮件摘要。`,
   },
   {
     purpose: MessagingRoutePurpose.DOCUMENT_FILINGS,
-    name: msg`Document filing alerts`,
-    description: msg`Notifications when documents are auto-filed.`,
+    name: msg`文档归档提醒`,
+    description: msg`文档自动归档时收到通知。`,
   },
 ];
 
@@ -246,7 +246,7 @@ export function Channels() {
             unconnectedProviders.length === 0 && (
               <ItemCard className="py-8 text-center">
                 <MutedText>
-                  <Trans>No channels available.</Trans>
+                  <Trans>暂无可用渠道。</Trans>
                 </MutedText>
               </ItemCard>
             )}
@@ -260,10 +260,10 @@ const INTRO_FEATURES: Array<{
   icon: React.ElementType;
   label: MessageDescriptor;
 }> = [
-  { icon: MailIcon, label: msg`Important emails` },
-  { icon: MessageCircleReplyIcon, label: msg`Drafted replies` },
-  { icon: CalendarClockIcon, label: msg`Meeting briefs` },
-  { icon: SunIcon, label: msg`Daily summary` },
+  { icon: MailIcon, label: msg`重要邮件` },
+  { icon: MessageCircleReplyIcon, label: msg`已起草的回复` },
+  { icon: CalendarClockIcon, label: msg`会议简报` },
+  { icon: SunIcon, label: msg`每日摘要` },
 ];
 
 function ChannelsIntro({
@@ -279,7 +279,7 @@ function ChannelsIntro({
       <h2 className="flex items-start gap-2 text-lg font-semibold tracking-tight">
         <BellIcon className="mt-1 size-5 shrink-0 text-blue-600 dark:text-blue-400" />
         <span>
-          <Trans>Inbox Zero where you work.</Trans>
+          <Trans>在你的工作场所使用 Inbox Zero。</Trans>
         </span>
       </h2>
       <MutedText className="mt-2 text-sm">
@@ -364,15 +364,12 @@ function ConnectedChannelSection({
         analytics.captureAction("channel_disconnected", {
           provider: channel.provider,
         });
-        toastSuccess({ description: t`${config.name} disconnected` });
+        toastSuccess({ description: t`${config.name} 已断开连接` });
         onUpdate();
       },
       onError: (error) => {
         toastError({
-          description: getActionErrorMessage(
-            error.error,
-            t`Failed to disconnect`,
-          ),
+          description: getActionErrorMessage(error.error, t`断开连接失败`),
         });
       },
     },
@@ -408,7 +405,7 @@ function ConnectedChannelSection({
       badge={
         <div className="flex items-center gap-1">
           <Badge color="green">
-            <Trans>Connected</Trans>
+            <Trans>已连接</Trans>
           </Badge>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -426,7 +423,7 @@ function ConnectedChannelSection({
                 className="text-destructive focus:text-destructive"
               >
                 <LogOutIcon className="mr-2 h-4 w-4" />
-                <Trans>Disconnect {config.name}</Trans>
+                <Trans>断开 {config.name}</Trans>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -437,12 +434,10 @@ function ConnectedChannelSection({
         <Item size="sm">
           <ItemContent>
             <ItemTitle>
-              <Trans>Rule notifications</Trans>
+              <Trans>规则通知</Trans>
             </ItemTitle>
             <ItemDescription>
-              <Trans>
-                Choose which rules send notifications and where they go.
-              </Trans>
+              <Trans>选择哪些规则发送通知以及通知发送到哪里。</Trans>
             </ItemDescription>
           </ItemContent>
           {isSlack && (
@@ -477,7 +472,7 @@ function ConnectedChannelSection({
             <Item size="sm">
               <ItemContent>
                 <MutedText className="text-sm">
-                  <Trans>No rules</Trans>
+                  <Trans>暂无规则</Trans>
                 </MutedText>
               </ItemContent>
             </Item>
@@ -574,10 +569,7 @@ function UnconnectedProviderSection({
       },
       onError: (error) => {
         toastError({
-          description: getActionErrorMessage(
-            error.error,
-            t`Failed to generate code`,
-          ),
+          description: getActionErrorMessage(error.error, t`生成代码失败`),
         });
       },
     },
@@ -613,10 +605,10 @@ function UnconnectedProviderSection({
           <Item size="sm">
             <ItemContent>
               <ItemTitle>
-                <Trans>Connect {config.name}</Trans>
+                <Trans>连接 {config.name}</Trans>
               </ItemTitle>
               <ItemDescription>
-                <Trans>Receive notifications via {config.name}.</Trans>
+                <Trans>通过 {config.name} 接收通知。</Trans>
               </ItemDescription>
             </ItemContent>
             <ItemActions>
@@ -626,7 +618,7 @@ function UnconnectedProviderSection({
                 disabled={isLoading}
                 onClick={handleConnect}
               >
-                <Trans>Connect</Trans>
+                <Trans>连接</Trans>
               </Button>
             </ItemActions>
           </Item>
@@ -657,26 +649,26 @@ function LinkCodeDialog({
   const providerName = dialog.provider === "TEAMS" ? "Teams" : "Telegram";
   const command = `/connect ${dialog.code}`;
   const openBotLabel =
-    dialog.provider === "TEAMS" ? t`Open Teams app` : t`Open Telegram bot`;
+    dialog.provider === "TEAMS" ? t`打开 Teams 应用` : t`打开 Telegram 机器人`;
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            <Trans>Connect {providerName}</Trans>
+            <Trans>连接 {providerName}</Trans>
           </DialogTitle>
           <DialogDescription>
             <Trans>
-              Send this command in a direct message with the Inbox Zero bot on{" "}
-              {providerName}. The code is one-time use and expires in 10
-              minutes.
+              在 {providerName} 上向 Inbox Zero
+              机器人发送直接消息并附带此命令。该代码仅可使用一次，并在 10
+              分钟后过期。
             </Trans>
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-2">
           <div className="text-xs text-muted-foreground">
-            <Trans>Command</Trans>
+            <Trans>命令</Trans>
           </div>
           <CopyInput value={command} />
         </div>
@@ -724,12 +716,12 @@ function RuleToggle({
     toggleRuleChannelAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: t`Settings saved` });
+        toastSuccess({ description: t`设置已保存` });
         onUpdate();
       },
       onError: (error) => {
         toastError({
-          description: getActionErrorMessage(error.error, t`Failed to update`),
+          description: getActionErrorMessage(error.error, t`更新失败`),
         });
       },
     },
@@ -758,7 +750,7 @@ function RuleToggle({
           <ItemTitle>{rule.name}</ItemTitle>
           {isDraft && (
             <Badge color="green">
-              <Trans>Draft reply</Trans>
+              <Trans>草稿回复</Trans>
             </Badge>
           )}
         </div>
@@ -779,7 +771,7 @@ function RuleToggle({
                   <CheckIcon
                     className={`mr-2 h-4 w-4 ${isDraft ? "invisible" : ""}`}
                   />
-                  <Trans>Notify only</Trans>
+                  <Trans>仅通知</Trans>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => switchMode("DRAFT_MESSAGING_CHANNEL")}
@@ -787,7 +779,7 @@ function RuleToggle({
                   <CheckIcon
                     className={`mr-2 h-4 w-4 ${!isDraft ? "invisible" : ""}`}
                   />
-                  <Trans>Draft reply in chat</Trans>
+                  <Trans>在聊天中起草回复</Trans>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

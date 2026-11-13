@@ -19,7 +19,7 @@ export async function isIntegrationActionEnabledForUserId(userId: string) {
     });
     return user ? isIntegrationActionEnabledForUserEmail(user.email) : false;
   } catch (error) {
-    logger.error("Failed to look up user for integration action access", {
+    logger.error("查找集成操作访问权限对应的用户失败", {
       error,
     });
     return false;
@@ -40,10 +40,7 @@ export async function isIntegrationActionEnabledForEmailAccountId(
       ? isIntegrationActionEnabledForUserEmail(emailAccount.user.email)
       : false;
   } catch (error) {
-    logger.error(
-      "Failed to look up email account for integration action access",
-      { error },
-    );
+    logger.error("查找集成操作访问权限对应的邮箱账号失败", { error });
     return false;
   }
 }
@@ -58,7 +55,7 @@ async function isIntegrationActionEnabledForUserEmail(email: string) {
     });
     return flags.isEnabled(INTEGRATION_ACTION_FEATURE_FLAG);
   } catch (error) {
-    logger.error("Failed to evaluate integration action feature flag", {
+    logger.error("评估集成操作功能开关失败", {
       error,
     });
     return false;

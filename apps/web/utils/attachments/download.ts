@@ -28,7 +28,7 @@ export function saveBlob(blob: Blob, filename: string) {
     link.click();
   } finally {
     link.remove();
-    // click() can start the download after this turn; 0ms revoke drops the file.
+    // click() 可能在本轮之后开始下载；0ms 撤销会丢弃文件。
     setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
   }
 }
@@ -47,14 +47,14 @@ export async function fetchAttachment({
   onProgress?: (receivedBytes: number) => void;
 }): Promise<Blob> {
   if (!emailAccountId) {
-    throw new Error("Email account ID is required");
+    throw new Error("需要邮箱账号 ID");
   }
 
   if (
     maxBytes !== undefined &&
     (!Number.isSafeInteger(maxBytes) || maxBytes < 0)
   )
-    throw new Error("Invalid attachment download size limit");
+    throw new Error("附件下载大小上限无效");
   signal?.throwIfAborted();
   const response = await fetchWithAccount({
     url,
@@ -64,14 +64,13 @@ export async function fetchAttachment({
 
   if (!response.ok) {
     await response.body?.cancel().catch(() => undefined);
-    throw new Error("Failed to download attachment");
+    throw new Error("下载附件失败");
   }
 
   if (maxBytes === undefined && !onProgress) return response.blob();
 
   const limit = maxBytes ?? Number.POSITIVE_INFINITY;
-  const sizeError = () =>
-    new Error("Attachment exceeds the download size limit");
+  const sizeError = () => new Error("附件超过下载大小上限");
   if (Number(response.headers.get("content-length")) > limit) {
     await response.body?.cancel().catch(() => undefined);
     throw sizeError();
@@ -98,7 +97,7 @@ export async function fetchAttachment({
       signal?.throwIfAborted();
       if (done) break;
       if (value.byteLength > limit - receivedBytes) throw sizeError();
-      // Coalesce tiny transport chunks so their object overhead stays bounded.
+      // 合并细小的传输分块，以使其对象开销保持有界。
       let offset = 0;
       while (offset < value.byteLength) {
         buffer ??= new Uint8Array(Math.min(64 * 1024, limit));

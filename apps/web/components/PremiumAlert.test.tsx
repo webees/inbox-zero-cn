@@ -18,7 +18,7 @@ vi.mock("@/app/(app)/premium/PremiumModal", () => ({
 }));
 
 vi.mock("@/components/EndTrialButton", () => ({
-  EndTrialButton: () => <button type="button">Start paid plan now</button>,
+  EndTrialButton: () => <button type="button">立即开始付费套餐</button>,
 }));
 
 describe("PremiumAlertWithData", () => {
@@ -34,8 +34,8 @@ describe("PremiumAlertWithData", () => {
 
     render(<PremiumAlertWithData activeOnly />);
 
-    expect(screen.getByText("Active Subscription Required")).toBeTruthy();
-    expect(screen.getByText("Start paid plan now")).toBeTruthy();
+    expect(screen.getByText("需要有效订阅")).toBeTruthy();
+    expect(screen.getByText("立即开始付费套餐")).toBeTruthy();
   });
 
   it("shows nothing to trial users on features that allow trials", () => {
@@ -56,8 +56,8 @@ describe("PremiumAlertWithData", () => {
 
     render(<PremiumAlertWithData activeOnly />);
 
-    expect(screen.queryByText("Active Subscription Required")).toBeNull();
-    expect(screen.getByText("Premium Feature")).toBeTruthy();
+    expect(screen.queryByText("需要有效订阅")).toBeNull();
+    expect(screen.getByText("高级版功能")).toBeTruthy();
   });
 
   it("shows nothing to active subscribers", () => {

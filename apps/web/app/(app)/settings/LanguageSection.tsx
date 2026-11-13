@@ -33,7 +33,7 @@ export function LanguageSection() {
       <Item size="sm">
         <ItemContent>
           <ItemTitle>
-            <Trans>Language</Trans>
+            <Trans>语言</Trans>
           </ItemTitle>
         </ItemContent>
         <ItemActions>
@@ -42,7 +42,7 @@ export function LanguageSection() {
             onValueChange={(value) => execute({ locale: toLocale(value) })}
             disabled={isExecuting}
           >
-            <SelectTrigger className="w-40" aria-label={t`Language`}>
+            <SelectTrigger className="w-40" aria-label={t`语言`}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

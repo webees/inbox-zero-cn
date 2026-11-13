@@ -67,7 +67,7 @@ const pricingTiers: PricingTier[] = [
     badges: [annualSavingsBadge(tiers[0])],
     button: {
       variant: "secondary-two",
-      content: "Try free for 7 days",
+      content: "免费试用 7 天",
       href: "/login",
     },
     icon: <Briefcase />,
@@ -100,8 +100,8 @@ const frequencies = ["annually", "monthly"] as const;
 type PricingFrequency = (typeof frequencies)[number];
 
 const frequencyLabels: Record<PricingFrequency, MessageDescriptor> = {
-  annually: msg`Annually`,
-  monthly: msg`Monthly`,
+  annually: msg`按年`,
+  monthly: msg`按月`,
 };
 
 export function Pricing() {
@@ -116,10 +116,10 @@ export function Pricing() {
   return (
     <Section id="pricing">
       <SectionHeading>
-        <Trans>Try for free, affordable paid plans</Trans>
+        <Trans>免费试用，付费套餐价格实惠</Trans>
       </SectionHeading>
       <SectionSubtitle>
-        <Trans>No hidden fees. Cancel anytime.</Trans>
+        <Trans>无隐藏费用，可随时取消。</Trans>
       </SectionSubtitle>
       <SectionContent
         noMarginTop
@@ -139,7 +139,7 @@ export function Pricing() {
           className="w-fit rounded-full p-1.5 text-xs font-semibold leading-5 ring-1 ring-inset ring-gray-200 mb-6 shadow-[0_0_7px_0_rgba(0,0,0,0.0.07)]"
         >
           <Label className="sr-only">
-            <Trans>Payment frequency</Trans>
+            <Trans>付款频率</Trans>
           </Label>
           {frequencies.map((value) => (
             <Radio
@@ -180,16 +180,16 @@ export function Pricing() {
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="font-title text-lg">
-                      <Trans>Email app</Trans>
+                      <Trans>电子邮件应用</Trans>
                     </h3>
                     <Badge variant="blue">
-                      <Trans>New</Trans>
+                      <Trans>新</Trans>
                     </Badge>
                   </div>
                   <Paragraph size="sm" className="mt-1">
                     <Trans>
-                      A fast email app for Gmail and Outlook. Free on web,
-                      desktop, and iPhone.
+                      适用于 Gmail 和 Outlook
+                      的快速电子邮件应用，在网页、桌面端和 iPhone 上免费使用。
                     </Trans>
                   </Paragraph>
                 </div>
@@ -211,7 +211,7 @@ export function Pricing() {
                   }
                 >
                   <span className="relative z-10">
-                    <Trans>Get started free</Trans>
+                    <Trans>免费开始使用</Trans>
                   </span>
                 </Link>
               </Button>
@@ -226,12 +226,9 @@ export function Pricing() {
                   <Sparkle />
                 </div>
                 <div>
-                  <h3 className="font-title text-lg">Enterprise</h3>
+                  <h3 className="font-title text-lg">企业版</h3>
                   <Paragraph size="sm" className="mt-1">
-                    <Trans>
-                      Need SSO, SCIM, on-premise deployment, or a dedicated
-                      account manager?
-                    </Trans>
+                    <Trans>需要 SSO、SCIM、本地部署或专属客户经理？</Trans>
                   </Paragraph>
                 </div>
               </div>
@@ -252,7 +249,7 @@ export function Pricing() {
                 >
                   <Chat />
                   <span className="relative z-10">
-                    <Trans>Speak to sales</Trans>
+                    <Trans>联系销售</Trans>
                   </span>
                 </Link>
               </Button>
@@ -323,12 +320,12 @@ function PricingCard({
                   {formatPrice(price)}
                 </div>
                 <Paragraph size="xs" color="light" className="-translate-y-1">
-                  <Trans>/user /month</Trans>
+                  <Trans>/用户/月</Trans>
                 </Paragraph>
               </>
             ) : (
               <div className="font-title text-[#242424] text-[1.7rem] md:text-[2.5rem] leading-tight">
-                <Trans>Contact us</Trans>
+                <Trans>联系我们</Trans>
               </div>
             )}
           </div>
@@ -337,14 +334,14 @@ function PricingCard({
               {isAnnual ? (
                 <Plural
                   value={INCLUDED_EMAIL_ACCOUNTS_PER_PERSON}
-                  one={`# email account included, then ${extraAccountPrice}/mo each, billed annually`}
-                  other={`# email accounts included, then ${extraAccountPrice}/mo each, billed annually`}
+                  one={`包含 # 个邮箱账号，之后每个 ${extraAccountPrice}/月，按年计费`}
+                  other={`包含 # 个邮箱账号，之后每个 ${extraAccountPrice}/月，按年计费`}
                 />
               ) : (
                 <Plural
                   value={INCLUDED_EMAIL_ACCOUNTS_PER_PERSON}
-                  one={`# email account included, then ${extraAccountPrice}/mo each`}
-                  other={`# email accounts included, then ${extraAccountPrice}/mo each`}
+                  one={`包含 # 个邮箱账号，之后每个 ${extraAccountPrice}/月`}
+                  other={`包含 # 个邮箱账号，之后每个 ${extraAccountPrice}/月`}
                 />
               )}
             </Paragraph>

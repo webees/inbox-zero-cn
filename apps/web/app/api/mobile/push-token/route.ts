@@ -4,19 +4,12 @@ import {
   MobilePushPlatform,
   MobilePushTokenType,
 } from "@/generated/prisma/enums";
-import { FCM_REGISTRATION_TOKEN } from "@/utils/fcm";
 import { withAuth } from "@/utils/middleware";
 import prisma from "@/utils/prisma";
 
 const MOBILE_PUSH_PLATFORMS = {
   android: MobilePushPlatform.ANDROID,
   ios: MobilePushPlatform.IOS,
-} as const;
-
-const MOBILE_PUSH_TOKEN_TYPES = {
-  apns: MobilePushTokenType.APNS,
-  expo: MobilePushTokenType.EXPO,
-  fcm: MobilePushTokenType.FCM,
 } as const;
 
 const EXPO_PUSH_TOKEN = /^(?:Exponent|Expo)PushToken\[[A-Za-z0-9_-]+\]$/;
@@ -26,7 +19,7 @@ const pushTokenSchema = z
   .object({
     token: z.string().trim().min(1).max(4096),
     platform: z.enum(["android", "ios"]),
-    tokenType: z.enum(["expo", "apns", "fcm"]).optional(),
+    tokenType: z.enum(["expo", "apns"]).optional(),
     previousToken: z.string().trim().min(1).max(4096).optional(),
   })
   .superRefine((value, ctx) => {
@@ -36,7 +29,7 @@ const pushTokenSchema = z
     if (!tokenType) {
       ctx.addIssue({
         code: "custom",
-        message: "tokenType is required for a raw device token",
+        message: "原始设备令牌必须提供 tokenType",
         path: ["tokenType"],
       });
       return;
@@ -44,7 +37,7 @@ const pushTokenSchema = z
     if (tokenType === "expo" && !EXPO_PUSH_TOKEN.test(value.token)) {
       ctx.addIssue({
         code: "custom",
-        message: "Expected an Expo push token",
+        message: "应为 Expo 推送令牌",
         path: ["token"],
       });
     }
@@ -52,30 +45,14 @@ const pushTokenSchema = z
       if (value.platform !== "ios") {
         ctx.addIssue({
           code: "custom",
-          message: "APNs tokens are iOS only",
+          message: "APNs 令牌仅适用于 iOS",
           path: ["platform"],
         });
       }
       if (!APNS_DEVICE_TOKEN.test(value.token)) {
         ctx.addIssue({
           code: "custom",
-          message: "Expected a hex APNs device token",
-          path: ["token"],
-        });
-      }
-    }
-    if (tokenType === "fcm") {
-      if (value.platform !== "android") {
-        ctx.addIssue({
-          code: "custom",
-          message: "FCM tokens are Android only",
-          path: ["platform"],
-        });
-      }
-      if (!FCM_REGISTRATION_TOKEN.test(value.token)) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Expected an FCM registration token",
+          message: "应为十六进制的 APNs 设备令牌",
           path: ["token"],
         });
       }
@@ -87,7 +64,10 @@ const pushTokenSchema = z
     return {
       token: value.token,
       platform: MOBILE_PUSH_PLATFORMS[value.platform],
-      tokenType: MOBILE_PUSH_TOKEN_TYPES[tokenType],
+      tokenType:
+        tokenType === "apns"
+          ? MobilePushTokenType.APNS
+          : MobilePushTokenType.EXPO,
       previousToken: value.previousToken,
     };
   });

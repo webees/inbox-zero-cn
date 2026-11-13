@@ -19,9 +19,9 @@ const CONTACT_READ_MASK = "names,emailAddresses,photos";
 const PHOTO_READ_MASK = "emailAddresses,photos";
 const PHOTO_PAGE_SIZE = 1000;
 const MAX_PHOTO_PAGES = 5;
-// Bounds the cached map and the payload sent to the browser.
+// 限制缓存映射的大小以及发送到浏览器的数据量。
 const MAX_CONTACT_PHOTOS = 2000;
-// The People API rejects longer queries, and no name or address prefix is that long.
+// People API 会拒绝更长的查询，而姓名或地址前缀不会达到这个长度。
 const MAX_PEOPLE_QUERY_LENGTH = 100;
 
 export async function searchContacts(
@@ -44,9 +44,9 @@ export async function searchContacts(
     return normalizeContactCandidates(onlySource.contacts ?? []);
   }
 
-  // Saved Google Contacts are only the address book the user curated. Gmail's
-  // compose autocomplete also searches Other Contacts — people the user has
-  // emailed — so both sources are required for Gmail-like suggestions.
+  // 已保存的 Google 联系人只是用户整理过的通讯录。Gmail 的
+  // 写信自动补全还会搜索其他联系人（用户曾发过邮件的人），
+  // 因此需要同时查询这两个来源才能提供类似 Gmail 的建议。
   const [saved, other] = await Promise.all([
     loadContactSource(
       () => searchSavedContacts(client, query),
@@ -70,7 +70,7 @@ export async function searchContacts(
   ]);
 }
 
-/** Real (non-placeholder) contact photos keyed by canonical email address. */
+/** 按规范电子邮件地址索引的真实（非占位）联系人照片。 */
 export async function listContactPhotos(
   client: people_v1.People,
   logger: Logger,
@@ -113,13 +113,13 @@ export async function listContactPhotos(
       : undefined,
   ]);
 
-  // An empty map would be cached as "this account has no photos".
+  // 空映射会被缓存为“此账号没有照片”。
   if (saved.deniedError && (!other || other.deniedError))
     throw saved.deniedError;
 
   const photos: Record<string, string> = {};
   let count = 0;
-  // Saved contacts come first so the user's own choice of photo wins.
+  // 已保存的联系人优先，这样用户亲自选择的照片会胜出。
   for (const person of [
     ...(saved.contacts ?? []),
     ...(other?.contacts ?? []),
@@ -151,13 +151,13 @@ async function loadContactSource<T>(
   } catch (error) {
     if (!isContactSourceDenied(error)) throw error;
 
-    logger.info("Gmail contact source not permitted", { source });
+    logger.info("不允许访问 Gmail 联系人来源", { source });
     return { contacts: undefined, deniedError: error };
   }
 }
 
 function isContactSourceDenied(error: unknown) {
-  // Google 403 rate-limit payloads reuse PERMISSION_DENIED; do not treat them as missing access.
+  // Google 的 403 限流响应会复用 PERMISSION_DENIED；不要将其视为缺少访问权限。
   if (
     isGmailRateLimitExceededError(error) ||
     isGmailQuotaExceededError(error)
@@ -183,7 +183,7 @@ function isContactSourceDenied(error: unknown) {
 }
 
 async function searchSavedContacts(client: people_v1.People, query: string) {
-  // Google requires an empty-query warmup before searching its contact cache.
+  // Google 要求在搜索联系人缓存之前先用空查询进行预热。
   if (query) {
     await client.people.searchContacts({
       query: "",
@@ -265,7 +265,7 @@ async function listPeoplePages(
   return people;
 }
 
-// Google fills in a generated letter tile when a person has no photo.
+// 当某人没有照片时，Google 会填入自动生成的字母图块。
 function getPhotoUrl(person: people_v1.Schema$Person) {
   return person.photos?.find((photo) => !photo.default)?.url ?? undefined;
 }
@@ -286,7 +286,7 @@ async function withContactCacheRetry<T>(search: () => Promise<T>): Promise<T> {
       throw error;
     }
 
-    // Google's lazy cache can still be rebuilding after the warmup returns.
+    // 预热返回后，Google 的延迟缓存可能仍在重建。
     await sleep(5000);
     return search();
   }

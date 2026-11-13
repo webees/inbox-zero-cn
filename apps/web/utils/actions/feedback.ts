@@ -34,11 +34,11 @@ async function sendFeedbackToWebhook({
       headers: { "Content-Type": "application/json" },
       signal: AbortSignal.timeout(5000),
       body: JSON.stringify({
-        text: "New product feedback received",
+        text: "收到新的产品反馈",
         blocks: [
           {
             type: "section",
-            text: { type: "plain_text", text: `User: ${email}` },
+            text: { type: "plain_text", text: `用户：${email}` },
           },
           ...splitFeedbackForSlack(feedback).map((text) => ({
             type: "section",
@@ -49,12 +49,12 @@ async function sendFeedbackToWebhook({
     });
 
     if (!response.ok) {
-      logger.error("Failed to send product feedback webhook", {
+      logger.error("发送产品反馈 webhook 失败", {
         status: response.status,
       });
     }
   } catch (error) {
-    logger.error("Failed to send product feedback webhook", { error });
+    logger.error("发送产品反馈 webhook 失败", { error });
   }
 }
 

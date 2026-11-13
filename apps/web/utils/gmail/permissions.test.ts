@@ -174,7 +174,7 @@ describe("handleGmailPermissionsCheck", () => {
 
     expect(result).toEqual({
       hasAllPermissions: false,
-      error: "Gmail access expired. Please reconnect your account.",
+      error: "Gmail 访问已过期。请重新连接你的账号。",
       missingScopes: REQUIRED_SCOPES,
     });
   });

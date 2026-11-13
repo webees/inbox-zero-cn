@@ -38,13 +38,13 @@ export function useCompleteOnboarding(signupIntent: SignupIntent | null) {
       toastError({
         description: getActionErrorMessage(
           {},
-          { prefix: "There was an error finishing onboarding" },
+          { prefix: "完成引导流程时出错" },
         ),
       });
       return false;
     }
     if (result?.serverError || result?.validationErrors) {
-      captureException(new Error("Failed to complete onboarding"), {
+      captureException(new Error("完成引导流程失败"), {
         extra: {
           context: "onboarding",
           step: "complete",
@@ -59,7 +59,7 @@ export function useCompleteOnboarding(signupIntent: SignupIntent | null) {
             serverError: result?.serverError,
             validationErrors: result?.validationErrors,
           },
-          { prefix: "There was an error finishing onboarding" },
+          { prefix: "完成引导流程时出错" },
         ),
       });
       return false;

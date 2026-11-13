@@ -91,7 +91,7 @@ describe("handleFollowUpReminderAction", () => {
     expect(postEphemeral).toHaveBeenCalled();
     const text = postEphemeral.mock.calls[0]?.[1];
     expect(typeof text).toBe("string");
-    expect(text).toMatch(/done/i);
+    expect(text).toMatch(/完成/);
   });
 
   it("replaces the original Slack message so the nudge reflects the resolved state", async () => {
@@ -112,7 +112,7 @@ describe("handleFollowUpReminderAction", () => {
     const [threadId, messageId, card] = editMessage.mock.calls[0] ?? [];
     expect(threadId).toBe("slack:C_CHANNEL:1700000000.000100");
     expect(messageId).toBe("1700000000.000100");
-    expect(JSON.stringify(card)).toMatch(/done/i);
+    expect(JSON.stringify(card)).toMatch(/完成/);
   });
 
   it("replaces the stored Slack notification before clearing its reference", async () => {
@@ -152,7 +152,7 @@ describe("handleFollowUpReminderAction", () => {
       expect.objectContaining({
         channel: "C_CHANNEL",
         ts: "1700000000.000100",
-        text: expect.stringMatching(/done/i),
+        text: expect.stringMatching(/完成/),
         blocks: expect.any(Array),
         unfurl_links: false,
         unfurl_media: false,

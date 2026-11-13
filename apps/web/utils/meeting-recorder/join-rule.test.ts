@@ -49,8 +49,8 @@ describe("shouldAutoJoin", () => {
       }),
     ).toBe(true);
 
-    // The connected calendar belongs to a different address than the email
-    // account, so `isOrganizer` is false even though the user is the host.
+    // 所连接的日历属于与邮箱账号不同的地址，
+    // 因此即使用户是主持人，`isOrganizer` 也为 false。
     expect(
       shouldAutoJoin({
         event: event({ isOrganizer: false, organizerEmail: "User@Acme.com" }),

@@ -262,9 +262,7 @@ describe("updateMessagingFeatureRouteAction", () => {
       },
     );
 
-    expect(result?.serverError).toBe(
-      "Please reconnect Teams before configuring notifications.",
-    );
+    expect(result?.serverError).toBe("请先重新连接 Teams，再配置通知。");
   });
 });
 
@@ -310,7 +308,7 @@ describe("updateSlackRouteAction", () => {
     });
 
     expect(result?.serverError).toBe(
-      "Only private channels you are a member of are allowed. Please select one of your private channels.",
+      "只允许使用你已加入的私密渠道。请选择你自己的某个私密渠道。",
     );
     expect(prisma.messagingRoute.upsert).not.toHaveBeenCalled();
     expect(sendChannelConfirmation).not.toHaveBeenCalled();
@@ -337,9 +335,7 @@ describe("updateSlackRouteAction", () => {
       targetId: "C123",
     });
 
-    expect(result?.serverError).toBe(
-      "Please reconnect Slack before configuring notifications.",
-    );
+    expect(result?.serverError).toBe("请先重新连接 Slack，再配置通知。");
     expect(listChannels).not.toHaveBeenCalled();
     expect(listPrivateChannelsForUser).not.toHaveBeenCalled();
     expect(prisma.messagingRoute.upsert).not.toHaveBeenCalled();
@@ -620,9 +616,7 @@ describe("toggleRuleChannelAction", () => {
       enabled: true,
     });
 
-    expect(result?.serverError).toBe(
-      "Please reconnect Teams before configuring notifications.",
-    );
+    expect(result?.serverError).toBe("请先重新连接 Teams，再配置通知。");
     expect(prisma.action.create).not.toHaveBeenCalled();
   });
 });

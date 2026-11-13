@@ -1,4 +1,3 @@
-import { cardToAdaptiveCard } from "@chat-adapter/teams";
 import { cardToBlockKit } from "@chat-adapter/slack";
 import type { KnownBlock } from "@slack/types";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -79,7 +78,7 @@ describe("normalizeMessagingAssistantText", () => {
       normalizeMessagingAssistantText({
         text: "Please click the Send button in this Telegram thread.",
       }),
-    ).toBe("This draft is pending confirmation.");
+    ).toBe("该草稿待确认。");
   });
 
   it("does not append redundant send-button guidance", () => {
@@ -112,17 +111,17 @@ describe("normalizeMessagingAssistantText", () => {
     });
 
     expect(output).toContain("Here are a few suggestions.");
-    expect(output).toContain("Suggested rules:");
+    expect(output).toContain("建议规则：");
     expect(output).toContain("**Monitoring**");
     expect(output).toContain("When: mention alerts from monitoring tools");
-    expect(output).toContain("Then: Label as 'Monitoring', Archive");
+    expect(output).toContain("Then: 打标签为 'Monitoring', 归档");
     expect(output).toContain("**Digest Updates**");
     expect(output).toContain("When: summary emails from Inbox Zero");
-    expect(output).toContain("Then: Label as 'Notification'");
+    expect(output).toContain("Then: 打标签为 'Notification'");
     expect(output).toContain("Want me to create either one?");
     expect(output).not.toContain("<rule-suggestion");
     expect(output).not.toContain("</rule-suggestions>");
-    expect(output).not.toContain("Then: Label as 'Notification', Archive");
+    expect(output).not.toContain("Then: 打标签为 'Notification', 归档");
   });
 
   it("formats standalone free-form rule suggestions", () => {
@@ -131,7 +130,7 @@ describe("normalizeMessagingAssistantText", () => {
         text: '<rule-suggestion name="Road Trip Plans" when="emails discussing road trips" do="move to Travels and notify Telegram" />',
       }),
     ).toBe(
-      "Suggested rule:\n**Road Trip Plans**\nWhen: emails discussing road trips\nThen: move to Travels and notify Telegram",
+      "建议规则：\n**Road Trip Plans**\nWhen: emails discussing road trips\nThen: move to Travels and notify Telegram",
     );
   });
 
@@ -140,7 +139,7 @@ describe("normalizeMessagingAssistantText", () => {
       normalizeMessagingAssistantText({
         text: '<Rule-Suggestion name="Monitoring" when="alerts" archive="true" />',
       }),
-    ).toBe("Suggested rule:\n**Monitoring**\nWhen: alerts\nThen: Archive");
+    ).toBe("建议规则：\n**Monitoring**\nWhen: alerts\nThen: 归档");
   });
 
   it("treats shorthand boolean rule suggestion attributes as enabled", () => {
@@ -149,7 +148,7 @@ describe("normalizeMessagingAssistantText", () => {
         text: '<rule-suggestion name="Updates" when="low-priority updates" archive draft markread />',
       }),
     ).toBe(
-      "Suggested rule:\n**Updates**\nWhen: low-priority updates\nThen: Archive, Draft Reply, Mark Read",
+      "建议规则：\n**Updates**\nWhen: low-priority updates\nThen: 归档, 草稿回复, 标为已读",
     );
   });
 });
@@ -227,7 +226,7 @@ describe("buildPendingEmailSummary", () => {
         referenceFrom: "sender@example.com",
         referenceSubject: "Question",
       }),
-    ).toBe('Reply to sender@example.com about "Question".');
+    ).toBe("回复 sender@example.com，主题为“Question”。");
   });
 
   it("formats forward summaries with source and destination", () => {
@@ -239,7 +238,7 @@ describe("buildPendingEmailSummary", () => {
         referenceSubject: "Project update",
       }),
     ).toBe(
-      'Forward "Project update" from sender@example.com to recipient@example.com.',
+      "将来自 sender@example.com 的“Project update”转发给 recipient@example.com。",
     );
   });
 });
@@ -249,7 +248,7 @@ describe("buildPendingEmailCardFallbackText", () => {
     expect(
       buildPendingEmailCardFallbackText("This draft is pending confirmation."),
     ).toBe(
-      "This draft is pending confirmation.\n\nI couldn't show the Send button right now. Ask me to prepare the draft again.",
+      "This draft is pending confirmation.\n\n现在无法显示“发送”按钮。请让我重新准备草稿。",
     );
   });
 
@@ -278,7 +277,7 @@ describe("buildMessagingUserMessages", () => {
     expect(modelUserMessage.parts).toEqual([
       expect.objectContaining({
         type: "text",
-        text: expect.stringContaining("unsupported non-image file attachments"),
+        text: "隐藏上下文：最近一次消息输入中包含一个或多个不受支持的非图片附件。其内容不可用，也无法从聊天中作为附件发送。",
       }),
       { type: "text", text: "Please draft a reply about this file." },
     ]);
@@ -419,7 +418,7 @@ describe("postPendingEmailCard", () => {
       type: "actions",
       elements: [
         expect.objectContaining({
-          text: expect.objectContaining({ text: "Send" }),
+          text: expect.objectContaining({ text: "发送" }),
         }),
       ],
     });
@@ -514,30 +513,16 @@ describe("postPendingEmailCard", () => {
 });
 
 describe("getMessagingAiGeneratedPostPayload", () => {
-  it("preserves email addresses and the AI disclosure in Teams assistant messages", () => {
-    const payload = getMessagingAiGeneratedPostPayload({
-      provider: "teams",
-      text: "Contact user@example.com about this summary.",
-    });
-    expect(payload).toHaveProperty("type", "card");
-    const rendered = JSON.stringify(
-      cardToAdaptiveCard(payload as Parameters<typeof cardToAdaptiveCard>[0]),
-    );
-    expect(rendered).toContain("user@example.com");
-    expect(rendered).toContain("AI-generated content may be inaccurate");
-    expect(rendered).not.toContain("<at>");
-  });
-
-  it("keeps lists and paragraph breaks together in Teams assistant replies", () => {
-    const text = "1. First item\n2. Second item\n\nA separate paragraph.";
-    const payload = getMessagingAiGeneratedPostPayload({
-      provider: "teams",
-      text,
-    });
+  it("adds an AI content disclosure to Teams assistant messages", () => {
     expect(
-      cardToAdaptiveCard(payload as Parameters<typeof cardToAdaptiveCard>[0]),
-    ).toMatchObject({
-      body: [{ text: expect.stringContaining(text) }],
+      getMessagingAiGeneratedPostPayload({
+        provider: "teams",
+        text: "Here is your summary.",
+      }),
+    ).toEqual({
+      markdown: expect.stringContaining(
+        "AI-generated content may be inaccurate",
+      ),
     });
   });
 
@@ -574,7 +559,7 @@ describe("pending email handled state helpers", () => {
         },
       }),
     ).toBe(
-      "Open in Gmail: https://mail.google.com/mail/u/?authuser=user%40example.com#all/message-1",
+      "在 Gmail 中打开: https://mail.google.com/mail/u/?authuser=user%40example.com#all/message-1",
     );
   });
 
@@ -612,7 +597,7 @@ describe("pending email handled state helpers", () => {
         children: [
           expect.objectContaining({
             type: "link-button",
-            label: "Open in Gmail",
+            label: "在 Gmail 中打开",
             url: "https://mail.google.com/mail/u/?authuser=user%40example.com#all/message-1",
           }),
         ],
@@ -664,7 +649,7 @@ describe("pending email handled state helpers", () => {
         children: [
           expect.objectContaining({
             type: "link-button",
-            label: "Open in Outlook",
+            label: "在 Outlook 中打开",
             url: "https://outlook.office.com/owa/?ItemID=sent-1&ispopout=0",
           }),
         ],

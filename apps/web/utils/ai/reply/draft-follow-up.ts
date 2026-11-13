@@ -74,7 +74,7 @@ export async function aiDraftFollowUp({
   emailAccount: EmailAccountWithAI;
   writingStyle: string | null;
 }) {
-  logger.info("Drafting follow-up email", {
+  logger.info("正在起草跟进邮件", {
     messageCount: messages.length,
   });
 
@@ -91,7 +91,7 @@ export async function aiDraftFollowUp({
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Draft follow-up",
+    label: "起草跟进邮件",
     modelOptions,
     promptHardening: {
       trust: "untrusted",

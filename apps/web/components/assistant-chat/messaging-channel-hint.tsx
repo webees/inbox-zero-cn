@@ -1,6 +1,5 @@
 "use client";
 
-import { Trans, useLingui } from "@lingui/react/macro";
 import { MessagesSquareIcon, XIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { Button } from "@/components/ui/button";
@@ -13,7 +12,6 @@ import { dismissHintAction } from "@/utils/actions/hints";
 const HINT_ID = "messaging-channel";
 
 export function MessagingChannelHint() {
-  const { t } = useLingui();
   const { emailAccountId } = useAccount();
   const { data: user, mutate: mutateUser } = useUser();
   const {
@@ -47,7 +45,7 @@ export function MessagingChannelHint() {
     <div className="mb-2 flex items-center gap-3 rounded-lg border bg-muted/50 px-4 py-3 text-sm">
       <MessagesSquareIcon className="size-4 flex-shrink-0" />
       <span className="flex-1 text-muted-foreground">
-        <Trans>You can also chat with your assistant on Slack.</Trans>
+        你也可以在 Slack 上与 AI 助手聊天。
       </span>
       <Button
         variant="outline"
@@ -56,11 +54,11 @@ export function MessagingChannelHint() {
         disabled={connecting}
         onClick={connect}
       >
-        {connecting ? <Trans>Connecting...</Trans> : <Trans>Connect</Trans>}
+        {connecting ? "连接中…" : "连接"}
       </Button>
       <button
         type="button"
-        aria-label={t`Dismiss`}
+        aria-label="关闭"
         className="rounded p-0.5 text-muted-foreground hover:bg-muted-foreground/10"
         onClick={() => dismiss({ hintId: HINT_ID })}
       >

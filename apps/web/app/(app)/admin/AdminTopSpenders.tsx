@@ -37,10 +37,9 @@ export function AdminTopSpenders() {
   return (
     <Card className="max-w-5xl">
       <CardHeader>
-        <CardTitle>Top Spenders</CardTitle>
+        <CardTitle>支出排行榜</CardTitle>
         <CardDescription>
-          Last 7 days. Nano-Limited comes from Redis; User Accounts is connected
-          email accounts.
+          最近 7 天。Nano-Limited 来自 Redis；用户账号为已连接的邮箱账号。
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -50,13 +49,13 @@ export function AdminTopSpenders() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-16">Rank</TableHead>
-                    <TableHead>Email Account ID</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>User Accounts</TableHead>
-                    <TableHead>Top Models</TableHead>
+                    <TableHead className="w-16">排名</TableHead>
+                    <TableHead>邮箱账号 ID</TableHead>
+                    <TableHead>邮箱</TableHead>
+                    <TableHead>用户账号</TableHead>
+                    <TableHead>热门模型</TableHead>
                     <TableHead>Nano-Limited</TableHead>
-                    <TableHead className="text-right">Cost</TableHead>
+                    <TableHead className="text-right">成本</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -83,9 +82,9 @@ export function AdminTopSpenders() {
                       </TableCell>
                       <TableCell>
                         {spender.nanoLimitedBySpendGuard ? (
-                          <Badge variant="red">Yes</Badge>
+                          <Badge variant="red">是</Badge>
                         ) : (
-                          <Badge variant="green">No</Badge>
+                          <Badge variant="green">否</Badge>
                         )}
                       </TableCell>
                       <TableCell className="text-right">
@@ -97,15 +96,15 @@ export function AdminTopSpenders() {
               </Table>
             ) : (
               <p className="text-sm text-muted-foreground">
-                No usage cost recorded in the past 7 days.
+                过去 7 天没有记录到使用成本。
               </p>
             )}
 
             <section className="space-y-3">
               <div>
-                <h3 className="font-medium text-sm">Spend by Model</h3>
+                <h3 className="font-medium text-sm">按模型支出</h3>
                 <p className="text-muted-foreground text-sm">
-                  Tinybird platform spend.
+                  Tinybird 平台支出。
                 </p>
               </div>
 
@@ -113,11 +112,11 @@ export function AdminTopSpenders() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-16">Rank</TableHead>
-                      <TableHead>Provider</TableHead>
-                      <TableHead>Model</TableHead>
-                      <TableHead className="text-right">Calls</TableHead>
-                      <TableHead className="text-right">Cost</TableHead>
+                      <TableHead className="w-16">排名</TableHead>
+                      <TableHead>提供商</TableHead>
+                      <TableHead>模型</TableHead>
+                      <TableHead className="text-right">调用次数</TableHead>
+                      <TableHead className="text-right">成本</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -142,7 +141,7 @@ export function AdminTopSpenders() {
                 </Table>
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  No model spend recorded in Tinybird for this window.
+                  此时间窗口内 Tinybird 没有记录到模型支出。
                 </p>
               )}
             </section>

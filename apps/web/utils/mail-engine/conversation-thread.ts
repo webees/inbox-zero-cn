@@ -79,8 +79,8 @@ export type OutgoingThreadMessage = {
 };
 
 /**
- * Sends queued on this device, shaped like the messages they will become so the
- * reader shows them in the conversation until the provider confirms them.
+ * 在此设备上排队的发送，已塑造成它们将成为的消息形态，以便
+ * 阅读器在服务商确认之前就会在会话中显示它们。
  */
 export function conversationOutgoingMessages(
   view: ConversationView,
@@ -120,8 +120,8 @@ export function conversationSendOperationIds(view: ConversationView) {
 export const CONVERSATION_PAGE_SIZE = 50;
 
 /**
- * `requested` spans one observation so each snapshot doesn't re-request. A
- * rejected or failed request is forgotten so the next snapshot retries it.
+ * `requested` 跨越一次观测，因此每个快照都不会重复请求。被
+ * 拒绝或失败的请求会被遗忘，以便下一个快照重试它。
  */
 export function requestMissingMessageContent(
   client: Pick<MailClient, "ensureMessageContent">,

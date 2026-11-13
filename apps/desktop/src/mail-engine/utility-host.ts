@@ -15,7 +15,7 @@ const STABLE_UPTIME_MS = 60_000;
 const CLOSE_TIMEOUT_MS = 5000;
 const HEALTH_TIMEOUT_MS = 2000;
 
-/** The Electron `UtilityProcess` surface the proxy uses. */
+/** 代理使用的 Electron `UtilityProcess` 接口 */
 export type MailChildProcess = {
   postMessage(message: MainToChildMessage): void;
   on(
@@ -35,8 +35,8 @@ export type DesktopMailProcessOwner = DesktopMailOwner & {
 };
 
 /**
- * Main-process proxy for the mail engine running in a utility process. Keeps
- * session cookies and crash recovery here, and the engine and SQLite there.
+ * 主进程侧的代理，对应运行在 utility 进程中的邮件引擎。会话 cookie 与崩溃
+ * 恢复保留在此处，引擎与 SQLite 则位于该进程中。
  */
 export function createDesktopMailProcessOwner(input: {
   databasePath: string;
@@ -45,7 +45,7 @@ export function createDesktopMailProcessOwner(input: {
   cookieHeader: (url: string) => Promise<string>;
   onEngineError: (error: Error) => void;
   onNewMail?: (payload: unknown) => void;
-  /** True while a child opens the mailbox, which runs any pending migrations. */
+  /** 子进程打开邮箱（会执行待处理的迁移）期间为 true */
   onOpeningChange?: (opening: boolean) => void;
 }): DesktopMailProcessOwner {
   const subscriptions = new Map<
