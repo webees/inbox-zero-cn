@@ -48,7 +48,7 @@ export class UnsubscribeService {
       this.jobs.size >= this.options.maxConcurrent ||
       this.jobs.has(job.jobId)
     )
-      throw new Error("Worker unavailable");
+      throw new Error("工作进程不可用");
     this.jobs.add(job.jobId);
     const token = randomBytes(32).toString("hex");
     const session: Session = {

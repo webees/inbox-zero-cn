@@ -12,9 +12,9 @@ import {
   watchLapsedErrorKey,
 } from "@/utils/error-messages";
 
-// A few missed or failed cron runs shouldn't trigger a notification.
+// 少量错过或失败的 cron 运行不应触发通知。
 const MIN_LAPSE_MS = 24 * 60 * 60 * 1000;
-// Not a backfill: accounts that lapsed long ago must never receive this email.
+// 不是回填：很久以前就已失效的账号绝不能收到此邮件。
 const MAX_LAPSE_MS = 7 * 24 * 60 * 60 * 1000;
 const MAX_ACCOUNTS_PER_RUN = 500;
 const NOTIFY_CONCURRENCY = 10;
@@ -29,7 +29,7 @@ export async function notifyLapsedWatches({ logger }: { logger: Logger }) {
     ? fetched.slice(0, MAX_ACCOUNTS_PER_RUN)
     : fetched;
 
-  logger.info("Found recently lapsed watch accounts", {
+  logger.info("发现近期失效的 watch 账号", {
     count: emailAccounts.length,
     truncated,
   });
@@ -44,7 +44,7 @@ export async function notifyLapsedWatches({ logger }: { logger: Logger }) {
     notified += results.filter(Boolean).length;
   }
 
-  logger.info("Processed lapsed watch notifications", { notified });
+  logger.info("已处理失效 watch 通知", { notified });
 
   return { notified };
 }
@@ -69,7 +69,7 @@ async function notifyIfEligible(
     emailAccountId: emailAccount.id,
     errorType: ErrorType.EMAIL_WATCH_LAPSED,
     storageKey: watchLapsedErrorKey(emailAccount.id),
-    errorMessage: `Email automation for ${emailAccount.email} has stopped. Please reconnect your account to resume automation.`,
+    errorMessage: `${emailAccount.email} 的邮件自动化已停止，请重新连接账号以恢复自动化。`,
     logger: logger.with({ emailAccountId: emailAccount.id }),
   });
 
@@ -99,8 +99,8 @@ async function getRecentlyLapsedEmailAccounts() {
         },
       },
     },
-    // Oldest expirations first, so a batch capped below the true match count
-    // still notifies the accounts closest to aging out of the window.
+    // 最先过期者优先，因此即使批次被限制在真实匹配数量之下，
+    // 仍会通知最接近超出时间窗口的账号。
     orderBy: { watchEmailsExpirationDate: "asc" },
     take: MAX_ACCOUNTS_PER_RUN + 1,
   });

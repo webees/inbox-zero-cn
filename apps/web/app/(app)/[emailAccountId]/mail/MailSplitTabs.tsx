@@ -71,7 +71,7 @@ export const MailSplitTabs = memo(function MailSplitTabs({
   portableLabelSplits?: PortableLabelSplit[];
   labelsByAccount?: Record<string, EmailLabels>;
   leading?: ReactNode;
-  /** Shown once the list scrolls under the tabs. */
+  /** 列表滚动到标签页下方时显示。 */
   showDivider: boolean;
 }) {
   const { t, i18n } = useLingui();
@@ -101,9 +101,9 @@ export const MailSplitTabs = memo(function MailSplitTabs({
         ? [
             {
               id: `label:${GmailLabel.IMPORTANT}`,
-              name: "Important",
+              name: "重要",
               value: GmailLabel.IMPORTANT,
-              label: t`Important`,
+              label: t`重要`,
             },
           ]
         : []),

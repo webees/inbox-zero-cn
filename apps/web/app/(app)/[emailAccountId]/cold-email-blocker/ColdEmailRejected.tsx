@@ -38,13 +38,13 @@ export function ColdEmailRejected() {
             <TableHeader>
               <TableRow>
                 <TableHead>
-                  <Trans>Email</Trans>
+                  <Trans>邮件</Trans>
                 </TableHead>
                 <TableHead>
-                  <Trans>AI Reason</Trans>
+                  <Trans>AI 原因</Trans>
                 </TableHead>
                 <TableHead>
-                  <Trans>Date</Trans>
+                  <Trans>日期</Trans>
                 </TableHead>
                 <TableHead />
               </TableRow>

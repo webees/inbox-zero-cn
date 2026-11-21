@@ -232,9 +232,8 @@ export const actionClientUser = baseClient.use(
 export const adminActionClient = baseClient.use(
   async ({ next, metadata, ctx }) => {
     const session = await auth();
-    if (!session?.user) throw new SafeError("Unauthorized");
-    if (!isAdmin({ email: session.user.email }))
-      throw new SafeError("Unauthorized");
+    if (!session?.user) throw new SafeError("未授权");
+    if (!isAdmin({ email: session.user.email })) throw new SafeError("未授权");
     setAuditContext({ actorType: "admin", userId: session.user.id });
 
     const logger = ctx.logger.with({ admin: true });
@@ -256,6 +255,6 @@ function runInstrumentedAction<T>({
   logger: ReturnType<typeof createScopedLogger>;
   run: () => Promise<T>;
 }) {
-  logger.info("Calling action");
+  logger.info("正在调用操作");
   return withServerActionInstrumentation(actionName, run);
 }

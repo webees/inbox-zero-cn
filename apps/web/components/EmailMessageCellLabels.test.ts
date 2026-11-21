@@ -71,7 +71,7 @@ describe("getEmailMessageCellLabels", () => {
     });
 
     expect(labels).toEqual([
-      { id: "ARCHIVE", name: "Archived" },
+      { id: "ARCHIVE", name: "已归档" },
       { id: "label-newsletter", name: "Newsletter" },
     ]);
   });
@@ -89,7 +89,7 @@ describe("getEmailMessageCellLabels", () => {
     });
 
     expect(labels).toEqual([
-      { id: "ARCHIVE", name: "Archived" },
+      { id: "ARCHIVE", name: "已归档" },
       { id: "label-newsletter", name: "Newsletter" },
     ]);
   });

@@ -140,7 +140,7 @@ export function SenderContextPanel({
       <div className="flex items-start gap-2 border-border border-b px-5 py-4">
         {identity}
         <Button
-          aria-label={t`Close sender profile`}
+          aria-label={t`关闭发件人资料`}
           className="-mr-2 -mt-1"
           onClick={onClose}
           size="iconXs"
@@ -168,7 +168,7 @@ function PublicContext({ context }: { context: PublicContactContext }) {
             ) : null}
             {context.confidence === "low" ? (
               <Badge className="font-normal" variant="outline">
-                <Trans>Possible match</Trans>
+                <Trans>可能匹配</Trans>
               </Badge>
             ) : null}
           </div>
@@ -179,7 +179,7 @@ function PublicContext({ context }: { context: PublicContactContext }) {
 
       <section className="border-border border-t pt-5">
         <h3 className="font-medium text-foreground text-xs uppercase tracking-wide">
-          <Trans>Public sources</Trans>
+          <Trans>公开来源</Trans>
         </h3>
         <div className="mt-3 space-y-2">
           {context.sources.map((source, index) => (
@@ -219,7 +219,7 @@ function CompanyContext({
             </h3>
             {company.website ? (
               <a
-                aria-label={t`Visit ${company.name}`}
+                aria-label={t`访问 ${company.name}`}
                 className="text-muted-foreground hover:text-foreground"
                 href={company.website}
                 rel="noreferrer"
@@ -288,7 +288,7 @@ function ContextUnavailable({
         <SparklesIcon className="size-4 text-muted-foreground" />
       </div>
       <div className="mt-3 font-medium text-foreground text-sm">
-        <Trans>No public context</Trans>
+        <Trans>没有公开背景信息</Trans>
       </div>
       <p className="mt-1 max-w-64 text-muted-foreground text-xs leading-5">
         {message}
@@ -301,7 +301,7 @@ function ContextUnavailable({
           size="sm"
           variant="outline"
         >
-          <Trans>Try again</Trans>
+          <Trans>重试</Trans>
         </Button>
       )}
     </div>
@@ -318,13 +318,13 @@ function ContextError({
   return (
     <div className="flex min-h-64 flex-col items-center justify-center text-center">
       <div className="font-medium text-foreground text-sm">
-        <Trans>Couldn't load public context</Trans>
+        <Trans>无法加载公开背景信息</Trans>
       </div>
       <p className="mt-1 max-w-64 text-muted-foreground text-xs leading-5">
         {getSWRFetchErrorMessage(error?.info)}
       </p>
       <Button className="mt-3" onClick={onRetry} size="sm" variant="outline">
-        <Trans>Try again</Trans>
+        <Trans>重试</Trans>
       </Button>
     </div>
   );

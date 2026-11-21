@@ -27,10 +27,9 @@ export function DesktopUpdateToast() {
 
     if (status?.state === "ready") {
       dismissedVersion.current = null;
-      // Ready status replays on every page load and window, so announcing it
-      // each time nagged people. Announce each release once; the sidebar item
-      // stays as the persistent way to restart. Desktop tabs share storage, so
-      // only a visible renderer may claim the announcement.
+      // 每次加载页面和新窗口时都会重放“已就绪”状态，每次都提示会打扰用户
+      // 每个版本只提示一次；侧边栏项仍作为重新启动的常驻入口
+      // 桌面端标签页共享存储，因此只有可见的渲染进程可以认领提示
       if (!isVisible) return;
       if (shownReadyVersion.current === status.version) return;
       if (getAnnouncedVersion() === status.version) {
@@ -39,13 +38,13 @@ export function DesktopUpdateToast() {
       }
       setAnnouncedVersion(status.version);
       shownReadyVersion.current = status.version;
-      toast(t`Inbox Zero ${status.version} is ready`, {
+      toast(t`Inbox Zero ${status.version} 已就绪`, {
         id: DESKTOP_UPDATE_TOAST_ID,
-        description: t`Restart the app to finish updating.`,
+        description: t`重启应用以完成更新。`,
         duration: Number.POSITIVE_INFINITY,
         onDismiss: undefined,
         action: {
-          label: t`Restart`,
+          label: t`重启`,
           onClick: () => {
             getInboxZeroDesktopApp()?.installUpdate?.();
           },
@@ -59,9 +58,9 @@ export function DesktopUpdateToast() {
       toast.dismiss(DESKTOP_UPDATE_TOAST_ID);
       return;
     }
-    // Progress keeps arriving after dismissal; don't reopen the same download.
+    // 关闭提示后仍会收到进度更新；不要重新打开同一下载的提示
     if (dismissedVersion.current === status.version) return;
-    toast(t`Downloading Inbox Zero ${status.version}`, {
+    toast(t`正在下载 Inbox Zero ${status.version}`, {
       id: DESKTOP_UPDATE_TOAST_ID,
       description: (
         <div className="mt-2 flex items-center gap-2">

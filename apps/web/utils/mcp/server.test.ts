@@ -283,7 +283,7 @@ describe("MCP tool permissions and rule writes", () => {
     prisma.rule.findFirst.mockResolvedValueOnce(null);
     const tool = await getTool(name, ["mcp:write"]);
     await expect(tool({ id: "foreign_rule", rule: {} })).rejects.toThrow(
-      "Rule not found",
+      "所选邮箱账号中未找到该规则。",
     );
     expect(prisma.rule.findFirst).toHaveBeenCalledWith(
       expect.objectContaining({

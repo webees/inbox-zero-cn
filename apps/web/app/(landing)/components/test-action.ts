@@ -5,13 +5,13 @@ import { sleep } from "@/utils/sleep";
 
 const logger = createScopedLogger("testAction");
 
-// server-action-export: allow - intentionally exposes a non-mutating test action.
+// server-action-export: allow - 有意暴露一个非变更性的测试操作。
 export async function testAction() {
-  logger.info("testAction started");
+  logger.info("testAction 已开始");
 
   await sleep(5000);
 
-  logger.info("testAction completed");
+  logger.info("testAction 已完成");
 
-  return "Action completed";
+  return "操作已完成";
 }

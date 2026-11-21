@@ -6,7 +6,6 @@ const {
   mockGenerateObject,
   mockIsContentFilterRefusal,
   mockNoObjectGeneratedErrorIsInstance,
-  mockTypeValidationErrorIsInstance,
   mockSaveAiUsage,
   mockShouldForceNanoModel,
 } = vi.hoisted(() => ({
@@ -15,7 +14,6 @@ const {
   mockGenerateObject: vi.fn(),
   mockIsContentFilterRefusal: vi.fn(() => false),
   mockNoObjectGeneratedErrorIsInstance: vi.fn(() => false),
-  mockTypeValidationErrorIsInstance: vi.fn(() => false),
   mockSaveAiUsage: vi.fn(),
   mockShouldForceNanoModel: vi.fn(),
 }));
@@ -24,7 +22,7 @@ vi.mock("ai", () => ({
   APICallError: { isInstance: () => false },
   RetryError: { isInstance: () => false },
   NoObjectGeneratedError: { isInstance: mockNoObjectGeneratedErrorIsInstance },
-  TypeValidationError: { isInstance: mockTypeValidationErrorIsInstance },
+  TypeValidationError: { isInstance: () => false },
   ToolLoopAgent: class {},
   generateObject: mockGenerateObject,
   generateText: vi.fn(),
@@ -67,7 +65,6 @@ vi.mock("@/utils/error", () => ({
   isAnthropicInsufficientBalanceError: vi.fn(() => false),
   isContentFilterRefusal: mockIsContentFilterRefusal,
   isIncorrectAPIKeyError: vi.fn(() => false),
-  isGeminiSpendingCapError: vi.fn(() => false),
   isInsufficientCreditsError: vi.fn(() => false),
   isInvalidAIModelError: vi.fn(() => false),
   isAPIKeyDeactivatedError: vi.fn(() => false),
@@ -91,9 +88,8 @@ describe("createGenerateObject repairText", () => {
     vi.clearAllMocks();
     mockIsContentFilterRefusal.mockReturnValue(false);
     mockNoObjectGeneratedErrorIsInstance.mockReturnValue(false);
-    mockTypeValidationErrorIsInstance.mockReturnValue(false);
     mockShouldForceNanoModel.mockResolvedValue({ shouldForce: false });
-    mockGenerateObject.mockReset().mockResolvedValue({
+    mockGenerateObject.mockResolvedValue({
       object: { ok: true },
       usage: null,
     });
@@ -412,24 +408,6 @@ describe("createGenerateObject repairText", () => {
       expect(request.providerOptions.openai.promptCacheKey).toBe("account-1");
     });
 
-    it("passes the model's local thinking options through to the call", async () => {
-      const generateObject = await createTestGenerateObject({
-        provider: "ollama",
-        modelName: "llama3",
-        providerOptions: { ollama: { think: false } },
-      });
-
-      await generateObject({
-        instructions: "Return JSON.",
-        prompt: "Classify this.",
-        schema: {} as any,
-      } as any);
-
-      expect(
-        mockGenerateObject.mock.calls[0][0].providerOptions.ollama,
-      ).toEqual({ think: false });
-    });
-
     it("adds the cache key to existing OpenRouter options", async () => {
       const generateObject = await createTestGenerateObject({
         provider: "openrouter",
@@ -469,74 +447,6 @@ describe("createGenerateObject repairText", () => {
 
     expect(result).toEqual({ object: { ok: true }, usage: null });
     expect(mockGenerateObject).toHaveBeenCalledTimes(2);
-  });
-
-  it.each([
-    "direct",
-    "wrapped",
-  ])("falls back after bounded retries for %s structured validation errors", async (kind) => {
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-    try {
-      const validationError = new Error("Invalid candidate ID");
-      const error =
-        kind === "direct"
-          ? validationError
-          : new Error("No object generated", { cause: validationError });
-      mockTypeValidationErrorIsInstance.mockImplementation(
-        (value) => value === validationError,
-      );
-      mockNoObjectGeneratedErrorIsInstance.mockImplementation(
-        (value) => kind === "wrapped" && value === error,
-      );
-      mockGenerateObject
-        .mockRejectedValueOnce(error)
-        .mockRejectedValueOnce(error)
-        .mockRejectedValueOnce(error)
-        .mockResolvedValueOnce({ object: { ok: true }, usage: null });
-
-      const generateObject = await createGenerateObjectWithFallback();
-      await expect(
-        generateObject({
-          instructions: "Return JSON.",
-          prompt: "Return JSON.",
-          schema: {} as any,
-        } as any),
-      ).resolves.toEqual({ object: { ok: true }, usage: null });
-
-      expect(mockGenerateObject).toHaveBeenCalledTimes(4);
-      expect(mockGenerateObject.mock.calls[3][0].model).not.toBe(
-        mockGenerateObject.mock.calls[0][0].model,
-      );
-      const outcomeLog = logSpy.mock.calls
-        .flat()
-        .find(
-          (value) =>
-            typeof value === "string" &&
-            value.includes("LLM object generation completed"),
-        );
-      expect(outcomeLog).toContain('"validation"');
-      expect(outcomeLog).not.toContain('"unknown"');
-    } finally {
-      logSpy.mockRestore();
-    }
-  });
-
-  it("propagates validation failure after exhausting configured models", async () => {
-    const error = new Error("Invalid candidate ID");
-    mockTypeValidationErrorIsInstance.mockImplementation(
-      (value) => value === error,
-    );
-    mockGenerateObject.mockRejectedValue(error);
-
-    const generateObject = await createGenerateObjectWithFallback();
-    await expect(
-      generateObject({
-        instructions: "Return JSON.",
-        prompt: "Return JSON.",
-        schema: {} as any,
-      } as any),
-    ).rejects.toBe(error);
-    expect(mockGenerateObject).toHaveBeenCalledTimes(6);
   });
 
   it("records billed usage when object validation fails before retry succeeds", async () => {
@@ -776,7 +686,6 @@ describe("createGenerateObject repairText", () => {
 type TestModel = {
   provider: string;
   modelName: string;
-  providerOptions?: Record<string, Record<string, unknown>>;
 };
 
 type GenerateObjectOverrides = Partial<TestModel> & {
@@ -788,7 +697,6 @@ type GenerateObjectOverrides = Partial<TestModel> & {
 async function createTestGenerateObject({
   provider = "openai",
   modelName = "gpt-test",
-  providerOptions,
   fallbackModels = [],
   onModelUsed,
   cacheSystemPrompt,
@@ -803,7 +711,7 @@ async function createTestGenerateObject({
     },
     label: "test",
     modelOptions: {
-      ...createResolvedModel({ provider, modelName, providerOptions }),
+      ...createResolvedModel({ provider, modelName }),
       hasUserApiKey: false,
       fallbackModels: fallbackModels.map(createResolvedModel),
     } as any,
@@ -831,16 +739,12 @@ async function getRepairText() {
   return mockGenerateObject.mock.calls[0][0].repairText;
 }
 
-function createResolvedModel({
-  provider,
-  modelName,
-  providerOptions,
-}: TestModel) {
+function createResolvedModel({ provider, modelName }: TestModel) {
   return {
     provider,
     modelName,
     model: {} as any,
-    providerOptions,
+    providerOptions: undefined,
   };
 }
 

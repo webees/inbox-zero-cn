@@ -14,21 +14,21 @@ export default function NotFound() {
   const pathname = usePathname();
 
   useEffect(() => {
-    logger.warn("Page not found", { pathname });
+    logger.warn("页面未找到", { pathname });
   }, [pathname]);
 
   return (
     <ClientBasicLayout>
       <ErrorPage
-        title="Page Not Found"
-        description="The page you are looking for could not be found."
+        title="页面未找到"
+        description="未找到你要查找的页面"
         button={
           <div className="flex flex-wrap justify-center gap-2">
             <Button asChild>
-              <Link href="/">Return Home</Link>
+              <Link href="/">返回首页</Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link href="https://docs.getinboxzero.com">Documentation</Link>
+              <Link href="https://docs.getinboxzero.com">文档</Link>
             </Button>
           </div>
         }

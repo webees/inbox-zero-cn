@@ -14,7 +14,6 @@ export type ApnsAlert = {
   subtitle?: string;
   body: string;
   sound?: "default";
-  category?: string;
   data?: Record<string, string>;
 };
 
@@ -169,7 +168,6 @@ function apnsPayload(notification: ApnsNotification) {
         body: notification.body,
       },
       sound: notification.sound ?? "default",
-      ...(notification.category ? { category: notification.category } : {}),
     },
     ...(notification.data ?? {}),
   };

@@ -51,7 +51,7 @@ export async function sendBookingConfirmationEmails({
   const hostLocation =
     link.locationType === BookingLinkLocationType.MICROSOFT_TEAMS &&
     !booking.videoConferenceLink
-      ? "Microsoft Teams link was not generated"
+      ? "Microsoft Teams 链接未生成"
       : location;
   const hostTimezone = getAccountTimezone(host.timezone);
   const guestParts = formatBookingParts({
@@ -106,7 +106,7 @@ export async function sendBookingConfirmationEmails({
       }),
     ]);
   } catch (error) {
-    logger.error("Failed to send booking confirmation emails", {
+    logger.error("发送预约确认邮件失败", {
       bookingId: booking.id,
       error,
     });
@@ -190,7 +190,7 @@ export async function sendBookingRescheduledEmails({
       }),
     ]);
   } catch (error) {
-    logger.error("Failed to send booking rescheduled emails", {
+    logger.error("发送预约改期邮件失败", {
       bookingId: booking.id,
       error,
     });
@@ -224,7 +224,7 @@ export async function sendBookingCancellationEmails({
       },
     });
   } catch (error) {
-    logger.error("Failed to send booking cancellation emails", {
+    logger.error("发送预约取消邮件失败", {
       bookingId: booking.id,
       error,
     });
@@ -280,8 +280,8 @@ function isUrl(value?: string | null) {
 }
 
 function getMeetingLink(booking: BookingEmailPayload) {
-  // Prefer the link the calendar provider generated at event-creation time
-  // (e.g. Google Meet, Teams) over the configured location value.
+  // 优先使用日历服务商在创建事件时生成的链接
+  //（例如 Google Meet、Teams），而非配置的地点值。
   if (booking.videoConferenceLink) return booking.videoConferenceLink;
   if (isUrl(booking.bookingLink.locationValue)) {
     return booking.bookingLink.locationValue;

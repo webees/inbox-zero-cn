@@ -59,7 +59,7 @@ export interface RequestWithLogger extends NextRequest {
   logger: Logger;
 }
 
-// Extended request type with validated account info
+// 扩展的请求类型，包含已验证的账号信息
 export interface RequestWithAuth extends RequestWithLogger {
   auth: { userId: string; emailOtp?: boolean };
 }
@@ -83,7 +83,7 @@ export interface MiddlewareOptions {
   };
 }
 
-// Higher-order middleware factory that handles common error logic
+// 处理通用错误逻辑的高阶中间件工厂
 function withMiddleware<T extends NextRequest>(
   handler: NextHandler<T>,
   middleware?: (
@@ -125,23 +125,23 @@ function withMiddleware<T extends NextRequest>(
       },
       async () => {
         try {
-          // Apply middleware if provided
+          // 如果提供了中间件，则应用它
           let enhancedReq = reqWithLogger;
           if (middleware) {
             const middlewareResult = await middleware(reqWithLogger, options);
 
-            // If middleware returned a Response, return it directly
+            // 如果中间件返回了 Response，则直接返回
             if (middlewareResult instanceof Response) {
               flushLogger(reqWithLogger);
               return middlewareResult;
             }
 
-            // Otherwise, continue with the enhanced request
+            // 否则继续使用增强后的请求
             enhancedReq = middlewareResult;
           }
           requestForError = enhancedReq;
 
-          // Execute the handler with the (potentially) enhanced request
+          // 使用（可能已增强的）请求执行处理函数
           const response = await handler(enhancedReq as T, context);
 
           flushLogger(enhancedReq);
@@ -150,7 +150,7 @@ function withMiddleware<T extends NextRequest>(
         } catch (error) {
           flushLogger(requestForError);
 
-          // redirects work by throwing an error. allow these
+          // 重定向通过抛出错误实现，允许这类错误
           if (error instanceof Error && error.message === "NEXT_REDIRECT") {
             throw error;
           }
@@ -166,13 +166,13 @@ function withMiddleware<T extends NextRequest>(
                 return publicApiErrorResponse({
                   status: 401,
                   code: "UNAUTHORIZED",
-                  message: "Authorization required. Please grant permissions.",
+                  message: "需要授权，请授予权限",
                 });
               }
 
               return NextResponse.json(
                 {
-                  error: "Authorization required. Please grant permissions.",
+                  error: "需要授权，请授予权限",
                   errorCode: NO_REFRESH_TOKEN_ERROR_CODE,
                   isKnownError: true,
                 },
@@ -186,8 +186,7 @@ function withMiddleware<T extends NextRequest>(
                   status: 401,
                   code: "UNAUTHORIZED",
                   message:
-                    error.safeMessage ||
-                    "Microsoft authorization has expired. Please reconnect.",
+                    error.safeMessage || "Microsoft 授权已过期，请重新连接",
                 });
               }
 
@@ -206,7 +205,7 @@ function withMiddleware<T extends NextRequest>(
 
           if (error instanceof ZodError) {
             if (!env.DISABLE_LOG_ZOD_ERRORS) {
-              reqLogger.error("Zod validation error", { error });
+              reqLogger.error("Zod 校验错误", { error });
             }
             if (publicApiRequest) {
               return publicApiErrorFromUnknown(error);
@@ -248,7 +247,7 @@ function withMiddleware<T extends NextRequest>(
             if (publicApiRequest) {
               return publicApiErrorResponse({
                 status: apiError.code,
-                message: apiError.message || "Request failed",
+                message: apiError.message || "请求失败",
                 headers,
               });
             }
@@ -277,13 +276,13 @@ function withMiddleware<T extends NextRequest>(
             );
           }
 
-          // Quick fix: log full error in development. TODO: handle properly
+          // 临时方案：在开发环境记录完整错误。TODO：妥善处理
           if (env.NODE_ENV === "development") {
-            // biome-ignore lint/suspicious/noConsole: helpful for debugging
+            // biome-ignore lint/suspicious/noConsole: 便于调试
             console.error(error);
           }
 
-          reqLogger.error("Unhandled error", {
+          reqLogger.error("未处理的错误", {
             error: error instanceof Error ? error.message : error,
             cause:
               error instanceof Error && error.cause
@@ -301,12 +300,12 @@ function withMiddleware<T extends NextRequest>(
             return publicApiErrorResponse({
               status: 500,
               code: "INTERNAL_ERROR",
-              message: "An unexpected error occurred",
+              message: "发生了意外错误",
             });
           }
 
           return NextResponse.json(
-            { error: "An unexpected error occurred" },
+            { error: "发生了意外错误" },
             { status: 500 },
           );
         } finally {
@@ -336,7 +335,7 @@ async function authMiddleware(
   try {
     session = await auth(req.headers);
   } catch (error) {
-    baseLogger.warn("Auth middleware failed", {
+    baseLogger.warn("认证中间件失败", {
       ...authLogContext,
       authError:
         error instanceof Error
@@ -347,7 +346,7 @@ async function authMiddleware(
   }
 
   if (!session?.user) {
-    baseLogger.warn("Auth middleware returning 401", {
+    baseLogger.warn("认证中间件返回 401", {
       ...authLogContext,
       reason:
         session === null || session === undefined
@@ -356,7 +355,7 @@ async function authMiddleware(
     });
 
     return NextResponse.json(
-      { error: "Unauthorized", isKnownError: true },
+      { error: "未授权", isKnownError: true },
       { status: 401 },
     );
   }
@@ -403,7 +402,7 @@ async function emailAccountMiddleware(
   const middlewareStartTime = Date.now();
 
   try {
-    // If account ID is provided, validate and get the email account ID
+    // 如果提供了账号 ID，则校验并获取邮箱账号 ID
     const email = await runTimedMiddlewareStep({
       logger: middlewareLogger,
       step: "validate-email-account",
@@ -413,7 +412,7 @@ async function emailAccountMiddleware(
     const emailAccountLogger = middlewareLogger.with({ email });
 
     if (!email && options?.allowOrgAdmins) {
-      // Check if user is admin or owner and is in the same org as the target email account
+      // 检查用户是否为管理员或所有者，并与目标邮箱账号属于同一组织
       const callerEmailAccount = await runTimedMiddlewareStep({
         logger: emailAccountLogger,
         step: "resolve-org-admin-caller-account",
@@ -421,14 +420,14 @@ async function emailAccountMiddleware(
       });
 
       if (!callerEmailAccount) {
-        emailAccountLogger.error("Org admin access denied");
+        emailAccountLogger.error("组织管理员访问被拒绝");
         return NextResponse.json(
-          { error: "Insufficient permissions", isKnownError: true },
+          { error: "权限不足", isKnownError: true },
           { status: 403 },
         );
       }
 
-      // Check if target member has consented to org admin analytics access
+      // 检查目标成员是否已同意组织管理员分析访问
       const targetMember = await runTimedMiddlewareStep({
         logger: emailAccountLogger,
         step: "check-org-admin-consent",
@@ -449,12 +448,10 @@ async function emailAccountMiddleware(
       });
 
       if (!targetMember?.allowOrgAdminAnalytics) {
-        emailAccountLogger.error(
-          "Member has not enabled org admin analytics access",
-        );
+        emailAccountLogger.error("成员尚未开启组织管理员分析访问权限");
         return NextResponse.json(
           {
-            error: "Analytics access not permitted by this member",
+            error: "该成员不允许访问分析数据",
             isKnownError: true,
           },
           { status: 403 },
@@ -493,9 +490,9 @@ async function emailAccountMiddleware(
     }
 
     if (!email) {
-      emailAccountLogger.error("Invalid email account ID");
+      emailAccountLogger.error("无效的邮箱账号 ID");
       return NextResponse.json(
-        { error: "Invalid account ID", isKnownError: true },
+        { error: "无效的账号 ID", isKnownError: true },
         { status: 403 },
       );
     }
@@ -525,7 +522,7 @@ async function emailAccountMiddleware(
 async function emailProviderMiddleware(
   req: NextRequest,
 ): Promise<RequestWithEmailProvider | Response> {
-  // First run email account middleware
+  // 先运行邮箱账号中间件
   const emailAccountReq = await emailAccountMiddleware(req);
   if (emailAccountReq instanceof Response) return emailAccountReq;
 
@@ -540,7 +537,7 @@ async function emailProviderMiddleware(
         prisma.emailAccount.findUnique({
           where: {
             id: emailAccountId,
-            userId, // ensure it belongs to the user
+            userId, // 确保属于该用户
           },
           include: {
             account: {
@@ -554,7 +551,7 @@ async function emailProviderMiddleware(
 
     if (!emailAccount) {
       return NextResponse.json(
-        { error: "Email account not found", isKnownError: true },
+        { error: "未找到邮箱账号", isKnownError: true },
         { status: 404 },
       );
     }
@@ -581,20 +578,20 @@ async function emailProviderMiddleware(
       throw new SafeError("No refresh token");
     }
 
-    // Known errors (revoked access, rate-limit mode) are logged where they're
-    // raised, and withMiddleware applies shared error handling.
+    // 已知错误（访问被撤销、限流模式）会在抛出处记录日志，
+    // 并由 withMiddleware 应用共享的错误处理。
     if (error instanceof SafeError || isProviderRateLimitModeError(error)) {
       throw error;
     }
 
-    emailAccountReq.logger.error("Failed to create email provider", {
+    emailAccountReq.logger.error("创建邮件提供商失败", {
       error,
       emailAccountId,
       userId,
     });
 
     return NextResponse.json(
-      { error: "Failed to initialize email provider" },
+      { error: "初始化邮件提供商失败" },
       { status: 500 },
     );
   } finally {
@@ -619,7 +616,7 @@ async function adminMiddleware(
 
   if (!isAdmin({ email: user?.email })) {
     return NextResponse.json(
-      { error: "Unauthorized", isKnownError: true },
+      { error: "未授权", isKnownError: true },
       { status: 403 },
     );
   }
@@ -629,9 +626,9 @@ async function adminMiddleware(
   return authReq;
 }
 
-// Public middlewares that build on the common infrastructure
+// 基于通用基础设施构建的公共中间件
 
-// withError overloads
+// withError 重载
 export function withError(
   scope: string,
   handler: NextHandler<RequestWithLogger>,
@@ -661,7 +658,7 @@ export function withError(
   );
 }
 
-// withAuth overloads
+// withAuth 重载
 export function withAuth(
   scope: string,
   handler: NextHandler<RequestWithAuth>,
@@ -684,7 +681,7 @@ export function withAdmin(
   return withMiddleware(handler, adminMiddleware, undefined, scope);
 }
 
-// withEmailAccount overloads
+// withEmailAccount 重载
 export function withEmailAccount(
   scope: string,
   handler: NextHandler<RequestWithEmailAccount>,
@@ -799,7 +796,7 @@ async function runTimedMiddlewareStep<T>({
 }): Promise<T> {
   const startedAt = Date.now();
   const slowStepLogTimeout = setTimeout(() => {
-    logger.warn("Middleware step still running", {
+    logger.warn("中间件步骤仍在运行", {
       step,
       elapsedMs: Date.now() - startedAt,
     });
@@ -811,7 +808,7 @@ async function runTimedMiddlewareStep<T>({
     clearTimeout(slowStepLogTimeout);
     const durationMs = Date.now() - startedAt;
     if (durationMs > SLOW_MIDDLEWARE_STEP_MS) {
-      logger.warn("Middleware step completed slowly", {
+      logger.warn("中间件步骤执行缓慢", {
         step,
         durationMs,
       });
@@ -830,7 +827,7 @@ function logSlowMiddlewareTotal({
 }) {
   const durationMs = Date.now() - startedAt;
   if (durationMs > SLOW_MIDDLEWARE_TOTAL_MS) {
-    logger.warn("Middleware completed slowly", {
+    logger.warn("中间件执行缓慢", {
       middleware,
       durationMs,
     });

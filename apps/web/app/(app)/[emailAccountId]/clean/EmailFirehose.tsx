@@ -92,13 +92,13 @@ export function EmailFirehose({
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="done">
             {action === CleanAction.ARCHIVE ? (
-              <Trans>Archived</Trans>
+              <Trans>已归档</Trans>
             ) : (
-              <Trans>Marked read</Trans>
+              <Trans>已标记为已读</Trans>
             )}
           </TabsTrigger>
           <TabsTrigger value="keep">
-            <Trans>Kept</Trans>
+            <Trans>已保留</Trans>
           </TabsTrigger>
         </TabsList>
         <div
@@ -154,20 +154,20 @@ export function EmailFirehose({
                   {action === CleanAction.ARCHIVE ? (
                     <Plural
                       value={stats.done}
-                      one="# archived."
-                      other="# archived."
+                      one="已归档 # 封"
+                      other="已归档 # 封"
                     />
                   ) : (
                     <Plural
                       value={stats.done}
-                      one="# marked read."
-                      other="# marked read."
+                      one="已标记为已读 # 封"
+                      other="已标记为已读 # 封"
                     />
                   )}
                 </span>
               ) : (
                 <span>
-                  <Trans>No emails yet</Trans>
+                  <Trans>暂无邮件</Trans>
                 </span>
               )}
             </div>
@@ -183,7 +183,7 @@ export function EmailFirehose({
             className={`flex items-center ${filter === "keep" ? "rounded-md bg-blue-100 px-2 py-1 dark:bg-blue-900/30" : "hover:underline"}`}
           >
             <div className="mr-1 size-3 rounded-full bg-blue-500" />
-            <span>Keep</span>
+            <span>保留</span>
             {filter === "keep" && (
               <XCircle className="ml-1 size-3 text-muted-foreground" />
             )}
@@ -195,7 +195,7 @@ export function EmailFirehose({
           >
             <div className="mr-1 size-3 rounded-full bg-green-500" />
             <span>
-              {action === CleanAction.ARCHIVE ? "Archived" : "Marked read"}
+              {action === CleanAction.ARCHIVE ? "已归档" : "已标记为已读"}
             </span>
             {filter === "archived" && (
               <XCircle className="ml-1 size-3 text-muted-foreground" />

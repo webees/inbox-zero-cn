@@ -271,7 +271,7 @@ export async function withRateLimitRecording<T>(
           attemptNumber,
         });
       } catch (recordError) {
-        logger.warn("Failed to record provider rate-limit state", {
+        logger.warn("记录服务商速率限制状态失败", {
           provider: rateLimitProvider,
           source,
           error:
@@ -295,8 +295,8 @@ export function getProviderRateLimitDelayMs({
   provider: EmailProviderRateLimitProvider;
   attemptNumber: number;
 }) {
-  // The guard's own error is not a provider response. Recording it would
-  // push retryAt forward on every skipped call, so the mode never expires.
+  // 守卫自身的错误不是服务商响应。记录它会在每次跳过调用时把 retryAt
+  // 往后推，导致该模式永远不会过期。
   if (isProviderRateLimitModeError(error)) return null;
 
   if (provider === "google") {
@@ -306,7 +306,7 @@ export function getProviderRateLimitDelayMs({
   return getMicrosoftRateLimitDelayMs(error, attemptNumber);
 }
 
-/** Seconds until the provider should accept requests again, for a Retry-After header. */
+/** 到服务商再次接受请求的秒数，用于 Retry-After 响应头。 */
 export function getProviderRateLimitRetryAfterSeconds({
   error,
   provider,
@@ -334,8 +334,8 @@ export function getProviderRateLimitRetryAfterSeconds({
   return Math.ceil(delayMs / 1000);
 }
 
-// Without an explicit retry time, Gmail's in-request backoff starts at 1s,
-// which is too short for a client deciding when to come back.
+// 没有明确的 retry 时间时，Gmail 请求内的退避从 1 秒开始，
+// 对决定何时重试的客户端来说太短了。
 function getGoogleRetryAfterMs(error: unknown) {
   const errorInfo = extractErrorInfo(error);
   if (!isRetryableError(errorInfo).isRateLimit) return null;

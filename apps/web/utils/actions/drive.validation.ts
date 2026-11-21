@@ -62,7 +62,7 @@ export const moveFilingBody = z.object({
 export type MoveFilingBody = z.infer<typeof moveFilingBody>;
 
 export const createDriveFolderBody = z.object({
-  folderName: z.string().min(1, "Folder name is required"),
+  folderName: z.string().min(1, "文件夹名称为必填项"),
   driveConnectionId: z.string(),
 });
 export type CreateDriveFolderBody = z.infer<typeof createDriveFolderBody>;

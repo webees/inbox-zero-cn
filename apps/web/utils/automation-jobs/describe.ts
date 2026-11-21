@@ -12,14 +12,14 @@ export function describeCronSchedule(cronExpression: string): string {
   const timeList =
     localTimes.length === 1
       ? localTimes[0]
-      : `${localTimes.slice(0, -1).join(", ")} and ${localTimes[localTimes.length - 1]}`;
+      : `${localTimes.slice(0, -1).join("、")}和${localTimes[localTimes.length - 1]}`;
 
-  return `${weekdayText} at ${timeList} ${schedule.timeZoneName}`;
+  return `${weekdayText} ${timeList} ${schedule.timeZoneName}`;
 }
 
 /**
- * Splits a daily-or-weekly cron into the parts a schedule sentence needs, with
- * times shown in the viewer's time zone. Returns null for anything else.
+ * 将每日或每周的 cron 拆分为日程句子所需的部分，
+ * 时间按查看者的时区显示。其他情况返回 null。
  */
 export function parseCronSchedule(
   cronExpression: string,
@@ -77,10 +77,10 @@ export function parseCronSchedule(
   }
 }
 
-/** Cron in English words, or the raw expression when cronstrue can't read it. */
+/** 用文字描述 cron 表达式，无法解析时返回原始表达式。 */
 export function describeCronExpression(cronExpression: string): string {
   try {
-    return cronstrue.toString(cronExpression);
+    return cronstrue.toString(cronExpression, { locale: "zh_CN" });
   } catch {
     return cronExpression;
   }
@@ -93,9 +93,9 @@ type CronWeekdays =
   | { kind: "custom"; text: string };
 
 const ENGLISH_WEEKDAYS: Record<NamedCronWeekdays, string> = {
-  everyDay: "Every day",
-  weekdays: "Weekdays",
-  weekends: "Weekends",
+  everyDay: "每天",
+  weekdays: "工作日",
+  weekends: "周末",
 };
 
 function parseWeekdays(dowField: string): CronWeekdays {
@@ -106,8 +106,8 @@ function parseWeekdays(dowField: string): CronWeekdays {
   return {
     kind: "custom",
     text: cronstrue
-      .toString(`0 0 * * ${dowField}`)
-      .replace("At 12:00 AM, ", ""),
+      .toString(`0 0 * * ${dowField}`, { locale: "zh_CN" })
+      .replace("12:00 凌晨，", ""),
   };
 }
 

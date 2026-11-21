@@ -52,7 +52,7 @@ function main() {
       allowModelChange: process.argv.includes("--allow-model-change"),
     });
   } catch (error) {
-    console.error(error instanceof Error ? error.message : "Invalid eval runs");
+    console.error(error instanceof Error ? error.message : "无效的 eval 运行");
     process.exit(1);
   }
 
@@ -68,7 +68,7 @@ function main() {
   console.log("# Paired comparison\n");
   console.log(`baseline  ${label(baseline)}  ${path.basename(baselinePath)}`);
   console.log(`variant   ${label(variant)}  ${path.basename(variantPath)}`);
-  console.log(`\n${pairs.length} paired cases\n`);
+  console.log(`\n${pairs.length} 个配对用例\n`);
 
   console.log(`baseline send-ready   ${pct(summary.baselineRate)}`);
   console.log(`variant  send-ready   ${pct(summary.variantRate)}`);

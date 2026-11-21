@@ -166,15 +166,15 @@ export async function archiveThread({
   if (archiveResult.status === "rejected") {
     const error = archiveResult.reason as Error;
     if (error.message?.includes("Requested entity was not found")) {
-      logger.warn("Thread not found", { threadId, userEmail: ownerEmail });
-      return { status: 404, message: "Thread not found" };
+      logger.warn("未找到会话", { threadId, userEmail: ownerEmail });
+      return { status: 404, message: "未找到会话" };
     }
-    logger.error("Failed to archive thread", { threadId, error });
+    logger.error("无法归档会话", { threadId, error });
     throw error;
   }
 
   if (publishResult.status === "rejected") {
-    logger.error("Failed to publish archive action", {
+    logger.error("无法发布归档操作", {
       threadId,
       error: publishResult.reason,
     });

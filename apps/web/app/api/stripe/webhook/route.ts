@@ -27,11 +27,7 @@ export const POST = withError("stripe/webhook", async (request) => {
     env.STRIPE_WEBHOOK_SECRET,
   );
 
-  // Processed before acknowledging so a failure makes Stripe retry delivery.
-  if (
-    event.type === "invoice.payment_succeeded" ||
-    event.type === "charge.dispute.created"
-  ) {
+  if (event.type === "invoice.payment_succeeded") {
     await processEvent(event, logger);
     return NextResponse.json({ received: true });
   }

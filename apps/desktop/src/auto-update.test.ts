@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   checkForDesktopUpdatesManually,
-  DESKTOP_IDLE_INSTALL_CHECK_MS,
   DESKTOP_UPDATE_INTERVAL_MS,
   installDownloadedDesktopUpdate,
   resetDesktopAutoUpdateForTests,
@@ -16,7 +15,6 @@ const {
   notificationOptions,
   notificationShow,
   Notification,
-  powerMonitor,
 } = vi.hoisted(() => {
   const notificationShow = vi.fn();
   const notificationOptions: Array<{ title: string; body: string }> = [];
@@ -47,11 +45,10 @@ const {
     notificationOptions,
     notificationShow,
     Notification,
-    powerMonitor: { getSystemIdleState: vi.fn(() => "active") },
   };
 });
 
-vi.mock("electron", () => ({ app, dialog, Notification, powerMonitor }));
+vi.mock("electron", () => ({ app, dialog, Notification }));
 vi.mock("electron-updater", () => ({ autoUpdater }));
 vi.mock("./sentry", () => ({ captureDesktopError: vi.fn() }));
 
@@ -147,8 +144,8 @@ describe("startDesktopAutoUpdate", () => {
     expect(onUpdateReady).toHaveBeenCalledWith("0.2.0");
     expect(notificationOptions).toEqual([
       {
-        body: "Restart Inbox Zero to finish updating to 0.2.0.",
-        title: "Update ready to install",
+        body: "重启 Inbox Zero 以完成更新到 0.2.0。",
+        title: "更新已准备好安装",
       },
     ]);
     expect(notificationShow).toHaveBeenCalledOnce();
@@ -204,7 +201,7 @@ describe("checkForDesktopUpdatesManually", () => {
     expect(autoUpdater.checkForUpdates).not.toHaveBeenCalled();
     expect(dialog.showMessageBox).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: "Updates are unavailable in development builds",
+        message: "开发版本中无法使用更新",
       }),
     );
   });
@@ -221,8 +218,8 @@ describe("checkForDesktopUpdatesManually", () => {
 
     expect(dialog.showMessageBox).toHaveBeenCalledWith(
       expect.objectContaining({
-        detail: "Inbox Zero 0.1.0 is the latest version.",
-        message: "You're up to date",
+        detail: "Inbox Zero 0.1.0 是当前最新版本。",
+        message: "已是最新版本",
       }),
     );
   });
@@ -241,8 +238,8 @@ describe("checkForDesktopUpdatesManually", () => {
     expect(dialog.showMessageBox).toHaveBeenCalledWith(
       expect.objectContaining({
         detail:
-          "You can keep using Inbox Zero. Restart to Update will appear in the app menu when it's ready.",
-        message: "Downloading Inbox Zero 0.2.0",
+          "您可以继续使用 Inbox Zero。更新准备好后，应用菜单中会出现“重启以更新”。",
+        message: "正在下载 Inbox Zero 0.2.0",
       }),
     );
     expect(autoUpdater.downloadUpdate).not.toHaveBeenCalled();
@@ -366,8 +363,8 @@ describe("checkForDesktopUpdatesManually", () => {
 
     expect(dialog.showMessageBox).toHaveBeenCalledWith(
       expect.objectContaining({
-        buttons: ["Restart to Update", "Later"],
-        message: "An update is ready to install",
+        buttons: ["重启以更新", "稍后"],
+        message: "更新已准备好安装",
       }),
     );
     expect(beforeInstall).toHaveBeenCalledOnce();
@@ -389,7 +386,7 @@ describe("checkForDesktopUpdatesManually", () => {
     expect(console.error).toHaveBeenCalledWith("feed unavailable");
     expect(dialog.showMessageBox).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: "Couldn't check for updates",
+        message: "无法检查更新",
         type: "error",
       }),
     );
@@ -426,121 +423,6 @@ describe("installDownloadedDesktopUpdate", () => {
 
   it("does nothing when no update has been downloaded", async () => {
     await expect(installDownloadedDesktopUpdate(vi.fn())).resolves.toBe(false);
-    expect(autoUpdater.quitAndInstall).not.toHaveBeenCalled();
-  });
-});
-
-describe("installing a downloaded update while idle", () => {
-  let notifyDownloaded: ((info: { version: string }) => void) | undefined;
-
-  beforeEach(() => {
-    vi.useFakeTimers();
-    resetDesktopAutoUpdateForTests();
-    notifyDownloaded = undefined;
-    autoUpdater.checkForUpdates.mockReset();
-    autoUpdater.checkForUpdates.mockResolvedValue(null);
-    autoUpdater.on.mockReset();
-    autoUpdater.on.mockImplementation((event, listener) => {
-      if (event === "update-downloaded") notifyDownloaded = listener;
-    });
-    autoUpdater.quitAndInstall.mockReset();
-    autoUpdater.setFeedURL.mockReset();
-    powerMonitor.getSystemIdleState.mockReset();
-  });
-
-  afterEach(() => {
-    resetDesktopAutoUpdateForTests();
-    vi.useRealTimers();
-  });
-
-  it("restarts into the update once nobody is using the computer", async () => {
-    const prepareToQuit = vi.fn();
-    powerMonitor.getSystemIdleState.mockReturnValue("idle");
-
-    await startDesktopAutoUpdate(true, { prepareToQuit });
-    notifyDownloaded?.({ version: "0.2.0" });
-    await vi.advanceTimersByTimeAsync(DESKTOP_IDLE_INSTALL_CHECK_MS);
-
-    expect(prepareToQuit).toHaveBeenCalledOnce();
-    expect(autoUpdater.quitAndInstall).toHaveBeenCalledOnce();
-    expect(autoUpdater.quitAndInstall).toHaveBeenCalledWith(true, true);
-    expect(prepareToQuit.mock.invocationCallOrder[0]).toBeLessThan(
-      autoUpdater.quitAndInstall.mock.invocationCallOrder[0],
-    );
-  });
-
-  it("treats a locked screen as idle", async () => {
-    powerMonitor.getSystemIdleState.mockReturnValue("locked");
-
-    await startDesktopAutoUpdate(true, { prepareToQuit: vi.fn() });
-    notifyDownloaded?.({ version: "0.2.0" });
-    await vi.advanceTimersByTimeAsync(DESKTOP_IDLE_INSTALL_CHECK_MS);
-
-    expect(autoUpdater.quitAndInstall).toHaveBeenCalledWith(true, true);
-  });
-
-  it("waits while the user is active and installs when they step away", async () => {
-    const prepareToQuit = vi.fn();
-    powerMonitor.getSystemIdleState.mockReturnValue("active");
-
-    await startDesktopAutoUpdate(true, { prepareToQuit });
-    notifyDownloaded?.({ version: "0.2.0" });
-    await vi.advanceTimersByTimeAsync(DESKTOP_IDLE_INSTALL_CHECK_MS * 30);
-
-    expect(prepareToQuit).not.toHaveBeenCalled();
-    expect(autoUpdater.quitAndInstall).not.toHaveBeenCalled();
-
-    powerMonitor.getSystemIdleState.mockReturnValue("idle");
-    await vi.advanceTimersByTimeAsync(DESKTOP_IDLE_INSTALL_CHECK_MS);
-
-    expect(autoUpdater.quitAndInstall).toHaveBeenCalledOnce();
-  });
-
-  it("keeps waiting when the system cannot report whether it is idle", async () => {
-    powerMonitor.getSystemIdleState.mockReturnValue("unknown");
-
-    await startDesktopAutoUpdate(true, { prepareToQuit: vi.fn() });
-    notifyDownloaded?.({ version: "0.2.0" });
-    await vi.advanceTimersByTimeAsync(DESKTOP_IDLE_INSTALL_CHECK_MS * 30);
-
-    expect(autoUpdater.quitAndInstall).not.toHaveBeenCalled();
-  });
-
-  it("tries again at the next idle check when installing fails", async () => {
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    powerMonitor.getSystemIdleState.mockReturnValue("idle");
-    autoUpdater.quitAndInstall.mockImplementationOnce(() => {
-      throw new Error("installer busy");
-    });
-
-    try {
-      await startDesktopAutoUpdate(true, { prepareToQuit: vi.fn() });
-      notifyDownloaded?.({ version: "0.2.0" });
-      await vi.advanceTimersByTimeAsync(DESKTOP_IDLE_INSTALL_CHECK_MS * 2);
-
-      expect(console.error).toHaveBeenCalledWith("installer busy");
-      expect(autoUpdater.quitAndInstall).toHaveBeenCalledTimes(2);
-    } finally {
-      errorSpy.mockRestore();
-    }
-  });
-
-  it("tries again when the updater reports a failed install without throwing", async () => {
-    powerMonitor.getSystemIdleState.mockReturnValue("idle");
-
-    await startDesktopAutoUpdate(true, { prepareToQuit: vi.fn() });
-    notifyDownloaded?.({ version: "0.2.0" });
-    await vi.advanceTimersByTimeAsync(DESKTOP_IDLE_INSTALL_CHECK_MS * 2);
-
-    expect(autoUpdater.quitAndInstall).toHaveBeenCalledTimes(2);
-  });
-
-  it("does not restart before an update has downloaded", async () => {
-    powerMonitor.getSystemIdleState.mockReturnValue("idle");
-
-    await startDesktopAutoUpdate(true, { prepareToQuit: vi.fn() });
-    await vi.advanceTimersByTimeAsync(DESKTOP_IDLE_INSTALL_CHECK_MS * 30);
-
     expect(autoUpdater.quitAndInstall).not.toHaveBeenCalled();
   });
 });

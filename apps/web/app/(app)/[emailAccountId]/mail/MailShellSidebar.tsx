@@ -70,9 +70,9 @@ const NO_FOLDERS: OutlookFolder[] = [];
 const NO_CATEGORIES: MailCategory[] = [];
 
 /**
- * The mail screen's left column. It owns the label counts and mailbox editing
- * so their updates stay here, and is memoized so thread navigation and list
- * snapshots don't re-render it.
+ * 邮件界面的左栏。它负责标签计数和邮箱编辑，
+ * 因此这些更新留在这里；它经过 memo 优化，
+ * 会话导航和列表快照不会触发重新渲染。
  */
 export const MailShellSidebar = memo(function MailShellSidebar({
   activeType,
@@ -95,8 +95,8 @@ export const MailShellSidebar = memo(function MailShellSidebar({
   onSelectAccount: (accountId: string) => void;
   onSelectAllAccounts: () => void;
   /**
-   * Leaves a view or split that the deleted label or folder defined.
-   * `deleted` resolves to whether the provider confirmed the delete.
+   * 离开由已删除标签或文件夹定义的视图或分类。
+   * `deleted` 的结果表示提供商是否确认删除。
    */
   onMailboxItemDeleted: (
     item: MailboxItem,
@@ -110,7 +110,7 @@ export const MailShellSidebar = memo(function MailShellSidebar({
   const isGoogle = isGoogleProvider(provider);
   const isOutlook = isMicrosoftProvider(provider);
   const { t } = useLingui();
-  const failureMessage = t`Something went wrong. Try again.`;
+  const failureMessage = t`出了点问题，请重试。`;
   const { userLabels: allLabels, mutate: mutateLabels } = useLabels();
   const { folders, mutate: mutateFolders } = useFolders(provider);
   const { countsById, mutate: mutateCounts } = useLabelCounts({
@@ -124,8 +124,8 @@ export const MailShellSidebar = memo(function MailShellSidebar({
   const { state: openSidebars } = useSidebar();
   const isMailSidebarOpen = openSidebars.includes("left-sidebar");
 
-  // Dragging writes straight to the CSS variable: re-rendering on every
-  // pointer move would make the sidebar edge lag behind the cursor.
+  // 拖拽时直接写入 CSS 变量：每次指针移动都重新渲染
+  // 会让侧边栏边缘落后于光标。
   const sidebarScopeRef = useRef<HTMLDivElement>(null);
   const setSidebarWidth = useCallback((width: number) => {
     sidebarScopeRef.current?.style.setProperty("--sidebar-width", `${width}px`);
@@ -407,7 +407,7 @@ export const MailShellSidebar = memo(function MailShellSidebar({
           {renderMailSidebar({ collapsed: !isMailSidebarOpen, inSheet: false })}
           {isMailSidebarOpen ? (
             <PanelResizeHandle
-              label={t`Resize sidebar`}
+              label={t`调整侧边栏大小`}
               edge="right"
               bounds={MAIL_SIDEBAR_WIDTH_BOUNDS}
               onResize={setSidebarWidth}
@@ -422,8 +422,8 @@ export const MailShellSidebar = memo(function MailShellSidebar({
       <Sheet open={isMobileNavOpen} onOpenChange={onMobileNavOpenChange}>
         <SheetContent
           side="left"
-          // Focusing the first control would pop the Compose tooltip over
-          // the rows beneath it, so focus the panel itself.
+          // 聚焦第一个控件会让撰写提示框弹在其下方的行上，
+          // 因此聚焦面板本身。
           onOpenAutoFocus={(event) => {
             event.preventDefault();
             (event.currentTarget as HTMLElement).focus();
@@ -436,7 +436,7 @@ export const MailShellSidebar = memo(function MailShellSidebar({
           }
         >
           <SheetTitle className="sr-only">
-            <Trans>Mail navigation</Trans>
+            <Trans>邮件导航</Trans>
           </SheetTitle>
           {renderMailSidebar({ collapsed: false, inSheet: true })}
         </SheetContent>
@@ -460,8 +460,8 @@ async function runMailboxItemAction(
 }
 
 /**
- * Shows `apply` at once, runs `request`, then reloads the list; a refused
- * request rolls back and shows why. Resolves to whether it succeeded.
+ * 立即显示 `apply` 的结果，执行 `request`，然后重新加载列表；
+ * 请求被拒绝时会回滚并显示原因。结果表示是否成功。
  */
 function updateOptimistically<T>(
   mutate: KeyedMutator<T>,
@@ -475,8 +475,8 @@ function updateOptimistically<T>(
       return current;
     },
     {
-      // The list on screen may hold other pending changes, such as a label
-      // still being created; build on it rather than on the last saved list.
+      // 屏幕上的列表可能包含其他待处理变更，例如仍在创建的标签；
+      // 应基于它而不是上次保存的列表进行构建。
       optimisticData: (committed, displayed) => apply(displayed ?? committed),
       populateCache: false,
       rollbackOnError: true,

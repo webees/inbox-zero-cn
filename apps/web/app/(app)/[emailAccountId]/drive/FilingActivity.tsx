@@ -53,12 +53,12 @@ export function FilingActivity() {
   return (
     <div>
       <SectionHeader className="mb-3">
-        <Trans>Recent Activity</Trans>
+        <Trans>最近活动</Trans>
       </SectionHeader>
       <LoadingContent loading={isLoading} error={error}>
         {data?.filings.length === 0 ? (
           <MutedText className="italic">
-            <Trans>No recently filed documents.</Trans>
+            <Trans>最近没有归档文档</Trans>
           </MutedText>
         ) : (
           <div className="rounded-lg border">
@@ -66,16 +66,16 @@ export function FilingActivity() {
               <TableHeader>
                 <TableRow>
                   <TableHead>
-                    <Trans>File</Trans>
+                    <Trans>文件</Trans>
                   </TableHead>
                   <TableHead>
-                    <Trans>Folder</Trans>
+                    <Trans>文件夹</Trans>
                   </TableHead>
                   <TableHead className="w-[100px]">
-                    <Trans>When</Trans>
+                    <Trans>时间</Trans>
                   </TableHead>
                   <TableHead className="w-[80px] text-center">
-                    <Trans>Correct?</Trans>
+                    <Trans>归档正确吗？</Trans>
                   </TableHead>
                   <TableHead className="w-[50px]" />
                 </TableRow>
@@ -96,8 +96,8 @@ export function FilingActivity() {
             {data && data.total > 10 && (
               <MutedText className="p-3 border-t">
                 <Trans>
-                  Showing {data.filings.length} of{" "}
-                  <Plural value={data.total} one="# filing" other="# filings" />
+                  显示 {data.filings.length} 条，共{" "}
+                  <Plural value={data.total} one="# 条归档" other="# 条归档" />
                 </Trans>
               </MutedText>
             )}
@@ -302,7 +302,7 @@ function FilingRow({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>
-                  <Trans>Which folder does this file belong in?</Trans>
+                  <Trans>此文件应归入哪个文件夹？</Trans>
                 </DropdownMenuLabel>
                 {otherFolders.map((folder) => (
                   <DropdownMenuItem
@@ -322,7 +322,7 @@ function FilingRow({
                 <DropdownMenuItem
                   onClick={() => setVote(voteBeforeDropdownRef.current)}
                 >
-                  <Trans>Cancel</Trans>
+                  <Trans>取消</Trans>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -345,7 +345,7 @@ function FilingRow({
             target="_blank"
             rel="noopener noreferrer"
             className="text-muted-foreground hover:text-foreground"
-            aria-label={t`Open ${filename} in drive`}
+            aria-label={t`在云端硬盘中打开 ${filename}`}
           >
             <ExternalLinkIcon className="size-4" />
           </a>
@@ -365,9 +365,9 @@ function FolderCell({
 
   if (isSkipped) {
     return (
-      <Tooltip content={filing.reasoning || t`Doesn't match preferences`}>
+      <Tooltip content={filing.reasoning || t`不符合你的偏好`}>
         <span className="flex items-center gap-1.5 text-muted-foreground italic">
-          <Trans>Skipped</Trans>
+          <Trans>已跳过</Trans>
           <InfoIcon className="size-3.5 shrink-0" />
         </span>
       </Tooltip>

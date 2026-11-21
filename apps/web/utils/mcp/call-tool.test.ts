@@ -56,7 +56,7 @@ describe("callMcpTool", () => {
       args: { content: "private task" },
     }).catch((caught) => caught);
 
-    expect(error).toEqual(new Error("Failed to call todoist tool add-tasks"));
+    expect(error).toEqual(new Error("调用 todoist 工具 add-tasks 失败"));
     expect(error.message).not.toContain("private email");
     expect(mockClientClose).toHaveBeenCalledOnce();
     expect(mockTransportClose).toHaveBeenCalledOnce();

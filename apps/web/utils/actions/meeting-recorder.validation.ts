@@ -12,9 +12,9 @@ export type UpdateMeetingRecorderSettingsBody = z.infer<
   typeof updateMeetingRecorderSettingsBody
 >;
 
-// Only the event id is accepted. The event itself is re-read from the account's
-// own calendars, so a caller cannot point the notetaker at a meeting they were
-// never invited to or attach themselves to someone else's recording.
+// 只接受事件 id。事件本身会从该账号自己的日历中重新读取，
+// 因此调用方无法把记录助手指向他们从未受邀参加的会议，
+// 也无法把自己附加到其他人的录制上。
 export const setMeetingJoinOverrideBody = z.object({
   calendarEventId: z.string(),
   join: z.boolean(),

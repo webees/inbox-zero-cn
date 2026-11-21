@@ -21,7 +21,7 @@ export function LinkPanel({
   const apply = () => {
     const normalized = normalizeLinkHref(href);
     if (!normalized || !isSafeEmailUrl(normalized)) {
-      setError("Enter a safe web, email, telephone, or in-message link.");
+      setError("请输入安全的网页、电子邮件、电话或站内链接。");
       return;
     }
     onApply(normalized);
@@ -29,7 +29,7 @@ export function LinkPanel({
 
   return (
     <div
-      aria-label={initialHref ? "Edit link" : "Add link"}
+      aria-label={initialHref ? "编辑链接" : "添加链接"}
       className={styles.linkPanel}
       data-email-editor-link-dialog=""
       onKeyDown={(event) => {
@@ -40,7 +40,7 @@ export function LinkPanel({
       }}
       role="dialog"
     >
-      <label htmlFor={inputId}>Link address</label>
+      <label htmlFor={inputId}>链接地址</label>
       <input
         aria-describedby={error ? errorId : undefined}
         aria-invalid={Boolean(error)}
@@ -72,7 +72,7 @@ export function LinkPanel({
             onClick={() => openSafeLink(initialHref)}
             type="button"
           >
-            Open
+            打开
           </button>
         )}
         {initialHref && (
@@ -81,18 +81,18 @@ export function LinkPanel({
             onClick={onRemove}
             type="button"
           >
-            Remove
+            移除
           </button>
         )}
         <button className={styles.linkButton} onClick={onCancel} type="button">
-          Cancel
+          取消
         </button>
         <button
           className={`${styles.linkButton} ${styles.linkButtonPrimary}`}
           onClick={apply}
           type="button"
         >
-          {initialHref ? "Update" : "Add"}
+          {initialHref ? "更新" : "添加"}
         </button>
       </div>
     </div>
@@ -110,8 +110,8 @@ function normalizeLinkHref(value: string) {
   if (!href) return "";
   if (/^(?:https?:\/\/|mailto:|tel:|#)/iu.test(href)) return href;
   if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(href)) return `mailto:${href}`;
-  // Keep other explicit schemes so the allowlist rejects them; a colon
-  // followed by digits is a port, as in example.com:8080.
+  // 保留其他显式 scheme，让允许列表拒绝它们；冒号后跟数字的是端口，
+  // 例如 example.com:8080。
   if (/^[a-z][a-z\d+.-]*:(?!\d)/iu.test(href)) return href;
   return `https://${href}`;
 }

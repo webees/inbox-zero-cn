@@ -43,13 +43,13 @@ export function BulkArchiveProgress({
     const current = Math.min(settledItems + 1, totalItems);
     if (failedItems) {
       return t`${plural(totalItems, {
-        one: `Archiving ${current} of # sender... ${failedItems} failed.`,
-        other: `Archiving ${current} of # senders... ${failedItems} failed.`,
+        one: `正在归档 ${current} / # 个发件人... ${failedItems} 个失败`,
+        other: `正在归档 ${current} / # 个发件人... ${failedItems} 个失败`,
       })}`;
     }
     return t`${plural(totalItems, {
-      one: `Archiving ${current} of # sender...`,
-      other: `Archiving ${current} of # senders...`,
+      one: `正在归档 ${current} / # 个发件人...`,
+      other: `正在归档 ${current} / # 个发件人...`,
     })}`;
   }
 
@@ -60,13 +60,13 @@ export function BulkArchiveProgress({
       inProgressText={getInProgressText()}
       completedText={
         failedItems
-          ? t`Archiving finished: ${completedItems} succeeded, ${failedItems} failed.`
+          ? t`归档完成：${completedItems} 个成功，${failedItems} 个失败`
           : t`${plural(completedItems, {
-              one: "Archiving complete! # sender processed!",
-              other: "Archiving complete! # senders processed!",
+              one: "归档完成！已处理 # 个发件人！",
+              other: "归档完成！已处理 # 个发件人！",
             })}`
       }
-      itemLabel={t`senders`}
+      itemLabel={t`个发件人`}
     />
   );
 }

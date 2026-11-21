@@ -55,12 +55,12 @@ export default function IntegrationsPage() {
           <ActionCard
             variant="blue"
             icon={<ZapIcon className="h-5 w-5" />}
-            title={t`Integrations are not enabled`}
-            description={t`This feature is in limited rollout. Join early access to enable integrations for your account.`}
+            title={t`集成功能尚未启用`}
+            description={t`此功能正在小范围推送。加入抢先体验即可为你的账号启用集成。`}
             action={
               <Button asChild variant="outline">
                 <Link href="/early-access">
-                  <Trans>Join Early Access</Trans>
+                  <Trans>加入抢先体验</Trans>
                 </Link>
               </Button>
             }
@@ -73,17 +73,14 @@ export default function IntegrationsPage() {
   return (
     <PageWrapper>
       <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <PageHeader
-          title={t`Integrations`}
-          description={t`Connect the tools you already use.`}
-        />
+        <PageHeader title={t`集成`} description={t`连接你已经在使用的工具。`} />
         {hasAccess && (
           <div className="flex flex-wrap items-center gap-2 sm:shrink-0 sm:flex-nowrap">
             <AddCustomMcpServerDialog />
             <RequestAccessDialog
               trigger={
                 <Button variant="outline">
-                  <Trans>Request an Integration</Trans>
+                  <Trans>申请集成</Trans>
                 </Button>
               }
             />
@@ -113,12 +110,10 @@ function Capabilities() {
         </ItemMedia>
         <ItemContent>
           <ItemTitle>
-            <Trans>Better drafts</Trans>
+            <Trans>更优质的草稿</Trans>
           </ItemTitle>
           <ItemDescription>
-            <Trans>
-              Replies arrive knowing the sender's plan, tickets, and history.
-            </Trans>
+            <Trans>回复时会了解发件人的套餐、工单和历史记录。</Trans>
           </ItemDescription>
         </ItemContent>
       </Item>
@@ -131,10 +126,10 @@ function Capabilities() {
           </ItemMedia>
           <ItemContent>
             <ItemTitle>
-              <Trans>Rule actions</Trans>
+              <Trans>规则操作</Trans>
             </ItemTitle>
             <ItemDescription>
-              <Trans>Rules can write back, like adding a Todoist task.</Trans>
+              <Trans>规则可以写回其他工具，例如添加 Todoist 任务。</Trans>
             </ItemDescription>
           </ItemContent>
         </Item>

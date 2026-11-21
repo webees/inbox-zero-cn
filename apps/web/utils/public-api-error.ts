@@ -25,14 +25,13 @@ export type PublicApiErrorBody = {
 };
 
 const DEFAULT_HINTS: Record<PublicApiErrorCode, string> = {
-  BAD_REQUEST: `Check the request against ${PUBLIC_API_OPENAPI_PATH} or ${PUBLIC_API_DOCS_URL}.`,
-  UNAUTHORIZED: `Include a valid API-Key header. See ${PUBLIC_API_DOCS_URL}.`,
-  FORBIDDEN: `Use an account-scoped API key with the required scopes. See ${PUBLIC_API_DOCS_URL}.`,
-  NOT_FOUND: `Confirm the path and resource id against ${PUBLIC_API_OPENAPI_PATH} or ${PUBLIC_API_DOCS_URL}.`,
-  METHOD_NOT_ALLOWED: `Use a method declared for this path in ${PUBLIC_API_OPENAPI_PATH}.`,
-  RATE_LIMITED:
-    "Wait and retry with backoff. Reduce request rate if the limit persists.",
-  INTERNAL_ERROR: `Retry the request. If it keeps failing, see ${PUBLIC_API_DOCS_URL}.`,
+  BAD_REQUEST: `对照 ${PUBLIC_API_OPENAPI_PATH} 或 ${PUBLIC_API_DOCS_URL} 检查请求。`,
+  UNAUTHORIZED: `请包含有效的 API-Key 请求头。参见 ${PUBLIC_API_DOCS_URL}。`,
+  FORBIDDEN: `请使用具有所需权限范围的账号级 API 密钥。参见 ${PUBLIC_API_DOCS_URL}。`,
+  NOT_FOUND: `请对照 ${PUBLIC_API_OPENAPI_PATH} 或 ${PUBLIC_API_DOCS_URL} 确认路径和资源 id。`,
+  METHOD_NOT_ALLOWED: `请使用 ${PUBLIC_API_OPENAPI_PATH} 中为该路径声明的方法。`,
+  RATE_LIMITED: "请稍候并以退避方式重试。如果限制持续存在，请降低请求速率。",
+  INTERNAL_ERROR: `请重试该请求。如果持续失败，参见 ${PUBLIC_API_DOCS_URL}。`,
 };
 
 export function isPublicApiPath(pathname: string): boolean {
@@ -101,7 +100,7 @@ export async function readPublicApiJson(request: Request): Promise<unknown> {
   try {
     return await request.json();
   } catch {
-    throw new SafeError("Request body must be valid JSON", 400);
+    throw new SafeError("请求体必须是有效的 JSON", 400);
   }
 }
 
@@ -113,15 +112,15 @@ export function createPublicApiMethodNotAllowedHandler(
       return publicApiErrorResponse({
         status: 404,
         code: "NOT_FOUND",
-        message: "External API is not enabled",
+        message: "外部 API 未启用",
       });
     }
 
     return publicApiErrorResponse({
       status: 405,
       code: "METHOD_NOT_ALLOWED",
-      message: "Method not allowed",
-      hint: `Use one of the supported methods: ${allowedMethods.join(", ")}.`,
+      message: "方法不允许",
+      hint: `请使用以下受支持的方法之一：${allowedMethods.join(", ")}。`,
       headers: { Allow: allowedMethods.join(", ") },
     });
   };
@@ -131,7 +130,7 @@ export function publicApiRouteNotFound() {
   return publicApiErrorResponse({
     status: 404,
     code: "NOT_FOUND",
-    message: "API route not found",
+    message: "未找到 API 路由",
   });
 }
 
@@ -143,7 +142,7 @@ export function publicApiErrorFromUnknown(error: unknown): NextResponse {
       : "";
     const issueMessage = firstIssue?.message
       ? `${firstIssue.message}${issuePath}`
-      : "Invalid request";
+      : "请求无效";
 
     return publicApiErrorResponse({
       status: 400,
@@ -163,13 +162,13 @@ export function publicApiErrorFromUnknown(error: unknown): NextResponse {
 
     return publicApiErrorResponse({
       status,
-      message: error.safeMessage || error.message || "Request failed",
+      message: error.safeMessage || error.message || "请求失败",
     });
   }
 
   return publicApiErrorResponse({
     status: 500,
     code: "INTERNAL_ERROR",
-    message: "An unexpected error occurred",
+    message: "发生了意外错误",
   });
 }

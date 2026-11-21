@@ -3,7 +3,7 @@ import type { EmailToContentOptions } from "@/utils/mail";
 import { internalDateToDate } from "@/utils/date";
 import { emailToContentForAI } from "@/utils/ai/content-sanitizer";
 
-// Convert a ParsedMessage to an EmailForLLM
+// 将 ParsedMessage 转换为 EmailForLLM
 export function getEmailForLLM(
   message: ParsedMessage,
   contentOptions?: EmailToContentOptions,

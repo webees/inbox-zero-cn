@@ -29,7 +29,7 @@ export function PageHeaderVideoButton({ video }: { video: Video }) {
           onClick={() => analytics.trackOpened({ trigger: "page_header" })}
         >
           <PlayIcon className="mr-2 size-3" />
-          Watch demo
+          观看演示
         </Button>
       </DialogTrigger>
       <VideoPlayerDialog

@@ -41,7 +41,7 @@ export function CleanInstructionsStep() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="text-center">
       <TypographyH3>
-        <Trans>Which emails should stay in your inbox?</Trans>
+        <Trans>哪些邮件应保留在收件箱中？</Trans>
       </TypographyH3>
 
       <div className="mt-4 grid gap-4">
@@ -49,25 +49,25 @@ export function CleanInstructionsStep() {
           name="reply"
           enabled={skipStates.skipReply}
           onChange={(value) => setSkipStates({ skipReply: value })}
-          labelRight={t`Emails needing replies`}
+          labelRight={t`需要回复的邮件`}
         />
         <Toggle
           name="starred"
           enabled={skipStates.skipStarred}
           onChange={(value) => setSkipStates({ skipStarred: value })}
-          labelRight={t`Starred emails`}
+          labelRight={t`星标邮件`}
         />
         <Toggle
           name="calendar"
           enabled={skipStates.skipCalendar}
           onChange={(value) => setSkipStates({ skipCalendar: value })}
-          labelRight={t`Future events`}
+          labelRight={t`未来事件`}
         />
         <Toggle
           name="receipt"
           enabled={skipStates.skipReceipt}
           onChange={(value) => setSkipStates({ skipReceipt: value })}
-          labelRight={t`Payment receipts`}
+          labelRight={t`付款收据`}
         />
         {/* <Toggle
           name="attachment"
@@ -79,14 +79,14 @@ export function CleanInstructionsStep() {
           name="conversation"
           enabled={skipStates.skipConversation}
           onChange={(value) => setSkipStates({ skipConversation: value })}
-          labelRight={t`Conversations`}
-          tooltipText={t`Email threads where you sent a reply`}
+          labelRight={t`会话`}
+          tooltipText={t`你已发送回复的邮件会话`}
         />
         <Toggle
           name="custom"
           enabled={showCustom}
           onChange={(value) => setShowCustom(value)}
-          labelRight={t`Custom`}
+          labelRight={t`自定义`}
         />
       </div>
 
@@ -98,10 +98,10 @@ export function CleanInstructionsStep() {
             rows={3}
             name="instructions"
             registerProps={register("instructions")}
-            placeholder={t`Example:
+            placeholder={t`示例：
 
-I work as a freelance designer. Don't archive emails from clients.
-I'm in the middle of a building project, keep those emails too.`}
+我是一名自由设计师。请不要归档客户的邮件。
+我正在参与一个建筑项目，也请保留这些邮件。`}
             error={errors.instructions}
           />
         </div>
@@ -109,7 +109,7 @@ I'm in the middle of a building project, keep those emails too.`}
 
       <div className="mt-6 flex justify-center">
         <Button type="submit">
-          <Trans>Continue</Trans>
+          <Trans>继续</Trans>
         </Button>
       </div>
     </form>

@@ -10,9 +10,7 @@ import {
 
 export async function watchGmail(gmail: gmail_v1.Gmail, logger: Logger) {
   if (env.GOOGLE_PUBSUB_VERIFICATION_TOKEN == null) {
-    throw new Error(
-      "GOOGLE_PUBSUB_VERIFICATION_TOKEN is required to watch Gmail",
-    );
+    throw new Error("监控 Gmail 需要 GOOGLE_PUBSUB_VERIFICATION_TOKEN");
   }
 
   try {
@@ -20,7 +18,7 @@ export async function watchGmail(gmail: gmail_v1.Gmail, logger: Logger) {
   } catch (error) {
     if (!isExistingGmailPushClientError(extractErrorInfo(error))) throw error;
 
-    logger.warn("Resetting Gmail watch after push client conflict");
+    logger.warn("在推送客户端冲突后重置 Gmail watch");
     await unwatchGmail(gmail);
     return await startGmailWatch(gmail, logger);
   }
@@ -42,7 +40,7 @@ async function startGmailWatch(gmail: gmail_v1.Gmail, logger: Logger) {
     }),
   );
 
-  logger.info("Gmail watch registered", {
+  logger.info("Gmail watch 已注册", {
     gmailHistoryId: res.data.historyId,
     expirationDate: res.data.expiration
       ? new Date(Number(res.data.expiration)).toISOString()

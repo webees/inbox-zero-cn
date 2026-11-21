@@ -215,7 +215,7 @@ export function FolderSelector({
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
                   <span>
-                    <Trans>Loading folders...</Trans>
+                    <Trans>正在加载文件夹...</Trans>
                   </span>
                 </>
               ) : value.id ? (
@@ -226,7 +226,7 @@ export function FolderSelector({
                   </span>
                 </div>
               ) : (
-                (placeholder ?? t`Select a folder...`)
+                (placeholder ?? t`选择文件夹...`)
               )}
             </div>
             <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
@@ -235,7 +235,7 @@ export function FolderSelector({
         <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
           <Command>
             <CommandInput
-              placeholder={t`Search folders...`}
+              placeholder={t`搜索文件夹...`}
               value={searchQuery}
               onValueChange={setSearchQuery}
             />
@@ -249,13 +249,13 @@ export function FolderSelector({
                 <div className="flex items-center justify-center py-6">
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
                   <span>
-                    <Trans>Loading folders...</Trans>
+                    <Trans>正在加载文件夹...</Trans>
                   </span>
                 </div>
               ) : (
                 <>
                   <CommandEmpty>
-                    <Trans>No folder found.</Trans>
+                    <Trans>未找到文件夹</Trans>
                   </CommandEmpty>
                   <CommandGroup>
                     {filteredFolders.map(({ folder, displayPath }) => (
@@ -282,8 +282,8 @@ export function FolderSelector({
           size="icon2xs"
           className="absolute right-9 top-2 hover:bg-muted"
           onClick={() => onChangeValue({ name: "", id: "" })}
-          aria-label={t`Clear folder selection`}
-          title={t`Clear folder selection`}
+          aria-label={t`清除文件夹选择`}
+          title={t`清除文件夹选择`}
         >
           <X className="h-3 w-3" />
         </Button>

@@ -1,4 +1,3 @@
 # @inboxzero/mail-ui
 
-Shared React DOM mail presentation for the Next mail route and the locally
-bootable desktop renderer. This package is not a mobile dependency.
+为 Next 邮件路由和可在本地启动的桌面渲染器提供共享的 React DOM 邮件呈现。此包不是移动端依赖。

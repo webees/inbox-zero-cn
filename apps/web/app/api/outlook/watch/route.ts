@@ -19,7 +19,7 @@ export const GET = withAuth("outlook/watch", async (request) => {
 
   if (emailAccounts.length === 0) {
     return NextResponse.json(
-      { message: "No Microsoft email accounts found for this user." },
+      { message: "未找到该用户的 Microsoft 邮箱账号。" },
       { status: 404 },
     );
   }
@@ -40,11 +40,11 @@ export const GET = withAuth("outlook/watch", async (request) => {
       });
 
       if (!account?.account.access_token || !account?.account.refresh_token) {
-        request.logger.warn("Missing tokens for account", { emailAccountId });
+        request.logger.warn("账号缺少令牌", { emailAccountId });
         results.push({
           emailAccountId,
           status: "error",
-          message: "Missing authentication tokens.",
+          message: "缺少认证令牌。",
         });
         continue;
       }
@@ -62,25 +62,24 @@ export const GET = withAuth("outlook/watch", async (request) => {
           expirationDate,
         });
       } else {
-        request.logger.error("Error watching inbox for account", {
+        request.logger.error("为账号监听收件箱时出错", {
           emailAccountId,
         });
         results.push({
           emailAccountId,
           status: "error",
-          message: "Failed to set up watch for this account.",
+          message: "无法为此账号设置监听。",
         });
       }
     } catch (error) {
-      request.logger.error("Exception while watching inbox for account", {
+      request.logger.error("监听账号收件箱时发生异常", {
         emailAccountId,
         error,
       });
       results.push({
         emailAccountId,
         status: "error",
-        message:
-          "An unexpected error occurred while setting up watch for this account.",
+        message: "为此账号设置监听时发生意外错误。",
         errorDetails: error instanceof Error ? error.message : String(error),
       });
     }

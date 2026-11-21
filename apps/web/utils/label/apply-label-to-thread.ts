@@ -39,7 +39,7 @@ export async function applyLabelToThread({
 
   if (failures.length > 0) {
     // Keep the provider error so callers can tell rate limits apart.
-    throw new Error(`Failed to label ${failures.length} messages in thread`, {
+    throw new Error(`为会话中的 ${failures.length} 封邮件添加标签失败`, {
       cause: firstFailure,
     });
   }

@@ -30,8 +30,8 @@ export function isNotFoundError(error: unknown) {
   );
 }
 
-// Driver adapters report either the violated fields or, when Postgres only
-// names the index, the index name.
+// 驱动适配器要么报告冲突的字段，要么在 Postgres 只给出索引名时
+// 报告索引名。
 function getDriverAdapterConstraint(
   meta: Record<string, unknown> | undefined,
 ): { fields: string[] } | { index: string } | undefined {
@@ -57,9 +57,9 @@ function getDriverAdapterConstraint(
   if (typeof index === "string") return { index };
 }
 
-// Prisma names unique indexes `<Model>_<field>_<field>_key`. Postgres truncates
-// names to 63 characters, which can cut into the last field, so a truncated
-// name only matches when it is exactly the caller's full key set, in order.
+// Prisma 将唯一索引命名为 `<Model>_<field>_<field>_key`。Postgres 会将名称
+// 截断为 63 个字符，这可能截断到最后一个字段，因此只有当截断后的名称
+// 恰好按顺序等于调用方的完整键集合时才匹配。
 function indexNameMatchesKeys(
   index: string,
   modelName: unknown,

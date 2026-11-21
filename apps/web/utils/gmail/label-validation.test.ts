@@ -41,29 +41,25 @@ describe("validateLabelNameBasic", () => {
     it("should reject empty strings", () => {
       const result = validateLabelNameBasic("");
       expect(result.valid).toBe(false);
-      expect(result.error).toBe("Label name cannot be empty");
+      expect(result.error).toBe("标签名称不能为空");
     });
 
     it("should reject whitespace-only strings", () => {
       const result = validateLabelNameBasic("   ");
       expect(result.valid).toBe(false);
-      expect(result.error).toBe("Label name cannot be empty");
+      expect(result.error).toBe("标签名称不能为空");
     });
 
     it("should reject labels with leading spaces", () => {
       const result = validateLabelNameBasic(" Work");
       expect(result.valid).toBe(false);
-      expect(result.error).toBe(
-        "Label name cannot have leading or trailing spaces",
-      );
+      expect(result.error).toBe("标签名称不能有前导或尾随空格");
     });
 
     it("should reject labels with trailing spaces", () => {
       const result = validateLabelNameBasic("Work ");
       expect(result.valid).toBe(false);
-      expect(result.error).toBe(
-        "Label name cannot have leading or trailing spaces",
-      );
+      expect(result.error).toBe("标签名称不能有前导或尾随空格");
     });
   });
 
@@ -72,7 +68,7 @@ describe("validateLabelNameBasic", () => {
       const longLabel = "a".repeat(226);
       const result = validateLabelNameBasic(longLabel);
       expect(result.valid).toBe(false);
-      expect(result.error).toBe("Label name cannot exceed 225 characters");
+      expect(result.error).toBe("标签名称不能超过 225 个字符");
     });
   });
 
@@ -80,7 +76,7 @@ describe("validateLabelNameBasic", () => {
     it("should reject labels with double spaces", () => {
       const result = validateLabelNameBasic("Work  Items");
       expect(result.valid).toBe(false);
-      expect(result.error).toBe("Label name cannot contain double spaces");
+      expect(result.error).toBe("标签名称不能包含连续双空格");
     });
   });
 

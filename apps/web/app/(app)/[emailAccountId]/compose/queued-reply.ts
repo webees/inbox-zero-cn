@@ -2,6 +2,7 @@ import type { MailClient } from "@inboxzero/mail-core/engine";
 import {
   OFFLINE_DISPATCH_HOLD_MS,
   type OperationState,
+  type OperationStatus,
 } from "@inboxzero/mail-core/operations";
 import type { QueryHandle } from "@inboxzero/mail-core/queries";
 import type { SendEmailBody } from "@/utils/types/mail";
@@ -39,16 +40,16 @@ type QueueReaderEmailOptions = {
   messageIds: string[];
   online: boolean;
   /**
-   * Called with the send's operation id just before it can appear in the
-   * thread. What it returns is called if the send is not admitted.
+   * 在发送可能出现在会话中之前，用该发送的操作 ID 调用。
+   * 如果发送未被接纳，则调用其返回值。
    */
   onSubmitting?: (operationId: string) => () => void;
   onQueued?: (operationId: string) => Promise<void>;
   mutationId?: string;
   holdForUndo?: boolean;
-  /** The mailbox draft's saved copies, which the queued send replaces. */
+  /** 邮箱草稿已保存的副本，排队发送会将其替换 */
   providerDraftMessageIds?: string[];
-  /** The files on the mailbox draft, kept so an undone send lists them. */
+  /** 邮箱草稿上的文件，保留以便撤销的发送能够列出它们 */
   attachments?: ComposeAttachmentReference[];
   settlementTimeoutMs?: number;
   threadId: string;
@@ -61,9 +62,8 @@ export async function queueReaderEmail(
   if (!mutationId) {
     return queueReaderEmailOnce(options, crypto.randomUUID());
   }
-  // An undone send keeps its command id, so resending the restored draft moves
-  // to the next id in the chain. Deriving ids keeps a send that is still
-  // pending anywhere in the chain blocking duplicates.
+  // 已撤销的发送会保留其命令 ID，因此重新发送恢复的草稿会移动到链中的下一个 ID。
+  // 推导 ID 可以让链中任何位置仍处于待处理的发送阻止重复。
   for (let attempt = 0; ; attempt += 1) {
     const commandId = sendCommandId(mutationId, attempt);
     try {
@@ -135,7 +135,7 @@ async function queueReaderEmailOnce(
     if (!copy && admission.code === "invalid") {
       throw new ConflictingSendError();
     }
-    throw new Error(copy ?? "Could not queue this email. Try again.");
+    throw new Error(copy ?? "无法将此邮件加入发送队列，请重试。");
   }
   await onQueued?.(commandId);
   if (undoHoldUntil !== undefined) {
@@ -180,11 +180,51 @@ export function waitForReaderEmailSettlement(options: {
   });
 }
 
+/**
+ * 发送成功送达时解析为 true；发送结束但未送达或等待超时时解析为 false。
+ * 与结算不同，此函数会持续监视仍处于待处理或不确定状态的发送。
+ */
+export function waitForDelivery(options: {
+  client: MailClient;
+  accountId: string;
+  operationId: string;
+  timeoutMs: number;
+}) {
+  const handle = options.client.observeOperation({
+    accountId: options.accountId,
+    operationId: options.operationId,
+  });
+  return new Promise<boolean>((resolve) => {
+    let finished = false;
+    const finish = (delivered: boolean) => {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timeout);
+      unsubscribe();
+      handle.close();
+      resolve(delivered);
+    };
+    const inspect = () => {
+      const status = handle.getSnapshot().data?.status;
+      if (status === "succeeded") finish(true);
+      else if (status && UNDELIVERED_END_STATUSES.has(status)) finish(false);
+    };
+    const unsubscribe = handle.subscribe(inspect);
+    const timeout = setTimeout(() => finish(false), options.timeoutMs);
+    inspect();
+  });
+}
+
+const UNDELIVERED_END_STATUSES = new Set<OperationStatus>([
+  "failed",
+  "needs_attention",
+  "cancelled",
+  "superseded",
+]);
+
 class ConflictingSendError extends Error {
   constructor() {
-    super(
-      "This reply is already queued with different content. Check the thread delivery status.",
-    );
+    super("此回复已以不同内容加入队列，请检查会话的发送状态。");
   }
 }
 
@@ -236,17 +276,17 @@ async function saveSendableDraft(
     });
     if (saved.status === "saved") return saved.draftRevision;
     if (saved.status === "rejected") {
-      throw new Error("Could not save this email on the device.");
+      throw new Error("无法在设备上保存此邮件。");
     }
     if (saved.currentDraftRevision == null) {
-      throw new Error("Could not save this email on the device.");
+      throw new Error("无法在设备上保存此邮件。");
     }
     if (expectedRevision === saved.currentDraftRevision) {
       return saved.currentDraftRevision;
     }
     expectedRevision = saved.currentDraftRevision;
   }
-  throw new Error("Could not save this email on the device.");
+  throw new Error("无法在设备上保存此邮件。");
 }
 
 async function waitForSettlement({
@@ -306,7 +346,7 @@ function operationOutcome(
   if (operation.status === "failed" || operation.status === "needs_attention") {
     return {
       status: "failed",
-      error: operation.error?.code ?? "There was an error sending the email",
+      error: operation.error?.code ?? "发送邮件时出错",
       ownsNotification: true,
     };
   }

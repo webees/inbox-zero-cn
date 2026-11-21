@@ -2,17 +2,17 @@ import { Prisma } from "@/generated/prisma/client";
 import type { Logger } from "./logger";
 
 /**
- * Wraps a Prisma operation with retry logic for specific transient errors.
- * Primarily targets P2028 ("Transaction already closed") which occurs
- * frequently in E2E tests using Neon's connection pooler.
+ * 为 Prisma 操作加上针对特定瞬时错误的重试逻辑。
+ * 主要针对 P2028（"Transaction already closed"），它在使用
+ * Neon 连接池的 E2E 测试中频繁出现。
  *
- * @param operation - The Prisma operation to execute.
- * @param options - Retry configuration.
- * @param options.maxRetries - Maximum number of retry attempts (default: 3).
- * @param options.delayMs - Initial delay in milliseconds for backoff (default: 100).
- * @param options.logger - Optional logger for retry visibility.
- * @returns The result of the Prisma operation.
- * @throws The original error if retries are exhausted or if a non-retriable error occurs.
+ * @param operation - 要执行的 Prisma 操作。
+ * @param options - 重试配置。
+ * @param options.maxRetries - 最大重试次数（默认：3）。
+ * @param options.delayMs - 退避的初始延迟毫秒数（默认：100）。
+ * @param options.logger - 用于重试可见性的可选 logger。
+ * @returns Prisma 操作的结果。
+ * @throws 当重试次数耗尽或发生不可重试的错误时，抛出原始错误。
  */
 export async function withPrismaRetry<T>(
   operation: () => Promise<T>,
@@ -29,9 +29,9 @@ export async function withPrismaRetry<T>(
         error.code === "P2028" &&
         attempt < maxRetries
       ) {
-        // Linear backoff: 100ms, 200ms, 300ms...
+        // 线性退避：100ms、200ms、300ms……
         const backoff = delayMs * attempt;
-        logger?.warn("Retrying Prisma operation due to P2028", {
+        logger?.warn("因 P2028 重试 Prisma 操作", {
           attempt,
           nextAttemptInMs: backoff,
           error: error.message,
@@ -42,6 +42,6 @@ export async function withPrismaRetry<T>(
       throw error;
     }
   }
-  // Unreachable: loop always exits via return (success) or throw (error)
-  throw new Error("Prisma retry exhausted (unreachable)");
+  // 不可达：循环总是通过 return（成功）或 throw（错误）退出
+  throw new Error("Prisma 重试次数耗尽（不可达）");
 }

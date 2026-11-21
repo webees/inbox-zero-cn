@@ -16,7 +16,7 @@ export function AnnouncementDialogDemo() {
 
   return (
     <>
-      <Button onClick={() => setIsOpen(true)}>Open Announcement Dialog</Button>
+      <Button onClick={() => setIsOpen(true)}>打开公告对话框</Button>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-xl">
           <AnnouncementContent
@@ -32,22 +32,22 @@ export function AnnouncementDialogDemo() {
 function getDemoAnnouncement(): Announcement {
   return {
     id: "follow-up-reminders",
-    title: "Follow-up Reminders",
+    title: "跟进提醒",
     description:
-      "Track replies and get reminded about unanswered emails. Never let an important email slip through the cracks.",
+      "跟踪回复，并针对未回复的邮件获得提醒，不让任何重要邮件被遗漏。",
     image: <FollowUpRemindersIllustration />,
     link: "/automation?tab=settings",
-    secondaryLink: { href: "/#", label: "Learn more" },
+    secondaryLink: { href: "/#", label: "了解更多" },
     publishedAt: "2026-01-15T00:00:00Z",
     details: [
       {
-        title: "Automatic follow-up labels",
-        description: "Labels threads after 3 days with no response.",
+        title: "自动跟进标签",
+        description: "在 3 天无回复后为会话添加标签。",
         icon: <Tag className={DETAIL_ICON_CLASS} />,
       },
       {
-        title: "Auto-generated drafts",
-        description: "Creates a draft to nudge unresponsive contacts.",
+        title: "自动生成草稿",
+        description: "为未回复的联系人生成草稿进行提醒。",
         icon: <FileEdit className={DETAIL_ICON_CLASS} />,
       },
     ],

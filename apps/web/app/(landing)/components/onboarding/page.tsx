@@ -12,22 +12,20 @@ export default function OnboardingComponentsPage() {
     <Container>
       <div className="space-y-10 py-8">
         <div>
-          <PageHeading>Onboarding Components</PageHeading>
+          <PageHeading>引导流程组件</PageHeading>
           <MutedText className="mt-2">
-            Storybook page for onboarding-specific UI.
+            引导流程专用 UI 的 Storybook 页面。
           </MutedText>
           <div className="mt-4">
-            <TextLink href="/components">← Back to all components</TextLink>
+            <TextLink href="/components">← 返回所有组件</TextLink>
           </div>
         </div>
 
         <div>
-          <div className="underline">
-            StepInboxProcessed — all system categories
-          </div>
+          <div className="underline">StepInboxProcessed — 所有系统分类</div>
           <MutedText className="mt-1">
-            One example per `SystemType`, alphabetized by label, so every badge
-            color is visible at once.
+            每个 `SystemType`
+            一个示例，按标签字母顺序排列，让每种徽章颜色都能一次性看到。
           </MutedText>
           <div className="mt-4">
             <OnboardingCompleteDemo
@@ -40,7 +38,7 @@ export default function OnboardingComponentsPage() {
         </div>
 
         <div>
-          <div className="underline">StepInboxProcessed — Gmail (premium)</div>
+          <div className="underline">StepInboxProcessed — Gmail（高级版）</div>
           <div className="mt-4">
             <OnboardingCompleteDemo
               data={getMockProcessedEmails()}
@@ -53,7 +51,7 @@ export default function OnboardingComponentsPage() {
 
         <div>
           <div className="underline">
-            StepInboxProcessed — Outlook (categories/folders terminology)
+            StepInboxProcessed — Outlook（分类/文件夹术语）
           </div>
           <div className="mt-4">
             <OnboardingCompleteDemo
@@ -67,7 +65,7 @@ export default function OnboardingComponentsPage() {
 
         <div>
           <div className="underline">
-            StepInboxProcessed — free user (shows upgrade line)
+            StepInboxProcessed — 免费用户（显示升级提示）
           </div>
           <div className="mt-4">
             <OnboardingCompleteDemo
@@ -80,7 +78,7 @@ export default function OnboardingComponentsPage() {
         </div>
 
         <div>
-          <div className="underline">StepInboxProcessed — loading state</div>
+          <div className="underline">StepInboxProcessed — 加载状态</div>
           <div className="mt-4">
             <OnboardingCompleteDemo
               data={undefined}
@@ -93,7 +91,7 @@ export default function OnboardingComponentsPage() {
 
         <div>
           <div className="underline">
-            StepInboxProcessed — empty fallback (Gmail)
+            StepInboxProcessed — 空状态回退（Gmail）
           </div>
           <div className="mt-4">
             <OnboardingCompleteDemo
@@ -107,7 +105,7 @@ export default function OnboardingComponentsPage() {
 
         <div>
           <div className="underline">
-            StepInboxProcessed — empty fallback (Outlook)
+            StepInboxProcessed — 空状态回退（Outlook）
           </div>
           <div className="mt-4">
             <OnboardingCompleteDemo
@@ -187,63 +185,63 @@ function getMockProcessedEmails(): GetOnboardingProcessedEmailsResponse {
     {
       systemType: SystemType.TO_REPLY,
       sender: "Sarah Chen",
-      subject: "Re: design review on Thursday",
+      subject: "回复：周四的设计评审",
       date: hoursAgo(2),
       hasDraft: true,
     },
     {
       systemType: SystemType.NEWSLETTER,
       sender: "TechNews Daily",
-      subject: "Your Monday digest",
+      subject: "你的周一邮件摘要",
       date: hoursAgo(3),
     },
     {
       systemType: SystemType.MARKETING,
       sender: "Notion",
-      subject: "New in Notion: AI blocks for everyone",
+      subject: "Notion 新功能：面向所有人的 AI 区块",
       date: hoursAgo(4),
     },
     {
       systemType: SystemType.NEWSLETTER,
       sender: "Stratechery",
-      subject: "The platform shift nobody saw coming",
+      subject: "没人预料到的平台转变",
       date: daysAgo(1),
     },
     {
       systemType: SystemType.TO_REPLY,
       sender: "Alex Park",
-      subject: "Quick question about onboarding",
+      subject: "关于引导流程的一个小问题",
       date: daysAgo(1),
       hasDraft: true,
     },
     {
       systemType: SystemType.MARKETING,
       sender: "Linear",
-      subject: "Try our new Cycles workflow",
+      subject: "试试我们新的 Cycles 工作流",
       date: daysAgo(2),
     },
     {
       systemType: SystemType.NEWSLETTER,
       sender: "Lenny's Newsletter",
-      subject: "How great PMs run weekly planning",
+      subject: "优秀的 PM 如何做每周规划",
       date: daysAgo(3),
     },
     {
       systemType: SystemType.NEWSLETTER,
       sender: "Morning Brew",
-      subject: "Markets had a weekend",
+      subject: "市场过了一个周末",
       date: daysAgo(4),
     },
     {
       systemType: SystemType.MARKETING,
       sender: "Figma",
-      subject: "You're invited to Config 2026",
+      subject: "诚邀你参加 Config 2026",
       date: daysAgo(5),
     },
     {
       systemType: SystemType.NEWSLETTER,
       sender: "Not Boring",
-      subject: "The seven companies that matter",
+      subject: "七家值得关注的公司",
       date: daysAgo(6),
     },
   ]);
@@ -254,52 +252,52 @@ function getAllSystemCategoriesMock(): GetOnboardingProcessedEmailsResponse {
     {
       systemType: SystemType.ACTIONED,
       sender: "Priya Sharma",
-      subject: "Re: Thanks, all sorted!",
+      subject: "回复：谢谢，都搞定了！",
     },
     {
       systemType: SystemType.AWAITING_REPLY,
       sender: "Marcus Lee",
-      subject: "Following up on the contract",
+      subject: "跟进合同事宜",
     },
     {
       systemType: SystemType.CALENDAR,
       sender: "Google Calendar",
-      subject: "Invitation: Product sync @ Thu 3pm",
+      subject: "邀请：产品同步会 @ 周四下午 3 点",
     },
     {
       systemType: SystemType.COLD_EMAIL,
       sender: "Jordan Reyes",
-      subject: "Quick intro: helping companies like yours",
+      subject: "简短介绍：帮助像你这样的公司",
     },
     {
       systemType: SystemType.FYI,
-      sender: "Team Updates",
-      subject: "Weekly engineering summary",
+      sender: "团队更新",
+      subject: "每周工程总结",
     },
     {
       systemType: SystemType.MARKETING,
       sender: "Notion",
-      subject: "New in Notion: AI blocks for everyone",
+      subject: "Notion 新功能：面向所有人的 AI 区块",
     },
     {
       systemType: SystemType.NEWSLETTER,
       sender: "TechNews Daily",
-      subject: "Your Monday digest",
+      subject: "你的周一邮件摘要",
     },
     {
       systemType: SystemType.NOTIFICATION,
       sender: "GitHub",
-      subject: "PR #482 has new comments",
+      subject: "PR #482 有新评论",
     },
     {
       systemType: SystemType.RECEIPT,
       sender: "Stripe",
-      subject: "Your receipt from Acme Inc.",
+      subject: "来自 Acme Inc. 的收据",
     },
     {
       systemType: SystemType.TO_REPLY,
       sender: "Sarah Chen",
-      subject: "Re: design review on Thursday",
+      subject: "回复：周四的设计评审",
       hasDraft: true,
     },
   ];

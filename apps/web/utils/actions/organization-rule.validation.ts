@@ -33,7 +33,7 @@ export const organizationRuleActionSchema = z
       if (!label) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Please enter a label name for the Label action",
+          message: "请为标签操作输入标签名称",
           path: ["label"],
         });
       } else {
@@ -54,7 +54,7 @@ export const organizationRuleActionSchema = z
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Please enter a recipient email address",
+        message: "请输入收件人邮箱地址",
         path: ["to"],
       });
     }
@@ -70,14 +70,14 @@ export const organizationRuleActionSchema = z
     if (data.type === ActionType.CALL_WEBHOOK && !data.url?.trim()) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Please enter a webhook URL",
+        message: "请输入 Webhook URL",
         path: ["url"],
       });
     }
     if (data.type === ActionType.MOVE_FOLDER && !data.folderName?.trim()) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Please enter a folder name",
+        message: "请输入文件夹名称",
         path: ["folderName"],
       });
     }
@@ -101,7 +101,7 @@ const conditionFields = {
 
 const actions = z
   .array(organizationRuleActionSchema)
-  .min(1, "You must have at least one action");
+  .min(1, "至少需要一项操作");
 
 function hasAtLeastOneCondition(data: {
   instructions?: string | null;
@@ -116,14 +116,14 @@ function hasAtLeastOneCondition(data: {
 }
 
 const conditionRefinement = {
-  message: "You must have at least one condition",
+  message: "至少需要一个条件",
   path: ["instructions"],
 };
 
 export const createOrganizationRuleBody = z
   .object({
     organizationId: z.string(),
-    name: z.string().trim().min(1, "Please enter a name"),
+    name: z.string().trim().min(1, "请输入名称"),
     enabled: z.boolean().optional(),
     actions,
     ...conditionFields,
@@ -148,7 +148,7 @@ export const updateOrganizationRuleBody = z
   .object({
     organizationId: z.string(),
     organizationRuleId: z.string(),
-    name: z.string().trim().min(1, "Please enter a name"),
+    name: z.string().trim().min(1, "请输入名称"),
     actions,
     ...conditionFields,
   })

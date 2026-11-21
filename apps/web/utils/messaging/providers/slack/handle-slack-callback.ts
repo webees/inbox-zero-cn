@@ -70,9 +70,7 @@ export async function handleSlackCallback(
     finalRedirectUrl.searchParams.set("slack_email_account_id", emailAccountId);
     const cachedResult = await getOAuthCodeResult(code);
     if (cachedResult) {
-      callbackLogger.info(
-        "Slack OAuth code already processed, returning cached result",
-      );
+      callbackLogger.info("Slack OAuth 授权码已处理，返回缓存结果");
       applyRedirectParams(finalRedirectUrl, cachedResult.params);
       await flushLogger(callbackLogger);
       return NextResponse.redirect(finalRedirectUrl, {
@@ -82,9 +80,7 @@ export async function handleSlackCallback(
 
     const acquiredLock = await acquireOAuthCodeLock(code);
     if (!acquiredLock) {
-      callbackLogger.warn(
-        "Slack OAuth code is being processed by another request",
-      );
+      callbackLogger.warn("Slack OAuth 授权码正在被另一个请求处理");
       const inFlightResult = await getOAuthCodeResult(code);
       if (inFlightResult) {
         applyRedirectParams(finalRedirectUrl, inFlightResult.params);
@@ -137,7 +133,7 @@ export async function handleSlackCallback(
       logger: callbackLogger,
     });
 
-    callbackLogger.info("Slack connected successfully", {
+    callbackLogger.info("Slack 连接成功", {
       teamId: tokens.team.id,
       teamName: tokens.team.name,
     });
@@ -154,7 +150,7 @@ export async function handleSlackCallback(
 
     if (error instanceof RedirectError) {
       const reason = getRedirectReason(error.redirectUrl);
-      logger.error("Slack callback redirect error", {
+      logger.error("Slack 回调重定向错误", {
         reason,
         hasCode: request.nextUrl.searchParams.has("code"),
         hasState: request.nextUrl.searchParams.has("state"),
@@ -171,14 +167,14 @@ export async function handleSlackCallback(
     }
 
     const reason = mapSlackCallbackErrorReason(error);
-    callbackLogger.error("Error in Slack callback", { error, reason });
+    callbackLogger.error("Slack 回调出错", { error, reason });
     if (codeForCleanup) {
       await clearOAuthCode(codeForCleanup);
     }
 
-    // Best-effort: try to extract emailAccountId from the state param for a
-    // proper account-scoped redirect. Fall back to prefix-less /channels which
-    // the (redirects) page will handle.
+    // 尽力而为：尝试从 state 参数中提取 emailAccountId，以便进行正确的
+    // 按账号限定的重定向。若失败，则回退到不带前缀的 /channels。
+    // 交由（重定向）页面处理。
     let errorPath = "/channels";
     try {
       const state = request.nextUrl.searchParams.get("state");
@@ -187,7 +183,7 @@ export async function handleSlackCallback(
         if (parsed) errorPath = prefixPath(parsed, "/channels");
       }
     } catch {
-      // Ignore — use fallback path
+      // 忽略——使用回退路径
     }
 
     const errorRedirectUrl = new URL(errorPath, env.NEXT_PUBLIC_BASE_URL);
@@ -221,7 +217,7 @@ function validateOAuthCallback(
   response.cookies.delete(SLACK_STATE_COOKIE_NAME);
 
   if (oauthError) {
-    logger.warn("Slack callback returned OAuth error", { oauthError });
+    logger.warn("Slack 回调返回 OAuth 错误", { oauthError });
     redirectUrl.searchParams.set(
       "error",
       `oauth_${sanitizeReason(oauthError)}`,
@@ -230,13 +226,13 @@ function validateOAuthCallback(
   }
 
   if (!code || code.length < 10) {
-    logger.warn("Missing or invalid code in Slack callback");
+    logger.warn("Slack 回调中的 code 缺失或无效");
     redirectUrl.searchParams.set("error", "missing_code");
     throw new RedirectError(redirectUrl, response.headers);
   }
 
   if (!receivedState) {
-    logger.warn("Missing state in Slack callback");
+    logger.warn("Slack 回调中缺少 state");
     redirectUrl.searchParams.set("error", "missing_state");
     throw new RedirectError(redirectUrl, response.headers);
   }
@@ -249,7 +245,7 @@ function validateOAuthCallback(
     storedState,
   });
   if (!stateValidation.success) {
-    logger.warn("Invalid state during Slack callback", {
+    logger.warn("Slack 回调期间 state 无效", {
       receivedStateFingerprint: getOAuthStateFingerprint(receivedState),
       hasStoredState: !!storedState,
       error: stateValidation.error,
@@ -280,7 +276,7 @@ function parseAndValidateSlackState(
 ) {
   const validationResult = slackOAuthStateSchema.safeParse(rawState);
   if (!validationResult.success) {
-    logger.error("State validation failed", {
+    logger.error("state 校验失败", {
       errors: validationResult.error.issues,
     });
     redirectUrl.searchParams.set("error", "invalid_state_format");
@@ -317,7 +313,7 @@ async function exchangeCodeForTokens(
 ): Promise<SlackOAuthResponse> {
   const redirectUri = `${env.WEBHOOK_URL || env.NEXT_PUBLIC_BASE_URL}/api/slack/callback`;
 
-  logger.info("Exchanging Slack code for tokens", {
+  logger.info("正在用 Slack code 换取令牌", {
     redirectUri,
     clientId: env.SLACK_CLIENT_ID,
     baseUrl: env.NEXT_PUBLIC_BASE_URL,
@@ -341,12 +337,13 @@ async function exchangeCodeForTokens(
   const raw = await response.json();
 
   if (!raw.ok) {
-    logger.error("Slack token exchange failed", {
+    logger.error("Slack 令牌交换失败", {
       slackError: raw.error,
       redirectUri,
       clientId: env.SLACK_CLIENT_ID,
     });
-    throw new Error(`Slack OAuth error: ${raw.error}`);
+    // 前缀是抛出方与 mapSlackCallbackErrorReason 之间的机器可读约定，必须保持英文
+    throw new Error(`Slack OAuth 错误：${raw.error}`);
   }
 
   const result = slackOAuthResponseSchema.safeParse(raw);
@@ -405,7 +402,7 @@ function getRedirectReason(redirectUrl: URL): string {
 function mapSlackCallbackErrorReason(error: unknown): string {
   if (!(error instanceof Error)) return "unexpected_error";
 
-  const oauthErrorPrefix = "Slack OAuth error: ";
+  const oauthErrorPrefix = "Slack OAuth 错误：";
   if (error.message.startsWith(oauthErrorPrefix)) {
     const oauthError = error.message.slice(oauthErrorPrefix.length);
     if (!oauthError) return "oauth_error";
@@ -433,6 +430,6 @@ async function flushLogger(logger: Logger): Promise<void> {
   try {
     await logger.flush();
   } catch {
-    // Ignore flush errors on OAuth callback responses
+    // 忽略 OAuth 回调响应中的 flush 错误
   }
 }

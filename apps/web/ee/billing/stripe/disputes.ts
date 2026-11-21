@@ -115,40 +115,40 @@ export function buildDisputeEvidence({
   const baseUrl = env.NEXT_PUBLIC_BASE_URL;
 
   const cancellationLine = facts.cancellationRequestedAt
-    ? `The customer requested cancellation on ${formatDate(facts.cancellationRequestedAt)}, after this charge.`
-    : "The customer has not requested cancellation.";
+    ? `客户在本次扣款之后于 ${formatDate(facts.cancellationRequestedAt)} 请求取消订阅。`
+    : "客户尚未请求取消订阅。";
 
   const usageLines = [
     facts.lastActiveAt && facts.lastActiveAt > facts.chargedAt
-      ? `Used the app while signed in on ${formatDate(facts.lastActiveAt)}, after the charge.`
+      ? `客户在本次扣款之后于 ${formatDate(facts.lastActiveAt)} 登录并使用过本应用。`
       : null,
     facts.assistantMessagesSinceCharge > 0
-      ? `Sent ${facts.assistantMessagesSinceCharge} message(s) to the in-app AI assistant since the charge.`
+      ? `本次扣款后，客户向应用内 AI 助手发送了 ${facts.assistantMessagesSinceCharge} 条消息。`
       : null,
   ].filter(Boolean);
 
   const rebuttal = [
-    `This charge on ${formatDate(facts.chargedAt)} is a renewal of the customer's active Inbox Zero subscription (${facts.subscriptionId}).`,
-    "The subscription had not been canceled when it renewed.",
+    `${formatDate(facts.chargedAt)} 的这笔扣款是客户当前 Inbox Zero 订阅（${facts.subscriptionId}）的续费。`,
+    "续费时，该订阅尚未被取消。",
     cancellationLine,
-    "The customer kept using the service after the charge:",
+    "客户在扣款后继续使用了该服务：",
     ...usageLines.map((line) => `- ${line}`),
   ].join("\n");
 
   return {
     product_description:
-      "Inbox Zero is a subscription web app (AI email assistant) that organizes, labels, and drafts replies to the customer's email. It renews automatically each billing period until canceled.",
+      "Inbox Zero 是一款订阅制网页应用（AI 邮件助手），可整理客户的邮件、添加标签并起草回复。在每个计费周期自动续费，直至取消。",
     customer_email_address: facts.customerEmail ?? undefined,
     service_date: facts.servicePeriod
-      ? `${formatDate(facts.servicePeriod.start)} to ${formatDate(facts.servicePeriod.end)}`
+      ? `${formatDate(facts.servicePeriod.start)} 至 ${formatDate(facts.servicePeriod.end)}`
       : undefined,
     access_activity_log: [
-      `Account email: ${facts.customerEmail ?? "unknown"}`,
-      `Charge date: ${facts.chargedAt.toISOString()}`,
-      `Last signed-in app visit: ${facts.lastActiveAt?.toISOString() ?? "unknown"}`,
-      `AI assistant messages sent since charge: ${facts.assistantMessagesSinceCharge}`,
+      `账号邮箱：${facts.customerEmail ?? "未知"}`,
+      `扣款日期：${facts.chargedAt.toISOString()}`,
+      `最近一次登录应用的时间：${facts.lastActiveAt?.toISOString() ?? "未知"}`,
+      `扣款后发送的 AI 助手消息数：${facts.assistantMessagesSinceCharge}`,
     ].join("\n"),
-    cancellation_policy_disclosure: `Customers can cancel at any time from the billing page at ${baseUrl}/premium, which links to the Stripe billing portal. Canceling stops future renewals.`,
+    cancellation_policy_disclosure: `客户可随时在 ${baseUrl}/premium 的计费页面取消订阅，该页面提供 Stripe 计费门户链接。取消后将停止后续续费。`,
     ...(reason === "subscription_canceled"
       ? { cancellation_rebuttal: rebuttal }
       : { uncategorized_text: rebuttal }),

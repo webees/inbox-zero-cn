@@ -60,4 +60,5 @@ test("retries engine startup after a worker load failure", async ({
   await expect(
     page.getByText("Mail couldn’t start", { exact: true }),
   ).toHaveCount(0);
+  await capturePlaywrightCheckpoint(page, testInfo, "mail-engine-retried");
 });

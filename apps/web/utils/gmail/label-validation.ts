@@ -1,25 +1,25 @@
 /**
- * Gmail Label Validation
+ * Gmail 标签校验
  *
- * This module provides validation for Gmail label names to prevent errors
- * when creating labels via the Gmail API.
+ * 该模块对 Gmail 标签名称进行校验，以防止在通过 Gmail API
+ * 创建标签时出错。
  *
- * Sources:
+ * 来源：
  * - https://developers.google.com/workspace/gmail/api/guides/labels
  * - Observed errors in production (e.g., reserved system labels)
  */
 
 /**
- * Gmail Reserved System Labels
+ * Gmail 保留的系统标签
  *
- * These are Gmail's built-in system labels that CANNOT be used as custom label names.
- * Attempting to create a label with any of these names will result in an "Invalid label name" error.
+ * 这些是 Gmail 内置的系统标签，不能用作自定义标签名称。
+ * 尝试使用这些名称中的任何一个创建标签都会导致 "Invalid label name" 错误。
  *
- * Note: Gmail documentation states this list is "not exhaustive" - there may be additional
- * reserved labels not documented here.
+ * 注意：Gmail 文档指出该列表“并非详尽”——可能还有此处
+ * 未记录的保留标签。
  */
 const GMAIL_RESERVED_LABELS = [
-  // Standard System Labels (Documented)
+  // 标准系统标签（已记录）
   "INBOX",
   "SPAM",
   "TRASH",
@@ -31,14 +31,14 @@ const GMAIL_RESERVED_LABELS = [
   "ALL_MAIL",
   "ALLMAIL",
 
-  // Category Labels
+  // 类别标签
   "PERSONAL",
   "SOCIAL",
   "PROMOTIONS",
   "UPDATES",
   "FORUMS",
 
-  // Additional Reserved Labels (Undocumented but Reserved)
+  // 额外保留标签（未记录但保留）
   "TRAVEL",
   "FINANCE",
   "CHAT",
@@ -48,12 +48,12 @@ const GMAIL_RESERVED_LABELS = [
 ] as const;
 
 /**
- * Maximum length for a Gmail label name
+ * Gmail 标签名称的最大长度
  */
 const GMAIL_LABEL_MAX_LENGTH = 225;
 
 /**
- * Result of label validation
+ * 标签校验的结果
  */
 type LabelValidationResult = {
   valid: boolean;
@@ -61,15 +61,15 @@ type LabelValidationResult = {
 };
 
 /**
- * Validates basic label name requirements
+ * 校验标签名称的基本要求
  *
- * @param name - The label name to validate
- * @returns An object with `valid` boolean and optional `error` message
+ * @param name - 要校验的标签名称
+ * @returns 一个包含 `valid` 布尔值和可选 `error` 消息的对象
  */
 export function validateLabelNameBasic(name: string): LabelValidationResult {
-  // Check if empty
+  // 检查是否为空
   if (!name?.trim()) {
-    return { valid: false, error: "Label name cannot be empty" };
+    return { valid: false, error: "标签名称不能为空" };
   }
 
   const trimmedName = name.trim();
@@ -77,32 +77,32 @@ export function validateLabelNameBasic(name: string): LabelValidationResult {
   if (trimmedName.length > GMAIL_LABEL_MAX_LENGTH) {
     return {
       valid: false,
-      error: `Label name cannot exceed ${GMAIL_LABEL_MAX_LENGTH} characters`,
+      error: `标签名称不能超过 ${GMAIL_LABEL_MAX_LENGTH} 个字符`,
     };
   }
 
-  // Check for leading/trailing spaces
+  // 检查首尾空格
   if (name !== trimmedName) {
     return {
       valid: false,
-      error: "Label name cannot have leading or trailing spaces",
+      error: "标签名称不能有前导或尾随空格",
     };
   }
 
-  // Check for double spaces
+  // 检查连续双空格
   if (name.includes("  ")) {
-    return { valid: false, error: "Label name cannot contain double spaces" };
+    return { valid: false, error: "标签名称不能包含连续双空格" };
   }
 
   return { valid: true };
 }
 
 /**
- * Validates a Gmail label name (Gmail-specific validation)
- * Includes checks for reserved system labels in addition to basic validation
+ * 校验 Gmail 标签名称（Gmail 专属校验）
+ * 除基本校验外，还包括对保留系统标签的检查
  *
- * @param name - The label name to validate
- * @returns An object with `valid` boolean and optional `error` message
+ * @param name - 要校验的标签名称
+ * @returns 一个包含 `valid` 布尔值和可选 `error` 消息的对象
  *
  * @example
  * ```ts
@@ -113,13 +113,13 @@ export function validateLabelNameBasic(name: string): LabelValidationResult {
  * ```
  */
 export function validateGmailLabelName(name: string): LabelValidationResult {
-  // First check basic validation
+  // 首先检查基本校验
   const basicValidation = validateLabelNameBasic(name);
   if (!basicValidation.valid) {
     return basicValidation;
   }
 
-  // Check for reserved system labels (case-insensitive)
+  // 检查保留系统标签（不区分大小写）
   const upperName = name.toUpperCase();
   if (GMAIL_RESERVED_LABELS.some((reserved) => upperName === reserved)) {
     return {

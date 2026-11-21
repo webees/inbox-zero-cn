@@ -26,25 +26,25 @@ export function RequestAccessDialog({
   const { t } = useLingui();
   const isGenericRequest = !integrationName;
   const title = isGenericRequest
-    ? t`Request an Integration`
-    : t`Request ${integrationName} Access`;
+    ? t`申请集成`
+    : t`申请 ${integrationName} 访问权限`;
   const subject = isGenericRequest
-    ? "Integration Request"
-    : `Request Access: ${integrationName} Integration`;
+    ? "集成申请"
+    : `申请访问权限：${integrationName} 集成`;
 
   const messageBody = isGenericRequest
-    ? `Hi,\n\nI would like to request a new integration for ${BRAND_NAME}.\n\nIntegration name:\n\nUse case:\n\nThank you!`
-    : `Hi,\n\nI'm interested in using the ${integrationName} integration with ${BRAND_NAME}.\n\nCould you please let me know when this integration will be available?\n\nThank you!`;
+    ? `你好，\n\n我想为 ${BRAND_NAME} 申请新的集成。\n\n集成名称：\n\n使用场景：\n\n谢谢！`
+    : `你好，\n\n我想在 ${BRAND_NAME} 中使用 ${integrationName} 集成。\n\n请告知此集成何时可用。\n\n谢谢！`;
 
   const handleCopyEmail = async () => {
     await navigator.clipboard.writeText(SUPPORT_EMAIL);
-    toastSuccess({ description: t`Email copied to clipboard` });
+    toastSuccess({ description: t`邮箱已复制到剪贴板` });
   };
 
   const handleCopyMessage = async () => {
-    const message = `Subject: ${subject}\n\n${messageBody}`;
+    const message = `主题：${subject}\n\n${messageBody}`;
     await navigator.clipboard.writeText(message);
-    toastSuccess({ description: t`Message copied to clipboard` });
+    toastSuccess({ description: t`消息已复制到剪贴板` });
   };
 
   return (
@@ -52,7 +52,7 @@ export function RequestAccessDialog({
       <DialogTrigger asChild>
         {trigger || (
           <Button size="sm" variant="outline">
-            <Trans>Request Access</Trans>
+            <Trans>申请访问权限</Trans>
           </Button>
         )}
       </DialogTrigger>
@@ -61,14 +61,14 @@ export function RequestAccessDialog({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
             {isGenericRequest
-              ? t`Send us an email to request a new integration.`
-              : t`Send us an email to request access to this integration.`}
+              ? t`发送邮件，申请新的集成。`
+              : t`发送邮件，申请访问此集成。`}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div>
             <div className="text-sm font-medium">
-              <Trans>Email</Trans>
+              <Trans>邮箱</Trans>
             </div>
             <div className="flex items-center gap-2 mt-1">
               <code className="flex-1 rounded bg-muted px-3 py-2 text-sm">
@@ -81,11 +81,11 @@ export function RequestAccessDialog({
           </div>
           <div>
             <div className="text-sm font-medium">
-              <Trans>Message</Trans>
+              <Trans>消息</Trans>
             </div>
             <div className="flex flex-col gap-2 mt-1">
               <div className="rounded bg-muted px-3 py-2 text-sm">
-                <div className="font-medium mb-2">Subject: {subject}</div>
+                <div className="font-medium mb-2">主题：{subject}</div>
                 <div className="whitespace-pre-wrap text-muted-foreground">
                   {messageBody}
                 </div>
@@ -97,7 +97,7 @@ export function RequestAccessDialog({
                 className="self-end"
               >
                 <Copy className="h-4 w-4 mr-2" />
-                <Trans>Copy Message</Trans>
+                <Trans>复制消息</Trans>
               </Button>
             </div>
           </div>

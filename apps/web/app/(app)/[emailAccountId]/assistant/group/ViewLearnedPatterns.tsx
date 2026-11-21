@@ -77,10 +77,10 @@ function ViewGroupInner({ groupId }: { groupId: string }) {
           <div className="sm:flex sm:items-center sm:justify-between">
             <div />
             {/* <div className="flex items-center space-x-1.5">
-            <TooltipExplanation text="Automatically detect and add new matching patterns from incoming emails." />
+            <TooltipExplanation text="自动从收到的邮件中检测并添加新的匹配模式。" />
             <Toggle
               name="auto-update"
-              label="Auto-add patterns"
+              label="自动添加模式"
               enabled={true}
               onChange={(enabled) => {}}
             />
@@ -93,7 +93,7 @@ function ViewGroupInner({ groupId }: { groupId: string }) {
                 onClick={() => setShowAddItem(true)}
               >
                 <PlusIcon className="mr-2 h-4 w-4" />
-                <Trans>Add pattern</Trans>
+                <Trans>添加模式</Trans>
               </Button>
             </div>
           </div>
@@ -110,7 +110,7 @@ function ViewGroupInner({ groupId }: { groupId: string }) {
               <GroupItems items={group.items} mutate={mutate} />
             ) : (
               <MessageText className="my-4 px-4">
-                <Trans>No learned patterns yet</Trans>
+                <Trans>还没有已学习的模式</Trans>
               </MessageText>
             ))}
         </LoadingContent>
@@ -153,10 +153,10 @@ const AddGroupItemForm = ({
       });
       if (result?.serverError) {
         toastError({
-          description: t`Failed to add pattern. ${result.serverError || ""}`,
+          description: t`添加模式失败。${result.serverError || ""}`,
         });
       } else {
-        toastSuccess({ description: t`Pattern added!` });
+        toastSuccess({ description: t`模式已添加！` });
       }
       mutate();
       onClose();
@@ -181,8 +181,8 @@ const AddGroupItemForm = ({
         <Select
           label=""
           options={[
-            { label: t`From`, value: GroupItemType.FROM },
-            { label: t`Subject`, value: GroupItemType.SUBJECT },
+            { label: t`发件人`, value: GroupItemType.FROM },
+            { label: t`主题`, value: GroupItemType.SUBJECT },
           ]}
           {...register("type", { required: true })}
           error={errors.type}
@@ -191,7 +191,7 @@ const AddGroupItemForm = ({
           <Input
             type="text"
             name="value"
-            placeholder={t`e.g. hello@company.com`}
+            placeholder={t`例如 hello@company.com`}
             registerProps={register("value", { required: true })}
             error={errors.value}
           />
@@ -205,10 +205,10 @@ const AddGroupItemForm = ({
               handleSubmit(onSubmit)();
             }}
           >
-            <Trans>Add</Trans>
+            <Trans>添加</Trans>
           </Button>
           <Button variant="outline" size="sm" onClick={onClose}>
-            <Trans>Cancel</Trans>
+            <Trans>取消</Trans>
           </Button>
         </div>
       </div>
@@ -216,8 +216,8 @@ const AddGroupItemForm = ({
       <div className="mt-4 flex justify-end">
         <Toggle
           name="exclude"
-          tooltipText={t`When enabled, never match this pattern.`}
-          label={t`Exclude`}
+          tooltipText={t`启用后，绝不匹配此模式。`}
+          label={t`排除`}
           enabled={exclude}
           onChange={setExclude}
         />
@@ -242,10 +242,7 @@ function GroupItems({
       <GroupItemList
         title={
           <div className="flex items-center gap-x-1.5">
-            <Trans>
-              When these patterns are encountered, the rule will automatically
-              match:
-            </Trans>
+            <Trans>遇到这些模式时，规则将自动匹配：</Trans>
           </div>
         }
         items={groupedByStatus.include || []}
@@ -255,9 +252,7 @@ function GroupItems({
         <GroupItemList
           title={
             <div className="flex items-center gap-x-1.5">
-              <Trans>
-                When these patterns are encountered, the rule will never match:
-              </Trans>
+              <Trans>遇到这些模式时，规则将永不匹配：</Trans>
             </div>
           }
           items={groupedByStatus.exclude || []}
@@ -305,7 +300,7 @@ function GroupItemList({
                   {isCreatedRecently ||
                     (isUpdatedRecently && (
                       <Badge variant="green" className="mr-1">
-                        {isCreatedRecently ? t`New!` : t`Updated`}
+                        {isCreatedRecently ? t`新增！` : t`已更新`}
                       </Badge>
                     ))}
 
@@ -313,14 +308,14 @@ function GroupItemList({
                     <GroupItemDisplay item={item} />
                     {isLearnedFromLabelRemoval && (
                       <Badge variant="muted" size="sm" className="ml-2">
-                        <Trans>Learned from label removal</Trans>
+                        <Trans>通过学习移除标签得出</Trans>
                       </Badge>
                     )}
                   </div>
                 </div>
               </TableCell>
               <TableCell className="flex items-center justify-end gap-4 py-2 text-right">
-                <Tooltip content={t`Date added`}>
+                <Tooltip content={t`添加日期`}>
                   <MutedText className="hidden sm:block">
                     {formatShortDate(new Date(item.createdAt), {
                       locale: i18n.locale,
@@ -333,8 +328,8 @@ function GroupItemList({
                   size={isLearnedFromLabelRemoval ? "sm" : "icon"}
                   aria-label={
                     isLearnedFromLabelRemoval
-                      ? t`Undo exclusion for ${item.value}`
-                      : t`Remove ${item.value}`
+                      ? t`撤销对 ${item.value} 的排除`
+                      : t`移除 ${item.value}`
                   }
                   onClick={async () => {
                     const result = await deleteGroupItemAction(emailAccountId, {
@@ -342,13 +337,13 @@ function GroupItemList({
                     });
                     if (result?.serverError) {
                       toastError({
-                        description: t`Failed to remove ${item.value}. ${result.serverError || ""}`,
+                        description: t`移除 ${item.value} 失败。${result.serverError || ""}`,
                       });
                     } else {
                       toastSuccess({
                         description: isLearnedFromLabelRemoval
-                          ? t`The rule can match ${item.value} again`
-                          : t`Removed learned pattern!`,
+                          ? t`规则可以再次匹配 ${item.value}`
+                          : t`已移除已学习的模式！`,
                       });
                       mutate();
                     }
@@ -357,7 +352,7 @@ function GroupItemList({
                   {isLearnedFromLabelRemoval ? (
                     <>
                       <Undo2Icon className="mr-1.5 size-4" />
-                      <Trans>Undo</Trans>
+                      <Trans>撤销</Trans>
                     </>
                   ) : (
                     <TrashIcon className="size-4" />
@@ -372,7 +367,7 @@ function GroupItemList({
           <TableRow>
             <TableCell colSpan={3}>
               <MessageText>
-                <Trans>No items</Trans>
+                <Trans>没有项目</Trans>
               </MessageText>
             </TableCell>
           </TableRow>
@@ -393,7 +388,7 @@ export function GroupItemDisplay({
     <>
       {item.exclude && (
         <Badge variant="destructive" className="mr-2">
-          <Trans>Exclude</Trans>
+          <Trans>排除</Trans>
         </Badge>
       )}
       <Badge variant="secondary" className="mr-2">
@@ -405,7 +400,7 @@ export function GroupItemDisplay({
 }
 
 const GROUP_ITEM_TYPE_LABELS: Record<GroupItemType, MessageDescriptor> = {
-  FROM: msg`From`,
-  SUBJECT: msg`Subject`,
-  BODY: msg`Body`,
+  FROM: msg`发件人`,
+  SUBJECT: msg`主题`,
+  BODY: msg`正文`,
 };

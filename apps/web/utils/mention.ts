@@ -1,22 +1,22 @@
 /**
- * Converts mention format @[LABEL] to just LABEL for AI processing
- * This strips the special markdown format used by the editor so the AI
- * receives clean label names without the mention syntax
+ * 将 @[LABEL] 提及格式转换为纯 LABEL，以便 AI 处理
+ * 这会剥离编辑器使用的特殊 markdown 格式，
+ * 让 AI 收到不含提及语法的干净标签名称
  */
 export function convertMentionsToLabels(promptFile: string): string {
   return processMentions(promptFile, (match) => match);
 }
 
 /**
- * Converts @[LABEL] format to "LABEL" for display in the UI
- * This is the inverse of convertMentionsToLabels
+ * 将 @[LABEL] 格式转换为 "LABEL" 以便在 UI 中展示
+ * 这是 convertMentionsToLabels 的逆操作
  */
 export function convertLabelsToDisplay(text: string): string {
   return processMentions(text, (match) => `"${match}"`);
 }
 
 /**
- * Helper function to process mentions with proper bracket matching
+ * 处理提及并进行正确括号匹配的辅助函数
  */
 function processMentions(
   text: string,
@@ -26,9 +26,9 @@ function processMentions(
   let i = 0;
 
   while (i < text.length) {
-    // Look for @[
+    // 查找 @[
     if (i < text.length - 1 && text[i] === "@" && text[i + 1] === "[") {
-      // Found start of mention, find the matching closing bracket
+      // 找到提及的开始位置，查找匹配的右括号
       let bracketCount = 1;
       let j = i + 2;
 
@@ -42,12 +42,12 @@ function processMentions(
       }
 
       if (bracketCount === 0) {
-        // Found matching closing bracket
+        // 找到匹配的右括号
         const labelContent = text.slice(i + 2, j - 1);
         result += transformer(labelContent);
         i = j;
       } else {
-        // No matching bracket found, treat as regular text
+        // 未找到匹配的括号，按普通文本处理
         result += text[i];
         i++;
       }

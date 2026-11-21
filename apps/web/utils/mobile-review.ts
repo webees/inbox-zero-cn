@@ -51,11 +51,11 @@ export async function createMobileReviewSession(input: {
 }) {
   const config = getMobileReviewConfig();
   if (!config.ok) {
-    input.logger.warn("Mobile review sign-in unavailable", {
+    input.logger.warn("移动端审核登录不可用", {
       ...config,
       ok: undefined,
     });
-    throw new SafeError("Review access is unavailable");
+    throw new SafeError("审核访问不可用");
   }
 
   const reviewDemoAccount = getMatchingReviewAccount({
@@ -65,16 +65,16 @@ export async function createMobileReviewSession(input: {
   });
 
   if (!reviewDemoAccount) {
-    input.logger.warn("Mobile review sign-in rejected", {
+    input.logger.warn("移动端审核登录被拒绝", {
       reason: "invalid_review_demo_code",
     });
-    throw new SafeError("Invalid review access code", 401);
+    throw new SafeError("无效的审核访问码", 401);
   }
 
   const reviewUser = (await getMobileReviewUsers([reviewDemoAccount]))[0];
   if (!reviewUser.ok) {
-    input.logger.warn("Mobile review sign-in unavailable", reviewUser);
-    throw new SafeError("Review access is unavailable");
+    input.logger.warn("移动端审核登录不可用", reviewUser);
+    throw new SafeError("审核访问不可用");
   }
 
   const authContext = await betterAuthConfig.$context;

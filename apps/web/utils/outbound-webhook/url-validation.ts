@@ -21,19 +21,19 @@ const PRIVATE_IP_RANGES = [
 
   // IPv6
   /^::1$/, // loopback
-  /^fe80:/i, // link-local
-  /^fc00:/i, // unique local (fc00::/7)
-  /^fd[0-9a-f]{2}:/i, // unique local
-  /^::ffff:(127\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|192\.168\.|169\.254\.)/i, // IPv4-mapped IPv6
+  /^fe80:/i, // 链路本地
+  /^fc00:/i, // 唯一本地地址 (fc00::/7)
+  /^fd[0-9a-f]{2}:/i, // 唯一本地地址
+  /^::ffff:(127\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|192\.168\.|169\.254\.)/i, // IPv4 映射的 IPv6
 ];
 
-// Blocked hostnames
+// 被阻止的主机名
 const BLOCKED_HOSTNAMES = [
   "localhost",
   "localhost.localdomain",
   "ip6-localhost",
   "ip6-loopback",
-  // Common cloud metadata endpoints
+  // 常见的云元数据端点
   "metadata.google.internal",
   "metadata.gcp.internal",
 ];
@@ -42,20 +42,20 @@ const IPV4_PATTERN = /^(\d{1,3}\.){3}\d{1,3}$/;
 const IPV6_PATTERN = /^(\[)?([0-9a-fA-F:]+)(\])?$/;
 
 /**
- * SECURITY: Opt-in escape hatch for trusted single-tenant self-hosted deployments.
+ * 安全：面向可信的单租户自托管部署的可选逃生舱。
  *
  * When `WEBHOOK_ALLOW_PRIVATE_IPS` is enabled, the private/internal IP checks
- * (both for IP literals and DNS-resolved addresses) are bypassed so self-hosters
+ * （包括 IP 字面量和 DNS 解析出的地址）会被绕过，使自托管者
  * can target internal services (LAN, Tailscale CGNAT `100.64.0.0/10`, etc.).
  *
- * This DISABLES SSRF protection for webhook URLs and must ONLY be used on a
+ * 这会禁用 webhook URL 的 SSRF 防护，且只能用于
  * trusted, single-tenant deployment. Never enable it on a shared/multi-tenant
- * (hosted) instance: it lets any user with webhook access reach internal
- * infrastructure and cloud metadata endpoints by IP.
+ * 实例（托管实例）：它会让任何拥有 webhook 访问权限的用户触达内部
+ * 基础设施，并通过 IP 触达云元数据端点。
  *
- * Defaults to false. Read directly from `process.env` (mirroring how `NODE_ENV`
- * is read in this file) so the validator keeps zero internal imports and stays
- * trivially testable via `vi.stubEnv`. The value is also declared in
+ * 默认为 false。直接从 `process.env` 读取（与 `NODE_ENV`
+ * 在本文件中的读取方式一致），使验证器保持零内部导入，并
+ * 可通过 `vi.stubEnv` 轻松测试。该值也在
  * `apps/web/env.ts` for typing/validation/documentation. Matching the
  * `booleanString` semantics, any value other than unset/empty/"false" enables it.
  */
@@ -70,9 +70,9 @@ export type WebhookUrlValidationResult =
   | { valid: false; error: string };
 
 /**
- * Validates webhook URL format without DNS resolution.
+ * 在不进行 DNS 解析的情况下验证 webhook URL 格式。
  * Use at rule creation/update time for immediate feedback.
- * Checks: URL parsing, scheme, blocked hostnames, private IP literals.
+ * 检查内容：URL 解析、协议、被阻止的主机名、私有 IP 字面量。
  */
 export function validateWebhookUrlFormat(
   url: string,
@@ -82,7 +82,7 @@ export function validateWebhookUrlFormat(
   try {
     parsedUrl = new URL(url);
   } catch {
-    return { valid: false, error: "Invalid URL format" };
+    return { valid: false, error: "无效的 URL 格式" };
   }
 
   const isProduction = process.env.NODE_ENV === "production";
@@ -92,8 +92,8 @@ export function validateWebhookUrlFormat(
     return {
       valid: false,
       error: isProduction
-        ? "Only HTTPS URLs are allowed for webhooks"
-        : "Only HTTP and HTTPS URLs are allowed for webhooks",
+        ? "webhook 仅允许使用 HTTPS URL"
+        : "webhook 仅允许使用 HTTP 和 HTTPS URL",
     };
   }
 
@@ -102,7 +102,7 @@ export function validateWebhookUrlFormat(
   if (BLOCKED_HOSTNAMES.includes(hostname)) {
     return {
       valid: false,
-      error: "Webhook URL hostname is not allowed",
+      error: "不允许使用该 webhook URL 主机名",
     };
   }
 
@@ -113,18 +113,18 @@ export function validateWebhookUrlFormat(
 }
 
 /**
- * Validates a webhook URL to prevent SSRF attacks.
+ * 验证 webhook URL 以防止 SSRF 攻击。
  *
- * Validation includes:
- * - Only HTTPS scheme allowed
- * - No IP addresses in the hostname (must use DNS names)
+ * 验证内容包括：
+ * - 仅允许 HTTPS 协议
+ * - 主机名中不能包含 IP 地址（必须使用 DNS 名称）
  * - No private/internal hostnames (localhost, metadata endpoints, etc.)
  * - DNS resolution must not resolve to private/internal IP addresses (both IPv4 and IPv6)
  *
- * The private-IP checks (literal and DNS-resolved) can be bypassed by setting
- * WEBHOOK_ALLOW_PRIVATE_IPS for trusted single-tenant self-hosts (see
- * allowPrivateIps). The blocked-hostname (localhost, cloud metadata) and
- * HTTPS-only-in-production constraints are NOT relaxed by that flag.
+ * 设置 WEBHOOK_ALLOW_PRIVATE_IPS 可绕过私有 IP 检查（字面量和 DNS 解析），
+ * 供可信的单租户自托管使用（参见
+ * allowPrivateIps）。被阻止的主机名（localhost、云元数据）以及
+ * 生产环境仅限 HTTPS 的限制不会因该标志而放宽。
  */
 export async function validateWebhookUrl(
   url: string,
@@ -141,57 +141,57 @@ export async function validateWebhookUrl(
 
   if (isIP(ipAddress)) return { valid: true };
 
-  // Resolve DNS and check if any resolved IP is private
-  // Check both IPv4 (A records) and IPv6 (AAAA records) to prevent bypass
+  // 解析 DNS 并检查是否有解析出的 IP 属于私有地址
+  // 同时检查 IPv4（A 记录）和 IPv6（AAAA 记录）以防绕过
   const allAddresses: string[] = [];
 
-  // Resolve IPv4 addresses (A records)
+  // 解析 IPv4 地址（A 记录）
   try {
     const ipv4Addresses = await dns.resolve(hostname);
     allAddresses.push(...ipv4Addresses);
   } catch (error) {
     const dnsError = error as NodeJS.ErrnoException;
-    // ENODATA means no A records exist (might have AAAA only)
-    // ENOTFOUND means hostname doesn't exist at all
+    // ENODATA 表示不存在 A 记录（可能只有 AAAA）
+    // ENOTFOUND 表示主机名完全不存在
     if (dnsError.code === "ENOTFOUND") {
       return {
         valid: false,
-        error: "Webhook URL hostname could not be resolved",
+        error: "无法解析 webhook URL 主机名",
       };
     }
-    // For ENODATA, continue to check AAAA records
+    // 对于 ENODATA，继续检查 AAAA 记录
     if (dnsError.code !== "ENODATA") {
       return {
         valid: false,
-        error: "Failed to validate webhook URL",
+        error: "验证 webhook URL 失败",
       };
     }
   }
 
-  // Resolve IPv6 addresses (AAAA records)
+  // 解析 IPv6 地址（AAAA 记录）
   try {
     const ipv6Addresses = await dns.resolve6(hostname);
     allAddresses.push(...ipv6Addresses);
   } catch {
-    // IPv6 resolution failure is OK if we have IPv4 addresses
+    // 如果已有 IPv4 地址，则 IPv6 解析失败无妨
   }
 
   if (allAddresses.length === 0) {
     return {
       valid: false,
-      error: "Webhook URL hostname could not be resolved",
+      error: "无法解析 webhook URL 主机名",
     };
   }
 
-  // Check all resolved addresses for private IPs.
-  // SECURITY: bypassed only when WEBHOOK_ALLOW_PRIVATE_IPS is explicitly enabled
-  // for a trusted single-tenant self-hosted deployment (see allowPrivateIps).
+  // 检查所有解析出的地址是否为私有 IP。
+  // 安全：仅当显式启用 WEBHOOK_ALLOW_PRIVATE_IPS 时才会绕过
+  // 用于可信的单租户自托管部署（参见 allowPrivateIps）。
   if (!allowPrivateIps()) {
     for (const ip of allAddresses) {
       if (isPrivateIP(ip)) {
         return {
           valid: false,
-          error: "Webhook URL cannot resolve to private IP addresses",
+          error: "webhook URL 不能解析为私有 IP 地址",
         };
       }
     }
@@ -207,15 +207,15 @@ function isPrivateIP(ip: string): boolean {
 function checkPrivateIpLiteral(
   hostname: string,
 ): WebhookUrlValidationResult | null {
-  // SECURITY: bypassed only when WEBHOOK_ALLOW_PRIVATE_IPS is explicitly enabled
-  // for a trusted single-tenant self-hosted deployment (see allowPrivateIps).
+  // 安全：仅当显式启用 WEBHOOK_ALLOW_PRIVATE_IPS 时才会绕过
+  // 用于可信的单租户自托管部署（参见 allowPrivateIps）。
   if (allowPrivateIps()) return null;
 
   if (IPV4_PATTERN.test(hostname)) {
     if (isPrivateIP(hostname)) {
       return {
         valid: false,
-        error: "Webhook URL cannot point to private IP addresses",
+        error: "webhook URL 不能指向私有 IP 地址",
       };
     }
   }
@@ -226,7 +226,7 @@ function checkPrivateIpLiteral(
     if (isPrivateIP(ipv6Addr)) {
       return {
         valid: false,
-        error: "Webhook URL cannot point to private IP addresses",
+        error: "webhook URL 不能指向私有 IP 地址",
       };
     }
   }

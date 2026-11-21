@@ -433,8 +433,8 @@ export function useThreadActions({
         const snoozedUntilLabel = formatDayAtTime(snoozedUntil, i18n);
         toast.success(
           t(i18n)`${plural(snapshots.length, {
-            one: `Snoozed until ${snoozedUntilLabel}`,
-            other: "Snoozed # conversations",
+            one: `已暂停到 ${snoozedUntilLabel}`,
+            other: "已将 # 个会话暂停",
           })}`,
         );
       }
@@ -443,12 +443,12 @@ export function useThreadActions({
           enqueueFailureCopy(
             failedCount === threadKeys.length
               ? t(i18n)`${plural(threadKeys.length, {
-                  one: "Couldn't queue snoozing",
-                  other: "Couldn't queue snoozing conversations",
+                  one: "无法将暂停操作加入队列",
+                  other: "无法将暂停会话加入队列",
                 })}`
               : t(i18n)`${plural(failedCount, {
-                  one: `Couldn't queue # of ${total} for snoozing`,
-                  other: `Couldn't queue # of ${total} for snoozing`,
+                  one: `无法将 ${total} 个会话中的 # 个加入暂停队列`,
+                  other: `无法将 ${total} 个会话中的 # 个加入暂停队列`,
                 })}`,
             rejectionCodes,
           ),
@@ -471,8 +471,8 @@ export function useThreadActions({
       if (snapshots.length) {
         toast.success(
           t(i18n)`${plural(snapshots.length, {
-            one: "Marked as spam",
-            other: "Marked # conversations as spam",
+            one: "已标记为垃圾邮件",
+            other: "已将 # 个会话标记为垃圾邮件",
           })}`,
         );
       }
@@ -480,10 +480,10 @@ export function useThreadActions({
         toast.error(
           enqueueFailureCopy(
             failedCount === threadKeys.length
-              ? t(i18n)`Couldn't queue marking as spam`
+              ? t(i18n)`无法将标记垃圾邮件操作加入队列`
               : t(i18n)`${plural(failedCount, {
-                  one: `Couldn't queue # of ${total} as spam`,
-                  other: `Couldn't queue # of ${total} as spam`,
+                  one: `无法将 ${total} 个会话中的 # 个标记为垃圾邮件并加入队列`,
+                  other: `无法将 ${total} 个会话中的 # 个标记为垃圾邮件并加入队列`,
                 })}`,
             rejectionCodes,
           ),
@@ -547,15 +547,15 @@ const ARCHIVE: UndoableAction = {
   steps: [{ change: { kind: "archive" }, compensation: { kind: "unarchive" } }],
   done: (i18n, count) =>
     t(i18n)`${plural(count, {
-      one: "Archived",
-      other: "Archived # conversations",
+      one: "已归档",
+      other: "已归档 # 个会话",
     })}`,
   queueFailed: (i18n, failedCount, total) =>
     failedCount === total
-      ? t(i18n)`Couldn't queue archiving`
+      ? t(i18n)`无法将归档操作加入队列`
       : t(i18n)`${plural(failedCount, {
-          one: `Couldn't queue # of ${total} for archiving`,
-          other: `Couldn't queue # of ${total} for archiving`,
+          one: `无法将 ${total} 个会话中的 # 个加入归档队列`,
+          other: `无法将 ${total} 个会话中的 # 个加入归档队列`,
         })}`,
   removesFromView: true,
 };
@@ -564,15 +564,15 @@ const MOVE_TO_INBOX: UndoableAction = {
   steps: [{ change: { kind: "unarchive" }, compensation: { kind: "archive" } }],
   done: (i18n, count) =>
     t(i18n)`${plural(count, {
-      one: "Moved to inbox",
-      other: "Moved # conversations to inbox",
+      one: "已移至收件箱",
+      other: "已将 # 个会话移至收件箱",
     })}`,
   queueFailed: (i18n, failedCount, total) =>
     failedCount === total
-      ? t(i18n)`Couldn't queue moving to inbox`
+      ? t(i18n)`无法将移至收件箱操作加入队列`
       : t(i18n)`${plural(failedCount, {
-          one: `Couldn't queue # of ${total} for moving to inbox`,
-          other: `Couldn't queue # of ${total} for moving to inbox`,
+          one: `无法将 ${total} 个会话中的 # 个加入移至收件箱队列`,
+          other: `无法将 ${total} 个会话中的 # 个加入移至收件箱队列`,
         })}`,
   removesFromView: true,
 };
@@ -586,15 +586,15 @@ const TRASH: UndoableAction = {
   ],
   done: (i18n, count) =>
     t(i18n)`${plural(count, {
-      one: "Deleted",
-      other: "Deleted # conversations",
+      one: "已删除",
+      other: "已删除 # 个会话",
     })}`,
   queueFailed: (i18n, failedCount, total) =>
     failedCount === total
-      ? t(i18n)`Couldn't queue deletion`
+      ? t(i18n)`无法将删除操作加入队列`
       : t(i18n)`${plural(failedCount, {
-          one: `Couldn't queue # of ${total} for deletion`,
-          other: `Couldn't queue # of ${total} for deletion`,
+          one: `无法将 ${total} 个会话中的 # 个加入删除队列`,
+          other: `无法将 ${total} 个会话中的 # 个加入删除队列`,
         })}`,
   removesFromView: true,
 };
@@ -618,15 +618,15 @@ function labelAction(labelId: string, archive: boolean): UndoableAction {
       steps,
       done: (i18n, count) =>
         t(i18n)`${plural(count, {
-          one: "Label applied",
-          other: "Label applied to # conversations",
+          one: "已应用标签",
+          other: "已为 # 个会话应用标签",
         })}`,
       queueFailed: (i18n, failedCount, total) =>
         failedCount === total
-          ? t(i18n)`Couldn't queue labeling`
+          ? t(i18n)`无法将标签操作加入队列`
           : t(i18n)`${plural(failedCount, {
-              one: `Couldn't queue # of ${total} for labeling`,
-              other: `Couldn't queue # of ${total} for labeling`,
+              one: `无法将 ${total} 个会话中的 # 个加入标签队列`,
+              other: `无法将 ${total} 个会话中的 # 个加入标签队列`,
             })}`,
       removesFromView: false,
     };
@@ -644,17 +644,17 @@ function labelAction(labelId: string, archive: boolean): UndoableAction {
 
 function movedCopy(i18n: I18n, count: number) {
   return t(i18n)`${plural(count, {
-    one: "Moved",
-    other: "Moved # conversations",
+    one: "已移动",
+    other: "已移动 # 个会话",
   })}`;
 }
 
 function movingQueueFailedCopy(i18n: I18n, failedCount: number, total: number) {
   return failedCount === total
-    ? t(i18n)`Couldn't queue moving`
+    ? t(i18n)`无法将移动操作加入队列`
     : t(i18n)`${plural(failedCount, {
-        one: `Couldn't queue # of ${total} for moving`,
-        other: `Couldn't queue # of ${total} for moving`,
+        one: `无法将 ${total} 个会话中的 # 个加入移动队列`,
+        other: `无法将 ${total} 个会话中的 # 个加入移动队列`,
       })}`;
 }
 
@@ -668,17 +668,17 @@ function getReadQueueFailedCopy(
 ) {
   if (failedCount === total) {
     return read
-      ? t(i18n)`Couldn't queue marking as read`
-      : t(i18n)`Couldn't queue marking as unread`;
+      ? t(i18n)`无法将标记已读操作加入队列`
+      : t(i18n)`无法将标记未读操作加入队列`;
   }
   return read
     ? t(i18n)`${plural(failedCount, {
-        one: `Couldn't queue # of ${total} as read`,
-        other: `Couldn't queue # of ${total} as read`,
+        one: `无法将 ${total} 个会话中的 # 个标记为已读并加入队列`,
+        other: `无法将 ${total} 个会话中的 # 个标记为已读并加入队列`,
       })}`
     : t(i18n)`${plural(failedCount, {
-        one: `Couldn't queue # of ${total} as unread`,
-        other: `Couldn't queue # of ${total} as unread`,
+        one: `无法将 ${total} 个会话中的 # 个标记为未读并加入队列`,
+        other: `无法将 ${total} 个会话中的 # 个标记为未读并加入队列`,
       })}`;
 }
 

@@ -42,48 +42,45 @@ export default function ChatPage() {
   return (
     <Container>
       <div className="space-y-8 py-8">
-        <h1>Chat Components</h1>
+        <h1>聊天组件</h1>
 
         <div>
-          <TextLink href="/components">← All Components</TextLink>
+          <TextLink href="/components">← 所有组件</TextLink>
         </div>
 
-        {/* Messages */}
-        <Section title="Messages (contained variant)">
+        {/* 消息 */}
+        <Section title="消息（contained 变体）">
           <ChatFrame>
             <Message from="user">
               <MessageContent variant="contained">
-                Can you help me clean up my inbox?
+                你能帮我清理收件箱吗？
               </MessageContent>
             </Message>
             <Message from="assistant">
               <MessageContent variant="contained">
                 <Response>
-                  Sure! I can help you organize your inbox. Let me search for
-                  emails that can be archived or categorized.
+                  当然！我可以帮你整理收件箱。让我搜索一下可以归档或分类的邮件。
                 </Response>
               </MessageContent>
             </Message>
             <Message from="user">
               <MessageContent variant="contained">
-                Yes, please archive all newsletters from last month.
+                好的，请把上个月的所有邮件简报都归档。
               </MessageContent>
             </Message>
           </ChatFrame>
         </Section>
 
-        <Section title="Messages (flat variant)">
+        <Section title="消息（flat 变体）">
           <ChatFrame>
             <Message from="user">
-              <MessageContent variant="flat">
-                What rules do I have set up?
-              </MessageContent>
+              <MessageContent variant="flat">我设置了哪些规则？</MessageContent>
             </Message>
             <Message from="assistant">
               <MessageContent variant="flat">
                 <Response>
                   {
-                    "You have **3 active rules**:\n\n1. **Newsletter Handler** — Archives and labels newsletters\n2. **Important Emails** — Marks urgent emails from your team\n3. **Auto-Reply** — Sends a response when you're out of office"
+                    "你设置了 **3 条生效的规则**：\n\n1. **邮件简报处理** — 归档并给邮件简报打标签\n2. **重要邮件** — 标记来自你团队的紧急邮件\n3. **自动回复** — 当你不在办公室时发送回复"
                   }
                 </Response>
               </MessageContent>
@@ -91,46 +88,39 @@ export default function ChatPage() {
           </ChatFrame>
         </Section>
 
-        {/* Reasoning */}
-        <Section title="Reasoning (collapsed)">
+        {/* 推理 */}
+        <Section title="推理（折叠）">
           <ChatFrame>
             <Message from="assistant">
               <MessageContent variant="flat">
                 <Reasoning duration={4}>
                   <ReasoningTrigger />
                   <ReasoningContent>
-                    The user wants to clean up their inbox. I should search for
-                    newsletters and promotional emails first, then suggest
-                    archiving them in bulk. Let me also check if they have any
-                    existing rules that might conflict.
+                    用户想清理收件箱。我应该先搜索邮件简报和推广邮件，然后建议批量归档它们。我还要检查一下是否有任何可能冲突的现有规则。
                   </ReasoningContent>
                 </Reasoning>
                 <Response>
-                  I found 47 newsletter emails from the past month. Would you
-                  like me to archive all of them?
+                  我找到了过去一个月里的 47
+                  封邮件简报。你想让我把它们全部归档吗？
                 </Response>
               </MessageContent>
             </Message>
           </ChatFrame>
         </Section>
 
-        <Section title="Reasoning (expanded)">
+        <Section title="推理（展开）">
           <ChatFrame>
             <Message from="assistant">
               <MessageContent variant="flat">
                 <Reasoning duration={12} defaultOpen>
                   <ReasoningTrigger />
                   <ReasoningContent>
-                    The user is asking about their email patterns. I need to
-                    analyze their inbox to find recurring senders and categorize
-                    them. Let me look at the top senders by volume and identify
-                    newsletters, promotions, and important contacts. I should
-                    also consider the frequency of emails from each sender.
+                    用户在询问自己的邮件规律。我需要分析他的收件箱，找出反复出现的发件人并对其进行分类。让我看看数量最多的发件人，并识别出邮件简报、推广邮件和重要联系人。我还应该考虑每个发件人的邮件频率。
                   </ReasoningContent>
                 </Reasoning>
                 <Response>
                   {
-                    "Based on your inbox analysis, here are your top email categories:\n\n- **Newsletters**: 120 emails/month\n- **Notifications**: 85 emails/month\n- **Direct messages**: 45 emails/month"
+                    "根据你的收件箱分析，以下是你最主要的邮件分类：\n\n- **邮件简报**：120 封/月\n- **通知**：85 封/月\n- **直接消息**：45 封/月"
                   }
                 </Response>
               </MessageContent>
@@ -138,10 +128,10 @@ export default function ChatPage() {
           </ChatFrame>
         </Section>
 
-        {/* Tool Calls */}
-        <Section title="Tool Call States">
+        {/* 工具调用 */}
+        <Section title="工具调用状态">
           <div className="space-y-4">
-            <MutedText>Pending (input streaming):</MutedText>
+            <MutedText>等待中（输入流式传输）：</MutedText>
             <Tool>
               <ToolHeader
                 title="search_inbox"
@@ -150,7 +140,7 @@ export default function ChatPage() {
               />
             </Tool>
 
-            <MutedText>Running (input available):</MutedText>
+            <MutedText>运行中（输入已就绪）：</MutedText>
             <Tool>
               <ToolHeader
                 title="search_inbox"
@@ -167,7 +157,7 @@ export default function ChatPage() {
               </ToolContent>
             </Tool>
 
-            <MutedText>Approval requested:</MutedText>
+            <MutedText>已请求批准：</MutedText>
             <Tool>
               <ToolHeader
                 title="archive_emails"
@@ -184,7 +174,7 @@ export default function ChatPage() {
               </ToolContent>
             </Tool>
 
-            <MutedText>Completed:</MutedText>
+            <MutedText>已完成：</MutedText>
             <Tool>
               <ToolHeader
                 title="search_inbox"
@@ -204,15 +194,15 @@ export default function ChatPage() {
                     messages: [
                       {
                         from: "updates@github.com",
-                        subject: "PR Review Requested",
+                        subject: "请求评审 PR",
                       },
                       {
                         from: "team@company.com",
-                        subject: "Weekly Standup Notes",
+                        subject: "每周站会记录",
                       },
                       {
                         from: "news@techcrunch.com",
-                        subject: "Daily Digest",
+                        subject: "每日邮件摘要",
                       },
                     ],
                   }}
@@ -221,7 +211,7 @@ export default function ChatPage() {
               </ToolContent>
             </Tool>
 
-            <MutedText>Error:</MutedText>
+            <MutedText>错误：</MutedText>
             <Tool>
               <ToolHeader
                 title="send_email"
@@ -232,18 +222,18 @@ export default function ChatPage() {
                 <ToolInput
                   input={{
                     to: "user@example.com",
-                    subject: "Follow up",
-                    body: "Hi, just following up on our conversation.",
+                    subject: "跟进",
+                    body: "你好，只是想跟进一下我们的对话。",
                   }}
                 />
                 <ToolOutput
                   output={undefined}
-                  errorText="Failed to send email: rate limit exceeded. Please try again later."
+                  errorText="发送邮件失败：超出速率限制。请稍后重试。"
                 />
               </ToolContent>
             </Tool>
 
-            <MutedText>Denied:</MutedText>
+            <MutedText>已拒绝：</MutedText>
             <Tool>
               <ToolHeader
                 title="delete_emails"
@@ -262,12 +252,12 @@ export default function ChatPage() {
           </div>
         </Section>
 
-        {/* Full conversation with tool call */}
-        <Section title="Full Conversation with Tool Call">
+        {/* 带工具调用的完整对话 */}
+        <Section title="带工具调用的完整对话">
           <ChatFrame>
             <Message from="user">
               <MessageContent variant="flat">
-                Search my inbox for emails from GitHub this week.
+                搜索我本周来自 GitHub 的邮件。
               </MessageContent>
             </Message>
             <Message from="assistant">
@@ -291,11 +281,11 @@ export default function ChatPage() {
                         messages: [
                           {
                             from: "notifications@github.com",
-                            subject: "PR #142 merged",
+                            subject: "PR #142 已合并",
                           },
                           {
                             from: "notifications@github.com",
-                            subject: "Issue #87 assigned to you",
+                            subject: "Issue #87 已分配给你",
                           },
                         ],
                       }}
@@ -305,7 +295,7 @@ export default function ChatPage() {
                 </Tool>
                 <Response>
                   {
-                    "I found **5 emails** from GitHub this week. Here are the highlights:\n\n1. **PR #142 merged** — Your pull request was merged\n2. **Issue #87 assigned to you** — A new issue needs your attention\n\nWould you like me to do anything with these emails?"
+                    "我找到了本周来自 GitHub 的 **5 封邮件**。以下是要点：\n\n1. **PR #142 已合并** — 你的拉取请求已被合并\n2. **Issue #87 已分配给你** — 有一个新 issue 需要你处理\n\n你想让我对这些邮件做些什么吗？"
                   }
                 </Response>
               </MessageContent>
@@ -313,12 +303,12 @@ export default function ChatPage() {
           </ChatFrame>
         </Section>
 
-        {/* Conversation with reasoning + tool */}
-        <Section title="Conversation with Reasoning + Tool Call">
+        {/* 带推理 + 工具调用的对话 */}
+        <Section title="带推理 + 工具调用的对话">
           <ChatFrame>
             <Message from="user">
               <MessageContent variant="flat">
-                Help me unsubscribe from newsletters I never read.
+                帮我退订那些我从来不看的邮件简报。
               </MessageContent>
             </Message>
             <Message from="assistant">
@@ -326,11 +316,7 @@ export default function ChatPage() {
                 <Reasoning duration={6}>
                   <ReasoningTrigger />
                   <ReasoningContent>
-                    The user wants to unsubscribe from newsletters they
-                    don&apos;t read. I should first search for newsletter emails
-                    and identify which ones have low engagement. I&apos;ll look
-                    at open rates and which ones were archived without being
-                    read.
+                    用户想退订他从来不看的邮件简报。我应该先搜索邮件简报，找出互动率低的那些。我会看看打开率，以及哪些是在未被阅读的情况下被归档的。
                   </ReasoningContent>
                 </Reasoning>
                 <Tool>
@@ -371,7 +357,7 @@ export default function ChatPage() {
                 </Tool>
                 <Response>
                   {
-                    "I found **23 unread newsletter emails** from 8 senders. Here are the ones you seem to never read:\n\n| Sender | Unread |\n|---|---|\n| marketing@store.com | 12 |\n| weekly@digest.io | 8 |\n| deals@shop.com | 3 |\n\nWould you like me to unsubscribe from any of these?"
+                    "我找到了来自 8 个发件人的 **23 封未读邮件简报**。以下是你似乎从来不看的那些：\n\n| 发件人 | 未读数 |\n|---|---|\n| marketing@store.com | 12 |\n| weekly@digest.io | 8 |\n| deals@shop.com | 3 |\n\n你想退订其中任何一封吗？"
                   }
                 </Response>
               </MessageContent>
@@ -379,14 +365,14 @@ export default function ChatPage() {
           </ChatFrame>
         </Section>
 
-        {/* Response with Markdown */}
-        <Section title="Response (Markdown)">
+        {/* Markdown 回复 */}
+        <Section title="回复（Markdown）">
           <ChatFrame>
             <Message from="assistant">
               <MessageContent variant="flat">
                 <Response>
                   {
-                    'Here\'s a summary of your inbox rules:\n\n## Active Rules\n\n1. **Newsletter Handler**\n   - Trigger: `from:*@substack.com`\n   - Action: Archive and label as "Newsletter"\n\n2. **Urgent Emails**\n   - Trigger: Subject contains "urgent" or "ASAP"\n   - Action: Star and move to top\n\n> **Tip:** You can combine multiple conditions using AND/OR operators for more precise filtering.\n\n### Quick Stats\n- Rules processed **1,247** emails this month\n- **89%** accuracy rate\n- Most active rule: Newsletter Handler (523 matches)'
+                    "以下是你的收件箱规则摘要：\n\n## 生效的规则\n\n1. **邮件简报处理**\n   - 触发条件：`from:*@substack.com`\n   - 操作：归档并标记为“邮件简报”\n\n2. **紧急邮件**\n   - 触发条件：主题包含“urgent”或“ASAP”\n   - 操作：加星标并移到顶部\n\n> **提示：** 你可以用 AND/OR 运算符组合多个条件，实现更精确的筛选。\n\n### 快速统计\n- 本月规则处理了 **1,247** 封邮件\n- 准确率 **89%**\n- 最活跃的规则：邮件简报处理（523 次匹配）"
                   }
                 </Response>
               </MessageContent>
@@ -394,10 +380,10 @@ export default function ChatPage() {
           </ChatFrame>
         </Section>
 
-        {/* Code Block */}
-        <Section title="Code Block">
+        {/* 代码块 */}
+        <Section title="代码块">
           <div className="space-y-4">
-            <MutedText>JSON output:</MutedText>
+            <MutedText>JSON 输出：</MutedText>
             <CodeBlock
               code={JSON.stringify(
                 {
@@ -417,7 +403,7 @@ export default function ChatPage() {
               <CodeBlockCopyButton />
             </CodeBlock>
 
-            <MutedText>TypeScript:</MutedText>
+            <MutedText>TypeScript：</MutedText>
             <CodeBlock
               code={`async function processEmails(rules: Rule[]) {
   const inbox = await searchInbox({ query: "in:inbox" });
@@ -437,21 +423,21 @@ export default function ChatPage() {
           </div>
         </Section>
 
-        {/* Suggestions */}
-        <Section title="Suggestions">
+        {/* 建议 */}
+        <Section title="建议">
           <Suggestions>
-            <Suggestion suggestion="Help me handle my inbox" />
-            <Suggestion suggestion="Clean up newsletters" />
-            <Suggestion suggestion="Create a new rule" />
-            <Suggestion suggestion="Show my email stats" />
-            <Suggestion suggestion="Auto-archive old emails" />
+            <Suggestion suggestion="帮我处理我的收件箱" />
+            <Suggestion suggestion="清理邮件简报" />
+            <Suggestion suggestion="创建一条新规则" />
+            <Suggestion suggestion="显示我的邮件统计" />
+            <Suggestion suggestion="自动归档旧邮件" />
           </Suggestions>
         </Section>
 
-        {/* Prompt Input */}
-        <Section title="Prompt Input">
+        {/* 提示输入框 */}
+        <Section title="提示输入框">
           <div className="space-y-4">
-            <MutedText>Default (idle):</MutedText>
+            <MutedText>默认（空闲）：</MutedText>
             <PromptInput onSubmit={(e) => e.preventDefault()}>
               <PromptInputTextarea disabled />
               <PromptInputToolbar>
@@ -467,12 +453,9 @@ export default function ChatPage() {
               </PromptInputToolbar>
             </PromptInput>
 
-            <MutedText>Submitted (loading):</MutedText>
+            <MutedText>已提交（加载中）：</MutedText>
             <PromptInput onSubmit={(e) => e.preventDefault()}>
-              <PromptInputTextarea
-                value="Archive all newsletters from last month"
-                disabled
-              />
+              <PromptInputTextarea value="归档上个月的所有邮件简报" disabled />
               <PromptInputToolbar>
                 <PromptInputTools>
                   <PromptInputButton>
@@ -483,7 +466,7 @@ export default function ChatPage() {
               </PromptInputToolbar>
             </PromptInput>
 
-            <MutedText>Streaming:</MutedText>
+            <MutedText>流式传输：</MutedText>
             <PromptInput onSubmit={(e) => e.preventDefault()}>
               <PromptInputTextarea disabled />
               <PromptInputToolbar>
@@ -496,7 +479,7 @@ export default function ChatPage() {
               </PromptInputToolbar>
             </PromptInput>
 
-            <MutedText>Error:</MutedText>
+            <MutedText>错误：</MutedText>
             <PromptInput onSubmit={(e) => e.preventDefault()}>
               <PromptInputTextarea disabled />
               <PromptInputToolbar>
@@ -511,21 +494,19 @@ export default function ChatPage() {
           </div>
         </Section>
 
-        {/* Shimmer & Loader */}
-        <Section title="Shimmer & Loader">
+        {/* 微光效果与加载器 */}
+        <Section title="微光效果与加载器">
           <div className="space-y-4">
-            <MutedText>Shimmer text:</MutedText>
-            <Shimmer className="text-sm">
-              Thinking about your request...
-            </Shimmer>
+            <MutedText>微光文本：</MutedText>
+            <Shimmer className="text-sm">正在思考你的请求…</Shimmer>
             <Shimmer className="text-base">
-              Searching your inbox for matching emails...
+              正在你的收件箱中搜索匹配的邮件…
             </Shimmer>
             <Shimmer as="span" className="text-lg font-semibold">
-              Processing 47 emails
+              正在处理 47 封邮件
             </Shimmer>
 
-            <MutedText>Loader:</MutedText>
+            <MutedText>加载器：</MutedText>
             <div className="flex items-center gap-4">
               <Loader size={16} />
               <Loader size={24} />
@@ -534,24 +515,24 @@ export default function ChatPage() {
           </div>
         </Section>
 
-        {/* Empty State */}
-        <Section title="Conversation Empty State">
+        {/* 空状态 */}
+        <Section title="对话空状态">
           <div className="h-[200px] rounded-lg border">
             <ConversationEmptyState
-              title="Start a conversation"
-              description="Ask me anything about your inbox"
+              title="开始对话"
+              description="关于你的收件箱，随便问我"
             />
           </div>
         </Section>
 
-        {/* Full Chat Layout */}
-        <Section title="Full Chat Layout">
+        {/* 完整聊天布局 */}
+        <Section title="完整聊天布局">
           <div className="flex h-[600px] flex-col rounded-lg border">
             <Conversation>
               <ConversationContent>
                 <Message from="user">
                   <MessageContent variant="flat">
-                    Can you show me a summary of my inbox activity this week?
+                    你能给我看看本周收件箱活动的摘要吗？
                   </MessageContent>
                 </Message>
                 <Message from="assistant">
@@ -559,9 +540,7 @@ export default function ChatPage() {
                     <Reasoning duration={3}>
                       <ReasoningTrigger />
                       <ReasoningContent>
-                        Let me pull up the inbox activity for this week. I need
-                        to search for all emails and categorize them by type and
-                        sender.
+                        让我调出本周的收件箱活动。我需要搜索所有邮件，并按类型和发件人对它们进行分类。
                       </ReasoningContent>
                     </Reasoning>
                     <Tool>
@@ -594,14 +573,14 @@ export default function ChatPage() {
                     </Tool>
                     <Response>
                       {
-                        "Here's your inbox summary for this week:\n\n- **67 total emails** (12 unread)\n- Newsletters: 23\n- Notifications: 18\n- Direct messages: 15\n- Promotions: 11\n\nWould you like me to help clean up any of these categories?"
+                        "这是你本周的收件箱摘要：\n\n- **共 67 封邮件**（12 封未读）\n- 邮件简报：23\n- 通知：18\n- 直接消息：15\n- 推广邮件：11\n\n你想让我帮你清理其中某些分类吗？"
                       }
                     </Response>
                   </MessageContent>
                 </Message>
                 <Message from="user">
                   <MessageContent variant="flat">
-                    Yes, archive all the promotions please.
+                    好的，请把所有推广邮件都归档。
                   </MessageContent>
                 </Message>
                 <Message from="assistant">
@@ -623,9 +602,7 @@ export default function ChatPage() {
                       </ToolContent>
                     </Tool>
                     <Response>
-                      {
-                        "I'm ready to archive **11 promotional emails**. Please confirm to proceed."
-                      }
+                      {"我已准备好归档 **11 封推广邮件**。请确认后继续。"}
                     </Response>
                   </MessageContent>
                 </Message>

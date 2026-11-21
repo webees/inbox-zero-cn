@@ -47,9 +47,9 @@ export function unquoteSearchValue(value: string): string {
 }
 
 /**
- * Boolean operators like hasattachments: are written true/false by our search
- * forms, but hand-typed queries also use yes/no. Returns undefined when the
- * value is neither, so callers can leave the token for other handling.
+ * 像 hasattachments: 这样的布尔运算符在我们的搜索表单中写作 true/false，
+ * 但手动输入的查询也会使用 yes/no。当值两者都不是时返回 undefined，
+ * 以便调用方将 token 留给其他处理逻辑。
  */
 export function parseBooleanSearchValue(value: string): boolean | undefined {
   if (/^(true|yes)$/i.test(value)) return true;

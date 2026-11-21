@@ -246,14 +246,14 @@ function SearchInboxResultDetails({ output }: { output: unknown }) {
     <>
       {queryUsed && (
         <ToolDetailRow
-          label={t`Query`}
+          label={t`查询`}
           value={<span className="font-mono text-xs">{queryUsed}</span>}
         />
       )}
       {error && (
         <div className="space-y-1 text-sm text-muted-foreground">
           <p>
-            <Trans>Search results were unavailable for that request.</Trans>
+            <Trans>该请求的搜索结果不可用</Trans>
           </p>
           <p className="text-xs">{error}</p>
         </div>
@@ -315,13 +315,13 @@ export function ManageInboxResult({
     action === "bulk_archive_senders" &&
     typeof archivedMessagesCount === "number"
   ) {
-    countText = t`${plural(archivedMessagesCount, { one: "# message", other: "# messages" })}`;
+    countText = t`${plural(archivedMessagesCount, { one: "# 封邮件", other: "# 封邮件" })}`;
   } else if (isSenderAction) {
     if (typeof senderCount === "number") {
-      countText = t`${plural(senderCount, { one: "# sender", other: "# senders" })}`;
+      countText = t`${plural(senderCount, { one: "# 个发件人", other: "# 个发件人" })}`;
     }
   } else if (typeof itemCount === "number") {
-    countText = t`${plural(itemCount, { one: "# item", other: "# items" })}`;
+    countText = t`${plural(itemCount, { one: "# 个项目", other: "# 个项目" })}`;
   }
 
   const resolvedThreads = threadIds
@@ -352,7 +352,7 @@ export function ManageInboxResult({
       {isInProgress && (
         <ToolPanel className="border-blue-200 bg-blue-50/60 text-blue-700 dark:border-blue-900 dark:bg-blue-950/20 dark:text-blue-200">
           <div className="text-sm">
-            <Trans>Processing senders now.</Trans>
+            <Trans>正在处理发件人</Trans>
           </div>
         </ToolPanel>
       )}
@@ -363,14 +363,14 @@ export function ManageInboxResult({
             {isSenderAction ? (
               <Plural
                 value={failedCount}
-                one="Failed on # sender."
-                other="Failed on # senders."
+                one="有 # 个发件人失败"
+                other="有 # 个发件人失败"
               />
             ) : (
               <Plural
                 value={failedCount}
-                one="Failed on # item."
-                other="Failed on # items."
+                one="有 # 个项目失败"
+                other="有 # 个项目失败"
               />
             )}
           </div>
@@ -384,7 +384,7 @@ export function ManageInboxResult({
       )}
 
       {senders && senders.length > 0 && (
-        <ToolSection label={t`Senders`}>
+        <ToolSection label={t`发件人`}>
           <div className="space-y-2">
             {senders.map((sender) => (
               <ToolPanel
@@ -399,7 +399,7 @@ export function ManageInboxResult({
                   target="_blank"
                   rel="noopener noreferrer"
                   className="shrink-0 text-muted-foreground hover:text-foreground"
-                  aria-label={t`View ${sender} in ${providerName}`}
+                  aria-label={t`在 ${providerName} 中查看 ${sender}`}
                 >
                   <ExternalLinkIcon className="size-3.5" />
                 </a>
@@ -426,12 +426,10 @@ export function ManageSenderCategoryResult({ output }: { output: unknown }) {
     "archivedMessagesCount",
   );
   const senders = getOutputField<string[]>(output, "senders") ?? [];
-  const categoryName = category?.name?.trim() || t`Category`;
+  const categoryName = category?.name?.trim() || t`分类`;
 
   if (senders.length === 0) {
-    return (
-      <BasicToolInfo text={t`No senders to archive in "${categoryName}"`} />
-    );
+    return <BasicToolInfo text={t`“${categoryName}”中没有可归档的发件人`} />;
   }
 
   const hiddenCount = Math.max(sendersCount - senders.length, 0);
@@ -440,8 +438,8 @@ export function ManageSenderCategoryResult({ output }: { output: unknown }) {
     <CollapsibleToolCard
       title={
         archivedMessagesCount === 0
-          ? t`No messages archived in "${categoryName}"`
-          : t`Archived "${categoryName}" category`
+          ? t`“${categoryName}”中未归档任何邮件`
+          : t`已归档“${categoryName}”分类`
       }
       badge={
         typeof archivedMessagesCount === "number" ? (
@@ -457,12 +455,12 @@ export function ManageSenderCategoryResult({ output }: { output: unknown }) {
           </Badge>
         ) : (
           <Badge color="green" className="text-[10px]">
-            <Plural value={sendersCount} one="# sender" other="# senders" />
+            <Plural value={sendersCount} one="# 个发件人" other="# 个发件人" />
           </Badge>
         )
       }
     >
-      <ToolSection label={t`Senders`}>
+      <ToolSection label={t`发件人`}>
         <div className="max-h-96 space-y-2 overflow-y-auto pr-1">
           {senders.map((sender) => (
             <ToolPanel
@@ -477,7 +475,7 @@ export function ManageSenderCategoryResult({ output }: { output: unknown }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="shrink-0 text-muted-foreground hover:text-foreground"
-                aria-label={t`View ${sender} in ${providerName}`}
+                aria-label={t`在 ${providerName} 中查看 ${sender}`}
               >
                 <ExternalLinkIcon className="size-3.5" />
               </a>
@@ -488,8 +486,8 @@ export function ManageSenderCategoryResult({ output }: { output: unknown }) {
           <div className="text-xs text-muted-foreground">
             <Plural
               value={hiddenCount}
-              one="+ # more sender not shown"
-              other="+ # more senders not shown"
+              one="另有 # 个发件人未显示"
+              other="另有 # 个发件人未显示"
             />
           </div>
         )}
@@ -558,7 +556,7 @@ export function ReadEmailResult({ output }: { output: unknown }) {
         )}
         {externalUrl && (
           <ToolExternalLink href={externalUrl}>
-            <Trans>Open in {providerName}</Trans>
+            <Trans>在 {providerName} 中打开</Trans>
           </ToolExternalLink>
         )}
       </div>
@@ -793,7 +791,7 @@ function EmailActionResult({
         {isConfirmed && (
           <div className="flex items-center gap-1 text-xs font-medium text-green-600">
             <CheckIcon className="size-3.5" />
-            <Trans>Sent</Trans>
+            <Trans>已发送</Trans>
           </div>
         )}
       </CardHeader>
@@ -802,7 +800,7 @@ function EmailActionResult({
         {displaySubject && (
           <div className="flex items-center gap-2 border-b px-4 py-2.5">
             <FieldLabel>
-              <Trans>Subject</Trans>
+              <Trans>主题</Trans>
             </FieldLabel>
             <span className="truncate text-sm font-medium text-foreground">
               {getPendingEmailSubjectPrefix(actionType)}
@@ -830,10 +828,10 @@ function EmailActionResult({
                     setIsEditing(false);
                   }}
                 >
-                  <Trans>Cancel</Trans>
+                  <Trans>取消</Trans>
                 </Button>
                 <Button size="sm" onClick={() => setIsEditing(false)}>
-                  <Trans>Save changes</Trans>
+                  <Trans>保存更改</Trans>
                 </Button>
               </div>
             </div>
@@ -857,7 +855,7 @@ function EmailActionResult({
               >
                 <PencilIcon className="size-3.5" />
                 <span className="hidden sm:inline">
-                  <Trans>Edit</Trans>
+                  <Trans>编辑</Trans>
                 </span>
               </Button>
             )}
@@ -875,7 +873,7 @@ function EmailActionResult({
                 <CopyIcon className="size-3.5" />
               )}
               <span className="hidden sm:inline">
-                {copied ? t`Copied` : t`Copy`}
+                {copied ? t`已复制` : t`复制`}
               </span>
             </Button>
             {externalUrl && (
@@ -888,7 +886,7 @@ function EmailActionResult({
                 <a href={externalUrl} target="_blank" rel="noopener noreferrer">
                   <ExternalLinkIcon className="size-3.5" />
                   <span className="hidden sm:inline">
-                    <Trans>Open in {providerName}</Trans>
+                    <Trans>在 {providerName} 中打开</Trans>
                   </span>
                 </a>
               </Button>
@@ -903,18 +901,18 @@ function EmailActionResult({
               className="gap-2"
             >
               {isProcessing ? (
-                t`Sending...`
+                t`发送中...`
               ) : isConfirming ? (
                 <>
                   <Loader2 className="size-4 animate-spin" />
-                  <Trans>Sending...</Trans>
+                  <Trans>发送中...</Trans>
                 </>
               ) : !isPersistedMessage ? (
-                t`Saving...`
+                t`保存中...`
               ) : (
                 <>
                   <SendIcon className="hidden size-3.5 sm:inline" />
-                  <Trans>Send</Trans>
+                  <Trans>发送</Trans>
                 </>
               )}
             </Button>
@@ -1141,19 +1139,19 @@ export function PendingTrashThreadsCard({
     ? t`Could not move these emails to trash.`
     : t`Could not delete these drafts.`;
   const progressText = isTrash ? (
-    <Trans>Moving to trash...</Trans>
+    <Trans>正在移入回收站...</Trans>
   ) : (
-    <Trans>Deleting drafts...</Trans>
+    <Trans>正在删除草稿...</Trans>
   );
   const pendingText = isTrash ? (
-    <Trans>Pending confirmation. Nothing has moved yet.</Trans>
+    <Trans>等待确认。尚未移动任何内容。</Trans>
   ) : (
-    <Trans>Pending confirmation. Only unsent drafts are deleted.</Trans>
+    <Trans>等待确认。仅删除未发送的草稿。</Trans>
   );
   const confirmText = isTrash ? (
-    <Trans>Move to trash</Trans>
+    <Trans>移入回收站</Trans>
   ) : (
-    <Trans>Delete drafts</Trans>
+    <Trans>删除草稿</Trans>
   );
 
   const handleConfirm = async () => {
@@ -1214,14 +1212,14 @@ export function PendingTrashThreadsCard({
             {isTrash ? (
               <Plural
                 value={threadIds.length}
-                one="Move # email to trash"
-                other="Move # emails to trash"
+                one="将 # 封邮件移入回收站"
+                other="将 # 封邮件移入回收站"
               />
             ) : (
               <Plural
                 value={threadIds.length}
-                one="Delete drafts in # conversation"
-                other="Delete drafts in # conversations"
+                one="删除 # 个会话中的草稿"
+                other="删除 # 个会话中的草稿"
               />
             )}
           </h3>
@@ -1246,7 +1244,7 @@ export function PendingTrashThreadsCard({
             disableConfirm || isDismissing || isConfirming || isProcessing
           }
         >
-          <Trans>Cancel</Trans>
+          <Trans>取消</Trans>
         </Button>
         <Button
           variant="destructive"
@@ -1358,7 +1356,7 @@ export function PendingSaveMemoryToolCard({
         <div className="flex items-center justify-between gap-3">
           <div>
             <h3 className="text-sm font-medium">
-              <Trans>Save memory</Trans>
+              <Trans>保存记忆</Trans>
             </h3>
             <p className="mt-1 text-xs text-muted-foreground">
               {isConfirmed
@@ -1438,13 +1436,11 @@ function PendingCreateRuleCardContent({
       <Alert variant="default" className="border-amber-500/40 bg-amber-500/5">
         <AlertTriangleIcon className="size-4 text-amber-600" />
         <AlertTitle>
-          <Trans>Review before enabling</Trans>
+          <Trans>启用前请检查</Trans>
         </AlertTitle>
         <AlertDescription className="space-y-2 text-sm">
           <p>
-            <Trans>
-              This rule can send email automatically. Review it before enabling.
-            </Trans>
+            <Trans>此规则可以自动发送邮件。请在启用前进行检查。</Trans>
           </p>
           {riskMessages.length === 1 ? (
             <p className="text-muted-foreground">{riskMessages[0]}</p>
@@ -1519,7 +1515,7 @@ export function UpdatedRuleConditions({
       <CardContent className="space-y-3 px-4 py-3.5">
         <div className="flex gap-4 text-sm">
           <FieldLabel className="pt-0.5">
-            <Trans>When</Trans>
+            <Trans>当</Trans>
           </FieldLabel>
           <RuleSummaryText>{conditionText}</RuleSummaryText>
         </div>
@@ -1527,7 +1523,7 @@ export function UpdatedRuleConditions({
         {actions && actions.length > 0 && (
           <div className="flex gap-4 text-sm">
             <FieldLabel className="pt-0.5">
-              <Trans>Then</Trans>
+              <Trans>则</Trans>
             </FieldLabel>
             <ActionBadgeList actions={actions} />
           </div>
@@ -1595,7 +1591,7 @@ export function UpdatedRuleActions({
         {conditionText && (
           <div className="flex gap-4 text-sm">
             <FieldLabel className="pt-0.5">
-              <Trans>When</Trans>
+              <Trans>当</Trans>
             </FieldLabel>
             <RuleSummaryText>{conditionText}</RuleSummaryText>
           </div>
@@ -1603,7 +1599,7 @@ export function UpdatedRuleActions({
 
         <div className="flex gap-4 text-sm">
           <FieldLabel className="pt-0.5">
-            <Trans>Then</Trans>
+            <Trans>则</Trans>
           </FieldLabel>
           <ActionBadgeList actions={args.actions} />
         </div>
@@ -1684,7 +1680,7 @@ export function UpdatedRule({
         {nameChanged && output.updatedName && (
           <div className="flex gap-4 text-sm">
             <FieldLabel className="pt-0.5">
-              <Trans>Name</Trans>
+              <Trans>名称</Trans>
             </FieldLabel>
             <p>{output.updatedName}</p>
           </div>
@@ -1693,7 +1689,7 @@ export function UpdatedRule({
         {conditionText && (
           <div className="flex gap-4 text-sm">
             <FieldLabel className="pt-0.5">
-              <Trans>When</Trans>
+              <Trans>条件</Trans>
             </FieldLabel>
             <RuleSummaryText>{conditionText}</RuleSummaryText>
           </div>
@@ -1702,16 +1698,16 @@ export function UpdatedRule({
         {enabledChanged && output.updatedEnabled !== undefined && (
           <div className="flex gap-4 text-sm">
             <FieldLabel className="pt-0.5">
-              <Trans>Status</Trans>
+              <Trans>状态</Trans>
             </FieldLabel>
-            <p>{output.updatedEnabled ? t`Enabled` : t`Disabled`}</p>
+            <p>{output.updatedEnabled ? t`已启用` : t`已禁用`}</p>
           </div>
         )}
 
         {actions && (
           <div className="flex gap-4 text-sm">
             <FieldLabel className="pt-0.5">
-              <Trans>Then</Trans>
+              <Trans>执行</Trans>
             </FieldLabel>
             <ActionBadgeList actions={actions} />
           </div>
@@ -1795,7 +1791,7 @@ export function UpdatedRuleState({
   const ruleId = output.ruleId;
   const ruleName = output.ruleName || args.ruleName;
   const enabled = output.enabled ?? args.operation === "enable";
-  const label = enabled ? t`Enabled` : t`Disabled`;
+  const label = enabled ? t`已启用` : t`已禁用`;
 
   return (
     <Card>
@@ -1815,7 +1811,7 @@ export function UpdatedRuleState({
       <CardContent className="space-y-3 px-4 py-3.5">
         <div className="flex items-center gap-2 text-sm">
           <FieldLabel>
-            <Trans>Status</Trans>
+            <Trans>状态</Trans>
           </FieldLabel>
           <Badge color={enabled ? "green" : "gray"}>{label}</Badge>
         </div>
@@ -1844,7 +1840,7 @@ export function PendingDeleteRuleToolCard({
 
   const handleDelete = async () => {
     if (!ruleId) {
-      toastError({ description: t`Could not delete this rule.` });
+      toastError({ description: t`无法删除此规则。` });
       return;
     }
 
@@ -1857,9 +1853,9 @@ export function PendingDeleteRuleToolCard({
       }
 
       setDeleted(true);
-      toastSuccess({ description: t`The rule has been deleted.` });
+      toastSuccess({ description: t`规则已删除。` });
     } catch {
-      toastError({ description: t`Failed to delete rule.` });
+      toastError({ description: t`删除规则失败。` });
     } finally {
       setIsDeleting(false);
     }
@@ -1872,12 +1868,12 @@ export function PendingDeleteRuleToolCard({
         <div className="min-w-0 flex-1">
           <h3 className="truncate text-base font-semibold">{ruleName}</h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            {deleted ? t`Deleted rule` : t`Pending deletion`}
+            {deleted ? t`已删除的规则` : t`待删除`}
           </p>
         </div>
         {deleted && (
           <Badge color="green" className="shrink-0">
-            <Trans>Deleted</Trans>
+            <Trans>已删除</Trans>
           </Badge>
         )}
       </CardHeader>
@@ -1890,12 +1886,10 @@ export function PendingDeleteRuleToolCard({
           >
             <AlertTriangleIcon className="size-4 text-amber-600" />
             <AlertTitle>
-              <Trans>Confirm rule deletion</Trans>
+              <Trans>确认删除规则</Trans>
             </AlertTitle>
             <AlertDescription className="text-sm text-muted-foreground">
-              <Trans>
-                This will permanently delete the rule and its actions.
-              </Trans>
+              <Trans>此操作将永久删除该规则及其操作。</Trans>
             </AlertDescription>
           </Alert>
 
@@ -1910,10 +1904,10 @@ export function PendingDeleteRuleToolCard({
               {isDeleting ? (
                 <>
                   <Loader2 className="size-4 animate-spin" />
-                  <Trans>Deleting...</Trans>
+                  <Trans>正在删除...</Trans>
                 </>
               ) : (
-                t`Delete rule`
+                t`删除规则`
               )}
             </Button>
           </div>
@@ -1941,12 +1935,12 @@ export function PendingDeleteRulePreviewCard({
         <div className="min-w-0 flex-1">
           <h3 className="truncate text-base font-semibold">{ruleName}</h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            {deleted ? t`Deleted rule` : t`Pending deletion`}
+            {deleted ? t`已删除的规则` : t`待删除`}
           </p>
         </div>
         {deleted && (
           <Badge color="green" className="shrink-0">
-            <Trans>Deleted</Trans>
+            <Trans>已删除</Trans>
           </Badge>
         )}
       </CardHeader>
@@ -1959,18 +1953,16 @@ export function PendingDeleteRulePreviewCard({
           >
             <AlertTriangleIcon className="size-4 text-amber-600" />
             <AlertTitle>
-              <Trans>Confirm rule deletion</Trans>
+              <Trans>确认删除规则</Trans>
             </AlertTitle>
             <AlertDescription className="text-sm text-muted-foreground">
-              <Trans>
-                This will permanently delete the rule and its actions.
-              </Trans>
+              <Trans>此操作将永久删除该规则及其操作。</Trans>
             </AlertDescription>
           </Alert>
 
           <div className="flex justify-end">
             <Button variant="destructive" size="sm" disabled>
-              <Trans>Delete rule</Trans>
+              <Trans>删除规则</Trans>
             </Button>
           </div>
         </CardContent>
@@ -2261,7 +2253,7 @@ function ViewChangesCollapsible({ children }: { children: React.ReactNode }) {
     <Collapsible>
       <CollapsibleTrigger className="flex items-center gap-1.5 text-sm text-muted-foreground">
         <ChevronRightIcon className="size-4 transition-transform [[data-state=open]>&]:rotate-90" />
-        <Trans>View changes</Trans>
+        <Trans>查看更改</Trans>
       </CollapsibleTrigger>
       <CollapsibleContent className="mt-2">{children}</CollapsibleContent>
     </Collapsible>
@@ -2817,9 +2809,9 @@ export function PendingDeleteSplitCard({
       }
       if (activeSplitId === split.id) setActiveSplitId(null);
       await mutate();
-      toastSuccess({ description: t`The split has been deleted.` });
+      toastSuccess({ description: t`拆分标签页已删除` });
     } catch {
-      toastError({ description: t`Failed to delete split.` });
+      toastError({ description: t`删除拆分标签页失败` });
     } finally {
       setIsDeleting(false);
     }
@@ -2832,12 +2824,12 @@ export function PendingDeleteSplitCard({
         <div className="min-w-0 flex-1">
           <h3 className="truncate text-base font-semibold">{split.name}</h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            {deleted ? t`Deleted split` : t`Pending deletion`}
+            {deleted ? t`已删除拆分标签页` : t`待删除`}
           </p>
         </div>
         {deleted && (
           <Badge color="green" className="shrink-0">
-            <Trans>Deleted</Trans>
+            <Trans>已删除</Trans>
           </Badge>
         )}
       </CardHeader>
@@ -2845,7 +2837,7 @@ export function PendingDeleteSplitCard({
       {!deleted && (
         <CardContent className="flex items-center justify-between gap-3 px-4 py-3.5">
           <p className="text-sm text-muted-foreground">
-            <Trans>Removes this tab. Your mail isn't changed.</Trans>
+            <Trans>移除该标签页，您的邮件不会改变</Trans>
           </p>
           <Button
             variant="destructive"
@@ -2857,10 +2849,10 @@ export function PendingDeleteSplitCard({
             {isDeleting ? (
               <>
                 <Loader2 className="size-4 animate-spin" />
-                <Trans>Deleting...</Trans>
+                <Trans>正在删除…</Trans>
               </>
             ) : (
-              t`Delete split`
+              t`删除拆分标签页`
             )}
           </Button>
         </CardContent>

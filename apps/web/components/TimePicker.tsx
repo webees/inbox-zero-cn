@@ -16,7 +16,7 @@ interface TimePickerProps {
 
 export function TimePicker({
   id = "time-picker",
-  label = "Time",
+  label = "时间",
   value,
   onChange,
   className,

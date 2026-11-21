@@ -12,7 +12,7 @@ function PricingDialogHeader() {
   return (
     <div className="mb-4 text-center">
       <h2 className="font-title text-2xl text-gray-900">
-        <Trans>Upgrade to Premium</Trans>
+        <Trans>升级到高级版</Trans>
       </h2>
     </div>
   );
@@ -22,17 +22,14 @@ function EnterpriseFooter() {
   return (
     <div className="flex items-center justify-between rounded-3xl border border-gray-200 bg-white p-4">
       <div>
-        <h3 className="font-semibold text-gray-900">Enterprise</h3>
+        <h3 className="font-semibold text-gray-900">企业版</h3>
         <p className="text-sm text-gray-600">
-          <Trans>
-            SSO, SCIM, on-premise deployment, and dedicated support for large
-            teams.
-          </Trans>
+          <Trans>面向大型团队提供 SSO、SCIM、本地部署和专属支持。</Trans>
         </p>
       </div>
       <Button variant="outline" asChild>
         <Link href="https://www.getinboxzero.com/sales">
-          <Trans>Speak to Sales</Trans>
+          <Trans>联系销售</Trans>
         </Link>
       </Button>
     </div>

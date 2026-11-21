@@ -15,14 +15,12 @@ const HELP_OPTIONS = {
 
 describe("expandPromptCommand", () => {
   it("maps cleanup command to a concrete inbox prompt", () => {
-    expect(expandPromptCommand("/cleanup")).toBe(
-      "Help me clean up my inbox today.",
-    );
+    expect(expandPromptCommand("/cleanup")).toBe("帮我清理一下今天的收件箱。");
   });
 
   it("maps command variants that include a bot username suffix", () => {
     expect(expandPromptCommand("/summary@InboxZeroBot")).toBe(
-      "Summarize what needs attention in my inbox today.",
+      "总结一下今天我的收件箱里有哪些需要处理的事项。",
     );
   });
 
@@ -64,7 +62,7 @@ describe("getHelpText", () => {
     const helpText = getHelpText("teams", HELP_OPTIONS);
     expect(helpText).toContain("Commands:");
     expect(helpText).toContain("Microsoft Teams");
-    expect(helpText).toContain("An active Inbox Zero account is required.");
+    expect(helpText).toContain("需要一个处于有效状态的 Inbox Zero 账号。");
     expect(helpText).toContain("https://example.com/channels");
     expect(helpText).toContain("support@example.com");
 

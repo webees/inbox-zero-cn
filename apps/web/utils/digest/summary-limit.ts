@@ -254,8 +254,8 @@ async function reserveDigestSummarySlotWithPrisma({
         return reservation.id;
       });
     } catch (error) {
-      // A competing writer does not take the reservation lock. Retry the whole
-      // transaction because PostgreSQL aborts it after a unique violation.
+      // 竞争的写入方不会获取预留锁。重试整个
+      // 事务，因为 PostgreSQL 在唯一约束冲突后会中止它。
       if (attempt >= 2 || !isDuplicateError(error)) throw error;
     }
   }

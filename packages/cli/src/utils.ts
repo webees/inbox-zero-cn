@@ -269,7 +269,7 @@ export function updateEnvValue(
 
 export function redactValue(key: string, value: string): string {
   if (value.startsWith("your-") || value === "skipped") {
-    return "(not configured)";
+    return "（未配置）";
   }
 
   if ((key === "DATABASE_URL" || key === "DIRECT_URL") && value.includes("@")) {
@@ -289,20 +289,12 @@ export function parsePortConflict(stderr: string): string | null {
     /Bind for \S+:(\d+) failed: port is already allocated/,
   );
   if (match) {
-    return `Port ${match[1]} is already in use by another process.`;
-  }
-
-  // e.g. "failed to bind host port for 127.0.0.1:5432:172.19.0.4:5432/tcp: address already in use"
-  const hostPortMatch = stderr.match(
-    /failed to bind host port for (?:\[[^\]]*\]|[^\s:]*):(\d+):/,
-  );
-  if (hostPortMatch) {
-    return `Port ${hostPortMatch[1]} is already in use by another process.`;
+    return `端口 ${match[1]} 已被另一个进程占用。`;
   }
 
   const addrMatch = stderr.match(/:(\d+):\s*address already in use/);
   if (addrMatch) {
-    return `Port ${addrMatch[1]} is already in use by another process.`;
+    return `端口 ${addrMatch[1]} 已被另一个进程占用。`;
   }
 
   return null;
@@ -336,9 +328,9 @@ export function syncManagedComposeEnv({
   const linkTarget = relative(repoRoot, envFile);
   const sourceContent = readFileSync(envFile, "utf-8");
   const conflictWarning =
-    `Preserved user-managed ${rootEnvFile}. Docker Compose may use different settings. ` +
-    `Align it with ${envFile} or pass --env-file pointing to that app configuration when running Docker Compose.`;
-  // lstat also detects dangling links, which must never be followed by the copy fallback.
+    `保留了用户管理的 ${rootEnvFile}。Docker Compose 可能使用不同的设置。` +
+    `请将其与 ${envFile} 对齐，或在运行 Docker Compose 时通过 --env-file 指向该应用配置。`;
+  // lstat 还能检测到悬空链接，复制回退绝不能跟随这类链接。
   const rootEnvStat = lstatSync(rootEnvFile, { throwIfNoEntry: false });
 
   if (!rootEnvStat) {

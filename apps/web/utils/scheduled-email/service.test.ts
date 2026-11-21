@@ -48,10 +48,10 @@ describe("scheduled replies", () => {
     prisma.scheduledEmail.findUnique.mockResolvedValue(null);
     await expect(
       scheduleEmail("account", { ...input, sendAt: now.toISOString() }, now),
-    ).rejects.toThrow("future");
+    ).rejects.toThrow("未来");
     await expect(
       scheduleEmail("account", { ...input, remindAt: now.toISOString() }, now),
-    ).rejects.toThrow("after");
+    ).rejects.toThrow("晚于");
     expect(prisma.scheduledEmail.create).not.toHaveBeenCalled();
   });
   // Native clients schedule over HTTP with the files inline.
@@ -112,7 +112,7 @@ describe("scheduled replies", () => {
   it("does not cancel an executing send", async () => {
     prisma.scheduledEmail.updateMany.mockResolvedValue({ count: 0 });
     await expect(cancelScheduledEmail("account", "id")).rejects.toThrow(
-      "started",
+      "已开始",
     );
     expect(prisma.scheduledEmail.updateMany).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -133,7 +133,7 @@ describe("scheduled replies", () => {
     });
     prisma.scheduledEmail.updateMany.mockResolvedValue({ count: 0 });
     await expect(cancelEmailReminder("account", "id")).rejects.toThrow(
-      "pending",
+      "待处理",
     );
   });
   it.each([
@@ -149,7 +149,7 @@ describe("scheduled replies", () => {
       status,
     } as never);
     await expect(retryScheduledEmail("account", "id", now)).rejects.toThrow(
-      "safely",
+      "安全",
     );
     expect(prisma.scheduledEmail.updateMany).not.toHaveBeenCalled();
   });
@@ -202,7 +202,7 @@ describe("scheduled replies", () => {
     prisma.emailSendOperation.findUnique.mockResolvedValue(null);
     prisma.scheduledEmail.updateMany.mockResolvedValue({ count: 0 });
     await expect(retryScheduledEmail("account", "id", now)).rejects.toThrow(
-      "safely",
+      "安全",
     );
   });
 
@@ -345,7 +345,7 @@ describe("scheduled replies", () => {
         },
         now,
       ),
-    ).rejects.toThrow("different email");
+    ).rejects.toThrow("另一封邮件");
     expect(prisma.scheduledEmail.create).toHaveBeenCalledTimes(1);
   });
 
@@ -373,7 +373,7 @@ describe("scheduled replies", () => {
       prisma.scheduledEmail.findUnique.mockResolvedValue(cancelled);
     }
     await expect(scheduleEmail("account", input, now)).rejects.toThrow(
-      "Start a new reply",
+      "请新建回复",
     );
     expect(executeDurableEmailSend).not.toHaveBeenCalled();
     expect(prisma.scheduledEmail.updateMany).not.toHaveBeenCalled();
@@ -694,7 +694,7 @@ describe("holdEmailForUndo", () => {
         sendAt: now,
         logger,
       }),
-    ).rejects.toThrow("different email");
+    ).rejects.toThrow("另一封邮件");
     expect(publishToQstashAt).not.toHaveBeenCalled();
   });
   it.each([

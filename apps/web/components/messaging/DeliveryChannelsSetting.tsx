@@ -32,7 +32,7 @@ const PROVIDER_CONFIG: Record<
 > = {
   SLACK: { name: "Slack", icon: HashIcon, supportsTargetSelection: true },
   TEAMS: {
-    name: "Teams",
+    name: "团队",
     icon: MessageCircleIcon,
     supportsTargetSelection: false,
   },
@@ -96,7 +96,7 @@ export function DeliveryChannelsSetting({
             <div className="flex items-center gap-3">
               <MailIcon className="h-5 w-5 text-muted-foreground" />
               <div className="flex-1 text-sm font-medium">
-                <Trans>Email</Trans>
+                <Trans>邮件</Trans>
               </div>
               <Toggle
                 name="emailDelivery"

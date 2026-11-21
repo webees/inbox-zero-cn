@@ -2,7 +2,6 @@ import type { Logger } from "@/utils/logger";
 import prisma from "@/utils/prisma";
 import { extractUniqueEmailAddresses } from "@/utils/email";
 import type { EmailProvider } from "@/utils/email/types";
-import { pluralize } from "@/utils/string";
 
 const UNCATEGORIZED_CATEGORY_NAME = "Uncategorized";
 const MAX_SENDERS_IN_OUTPUT = 100;
@@ -59,7 +58,7 @@ export async function archiveCategory({
       sendersCount: 0,
       archivedMessagesCount: 0,
       senders: [],
-      message: `No senders are currently assigned to "${resolvedCategory.category.name}".`,
+      message: `当前没有发件人分配给“${resolvedCategory.category.name}”。`,
     };
   }
 
@@ -86,8 +85,8 @@ export async function archiveCategory({
     senders: normalizedSenderEmails.slice(0, MAX_SENDERS_IN_OUTPUT),
     message:
       archivedMessagesCount > 0
-        ? `Archived ${archivedMessagesCount} ${pluralize(archivedMessagesCount, "message")} from ${sendersCount} ${pluralize(sendersCount, "sender")} in "${resolvedName}".`
-        : `No messages were archived from the ${sendersCount} ${pluralize(sendersCount, "sender")} in "${resolvedName}".`,
+        ? `已归档“${resolvedName}”中 ${sendersCount} 个发件人的 ${archivedMessagesCount} 封邮件。`
+        : `未归档“${resolvedName}”中 ${sendersCount} 个发件人的任何邮件。`,
   };
 }
 
@@ -116,7 +115,7 @@ async function resolveCategory({
       return {
         success: false as const,
         action: "archive_category" as const,
-        message: "The requested category was not found for this account.",
+        message: "此账号中未找到请求的分类。",
       };
     }
 
@@ -130,7 +129,7 @@ async function resolveCategory({
     return {
       success: false as const,
       action: "archive_category" as const,
-      message: "categoryId or categoryName is required.",
+      message: "需要提供 categoryId 或 categoryName。",
     };
   }
 

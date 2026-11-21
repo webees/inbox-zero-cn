@@ -33,69 +33,68 @@ export function getActionDisplayText(
     case ActionType.DRAFT_MESSAGING_CHANNEL:
       if (action.content) {
         const content = truncate(action.content, 10);
-        return i18n._(msg`Draft Reply: ${content}`);
+        return i18n._(msg`草稿回复：${content}`);
       }
-      return i18n._(msg`Draft Reply`);
+      return i18n._(msg`草稿回复`);
     case ActionType.LABEL: {
       const labelAction = i18n._(
         getEmailTerminologyMessages(provider).label.action,
       );
       const labelName = getActionLabelName(action, labels);
       if (!labelName) return labelAction;
-      // ICU reads '{x}' as literal text, so the quotes go in the value.
-      const quotedLabelName = `'${truncate(labelName, 15)}'`;
-      return i18n._(msg`${labelAction} as ${quotedLabelName}`);
+      const quotedLabelName = `「${truncate(labelName, 15)}」`;
+      return i18n._(msg`${labelAction}为${quotedLabelName}`);
     }
     case ActionType.ARCHIVE:
-      return i18n._(msg`Archive`);
+      return i18n._(msg`归档`);
     case ActionType.DELETE:
-      return i18n._(msg`Delete`);
+      return i18n._(msg`删除`);
     case ActionType.MARK_READ:
-      return i18n._(msg`Mark Read`);
+      return i18n._(msg`标记为已读`);
     case ActionType.STAR:
-      return i18n._(msg`Star`);
+      return i18n._(msg`加星标`);
     case ActionType.MARK_SPAM:
-      return i18n._(msg`Mark Spam`);
+      return i18n._(msg`标记为垃圾邮件`);
     case ActionType.REPLY:
-      return i18n._(msg`Reply`);
+      return i18n._(msg`回复`);
     case ActionType.SEND_EMAIL: {
-      if (!action.to) return i18n._(msg`Send Email`);
+      if (!action.to) return i18n._(msg`发送邮件`);
       const to = truncate(action.to, 8);
-      return i18n._(msg`Send Email to ${to}`);
+      return i18n._(msg`发送邮件给${to}`);
     }
     case ActionType.FORWARD: {
-      if (!action.to) return i18n._(msg`Forward`);
+      if (!action.to) return i18n._(msg`转发`);
       const to = truncate(action.to, 8);
-      return i18n._(msg`Forward to ${to}`);
+      return i18n._(msg`转发给${to}`);
     }
     case ActionType.MOVE_FOLDER: {
-      if (!action.folderName) return i18n._(msg`Move to folder`);
-      const quotedFolderName = `'${action.folderName}'`;
-      return i18n._(msg`Move to ${quotedFolderName} folder`);
+      if (!action.folderName) return i18n._(msg`移动到文件夹`);
+      const quotedFolderName = `「${action.folderName}」`;
+      return i18n._(msg`移动到文件夹${quotedFolderName}`);
     }
     case ActionType.DIGEST:
-      return i18n._(msg`Digest`);
+      return i18n._(msg`邮件摘要`);
     case ActionType.CALL_WEBHOOK:
-      return i18n._(msg`Call Webhook`);
+      return i18n._(msg`调用 Webhook`);
     case ActionType.NOTIFY_MESSAGING_CHANNEL: {
       if (action.messagingChannel?.provider) {
         const providerName = getMessagingProviderName(
           action.messagingChannel.provider,
         );
-        return i18n._(msg`Notify on ${providerName}`);
+        return i18n._(msg`通过${providerName}通知`);
       }
-      if (!action.notificationDestination) return i18n._(msg`Notify`);
+      if (!action.notificationDestination) return i18n._(msg`通知`);
       const destination = truncate(action.notificationDestination, 18);
-      return i18n._(msg`Notify on ${destination}`);
+      return i18n._(msg`通过${destination}通知`);
     }
     case ActionType.NOTIFY_SENDER:
-      return i18n._(msg`Notify Sender`);
+      return i18n._(msg`通知发件人`);
     case ActionType.INTEGRATION: {
       const label = i18n._(getIntegrationActionLabelMessage(action));
       const displayValue = getIntegrationActionDisplayValue(action);
       if (!displayValue) return label;
       const truncatedValue = truncate(displayValue, 20);
-      return `${label}: '${truncatedValue}'`;
+      return `${label}：${truncatedValue}`;
     }
     default: {
       const exhaustiveCheck: never = action.type;

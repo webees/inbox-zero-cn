@@ -25,7 +25,7 @@ export const mailSplitFilterSchema = z
         ? !!filter.value
         : filter.value == null,
     {
-      message: "Provide a value only for conditions that require one",
+      message: "仅为需要取值的条件提供值",
       path: ["value"],
     },
   )
@@ -33,14 +33,14 @@ export const mailSplitFilterSchema = z
     (filter) =>
       filter.kind !== MailSplitFilterKind.FROM ||
       senderFilterSchema.safeParse(filter.value).success,
-    { message: "Enter a sender email address or @domain.com", path: ["value"] },
+    { message: "输入发件人邮箱地址或 @domain.com", path: ["value"] },
   )
   .refine(
     (filter) =>
       filter.kind !== MailSplitFilterKind.TO ||
       senderFilterSchema.safeParse(filter.value).success,
     {
-      message: "Enter a recipient email address or @domain.com",
+      message: "输入收件人邮箱地址或 @domain.com",
       path: ["value"],
     },
   )
@@ -48,12 +48,12 @@ export const mailSplitFilterSchema = z
     (filter) =>
       filter.kind !== MailSplitFilterKind.OLDER_THAN ||
       OLDER_THAN_VALUES.includes(filter.value ?? ""),
-    { message: "Unknown age", path: ["value"] },
+    { message: "未知时间范围", path: ["value"] },
   );
 
 export type MailSplitFilterDraft = z.infer<typeof mailSplitFilterSchema>;
 
-/** One condition row per filter, so the cap matches what the builder can show. */
+/** 每个筛选条件对应一行，因此上限与构建器可显示的行数一致。 */
 export const MAX_SPLIT_FILTERS = 25;
 
 export const mailSplitFiltersSchema = z

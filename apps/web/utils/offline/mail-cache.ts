@@ -10,9 +10,8 @@ export const SKIP_WAITING = "SKIP_WAITING";
 
 type WaitUntil = (promise: Promise<unknown>) => void;
 
-// Shell documents and account metadata let the mail route reopen from Cache
-// Storage after activation. Mailbox state lives in SQLite; API mutations and
-// authentication always use the network.
+// 外壳文档和账号元数据让邮件路由在激活后可以从缓存存储重新打开。邮箱状态
+// 保存在 SQLite 中；API 变更和身份认证始终走网络。
 export function createOfflineMailCache({
   origin,
   cacheName,
@@ -51,7 +50,7 @@ export function createOfflineMailCache({
     const startedAtGeneration = activeClears ? undefined : generation;
     const startedAccountsGeneration = accountsGeneration;
     const url = new URL(request.url);
-    // Mail's query parameters select client-side views of the same account.
+    // 邮件的查询参数用于选择同一账号的不同客户端视图。
     const key = `${origin}${url.pathname}`;
     const isDocument = isOfflineMailPath(url.pathname);
     const controller = new AbortController();
@@ -59,12 +58,12 @@ export function createOfflineMailCache({
     request.signal.addEventListener("abort", abortRequest, { once: true });
     if (request.signal.aborted) abortRequest();
     const networkTimeout = setTimeout(() => {
-      controller.abort(new Error("Mailbox request timed out"));
+      controller.abort(new Error("邮箱请求超时"));
     }, 15_000);
     const cached = async () => {
       if (startedAtGeneration !== generation) return;
       try {
-        // An in-flight refresh must not block reading the previous saved copy.
+        // 正在进行的刷新不得阻止读取先前保存的副本。
         const response = await (await caches.open(cacheName)).match(key);
         return startedAtGeneration === generation ? response : undefined;
       } catch {
@@ -93,13 +92,13 @@ export function createOfflineMailCache({
         contentType.includes(isDocument ? "text/html" : "application/json") &&
         startedAtGeneration === generation
       ) {
-        // Headers can arrive while the streamed HTML stalls indefinitely.
-        // Keep the timeout active until the document is actually readable.
+        // 流式 HTML 可能无限期停滞，但响应头可能已经到达。
+        // 在文档真正可读之前，保持超时处于激活状态。
         await response.clone().arrayBuffer();
         const copy = response.clone();
         waitUntil(
           queueWrite(async (cache) => {
-            // Logout can happen while opening Cache Storage or writing another entry.
+            // 在打开缓存存储或写入其他条目时仍可能发生退出登录。
             if (
               startedAtGeneration === generation &&
               !removedMailKeys.has(key) &&
@@ -116,8 +115,8 @@ export function createOfflineMailCache({
       clearTimeout(networkTimeout);
       request.signal.removeEventListener("abort", abortRequest);
     });
-    // Keep a late successful response alive to refresh the offline copy, even
-    // after the timeout has already returned the saved document.
+    // 即使超时后已返回保存的文档，也要保留迟到的成功响应，
+    // 以便刷新离线副本。
     waitUntil(network.catch(() => {}));
     let timeout: ReturnType<typeof setTimeout> | undefined;
     const fallback = new Promise<Response>((resolve) => {
@@ -178,7 +177,7 @@ export function createOfflineMailCache({
         trackWork,
       );
     })().finally(async () => {
-      // A cached fallback can return while the live refresh is still running.
+      // 实时刷新仍在进行时，缓存回退可能已经返回。
       await Promise.all(backgroundWork);
       await writes;
       if (saves.get(key) === saving) saves.delete(key);

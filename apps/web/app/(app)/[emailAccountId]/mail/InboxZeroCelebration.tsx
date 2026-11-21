@@ -5,11 +5,7 @@ export function InboxZeroCelebration({ splitName }: { splitName?: string }) {
     <div className="mx-auto flex max-w-md flex-col items-center gap-6 pt-4">
       <SunriseScene />
       <h2 className="font-title text-2xl text-foreground tracking-tight">
-        {splitName ? (
-          <Trans>All clear</Trans>
-        ) : (
-          <Trans>You've reached inbox zero</Trans>
-        )}
+        {splitName ? <Trans>全部清空</Trans> : <Trans>你的收件箱已清空</Trans>}
       </h2>
     </div>
   );

@@ -36,7 +36,7 @@ export const TestCustomEmailForm = () => {
       const result = await testAiCustomContentAction(emailAccountId, data);
       if (result?.serverError) {
         toastError({
-          title: t`Error testing email`,
+          title: t`测试邮件时出错`,
           description: result.serverError,
         });
       } else {
@@ -54,14 +54,14 @@ export const TestCustomEmailForm = () => {
           autosizeTextarea
           rows={3}
           name="content"
-          placeholder={t`Paste in email content or write your own. e.g. Receipt from Stripe for $49`}
+          placeholder={t`粘贴邮件内容或自行编写，例如 Stripe 的 49 美元收据`}
           registerProps={register("content", { required: true })}
           error={errors.content}
         />
         <Button type="submit" loading={isSubmitting} size="sm">
           <SparklesIcon className="mr-2 size-4" />
           <span>
-            <Trans>Test</Trans>
+            <Trans>测试</Trans>
           </span>
         </Button>
       </form>
@@ -69,7 +69,7 @@ export const TestCustomEmailForm = () => {
         <Card className="mt-4">
           <CardHeader>
             <CardTitle>
-              <Trans>Test result</Trans>
+              <Trans>测试结果</Trans>
             </CardTitle>
           </CardHeader>
           <CardContent>

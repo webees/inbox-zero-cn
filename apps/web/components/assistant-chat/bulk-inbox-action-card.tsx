@@ -142,7 +142,7 @@ export function BulkInboxActionCard({
       }
       setDismissed(true);
     } catch {
-      setErrorMessage("Couldn't cancel the cleanup. Try again.");
+      setErrorMessage("无法取消清理，请重试");
     } finally {
       setIsDismissing(false);
     }
@@ -159,7 +159,7 @@ export function BulkInboxActionCard({
       }
       await mutate();
     } catch {
-      toastError({ description: "Could not stop this action. Try again." });
+      toastError({ description: "无法停止此操作，请重试" });
     } finally {
       setIsStopping(false);
     }
@@ -168,9 +168,7 @@ export function BulkInboxActionCard({
   if (isCancelled) {
     return (
       <StatusCard>
-        <span className="text-muted-foreground">
-          Cancelled. Nothing changed.
-        </span>
+        <span className="text-muted-foreground">已取消，未做任何更改</span>
       </StatusCard>
     );
   }
@@ -180,7 +178,7 @@ export function BulkInboxActionCard({
       const acted = job?.actedCount ?? 0;
       const processed = job?.processedCount ?? 0;
       const total = estimate?.searchThreadCount ?? 0;
-      // The total is an estimate, so the bar never claims to be finished.
+      // 总量只是估算值，因此进度条不会声称已完成
       const progress = total ? Math.min(95, (processed / total) * 100) : 0;
       return (
         <StatusCard
@@ -191,7 +189,7 @@ export function BulkInboxActionCard({
               onClick={handleStop}
               disabled={isStopping}
             >
-              Stop
+              停止
             </Button>
           }
         >
@@ -200,14 +198,14 @@ export function BulkInboxActionCard({
             <span className="font-medium">{copy.running}…</span>
             {processed > 0 && (
               <span className="tabular-nums text-muted-foreground">
-                {acted.toLocaleString()} so far
+                目前处理了 {acted.toLocaleString()} 封
               </span>
             )}
           </div>
           <Progress
             value={progress}
             className="mt-2 h-1.5"
-            aria-label={`${copy.running} progress`}
+            aria-label={`${copy.running} 进度`}
           />
         </StatusCard>
       );
@@ -231,9 +229,8 @@ export function BulkInboxActionCard({
         </div>
         {job.limitReached && (
           <p className="mt-1 text-xs text-muted-foreground">
-            Stopped at the limit of{" "}
-            {BULK_INBOX_ACTION_MAX_THREADS.toLocaleString()} emails per cleanup.
-            Ask again to continue with the rest.
+            已达到每次清理 {BULK_INBOX_ACTION_MAX_THREADS.toLocaleString()}{" "}
+            封邮件的上限， 请再次请求以继续处理剩余邮件。
           </p>
         )}
         {job.error && (
@@ -255,7 +252,7 @@ export function BulkInboxActionCard({
         {senders.length > 0 && (
           <p className="truncate text-xs text-muted-foreground">
             {senders.join(", ")}
-            {hasMore ? " + more" : ""}
+            {hasMore ? " + 更多" : ""}
           </p>
         )}
         {notice && (
@@ -273,7 +270,7 @@ export function BulkInboxActionCard({
               size="sm"
               className="group h-8 gap-1 text-xs"
             >
-              Details
+              详情
               <ChevronDownIcon className="size-3.5 transition-transform group-data-[state=open]:rotate-180" />
             </Button>
           </CollapsibleTrigger>
@@ -284,7 +281,7 @@ export function BulkInboxActionCard({
               onClick={handleDismiss}
               disabled={isDismissing || isConfirming || isProcessing}
             >
-              Cancel
+              取消
             </Button>
             <Button
               size="sm"
@@ -309,12 +306,10 @@ export function BulkInboxActionCard({
         <CollapsibleContent>
           <CardContent className="space-y-1 border-t px-4 py-3 text-xs text-muted-foreground">
             <p className="break-words">
-              Search: {formatSearch(pendingAction.search)}
+              搜索：{formatSearch(pendingAction.search)}
             </p>
             {pendingAction.instruction && (
-              <p className="break-words">
-                Only if: {pendingAction.instruction}
-              </p>
+              <p className="break-words">仅当：{pendingAction.instruction}</p>
             )}
           </CardContent>
         </CollapsibleContent>
@@ -390,8 +385,8 @@ function getResultSentence({
   failed: number;
 }) {
   const parts = [`${doneLabel} ${acted.toLocaleString()}`];
-  if (kept) parts.push(`kept ${kept.toLocaleString()}`);
-  if (failed) parts.push(`${failed.toLocaleString()} failed`);
+  if (kept) parts.push(`保留 ${kept.toLocaleString()} 封`);
+  if (failed) parts.push(`${failed.toLocaleString()} 封失败`);
   return (RESULT_PREFIXES[status] ?? "") + parts.join(" · ");
 }
 
@@ -408,10 +403,10 @@ function formatSearch(
 ) {
   return [
     search.query,
-    search.fromEmail && `from ${search.fromEmail}`,
+    search.fromEmail && `来自 ${search.fromEmail}`,
     search.readState,
-    search.folderName && `in ${search.folderName}`,
-    search.categoryName && `category ${search.categoryName}`,
+    search.folderName && `位于 ${search.folderName}`,
+    search.categoryName && `类别 ${search.categoryName}`,
   ]
     .filter(Boolean)
     .join(", ");

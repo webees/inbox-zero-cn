@@ -55,7 +55,7 @@ describe("hasCronSecret", () => {
 
   it("should return false for malformed authorization header", () => {
     const request = createMockRequestWithLogger({
-      authorization: "test-secret-123", // Missing "Bearer" prefix
+      authorization: "test-secret-123", // 缺少 "Bearer" 前缀
     });
 
     expect(hasCronSecret(request)).toBe(false);

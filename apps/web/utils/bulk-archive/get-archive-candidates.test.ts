@@ -83,7 +83,7 @@ describe("getArchiveCandidates", () => {
       const result = getArchiveCandidates(groups);
 
       expect(result[0].confidence).toBe("medium");
-      expect(result[0].reason).toBe("Automated notification");
+      expect(result[0].reason).toBe("自动通知");
     });
 
     it("should classify alert category as medium confidence", () => {
@@ -91,7 +91,7 @@ describe("getArchiveCandidates", () => {
       const result = getArchiveCandidates(groups);
 
       expect(result[0].confidence).toBe("medium");
-      expect(result[0].reason).toBe("Automated notification");
+      expect(result[0].reason).toBe("自动通知");
     });
 
     it("should classify receipt category as medium confidence", () => {
@@ -99,7 +99,7 @@ describe("getArchiveCandidates", () => {
       const result = getArchiveCandidates(groups);
 
       expect(result[0].confidence).toBe("medium");
-      expect(result[0].reason).toBe("Automated notification");
+      expect(result[0].reason).toBe("自动通知");
     });
 
     it("should classify update category as medium confidence", () => {
@@ -107,7 +107,7 @@ describe("getArchiveCandidates", () => {
       const result = getArchiveCandidates(groups);
 
       expect(result[0].confidence).toBe("medium");
-      expect(result[0].reason).toBe("Automated notification");
+      expect(result[0].reason).toBe("自动通知");
     });
 
     it("should match partial category names containing medium confidence keywords", () => {
@@ -132,7 +132,7 @@ describe("getArchiveCandidates", () => {
       const result = getArchiveCandidates(groups);
 
       expect(result[0].confidence).toBe("low");
-      expect(result[0].reason).toBe("Other category");
+      expect(result[0].reason).toBe("其他分类");
     });
 
     it("should classify unrecognized categories as low confidence", () => {

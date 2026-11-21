@@ -622,19 +622,6 @@ export async function deleteRule({
   ruleId: string;
   groupId?: string | null;
 }) {
-  let deletedGroup = false;
-  if (groupId) {
-    const deletedGroups = await prisma.group.deleteMany({
-      where: { id: groupId, emailAccountId },
-    });
-
-    deletedGroup = deletedGroups.count > 0;
-  }
-
-  if (!deletedGroup) {
-    await prisma.rule.delete({ where: { id: ruleId, emailAccountId } });
-  }
-
   after(() =>
     trackRuleEvent({
       emailAccountId,
@@ -642,6 +629,16 @@ export async function deleteRule({
       properties: { ruleId },
     }),
   );
+
+  if (groupId) {
+    const deletedGroups = await prisma.group.deleteMany({
+      where: { id: groupId, emailAccountId },
+    });
+
+    if (deletedGroups.count > 0) return;
+  }
+
+  await prisma.rule.delete({ where: { id: ruleId, emailAccountId } });
 }
 
 type RuleScopeKey =
@@ -919,9 +916,7 @@ export async function assertIntegrationActionsConnected(
     if (connectedNames.has(name)) continue;
 
     const displayName = findIntegration(name)?.displayName ?? name;
-    throw new SafeError(
-      `${displayName} isn't connected. Connect it to use this action.`,
-    );
+    throw new SafeError(`${displayName} 尚未连接。请先连接它再使用此操作。`);
   }
 }
 
@@ -932,7 +927,7 @@ async function assertIntegrationActionsEnabled(
   if (!actions.some((action) => action.type === ActionType.INTEGRATION)) return;
 
   if (!(await isIntegrationActionEnabledForEmailAccountId(emailAccountId))) {
-    throw new SafeError("Integration actions are not enabled for this user.");
+    throw new SafeError("此用户未启用集成操作。");
   }
 }
 

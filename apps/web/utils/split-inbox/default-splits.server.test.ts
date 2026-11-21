@@ -9,6 +9,7 @@ import {
   getDefaultMailSplitDraftsForAccount,
   setDefaultMailSplits,
 } from "@/utils/split-inbox/default-splits.server";
+import { getRuleLabel } from "@/utils/rule/consts";
 
 vi.mock("@/utils/prisma");
 
@@ -64,7 +65,7 @@ describe("setDefaultMailSplits", () => {
       getDefaultMailSplitDraftsForAccount("account-id"),
     ).resolves.toEqual([
       {
-        name: "Receipt",
+        name: getRuleLabel(SystemType.RECEIPT),
         labelId: "receipt-label",
         filters: [{ kind: MailSplitFilterKind.LABEL, value: "receipt-label" }],
       },

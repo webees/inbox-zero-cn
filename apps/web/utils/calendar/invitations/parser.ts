@@ -60,12 +60,12 @@ export function parseCalendarInvitation(content: string, email: string) {
   }
 }
 
-// Throws on malformed ICS; callers own the error handling.
+// 对格式错误的 ICS 抛出错误；错误处理由调用方负责。
 export function getCalendarInvitationIdentity(content: string) {
   const calendar = new ICAL.Component(ICAL.parse(content));
   if (calendar.name !== "vcalendar") return null;
   const events = calendar.getAllSubcomponents("vevent");
-  // A multi-event request needs an explicit event selector before it can be answered.
+  // 多事件请求在被应答之前需要一个明确的事件选择器。
   if (events.length !== 1) return null;
   const event = events[0];
   const uid = event.getFirstPropertyValue("uid");
@@ -138,8 +138,8 @@ function getEmail(value: unknown) {
   return result.success ? result.data.toLowerCase() : null;
 }
 
-// The details the reader shows alongside the RSVP buttons. Everything here is
-// display-only; responding relies on the fields above.
+// 阅读器在 RSVP 按钮旁显示的详情。此处一切都仅用于
+// 展示；响应依赖上方的字段。
 function getInvitationDetails(event: ICAL.Component, start: ICAL.Time) {
   const timeZone = getParameter(event.getFirstProperty("dtstart"), "tzid");
   const location = getText(event, "location");
@@ -150,19 +150,19 @@ function getInvitationDetails(event: ICAL.Component, start: ICAL.Time) {
     location: location?.slice(0, 2000) ?? null,
     conferenceUrl:
       findVideoConferenceLink(
-        // Every vendor names the join URL in its own X- property, so scan them
-        // all rather than enumerating names that keep growing.
+        // 每个厂商都用各自的 X- 属性命名加入 URL，因此扫描全部
+        // 属性，而不是枚举不断增长的名称。
         ...getExtensionValues(event),
         location,
-        // Read in full rather than truncated: the description is only scanned
-        // for a join link, and invitations bury it in a long agenda.
+        // 完整读取而非截断：描述仅被扫描以查找加入链接，
+        // 而邀请会将其埋在长长的议程中。
         getText(event, "description"),
       ) ?? null,
   };
 }
 
-// An event may end in a different zone than it starts in, so DTEND carries its
-// own TZID. An end derived from DURATION stays in the start's zone.
+// 事件结束的时区可能与开始时不同，因此 DTEND 携带自己的
+// TZID。由 DURATION 推导的结束时间保持在开始时区。
 function getEndTime(
   event: ICAL.Component,
   start: ICAL.Time,
@@ -177,8 +177,8 @@ function getEndTime(
   const duration = event.getFirstPropertyValue("duration");
   if (!(duration instanceof ICAL.Duration)) return null;
   const derived = start.clone();
-  // Calendar days/weeks retain wall-clock time across DST; timed units advance
-  // the instant, after the calendar days (RFC 5545 section 3.3.6).
+  // 日历天/周在 DST 期间保留挂钟时间；定时单位在日历天之后
+  // 推进时刻（RFC 5545 第 3.3.6 节）。
   derived.addDuration(
     new ICAL.Duration({
       days: duration.days,
@@ -199,15 +199,15 @@ function getEndTime(
 }
 
 /**
- * Serialises a time for the reader: a plain date for all-day events, an
- * absolute instant when the zone is known, and a floating wall clock otherwise.
+ * 为阅读器序列化时间：全天事件用纯日期，时区已知时用
+ * 绝对时刻，否则用浮动挂钟时间。
  */
 function toDisplayTime(time: ICAL.Time, timeZone: string | null) {
   if (time.isDate) return time.toString();
   if (time.zone !== ICAL.Timezone.localTimezone)
     return time.toJSDate().toISOString();
-  // ical.js only resolves a TZID that the invitation defines as a VTIMEZONE.
-  // Senders that omit it still name a zone the runtime can look up.
+  // ical.js 只解析邀请定义为 VTIMEZONE 的 TZID。
+  // 省略它的发件人仍会写出运行时能查找的时区名。
   return (timeZone && toInstant(time, timeZone)) ?? time.toString();
 }
 
@@ -221,7 +221,7 @@ function toInstant(time: ICAL.Time, timeZone: string) {
     time.second,
     timeZone,
   );
-  // A TZID the runtime cannot resolve (a Windows zone name) leaves it floating.
+  // 运行时无法解析的 TZID（Windows 时区名）会使其保持浮动。
   return Number.isNaN(zoned.getTime())
     ? null
     : new Date(zoned.getTime()).toISOString();

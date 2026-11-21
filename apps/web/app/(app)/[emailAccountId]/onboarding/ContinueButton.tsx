@@ -5,7 +5,7 @@ import { Button, type ButtonProps } from "@/components/ui/button";
 export function ContinueButton(props: ButtonProps) {
   return (
     <Button size="sm" {...props}>
-      <Trans>Continue</Trans> <ArrowRightIcon className="size-4 ml-2" />
+      <Trans>继续</Trans> <ArrowRightIcon className="size-4 ml-2" />
     </Button>
   );
 }

@@ -32,7 +32,7 @@ export function SendWarningsDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            <Trans>Send anyway?</Trans>
+            <Trans>仍要发送吗？</Trans>
           </AlertDialogTitle>
           <AlertDialogDescription asChild>
             <div className="space-y-1">
@@ -46,10 +46,10 @@ export function SendWarningsDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>
-            <Trans>Go back</Trans>
+            <Trans>返回</Trans>
           </AlertDialogCancel>
           <AlertDialogAction onClick={onSendAnyway}>
-            <Trans>Send anyway</Trans>
+            <Trans>仍要发送</Trans>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -59,7 +59,7 @@ export function SendWarningsDialog({
 
 function getSendWarningMessage(warning: SendWarning) {
   if (warning.type === "missing-attachment") {
-    return msg`You mention an attachment, but nothing is attached.`;
+    return msg`你提到了附件，但并未附加任何文件。`;
   }
-  return msg`There's an unfilled placeholder: ${warning.placeholder}`;
+  return msg`有未填写的占位符：${warning.placeholder}`;
 }

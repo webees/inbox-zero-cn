@@ -24,7 +24,7 @@ interface TagInputProps {
 export function TagInput({
   value,
   onChange,
-  placeholder = "Type and press Enter",
+  placeholder = "输入后按回车",
   validate,
   className,
   id,
@@ -49,7 +49,7 @@ export function TagInput({
       }
 
       if (value.includes(trimmedTag)) {
-        setInputError("This value has already been added");
+        setInputError("该值已添加");
         return;
       }
 

@@ -45,7 +45,7 @@ export function getActionRiskLevel(
   if (!highRiskActions.some((type) => type === action.type)) {
     return {
       level: RISK_LEVELS.LOW,
-      message: "Low Risk: No email sending action is performed.",
+      message: "低风险：不执行任何邮件发送操作。",
     };
   }
 
@@ -76,12 +76,12 @@ export function getActionRiskLevel(
     "partially-dynamic",
   );
 
-  // All rules are now automated, so we always check for dynamic content risks
+  // 现在所有规则都自动执行，因此我们始终检查动态内容风险
   if (hasFullyDynamicContent && hasFullyDynamicRecipient) {
     const level = isAIRule(rule) ? RISK_LEVELS.VERY_HIGH : RISK_LEVELS.HIGH;
     return {
       level,
-      message: `${level === RISK_LEVELS.VERY_HIGH ? "Very High" : "High"} Risk: The AI can generate any content and send it to any address. A malicious actor could trick the AI to send spam or other unwanted emails on your behalf.`,
+      message: `${level === RISK_LEVELS.VERY_HIGH ? "极高" : "高"}风险：AI 可以生成任意内容并发送到任意地址。恶意行为者可能诱骗 AI 以你的名义发送垃圾邮件或其他不需要的邮件。`,
     };
   }
 
@@ -89,7 +89,7 @@ export function getActionRiskLevel(
     return {
       level: RISK_LEVELS.HIGH,
       message:
-        "High Risk: The AI can send emails to any address. A malicious actor could use this to send spam or other unwanted emails on your behalf.",
+        "高风险：AI 可以将邮件发送到任意地址。恶意行为者可能利用这一点以你的名义发送垃圾邮件或其他不需要的邮件。",
     };
   }
 
@@ -98,13 +98,13 @@ export function getActionRiskLevel(
       return {
         level: RISK_LEVELS.HIGH,
         message:
-          "High Risk: The AI can generate any task content from the matching email. A malicious sender could trick the AI into creating unwanted or misleading tasks in your connected integration.",
+          "高风险：AI 可以根据匹配的邮件生成任意任务内容。恶意发件人可能诱骗 AI 在你已连接的集成中创建不需要或具有误导性的任务。",
       };
     }
     return {
       level: RISK_LEVELS.HIGH,
       message:
-        "High Risk: The AI can automatically generate and send any email content. A malicious actor could potentially trick the AI into generating unwanted or inappropriate content.",
+        "高风险：AI 可以自动生成并发送任意邮件内容。恶意行为者可能诱骗 AI 生成不需要或不恰当的内容。",
     };
   }
 
@@ -112,13 +112,13 @@ export function getActionRiskLevel(
     return {
       level: RISK_LEVELS.MEDIUM,
       message:
-        "Medium Risk: The AI can generate content or recipients using templates. While more constrained than fully dynamic content, review the templates carefully.",
+        "中风险：AI 可以使用模板生成内容或收件人。虽然比完全动态的内容受到更多限制，但仍请仔细检查模板。",
     };
   }
 
   return {
     level: RISK_LEVELS.LOW,
-    message: "Low Risk: All content and recipients are static.",
+    message: "低风险：所有内容和收件人都是静态的。",
   };
 }
 
@@ -145,7 +145,7 @@ export function getRiskLevel(
   level: RiskLevel;
   message: string;
 } {
-  // Get risk level for each action and return the highest risk
+  // 获取每个操作的风险等级并返回最高风险
   return rule.actions.reduce<{ level: RiskLevel; message: string }>(
     (highestRisk, action) => {
       const actionRisk = getActionRiskLevel(action, rule);
@@ -159,7 +159,7 @@ export function getRiskLevel(
     },
     {
       level: RISK_LEVELS.LOW,
-      message: "Low Risk: All content and recipients are static.",
+      message: "低风险：所有内容和收件人都是静态的。",
     },
   );
 }
@@ -189,8 +189,8 @@ function getIntegrationArgsDynamicStatus(action: RiskAction) {
     action.integrationName,
     action.integrationToolName,
   );
-  // Fail safe: an unrecognised tool is assumed to write AI-generated content,
-  // so it still trips the high-risk gate instead of looking static.
+  // 故障安全：无法识别的工具会被假定为写入 AI 生成的内容，
+  // 因此它仍会触发高风险关卡，而不会被视为静态。
   if (!spec) return "fully-dynamic";
 
   const integrationArgs =
@@ -203,8 +203,8 @@ function getIntegrationArgsDynamicStatus(action: RiskAction) {
   const statuses = spec.args.map((arg) => {
     const rawValue = integrationArgs[arg.key];
     const value = typeof rawValue === "string" ? rawValue : "";
-    // An arg the AI fills at execution is as dynamic as a {{template}} was,
-    // even though it is stored empty.
+    // AI 在执行时填充的参数与 {{template}} 一样动态，
+    // 即使它存储为空值。
     if (isAiFilledArgValue(arg, value)) return "fully-dynamic";
     return checkFieldStatus(value);
   });
@@ -215,7 +215,7 @@ function getIntegrationArgsDynamicStatus(action: RiskAction) {
   return null;
 }
 
-// Helper functions
+// 辅助函数
 export function isFullyDynamicField(field: string) {
   const trimmed = field.trim();
   return trimmed.startsWith("{{") && trimmed.endsWith("}}");

@@ -55,9 +55,9 @@ export async function getRequiredGmailDraftAttachments(
 }
 
 /**
- * Gmail has no per-attachment draft API: every change replaces the whole
- * message. Text edits and small attachment changes rebuild it here from what
- * the draft already holds, so the browser never re-sends existing files.
+ * Gmail 没有按附件的草稿 API：每次更改都会替换整封
+ * 邮件。文本编辑和小的附件更改在这里根据草稿已有内容
+ * 重建它，因此浏览器绝不会重新发送现有文件。
  */
 export async function rewriteGmailDraft({
   gmail,
@@ -78,7 +78,7 @@ export async function rewriteGmailDraft({
     removeAttachmentId &&
     !parts.some(({ attachment }) => attachment.id === removeAttachmentId)
   )
-    throw new SafeError("This file is no longer on the draft.");
+    throw new SafeError("此文件已不在草稿中。");
   const kept = parts.filter(
     ({ attachment }) =>
       attachment.id !== removeAttachmentId &&
@@ -106,9 +106,9 @@ export async function rewriteGmailDraft({
 }
 
 /**
- * The full draft message with a slot where each attachment's base64 goes.
- * The server writes every header, the HTML, and the MIME structure; the
- * browser only fills the slots with the bytes of the files.
+ * 完整草稿邮件，并为每个附件的 base64 预留一个槽位。
+ * 服务器写入每个头、HTML 和 MIME 结构；
+ * 浏览器只用文件的字节填充这些槽位。
  */
 export async function buildGmailDraftUploadTemplate({
   gmail,
@@ -124,14 +124,14 @@ export async function buildGmailDraftUploadTemplate({
     .map((part) => part.attachment)
     .filter((item) => item.id !== attachment.id);
   assertDraftAttachmentLimits(existing, attachment.size);
-  // Attached emails can't be base64 (RFC 2046), so they have no slot.
+  // 作为附件的邮件不能是 base64（RFC 2046），因此它们没有槽位。
   if (
     [...existing, attachment].some((item) =>
       item.mimeType.startsWith("message/"),
     )
   )
     throw new SafeError(
-      "Large files can't be added to a draft that has an attached email. Attach a file under 3 MB, or remove the attached email.",
+      "无法向带有附加邮件的草稿添加大型文件。请附加小于 3 MB 的文件，或移除该附加邮件。",
     );
 
   const slots = [
@@ -156,8 +156,8 @@ export async function buildGmailDraftUploadTemplate({
       },
     },
   ].map((slot) => {
-    // A short placeholder whose base64 fits one line, so it can be found in
-    // the built message and swapped for the real file.
+    // 一个简短的占位符，其 base64 可放入一行，因此可以在
+    // 构建好的邮件中找到并替换为真实文件。
     const content = Buffer.from(randomBytes(15).toString("hex"));
     return { ...slot, content, encoded: content.toString("base64") };
   });
@@ -167,21 +167,20 @@ export async function buildGmailDraftUploadTemplate({
       slots.map((slot) => toGmailMailAttachment(slot.attachment, slot.content)),
     ),
   );
-  // The browser re-encodes the text parts, so a byte outside ASCII would
-  // change their length and break the declared upload size.
-  if (built.some((byte) => byte > 0x7f))
-    throw new Error("Could not prepare the draft upload.");
+  // 浏览器会重新编码文本部分，因此 ASCII 之外的字节会
+  // 改变它们的长度并破坏声明的上传大小。
+  if (built.some((byte) => byte > 0x7f)) throw new Error("无法准备草稿上传。");
   const message = built.toString("latin1");
 
-  // Inline images sit in a related part ahead of regular attachments, so the
-  // message order can differ from the slot order.
+  // 内联图片位于常规附件之前的相关部分中，因此
+  // 邮件顺序可能与槽位顺序不同。
   const located = slots
     .map((slot) => ({ ...slot, index: message.indexOf(slot.encoded) }))
     .sort((a, b) => a.index - b.index);
   const parts: DraftMessageUploadPart[] = [];
   let cursor = 0;
   for (const { part, encoded, index } of located) {
-    if (index < cursor) throw new Error("Could not prepare the draft upload.");
+    if (index < cursor) throw new Error("无法准备草稿上传。");
     parts.push({ type: "text", text: message.slice(cursor, index) }, part);
     cursor = index + encoded.length;
   }
@@ -195,8 +194,8 @@ export async function buildGmailDraftUploadTemplate({
 }
 
 /**
- * Uses Gmail's media upload, which takes messages up to 35 MB rather than
- * the much smaller JSON request limit.
+ * 使用 Gmail 的媒体上传，它最多可处理 35 MB 的邮件，
+ * 而不是小得多的 JSON 请求限制。
  */
 export async function uploadGmailDraftMessage(
   gmail: gmail_v1.Gmail,
@@ -204,10 +203,10 @@ export async function uploadGmailDraftMessage(
   message: Buffer,
 ) {
   const { draftId, threadId } = draft;
-  // The client's root URL isn't applied to upload URLs, so pass it per call.
+  // 客户端的根 URL 不会应用到上传 URL，因此每次调用都传入它。
   const options = { rootUrl: gmail.context._options.rootUrl };
   const result = await withGmailRetry(() => {
-    // Built per attempt because a retry needs a fresh stream.
+    // 每次尝试都重新构建，因为重试需要新的流。
     const upload = {
       requestBody: { message: { threadId } },
       media: { mimeType: "message/rfc822", body: Readable.from(message) },
@@ -235,7 +234,7 @@ function draftMailOptions(
     bcc: text?.bcc ?? current.headers?.bcc,
     replyTo: current.headers?.["reply-to"],
     subject: text?.subject ?? current.subject ?? "",
-    // A plain-text draft stays plain text.
+    // 纯文本草稿保持为纯文本。
     ...(html == null
       ? { text: current.textPlain ?? "" }
       : { html, text: convertEmailHtmlToText({ htmlText: html }) }),
@@ -254,6 +253,6 @@ async function getRequiredDraft(gmail: gmail_v1.Gmail, draftId: string) {
 
 function draftNotFound() {
   return new DraftNotFoundError(
-    "This draft is no longer available in Gmail. Check Sent before trying again.",
+    "此草稿在 Gmail 中已不可用。请先检查“已发送”文件夹，然后重试。",
   );
 }

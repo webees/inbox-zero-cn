@@ -8,9 +8,9 @@ const logger = createScopedLogger("composio");
 const COMPOSIO_API_URL = "https://backend.composio.dev/api/v3";
 const COMPOSIO_REQUEST_TIMEOUT_MS = 15_000;
 
-// Auth configs and MCP servers are shared per app across all users. Every
-// instance resolves the oldest matching resource so concurrent first-time
-// provisioning converges on the same one.
+// 认证配置和 MCP 服务器按应用在所有用户间共享。每个
+// 实例都解析最早匹配的资源，使并发的首次
+// 配置收敛到同一个。
 const authConfigIds = new Map<string, Promise<string>>();
 const mcpServerUrls = new Map<string, Promise<string>>();
 
@@ -84,7 +84,7 @@ function getAuthConfigId(app: string) {
         },
       }),
     );
-    logger.info("Created Composio auth config", { app });
+    logger.info("已创建 Composio 认证配置", { app });
     return created.auth_config.id;
   });
 }
@@ -118,17 +118,17 @@ function getMcpServerUrl(app: string, allowedTools: string[]) {
           },
         }),
       );
-      logger.info("Created Composio MCP server", { app });
+      logger.info("已创建 Composio MCP 服务器", { app });
       return created.mcp_url;
     }
 
-    // The server enforces the allowlist, so keep it in step with the registry
+    // 服务器会强制执行允许列表，因此要与注册表保持一致
     if (!haveSameItems(existing.allowed_tools, allowedTools)) {
       await composioFetch(`/mcp/${existing.id}`, {
         method: "PATCH",
         body: { allowed_tools: allowedTools },
       });
-      logger.info("Updated Composio MCP server tools", { app });
+      logger.info("已更新 Composio MCP 服务器工具", { app });
     }
     return existing.mcp_url;
   });
@@ -180,10 +180,10 @@ async function composioFetch(
   });
 
   if (!response.ok) {
-    // Composio explains rejections (e.g. missing key permissions) in the body
+    // Composio 会在响应正文中说明拒绝原因（例如缺少密钥权限）
     const reason = await response.text().catch(() => "");
     throw new Error(
-      `Composio request failed: ${options.method ?? "GET"} ${path.split("?")[0]} returned ${response.status}${reason ? `: ${reason.slice(0, 500)}` : ""}`,
+      `Composio 请求失败：${options.method ?? "GET"} ${path.split("?")[0]} 返回了 ${response.status}${reason ? `：${reason.slice(0, 500)}` : ""}`,
     );
   }
 
@@ -191,7 +191,7 @@ async function composioFetch(
 }
 
 function getApiKey() {
-  if (!env.COMPOSIO_API_KEY) throw new Error("COMPOSIO_API_KEY is not set");
+  if (!env.COMPOSIO_API_KEY) throw new Error("未设置 COMPOSIO_API_KEY");
   return env.COMPOSIO_API_KEY;
 }
 

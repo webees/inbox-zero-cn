@@ -107,7 +107,7 @@ describe("local mail provider adapters", () => {
         { phase: "capabilities" },
         { emailAccountId: "another-account" },
       ),
-    ).rejects.toThrow("context mismatch");
+    ).rejects.toThrow("Local mail account context mismatch");
   });
   it("preserves expired history as an explicit reconciliation signal", async () => {
     vi.mocked(getGmailMailChangesPage).mockResolvedValue({

@@ -2,7 +2,6 @@
 
 import type { ComponentProps, ReactNode } from "react";
 
-import { Plural, Trans } from "@lingui/react/macro";
 import { useControllableState } from "@radix-ui/react-use-controllable-state";
 import {
   Collapsible,
@@ -120,28 +119,12 @@ export type ReasoningTriggerProps = ComponentProps<
 
 const defaultGetThinkingMessage = (isStreaming: boolean, duration?: number) => {
   if (isStreaming) {
-    return (
-      <span className="animate-pulse">
-        <Trans>Thinking...</Trans>
-      </span>
-    );
+    return <span className="animate-pulse">思考中…</span>;
   }
   if (duration === undefined || duration === 0) {
-    return (
-      <span>
-        <Trans>Thought for a few seconds</Trans>
-      </span>
-    );
+    return <span>思考了几秒钟</span>;
   }
-  return (
-    <span>
-      <Plural
-        value={duration}
-        one="Thought for # second"
-        other="Thought for # seconds"
-      />
-    </span>
-  );
+  return <span>思考了 {duration} 秒</span>;
 };
 
 export const ReasoningTrigger = memo(

@@ -21,7 +21,7 @@ export const upsertRuleAttachmentSourcesAction = actionClient
         select: { id: true },
       });
 
-      if (!rule) throw new SafeError("Rule not found");
+      if (!rule) throw new SafeError("未找到规则");
 
       if (sources.length > 0) {
         const hasAccess = await checkHasAccess({
@@ -31,7 +31,7 @@ export const upsertRuleAttachmentSourcesAction = actionClient
 
         if (!hasAccess) {
           throw new SafeError(
-            "Drive-powered draft attachments require the Plus plan or higher.",
+            "由 Drive 提供的草稿附件需要 Plus 套餐或更高档位。",
           );
         }
       }
@@ -51,7 +51,7 @@ export const upsertRuleAttachmentSourcesAction = actionClient
 
       for (const source of sources) {
         if (!validConnectionIds.has(source.driveConnectionId)) {
-          throw new SafeError("Drive connection not found");
+          throw new SafeError("未找到 Drive 连接");
         }
       }
 

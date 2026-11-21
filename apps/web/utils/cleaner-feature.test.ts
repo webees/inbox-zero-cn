@@ -21,7 +21,7 @@ describe("assertCleanerApiEnabled", () => {
 
   it("throws on self-hosted deployments when cleaner is disabled", () => {
     expect(() => assertCleanerApiEnabled()).toThrowError(
-      new SafeError("Cleaner is not enabled", 404),
+      new SafeError("未启用清理功能", 404),
     );
   });
 

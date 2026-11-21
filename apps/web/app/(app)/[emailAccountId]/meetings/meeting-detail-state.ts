@@ -13,9 +13,9 @@ export type MeetingDetailState =
   | "recording-failed";
 
 /**
- * What the meeting dialog should show. A meeting is listed as soon as a bot is
- * booked, so the dialog opens long before there is anything to read, and both
- * the recording and the summarization can fail independently.
+ * 会议对话框应显示的内容。只要预约了机器人，会议就会被列出，
+ * 因此对话框早在有任何内容可读之前就会打开，而录制和总结
+ * 都可能各自失败。
  */
 export function getMeetingDetailState({
   hasSummary,
@@ -40,8 +40,8 @@ export function getMeetingDetailState({
   }
   if (hasTranscript) return "notes";
 
-  // Once the bot is in the call, the meeting is being captured even though
-  // there is nothing to read yet, so "not recorded" would be wrong.
+  // 机器人进入通话后，即便还没有内容可读，会议也已在被采集，
+  // 因此显示“未录制”是不对的。
   if (recordingStatus && CAPTURED_MEETING_STATUSES.includes(recordingStatus)) {
     return "processing";
   }

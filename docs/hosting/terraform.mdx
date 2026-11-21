@@ -1,37 +1,37 @@
 ---
-title: 'Terraform Deployment'
-description: 'Deploy Inbox Zero to AWS using Terraform'
+title: 'Terraform 部署'
+description: '使用 Terraform 将 Inbox Zero 部署到 AWS'
 ---
 
-Deploy Inbox Zero to AWS using Terraform. This provisions:
+使用 Terraform 将 Inbox Zero 部署到 AWS。这会创建：
 
-- ECS Fargate service + ALB
+- ECS Fargate 服务 + ALB
 - RDS PostgreSQL
-- Optional ElastiCache Redis
-- SSM Parameter Store secrets
+- 可选 ElastiCache Redis
+- SSM Parameter Store 密钥
 
-## Prerequisites
+## 前置条件
 
-- Terraform installed
-- AWS credentials configured
-- Google OAuth credentials
-- LLM provider API key
+- 已安装 Terraform
+- 已配置 AWS 凭据
+- Google OAuth 凭据
+- LLM 提供方 API 密钥
 
-## Generate Terraform Files
+## 生成 Terraform 文件
 
 ```bash
 npx @inbox-zero/cli setup-terraform
 ```
 
-If you've [installed the CLI globally](/hosting/quick-start#install-options), you can use `inbox-zero setup-terraform`. From a cloned repo, you can also use `pnpm setup-terraform`.
+如果你已[全局安装 CLI](/hosting/quick-start#install-options)，可以使用 `inbox-zero setup-terraform`。从克隆的仓库中，你也可以使用 `pnpm setup-terraform`。
 
-This creates a `terraform/` directory with:
+这会创建一个 `terraform/` 目录，包含：
 
-- `main.tf`, `variables.tf`, `outputs.tf`
-- `terraform.tfvars` (contains secrets)
+- `main.tf`、`variables.tf`、`outputs.tf`
+- `terraform.tfvars`（包含密钥）
 - `.gitignore`
 
-## Deploy
+## 部署
 
 ```bash
 cd terraform
@@ -39,29 +39,29 @@ terraform init
 terraform apply
 ```
 
-After apply:
+应用后：
 
 ```bash
 terraform output service_url
 ```
 
-## HTTPS and Custom Domains (Optional)
+## HTTPS 和自定义域名（可选）
 
-Set these in `terraform.tfvars`:
+在 `terraform.tfvars` 中设置以下内容：
 
-- `domain_name` (e.g. `app.example.com`)
+- `domain_name`（例如 `app.example.com`）
 - `acm_certificate_arn`
-- `route53_zone_id` (optional, to create DNS record)
+- `route53_zone_id`（可选，用于创建 DNS 记录）
 
-The service uses the ALB DNS name if `base_url` is not set.
+如果未设置 `base_url`，服务会使用 ALB DNS 名称。
 
-## Notes
+## 说明
 
-- `terraform.tfvars` contains secrets and should not be committed.
-- Database migrations run automatically on container startup.
-- Secrets are stored in SSM Parameter Store at `/${app_name}/${environment}/secrets`.
-- If you want an API Gateway with JWT validation for Pub/Sub webhooks, add it
-  separately (see `copilot/templates/webhook-gateway.yml` for the pattern).
-- If your app is on a private network, one option is to expose only a small AWS
-  Lambda webhook relay (or Lambda behind API Gateway) that forwards verified
-  Pub/Sub webhook requests to `/api/google/webhook`.
+- `terraform.tfvars` 包含密钥，不应提交。
+- 数据库迁移会在容器启动时自动运行。
+- 密钥存储在 SSM Parameter Store 的 `/${app_name}/${environment}/secrets`。
+- 如果你希望为 Pub/Sub webhook 提供带 JWT 验证的 API Gateway，请单独添加
+  （参见 `copilot/templates/webhook-gateway.yml` 了解模式）。
+- 如果你的应用位于私有网络，一种选择是仅暴露一个小的 AWS
+  Lambda webhook 中继（或位于 API Gateway 后的 Lambda），将经过验证的
+  Pub/Sub webhook 请求转发到 `/api/google/webhook`。

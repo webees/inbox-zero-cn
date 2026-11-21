@@ -143,7 +143,7 @@ export function CleanupDraftsSection({
               {automaticCleanupEnabled ? (
                 <>
                   <Input
-                    aria-label={t`Draft cleanup age in days`}
+                    aria-label={t`草稿清理期限（天）`}
                     className="h-8 w-24"
                     disabled={isUpdatingCleanupSettings}
                     max={MAX_AI_DRAFT_CLEANUP_DAYS}
@@ -156,7 +156,7 @@ export function CleanupDraftsSection({
                     value={cleanupDaysInputValue}
                   />
                   <span className="text-sm text-muted-foreground">
-                    <Trans>days</Trans>
+                    <Trans>天</Trans>
                   </span>
                   <Button
                     size="sm"
@@ -169,12 +169,12 @@ export function CleanupDraftsSection({
                     loading={isUpdatingCleanupSettings}
                     onClick={handleSaveCleanupDays}
                   >
-                    <Trans>Save</Trans>
+                    <Trans>保存</Trans>
                   </Button>
                 </>
               ) : null}
               <Switch
-                aria-label={t`Toggle automatic AI draft cleanup`}
+                aria-label={t`切换自动 AI 草稿清理`}
                 checked={automaticCleanupEnabled}
                 disabled={isUpdatingCleanupSettings}
                 onCheckedChange={handleToggleAutomaticCleanup}
@@ -185,14 +185,13 @@ export function CleanupDraftsSection({
           <Item size="sm">
             <ItemContent>
               <ItemTitle>
-                <Trans>Delete Old AI Drafts</Trans>
+                <Trans>删除旧的 AI 草稿</Trans>
               </ItemTitle>
               <ItemDescription>
                 <Trans>
-                  Remove unedited drafts created by {BRAND_NAME} that are older
-                  than{" "}
-                  <Plural value={savedCleanupDays} one="# day" other="# days" />
-                  .
+                  删除由 {BRAND_NAME} 创建的、已超过{" "}
+                  <Plural value={savedCleanupDays} one="# 天" other="# 天" />{" "}
+                  且未经编辑的草稿
                 </Trans>
               </ItemDescription>
             </ItemContent>
@@ -203,7 +202,7 @@ export function CleanupDraftsSection({
                 loading={isExecuting}
                 onClick={() => execute()}
               >
-                <Trans>Delete old drafts</Trans>
+                <Trans>删除旧草稿</Trans>
               </Button>
             </ItemActions>
           </Item>
@@ -212,8 +211,8 @@ export function CleanupDraftsSection({
               <p className="text-xs text-muted-foreground">
                 <Plural
                   value={result.skippedModified}
-                  one="# draft was kept because you edited it"
-                  other="# drafts were kept because you edited them"
+                  one="# 份草稿因你编辑过而被保留"
+                  other="# 份草稿因你编辑过而被保留"
                 />
               </p>
             </div>

@@ -21,10 +21,14 @@ vi.mock("@/components/ui/button", () => ({
     children,
     onClick,
     disabled,
+    loading: _loading,
+    ...props
   }: {
     children?: ReactNode;
     onClick?: () => void | Promise<void>;
     disabled?: boolean;
+    loading?: boolean;
+    [key: string]: unknown;
   }) =>
     createElement(
       "button",
@@ -32,6 +36,7 @@ vi.mock("@/components/ui/button", () => ({
         type: "button",
         onClick,
         disabled,
+        ...props,
       },
       children,
     ),
@@ -113,7 +118,7 @@ describe("CategorizeWithAiButton", () => {
 
     render(<CategorizeWithAiButton />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Categorize" }));
+    fireEvent.click(screen.getByTestId("categorize-with-ai"));
 
     await waitFor(() => {
       expect(mockSetIsBulkCategorizing).toHaveBeenNthCalledWith(1, true);
@@ -125,7 +130,7 @@ describe("CategorizeWithAiButton", () => {
       toastMessages.success({
         totalUncategorizedSenders: 0,
       }),
-    ).toBe("No more senders to categorize right now.");
+    ).toBe("当前没有更多需要分类的发件人。");
   });
 
   it("shows a fallback success message when the action resolves without data", async () => {
@@ -137,7 +142,7 @@ describe("CategorizeWithAiButton", () => {
 
     render(<CategorizeWithAiButton />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Categorize" }));
+    fireEvent.click(screen.getByTestId("categorize-with-ai"));
 
     await waitFor(() => {
       expect(mockSetIsBulkCategorizing).toHaveBeenNthCalledWith(1, true);
@@ -145,7 +150,7 @@ describe("CategorizeWithAiButton", () => {
     });
 
     const [, toastMessages] = mockToastPromise.mock.calls[0];
-    expect(toastMessages.success(undefined)).toBe("Categorization started.");
+    expect(toastMessages.success(undefined)).toBe("已开始分类。");
   });
 
   it("stops bulk categorizing when the action throws", async () => {
@@ -159,7 +164,7 @@ describe("CategorizeWithAiButton", () => {
 
     render(<CategorizeWithAiButton />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Categorize" }));
+    fireEvent.click(screen.getByTestId("categorize-with-ai"));
 
     await waitFor(() => {
       expect(mockSetIsBulkCategorizing).toHaveBeenNthCalledWith(1, true);
@@ -168,7 +173,7 @@ describe("CategorizeWithAiButton", () => {
 
     const [, toastMessages] = mockToastPromise.mock.calls[0];
     expect(toastMessages.error(new Error("Queue publish failed"))).toBe(
-      "Error categorizing senders: Queue publish failed",
+      "分类发件人时出错：Queue publish failed",
     );
   });
 });

@@ -72,7 +72,7 @@ export function MessageActionsMenu({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            aria-label={t`More message actions`}
+            aria-label={t`更多邮件操作`}
             size="iconXs"
             variant="ghostMuted"
             onClick={(event) => event.stopPropagation()}
@@ -89,7 +89,7 @@ export function MessageActionsMenu({
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
               <SparklesIcon className="mr-2 size-4" />
-              <Trans>Matched reason</Trans>
+              <Trans>匹配原因</Trans>
             </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
               <DropdownMenuSubContent
@@ -108,7 +108,7 @@ export function MessageActionsMenu({
                   ))
                 ) : (
                   <p className="p-3 text-muted-foreground text-xs">
-                    <Trans>No matched rules for this message.</Trans>
+                    <Trans>此邮件没有匹配的规则。</Trans>
                   </p>
                 )}
               </DropdownMenuSubContent>
@@ -123,17 +123,17 @@ export function MessageActionsMenu({
             }
           >
             <PrinterIcon className="mr-2 size-4" />
-            <Trans>Print</Trans>
+            <Trans>打印</Trans>
           </DropdownMenuItem>
 
           <DropdownMenuItem onSelect={downloadMessage}>
             <DownloadIcon className="mr-2 size-4" />
-            <Trans>Download message</Trans>
+            <Trans>下载邮件</Trans>
           </DropdownMenuItem>
 
           <DropdownMenuItem onSelect={() => setIsSourceOpen(true)}>
             <CodeIcon className="mr-2 size-4" />
-            <Trans>Show original</Trans>
+            <Trans>显示原始邮件</Trans>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -168,13 +168,13 @@ function RuleAttribution({
       <div className="min-w-0 text-xs">
         <span className="text-muted-foreground">
           {plan.status === ExecutedRuleStatus.APPLIED ? (
-            <Trans>Applied rule:</Trans>
+            <Trans>已应用的规则：</Trans>
           ) : (
-            <Trans>Matched rule:</Trans>
+            <Trans>匹配的规则：</Trans>
           )}{" "}
         </span>
         <span className="font-medium text-foreground break-words [overflow-wrap:anywhere]">
-          {plan.rule?.name ?? t`a deleted rule`}
+          {plan.rule?.name ?? t`已删除的规则`}
         </span>
       </div>
 
@@ -189,8 +189,8 @@ function RuleAttribution({
           <div className="font-medium">
             <Plural
               value={reasonDisplay.actionFailureMessages.length}
-              one="Action issue"
-              other="Action issues"
+              one="操作问题"
+              other="操作问题"
             />
           </div>
           <ul className="mt-0.5 list-disc space-y-0.5 pl-4">
@@ -213,9 +213,9 @@ function RuleAttribution({
           <div className="font-medium text-xs">
             {plan.status === ExecutedRuleStatus.APPLIED &&
             reasonDisplay.actionFailureMessages.length === 0 ? (
-              <Trans>Actions applied</Trans>
+              <Trans>已应用操作</Trans>
             ) : (
-              <Trans>Rule actions</Trans>
+              <Trans>规则操作</Trans>
             )}
           </div>
           <RuleActions

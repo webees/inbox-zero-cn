@@ -2,11 +2,16 @@ import type { MenuItemConstructorOptions } from "electron";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { configureDesktopApplicationMenu } from "./application-menu";
 
-const { app, Menu } = vi.hoisted(() => ({
+const { app, BrowserWindow, Menu } = vi.hoisted(() => ({
   app: {
     getVersion: vi.fn(() => "0.2.0"),
     setAboutPanelOptions: vi.fn(),
     showAboutPanel: vi.fn(),
+  },
+  BrowserWindow: class {
+    webContents = {
+      navigationHistory: { goBack: vi.fn(), goForward: vi.fn() },
+    };
   },
   Menu: {
     buildFromTemplate: vi.fn(
@@ -16,7 +21,7 @@ const { app, Menu } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock("electron", () => ({ app, Menu }));
+vi.mock("electron", () => ({ app, BrowserWindow, Menu }));
 
 describe("desktop application menu", () => {
   beforeEach(() => {
@@ -28,7 +33,6 @@ describe("desktop application menu", () => {
     configureDesktopApplicationMenu({
       checkForUpdates,
       createWindow: vi.fn(),
-      getActiveContents: vi.fn(),
       openSettings: vi.fn(),
       recordDiagnostics: vi.fn(),
       platform: "win32",
@@ -39,10 +43,10 @@ describe("desktop application menu", () => {
     expect(Menu.setApplicationMenu).toHaveBeenCalledWith(template);
     const help = template.find((item) => item.role === "help");
     const submenu = help?.submenu as MenuItemConstructorOptions[];
-    const update = submenu.find((item) => item.label === "Check for Updates…");
+    const update = submenu.find((item) => item.label === "检查更新…");
     expect(update?.click).toBe(checkForUpdates);
 
-    const about = submenu.find((item) => item.label === "About Inbox Zero");
+    const about = submenu.find((item) => item.label === "关于 Inbox Zero");
     expect(about?.click).toEqual(expect.any(Function));
     about?.click?.({} as never, {} as never, {} as never);
 
@@ -58,7 +62,6 @@ describe("desktop application menu", () => {
     configureDesktopApplicationMenu({
       checkForUpdates: vi.fn(),
       createWindow,
-      getActiveContents: vi.fn(),
       openSettings: vi.fn(),
       recordDiagnostics: vi.fn(),
       platform: "darwin",
@@ -66,9 +69,9 @@ describe("desktop application menu", () => {
 
     const template: MenuItemConstructorOptions[] =
       Menu.buildFromTemplate.mock.results[0].value;
-    const file = template.find((item) => item.label === "File");
+    const file = template.find((item) => item.label === "文件");
     const submenu = file?.submenu as MenuItemConstructorOptions[];
-    const newWindow = submenu.find((item) => item.label === "New Window");
+    const newWindow = submenu.find((item) => item.label === "新建窗口");
     expect(newWindow?.accelerator).toBe("CommandOrControl+N");
     newWindow?.click?.({} as never, {} as never, {} as never);
     expect(createWindow).toHaveBeenCalledOnce();
@@ -79,7 +82,6 @@ describe("desktop application menu", () => {
     configureDesktopApplicationMenu({
       checkForUpdates,
       createWindow: vi.fn(),
-      getActiveContents: vi.fn(),
       openSettings: vi.fn(),
       recordDiagnostics: vi.fn(),
       updateReady: true,
@@ -90,7 +92,7 @@ describe("desktop application menu", () => {
       Menu.buildFromTemplate.mock.results[0].value;
     const appMenu = template.find((item) => item.label === "Inbox Zero");
     const submenu = appMenu?.submenu as MenuItemConstructorOptions[];
-    const update = submenu.find((item) => item.label === "Restart to Update");
+    const update = submenu.find((item) => item.label === "重启以更新");
     expect(update?.click).toBe(checkForUpdates);
   });
 
@@ -98,7 +100,6 @@ describe("desktop application menu", () => {
     configureDesktopApplicationMenu({
       checkForUpdates: vi.fn(),
       createWindow: vi.fn(),
-      getActiveContents: vi.fn(),
       openSettings: vi.fn(),
       recordDiagnostics: vi.fn(),
       downloadPercent: 42,
@@ -109,9 +110,9 @@ describe("desktop application menu", () => {
       Menu.buildFromTemplate.mock.results[0].value;
     const appMenu = template.find((item) => item.label === "Inbox Zero");
     const submenu = appMenu?.submenu as MenuItemConstructorOptions[];
-    expect(
-      submenu.some((item) => item.label === "Downloading update… 42%"),
-    ).toBe(true);
+    expect(submenu.some((item) => item.label === "正在下载更新… 42%")).toBe(
+      true,
+    );
   });
 
   it.each([
@@ -122,7 +123,6 @@ describe("desktop application menu", () => {
     configureDesktopApplicationMenu({
       checkForUpdates: vi.fn(),
       createWindow: vi.fn(),
-      getActiveContents: vi.fn(),
       openSettings: vi.fn(),
       recordDiagnostics,
       platform,
@@ -132,13 +132,13 @@ describe("desktop application menu", () => {
       Menu.buildFromTemplate.mock.results[0].value;
     const help = template.find((item) => item.role === "help");
     const submenu = help?.submenu as MenuItemConstructorOptions[];
-    const record = submenu.find((item) => item.label === "Record Diagnostics…");
+    const record = submenu.find((item) => item.label === "记录诊断信息…");
     expect(record?.click).toBe(recordDiagnostics);
   });
 
   it.each([
     { platform: "darwin", menu: "Inbox Zero" },
-    { platform: "win32", menu: "File" },
+    { platform: "win32", menu: "文件" },
   ] as const)("offers Settings with Cmd/Ctrl+, in the $menu menu on $platform", ({
     platform,
     menu,
@@ -147,7 +147,6 @@ describe("desktop application menu", () => {
     configureDesktopApplicationMenu({
       checkForUpdates: vi.fn(),
       createWindow: vi.fn(),
-      getActiveContents: vi.fn(),
       openSettings,
       recordDiagnostics: vi.fn(),
       platform,
@@ -157,7 +156,7 @@ describe("desktop application menu", () => {
       Menu.buildFromTemplate.mock.results[0].value;
     const parent = template.find((item) => item.label === menu);
     const submenu = parent?.submenu as MenuItemConstructorOptions[];
-    const settings = submenu.find((item) => item.label === "Settings…");
+    const settings = submenu.find((item) => item.label === "设置…");
     expect(settings?.accelerator).toBe("CommandOrControl+,");
     expect(settings?.click).toBe(openSettings);
   });
@@ -166,7 +165,6 @@ describe("desktop application menu", () => {
     configureDesktopApplicationMenu({
       checkForUpdates: vi.fn(),
       createWindow: vi.fn(),
-      getActiveContents: vi.fn(),
       openSettings: vi.fn(),
       recordDiagnostics: vi.fn(),
       platform: "darwin",
@@ -174,7 +172,7 @@ describe("desktop application menu", () => {
 
     const template: MenuItemConstructorOptions[] =
       Menu.buildFromTemplate.mock.results[0].value;
-    const edit = template.find((item) => item.label === "Edit");
+    const edit = template.find((item) => item.label === "编辑");
     const submenu = edit?.submenu as MenuItemConstructorOptions[];
     const pastePlain = submenu.find(
       (item) => item.role === "pasteAndMatchStyle",
@@ -182,18 +180,10 @@ describe("desktop application menu", () => {
     expect(pastePlain?.accelerator).toBe("CommandOrControl+Shift+V");
   });
 
-  it("navigates the focused window's active tab with Cmd/Ctrl+[ and Cmd/Ctrl+]", () => {
-    const window = {};
-    const contents = {
-      navigationHistory: { goBack: vi.fn(), goForward: vi.fn() },
-    };
-    const getActiveContents = vi.fn((target: unknown) =>
-      target === window ? contents : undefined,
-    );
+  it("navigates the focused window's history with Cmd/Ctrl+[ and Cmd/Ctrl+]", () => {
     configureDesktopApplicationMenu({
       checkForUpdates: vi.fn(),
       createWindow: vi.fn(),
-      getActiveContents: getActiveContents as never,
       openSettings: vi.fn(),
       recordDiagnostics: vi.fn(),
       platform: "darwin",
@@ -201,16 +191,19 @@ describe("desktop application menu", () => {
 
     const template: MenuItemConstructorOptions[] =
       Menu.buildFromTemplate.mock.results[0].value;
-    const view = template.find((item) => item.label === "View");
+    const view = template.find((item) => item.label === "视图");
     const submenu = view?.submenu as MenuItemConstructorOptions[];
-    const back = submenu.find((item) => item.label === "Back");
-    const forward = submenu.find((item) => item.label === "Forward");
+    const back = submenu.find((item) => item.label === "后退");
+    const forward = submenu.find((item) => item.label === "前进");
     expect(back?.accelerator).toBe("CommandOrControl+[");
     expect(forward?.accelerator).toBe("CommandOrControl+]");
 
+    const window = new BrowserWindow();
     back?.click?.({} as never, window as never, {} as never);
-    expect(contents.navigationHistory.goBack).toHaveBeenCalledOnce();
+    expect(window.webContents.navigationHistory.goBack).toHaveBeenCalledOnce();
     forward?.click?.({} as never, window as never, {} as never);
-    expect(contents.navigationHistory.goForward).toHaveBeenCalledOnce();
+    expect(
+      window.webContents.navigationHistory.goForward,
+    ).toHaveBeenCalledOnce();
   });
 });

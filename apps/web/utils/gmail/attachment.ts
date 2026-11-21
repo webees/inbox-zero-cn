@@ -62,14 +62,14 @@ export async function getGmailAttachmentStream(
     signal.throwIfAborted();
   }
   return decodeGmailAttachmentStream(
-    // Node's web stream type is a separate declaration from the DOM one.
+    // Node 的 web stream 类型是与 DOM 分开的声明。
     Readable.toWeb(response.data) as unknown as ReadableStream<Uint8Array>,
     signal,
   );
 }
 
-// Gmail keeps this part header across saves, which gives each attachment an
-// id that survives Gmail replacing a draft's message.
+// Gmail 会在多次保存间保留该部分头，这为每个附件提供了一个
+// 在 Gmail 替换草稿邮件后仍然存活的 id。
 const ATTACHMENT_ID_HEADER = "X-Attachment-Id";
 
 export type GmailAttachmentPart = {
@@ -141,7 +141,7 @@ export async function readGmailAttachmentParts(
           attachment.providerAttachmentId,
         )
       ).data;
-    if (content == null) throw new Error("Missing Gmail attachment data");
+    if (content == null) throw new Error("缺少 Gmail 附件数据");
     attachments.push(
       toGmailMailAttachment(attachment, Buffer.from(content, "base64url")),
     );
@@ -172,8 +172,8 @@ export function toGmailMailAttachment(
     filename: attachment.filename,
     contentType: attachment.mimeType,
     content,
-    // An attached email must keep a 7bit or 8bit encoding (RFC 2046), so the
-    // builder picks it; every other file is base64.
+    // 作为附件的邮件必须保持 7bit 或 8bit 编码（RFC 2046），因此由
+    // 构建器来选择；其他所有文件都是 base64。
     ...(attachment.mimeType.startsWith("message/")
       ? {}
       : { contentTransferEncoding: "base64" }),
@@ -281,7 +281,7 @@ function collectAttachmentParts(
   payload: gmail_v1.Schema$MessagePart | null | undefined,
 ): gmail_v1.Schema$MessagePart[] {
   if (!payload) return [];
-  // An attached email is one file, not a set of parts to unpack.
+  // 作为附件的邮件是一个文件，而不是一组要解包的部分。
   if (payload.mimeType === "message/rfc822") return [payload];
   if (payload.parts?.length)
     return payload.parts.flatMap((part) => collectAttachmentParts(part));
@@ -310,10 +310,10 @@ function partHeaders(part: gmail_v1.Schema$MessagePart) {
   );
 }
 
-// A file without our id header (written by another client, or never rebuilt)
-// gets an id from what Gmail reports about it, so listing it before and after
-// a rebuild yields the same id that the rebuild then writes into the header.
-// Ids other files already carry are skipped, so identical files never share one.
+// 没有我们的 id 头的文件（由其他客户端写入，或从未重建过）
+// 会从 Gmail 报告的关于它的信息中获取 id，因此在重建前后列出它会得到
+// 与重建后写入头中的相同 id。
+// 其他文件已携带的 id 会被跳过，因此相同的文件绝不会共享一个 id。
 function derivedAttachmentId(
   seen: Map<string, number>,
   usedIds: Set<string>,

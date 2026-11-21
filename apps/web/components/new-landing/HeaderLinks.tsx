@@ -23,16 +23,16 @@ import {
 } from "@/components/ui/navigation-menu";
 
 const navigation = [
-  { name: msg`Enterprise`, href: "/enterprise" },
-  { name: msg`Case Studies`, href: "/case-studies" },
-  { name: msg`Pricing`, href: "/pricing" },
+  { name: msg`企业版`, href: "/enterprise" },
+  { name: msg`客户案例`, href: "/case-studies" },
+  { name: msg`价格`, href: "/pricing" },
 ];
 
 const useCases = [
   {
-    title: msg`Founders`,
+    title: msg`创始人`,
     href: "/founders",
-    description: msg`Scale your startup while AI handles your inbox`,
+    description: msg`AI 管理收件箱，助你扩展初创业务`,
     icon: RocketIcon,
     iconColor: "text-new-purple-600",
     borderColor: "from-new-purple-200 to-new-purple-300",
@@ -40,9 +40,9 @@ const useCases = [
     hoverBg: "hover:bg-new-purple-50/[0.44]",
   },
   {
-    title: msg`Small Business`,
+    title: msg`小型企业`,
     href: "/small-business",
-    description: msg`Grow your business with automated email management`,
+    description: msg`通过自动化邮件管理发展业务`,
     icon: BuildingIcon,
     iconColor: "text-new-green-500",
     borderColor: "from-new-green-150 to-new-green-200",
@@ -50,9 +50,9 @@ const useCases = [
     hoverBg: "hover:bg-new-green-50",
   },
   {
-    title: msg`Content Creators`,
+    title: msg`内容创作者`,
     href: "/creator",
-    description: msg`Streamline brand partnerships and collaborations`,
+    description: msg`简化品牌合作与协作流程`,
     icon: UserIcon,
     iconColor: "text-new-blue-600",
     borderColor: "from-new-blue-150 to-new-blue-200",
@@ -60,9 +60,9 @@ const useCases = [
     hoverBg: "hover:bg-new-blue-50/50",
   },
   {
-    title: msg`Real Estate`,
+    title: msg`房地产`,
     href: "/real-estate",
-    description: msg`AI email management for real estate professionals`,
+    description: msg`为房地产专业人士提供 AI 邮件管理`,
     icon: HomeIcon,
     iconColor: "text-new-pink-500",
     borderColor: "from-new-pink-150 to-new-pink-200",
@@ -70,9 +70,9 @@ const useCases = [
     hoverBg: "hover:bg-new-pink-50/[0.44]",
   },
   {
-    title: msg`Customer Support`,
+    title: msg`客户支持`,
     href: "/customer-support",
-    description: msg`Deliver faster support with AI-powered responses`,
+    description: msg`借助 AI 回复更快提供支持`,
     icon: HeadphonesIcon,
     iconColor: "text-new-orange-600",
     borderColor: "from-new-orange-150 to-new-orange-200",
@@ -80,9 +80,9 @@ const useCases = [
     hoverBg: "hover:bg-new-orange-50/50",
   },
   {
-    title: msg`E-commerce`,
+    title: msg`电子商务`,
     href: "/ecommerce",
-    description: msg`Automate order updates and customer communications`,
+    description: msg`自动处理订单更新与客户沟通`,
     icon: ShoppingCartIcon,
     iconColor: "text-new-indigo-600",
     borderColor: "from-new-indigo-150 to-new-indigo-200",
@@ -101,7 +101,7 @@ export function HeaderLinks() {
           {/* Solutions Dropdown */}
           <NavigationMenuItem>
             <NavigationMenuTrigger className="text-sm font-semibold font-geist leading-6 text-gray-900">
-              <Trans>Solutions</Trans>
+              <Trans>解决方案</Trans>
             </NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="grid w-[640px] grid-cols-2 gap-2 p-4">

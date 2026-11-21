@@ -43,10 +43,8 @@ export async function sendAutomationMessageToSlack({
   });
 
   if (channel.provider !== MessagingProvider.SLACK) {
-    const error = new AutomationJobConfigurationError(
-      "Only Slack messaging channels are supported",
-    );
-    slackLogger.error("Unsupported messaging provider for automation job", {
+    const error = new AutomationJobConfigurationError("仅支持 Slack 消息频道");
+    slackLogger.error("自动化任务不支持该消息服务商", {
       provider: channel.provider,
       error,
     });
@@ -55,9 +53,9 @@ export async function sendAutomationMessageToSlack({
 
   if (!channel.accessToken) {
     const error = new AutomationJobConfigurationError(
-      "Messaging channel is missing Slack access token",
+      "消息频道缺少 Slack 访问令牌",
     );
-    slackLogger.error("Slack channel is missing access token", { error });
+    slackLogger.error("Slack 频道缺少访问令牌", { error });
     throw error;
   }
 
@@ -65,9 +63,9 @@ export async function sendAutomationMessageToSlack({
   const formattedText =
     route?.targetType === MessagingRouteTargetType.DIRECT_MESSAGE
       ? text
-      : `${text}\n\n_Reply with ${formatSlackAppMention(channel.botUserId)} to chat about your emails._`;
+      : `${text}\n\n_回复 ${formatSlackAppMention(channel.botUserId)} 即可聊聊你的邮件。_`;
 
-  slackLogger.info("Sending Slack automation message");
+  slackLogger.info("正在发送 Slack 自动化消息");
 
   const destinationChannelId = await resolveSlackRouteDestination({
     accessToken: channel.accessToken,
@@ -76,9 +74,9 @@ export async function sendAutomationMessageToSlack({
 
   if (!destinationChannelId) {
     const error = new AutomationJobConfigurationError(
-      "No Slack destination available for automation job",
+      "自动化任务没有可用的 Slack 目标",
     );
-    slackLogger.error("No Slack destination available for automation job", {
+    slackLogger.error("自动化任务没有可用的 Slack 目标", {
       hasRoute: Boolean(route),
       error,
     });
@@ -92,7 +90,7 @@ export async function sendAutomationMessageToSlack({
         text: formattedText,
       }),
     );
-    slackLogger.info("Slack automation message sent");
+    slackLogger.info("Slack 自动化消息已发送");
 
     return {
       channelId: destinationChannelId,
@@ -101,14 +99,14 @@ export async function sendAutomationMessageToSlack({
   } catch (error) {
     if (isSlackError(error) && error.data?.error === "not_in_channel") {
       if (!route || route.targetType !== MessagingRouteTargetType.CHANNEL) {
-        slackLogger.error("Slack destination is not a joinable channel", {
+        slackLogger.error("Slack 目标不是可加入的频道", {
           slackError: error.data?.error,
           error,
         });
         throw error;
       }
 
-      slackLogger.info("Joining Slack channel before retrying message");
+      slackLogger.info("重试消息前先加入 Slack 频道");
       await client.conversations.join({ channel: route.targetId });
       const response = await client.chat.postMessage(
         disableSlackLinkUnfurls({
@@ -116,7 +114,7 @@ export async function sendAutomationMessageToSlack({
           text: formattedText,
         }),
       );
-      slackLogger.info("Slack automation message sent after joining channel");
+      slackLogger.info("加入频道后 Slack 自动化消息已发送");
 
       return {
         channelId: route.targetId,
@@ -124,7 +122,7 @@ export async function sendAutomationMessageToSlack({
       };
     }
 
-    slackLogger.error("Failed to send Slack automation message", {
+    slackLogger.error("发送 Slack 自动化消息失败", {
       error,
       slackError: isSlackError(error) ? error.data?.error : null,
     });

@@ -17,7 +17,7 @@ export type CalendarEventStatus = {
 };
 
 /**
- * Checks if an email is a calendar event and extracts event date information
+ * 检查一封邮件是否为日历事件，并提取事件日期信息
  * @param email The email to analyze
  * @returns Information about the calendar event
  */
@@ -26,7 +26,7 @@ export function analyzeCalendarEvent(email: ParsedMessage): CalendarEventInfo {
     isCalendarEvent: false,
   };
 
-  // Check subject for calendar event indicators
+  // 检查主题中是否有日历事件标志
   const subject = email.headers.subject || "";
   const calendarKeywords = [
     "invitation",
@@ -40,19 +40,19 @@ export function analyzeCalendarEvent(email: ParsedMessage): CalendarEventInfo {
     "reminder",
   ];
 
-  // Check if subject contains calendar keywords
+  // 检查主题是否包含日历关键词
   const hasCalendarSubject = calendarKeywords.some((keyword) =>
     subject.toLowerCase().includes(keyword.toLowerCase()),
   );
 
-  // Check body for calendar event indicators
+  // 检查正文中是否有日历事件标志
   const body = email.textHtml || "";
 
-  // Determine if it's a calendar event based on checks
+  // 根据各项检查判断它是否为日历事件
   result.isCalendarEvent = hasCalendarSubject || hasIcsAttachment(email);
 
   if (result.isCalendarEvent) {
-    // Extract event title
+    // 提取事件标题
     if (
       subject.includes("Updated invitation:") ||
       subject.includes("invitation:") ||
@@ -64,7 +64,7 @@ export function analyzeCalendarEvent(email: ParsedMessage): CalendarEventInfo {
         .replace("invite:", "")
         .trim();
 
-      // If there's schedule information after "@", take only the event name
+      // 如果 "@" 之后有日程信息，只取事件名称
       if (title.includes("@")) {
         title = title.split("@")[0].trim();
       }
@@ -84,25 +84,25 @@ export function analyzeCalendarEvent(email: ParsedMessage): CalendarEventInfo {
       );
     result.organizer = organizerMatch?.[1];
 
-    // Look for date patterns in the body
+    // 在正文中查找日期模式
     result.recurringEvent =
       body.includes("Weekly") ||
       body.includes("RRULE:FREQ=") ||
       body.includes("recurring");
 
-    // Extract dates from common patterns in email body
+    // 从邮件正文的常见模式中提取日期
     const datePatterns = [
-      // Pattern for full date with time: "Monday 10 Feb to Monday 3 Mar"
+      // 带时间的完整日期模式："Monday 10 Feb to Monday 3 Mar"
       /(?:from|on)\s+(?:Mon(?:day)?|Tue(?:sday)?|Wed(?:nesday)?|Thu(?:rsday)?|Fri(?:day)?|Sat(?:urday)?|Sun(?:day)?)\s+(\d{1,2})\s+(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)/i,
 
-      // Pattern for ISO date in iCalendar data: DTSTART, DTEND, etc.
+      // iCalendar 数据中 ISO 日期的模式：DTSTART、DTEND 等
       /DTSTART(?:;TZID=[^:]+)?:(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/i,
 
-      // Pattern for datetime strings
+      // 日期时间字符串的模式
       /(\d{1,2})\s+(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+(\d{4})\s+at\s+(\d{1,2}):(\d{2})/i,
     ];
 
-    // Try to find date using the patterns
+    // 尝试使用这些模式查找日期
     let dateMatch = null;
     for (const pattern of datePatterns) {
       const match = body.match(pattern);
@@ -112,7 +112,7 @@ export function analyzeCalendarEvent(email: ParsedMessage): CalendarEventInfo {
       }
     }
 
-    // Process iCalendar dates if present
+    // 如果存在 iCalendar 日期则处理
     const dtStartMatch = body.match(
       /DTSTART(?:;TZID=[^:]+)?:(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/i,
     );
@@ -127,7 +127,7 @@ export function analyzeCalendarEvent(email: ParsedMessage): CalendarEventInfo {
         Number.parseInt(second),
       );
 
-      // Also look for end date
+      // 同时查找结束日期
       const dtEndMatch = body.match(
         /DTEND(?:;TZID=[^:]+)?:(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/i,
       );
@@ -144,13 +144,13 @@ export function analyzeCalendarEvent(email: ParsedMessage): CalendarEventInfo {
         );
       }
 
-      // Set the event date
+      // 设置事件日期
       result.eventDate = result.startDate;
       result.eventDateString = result.eventDate.toLocaleString();
     }
-    // If we didn't find an iCalendar date but found text description of date
+    // 如果没有找到 iCalendar 日期，但找到了日期的文字描述
     else if (dateMatch) {
-      // For text patterns like "Monday 10 Feb"
+      // 对于 "Monday 10 Feb" 之类的文字模式
       const monthNames = [
         "january",
         "february",
@@ -178,15 +178,15 @@ export function analyzeCalendarEvent(email: ParsedMessage): CalendarEventInfo {
         "dec",
       ];
 
-      // This is a simplistic approach - for production code, you'd want more robust parsing
+      // 这是一个简化的实现——生产代码中你会需要更健壮的解析
       const day = dateMatch[1];
       const monthText = dateMatch[2].toLowerCase();
 
-      // Determine month number (0-11)
+      // 确定月份编号（0-11）
       let month = monthNames.indexOf(monthText) % 12;
       if (month === -1) month = 0; // Default to January if not found
 
-      // Year might not be in the match, use current year as fallback
+      // 匹配中可能没有年份，回退使用当前年份
       const year = dateMatch[3]
         ? Number.parseInt(dateMatch[3])
         : new Date().getFullYear();
@@ -195,9 +195,9 @@ export function analyzeCalendarEvent(email: ParsedMessage): CalendarEventInfo {
       result.eventDateString = `${year}-${(month + 1).toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
     }
 
-    // Extract date from text patterns if we haven't found it yet
+    // 如果尚未找到日期，则从文字模式中提取
     if (!result.eventDate) {
-      // Look for patterns like "Weekly from 16:00 to 17:00 on Monday from Mon 10 Feb to Mon 3 Mar"
+      // 查找诸如 "Weekly from 16:00 to 17:00 on Monday from Mon 10 Feb to Mon 3 Mar" 的模式
       const weeklyPattern =
         /Weekly.*?from.*?(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/i;
       const weeklyMatch = body.match(weeklyPattern);
@@ -221,7 +221,7 @@ export function analyzeCalendarEvent(email: ParsedMessage): CalendarEventInfo {
         };
         const month = monthMap[monthText] || 0;
 
-        // Assume current year if not specified
+        // 未指定时假定为当前年份
         const year = new Date().getFullYear();
 
         result.eventDate = new Date(year, month, day);
@@ -234,7 +234,7 @@ export function analyzeCalendarEvent(email: ParsedMessage): CalendarEventInfo {
 }
 
 /**
- * Checks if an email has a .ics file attachment.
+ * 检查一封邮件是否有 .ics 文件附件。
  * @param email The email to check.
  * @returns True if a .ics attachment is found, false otherwise.
  */
@@ -277,7 +277,7 @@ export function getCalendarEventStatus(
   };
 }
 
-/** High-confidence calendar detection for preset rule matching (bypasses AI). */
+/** 用于预设规则匹配的高置信度日历检测（绕过 AI）。 */
 export function isCalendarInvite(email: ParsedMessage): boolean {
   return (
     email.attachments?.some(isCalendarInviteAttachment) === true ||
@@ -307,6 +307,6 @@ function hasICalendarContent(email: ParsedMessage): boolean {
     return false;
   }
 
-  // Require DTSTART or METHOD to avoid false positives
+  // 要求包含 DTSTART 或 METHOD 以避免误判
   return body.includes("DTSTART") || body.includes("METHOD:");
 }

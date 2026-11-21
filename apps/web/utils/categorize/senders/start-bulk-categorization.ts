@@ -41,7 +41,7 @@ export async function startBulkCategorization({
   const existingProgress = await getCategorizationProgress({ emailAccountId });
 
   if (existingProgress?.status === "running") {
-    logger.info("Sender categorization already running", {
+    logger.info("发件人分类已在运行", {
       totalItems: existingProgress.totalItems,
       completedItems: existingProgress.completedItems,
     });
@@ -59,7 +59,7 @@ export async function startBulkCategorization({
     await deleteCategorizationProgress({ emailAccountId });
   }
 
-  logger.info("Starting sender categorization");
+  logger.info("开始发件人分类");
 
   await ensureDefaultCategories({ emailAccountId });
 
@@ -71,7 +71,7 @@ export async function startBulkCategorization({
   deleteEmptyCategorizeSendersQueues({
     skipEmailAccountId: emailAccountId,
   }).catch((error) => {
-    logger.error("Error deleting empty categorize queues", { error });
+    logger.error("删除空的分类队列时出错", { error });
   });
 
   let totalQueuedSenders = 0;
@@ -93,7 +93,7 @@ export async function startBulkCategorization({
         offset: currentOffset,
       });
 
-      logger.trace("Got uncategorized senders", {
+      logger.trace("已获取未分类的发件人", {
         uncategorizedSenders: result.uncategorizedSenders.length,
       });
 
@@ -119,7 +119,7 @@ export async function startBulkCategorization({
       }
 
       if (totalQueuedSenders >= MAX_SENDERS) {
-        logger.info("Reached max sender categorization limit", {
+        logger.info("已达到发件人分类上限", {
           maxSenders: MAX_SENDERS,
         });
         break;
@@ -147,7 +147,7 @@ export async function startBulkCategorization({
     const loadedMoreMessages =
       syncResult.loadedAfterMessages > 0 || syncResult.loadedBeforeMessages > 0;
 
-    logger.info("Categorize sync pass completed", {
+    logger.info("分类同步遍历完成", {
       syncPasses,
       loadedAfterMessages: syncResult.loadedAfterMessages,
       loadedBeforeMessages: syncResult.loadedBeforeMessages,
@@ -161,7 +161,7 @@ export async function startBulkCategorization({
   }
 
   if (totalQueuedSenders === 0) {
-    logger.info("No senders queued for categorization");
+    logger.info("没有发件人被加入分类队列");
 
     return {
       started: false,
@@ -173,12 +173,12 @@ export async function startBulkCategorization({
         totalItems: 0,
         completedItems: 0,
         remainingItems: 0,
-        message: "No uncategorized senders to categorize.",
+        message: "没有需要分类的未分类发件人。",
       },
     };
   }
 
-  logger.info("Queued senders for categorization", {
+  logger.info("已将发件人加入分类队列", {
     totalQueuedSenders,
     syncPasses,
     shouldLoadMoreMessages,

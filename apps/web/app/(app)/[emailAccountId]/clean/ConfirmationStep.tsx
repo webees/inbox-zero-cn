@@ -66,7 +66,7 @@ export function ConfirmationStep({
     <div className="text-center">
       <Image
         src="/images/illustrations/business-success-chart.svg"
-        alt={t`clean up`}
+        alt={t`清理`}
         width={200}
         height={200}
         className="mx-auto dark:brightness-90 dark:invert"
@@ -74,22 +74,19 @@ export function ConfirmationStep({
       />
 
       <TypographyH3 className="mt-2">
-        <Trans>Ready to clean up your inbox</Trans>
+        <Trans>准备好清理你的收件箱了吗</Trans>
       </TypographyH3>
 
       <ul className="mx-auto mt-4 max-w-prose list-disc space-y-2 pl-4 text-left">
         <li>
           <Plural
             value={PREVIEW_RUN_COUNT}
-            one="We'll process # email in an initial clean up."
-            other="We'll process # emails in an initial clean up."
+            one="我们将在首次清理中处理 # 封邮件。"
+            other="我们将在首次清理中处理 # 封邮件。"
           />
         </li>
         <li>
-          <Trans>
-            If you're happy with the results, we'll continue to process the rest
-            of your inbox.
-          </Trans>
+          <Trans>如果你对结果满意，我们将继续处理收件箱中剩余的邮件。</Trans>
         </li>
         {/* TODO: we should count only emails we're processing */}
         {/* <li>
@@ -99,33 +96,30 @@ export function ConfirmationStep({
         <li>
           {action === CleanAction.ARCHIVE ? (
             <Trans>
-              Archived emails will be labeled{" "}
-              <Badge color="green">{ARCHIVED_LABEL}</Badge> in Gmail.
+              已归档的邮件将在 Gmail 中被标记为{" "}
+              <Badge color="green">{ARCHIVED_LABEL}</Badge>。
             </Trans>
           ) : (
             <Trans>
-              Emails marked as read will be labeled{" "}
-              <Badge color="green">{READ_LABEL}</Badge> in Gmail.
+              标记为已读的邮件将在 Gmail 中被标记为{" "}
+              <Badge color="green">{READ_LABEL}</Badge>。
             </Trans>
           )}
         </li>
         <li>
-          <Trans>
-            No emails are deleted - everything can be found in search.
-          </Trans>
+          <Trans>不会删除任何邮件 - 所有邮件都可以在搜索中找到。</Trans>
         </li>
         {reuseSettings && (
           <li>
             <Trans>
-              We'll use your settings from the last time you cleaned your inbox.
-              You can adjust these{" "}
+              我们将使用你上次清理收件箱时的设置。你可以
               <Link
                 className="font-semibold hover:underline"
                 href={prefixPath(emailAccountId, "/clean/onboarding")}
               >
-                here
+                在此
               </Link>
-              .
+              调整。
             </Trans>
           </li>
         )}
@@ -133,7 +127,7 @@ export function ConfirmationStep({
 
       <div className="mt-6">
         <Button size="lg" onClick={handleStartCleaning}>
-          <Trans>Start Cleaning</Trans>
+          <Trans>开始清理</Trans>
         </Button>
       </div>
 

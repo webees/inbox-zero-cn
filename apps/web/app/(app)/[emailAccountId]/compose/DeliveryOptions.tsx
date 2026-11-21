@@ -161,10 +161,10 @@ function DeliveryTimePicker({
               onClick={() => setShowCustom(false)}
             >
               <ChevronLeftIcon className="size-3.5" />
-              <Trans>Back</Trans>
+              <Trans>返回</Trans>
             </Button>
             <label className="block text-xs text-muted-foreground">
-              <Trans>Choose a date and time</Trans>
+              <Trans>选择日期和时间</Trans>
               <input
                 aria-label={dateTimeLabel}
                 type="datetime-local"
@@ -180,14 +180,14 @@ function DeliveryTimePicker({
               disabled={!custom || new Date(custom).getTime() <= earliest}
               onClick={() => choose(new Date(custom))}
             >
-              <Trans>Set time</Trans>
+              <Trans>设置时间</Trans>
             </Button>
           </div>
         ) : (
           <>
             {isReminder && (
               <p className="px-2 py-2 text-xs font-medium text-muted-foreground">
-                <Trans>Remind me if no reply</Trans>
+                <Trans>未收到回复时提醒我</Trans>
               </p>
             )}
             {[1, 2, 7].map((days) => {
@@ -204,10 +204,10 @@ function DeliveryTimePicker({
                 >
                   <span>
                     {after
-                      ? t`${plural(days, { one: "# day after sending", other: "# days after sending" })}`
+                      ? t`${plural(days, { one: "发送后 # 天", other: "发送后 # 天" })}`
                       : days === 1
-                        ? t`Tomorrow morning`
-                        : t`${plural(days, { one: "In # day", other: "In # days" })}`}
+                        ? t`明天早上`
+                        : t`${plural(days, { one: "# 天后", other: "# 天后" })}`}
                   </span>
                   <span className="shrink-0 text-muted-foreground">
                     {date.toLocaleDateString(i18n.locale, {
@@ -227,7 +227,7 @@ function DeliveryTimePicker({
               onClick={() => setShowCustom(true)}
             >
               <CalendarDaysIcon className="size-3.5 text-muted-foreground" />
-              <Trans>Choose date and time</Trans>
+              <Trans>选择日期和时间</Trans>
               <ChevronRightIcon className="ml-auto size-3.5 text-muted-foreground" />
             </Button>
             {value && (
@@ -241,7 +241,7 @@ function DeliveryTimePicker({
                 }}
               >
                 <XIcon className="size-3.5" />
-                <Trans>Clear time</Trans>
+                <Trans>清除时间</Trans>
               </Button>
             )}
           </>

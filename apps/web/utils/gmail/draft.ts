@@ -14,7 +14,7 @@ const MAX_DRAFT_LOOKUP_PAGES = 10;
 
 export async function getDraft(draftId: string, gmail: gmail_v1.Gmail) {
   try {
-    logger.info("Fetching draft", { draftId });
+    logger.info("正在获取草稿", { draftId });
     const response = await withGmailRetry(() =>
       gmail.users.drafts.get({
         userId: "me",
@@ -23,7 +23,7 @@ export async function getDraft(draftId: string, gmail: gmail_v1.Gmail) {
       }),
     );
 
-    logger.info("Draft API response received", {
+    logger.info("已收到草稿 API 响应", {
       draftId,
       responseDraftId: response.data.id,
       embeddedMessageId: response.data.message?.id,
@@ -32,9 +32,9 @@ export async function getDraft(draftId: string, gmail: gmail_v1.Gmail) {
 
     const message = parseMessage(response.data.message as MessageWithPayload);
 
-    // Safety: Gmail can sometimes keep a Draft wrapper around a message that has
-    // already been sent (moved to Sent). Treat those as "no draft" so cleanup
-    // routines don't accidentally delete sent mail.
+    // 安全措施：Gmail 有时会在已发送（移动到已发送）的邮件周围
+    // 保留 Draft 包装。将这些视为“无草稿”，以免清理
+    // 流程意外删除已发送邮件。
     const labelIds = message.labelIds ?? [];
     const hasDraftLabel = labelIds.includes(GmailLabel.DRAFT);
     const hasSentLabel = labelIds.includes(GmailLabel.SENT);
@@ -57,7 +57,7 @@ export async function getDraft(draftId: string, gmail: gmail_v1.Gmail) {
     return { ...message, payload: response.data.message?.payload };
   } catch (error) {
     if (isNotFoundError(error)) {
-      logger.info("Draft not found, returning null.", { draftId });
+      logger.info("未找到草稿，返回 null。", { draftId });
       return null;
     }
     throw error;
@@ -68,8 +68,8 @@ export async function getDraftIdForMessage(
   gmail: gmail_v1.Gmail,
   messageId: string,
 ): Promise<string | null> {
-  // Gmail draft ids (r-NNN) differ from the draft's message id; drafts.list is
-  // the only way to map one to the other.
+  // Gmail 草稿 id（r-NNN）不同于草稿的邮件 id；drafts.list 是
+  // 将两者相互映射的唯一方式。
   let pageToken: string | undefined;
   const seenPageTokens = new Set<string>();
   for (let pageCount = 0; pageCount < MAX_DRAFT_LOOKUP_PAGES; pageCount++) {
@@ -92,7 +92,7 @@ export async function getDraftIdForMessage(
     pageToken = nextPageToken;
   }
 
-  logger.warn("Stopped draft lookup after reaching the page limit", {
+  logger.warn("达到页数上限后停止草稿查找", {
     maxPages: MAX_DRAFT_LOOKUP_PAGES,
   });
 
@@ -118,9 +118,9 @@ function isNotFoundError(error: unknown): boolean {
 }
 
 /**
- * Validates that a draft ID has the expected format.
- * Gmail draft IDs start with 'r-' followed by numbers (e.g., 'r-2497042748957023124').
- * This helps prevent accidentally passing a message ID to the draft delete API.
+ * 校验草稿 ID 是否具有预期格式。
+ * Gmail 草稿 ID 以 'r-' 开头，后跟数字（例如 'r-2497042748957023124'）。
+ * 这有助于防止意外将邮件 ID 传给草稿删除 API。
  */
 function isValidGmailDraftId(draftId: string): boolean {
   return /^r-\d+$/.test(draftId);
@@ -130,7 +130,7 @@ export async function sendDraft(
   gmail: gmail_v1.Gmail,
   draftId: string,
 ): Promise<{ messageId: string; threadId: string }> {
-  logger.info("Sending draft", { draftId });
+  logger.info("正在发送草稿", { draftId });
 
   const response = await withGmailNonIdempotentWriteRetry(() =>
     gmail.users.drafts.send({
@@ -145,10 +145,10 @@ export async function sendDraft(
   const threadId = response.data.threadId;
 
   if (!messageId || !threadId) {
-    throw new Error("Failed to send draft: missing messageId or threadId");
+    throw new Error("发送草稿失败：缺少 messageId 或 threadId");
   }
 
-  logger.info("Draft sent successfully", { draftId, messageId, threadId });
+  logger.info("草稿发送成功", { draftId, messageId, threadId });
 
   return { messageId, threadId };
 }
@@ -157,16 +157,16 @@ export async function deleteDraft(
   gmail: gmail_v1.Gmail,
   draftId: string,
 ): Promise<boolean> {
-  // Log detailed info about the draft ID format for debugging
-  logger.info("Attempting to delete draft", {
+  // 记录草稿 ID 格式的详细信息以便调试
+  logger.info("正在尝试删除草稿", {
     draftId,
     draftIdLength: draftId.length,
     startsWithR: draftId.startsWith("r-"),
     isValidFormat: isValidGmailDraftId(draftId),
   });
 
-  // Warn but don't block if draft ID format is unexpected
-  // This helps us identify potential issues without breaking functionality
+  // 如果草稿 ID 格式意外，则发出警告但不阻止
+  // 这有助于我们在不破坏功能的情况下识别潜在问题
   if (!isValidGmailDraftId(draftId)) {
     logger.warn(
       "Draft ID does not match expected Gmail format (r-NNNNN). This may indicate an issue.",
@@ -175,10 +175,10 @@ export async function deleteDraft(
   }
 
   try {
-    // Defensive check: only delete if this is still a real draft.
+    // 防御性检查：仅当这仍是真正的草稿时才删除。
     const existingDraft = await getDraft(draftId, gmail);
     if (!existingDraft) {
-      logger.warn("Draft not found or no longer a draft, skipping deletion.", {
+      logger.warn("未找到草稿或它不再是草稿，跳过删除。", {
         draftId,
       });
       return false;
@@ -193,16 +193,16 @@ export async function deleteDraft(
     if (response.status !== 200 && response.status !== 204) {
       throw new Error(`Unexpected draft deletion status: ${response.status}`);
     }
-    logger.info("Successfully deleted draft", { draftId });
+    logger.info("已成功删除草稿", { draftId });
     return true;
   } catch (error) {
     if (isNotFoundError(error)) {
-      logger.warn("Draft not found or already deleted, skipping deletion.", {
+      logger.warn("未找到草稿或它已被删除，跳过删除。", {
         draftId,
       });
       return false;
     } else {
-      logger.error("Failed to delete draft", { draftId, error });
+      logger.error("删除草稿失败", { draftId, error });
       throw error;
     }
   }

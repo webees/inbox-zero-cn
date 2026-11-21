@@ -134,7 +134,7 @@ export function createCalendarEventProvider({
     return new MicrosoftCalendarEventProvider(providerParams, logger);
   }
 
-  throw new SafeError("Unsupported calendar provider");
+  throw new SafeError("不支持的日历服务商");
 }
 
 function isUsableCalendarConnection(connection: {

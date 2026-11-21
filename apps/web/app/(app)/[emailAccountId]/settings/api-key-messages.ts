@@ -13,31 +13,31 @@ export const API_KEY_SCOPE_MESSAGES: Record<
 > = {
   STATS_READ: {
     label: msg`Read stats`,
-    description: msg`Read aggregated inbox statistics for this inbox.`,
+    description: msg`读取此收件箱的汇总统计数据。`,
   },
   RULES_READ: {
-    label: msg`Read rules`,
-    description: msg`List and inspect automation rules for this inbox.`,
+    label: msg`读取规则`,
+    description: msg`列出并查看此收件箱的自动化规则。`,
   },
   RULES_WRITE: {
-    label: msg`Write rules`,
-    description: msg`Create, update, and delete automation rules for this inbox.`,
+    label: msg`写入规则`,
+    description: msg`为此收件箱创建、更新和删除自动化规则。`,
   },
   SETTINGS_READ: {
-    label: msg`Read settings`,
-    description: msg`Read inbox settings for this inbox.`,
+    label: msg`读取设置`,
+    description: msg`读取此收件箱的收件箱设置。`,
   },
   SETTINGS_WRITE: {
-    label: msg`Write settings`,
-    description: msg`Update inbox settings for this inbox.`,
+    label: msg`写入设置`,
+    description: msg`更新此收件箱的收件箱设置。`,
   },
   ASSISTANT_CHAT: {
-    label: msg`Assistant chat`,
-    description: msg`Start assistant chat sessions for this inbox.`,
+    label: msg`助手对话`,
+    description: msg`为此收件箱启动助手对话会话。`,
   },
   SENDERS_UNSUBSCRIBE: {
-    label: msg`Unsubscribe senders`,
-    description: msg`Unsubscribe from senders for this inbox.`,
+    label: msg`退订发件人`,
+    description: msg`为此收件箱退订发件人的邮件。`,
   },
 };
 
@@ -45,8 +45,8 @@ export const API_KEY_EXPIRY_MESSAGES: Record<
   ApiKeyExpiryValue,
   MessageDescriptor
 > = {
-  "30": msg`30 days`,
-  "90": msg`90 days`,
-  "365": msg`1 year`,
-  never: msg`No expiry`,
+  "30": msg`30 天`,
+  "90": msg`90 天`,
+  "365": msg`1 年`,
+  never: msg`永不过期`,
 };

@@ -42,7 +42,7 @@ function main() {
   const files = resolveFiles();
   if (files.length < 2) {
     console.error(
-      `Need at least two full ablation runs to pool. Found ${files.length} in ${RUN_DIR}.`,
+      `至少需要两次完整的消融运行才能汇总。在 ${RUN_DIR} 中找到 ${files.length} 次。`,
     );
     process.exit(1);
   }
@@ -59,9 +59,7 @@ function main() {
 
   const totalSamples = runs.reduce((sum, run) => sum + run.samples, 0);
 
-  console.log(
-    `# Pooled ablation — ${runs.length} runs, effective k=${totalSamples}\n`,
-  );
+  console.log(`# 汇总消融 — ${runs.length} 次运行，有效 k=${totalSamples}\n`);
   for (const [index, file] of files.entries()) {
     console.log(
       `- run ${letter(index)}: ${path.basename(file)} (k=${runs[index]?.samples})`,

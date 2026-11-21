@@ -45,8 +45,7 @@ export const muteConversationInput = z.object({
   muted: z.boolean(),
 });
 
-// REST bodies for the mobile app. The conversation and comment IDs come from
-// the route path.
+// 移动端应用的 REST 请求体。会话和评论 ID 来自路由路径。
 export const commentBody = commentInput.omit({ conversationId: true });
 export const participantAccessBody = participantAccessInput.omit({
   conversationId: true,

@@ -94,7 +94,7 @@ describe("createPublicOpenApiDocument", () => {
     expect(docs.servers).toEqual([
       {
         url: "https://www.getinboxzero.com/api/v1",
-        description: "Primary server",
+        description: "主服务器",
       },
     ]);
   });

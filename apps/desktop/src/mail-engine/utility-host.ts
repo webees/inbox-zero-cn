@@ -9,8 +9,8 @@ import type {
 
 const RESTART_BASE_DELAY_MS = 1000;
 const RESTART_MAX_DELAY_MS = 60_000;
-// A child that stayed up this long is treated as healthy again, so a later
-// crash restarts quickly instead of inheriting the old backoff.
+// 子进程持续运行这么久后会被重新视为健康，因此之后的崩溃会快速重启，
+// 而不会继承旧的退避时间。
 const STABLE_UPTIME_MS = 60_000;
 const CLOSE_TIMEOUT_MS = 5000;
 const HEALTH_TIMEOUT_MS = 2000;
@@ -26,7 +26,7 @@ export type MailChildProcess = {
   kill(): boolean;
 };
 
-// Sync freshness reaches the main process through `health`.
+// 同步新鲜度通过 `health` 传递到主进程。
 export type DesktopMailProcessOwner = Omit<
   DesktopMailOwner,
   "syncFreshness"
@@ -39,19 +39,19 @@ export type DesktopMailProcessOwner = Omit<
 };
 
 /**
- * Main-process proxy for the mail engine running in a utility process. Keeps
- * session cookies and crash recovery here, and the engine and SQLite there.
+ * 运行在实用进程中的邮件引擎的主进程代理。会话 Cookie 与崩溃恢复保留在这里，
+ * 而引擎与 SQLite 保留在实用进程中。
  */
 export function createDesktopMailProcessOwner(input: {
   databasePath: string;
   origin: string;
-  /** `<client>/<version>` the engine sends on mail API requests. */
+  /** 引擎在邮件 API 请求中发送的 `<client>/<version>`。 */
   client?: string;
   fork: () => MailChildProcess;
   cookieHeader: (url: string) => Promise<string>;
   onEngineError: (error: Error) => void;
   onNewMail?: (payload: unknown) => void;
-  /** True while a child opens the mailbox, which runs any pending migrations. */
+  /** 子进程打开邮箱（会执行待处理的迁移）期间为 true。 */
   onOpeningChange?: (opening: boolean) => void;
 }): DesktopMailProcessOwner {
   const subscriptions = new Map<
@@ -94,9 +94,8 @@ export function createDesktopMailProcessOwner(input: {
         child.postMessage({ type: "subscribe", subscriptionId, payload });
       }
     });
-    // A child that cannot open the mailbox is restarted with backoff. An exit
-    // or close before start replies clears `current` or sets `closed` first,
-    // and the exit handler already reports a crash.
+    // 无法打开邮箱的子进程会按退避策略重启。若在启动回复前退出或关闭，
+    // 会先清除 `current` 或设置 `closed`，且退出处理器已经上报过崩溃。
     ready.catch((error: unknown) => {
       if (closed || running !== current) return;
       input.onEngineError(asError(error));

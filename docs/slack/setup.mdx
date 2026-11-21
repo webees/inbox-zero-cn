@@ -1,92 +1,92 @@
 ---
-title: 'Slack Integration Setup'
-description: 'Set up the Slack bot for meeting briefs and AI assistant'
+title: 'Slack 集成设置'
+description: '为会议简报和 AI 助手设置 Slack 机器人'
 ---
 
-## 1. Create a Slack App
+## 1. 创建 Slack 应用
 
-The easiest way is to use the included manifest:
+最简单的方式是使用附带的 manifest：
 
-1. Go to [https://api.slack.com/apps](https://api.slack.com/apps) and click **Create New App** > **From an app manifest**
-2. Select a workspace
-3. Paste the contents of the [`manifest.yaml` template](https://github.com/elie222/inbox-zero/blob/main/docs/slack/manifest.yaml), replacing `YOUR_DOMAIN` with your actual domain
-4. Click **Create**
+1. 前往 [https://api.slack.com/apps](https://api.slack.com/apps)，点击 **Create New App** > **From an app manifest**
+2. 选择一个工作区
+3. 粘贴 [`manifest.yaml` 模板](https://github.com/elie222/inbox-zero/blob/main/docs/slack/manifest.yaml)的内容，并把 `YOUR_DOMAIN` 替换为你的实际域名
+4. 点击 **Create**
 
-This configures all scopes, event subscriptions, and the bot user automatically.
+这会自动配置所有作用域、事件订阅和机器人用户。
 
 <details>
-<summary>Manual setup (without manifest)</summary>
+<summary>手动设置（不使用 manifest）</summary>
 
-### Configure OAuth & Permissions
+### 配置 OAuth 与权限
 
-Under **OAuth & Permissions**:
+在 **OAuth & Permissions** 下：
 
-**Redirect URLs** — add:
+**重定向 URL** —— 添加：
 
 ```
 https://<your-domain>/api/slack/callback
 ```
 
-**Bot Token Scopes** — add these scopes:
+**机器人令牌作用域** —— 添加以下作用域：
 
-| Scope | Purpose |
+| 作用域 | 用途 |
 |-------|---------|
-| `channels:read` | Resolve public channels where users mention the assistant |
-| `channels:join` | Join a public channel when needed for assistant interactions |
-| `groups:read` | List private channels available as notification targets |
-| `chat:write` | Send meeting briefs and AI responses |
-| `app_mentions:read` | Respond to @mentions in channels |
-| `im:read` | Receive direct messages |
-| `im:write` | Send DM responses |
-| `im:history` | Read DM conversation history |
-| `assistant:write` | Enable Slack Assistant prompts and status indicators |
-| `reactions:write` | Add processing indicator reactions |
-| `users:read` | View workspace members |
-| `users:read.email` | Look up teammates by email for multi-user workspaces |
+| `channels:read` | 解析用户在其中提及助手的公共频道 |
+| `channels:join` | 在助手交互需要时加入公共频道 |
+| `groups:read` | 列出可作为通知目标的私有频道 |
+| `chat:write` | 发送会议简报和 AI 回复 |
+| `app_mentions:read` | 响应频道中的 @提及 |
+| `im:read` | 接收私信 |
+| `im:write` | 发送私信回复 |
+| `im:history` | 读取私信对话历史 |
+| `assistant:write` | 启用 Slack 助手提示和状态指示器 |
+| `reactions:write` | 添加处理中的指示表情 |
+| `users:read` | 查看工作区成员 |
+| `users:read.email` | 为多用户工作区按邮箱查找队友 |
 
-### Enable Event Subscriptions
+### 启用事件订阅
 
-Under **Event Subscriptions**:
+在 **Event Subscriptions** 下：
 
-1. Toggle **Enable Events** to ON
-2. Set **Request URL** to:
+1. 把 **Enable Events** 切换为开启
+2. 把 **Request URL** 设置为：
    ```
    https://<your-domain>/api/slack/events
    ```
-3. Under **Subscribe to bot events**, add:
-   - `message.im` — direct messages to the bot
-   - `app_mention` — @mentions in channels
-   - `assistant_thread_started` — initialize Slack assistant thread prompts
-   - `assistant_thread_context_changed` — respond to assistant context switches
+3. 在 **Subscribe to bot events** 下添加：
+   - `message.im` —— 发送给机器人的私信
+   - `app_mention` —— 频道中的 @提及
+   - `assistant_thread_started` —— 初始化 Slack 助手会话提示
+   - `assistant_thread_context_changed` —— 响应助手上下文切换
 
-Slack will send a verification challenge to the URL; the app handles this automatically.
+Slack 会向该 URL 发送一个验证挑战；应用会自动处理它。
 
-### Enable Interactivity
+### 启用交互
 
-Under **Interactivity & Shortcuts**:
+在 **Interactivity & Shortcuts** 下：
 
-1. Toggle **Interactivity** to ON
-2. Set **Request URL** to:
+1. 把 **Interactivity** 切换为开启
+2. 把 **Request URL** 设置为：
    ```
    https://<your-domain>/api/slack/events
    ```
 
-Interactive actions (for example, assistant `Send` buttons) are posted to this URL. Without this setting, button clicks will not reach the app.
+交互操作（例如助手中的 `Send` 按钮）会发送到该 URL。没有此设置，按钮点击就无法到达应用。
 
-### Enable App Home
+### 启用应用主页
 
-Under **App Home**:
+在 **App Home** 下：
 
-1. Check **Allow users to send Slash commands and messages from the messages tab**
-2. Uncheck **Make the messages tab read-only** (if shown)
+1. 勾选 **Allow users to send Slash commands and messages from the messages tab**
+2. 取消勾选 **Make the messages tab read-only**（如果显示）
 
-This lets users DM the bot directly to chat with the AI assistant.
+这让用户可以直接给机器人发私信，从而与 AI 助手聊天。
 
 </details>
 
-## 2. Set Environment Variables
+## 2. 设置环境变量
 
-From **Basic Information** and **OAuth & Permissions** pages, set these in your `.env`:
+从 **Basic Information** 和 **OAuth & Permissions** 页面，在你的 `.env` 中设置这些内容：
 
 ```bash
 SLACK_CLIENT_ID=       # OAuth & Permissions > Client ID
@@ -94,23 +94,23 @@ SLACK_CLIENT_SECRET=   # OAuth & Permissions > Client Secret
 SLACK_SIGNING_SECRET=  # Basic Information > Signing Secret
 ```
 
-All three are optional. If not set, the Slack connect button is hidden and the events endpoint returns 503.
+这三项都是可选的。如果未设置，Slack 连接按钮会被隐藏，且事件端点会返回 503。
 
-For local development with ngrok, also set:
+使用 ngrok 进行本地开发时，还要设置：
 
 ```bash
 WEBHOOK_URL=https://your-domain.ngrok-free.app
 ```
 
-This is used for the OAuth callback and events webhook URLs. `NEXT_PUBLIC_BASE_URL` stays as `http://localhost:3000` so other auth flows aren't affected.
+它用于 OAuth 回调和事件 webhook URL。`NEXT_PUBLIC_BASE_URL` 保持为 `http://localhost:3000`，以免影响其他认证流程。
 
-## 3. Connect from the UI
+## 3. 从 UI 连接
 
-1. Navigate to **Settings** > **Email Account** tab
-2. Click **Connect Slack** under Connected Apps
-3. Authorize the app in the Slack OAuth flow
-4. Open **Channels** and choose a private Slack channel for notifications
-5. Invite the Inbox Zero bot to that private channel
-6. Enable the meeting briefs, follow-ups, digests, filing alerts, or rule notifications you want delivered there
+1. 导航到**设置** > **邮箱账号**标签页
+2. 在已连接的应用下点击**连接 Slack**
+3. 在 Slack OAuth 流程中授权该应用
+4. 打开**渠道**，选择一个用于通知的私有 Slack 频道
+5. 把 Inbox Zero 机器人邀请到该私有频道
+6. 启用你想投递到那里的会议简报、跟进提醒、摘要、归档提醒或规则通知
 
-Users can also DM the bot or @mention it in channels to chat with the AI assistant.
+用户也可以给机器人发私信或在频道中 @提及它，从而与 AI 助手聊天。

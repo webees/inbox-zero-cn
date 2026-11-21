@@ -129,5 +129,6 @@ describe("draft cleanup cron route", () => {
         }),
       }),
     );
+    expect(captureExceptionMock).not.toHaveBeenCalled();
   });
 });

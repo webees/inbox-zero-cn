@@ -27,12 +27,11 @@ export function StepLabels({
 
           <div className="text-center mt-4">
             <PageHeading>
-              <Trans>How do you want your inbox organized?</Trans>
+              <Trans>你希望如何整理收件箱？</Trans>
             </PageHeading>
             <TypographyP className="mt-2 max-w-lg mx-auto">
               <Trans>
-                We'll use these labels to organize your inbox. You can add
-                custom labels and change them later.
+                我们会使用这些标签来整理你的收件箱。你可以添加自定义标签，并在之后更改。
               </Trans>
             </TypographyP>
           </div>

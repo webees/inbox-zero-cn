@@ -10,16 +10,16 @@ describe("desktop context menu", () => {
     const template = build({ selectionText: "quarterly numbers" }, actions);
 
     expect(labels(template)).toEqual([
-      "Look Up “quarterly numbers”",
-      "Search with Google for “quarterly numbers”",
+      "查询 “quarterly numbers”",
+      "使用 Google 搜索 “quarterly numbers”",
       "---",
       "copy",
       "---",
       "shareMenu",
-      "Speech",
+      "语音",
     ]);
 
-    click(template, "Search with Google for “quarterly numbers”");
+    click(template, "使用 Google 搜索 “quarterly numbers”");
     expect(actions.openExternal).toHaveBeenCalledWith(
       "https://www.google.com/search?q=quarterly%20numbers",
     );
@@ -33,7 +33,7 @@ describe("desktop context menu", () => {
     );
 
     expect(labels(template)).toEqual([
-      "Search with Google for “hello”",
+      "使用 Google 搜索 “hello”",
       "---",
       "copy",
     ]);
@@ -54,7 +54,7 @@ describe("desktop context menu", () => {
     expect(labels(template)).toEqual([
       "receive",
       "relieve",
-      "Add to Dictionary",
+      "添加到词典",
       "---",
       "cut",
       "copy",
@@ -62,13 +62,13 @@ describe("desktop context menu", () => {
       "pasteAndMatchStyle",
       "selectAll",
       "---",
-      "Emoji & Symbols",
+      "表情符号与符号",
     ]);
     expect(template.find((item) => item.role === "copy")?.enabled).toBe(false);
 
     click(template, "receive");
     expect(actions.replaceMisspelling).toHaveBeenCalledWith("receive");
-    click(template, "Add to Dictionary");
+    click(template, "添加到词典");
     expect(actions.addToDictionary).toHaveBeenCalledWith("recieve");
   });
 
@@ -79,8 +79,8 @@ describe("desktop context menu", () => {
       actions,
     );
 
-    expect(labels(template)).toEqual(["Copy Email Address"]);
-    click(template, "Copy Email Address");
+    expect(labels(template)).toEqual(["复制邮箱地址"]);
+    click(template, "复制邮箱地址");
     expect(actions.copyText).toHaveBeenCalledWith("jane+news@example.com");
   });
 
@@ -88,7 +88,7 @@ describe("desktop context menu", () => {
     const actions = createActions();
     const template = build({ linkURL: "mailto:a%ZZ@example.com" }, actions);
 
-    click(template, "Copy Email Address");
+    click(template, "复制邮箱地址");
     expect(actions.copyText).toHaveBeenCalledWith("a%ZZ@example.com");
   });
 
@@ -96,8 +96,8 @@ describe("desktop context menu", () => {
     const actions = createActions();
     const template = build({ linkURL: "https://example.com/a" }, actions);
 
-    expect(labels(template)).toEqual(["Open Link in Browser", "Copy Link"]);
-    click(template, "Open Link in Browser");
+    expect(labels(template)).toEqual(["在浏览器中打开链接", "复制链接"]);
+    click(template, "在浏览器中打开链接");
     expect(actions.openExternal).toHaveBeenCalledWith("https://example.com/a");
   });
 
@@ -119,12 +119,8 @@ describe("desktop context menu", () => {
       },
       actions,
     );
-    expect(labels(remote)).toEqual([
-      "Save Image As…",
-      "Copy Image",
-      "Copy Image Address",
-    ]);
-    click(remote, "Copy Image");
+    expect(labels(remote)).toEqual(["图像另存为…", "复制图像", "复制图像地址"]);
+    click(remote, "复制图像");
     expect(actions.copyImageAt).toHaveBeenCalledWith(10, 20);
 
     const inline = build(
@@ -135,7 +131,7 @@ describe("desktop context menu", () => {
       },
       actions,
     );
-    expect(labels(inline)).toEqual(["Save Image As…", "Copy Image"]);
+    expect(labels(inline)).toEqual(["图像另存为…", "复制图像"]);
   });
 
   it("shows nothing on empty space in production", () => {
@@ -149,7 +145,7 @@ describe("desktop context menu", () => {
       { platform: "darwin", isDevelopment: true },
     );
 
-    expect(labels(template)).toEqual(["Inspect Element"]);
+    expect(labels(template)).toEqual(["检查元素"]);
   });
 });
 

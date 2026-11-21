@@ -45,7 +45,7 @@ describe("user/trial-preview route", () => {
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
-      planName: "Starter",
+      planName: "入门版",
       interval: "year",
       trialEnd: "2026-08-03T00:00:00.000Z",
       amountDue: 21_600,

@@ -113,7 +113,7 @@ describe("POST /api/user/senders/bulk", () => {
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({
-      error: "Invalid JSON body",
+      error: "无效的 JSON 请求体",
       isKnownError: true,
     });
     expect(mockApply).not.toHaveBeenCalled();

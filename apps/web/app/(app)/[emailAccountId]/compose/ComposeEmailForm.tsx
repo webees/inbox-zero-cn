@@ -692,7 +692,7 @@ function ComposeEmailFormContent({
           >
             <Button disabled={isSubmitting} type="submit" variant="gradient">
               {isSubmitting && <ButtonLoader />}
-              <Trans>Send</Trans>
+              <Trans>发送</Trans>
             </Button>
           </Tooltip>
           <button

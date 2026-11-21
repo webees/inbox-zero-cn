@@ -1,40 +1,40 @@
 ---
-title: 'Use Your Own AI API Key'
-description: 'Choose an AI provider, model, and provider API key for Inbox Zero features.'
+title: '使用你自己的 AI API 密钥'
+description: '为 Inbox Zero 功能选择 AI 服务商、模型和服务商 API 密钥。'
 icon: 'key'
 ---
 
-Inbox Zero covers AI costs by default, but you can optionally use your own model-provider API key.
+Inbox Zero 默认承担 AI 费用，但你也可以选择使用自己的模型服务商 API 密钥。
 
 <Note>
-This setting is for the AI provider that powers Inbox Zero features. It is different from the developer API keys in the **Developer** settings section, which authenticate requests to the Inbox Zero API.
+此设置针对为 Inbox Zero 功能提供支持的 AI 服务商。它不同于**开发者**设置部分中的开发者 API 密钥，后者用于对 Inbox Zero API 的请求进行认证。
 </Note>
 
-## Configure a Provider
+## 配置服务商
 
-1. Open the account menu at the bottom of the sidebar and choose **Settings**.
-2. Expand the relevant email account.
-3. Find the **AI Model** section.
-4. Select a provider, enter the provider's model identifier and API key, then click **Save**.
-5. Test the configuration on the **Assistant** or **Chat** page.
+1. 打开侧边栏底部的账号菜单，选择**设置**。
+2. 展开相关的邮箱账号。
+3. 找到 **AI 模型**部分。
+4. 选择服务商，输入服务商的模型标识符和 API 密钥，然后点击**保存**。
+5. 在**助手**或**聊天**页面测试该配置。
 
-Leave the provider set to **Default** to use the AI service included with Inbox Zero.
+把服务商保持为**默认**即可使用 Inbox Zero 自带的 AI 服务。
 
-## Providers in Settings
+## 设置中的服务商
 
 ### Anthropic
 
-Create a key in the [Anthropic Console](https://console.anthropic.com/settings/keys). Enter an Anthropic model identifier in the Model field.
+在 [Anthropic Console](https://console.anthropic.com/settings/keys) 创建一个密钥。在模型字段中输入 Anthropic 模型标识符。
 
 ### OpenAI
 
-Create a key on the [OpenAI API keys page](https://platform.openai.com/api-keys).
+在 [OpenAI API keys 页面](https://platform.openai.com/api-keys)创建一个密钥。
 
 <iframe
   width="560"
   height="315"
   src="https://www.youtube.com/embed/AQtB0j6Zmt0"
-  title="YouTube video player"
+  title="YouTube 视频播放器"
   frameBorder="0"
   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
   allowFullScreen
@@ -42,28 +42,28 @@ Create a key on the [OpenAI API keys page](https://platform.openai.com/api-keys)
 
 ### Azure OpenAI
 
-Use an Azure OpenAI API key and enter the Azure deployment name in the Model field.
+使用 Azure OpenAI API 密钥，并在模型字段中输入 Azure 部署名称。
 
 ### Google
 
-Create a Gemini API key in [Google AI Studio](https://aistudio.google.com/app/apikey) and enter the corresponding model identifier.
+在 [Google AI Studio](https://aistudio.google.com/app/apikey) 创建 Gemini API 密钥，并输入对应的模型标识符。
 
 ### Groq
 
-Create a key in the [Groq Console](https://console.groq.com/keys) and enter a model available to your Groq account.
+在 [Groq Console](https://console.groq.com/keys) 创建一个密钥，并输入你的 Groq 账号可用的模型。
 
 ### Cerebras
 
-Create a key in the [Cerebras Cloud Console](https://cloud.cerebras.ai) and enter a Cerebras model ID such as `qwen-3.8-27b`.
+在 [Cerebras Cloud Console](https://cloud.cerebras.ai) 创建一个密钥，并输入诸如 `qwen-3.8-27b` 的 Cerebras 模型 ID。
 
 ### OpenRouter
 
-Create a key in [OpenRouter](https://openrouter.ai/settings/keys). Use OpenRouter's provider-qualified model identifier, such as `provider/model`.
+在 [OpenRouter](https://openrouter.ai/settings/keys) 创建一个密钥。使用 OpenRouter 带服务商限定的模型标识符，例如 `provider/model`。
 
 ### Vercel AI Gateway
 
-Create an AI Gateway API key in Vercel and use the model identifier expected by [Vercel AI Gateway](https://vercel.com/ai-gateway). Provider-qualified identifiers are recommended.
+在 Vercel 创建 AI Gateway API 密钥，并使用 [Vercel AI Gateway](https://vercel.com/ai-gateway) 所期望的模型标识符。推荐使用带服务商限定的标识符。
 
-## Usage and Billing
+## 用量与计费
 
-When you use your own provider key, the provider bills that account according to its pricing and limits. Click **View usage** in the AI Model section to review the usage recorded by Inbox Zero. Provider-side billing remains the source of truth for charges.
+当你使用自己的服务商密钥时，由该服务商根据其定价和限额向该账号计费。点击 AI 模型部分中的**查看用量**以查看 Inbox Zero 记录的用量。服务商侧的计费仍是费用的最终依据。

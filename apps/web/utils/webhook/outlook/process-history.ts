@@ -164,7 +164,7 @@ export async function processHistoryForUser({
                     } catch (error) {
                       await logErrorWithDedupe({
                         logger,
-                        message: "Error learning from Outlook label removal",
+                        message: "从 Outlook 标签移除中学习时出错",
                         error,
                         context: {
                           messageId: message.id,
@@ -232,7 +232,7 @@ export async function processHistoryForUser({
     });
     await logErrorWithDedupe({
       logger,
-      message: "Error processing webhook",
+      message: "处理 webhook 时出错",
       error,
       context: {
         resourceData,

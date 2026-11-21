@@ -255,11 +255,11 @@ export function ProcessRulesContent({ testMode }: { testMode: boolean }) {
 
   const { setInput } = useChat();
 
-  let loadMoreLabel = t`No More Messages`;
+  let loadMoreLabel = t`没有更多邮件`;
   if (isValidating) {
-    loadMoreLabel = t`Loading...`;
+    loadMoreLabel = t`加载中...`;
   } else if (hasMore) {
-    loadMoreLabel = t`Load More`;
+    loadMoreLabel = t`加载更多`;
   }
 
   return (
@@ -269,12 +269,12 @@ export function ProcessRulesContent({ testMode }: { testMode: boolean }) {
           {isRunningAll ? (
             <Button onClick={handleStop} variant="outline" size="sm">
               <PauseIcon className="mr-2 size-4" />
-              <Trans>Stop</Trans>
+              <Trans>停止</Trans>
             </Button>
           ) : (
             <Button onClick={handleRunAll} size="sm">
               <BookOpenCheckIcon className="mr-2 size-4" />
-              {testMode ? <Trans>Test All</Trans> : <Trans>Run on All</Trans>}
+              {testMode ? <Trans>全部测试</Trans> : <Trans>全部运行</Trans>}
             </Button>
           )}
         </div>
@@ -287,7 +287,7 @@ export function ProcessRulesContent({ testMode }: { testMode: boolean }) {
               size="sm"
             >
               <PenSquareIcon className="mr-2 size-4" />
-              <Trans>Custom</Trans>
+              <Trans>自定义</Trans>
             </Button>
           )}
           <SearchForm
@@ -320,7 +320,7 @@ export function ProcessRulesContent({ testMode }: { testMode: boolean }) {
       >
         {messages.length === 0 ? (
           <MutedText className="p-4 text-center">
-            <Trans>No emails found</Trans>
+            <Trans>未找到邮件</Trans>
           </MutedText>
         ) : (
           <Card>
@@ -467,7 +467,7 @@ function ProcessRulesRow({
               >
                 {!isRunning && <SparklesIcon className="mr-2 size-4" />}
                 <span>
-                  {testMode ? <Trans>Test</Trans> : <Trans>Run</Trans>}
+                  {testMode ? <Trans>测试</Trans> : <Trans>运行</Trans>}
                 </span>
               </Button>
             )}
@@ -500,16 +500,16 @@ function RerunButton({
       <RefreshCcwIcon
         className={cn("mr-2 size-4", isRunning && "animate-spin")}
       />
-      <span>{testMode ? <Trans>Retest</Trans> : <Trans>Rerun</Trans>}</span>
+      <span>
+        {testMode ? <Trans>重新测试</Trans> : <Trans>重新运行</Trans>}
+      </span>
     </Button>
   );
 
   if (canRerun) return button;
 
   return (
-    <Tooltip
-      content={t`Re-processing emails you've already handled is available on the Professional plan.`}
-    >
+    <Tooltip content={t`重新处理已处理过的邮件仅适用于 Professional 套餐`}>
       <span className="inline-flex cursor-not-allowed">{button}</span>
     </Tooltip>
   );

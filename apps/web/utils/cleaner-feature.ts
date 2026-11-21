@@ -5,5 +5,5 @@ export function assertCleanerApiEnabled() {
   if (process.env.VERCEL === "1") return;
   if (env.NEXT_PUBLIC_CLEANER_ENABLED) return;
 
-  throw new SafeError("Cleaner is not enabled", 404);
+  throw new SafeError("未启用清理功能", 404);
 }

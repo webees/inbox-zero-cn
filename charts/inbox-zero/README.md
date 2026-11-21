@@ -1,24 +1,24 @@
 # Inbox Zero Helm Chart
 
-This chart maps the Docker Compose self-hosting stack onto Kubernetes:
+此 chart 将 Docker Compose 自托管栈映射到 Kubernetes：
 
-- `web` Deployment for the Next.js app
-- `worker` Deployment for the optional BullMQ worker
-- CronJobs for scheduled endpoints
-- optional bundled Postgres, Redis, and Redis HTTP bridge for demos
-- managed Postgres and Redis configuration for production
-- optional Ingress and ServiceAccount resources
+- 用于 Next.js 应用的 `web` Deployment
+- 用于可选 BullMQ worker 的 `worker` Deployment
+- 用于计划端点的 CronJobs
+- 用于演示的可选内置 Postgres、Redis 和 Redis HTTP 桥接
+- 用于生产的托管 Postgres 和 Redis 配置
+- 可选的 Ingress 和 ServiceAccount 资源
 
-For production, use managed Postgres and managed Redis. The bundled StatefulSets are intended for demos and small self-hosted installs, not production workloads that need backups, failover, monitoring, and tested restores.
+生产环境请使用托管 Postgres 和托管 Redis。内置的 StatefulSets 面向演示和小型自托管安装，不适用于需要备份、故障转移、监控和经过测试的恢复的生产工作负载。
 
-## Documentation
+## 文档
 
-Use the Kubernetes hosting guide for installation and operations:
+有关安装和运维，请参阅 Kubernetes 托管指南：
 
-- [Kubernetes Deployment](../../docs/hosting/kubernetes.mdx)
-- [Environment Variables](../../docs/hosting/environment-variables.mdx)
+- [Kubernetes 部署](../../docs/hosting/kubernetes.mdx)
+- [环境变量](../../docs/hosting/environment-variables.mdx)
 
-## Install
+## 安装
 
 ```bash
 helm upgrade --install inbox-zero ./charts/inbox-zero \
@@ -27,9 +27,9 @@ helm upgrade --install inbox-zero ./charts/inbox-zero \
   -f values.prod.yaml
 ```
 
-## Production Shape
+## 生产形态
 
-Use managed data services through existing Kubernetes Secrets:
+通过现有的 Kubernetes Secret 使用托管数据服务：
 
 ```yaml
 externalDatabase:
@@ -45,11 +45,11 @@ externalRedis:
 existingSecret: inbox-zero-secrets
 ```
 
-The app environment keys belong in `inbox-zero-secrets`; see the environment variable reference for the full list.
+应用环境变量键应放在 `inbox-zero-secrets` 中；完整列表请参阅环境变量参考。
 
-## Demo Data Services
+## 演示数据服务
 
-Bundled Postgres, Redis, and Redis HTTP require explicit secret values:
+内置的 Postgres、Redis 和 Redis HTTP 需要显式设置密钥值：
 
 ```yaml
 postgresql:

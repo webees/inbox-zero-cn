@@ -159,7 +159,7 @@ export async function determineThreadStatusWithLlm({
 
   const prompt = `${getUserInfoPrompt({ emailAccount })}
 
-Email thread (in chronological order, oldest to newest):
+邮件会话（按时间顺序，从旧到新）：
 
 <thread>
 ${getEmailListPrompt({
@@ -168,13 +168,13 @@ ${getEmailListPrompt({
 })}
 </thread>
 
-${userSentLastEmail ? "The user sent the latest message in this thread, so the other person owes the answer to any question it asks.\n\n" : ""}Based on the full thread context above, determine the current status of this thread.`.trim();
+${userSentLastEmail ? "用户发送了此会话中的最新消息，因此对方需要回答其中提出的任何问题。\n\n" : ""}根据上述完整的会话上下文，判断此会话的当前状态。`.trim();
 
   const modelOptions = getModel(emailAccount.user, modelType);
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Determine thread status",
+    label: "判断会话状态",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "compact" },
   });

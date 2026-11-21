@@ -119,19 +119,19 @@ export const InboxBundleRow = memo(function InboxBundleRow({
   );
 });
 
-/** Sits above an expanded bundle's threads so the reader can fold it back. */
+/** 位于已展开分组中的会话上方，以便阅读器将其折叠回去。 */
 export function InboxBundleHeader({
   bundle,
   onCollapse,
 }: {
   bundle: InboxBundle;
-  /** Told whether the keyboard did it, so focus can follow to the row. */
+  /** 告知是否由键盘触发，以便焦点可以跟随到该行。 */
   onCollapse: (fromKeyboard: boolean) => void;
 }) {
   return (
     <button
       className="flex w-full items-center gap-1.5 border-border/40 border-b bg-muted/40 py-1.5 pr-5 pl-3 text-left text-muted-foreground text-xs hover:bg-muted"
-      // A keyboard activation reports no clicks.
+      // 键盘激活不会报告点击事件。
       onClick={(event) => onCollapse(event.detail === 0)}
       type="button"
     >
@@ -140,7 +140,7 @@ export function InboxBundleHeader({
       <span className="font-medium text-foreground">{bundle.name}</span>
       <span>{bundle.threads.length}</span>
       <span className="ml-auto">
-        <Trans>Collapse</Trans>
+        <Trans>折叠</Trans>
       </span>
     </button>
   );

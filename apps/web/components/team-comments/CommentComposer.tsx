@@ -123,8 +123,7 @@ export function CommentComposer({
   const notice = newlyShared.length ? (
     <span>
       <Trans>
-        Sending will also share all past and future messages in this
-        conversation with{" "}
+        发送后还会将此会话中所有过去和未来的消息共享给{" "}
         <span className="font-medium text-foreground">{newlySharedNames}</span>.
       </Trans>
     </span>
@@ -143,7 +142,7 @@ export function CommentComposer({
           <div
             id="comment-mentions"
             role="listbox"
-            aria-label={t`Mention a teammate`}
+            aria-label={t`提及队友`}
             className="absolute bottom-full left-0 z-10 mb-1 w-64 rounded-md border bg-popover p-1 shadow-md"
           >
             {suggestions.map((candidate, index) => (
@@ -161,7 +160,7 @@ export function CommentComposer({
                 {candidate.name}
                 {!participantIds.includes(candidate.memberId) && (
                   <span className="text-muted-foreground text-xs">
-                    <Trans>Not shared yet</Trans>
+                    <Trans>尚未共享</Trans>
                   </span>
                 )}
               </button>
@@ -170,7 +169,7 @@ export function CommentComposer({
         )}
         <div className="flex items-end gap-2 rounded-lg border bg-background py-1.5 pr-1.5 pl-3 transition-[box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50">
           <label className="sr-only" htmlFor="internal-comment">
-            <Trans>Internal comment</Trans>
+            <Trans>内部评论</Trans>
           </label>
           <AutosizeTextarea
             id="internal-comment"
@@ -178,13 +177,12 @@ export function CommentComposer({
             minRows={1}
             maxRows={10}
             maxLength={10_000}
-            placeholder={t`Comment and @mention a teammate`}
+            placeholder={t`评论并 @提及队友`}
             value={body}
             onChange={(event: ChangeEvent<HTMLTextAreaElement>) => {
               const next = event.target.value;
               setBody(next);
-              // A pick is only valid while its mention is still in the text;
-              // otherwise retyping an ambiguous name would reuse it.
+              // 选择仅在提及其仍在文本中时有效；否则重新输入有歧义的名字会复用它。
               setPicked((current) => {
                 const stillMentioned = getMentionedMemberIds(
                   next,

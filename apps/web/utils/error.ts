@@ -486,26 +486,26 @@ export function checkCommonErrors(
   }
 
   if (isGmailInsufficientPermissionsError(error)) {
-    logger.warn("Gmail insufficient permissions error for url", { url });
+    logger.warn("Gmail 权限不足错误，url", { url });
     return {
-      type: "Gmail Insufficient Permissions",
+      type: "Gmail 权限不足",
       message:
-        "You must grant all Gmail permissions to use the app. Please log out and log in again to grant permissions.",
+        "你必须授予全部 Gmail 权限才能使用本应用。请退出登录后重新登录以授予权限。",
       code: 403,
     };
   }
 
   if (isGmailServiceUnavailableError(error)) {
-    logger.warn("Gmail not enabled for account for url", { url });
+    logger.warn("账号未启用 Gmail，url", { url });
     return {
-      type: "Gmail Service Unavailable",
+      type: "Gmail 服务不可用",
       message: GMAIL_SERVICE_UNAVAILABLE_MESSAGE,
       code: 403,
     };
   }
 
   if (isGmailRateLimitExceededError(error)) {
-    logger.warn("Gmail rate limit exceeded for url", { url });
+    logger.warn("Gmail 超出速率限制，url", { url });
     return {
       type: getProviderRateLimitApiErrorType("google"),
       message: getEmailProviderRateLimitMessage("google"),
@@ -514,16 +514,16 @@ export function checkCommonErrors(
   }
 
   if (isGmailQuotaExceededError(error)) {
-    logger.warn("Gmail quota exceeded for url", { url });
+    logger.warn("Gmail 超出配额，url", { url });
     return {
-      type: "Gmail Quota Exceeded",
-      message: "You have exceeded the Gmail quota. Please try again later.",
+      type: "Gmail 配额已超出",
+      message: "你已超出 Gmail 配额。请稍后重试。",
       code: 429,
     };
   }
 
   if (isOutlookThrottlingError(error)) {
-    logger.warn("Outlook throttling error for url", { url });
+    logger.warn("Outlook 限流错误，url", { url });
     return {
       type: getProviderRateLimitApiErrorType("microsoft"),
       message: getEmailProviderRateLimitMessage("microsoft"),
@@ -532,42 +532,40 @@ export function checkCommonErrors(
   }
 
   if (isOutlookAccessDeniedError(error)) {
-    logger.warn("Outlook access denied error for url", { url });
+    logger.warn("Outlook 访问被拒绝错误，url", { url });
     return {
-      type: "Outlook Access Denied",
-      message:
-        "Access to the mailbox was denied. The account may need to be reconnected.",
+      type: "Outlook 访问被拒绝",
+      message: "访问邮箱的权限被拒绝。该账号可能需要重新连接。",
       code: 403,
     };
   }
 
   if (isOutlookItemNotFoundError(error)) {
-    logger.warn("Outlook item not found for url", { url });
+    logger.warn("Outlook 未找到项目，url", { url });
     return {
-      type: "Outlook Item Not Found",
-      message: "The requested email was not found. It may have been deleted.",
+      type: "Outlook 未找到项目",
+      message: "未找到请求的邮件，它可能已被删除。",
       code: 404,
     };
   }
 
   if (isOutlookServerError(error)) {
-    logger.warn("Outlook service unavailable for url", {
+    logger.warn("Outlook 服务不可用，url", {
       url,
       statusCode: (error as { statusCode: number }).statusCode,
     });
     return {
-      type: "Outlook Service Unavailable",
-      message:
-        "Microsoft is temporarily unavailable. Please try again shortly.",
+      type: "Outlook 服务不可用",
+      message: "Microsoft 服务暂时不可用。请稍后重试。",
       code: 503,
     };
   }
 
   if (RetryError.isInstance(error) && isAiQuotaExceededError(error)) {
-    logger.warn("AI quota exceeded for url", { url });
+    logger.warn("AI 额度已超出，url", { url });
     return {
-      type: "AI Quota Exceeded",
-      message: `AI error: ${error.message}`,
+      type: "AI 额度已超出",
+      message: `AI 错误：${error.message}`,
       code: 429,
     };
   }

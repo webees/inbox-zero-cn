@@ -25,36 +25,36 @@ import {
 
 const errorMessages: Record<string, { title: string; description: string }> = {
   email_not_found: {
-    title: "Account Not Authorized",
+    title: "账号未获授权",
     description:
-      "Your account is not authorized to access this application. This may be because your email is not part of the allowed organization. Please contact your administrator or try signing in with a different account.",
+      "你的账号无权访问此应用。这可能是因为你的邮箱不属于允许的组织。请联系管理员，或尝试使用其他账号登录。",
   },
   signup_not_allowed: {
-    title: "Sign-up Restricted",
+    title: "注册受限",
     description:
-      "This deployment only allows sign-up from specific email addresses or domains. Please contact your administrator or try signing in with a different account.",
+      "此部署仅允许特定电子邮件地址或域名注册。请联系管理员，或尝试使用其他账号登录。",
   },
   email_already_linked: {
-    title: "Email Already Linked",
+    title: "邮箱已关联",
     description: getEmailAlreadyLinkedDescription(),
   },
   account_not_linked: {
-    title: "Sign-in Method Doesn't Match",
+    title: "登录方式不匹配",
     description:
-      "An account already exists for this email, but it was created with a different sign-in method or a different provider account. Sign in the way you originally signed up, or contact support so we can reconnect the two.",
+      "此电子邮件已有账号，但该账号是通过不同的登录方式或其他服务商账号创建的。请使用最初注册时的登录方式登录，或联系支持人员，以便我们重新关联这两个账号。",
   },
   org_invite_invalid_code: {
-    title: "Organization Invite Sign-in Failed",
+    title: "组织邀请登录失败",
     description:
-      "We couldn't complete sign-in while joining this organization. Please start from the invitation link again. If it still fails, sign in with the original account for this mailbox, then accept the invite again.",
+      "加入此组织时无法完成登录。请再次从邀请链接开始操作。如果仍然失败，请使用此邮箱的原始账号登录，然后再次接受邀请。",
   },
   invalid_code: {
-    title: "Sign-in Session Expired",
+    title: "登录会话已过期",
     description:
-      "Your sign-in link is no longer valid. This can happen if the login flow was opened twice, timed out, or already used. Please start sign-in again from the login page.",
+      "你的登录链接已失效。这可能是因为登录流程被打开两次、已超时或已被使用。请从登录页重新开始登录。",
   },
   requiresreconsent: {
-    title: "Permissions need to be refreshed",
+    title: "需要刷新权限",
     description: getRequiresReconsentDescription(),
   },
 };

@@ -63,7 +63,7 @@ describe("Gmail enumeration checkpoints", () => {
     const first = await getGmailMailBackfillPage(input());
     await expect(
       getGmailMailBackfillPage({ ...input(), cursor: first.nextCursor }),
-    ).rejects.toThrow("did not advance");
+    ).rejects.toThrow("没有推进");
   });
   it("rejects a repeated history continuation before checkpointing it", async () => {
     const cursor = await captureGmailMailHistoryCursor(input());
@@ -74,7 +74,7 @@ describe("Gmail enumeration checkpoints", () => {
     if (first.resetRequired) throw new Error("Unexpected reset");
     await expect(
       getGmailMailChangesPage({ ...input(), cursor: first.cursor }),
-    ).rejects.toThrow("did not advance");
+    ).rejects.toThrow("没有推进");
   });
   it("omits the provider lower-bound query for the explicit all-time window", async () => {
     await getGmailMailBackfillPage({
@@ -101,7 +101,7 @@ describe("Gmail enumeration checkpoints", () => {
         cursor: page.nextCursor,
         [bound]: new Date(input()[bound].getTime() + 1),
       }),
-    ).rejects.toThrow("Invalid local mail sync cursor");
+    ).rejects.toThrow("无效的本地邮件同步游标");
     expect(gmail.users.messages.list).not.toHaveBeenCalled();
   });
   it.each([
@@ -118,14 +118,14 @@ describe("Gmail enumeration checkpoints", () => {
     ).toString("base64url");
     await expect(
       getGmailMailChangesPage({ ...input(), cursor: changed }),
-    ).rejects.toThrow("Invalid local mail sync cursor");
+    ).rejects.toThrow("无效的本地邮件同步游标");
     expect(gmail.users.history.list).not.toHaveBeenCalled();
   });
   it("never reuses fixed window coverage for open-ended freshness", async () => {
     const cursor = await captureGmailMailHistoryCursor(input());
     await expect(
       getGmailMailChangesPage({ ...input(), before: undefined, cursor }),
-    ).rejects.toThrow("Invalid local mail sync cursor");
+    ).rejects.toThrow("无效的本地邮件同步游标");
   });
   it("keeps the original history anchor until exhaustion", async () => {
     const cursor = await captureGmailMailHistoryCursor(input());
@@ -265,7 +265,7 @@ describe("Gmail bounded hydration", () => {
         ...input(),
         messageIds: Array.from({ length: 26 }, (_, i) => `id-${i}`),
       }),
-    ).rejects.toThrow("at most 25");
+    ).rejects.toThrow("最多需要 25");
     expect(withLocalMailSyncBudget).not.toHaveBeenCalled();
   });
   it("rejects missing payloads or invalid dates rather than claiming complete coverage", async () => {
@@ -274,13 +274,13 @@ describe("Gmail bounded hydration", () => {
     });
     await expect(
       hydrateGmailMailMessages({ ...input(), messageIds: ["incomplete"] }),
-    ).rejects.toThrow("incomplete sync message");
+    ).rejects.toThrow("不完整的同步邮件");
     gmail.users.messages.get.mockResolvedValueOnce({
       data: { ...message("date"), internalDate: null },
     });
     await expect(
       hydrateGmailMailMessages({ ...input(), messageIds: ["date"] }),
-    ).rejects.toThrow("message date");
+    ).rejects.toThrow("邮件日期");
   });
 });
 function makeGmail() {

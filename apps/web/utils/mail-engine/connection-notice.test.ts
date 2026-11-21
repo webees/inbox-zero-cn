@@ -4,17 +4,16 @@ import { mailEngineConnectionCopy } from "./connection-notice";
 describe("mailEngineConnectionCopy", () => {
   it("asks the user to reconnect when auth is blocked", () => {
     expect(mailEngineConnectionCopy("blocked_auth")).toEqual({
-      title: "Reconnect this account to continue syncing.",
-      description:
-        "Mailbox catch-up is paused until this account is reconnected.",
-      action: "Reconnect",
+      title: "重新连接此账号以继续同步。",
+      description: "在重新连接此账号之前，邮箱补收将暂停。",
+      action: "重新连接",
     });
   });
 
   it("explains automatic retry while the mailbox is offline", () => {
     expect(mailEngineConnectionCopy("offline")).toEqual({
-      title: "Waiting to sync.",
-      description: "Catch-up will retry automatically.",
+      title: "等待同步。",
+      description: "补收会自动重试。",
     });
   });
 

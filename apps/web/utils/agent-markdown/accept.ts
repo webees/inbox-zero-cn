@@ -9,8 +9,8 @@ type AcceptEntry = {
 };
 
 /**
- * Parse an Accept header into media-range entries with q-values.
- * Spec-oriented subset sufficient for HTML vs Markdown negotiation.
+ * 将 Accept 请求头解析为带 q 值的媒体范围条目。
+ * 面向规范的子集，足以支持 HTML 与 Markdown 之间的内容协商。
  */
 export function parseAcceptHeader(header: string | null): AcceptEntry[] {
   if (!header?.trim()) return [];
@@ -39,8 +39,8 @@ export function parseAcceptHeader(header: string | null): AcceptEntry[] {
 }
 
 /**
- * Pick the preferred representation among text/html and text/markdown.
- * Returns null when the client explicitly rejects every produced type.
+ * 在 text/html 与 text/markdown 之间选择首选的表示形式。
+ * 当客户端显式拒绝所有可生成的类型时返回 null。
  */
 export function preferredType(
   acceptHeader: string | null,
@@ -86,7 +86,7 @@ export function prefersMarkdown(acceptHeader: string | null): boolean {
   return preferredType(acceptHeader) === "text/markdown";
 }
 
-/** Append Accept to Vary without dropping existing tokens (e.g. RSC vary). */
+/** 将 Accept 追加到 Vary，同时不丢弃已有的 token（例如 RSC 的 vary）。 */
 export function appendVaryAccept(headers: Headers): void {
   const existing = headers.get("vary");
   if (existing === "*") return;

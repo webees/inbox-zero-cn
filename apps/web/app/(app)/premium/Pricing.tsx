@@ -89,14 +89,14 @@ export default function Pricing(props: PricingProps) {
     <div className="mb-12">
       <div className="mx-auto max-w-2xl text-center lg:max-w-4xl">
         <h2 className="font-title text-base leading-7 text-blue-600">
-          <Trans>Pricing</Trans>
+          <Trans>价格</Trans>
         </h2>
         <p className="mt-2 font-title text-4xl text-gray-900 sm:text-5xl">
-          <Trans>Try for free, affordable paid plans</Trans>
+          <Trans>免费试用，实惠的付费套餐</Trans>
         </p>
       </div>
       <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-gray-600">
-        <Trans>No hidden fees. Cancel anytime.</Trans>
+        <Trans>无隐藏费用，随时取消</Trans>
       </p>
     </div>
   );
@@ -148,8 +148,8 @@ export default function Pricing(props: PricingProps) {
         ) : (
           <AlertBasic
             variant="blue"
-            title={t`Billing access restricted`}
-            description={t`Only organization owners and admins can manage billing.`}
+            title={t`账单访问受限`}
+            description={t`只有组织所有者和管理员可以管理账单。`}
           />
         )}
       </div>
@@ -176,7 +176,7 @@ export default function Pricing(props: PricingProps) {
               <Button asChild>
                 <Link href="/setup">
                   <SparklesIcon className="mr-2 h-4 w-4" />
-                  <Trans>Go to app</Trans>
+                  <Trans>前往应用</Trans>
                 </Link>
               </Button>
             )}
@@ -185,8 +185,8 @@ export default function Pricing(props: PricingProps) {
               <div className="mt-2 w-full max-w-2xl basis-full text-left">
                 <AlertBasic
                   variant="blue"
-                  title={t`Managed in the App Store`}
-                  description={t`This subscription is billed by Apple. To change or cancel it, use your iPhone or iPad subscription settings.`}
+                  title={t`通过 App Store 管理`}
+                  description={t`此订阅由 Apple 收费。如需更改或取消，请使用 iPhone 或 iPad 的订阅设置。`}
                 />
               </div>
             )}
@@ -195,8 +195,8 @@ export default function Pricing(props: PricingProps) {
               <div className="mt-2 w-full max-w-2xl basis-full text-left">
                 <AlertBasic
                   variant="blue"
-                  title={t`Grandfathered pricing`}
-                  description={t`You're on a legacy ${legacyTierName} Stripe plan, and your price stays the same. The prices below are for new subscriptions.`}
+                  title={t`旧版价格`}
+                  description={t`您使用的是旧版 ${legacyTierName} Stripe 套餐，价格保持不变。下方价格适用于新订阅。`}
                 />
               </div>
             )}
@@ -217,7 +217,7 @@ export default function Pricing(props: PricingProps) {
         >
           <div className="ml-1">
             <DiscountBadge>
-              <Trans>Save up to 20%</Trans>
+              <Trans>最多节省 20%</Trans>
             </DiscountBadge>
           </div>
         </PricingFrequencyToggle>
@@ -299,9 +299,9 @@ function PriceTier({
 
   // `text` stays English for analytics; `label` is what the button shows.
   function getCTA() {
-    if (isCurrentPlan) return { text: "Current plan", label: t`Current plan` };
+    if (isCurrentPlan) return { text: "Current plan", label: t`当前套餐` };
     if (userPremiumTier && !tier.ctaLink) {
-      return { text: "Switch to this plan", label: t`Switch to this plan` };
+      return { text: "Switch to this plan", label: t`切换到此套餐` };
     }
     return {
       text: tier.cta,
@@ -324,7 +324,7 @@ function PriceTier({
           </h3>
           {tier.mostPopular ? (
             <DiscountBadge>
-              <Trans>Popular</Trans>
+              <Trans>热门</Trans>
             </DiscountBadge>
           ) : null}
         </div>
@@ -334,7 +334,7 @@ function PriceTier({
         <p className="mt-6 flex items-baseline gap-x-1">
           {tier.price[frequency.value] === 0 ? (
             <span className="text-4xl font-bold tracking-tight text-gray-900">
-              <Trans>Let's talk</Trans>
+              <Trans>联系我们</Trans>
             </span>
           ) : (
             <>
@@ -342,7 +342,7 @@ function PriceTier({
                 {formatPrice(tier.price[frequency.value])}
               </span>
               <span className="text-sm font-semibold leading-6 text-gray-600">
-                <Trans>/user</Trans>
+                <Trans>/用户</Trans>
               </span>
             </>
           )}
@@ -350,7 +350,7 @@ function PriceTier({
           {!!tier.discount?.[frequency.value] && (
             <DiscountBadge>
               <span className="tracking-wide">
-                <Trans>SAVE {discountPercent}%</Trans>
+                <Trans>节省 {discountPercent}%</Trans>
               </span>
             </DiscountBadge>
           )}
@@ -425,13 +425,13 @@ function PriceTier({
 
           async function load() {
             if (tier.tiers[frequency.value] === userPremiumTier) {
-              toast.info(t`You are already on this plan`);
+              toast.info(t`您已在使用此套餐`);
               return;
             }
 
             if (hasActiveAppleManagedSubscription) {
               toast.info(
-                t`This subscription is managed through the App Store. To change or cancel it, use your iPhone or iPad subscription settings.`,
+                t`此订阅通过 App Store 管理。如需更改或取消，请使用 iPhone 或 iPad 的订阅设置。`,
               );
               return;
             }
@@ -451,9 +451,9 @@ function PriceTier({
 
             if (!result?.data?.url || result?.serverError) {
               const description = hasActiveStripeSubscription
-                ? t`We couldn't open the plan change page. Your subscription has not been changed. Please contact support at ${supportEmail}`
+                ? t`无法打开套餐更改页面。您的订阅未发生更改。请联系支持团队：${supportEmail}`
                 : result?.serverError ||
-                  t`Error creating checkout session. Please contact support at ${supportEmail}`;
+                  t`创建结账会话失败。请联系支持团队：${supportEmail}`;
 
               captureException(new Error("Error opening Stripe billing flow"), {
                 extra: {
@@ -481,7 +481,7 @@ function PriceTier({
               description:
                 error instanceof Error
                   ? error.message
-                  : t`Error creating checkout session. Please contact support at ${supportEmail}`,
+                  : t`创建结账会话失败。请联系支持团队：${supportEmail}`,
             });
           } finally {
             setLoading(false);
@@ -510,17 +510,17 @@ function PriceTier({
 function ExtraAccountPricing({ price }: { price: number }) {
   const { t } = useLingui();
   const formattedPrice = formatPrice(getExtraAccountPrice(price));
-  const extraAccountPrice = t`${formattedPrice}/mo`;
+  const extraAccountPrice = t`${formattedPrice}/月`;
 
   return (
     <p className="mt-1 flex items-center gap-2 text-sm leading-6 text-gray-600">
       <Plural
         value={INCLUDED_EMAIL_ACCOUNTS_PER_PERSON}
-        one={`# email account included, then ${extraAccountPrice} each`}
-        other={`# email accounts included, then ${extraAccountPrice} each`}
+        one={`包含 # 个邮箱账号，之后每个 ${extraAccountPrice}`}
+        other={`包含 # 个邮箱账号，之后每个 ${extraAccountPrice}`}
       />
       <TooltipExplanation
-        text={t`Connect your personal and work email at no extra cost. Each extra email account is ${extraAccountPrice}. Each team member is billed as a separate user.`}
+        text={t`免费连接您的个人和工作邮箱。每个额外邮箱账号为 ${extraAccountPrice}。每位团队成员按独立用户计费。`}
       />
     </p>
   );

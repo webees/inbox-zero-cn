@@ -32,8 +32,8 @@ export function createNodeSqliteDriver(path = ":memory:"): SqliteDriver {
     if (path !== ":memory:") {
       writer.exec("PRAGMA journal_mode=WAL");
       writer.exec("PRAGMA synchronous=NORMAL");
-      // WAL lets a second connection read the last committed state while a
-      // write transaction is open, so reads never queue behind writes.
+      // WAL 允许第二个连接在写事务打开时读取最后一次提交的状态，
+      // 因此读取永远不会排在写入之后。
       reader = new DatabaseSync(path, { readOnly: true });
     }
   } catch (error) {
@@ -49,7 +49,7 @@ export function createNodeSqliteDriver(path = ":memory:"): SqliteDriver {
     work: (tx: SqlTransaction) => Promise<T>,
     begin: string,
   ) {
-    if (closed) return Promise.reject(new Error("sqlite driver is closed"));
+    if (closed) return Promise.reject(new Error("sqlite 驱动已关闭"));
     return queue.run(work, begin);
   }
 
@@ -59,7 +59,7 @@ export function createNodeSqliteDriver(path = ":memory:"): SqliteDriver {
     async close() {
       closed = true;
       await Promise.all([reads.idle(), writes.idle()]);
-      // The writer closes last so it checkpoints and removes the WAL.
+      // 最后关闭写入方，以执行检查点并移除 WAL。
       if (reader !== writer) reader.close();
       writer.close();
     },
@@ -100,8 +100,8 @@ export async function wipeNodeMailbox(path: string): Promise<void> {
 
 type TransactionQueue = ReturnType<typeof createTransactionQueue>;
 
-// A connection holds one transaction at a time, and work awaits between
-// statements, so each connection runs its transactions one after another.
+// 每个连接同一时间只能持有一个事务，且语句之间会等待工作完成，
+// 因此每个连接会依次执行其事务。
 function createTransactionQueue(database: DatabaseSync) {
   let tail = Promise.resolve();
   return {
@@ -116,7 +116,7 @@ function createTransactionQueue(database: DatabaseSync) {
           try {
             database.exec("ROLLBACK");
           } catch {
-            // already rolled back
+            // 已经回滚
           }
           throw error;
         }
@@ -145,11 +145,8 @@ function createTransaction(database: DatabaseSync): SqlTransaction {
     },
     async execute(sql, bindings = []) {
       const statement = database.prepare(sql);
-      // FTS rowids can exceed Number.MAX_SAFE_INTEGER, and Node 26 throws when
-      // run() converts the connection's lastInsertRowid to a number.
-      statement.setReadBigInts(true);
-      const result = statement.run(...bindings);
-      return { changedRows: Number(result.changes) };
+      const result = statement.run(...bindings) as { changes?: number };
+      return { changedRows: Number(result.changes ?? 0) };
     },
   };
 }

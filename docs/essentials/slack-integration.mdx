@@ -1,65 +1,65 @@
 ---
-title: 'Slack Integration'
-description: 'Chat with your assistant and deliver rules, drafts, and updates to Slack.'
+title: 'Slack 集成'
+description: '与你的助手聊天，并把规则、草稿和更新投递到 Slack。'
 icon: 'hashtag'
 ---
 
-Connect Slack from the unified **Channels** page. A connected workspace can chat with the assistant and receive rule notifications, draft replies for review, meeting briefs, follow-up reminders, digests, and document-filing alerts.
+从统一的**渠道**页面连接 Slack。已连接的工作区可以与助手聊天，并接收规则通知、供审阅的草稿回复、会议简报、跟进提醒、摘要和文档归档提醒。
 
 <iframe
   src="https://player.mux.com/QbtTl00g2Gjx3JhM016Xkei0202zW4qpsF302rp01sRQHaf028?metadata-video-title=Slack%20and%20Telegram%20walkthrough&accent-color=%233b82f6"
-  title="Slack and Telegram walkthrough"
+  title="Slack 与 Telegram 使用演示"
   style={{ width: "100%", border: "none", aspectRatio: "16/9" }}
   loading="lazy"
   allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
   allowFullScreen
 ></iframe>
 
-## Connect Slack
+## 连接 Slack
 
-1. Connect a Gmail or Outlook account to Inbox Zero.
-2. Open **Channels** in the left sidebar.
-3. Find Slack and click **Connect**.
-4. Approve the requested permissions in Slack.
-5. After returning to Inbox Zero, choose a destination for **Rule notifications** before enabling any rules, then configure the other feature destinations you want.
+1. 把 Gmail 或 Outlook 账号连接到 Inbox Zero。
+2. 打开左侧边栏中的**渠道**。
+3. 找到 Slack 并点击**连接**。
+4. 在 Slack 中批准所请求的权限。
+5. 返回 Inbox Zero 后，在启用任何规则之前先为**规则通知**选择一个目的地，然后配置你想要的其他功能目的地。
 
-The connected workspace appears on the Channels page with a **Connected** badge.
+已连接的工作区会带有**已连接**徽章出现在渠道页面上。
 
-## Choose a Destination
+## 选择目的地
 
-Each Slack feature can use a direct message or an allowed private channel. Configured channel delivery has these restrictions:
+每个 Slack 功能都可以使用一条私信或一个允许的私有频道。已配置的频道投递有以下限制：
 
-- Public channels cannot be selected.
-- You must be a member of the private channel.
-- Inbox Zero does not automatically join the selected channel.
-- If a private channel is missing from the selector, use the `/invite @<bot-name>` command shown in the destination menu to invite the Inbox Zero bot, then refresh the list.
+- 无法选择公共频道。
+- 你必须是该私有频道的成员。
+- Inbox Zero 不会自动加入所选频道。
+- 如果选择器中没有某个私有频道，请使用目的地菜单中显示的 `/invite @<bot-name>` 命令邀请 Inbox Zero 机器人，然后刷新列表。
 
-You can choose separate destinations for rule notifications, meeting briefs, follow-up reminders, digests, document-filing alerts, and scheduled check-ins.
+你可以为规则通知、会议简报、跟进提醒、摘要、文档归档提醒和定期的定期检查分别选择不同的目的地。
 
-## Rule Notifications and Draft Review
+## 规则通知与草稿审阅
 
-The **Rule notifications** section lists your assistant rules. First, choose a destination in the section's header; if you enable a rule before choosing one, Inbox Zero shows "Please select a target channel before enabling notifications." Then enable a rule for Slack and use its menu to choose:
+**规则通知**部分列出你的助手规则。首先，在该部分的页眉中选择一个目的地；如果你在未选择目的地时就启用规则，Inbox Zero 会显示「请先选择一个目标频道，然后再启用通知。」然后为 Slack 启用某条规则，并使用其菜单选择：
 
-- **Notify only**: Post a notification when the rule matches.
-- **Draft reply in chat**: Deliver the generated reply to Slack for review.
+- **仅通知**：规则匹配时推送一条通知。
+- **在聊天中起草回复**：把生成的回复投递到 Slack 以供审阅。
 
-## Chat with the Assistant
+## 与助手聊天
 
-- Send the Inbox Zero bot a direct message.
-- Mention the bot in a Slack conversation where it has been added.
-- Continue related conversations in Slack threads.
+- 向 Inbox Zero 机器人发送私信。
+- 在机器人已被添加的 Slack 对话中 @提及它。
+- 在 Slack 会话串中继续相关对话。
 
-The assistant can search and manage email, draft messages, and update supported rules and settings. Use `/help` to see shortcuts such as `/summary`, `/draftreply`, `/followups`, and `/cleanup`.
+助手可以搜索和管理邮件、起草消息，并更新受支持的规则和设置。使用 `/help` 查看 `/summary`、`/draftreply`、`/followups` 和 `/cleanup` 等快捷命令。
 
-## Other Slack Deliveries
+## 其他 Slack 投递
 
-Enable these from the connected Slack section of **Channels** or from the feature's own settings:
+从**渠道**中已连接的 Slack 部分，或从功能自身的设置中启用这些内容：
 
-- [Meeting Briefs](/essentials/meeting-briefs)
-- Follow-up reminders and scheduled check-ins
-- [Email Digest](/essentials/email-digest)
-- [Auto-File Attachments](/essentials/auto-file-attachments) alerts
+- [会议简报](/essentials/meeting-briefs)
+- 跟进提醒和定期的定期检查
+- [邮件摘要](/essentials/email-digest)
+- [自动归档附件](/essentials/auto-file-attachments)提醒
 
-## Disconnect Slack
+## 断开 Slack
 
-Open **Channels**, use the menu next to the connected Slack workspace, and choose `Disconnect Slack`. This stops chat access and all Slack deliveries for that connection.
+打开**渠道**，使用已连接 Slack 工作区旁的菜单，选择 `Disconnect Slack`。这会停止该连接的聊天访问和所有 Slack 投递。

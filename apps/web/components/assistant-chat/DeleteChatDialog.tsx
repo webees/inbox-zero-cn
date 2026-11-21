@@ -1,6 +1,5 @@
 "use client";
 
-import { Trans, useLingui } from "@lingui/react/macro";
 import { useAction } from "next-safe-action/hooks";
 import {
   AlertDialog,
@@ -30,20 +29,19 @@ export function DeleteChatDialog({
   label: string;
   onDeleted: () => void;
 }) {
-  const { t } = useLingui();
   const { emailAccountId } = useAccount();
   const { execute, isExecuting } = useAction(
     deleteChatAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: t`Chat deleted.` });
+        toastSuccess({ description: "聊天已删除。" });
         onDeleted();
         onOpenChange(false);
       },
       onError: (error) => {
         toastError({
           description: getActionErrorMessage(error.error, {
-            prefix: t`Failed to delete chat`,
+            prefix: "删除聊天失败",
           }),
         });
       },
@@ -54,20 +52,14 @@ export function DeleteChatDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>
-            <Trans>Delete chat?</Trans>
-          </AlertDialogTitle>
+          <AlertDialogTitle>删除聊天？</AlertDialogTitle>
           <AlertDialogDescription>
-            <Trans>
-              &ldquo;{label}&rdquo; will be removed from your chat history and
-              its messages will be redacted. This action cannot be undone.
-            </Trans>
+            &ldquo;{label}&rdquo;
+            将从你的聊天记录中移除，其中的消息将被隐去。此操作无法撤销。
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isExecuting}>
-            <Trans>Cancel</Trans>
-          </AlertDialogCancel>
+          <AlertDialogCancel disabled={isExecuting}>取消</AlertDialogCancel>
           <AlertDialogAction
             onClick={(e) => {
               e.preventDefault();
@@ -76,7 +68,7 @@ export function DeleteChatDialog({
             disabled={isExecuting}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {isExecuting ? <Trans>Deleting...</Trans> : <Trans>Delete</Trans>}
+            {isExecuting ? "删除中…" : "删除"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

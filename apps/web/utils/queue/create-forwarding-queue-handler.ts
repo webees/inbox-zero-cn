@@ -55,7 +55,7 @@ export function createForwardingQueueHandler<TSchema extends z.ZodTypeAny>({
 
       const traceContext = getTraceContext?.(parseResult.data, metadata);
       if (traceContext) {
-        runLogger.trace("Forwarding queue message", traceContext);
+        runLogger.trace("正在转发队列消息", traceContext);
       }
 
       await forwardQueueMessageToInternalApi({

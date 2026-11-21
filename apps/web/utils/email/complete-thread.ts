@@ -12,7 +12,7 @@ export async function readCompleteThreadJson<T>(
 ): Promise<T> {
   if (budget.remainingPages-- <= 0) {
     await source.cancel();
-    throw new Error("Conversation exceeds the offline snapshot page limit");
+    throw new Error("会话超出离线快照页数上限");
   }
   const reader = source
     .pipeThrough(new TransformStream<Uint8Array, Uint8Array>(), { signal })
@@ -27,7 +27,7 @@ export async function readCompleteThreadJson<T>(
       signal?.throwIfAborted();
       if (done) break;
       if (value.byteLength > budget.remainingBytes)
-        throw new Error("Conversation exceeds the offline snapshot byte limit");
+        throw new Error("会话超出离线快照字节上限");
       budget.remainingBytes -= value.byteLength;
       total += value.byteLength;
       let index = 0;

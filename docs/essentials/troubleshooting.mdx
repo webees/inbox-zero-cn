@@ -1,57 +1,56 @@
 ---
-title: 'Troubleshooting'
-description: 'Resolve common mailbox, rule, draft, calendar, and channel problems.'
+title: '故障排查'
+description: '解决常见的邮箱、规则、草稿、日历和渠道问题。'
 icon: 'life-ring'
 ---
 
-## Mail is not being processed
+## 邮件没有被处理
 
-1. Confirm the correct mailbox is selected in the account switcher.
-2. Open **Settings → Email Accounts** and make sure rules are not globally disabled.
-3. Check whether Gmail or Outlook access was revoked or requires new permissions.
-4. Open **Assistant → History** to see whether the message was evaluated.
-5. Reconnect the mailbox if the app reports a permission or subscription error.
+1. 确认账号切换器中选中的是正确的邮箱。
+2. 打开**设置 → 邮箱账号**，确保规则没有被全局禁用。
+3. 检查 Gmail 或 Outlook 访问权限是否被撤销，或是否需要新的权限。
+4. 打开**助手 → 历史**，查看该邮件是否被评估过。
+5. 如果应用报告权限或订阅错误，请重新连接该邮箱。
 
-## A rule matched the wrong message
+## 某条规则匹配到了错误的邮件
 
-Open **Assistant → History**, find the message, and select **Fix**. Explain what should have happened. You can also open the rule directly to adjust its static conditions, AI instructions, actions, or learned patterns.
+打开**助手 → 历史**，找到该邮件，选择**修复**。说明本应发生什么。你也可以直接打开该规则，调整其静态条件、AI 说明、操作或学习到的模式。
 
-Use the **Test** tab before re-enabling a rule that sends, replies, forwards, deletes, or calls a webhook.
+在重新启用会发送、回复、转发、删除或调用 webhook 的规则前，请使用**测试**标签页。
 
-## A rule did not match
+## 某条规则没有匹配
 
-- Check whether the rule is enabled.
-- Check **Apply to threads** if the message was a reply in an existing conversation.
-- Review overlapping rules and the multi-rule setting.
-- Confirm that referenced labels, folders, channels, files, or calendars still exist.
-- Test the rule against the message text and inspect the explanation.
+- 检查该规则是否已启用。
+- 如果该邮件是现有会话中的回复，请检查**应用于会话**。
+- 检查相互重叠的规则和多规则设置。
+- 确认所引用的标签、文件夹、渠道、文件或日历仍然存在。
+- 对该邮件文本测试规则并检查解释。
 
-## A draft was not created
+## 没有创建草稿
 
-Check that auto-drafting is enabled and that the message meets your configured draft-confidence threshold. A message may also be excluded because it does not need a reply, the relevant rule is disabled, or the provider no longer has permission to create drafts.
+检查是否已启用自动起草，以及该邮件是否满足你配置的起草置信度阈值。邮件也可能因为不需要回复、相关规则被禁用，或服务商不再有创建草稿的权限而被排除。
 
-## Calendar or availability is wrong
+## 日历或空闲时间不正确
 
-- Verify the correct calendars are connected and enabled.
-- Confirm your timezone and weekly availability.
-- Check that the destination calendar for a booking link still exists.
-- Reconnect the calendar if events are not updating.
+- 核实连接并启用了正确的日历。
+- 确认你的时区和每周空闲时间。
+- 检查预约链接的目标日历是否仍然存在。
+- 如果事件没有更新，请重新连接该日历。
 
-## Channel notifications are missing
+## 缺少渠道通知
 
-Open **Channels** and check that the provider is connected and the relevant delivery type is enabled.
+打开**渠道**，检查服务商已连接，且相关的投递类型已启用。
 
-For Slack notifications, choose a private channel you belong to and manually invite the Inbox Zero bot to that channel. Teams and Telegram delivery uses the linked direct-message conversation.
+对于 Slack 通知，请选择一个你所属的私有频道，并把 Inbox Zero 机器人手动邀请到该频道。Teams 和 Telegram 投递使用已链接的私信对话。
 
-## Attachment filing failed
+## 附件归档失败
 
-Confirm that the drive connection is active and that the destination is within the folders you approved. If the AI requested clarification, reply through the configured channel or correct the filing from the Attachments page.
+确认云盘连接有效，且目标位置在你已批准的文件夹内。如果 AI 请求澄清，请通过已配置的渠道回复，或从附件页面纠正归档。
 
-## A bulk action is taking longer than expected
+## 某个批量操作耗时比预期长
 
-Large inbox operations can take time. Keep the page open while it reports progress, avoid starting the same operation again, and review the resulting history or sender state before applying another bulk action.
+大型收件箱操作可能需要时间。在它报告进度期间请保持页面打开，避免再次启动同一操作，并在应用另一个批量操作前检查生成的历史或发件人状态。
 
-## Still stuck?
+## 仍然卡住了？
 
-Contact [support@getinboxzero.com](mailto:support@getinboxzero.com) with the affected feature, email provider, approximate time of the problem, and any visible error message. Do not send passwords, API keys, OAuth tokens, or full sensitive email content.
-
+请联系 [support@getinboxzero.com](mailto:support@getinboxzero.com)，并提供受影响的的功能、邮件服务商、问题的大致时间以及任何可见的错误消息。请勿发送密码、API 密钥、OAuth 令牌或完整的敏感邮件内容。

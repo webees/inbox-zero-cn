@@ -45,7 +45,7 @@ export function resolveMicrosoftGraphNextLink(
   pageToken?: string | null,
 ): string | null {
   if (!isAllowedMicrosoftGraphPageToken(pageToken)) {
-    throw new Error("Invalid Outlook page token");
+    throw new Error("Outlook 分页令牌无效");
   }
   if (pageToken?.startsWith("/v1.0/") || pageToken?.startsWith("/beta/")) {
     return `https://graph.microsoft.com${pageToken}`;
@@ -56,7 +56,7 @@ export function resolveMicrosoftGraphNextLink(
 export const microsoftGraphPageTokenSchema = z
   .string()
   .nullish()
-  .refine(isAllowedMicrosoftGraphPageToken, { message: "Invalid page token" });
+  .refine(isAllowedMicrosoftGraphPageToken, { message: "分页令牌无效" });
 
 export function isAdvancingGraphNextLink(
   currentLink: string,

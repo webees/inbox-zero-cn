@@ -30,14 +30,14 @@ export function buildDocumentFiledBlocks({
 
   const fileDisplay = fileLink ? `<${fileLink}|${filename}>` : `*${filename}*`;
 
-  const fromPart = senderEmail ? ` from *${senderEmail}*` : "";
+  const fromPart = senderEmail ? `，来自 *${senderEmail}*` : "";
 
   return [
     {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `📨 Filed ${fileDisplay}${fromPart} to *${folderPath}*`,
+        text: `📨 已将 ${fileDisplay}${fromPart} 归档到 *${folderPath}*`,
       },
     },
   ];
@@ -48,7 +48,7 @@ export function buildDocumentAskBlocks({
   reasoning,
   senderEmail,
 }: DocumentAskBlocksParams): (KnownBlock | Block)[] {
-  const fromPart = senderEmail ? ` from *${senderEmail}*` : "";
+  const fromPart = senderEmail ? `，来自 *${senderEmail}*` : "";
   const reasonPart = reasoning ? ` — ${reasoning}` : "";
 
   return [
@@ -56,7 +56,7 @@ export function buildDocumentAskBlocks({
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `📄 Where should I file *${filename}*${fromPart}?${reasonPart}`,
+        text: `📄 我该把 *${filename}*${fromPart} 归档到哪里？${reasonPart}`,
       },
     },
   ];

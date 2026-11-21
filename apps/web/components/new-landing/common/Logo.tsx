@@ -48,24 +48,24 @@ export function Logo({ variant = "default" }: LogoProps) {
           }
         >
           <ExternalLinkIcon className="mr-2 size-4" />
-          <Trans>Open Link in New Tab</Trans>
+          <Trans>在新标签页中打开链接</Trans>
         </ContextMenuItem>
         <ContextMenuSeparator />
         <ContextMenuItem
           onSelect={async () => {
             if (await copyLogoSvg()) {
-              toastSuccess({ description: t`Logo copied as SVG` });
+              toastSuccess({ description: t`Logo 已复制为 SVG` });
             } else {
-              toastError({ description: t`Couldn't copy the logo` });
+              toastError({ description: t`无法复制 Logo` });
             }
           }}
         >
           <CopyIcon className="mr-2 size-4" />
-          <Trans>Copy Logo as SVG</Trans>
+          <Trans>复制 Logo 为 SVG</Trans>
         </ContextMenuItem>
         <ContextMenuItem onSelect={() => router.push("/brand")}>
           <PaletteIcon className="mr-2 size-4" />
-          <Trans>Go to Brand Kit</Trans>
+          <Trans>前往品牌资源包</Trans>
         </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
@@ -77,7 +77,7 @@ async function copyLogoSvg(): Promise<boolean> {
     // Passing a promise keeps the user gesture alive in Safari while the SVG loads.
     const svg = fetch("/brand/inbox-zero-wordmark-dark.svg")
       .then((res) => {
-        if (!res.ok) throw new Error(`Logo request failed: ${res.status}`);
+        if (!res.ok) throw new Error(`Logo 请求失败：${res.status}`);
         return res.text();
       })
       .then((text) => new Blob([text], { type: "text/plain" }));

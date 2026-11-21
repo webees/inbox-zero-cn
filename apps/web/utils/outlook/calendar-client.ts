@@ -144,7 +144,7 @@ export const getCalendarClientWithRefresh = async ({
         logger,
       });
       throw new SafeError(
-        "Your Microsoft calendar authorization has expired. Please reconnect your calendar.",
+        "你的 Microsoft 日历授权已过期。请重新连接你的日历。",
       );
     }
 

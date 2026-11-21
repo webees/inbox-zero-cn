@@ -1,6 +1,5 @@
 "use client";
 
-import { useLingui } from "@lingui/react/macro";
 import { AudioLinesIcon, MicIcon } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -30,7 +29,6 @@ export function VoiceInput({
   onSend: (text: string) => void;
   className?: string;
 }) {
-  const { t } = useLingui();
   const analytics = useProductAnalytics();
   const { status: voiceStatus } = useVoiceStatus();
   const dictation = useVoiceDictation();
@@ -91,14 +89,14 @@ export function VoiceInput({
     <>
       <div className={cn("flex items-center gap-1", className)}>
         {canDictate ? (
-          <Tooltip content={t`Dictate`}>
+          <Tooltip content="听写">
             <Button
-              aria-label={t`Dictate`}
+              aria-label="听写"
               className="size-9 rounded-full"
               data-testid="voice-dictate-button"
               onClick={() => {
                 beginDictation().catch((error) => {
-                  toastVoiceError(error, t`Could not start the microphone.`);
+                  toastVoiceError(error, "无法启动麦克风。");
                 });
               }}
               size="icon"
@@ -110,17 +108,14 @@ export function VoiceInput({
           </Tooltip>
         ) : null}
         {canLive ? (
-          <Tooltip content={t`Live conversation`}>
+          <Tooltip content="实时对话">
             <Button
-              aria-label={t`Start live conversation`}
+              aria-label="开始实时对话"
               className="size-9 rounded-full"
               data-testid="voice-live-button"
               onClick={() => {
                 beginLive().catch((error) => {
-                  toastVoiceError(
-                    error,
-                    t`Could not start a live conversation.`,
-                  );
+                  toastVoiceError(error, "无法开始实时对话。");
                 });
               }}
               size="icon"
@@ -154,14 +149,14 @@ export function VoiceInput({
             if (mode === "live") finishLive(true);
             else
               finishDictation(true).catch((error) => {
-                toastVoiceError(error, t`Could not finish dictation.`);
+                toastVoiceError(error, "无法完成听写。");
               });
           }}
           onStop={() => {
             if (mode === "live") finishLive(false);
             else
               finishDictation(false).catch((error) => {
-                toastVoiceError(error, t`Could not finish dictation.`);
+                toastVoiceError(error, "无法完成听写。");
               });
           }}
           transcript={mode === "live" ? live.userTranscript : ""}
@@ -172,7 +167,7 @@ export function VoiceInput({
 }
 
 function toastVoiceError(error: unknown, fallback: string) {
-  logger.error("Voice UI error", {
+  logger.error("语音界面错误", {
     error: error instanceof Error ? error.message : String(error),
   });
   toastError({ description: fallback });

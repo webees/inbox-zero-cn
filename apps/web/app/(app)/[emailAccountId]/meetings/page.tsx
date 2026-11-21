@@ -44,7 +44,7 @@ function MeetingsPageContent() {
   if (!meetingRecorderEnabled) {
     return (
       <PageWrapper>
-        <PageHeader title={t`Meetings`} />
+        <PageHeader title={t`会议`} />
 
         <div className="mt-8 max-w-3xl">
           <ActionCard
@@ -152,7 +152,7 @@ function MeetingRecorderPageContent() {
           Icon={SettingsIcon}
           onClick={() => setIsSettingsOpen(true)}
         >
-          <Trans>Settings</Trans>
+          <Trans>设置</Trans>
         </Button>
       </div>
 
@@ -163,13 +163,12 @@ function MeetingRecorderPageContent() {
           <ActionCard
             variant="blue"
             icon={<CalendarIcon className="h-5 w-5" />}
-            title={t`Reconnect your calendar`}
+            title={t`重新连接日历`}
             description={
               <div className="space-y-4">
                 <p>
                   <Trans>
-                    Your meeting notetaker is still enabled. Connect a calendar
-                    so it can find upcoming meetings.
+                    你的会议记录助手仍然启用。请连接日历，以便它查找即将开始的会议。
                   </Trans>
                 </p>
                 <ConnectCalendar

@@ -78,6 +78,7 @@ test("replies from the alias a message was sent to", async ({
 
   const summary = page.getByRole("button", { name: /^Draft to/ });
   await expect(summary).toContainText(`from ${ALIAS.email}`);
+  await capturePlaywrightCheckpoint(page, testInfo, "reply-summary-from-alias");
 
   await summary.click();
   const from = page.getByRole("combobox", { name: "From" });

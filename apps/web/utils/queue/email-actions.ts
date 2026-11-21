@@ -18,8 +18,8 @@ export const runAiRules = async (
   }: {
     signal?: AbortSignal;
     skipDraftReplies?: boolean;
-    // Retrying inside the task keeps a rate-limited email queued, and retries
-    // only that email, instead of failing the batch.
+    // 在任务内部重试可让受速率限制的邮件保持排队，并只重试该邮件，
+    // 而不是让整批失败。
     runWithRetry?: <T>(
       operation: () => Promise<T>,
       signal: AbortSignal,
@@ -33,7 +33,7 @@ export const runAiRules = async (
   const batchAbortController = new AbortController();
   const abortBatch = () => {
     batchAbortController.abort(
-      signal?.reason ?? new DOMException("Aborted", "AbortError"),
+      signal?.reason ?? new DOMException("已中止", "AbortError"),
     );
   };
 
@@ -93,7 +93,7 @@ export const runAiRules = async (
 
     if (hasTaskFailure) throw firstError;
     if (signal?.aborted) {
-      throw signal.reason ?? new DOMException("Aborted", "AbortError");
+      throw signal.reason ?? new DOMException("已中止", "AbortError");
     }
 
     return results.map((result) => {

@@ -543,7 +543,7 @@ function ChatHistoryDropdown() {
           if (value) setShouldLoadChats(true);
         }}
       >
-        <Tooltip content={t`View previous conversations`}>
+        <Tooltip content={t`查看之前的会话`}>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
@@ -556,7 +556,7 @@ function ChatHistoryDropdown() {
             >
               <HistoryIcon className="size-5" />
               <span className="sr-only">
-                <Trans>Chat History</Trans>
+                <Trans>聊天记录</Trans>
               </span>
             </Button>
           </DropdownMenuTrigger>
@@ -571,12 +571,12 @@ function ChatHistoryDropdown() {
                 className="flex items-center justify-center"
               >
                 <Loader2 className="mr-2 size-4 animate-spin" />
-                <Trans>Loading chats...</Trans>
+                <Trans>正在加载聊天...</Trans>
               </DropdownMenuItem>
             }
             errorComponent={
               <DropdownMenuItem disabled>
-                <Trans>Error loading chats</Trans>
+                <Trans>加载聊天失败</Trans>
               </DropdownMenuItem>
             }
           >
@@ -601,7 +601,7 @@ function ChatHistoryDropdown() {
               ))
             ) : (
               <DropdownMenuItem disabled>
-                <Trans>No previous chats found</Trans>
+                <Trans>未找到之前的聊天</Trans>
               </DropdownMenuItem>
             )}
           </LoadingContent>
@@ -660,7 +660,7 @@ function ChatSendError({
             className="h-auto shrink-0 px-1.5 py-0.5 text-destructive hover:text-destructive"
             onClick={onNewChat}
           >
-            <Trans>New chat</Trans>
+            <Trans>新建聊天</Trans>
           </Button>
         ) : null}
       </div>
@@ -691,12 +691,12 @@ function QueuedMessageChip({
           <div className="truncate text-sm">
             {message.text ||
               t`${plural(attachmentCount, {
-                one: "# image",
-                other: "# images",
+                one: "# 张图片",
+                other: "# 张图片",
               })}`}
           </div>
           <div className="truncate text-xs text-muted-foreground">
-            <Trans>Sends when the assistant finishes</Trans>
+            <Trans>助手完成后发送</Trans>
           </div>
         </div>
         <Button
@@ -706,13 +706,13 @@ function QueuedMessageChip({
           className="shrink-0"
           onClick={onSendNow}
         >
-          <Trans>Send now</Trans>
+          <Trans>立即发送</Trans>
         </Button>
         <Button
           type="button"
           variant="ghost"
           size="iconXs"
-          aria-label={t`Remove queued message`}
+          aria-label={t`移除排队消息`}
           className="shrink-0 text-muted-foreground"
           onClick={onRemove}
         >

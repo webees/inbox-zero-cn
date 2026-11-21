@@ -41,9 +41,9 @@ export function BulkUnsubscribeDesktop({
   const { t } = useLingui();
 
   return (
-    // Only let the header stick to the page once the widest rows fit (~800px);
-    // narrower, e.g. with the chat sidebar open, the table keeps its own
-    // horizontal scroll so the actions column isn't clipped.
+    // 仅当最宽的行能放下（约 800px）时才让表头固定在页面上；
+    // 窗口更窄时，例如聊天侧边栏打开时，表格保持自身的水平滚动，
+    // 以免操作列被裁切。
     <div className="[container-type:inline-size]">
       <Table
         className="bulk-unsub-table min-[641px]:min-w-[800px] sm:table-fixed"
@@ -57,9 +57,7 @@ export function BulkUnsubscribeDesktop({
             <TableHead className="w-10 pr-0">
               <ButtonCheckbox
                 label={
-                  isAllSelected
-                    ? t`Deselect all senders`
-                    : t`Select all senders`
+                  isAllSelected ? t`取消选择所有发件人` : t`选择所有发件人`
                 }
                 checked={isAllSelected}
                 indeterminate={isSomeSelected && !isAllSelected}
@@ -68,7 +66,7 @@ export function BulkUnsubscribeDesktop({
             </TableHead>
             <TableHead className="pl-4">
               <span className="text-sm font-medium">
-                <Trans>From</Trans>
+                <Trans>发件人</Trans>
               </span>
             </TableHead>
             <TableHead className="w-[90px] whitespace-nowrap">
@@ -79,7 +77,7 @@ export function BulkUnsubscribeDesktop({
                 }
                 onClick={() => onSort("emails")}
               >
-                <Trans>Emails</Trans>
+                <Trans>邮件数</Trans>
               </HeaderButton>
             </TableHead>
             <TableHead className="w-[150px] whitespace-nowrap">
@@ -90,7 +88,7 @@ export function BulkUnsubscribeDesktop({
                 }
                 onClick={() => onSort("unread")}
               >
-                <Trans>Read</Trans>
+                <Trans>已读</Trans>
               </HeaderButton>
             </TableHead>
             <TableHead className="w-[300px]" />

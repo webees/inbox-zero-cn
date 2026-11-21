@@ -1,6 +1,5 @@
 "use client";
 
-import { useLingui } from "@lingui/react/macro";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils/index";
 import { ArrowDownIcon } from "lucide-react";
@@ -40,41 +39,32 @@ export type ConversationEmptyStateProps = ComponentProps<"div"> & {
 
 export const ConversationEmptyState = ({
   className,
-  title,
-  description,
+  title = "暂无消息",
+  description = "开始对话后，消息会显示在这里",
   icon,
   children,
   ...props
-}: ConversationEmptyStateProps) => {
-  const { t } = useLingui();
-  const resolvedTitle = title ?? t`No messages yet`;
-  const resolvedDescription =
-    description ?? t`Start a conversation to see messages here`;
-
-  return (
-    <div
-      className={cn(
-        "flex size-full flex-col items-center justify-center gap-3 p-8 text-center",
-        className,
-      )}
-      {...props}
-    >
-      {children ?? (
-        <>
-          {icon && <div className="text-muted-foreground">{icon}</div>}
-          <div className="space-y-1">
-            <h3 className="font-medium text-sm">{resolvedTitle}</h3>
-            {resolvedDescription && (
-              <p className="text-muted-foreground text-sm">
-                {resolvedDescription}
-              </p>
-            )}
-          </div>
-        </>
-      )}
-    </div>
-  );
-};
+}: ConversationEmptyStateProps) => (
+  <div
+    className={cn(
+      "flex size-full flex-col items-center justify-center gap-3 p-8 text-center",
+      className,
+    )}
+    {...props}
+  >
+    {children ?? (
+      <>
+        {icon && <div className="text-muted-foreground">{icon}</div>}
+        <div className="space-y-1">
+          <h3 className="font-medium text-sm">{title}</h3>
+          {description && (
+            <p className="text-muted-foreground text-sm">{description}</p>
+          )}
+        </div>
+      </>
+    )}
+  </div>
+);
 
 export type ConversationScrollButtonProps = ComponentProps<typeof Button> & {
   wrapperClassName?: string;

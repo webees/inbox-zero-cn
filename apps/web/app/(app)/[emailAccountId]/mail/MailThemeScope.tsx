@@ -3,13 +3,13 @@
 import { useEffect } from "react";
 
 /**
- * Applies the Mail palette by stamping `data-theme="mail"` on the document root.
+ * 通过在文档根节点上标记 `data-theme="mail"` 来应用 Mail 调色板。
  *
- * It has to be the root rather than a wrapper element: Radix renders dropdowns,
- * dialogs and tooltips into a portal on <body>, so a wrapper-scoped theme would
- * leave every popover painted in the app's default palette on top of this screen.
+ * 必须是根节点而非包裹元素：Radix 会把下拉菜单、对话框与
+ * 提示渲染到 <body> 上的 portal 中，因此作用域仅限包裹元素的主题
+ * 会让每个弹出层都以此屏幕应用的默认调色板绘制。
  *
- * next-themes drives dark mode through a class, so an attribute doesn't collide.
+ * next-themes 通过 class 驱动深色模式，因此使用属性不会冲突。
  */
 export function MailThemeScope() {
   useEffect(() => {

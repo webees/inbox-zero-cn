@@ -73,7 +73,7 @@ export default function MeetingRecapEmail({
           <Container className="mx-auto w-full max-w-[600px] p-0">
             <Section className="px-8 pt-6 pb-2">
               <Text className="text-base text-gray-900 mt-0 mb-0">
-                Notes from <strong>{meetingTitle}</strong>
+                来自 <strong>{meetingTitle}</strong> 的笔记
               </Text>
               <Text className="text-base text-gray-900 mt-0 mb-0">
                 {formattedTime}
@@ -86,24 +86,22 @@ export default function MeetingRecapEmail({
               </Text>
             </Section>
 
-            {renderBulletSection("Decisions", recap.keyDecisions)}
-            {renderBulletSection("Action items", actionItems)}
-            {renderBulletSection("Open questions", recap.openQuestions ?? [])}
-            {renderBulletSection("Next steps", recap.nextSteps ?? [])}
+            {renderBulletSection("决策", recap.keyDecisions)}
+            {renderBulletSection("行动项", actionItems)}
+            {renderBulletSection("待解决问题", recap.openQuestions ?? [])}
+            {renderBulletSection("后续步骤", recap.nextSteps ?? [])}
 
             {followUpDraftCreated && (
               <Section className="px-8 pb-4">
                 <Text className="text-sm text-gray-700 mt-0 mb-0">
-                  A follow-up email to the other attendees is waiting in your
-                  drafts. Nothing has been sent.
+                  一封发给其他参会者的跟进邮件已保存在你的草稿中。尚未发送任何内容。
                 </Text>
               </Section>
             )}
 
             <Section className="px-8 pb-6">
               <Text className="text-xs text-gray-400 mt-0 mb-0 italic">
-                These notes are AI-generated from an automatic transcript and
-                may be inaccurate.
+                这些笔记由 AI 根据自动转录生成，可能不准确。
               </Text>
             </Section>
 
@@ -111,15 +109,14 @@ export default function MeetingRecapEmail({
 
             <Section className="px-8 pb-8">
               <Text className="text-xs text-gray-500 mt-0 mb-2">
-                You're receiving these notes because you enabled the notetaker
-                in your Inbox Zero settings.
+                你收到这些笔记是因为你在 Inbox Zero 设置中启用了会议记录功能。
               </Text>
               <Text className="text-xs text-gray-500 mt-0 mb-0">
                 <Link
                   href={`${baseUrl}/${emailAccountId}/meetings`}
                   className="text-gray-600 underline"
                 >
-                  View meeting
+                  查看会议
                 </Link>
               </Text>
             </Section>
@@ -134,28 +131,28 @@ MeetingRecapEmail.PreviewProps = {
   baseUrl: "https://www.getinboxzero.com",
   unsubscribeToken: "test-token",
   emailAccountId: "test-account",
-  meetingTitle: "Product Strategy Review with Acme Corp",
+  meetingTitle: "与 Acme Corp 的产品战略评审",
   formattedTime: "Mon, May 4 at 2:00 PM",
   followUpDraftCreated: true,
   recap: {
     overview:
-      "Acme walked through their rollout timeline and raised concerns about the enterprise tier's API limits. The team agreed to revisit pricing before the next call.",
+      "Acme 介绍了他们的上线时间表，并对企业版套餐的 API 限制提出了顾虑。团队同意在下次通话前重新讨论定价。",
     keyDecisions: [
-      "Enterprise tier will include a higher API rate limit",
-      "Rollout moves to the first week of June",
+      "企业版套餐将包含更高的 API 速率限制",
+      "上线时间推迟到 6 月第一周",
     ],
     actionItems: [
-      { description: "Send the revised pricing sheet", owner: "Alice" },
-      { description: "Confirm the security review timeline", owner: "John" },
-      { description: "Share the migration checklist" },
+      { description: "发送修订后的报价单", owner: "Alice" },
+      { description: "确认安全审查时间表", owner: "John" },
+      { description: "分享迁移清单" },
     ],
-    openQuestions: ["Who signs off on the security review?"],
-    nextSteps: ["Reconvene next Thursday with the updated pricing"],
+    openQuestions: ["谁来批准安全审查？"],
+    nextSteps: ["下周四带着更新后的定价再次开会"],
   },
 } satisfies MeetingRecapEmailProps;
 
 export function generateMeetingRecapSubject(
   props: Pick<MeetingRecapEmailProps, "meetingTitle">,
 ): string {
-  return `Notes from ${props.meetingTitle}`;
+  return `来自 ${props.meetingTitle} 的笔记`;
 }

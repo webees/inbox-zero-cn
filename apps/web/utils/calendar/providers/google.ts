@@ -35,7 +35,7 @@ export function createGoogleCalendarProvider(
       const email = payload.email;
 
       if (!email) {
-        throw new Error("Could not get email from Google profile");
+        throw new Error("无法从 Google 资料获取邮箱");
       }
 
       return {
@@ -79,7 +79,7 @@ export function createGoogleCalendarProvider(
               },
             },
             update: {
-              name: googleCalendar.summary || "Untitled Calendar",
+              name: googleCalendar.summary || "未命名日历",
               description: googleCalendar.description,
               timezone: googleCalendar.timeZone,
               primary: googleCalendar.primary ?? false,
@@ -87,7 +87,7 @@ export function createGoogleCalendarProvider(
             create: {
               connectionId,
               calendarId: googleCalendar.id,
-              name: googleCalendar.summary || "Untitled Calendar",
+              name: googleCalendar.summary || "未命名日历",
               description: googleCalendar.description,
               timezone: googleCalendar.timeZone,
               primary: googleCalendar.primary ?? false,
@@ -98,7 +98,7 @@ export function createGoogleCalendarProvider(
 
         await autoPopulateTimezone(emailAccountId, googleCalendars, logger);
       } catch (error) {
-        logger.error("Error syncing calendars", { error, connectionId });
+        logger.error("同步日历出错", { error, connectionId });
         await prisma.calendarConnection.update({
           where: { id: connectionId },
           data: { isConnected: false },
@@ -114,7 +114,7 @@ async function verifyGoogleIdTokenPayload(
   idToken: string | null | undefined,
 ) {
   if (!idToken) {
-    throw new Error("Missing id_token from Google response");
+    throw new Error("Google 响应中缺少 id_token");
   }
 
   const ticket = await googleAuth.verifyIdToken({
@@ -124,7 +124,7 @@ async function verifyGoogleIdTokenPayload(
   const payload = ticket.getPayload();
 
   if (!payload?.email) {
-    throw new Error("Could not get email from ID token");
+    throw new Error("无法从 ID token 获取邮箱");
   }
 
   return payload;

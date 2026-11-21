@@ -18,7 +18,7 @@ import { notifyMailboxChanged } from "@/utils/mailbox-push";
 
 export const maxDuration = 300;
 
-// Google PubSub calls this endpoint each time a user recieves an email. We subscribe for updates via `api/google/watch`
+// 每当用户收到邮件时，Google PubSub 都会调用此端点。我们通过 `api/google/watch` 订阅更新
 export const POST = withError("google/webhook", async (request) => {
   const searchParams = new URL(request.url).searchParams;
   const token = searchParams.get("token");
@@ -28,32 +28,29 @@ export const POST = withError("google/webhook", async (request) => {
   const verificationToken = env.GOOGLE_PUBSUB_VERIFICATION_TOKEN;
 
   if (verificationToken == null) {
-    logger.error("Google webhook verification token is not configured");
+    logger.error("Google webhook 校验令牌未配置");
     return NextResponse.json(
-      { message: "Google webhook is not configured" },
+      { message: "Google webhook 未配置" },
       { status: 503 },
     );
   }
 
-  // Empty string intentionally disables query-param verification when
-  // requests are authenticated upstream, such as via the OIDC gateway.
+  // 空字符串会有意禁用查询参数校验，适用于请求已在上游通过身份验证的情况，
+  // 例如经由 OIDC 网关。
   if (verificationToken !== "" && token !== verificationToken) {
-    logger.error("Invalid verification token");
-    return NextResponse.json(
-      { message: "Invalid verification token" },
-      { status: 403 },
-    );
+    logger.error("校验令牌无效");
+    return NextResponse.json({ message: "验证令牌无效" }, { status: 403 });
   }
 
   const body = await request.json();
   const decodedData = decodeHistoryId(body);
 
-  // A malformed payload can never be processed; report it as a client error
-  // rather than letting a TypeError surface as a 500.
+  // 格式错误的载荷无法处理；将其报告为客户端错误，
+  // 而不是让 TypeError 以 500 的形式暴露。
   if (!decodedData) {
-    logger.warn("Invalid Gmail Pub/Sub notification payload");
+    logger.warn("Gmail Pub/Sub 通知载荷无效");
     return NextResponse.json(
-      { message: "Invalid Pub/Sub message payload" },
+      { message: "Pub/Sub 消息载荷无效" },
       { status: 400 },
     );
   }
@@ -66,7 +63,7 @@ export const POST = withError("google/webhook", async (request) => {
     sentAt: body.message?.publishTime,
   });
 
-  logger.info("Received webhook - acknowledging immediately");
+  logger.info("已收到 webhook，立即确认");
 
   const emailAccount = await getWebhookEmailAccount(
     { email: decodedData.emailAddress.toLowerCase() },
@@ -74,14 +71,14 @@ export const POST = withError("google/webhook", async (request) => {
   );
 
   logger = logger.with({ emailAccountId: emailAccount?.id });
-  logger.info("Gmail webhook account lookup completed", {
+  logger.info("Gmail webhook 邮箱账号查询完成", {
     emailAccountFound: !!emailAccount,
     lastSyncedHistoryId: emailAccount?.lastSyncedHistoryId,
   });
 
   if (emailAccount) {
-    // Notify before history processing so early returns still reach clients,
-    // and so this response is not waiting on Apple.
+    // 在历史记录处理前通知，使提前返回仍能送达客户端，
+    // 且此响应无需等待 Apple。
     after(() =>
       notifyMailboxChanged({
         emailAccountId: emailAccount.id,
@@ -92,7 +89,7 @@ export const POST = withError("google/webhook", async (request) => {
       emailAccountId: emailAccount.id,
       logger,
     }).catch((error) => {
-      logger.warn("Failed to read provider rate-limit state before enqueue", {
+      logger.warn("入队前读取服务商限流状态失败", {
         error: error instanceof Error ? error.message : error,
       });
       return null;
@@ -101,16 +98,13 @@ export const POST = withError("google/webhook", async (request) => {
     if (isGoogleProvider(activeRateLimit?.provider)) {
       await cleanupWebhookAccountOnRateLimitSkip(emailAccount, logger).catch(
         (error) => {
-          logger.warn(
-            "Failed to cleanup webhook account during rate-limit skip",
-            {
-              error: error instanceof Error ? error.message : error,
-            },
-          );
+          logger.warn("限流跳过期间清理 webhook 邮箱账号失败", {
+            error: error instanceof Error ? error.message : error,
+          });
         },
       );
       await markGmailHistoryCatchUp(emailAccount.id, logger);
-      logger.warn("Skipping webhook enqueue due to active Gmail rate limit", {
+      logger.warn("因 Gmail 限流生效而跳过 webhook 入队", {
         retryAt: activeRateLimit.retryAt.toISOString(),
         rateLimitSource: activeRateLimit.source,
       });
@@ -118,8 +112,8 @@ export const POST = withError("google/webhook", async (request) => {
     }
   }
 
-  // Process history asynchronously using after() to avoid Pub/Sub acknowledgment timeout
-  // This ensures we acknowledge the message quickly while still processing it fully
+  // 使用 after() 异步处理历史记录，避免 Pub/Sub 确认超时
+  // 这样既能快速确认消息，又能完整处理它
   after(() =>
     runWithBackgroundLoggerFlush({
       logger,

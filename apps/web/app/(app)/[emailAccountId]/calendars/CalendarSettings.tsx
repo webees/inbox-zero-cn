@@ -71,8 +71,8 @@ export function CalendarSettings() {
 
   return (
     <SettingCard
-      title={t`Timezone`}
-      description={t`Used for meeting briefs, AI scheduling, and your availability hours.`}
+      title={t`时区`}
+      description={t`用于会议简报、AI 日程安排和你的可用时段。`}
       collapseOnMobile
       right={
         <LoadingContent
@@ -84,8 +84,8 @@ export function CalendarSettings() {
             <div className="w-full sm:w-64">
               <Combobox
                 options={timezoneOptions}
-                placeholder={t`Select timezone`}
-                emptyText={t`No timezone found.`}
+                placeholder={t`选择时区`}
+                emptyText={t`未找到时区。`}
                 value={timezoneValue}
                 onChangeValue={(value) => {
                   if (value) setSelectedTimezone(value);
@@ -99,7 +99,7 @@ export function CalendarSettings() {
               className="w-full sm:w-auto"
               onClick={handleSaveTimezone}
             >
-              <Trans>Save</Trans>
+              <Trans>保存</Trans>
             </Button>
           </div>
         </LoadingContent>

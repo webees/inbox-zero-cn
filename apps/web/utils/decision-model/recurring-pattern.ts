@@ -67,7 +67,7 @@ export async function decideRecurringPattern({
       candidateRules,
     },
     questions,
-    label: "Detect recurring pattern",
+    label: "检测重复模式",
     logger,
   });
 
@@ -85,13 +85,13 @@ export async function decideRecurringPattern({
     return {
       matchedRule: null,
       explanation: bestMatch
-        ? `The strongest rule had ${Math.round(bestMatch.probability * 100)}% confidence, below the recurring-pattern threshold.`
-        : "No rule cleared the recurring-pattern confidence threshold.",
+        ? `最强的规则置信度为 ${Math.round(bestMatch.probability * 100)}%，低于重复模式阈值。`
+        : "没有规则达到重复模式的置信度阈值。",
     };
   }
 
   return {
     matchedRule: bestMatch.rule.name,
-    explanation: `Decision model matched this sender to ${bestMatch.rule.name} with ${Math.round(bestMatch.probability * 100)}% confidence.`,
+    explanation: `决策模型以 ${Math.round(bestMatch.probability * 100)}% 的置信度将此发件人匹配到 ${bestMatch.rule.name}。`,
   };
 }

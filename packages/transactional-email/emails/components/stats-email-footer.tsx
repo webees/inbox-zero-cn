@@ -10,22 +10,21 @@ export function StatsEmailFooter({
   return (
     <Section>
       <Text>
-        You're receiving this email because you're subscribed to Inbox Zero
-        stats updates. You can change this in your{" "}
+        您收到此邮件是因为您订阅了 Inbox Zero 统计更新。您可以在您的{" "}
         <Link
           href={`${baseUrl}/settings#email-updates`}
           className="text-[15px]"
         >
-          settings
+          设置
         </Link>
-        .
+        中更改。
       </Text>
 
       <Link
         href={`${baseUrl}/api/unsubscribe?token=${encodeURIComponent(unsubscribeToken)}`}
         className="text-[15px]"
       >
-        Unsubscribe from emails like this
+        退订此类邮件
       </Link>
     </Section>
   );

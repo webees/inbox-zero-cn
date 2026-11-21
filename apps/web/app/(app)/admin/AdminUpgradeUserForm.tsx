@@ -33,7 +33,7 @@ const tierOptions: { key: TierKey; name: string; features: string }[] = [
     name: t.name,
     features: t.features.map((f) => f.text).join(", "),
   })),
-  { key: "LIFETIME", name: "Lifetime", features: "One-time purchase" },
+  { key: "LIFETIME", name: "终身版", features: "一次性购买" },
 ];
 
 function buildPremiumTier(
@@ -55,19 +55,18 @@ export const AdminUpgradeUserForm = () => {
     {
       onSuccess: ({ data, input }) => {
         if (!data?.pending) {
-          toastSuccess({ description: "Premium status changed" });
+          toastSuccess({ description: "高级版状态已更改" });
         } else if (input.upgrade) {
           toastSuccess({
-            description:
-              "User has not signed up yet. Premium will be applied when they sign up.",
+            description: "用户尚未注册。高级版将在其注册后生效。",
           });
         } else {
-          toastSuccess({ description: "Pending premium grant removed" });
+          toastSuccess({ description: "待处理的高级版授权已移除" });
         }
       },
       onError: ({ error }) => {
         toastError({
-          description: `Error changing premium status: ${error.serverError}`,
+          description: `更改高级版状态时出错：${error.serverError}`,
         });
       },
     },
@@ -102,20 +101,20 @@ export const AdminUpgradeUserForm = () => {
       <Input
         type="email"
         name="email"
-        label="Email"
+        label="邮箱"
         registerProps={register("email", { required: true })}
         error={errors.email}
       />
       <Input
         type="number"
         name="emailAccountsAccess"
-        label="Seats"
+        label="席位"
         registerProps={register("emailAccountsAccess", { valueAsNumber: true })}
         error={errors.emailAccountsAccess}
       />
 
       <div>
-        <Label name="plan" label="Plan" />
+        <Label name="plan" label="套餐" />
         <Select
           value={selectedTier}
           onValueChange={(v) => setSelectedTier(v as TierKey)}
@@ -151,7 +150,7 @@ export const AdminUpgradeUserForm = () => {
 
       {selectedTier !== "LIFETIME" && (
         <div>
-          <Label name="billingPeriod" label="Billing period" />
+          <Label name="billingPeriod" label="计费周期" />
           <div className="mt-1 flex gap-1 rounded-md border border-input p-1">
             {(["MONTHLY", "ANNUALLY"] as const).map((bp) => (
               <button
@@ -165,7 +164,7 @@ export const AdminUpgradeUserForm = () => {
                     : "text-muted-foreground hover:text-foreground",
                 )}
               >
-                {bp === "MONTHLY" ? "Monthly" : "Annual"}
+                {bp === "MONTHLY" ? "按月" : "按年"}
               </button>
             ))}
           </div>
@@ -175,7 +174,7 @@ export const AdminUpgradeUserForm = () => {
       <Input
         type="number"
         name="count"
-        label="Months/Years"
+        label="月数/年数"
         registerProps={register("count", { valueAsNumber: true })}
         error={errors.count}
       />
@@ -193,7 +192,7 @@ export const AdminUpgradeUserForm = () => {
             });
           }}
         >
-          Upgrade
+          升级
         </Button>
         <Button
           type="button"
@@ -208,7 +207,7 @@ export const AdminUpgradeUserForm = () => {
             });
           }}
         >
-          Downgrade
+          降级
         </Button>
       </div>
     </form>

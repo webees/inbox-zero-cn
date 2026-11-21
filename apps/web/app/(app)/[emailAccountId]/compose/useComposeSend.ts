@@ -164,12 +164,12 @@ export function useComposeSend({
         pendingRecipients: pendingRecipientsRef.current,
       });
       if (!recipients.to) {
-        toastError({ description: t`Enter a valid recipient email address.` });
+        toastError({ description: t`请输入有效的收件人邮箱地址。` });
         return;
       }
 
-      // Files go to the mailbox draft as they are attached, so a send waits
-      // for them and never carries their bytes itself.
+      // 附件在添加时会进入邮箱草稿，因此发送需要等待它们完成，
+      // 自身不会携带这些文件内容。
       if (attachmentsRef.current.length)
         await waitForDraftOperations(draftQueueKey);
       const failedAttachment = attachmentsRef.current.find(
@@ -177,7 +177,7 @@ export function useComposeSend({
       );
       if (failedAttachment) {
         toastError({
-          description: t`${failedAttachment.filename} isn't attached. Remove it or attach it again before sending.`,
+          description: t`${failedAttachment.filename} 尚未附加。发送前请移除它或重新附加。`,
         });
         return;
       }
@@ -229,14 +229,11 @@ export function useComposeSend({
         }
       }
       setSubmissionError("");
-      // Read once: whether to wait for the draft and whether to hold for undo
-      // must agree.
+      // 只读取一次：是否等待草稿与是否暂留以便撤销必须保持一致。
       const online = navigator.onLine;
-      // A draft save already on its way to the mailbox would hold Send for a
-      // round trip. Instead the send carries its own content, and once it is
-      // delivered the server removes the session's draft, even one that save
-      // creates afterwards. Sending through the draft would let the late save
-      // overwrite the final text (specs/compose-send.qnt).
+      // 已经发往邮箱的草稿保存会让发送多等一个往返。因此发送会携带自己的内容，
+      // 送达后服务器会移除该会话的草稿，包括保存随后新建的草稿。若通过草稿发送，
+      // 迟到的保存可能覆盖最终正文（specs/compose-send.qnt）。
       const replacesSavingDraft =
         hasPendingDraftOperations(draftQueueKey) &&
         attachmentsRef.current.length === 0 &&
@@ -249,8 +246,8 @@ export function useComposeSend({
       const draftSaveSettled = stopProviderAutosave().then(() =>
         waitForDraftOperations(draftQueueKey),
       );
-      // Scheduling is confirmed by the server, so the composer closes and the
-      // thread shows it being scheduled at once; a refusal reopens it.
+      // 定时发送由服务器确认，因此编辑器会立即关闭并在会话中显示正在定时发送；
+      // 若被拒绝则会重新打开编辑器。
       const schedulesAtOnce =
         Boolean(deliveryTimes.sendAt) &&
         (isInlineReply
@@ -260,8 +257,7 @@ export function useComposeSend({
       let withdrawSchedule = () => {};
       let sessionDraftIds: string[] = [];
       if (schedulesAtOnce) {
-        // The reply's mailbox draft would otherwise show in the thread until
-        // the server confirms; the ids are read from this device.
+        // 否则回复的邮箱草稿会在服务器确认前显示在会话中；这些 ID 从本设备读取。
         sessionDraftIds = providerDraftMessageId
           ? getDraftSessionMessageIds(
               selectedEmailAccountId,
@@ -290,7 +286,7 @@ export function useComposeSend({
           showSessionDrafts();
         };
         if (!scheduledThreadId)
-          toastSuccess({ description: t`Email scheduled.` });
+          toastSuccess({ description: t`邮件已定时发送。` });
         onClose?.();
       }
       const failSchedule = (description: string) => {
@@ -303,7 +299,7 @@ export function useComposeSend({
       if (!replacesSavingDraft) await draftSaveSettled;
       let deliveryAccepted = false;
       try {
-        // Autosave can replace a draft's message ID; its provider draft ID survives.
+        // 自动保存可能替换草稿的消息 ID；其服务商草稿 ID 会保留。
         if (replacesSavingDraft)
           enrichedData.replacesDraftOfSession = requestId;
         enrichedData.providerDraftId = replacesSavingDraft
@@ -312,9 +308,9 @@ export function useComposeSend({
               providerDraftId.current,
               localDraftIdentity,
             );
-        // The mailbox draft is what carries the files to the recipient.
+        // 邮箱草稿负责将文件送达收件人。
         if (attachmentsRef.current.length && !enrichedData.providerDraftId) {
-          const description = t`Could not find this draft in your mailbox to send its attachments. Reopen it and try again.`;
+          const description = t`无法在邮箱中找到此草稿以发送其附件。请重新打开后重试。`;
           if (schedulesAtOnce) failSchedule(description);
           else toastError({ description });
           return;
@@ -322,7 +318,7 @@ export function useComposeSend({
         if (isInlineReply) {
           if (deliveryPath.current === "outbox" && (sendAt || remindAt)) {
             setSubmissionError(
-              t`This reply was already submitted to the outbox. Check its delivery status before scheduling a new reply.`,
+              t`此回复已提交到发件箱。安排新的回复前请检查其发送状态。`,
             );
             return;
           }
@@ -343,7 +339,7 @@ export function useComposeSend({
           ? deliveryPath.current === "scheduled"
           : canScheduleDelivery && Boolean(sendAt || remindAt);
         if (schedulesAtOnce) {
-          // A save that finished meanwhile may have added a draft message.
+          // 期间完成的保存可能已添加草稿消息。
           const showLaterDrafts = hideSendingDraftMessages(
             selectedEmailAccountId,
             draftMessageIds.filter((id) => !sessionDraftIds.includes(id)),
@@ -368,8 +364,8 @@ export function useComposeSend({
             failSchedule(
               getActionErrorMessage(result ?? {}, {
                 prefix: scheduledThreadId
-                  ? t`Could not schedule this reply`
-                  : t`Could not schedule this email`,
+                  ? t`无法安排此回复的定时发送`
+                  : t`无法安排此邮件的定时发送`,
               }),
             );
             return;
@@ -380,14 +376,13 @@ export function useComposeSend({
             await clearLocalDraft();
           } catch {
             toastError({
-              description: t`Reply scheduled, but its local draft copy could not be cleared.`,
+              description: t`回复已定时发送，但无法清除其本地草稿副本。`,
             });
           }
           if (markDoneAfterSend) onMarkDone?.();
-          // The Scheduled view stops polling once nothing is pending, so it
-          // needs the new send pushed to it rather than waiting for a refresh.
-          // The email is already scheduled by now, so a refresh that fails must
-          // not reach the catch below and report the send itself as failed.
+          // 定时发送视图在没有待处理项后会停止轮询，因此需要主动推送新的发送，
+          // 而不是等待刷新。此时邮件已定时发送，刷新失败不能进入下方的 catch
+          // 并把发送本身报告为失败。
           await refreshScheduledEmails(
             mutate,
             selectedEmailAccountId,
@@ -395,7 +390,7 @@ export function useComposeSend({
           );
           if (!schedulesAtOnce) {
             if (!scheduledThreadId)
-              toastSuccess({ description: t`Email scheduled.` });
+              toastSuccess({ description: t`邮件已定时发送。` });
             onClose?.();
           }
           refetch?.();
@@ -410,11 +405,9 @@ export function useComposeSend({
           localDraftIdentity?.messageId ??
           requestId;
         if (!client) {
-          setSubmissionError(
-            t`Mail is still starting. Try sending again in a moment.`,
-          );
+          setSubmissionError(t`邮件服务仍在启动中。请稍后重试发送。`);
           toastError({
-            description: t`Mail is still starting. Try sending again in a moment.`,
+            description: t`邮件服务仍在启动中。请稍后重试发送。`,
           });
           return;
         }
@@ -455,11 +448,11 @@ export function useComposeSend({
                 draftMessageIds,
               );
               if (replacesSavingDraft && localDraftIdentity) {
-                // The save may give the draft a message the send has not seen.
+                // 保存可能为草稿添加发送尚未看到的消息。
                 draftSaveSettled
                   .then(() => getReplyDraft(localDraftIdentity))
                   .then((saved) => {
-                    // An undo before the save landed already handed it back.
+                    // 保存完成前的撤销操作已将其交还。
                     if (draftShownAgain) return;
                     showSavedDraft = hideSendingDraftMessages(
                       selectedEmailAccountId,
@@ -486,7 +479,7 @@ export function useComposeSend({
           const description = getComposeErrorMessage(
             error,
             i18n,
-            t`Could not confirm this reply was queued. Check the thread delivery status before retrying.`,
+            t`无法确认此回复已加入队列。重试前请检查会话的发送状态。`,
           );
           showDraftAgain();
           setSubmissionError(description);
@@ -500,8 +493,8 @@ export function useComposeSend({
           } catch {
             toastError({
               description: isInlineReply
-                ? t`Reply queued, but its local draft copy could not be cleared.`
-                : t`Email queued, but its local draft copy could not be cleared.`,
+                ? t`回复已加入队列，但无法清除其本地草稿副本。`
+                : t`邮件已加入队列，但无法清除其本地草稿副本。`,
             });
           }
         };

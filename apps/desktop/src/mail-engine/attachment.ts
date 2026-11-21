@@ -43,7 +43,7 @@ export async function readDesktopAttachment(input: {
     Number(response.headers.get("content-length")) > MAX_INLINE_IMAGE_BYTES
   ) {
     await response.body?.cancel();
-    throw new Error("Inline image download failed");
+    throw new Error("内嵌图片下载失败");
   }
   const reader = response.body?.getReader();
   if (!reader) return new Uint8Array();
@@ -55,7 +55,7 @@ export async function readDesktopAttachment(input: {
       if (done) break;
       size += value.byteLength;
       if (size > MAX_INLINE_IMAGE_BYTES)
-        throw new Error("Inline image exceeds size limit");
+        throw new Error("内嵌图片超出大小限制");
       chunks.push(value);
     }
     const bytes = new Uint8Array(size);

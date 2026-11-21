@@ -39,12 +39,12 @@ export function ResponseTimeAnalytics({
   const distributionData = useMemo(() => {
     if (!data?.distribution) return [];
     return [
-      { group: t`< 1 hour`, count: data.distribution.lessThan1Hour },
-      { group: t`1-4 hours`, count: data.distribution.oneToFourHours },
-      { group: t`4-24 hours`, count: data.distribution.fourTo24Hours },
-      { group: t`1-3 days`, count: data.distribution.oneToThreeDays },
-      { group: t`3-7 days`, count: data.distribution.threeToSevenDays },
-      { group: t`> 7 days`, count: data.distribution.moreThan7Days },
+      { group: t`不足 1 小时`, count: data.distribution.lessThan1Hour },
+      { group: t`1-4 小时`, count: data.distribution.oneToFourHours },
+      { group: t`4-24 小时`, count: data.distribution.fourTo24Hours },
+      { group: t`1-3 天`, count: data.distribution.oneToThreeDays },
+      { group: t`3-7 天`, count: data.distribution.threeToSevenDays },
+      { group: t`超过 7 天`, count: data.distribution.moreThan7Days },
     ];
   }, [data, t]);
   const trendData = useMemo(() => {
@@ -62,12 +62,12 @@ export function ResponseTimeAnalytics({
   }, [data]);
 
   const distributionChartConfig: ChartConfig = {
-    count: { label: t`Emails`, color: COLORS.analytics.blue },
+    count: { label: t`邮件`, color: COLORS.analytics.blue },
   };
 
   const trendChartConfig: ChartConfig = {
     median: {
-      label: t`Median Response Time`,
+      label: t`回复时间中位数`,
       color: COLORS.analytics.purple,
     },
   };
@@ -83,11 +83,11 @@ export function ResponseTimeAnalytics({
           {data.emailsAnalyzed > 0 && (
             <p className="text-muted-foreground text-sm">
               <Trans>
-                Response time data based on last{" "}
+                基于最近{" "}
                 <Plural
                   value={data.emailsAnalyzed}
-                  one="# email"
-                  other="# emails"
+                  one="# 封邮件"
+                  other="# 封邮件"
                 />
               </Trans>
             </p>
@@ -95,18 +95,18 @@ export function ResponseTimeAnalytics({
 
           <div className="grid gap-2 sm:gap-4 grid-cols-3">
             <SummaryCard
-              title={t`Median Response`}
+              title={t`中位回复时间`}
               value={formatTime(data.summary.medianResponseTime)}
               icon={<Clock className="h-4 w-4" />}
               comparison={data.summary.previousPeriodComparison}
             />
             <SummaryCard
-              title={t`Average Response`}
+              title={t`平均回复时间`}
               value={formatTime(data.summary.averageResponseTime)}
               icon={<Timer className="h-4 w-4" />}
             />
             <SummaryCard
-              title={t`Within 1 Hour`}
+              title={t`1 小时内`}
               value={`${data.summary.within1Hour}%`}
               icon={<TrendingUp className="h-4 w-4" />}
             />
@@ -116,7 +116,7 @@ export function ResponseTimeAnalytics({
           {distributionData.some((d) => d.count > 0) && (
             <CardBasic>
               <p>
-                <Trans>Response Time Distribution</Trans>
+                <Trans>回复时间分布</Trans>
               </p>
               <div className="mt-4">
                 <BarChart
@@ -135,7 +135,7 @@ export function ResponseTimeAnalytics({
           {trendData.length > 0 && (
             <CardBasic>
               <p>
-                <Trans>Weekly Response Time Trend</Trans>
+                <Trans>每周回复时间趋势</Trans>
               </p>
               <div className="mt-4">
                 <BarChart
@@ -156,13 +156,11 @@ export function ResponseTimeAnalytics({
             trendData.length === 0 && (
               <CardBasic>
                 <p>
-                  <Trans>Response Time Analytics</Trans>
+                  <Trans>回复时间分析</Trans>
                 </p>
                 <div className="mt-4 h-32 flex items-center justify-center text-muted-foreground">
                   <p>
-                    <Trans>
-                      No response time data available for this period.
-                    </Trans>
+                    <Trans>此时间段没有可用的回复时间数据。</Trans>
                   </p>
                 </div>
               </CardBasic>
@@ -215,7 +213,7 @@ function SummaryCard({
             ) : null}
             <PercentChangeText change={comparison.percentChange} />
             <span className="text-muted-foreground ml-1">
-              <Trans>vs previous</Trans>
+              <Trans>较上期</Trans>
             </span>
           </p>
         )}
@@ -230,7 +228,7 @@ function formatTime(minutes: number): string {
   if (minutes < 1440) {
     let hours = Math.floor(minutes / 60);
     let mins = Math.round(minutes % 60);
-    // Carry over if rounded minutes equals 60
+    // 四舍五入后的分钟数等于 60 时进位
     if (mins === 60) {
       hours += 1;
       mins = 0;
@@ -239,7 +237,7 @@ function formatTime(minutes: number): string {
   }
   let days = Math.floor(minutes / 1440);
   let hours = Math.round((minutes % 1440) / 60);
-  // Carry over if rounded hours equals 24
+  // 四舍五入后的小时数等于 24 时进位
   if (hours === 24) {
     days += 1;
     hours = 0;
@@ -247,7 +245,7 @@ function formatTime(minutes: number): string {
   return hours > 0 ? `${days}d ${hours}h` : `${days}d`;
 }
 
-// Shorter format for Y-axis labels
+// Y 轴标签的简短格式
 function formatTimeShort(minutes: number): string {
   if (minutes === 0) return "0";
   if (minutes < 60) return `${Math.round(minutes)}m`;
@@ -261,7 +259,7 @@ function formatTimeShort(minutes: number): string {
 
 function PercentChangeText({ change }: { change: number }) {
   const percentChange = Math.abs(change);
-  if (change === 0) return <Trans>No change</Trans>;
-  if (change < 0) return <Trans>{percentChange}% faster</Trans>;
-  return <Trans>{percentChange}% slower</Trans>;
+  if (change === 0) return <Trans>无变化</Trans>;
+  if (change < 0) return <Trans>快 {percentChange}%</Trans>;
+  return <Trans>慢 {percentChange}%</Trans>;
 }

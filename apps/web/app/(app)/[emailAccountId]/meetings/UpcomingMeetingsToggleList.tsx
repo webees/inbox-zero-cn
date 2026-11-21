@@ -47,7 +47,7 @@ export function UpcomingMeetingsToggleList({
       onError: ({ error }) => {
         toastError({
           description: getActionErrorMessage(error, {
-            prefix: t`Failed to update this meeting`,
+            prefix: t`更新此会议失败`,
           }),
         });
       },
@@ -72,7 +72,7 @@ export function UpcomingMeetingsToggleList({
   return (
     <div>
       <TypographyH3>
-        <Trans>Up next</Trans>
+        <Trans>接下来</Trans>
       </TypographyH3>
 
       <LoadingContent
@@ -83,14 +83,12 @@ export function UpcomingMeetingsToggleList({
         {isLocked && (
           <Alert className="mt-4">
             <AlertTitle>
-              <Trans>Meeting recording requires the Plus plan</Trans>
+              <Trans>会议录制需要 Plus 套餐</Trans>
             </AlertTitle>
             <AlertDescription className="flex flex-wrap items-center justify-between gap-2">
-              <Trans>
-                Upgrade to have meetings recorded and summarized automatically.
-              </Trans>
+              <Trans>升级后即可自动录制并总结会议。</Trans>
               <UpgradeToPlusButton
-                tooltip={t`Upgrade to the Plus plan to record and summarize your meetings.`}
+                tooltip={t`升级到 Plus 套餐即可录制并总结你的会议。`}
               />
             </AlertDescription>
           </Alert>
@@ -103,7 +101,7 @@ export function UpcomingMeetingsToggleList({
                 <CalendarIcon />
               </EmptyMedia>
               <EmptyTitle>
-                <Trans>No upcoming calls with a video link</Trans>
+                <Trans>没有即将开始且带视频链接的通话</Trans>
               </EmptyTitle>
             </EmptyHeader>
           </Empty>

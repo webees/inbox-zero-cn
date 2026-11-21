@@ -1,3 +1,3 @@
-## Loops Package
+## Loops 包
 
-This package contains the code for the Loops which is used to send marketing emails to users.
+此包包含 Loops 的代码，用于向用户发送营销邮件。

@@ -42,7 +42,7 @@ export const GET = withAccountApiKey(
       return publicApiErrorResponse({
         status: 404,
         code: "NOT_FOUND",
-        message: "Rule not found",
+        message: "未找到规则",
       });
     }
 
@@ -68,7 +68,7 @@ export const PUT = withAccountApiKey(
       return publicApiErrorResponse({
         status: 404,
         code: "NOT_FOUND",
-        message: "Rule not found",
+        message: "未找到规则",
       });
     }
 
@@ -116,7 +116,7 @@ export const DELETE = withAccountApiKey(
       return publicApiErrorResponse({
         status: 404,
         code: "NOT_FOUND",
-        message: "Rule not found",
+        message: "未找到规则",
       });
     }
 

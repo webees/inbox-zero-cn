@@ -96,7 +96,7 @@ export function NavUser() {
               }}
             >
               <SettingsIcon className="mr-2 size-4" />
-              <Trans>Settings</Trans>
+              <Trans>设置</Trans>
             </DropdownMenuItem>
             {!hasOrganization && (
               <DropdownMenuItem asChild>
@@ -108,7 +108,7 @@ export function NavUser() {
                   onClick={() => closeMobileSidebar("left-sidebar")}
                 >
                   <Building2Icon className="mr-2 size-4" />
-                  <Trans>Create organization</Trans>
+                  <Trans>创建组织</Trans>
                 </Link>
               </DropdownMenuItem>
             )}
@@ -119,7 +119,7 @@ export function NavUser() {
                   onClick={() => closeMobileSidebar("left-sidebar")}
                 >
                   <Building2Icon className="mr-2 size-4" />
-                  <Trans>My Organization</Trans>
+                  <Trans>我的组织</Trans>
                 </Link>
               </DropdownMenuItem>
             )}
@@ -132,7 +132,7 @@ export function NavUser() {
                   onClick={() => closeMobileSidebar("left-sidebar")}
                 >
                   <GlobeIcon className="mr-2 size-4" />
-                  <Trans>Install extension</Trans>
+                  <Trans>安装扩展</Trans>
                 </Link>
               </DropdownMenuItem>
             )}
@@ -151,7 +151,7 @@ export function NavUser() {
                   onClick={() => closeMobileSidebar("left-sidebar")}
                 >
                   <ShieldCheckIcon className="mr-2 size-4" />
-                  <Trans>Cold Email Blocker</Trans>
+                  <Trans>冷邮件拦截器</Trans>
                 </Link>
               </DropdownMenuItem>
             )}
@@ -167,7 +167,7 @@ export function NavUser() {
                   onClick={() => closeMobileSidebar("left-sidebar")}
                 >
                   <CrownIcon className="mr-2 size-4" />
-                  <Trans>Premium</Trans>
+                  <Trans>高级版</Trans>
                 </Link>
               </DropdownMenuItem>
             )}
@@ -179,7 +179,7 @@ export function NavUser() {
                 onClick={() => closeMobileSidebar("left-sidebar")}
               >
                 <CircleHelpIcon className="mr-2 size-4" />
-                <Trans>Help Center</Trans>
+                <Trans>帮助中心</Trans>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
@@ -190,7 +190,7 @@ export function NavUser() {
                 onClick={() => closeMobileSidebar("left-sidebar")}
               >
                 <LightbulbIcon className="mr-2 size-4" />
-                <Trans>Feature Requests</Trans>
+                <Trans>功能请求</Trans>
               </Link>
             </DropdownMenuItem>
             {!env.NEXT_PUBLIC_BYPASS_PREMIUM_CHECKS && (
@@ -201,7 +201,7 @@ export function NavUser() {
                 }}
               >
                 <GiftIcon className="mr-2 size-4" />
-                <Trans>Refer a Friend</Trans>
+                <Trans>推荐好友</Trans>
               </DropdownMenuItem>
             )}
           </DropdownMenuGroup>
@@ -214,7 +214,7 @@ export function NavUser() {
             }}
           >
             <LogOutIcon className="mr-2 size-4" />
-            <Trans>Sign out</Trans>
+            <Trans>退出登录</Trans>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

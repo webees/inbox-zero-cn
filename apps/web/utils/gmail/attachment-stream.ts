@@ -14,8 +14,8 @@ export function decodeGmailAttachmentStream(
   let remainder = "";
   let padding = false;
   const tokens = (source as unknown as ReadableStream<BufferSource>)
-    // TextDecoderStream accepts any BufferSource, but ReadableStream is
-    // invariant here, so the wider input type needs to be stated.
+    // TextDecoderStream 接受任何 BufferSource，但 ReadableStream 在
+    // 这里是不可变的，因此需要显式声明更宽的输入类型。
     .pipeThrough(new TextDecoderStream(), { signal })
     .pipeThrough(
       parser.asWebStream({
@@ -30,8 +30,7 @@ export function decodeGmailAttachmentStream(
     new TransformStream<Token, Uint8Array>({
       transform(token, controller) {
         if (expectingData) {
-          if (token.name !== "startString")
-            throw new Error("Invalid attachment data");
+          if (token.name !== "startString") throw new Error("无效的附件数据");
           expectingData = false;
           inData = true;
           return;
@@ -44,12 +43,12 @@ export function decodeGmailAttachmentStream(
           token.name === "keyValue" &&
           token.value === "data"
         ) {
-          if (foundData) throw new Error("Duplicate attachment data");
+          if (foundData) throw new Error("重复的附件数据");
           foundData = true;
           expectingData = true;
         } else if (inData && token.name === "stringChunk") {
           if (!/^[A-Za-z0-9_=-]*$/.test(token.value))
-            throw new Error("Invalid attachment encoding");
+            throw new Error("无效的附件编码");
           remainder += token.value;
           const index = remainder.indexOf("=");
           if (index !== -1) padding = true;
@@ -68,7 +67,7 @@ export function decodeGmailAttachmentStream(
             padding &&
             (remainder.length > 4 || !/^[A-Za-z0-9_-]*={1,2}$/.test(remainder))
           )
-            throw new Error("Invalid attachment padding");
+            throw new Error("无效的附件填充");
         } else if (inData && token.name === "endString") {
           const bytes = Buffer.from(remainder, "base64url");
           if (
@@ -76,7 +75,7 @@ export function decodeGmailAttachmentStream(
             bytes.toString("base64url") !== remainder.replace(/=+$/, "") ||
             (padding && remainder.length !== 4)
           )
-            throw new Error("Invalid attachment encoding");
+            throw new Error("无效的附件编码");
           if (bytes.length) controller.enqueue(new Uint8Array(bytes));
           remainder = "";
           inData = false;
@@ -84,7 +83,7 @@ export function decodeGmailAttachmentStream(
       },
       flush() {
         if (!foundData || inData || expectingData)
-          throw new Error("Missing attachment data");
+          throw new Error("缺少附件数据");
       },
     }),
     { signal },

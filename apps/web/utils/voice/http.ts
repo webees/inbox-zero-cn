@@ -38,8 +38,8 @@ export function voiceHttpError(
 ): VoiceRequestError {
   const detail = extractErrorMessage(body);
   const message = detail
-    ? `${providerName} failed while ${action}: ${detail}`
-    : `${providerName} failed while ${action} (${status})`;
+    ? `${providerName} 在执行 ${action} 时失败：${detail}`
+    : `${providerName} 在执行 ${action} 时失败（${status}）`;
   return new VoiceRequestError(
     message,
     status >= 400 && status < 600 ? status : 502,

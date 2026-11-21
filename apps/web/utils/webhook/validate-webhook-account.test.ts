@@ -365,7 +365,7 @@ describe("getWebhookEmailAccount", () => {
 
     expect(logErrorWithDedupe).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: "Account not found",
+        message: "未找到账号",
         dedupeKeyParts: expect.objectContaining({
           lookupType: "email",
           email: "user@example.com",
@@ -385,7 +385,7 @@ describe("getWebhookEmailAccount", () => {
 
     expect(logErrorWithDedupe).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: "Account not found",
+        message: "未找到账号",
         dedupeKeyParts: expect.objectContaining({
           lookupType: "subscription",
           watchEmailsSubscriptionId: "sub-123",

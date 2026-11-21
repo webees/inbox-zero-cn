@@ -31,7 +31,7 @@ export async function resolveOutlookFolderId({
   }
   if (match.folder) return match.folder.id;
 
-  throw new Error("Outlook folder not found. Use a folder from listFolders.");
+  throw new Error("未找到 Outlook 文件夹。请使用 listFolders 中的文件夹。");
 }
 
 export async function resolveOutlookCategoryName({

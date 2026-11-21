@@ -12,14 +12,11 @@ export function ColdEmailTest() {
     <Card>
       <CardHeader>
         <CardTitle>
-          <Trans>Test cold email blocker</Trans>
+          <Trans>测试冷邮件拦截器</Trans>
         </CardTitle>
 
         <CardDescription>
-          <Trans>
-            Check how your the cold email blocker performs against previous
-            emails.
-          </Trans>
+          <Trans>检查你的冷邮件拦截器对以往邮件的表现。</Trans>
         </CardDescription>
       </CardHeader>
       <TestRulesContent />

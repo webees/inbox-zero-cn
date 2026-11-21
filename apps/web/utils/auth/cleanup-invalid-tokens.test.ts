@@ -270,7 +270,9 @@ describe("cleanupInvalidTokens", () => {
         userEmail: "test@example.com",
         emailAccountId: "ea_1",
         errorType: "Account disconnected",
-        errorMessage: expect.stringContaining("missing required permissions"),
+        errorMessage: expect.stringContaining(
+          "的连接缺少必需权限。请重新连接你的账号并批准所请求的权限，以恢复自动化。",
+        ),
         logger,
       }),
     );
@@ -295,7 +297,9 @@ describe("cleanupInvalidTokens", () => {
         userEmail: "test@example.com",
         emailAccountId: "ea_1",
         errorType: "Account disconnected",
-        errorMessage: expect.stringContaining("security policy"),
+        errorMessage: expect.stringContaining(
+          "的连接被你的 Google 账号安全策略阻止。请检查 Google 安全设置并重新连接你的账号，以恢复自动化。",
+        ),
         logger,
       }),
     );

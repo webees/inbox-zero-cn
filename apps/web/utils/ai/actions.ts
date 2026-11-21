@@ -65,12 +65,12 @@ export const runActionFunction = async (options: {
   const { action, emailAccount, logger } = options;
   const log = logger.with({ module: MODULE });
 
-  log.info("Running action", {
+  log.info("正在执行动作", {
     actionType: action.type,
     userEmail: emailAccount.email,
     id: action.id,
   });
-  log.trace("Running action", () => filterNullProperties(action));
+  log.trace("正在运行动作", () => filterNullProperties(action));
 
   const { type, ...args } = action;
   const opts = {
@@ -648,7 +648,7 @@ const integration: ActionFunction<{
     return {
       success: false,
       errorCode: "INTEGRATION_NOT_CONNECTED",
-      errorMessage: `${integrationConfig.displayName} is not connected. Connect it on the Integrations page.`,
+      errorMessage: `${integrationConfig.displayName} 尚未连接。请在集成页面连接`,
     };
   }
 
@@ -657,7 +657,7 @@ const integration: ActionFunction<{
     return {
       success: false,
       errorCode: "UNSUPPORTED_INTEGRATION_TOOL",
-      errorMessage: `Unsupported integration tool: ${integrationName}/${integrationToolName}`,
+      errorMessage: `不支持的集成工具：${integrationName}/${integrationToolName}`,
     };
   }
 
@@ -883,7 +883,7 @@ async function runMessagingNotificationAction({
   await markMessagingActionFailed({
     actionId,
     logger,
-    reason: `Failed to deliver ${actionType} notification`,
+    reason: `发送 ${actionType} 通知失败`,
   });
   return { success: false, errorCode: "MESSAGING_DELIVERY_FAILED" };
 }

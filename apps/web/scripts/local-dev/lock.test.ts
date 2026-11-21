@@ -39,7 +39,7 @@ test("only one concurrent launcher acquires a stale lock", async () => {
       results.filter((result) => result.status === "rejected"),
     ).toHaveLength(1);
     const rejection = results.find((result) => result.status === "rejected");
-    expect(rejection?.reason.message).toContain("lock port");
+    expect(rejection?.reason.message).toContain("锁端口");
   } finally {
     for (const result of results) {
       if (result.status === "fulfilled") {

@@ -2,17 +2,16 @@ import * as Sentry from "@sentry/electron/main";
 import type { Breadcrumb, ErrorEvent } from "@sentry/electron/main";
 import { app } from "electron";
 
-// Injected at build time; development and self-hosted builds leave it empty.
+// 在构建时注入；开发和自托管构建会留空。
 const DSN = process.env.INBOX_ZERO_SENTRY_DSN;
-// The mail engine and updater retry on their own, so a persistent failure
-// would otherwise report on every attempt.
+// 邮件引擎和更新程序会自行重试，否则一个持续存在的失败会在每次尝试时都上报。
 const REPEAT_REPORT_INTERVAL_MS = 10 * 60 * 1000;
 const lastReportedAt = new Map<string, number>();
 const DIAGNOSTICS_UPLOAD_TIMEOUT_MS = 60_000;
 
 /**
- * Reports main-process errors, renderer/GPU process crashes, and native
- * minidumps. The hosted web app reports its own renderer errors separately.
+ * 上报主进程错误、渲染进程/GPU 进程崩溃以及原生 minidump。
+ * 托管的 Web 应用会单独上报它自己的渲染进程错误。
  */
 export function initDesktopSentry() {
   if (!DSN) return;
@@ -47,7 +46,7 @@ export function isDesktopSentryEnabled() {
   return Boolean(DSN);
 }
 
-/** Resolves to the event id to quote to support, or null if it didn't send. */
+/** 解析为可向支持团队提供的 event id；如果未发送则为 null。 */
 export async function sendDesktopDiagnostics(
   attachments: Array<{ filename: string; data: Uint8Array }>,
 ) {
@@ -55,14 +54,14 @@ export async function sendDesktopDiagnostics(
   const eventId = Sentry.withScope((scope) => {
     scope.setTag("area", "diagnostics");
     for (const attachment of attachments) scope.addAttachment(attachment);
-    return Sentry.captureMessage("User diagnostics", "info");
+    return Sentry.captureMessage("用户诊断", "info");
   });
   const sent = await Sentry.flush(DIAGNOSTICS_UPLOAD_TIMEOUT_MS);
   return sent ? eventId : null;
 }
 
-// Native renderer crashes carry the crashed page URL, which can include query
-// strings, outside the breadcrumbs.
+// 原生渲染进程崩溃会带上崩溃页面的 URL，其中可能包含查询字符串，
+// 而这些信息不在 breadcrumbs 里。
 export function scrubEvent(event: ErrorEvent): ErrorEvent {
   const electron = event.contexts?.electron;
   if (electron && typeof electron.crashed_url === "string") {
@@ -72,8 +71,8 @@ export function scrubEvent(event: ErrorEvent): ErrorEvent {
   return event;
 }
 
-// Sentry is a third party: keep URL paths for context but drop query strings,
-// and skip console output, which can include mail content.
+// Sentry 是第三方：为保留上下文而保留 URL 路径，但去掉查询字符串，
+// 并跳过可能包含邮件内容的 console 输出。
 export function scrubBreadcrumb(breadcrumb: Breadcrumb): Breadcrumb | null {
   if (breadcrumb.category === "console") return null;
   if (!breadcrumb.data) return breadcrumb;

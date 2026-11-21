@@ -19,13 +19,13 @@ export async function getOutlookAttachment(
       attachmentId,
     );
     const content = Buffer.from(await new Response(stream).arrayBuffer());
-    // Graph's size includes attachment metadata, so the raw file is usually
-    // smaller. Only an empty or oversized body is a reliable sign of bad data.
+    // Graph 的大小包含附件元数据，因此原始文件通常
+    // 更小。只有空或过大的正文才是坏数据的可靠迹象。
     if (
       attachment.size &&
       (content.length === 0 || content.length > attachment.size)
     ) {
-      throw new Error("Attachment size mismatch");
+      throw new Error("附件大小不匹配");
     }
 
     return {
@@ -56,7 +56,7 @@ export async function getOutlookAttachmentStream(
   if (!response.ok || !response.body || signal?.aborted) {
     await response.body?.cancel().catch(() => undefined);
     signal?.throwIfAborted();
-    throw Object.assign(new Error("Unable to stream attachment"), {
+    throw Object.assign(new Error("无法流式传输附件"), {
       status: response.status,
       statusCode: response.status,
     });

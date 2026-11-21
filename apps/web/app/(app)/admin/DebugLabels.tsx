@@ -23,12 +23,12 @@ import {
 export function DebugLabels() {
   const { execute, isExecuting, result } = useAction(adminGetLabelsAction, {
     onSuccess: () => {
-      toastSuccess({ description: "Labels found!" });
+      toastSuccess({ description: "找到标签！" });
     },
     onError: ({ error }) => {
       toastError({
-        title: "Error getting labels",
-        description: error.serverError || "An error occurred",
+        title: "获取标签时出错",
+        description: error.serverError || "发生错误",
       });
     },
   });
@@ -51,21 +51,21 @@ export function DebugLabels() {
   return (
     <Card className="max-w-xl">
       <CardHeader>
-        <CardTitle>Debug labels</CardTitle>
-        <CardDescription>Get all labels for an email account</CardDescription>
+        <CardTitle>调试标签</CardTitle>
+        <CardDescription>获取邮箱账号的所有标签</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <Input
             type="text"
             name="emailAccountId"
-            label="Email Account ID"
-            placeholder="Email Account ID"
+            label="邮箱账号 ID"
+            placeholder="邮箱账号 ID"
             registerProps={register("emailAccountId")}
             error={errors.emailAccountId}
           />
           <Button type="submit" loading={isExecuting}>
-            Get Labels
+            获取标签
           </Button>
         </form>
 

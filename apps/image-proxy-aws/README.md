@@ -1,18 +1,18 @@
-# AWS Image Proxy
+# AWS 图片代理
 
-This app provides an AWS Lambda adapter for the Inbox Zero image proxy contract.
+此应用为 Inbox Zero 图片代理契约提供 AWS Lambda 适配器。
 
-Accepted request shapes:
+接受的请求形式：
 
-- Signed mode: `GET /proxy?u=<url>&e=<unix-seconds>&s=<signature>`
+- 签名模式：`GET /proxy?u=<url>&e=<unix-seconds>&s=<signature>`
 
-Recommended deployment:
+推荐部署：
 
-1. Deploy `src/handler.ts` as a Lambda Function URL or API Gateway v2 handler.
-2. Put CloudFront in front of the function.
-3. Forward the full query string so cache keys include `u`, `e`, and `s`.
-4. Set `IMAGE_PROXY_SIGNING_SECRET` and configure the web app with the same value so the proxy only accepts signed requests.
+1. 将 `src/handler.ts` 部署为 Lambda Function URL 或 API Gateway v2 处理器。
+2. 在函数前放置 CloudFront。
+3. 转发完整查询字符串，使缓存键包含 `u`、`e` 和 `s`。
+4. 设置 `IMAGE_PROXY_SIGNING_SECRET`，并在 Web 应用中使用相同值进行配置，使代理仅接受签名请求。
 
-The web app only needs `NEXT_PUBLIC_IMAGE_PROXY_BASE_URL` pointing at the AWS endpoint.
-`IMAGE_PROXY_SIGNING_SECRET` must match between the app and the proxy.
-If you need to accept signatures from multiple clients, the proxy can use a comma-separated secret list for validation. Each client that signs proxy URLs should still use a single secret.
+Web 应用只需将 `NEXT_PUBLIC_IMAGE_PROXY_BASE_URL` 指向 AWS 端点。
+`IMAGE_PROXY_SIGNING_SECRET` 必须在应用与代理之间保持一致。
+如需接受来自多个客户端的签名，代理可使用逗号分隔的密钥列表进行校验。每个为代理 URL 签名的客户端仍应使用单一密钥。

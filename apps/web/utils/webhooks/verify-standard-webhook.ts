@@ -1,9 +1,9 @@
 import crypto from "node:crypto";
 import { secureCompareBuffers } from "@/utils/crypto-compare";
 
-// Recall (via Svix) and Loops both sign webhooks with the Standard Webhooks
-// scheme. Rather than pull in the Svix SDK we verify the signature by hand: it
-// is a documented, stable HMAC scheme.
+// Recall（通过 Svix）和 Loops 都使用 Standard Webhooks
+// 方案对 webhook 签名。我们没有引入 Svix SDK，而是手动验证签名：它
+// 是一个有文档记录且稳定的 HMAC 方案。
 // https://docs.svix.com/receiving/verifying-payloads/how-manual
 
 const TOLERANCE_SECONDS = 5 * 60;
@@ -34,9 +34,9 @@ export function verifyStandardWebhook({
   headers: Headers;
   rawBody: string;
 }): StandardWebhookVerification {
-  // Svix sends `svix-*`; the vendor-neutral standard-webhooks names are
-  // `webhook-*`. The signature is computed identically either way, so accept
-  // both rather than 401 on a delivery we could have verified.
+  // Svix 发送 `svix-*`；供应商中立的 standard-webhooks 名称是
+  // `webhook-*`。两种方式的签名计算完全相同，因此
+  // 两者都接受，而不是对本可验证的投递返回 401。
   const id = getHeader(headers, "id");
   const timestamp = getHeader(headers, "timestamp");
   const signatureHeader = getHeader(headers, "signature");
@@ -69,8 +69,8 @@ export function verifyStandardWebhook({
     .update(`${id}.${timestamp}.${rawBody}`)
     .digest();
 
-  // The header holds space-separated `v1,<base64>` entries so a secret can be
-  // rotated without dropping deliveries. Any match is enough.
+  // 该头包含以空格分隔的 `v1,<base64>` 条目，因此可以
+  // 轮换密钥而不丢弃投递。任意一个匹配即可。
   const verified = signatureHeader
     .split(" ")
     .some((entry) => matchesSignature(entry, expected));

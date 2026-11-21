@@ -13,8 +13,8 @@ export async function waitForMetadataCoverage(
   accountId: string,
   abort: AbortSignal,
 ) {
-  // Follower getDiagnostics can hang after a closed BroadcastChannel.
-  // Abort must win that race so Strict Mode remounts can first-paint.
+  // BroadcastChannel 关闭后，跟随者的 getDiagnostics 可能挂起。
+  // 中止必须赢得这场竞态，以便严格模式重挂载时能首帧渲染。
   const aborted = waitForAbort(abort);
   while (!abort.aborted) {
     try {

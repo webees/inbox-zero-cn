@@ -6,7 +6,7 @@ export async function deleteExpiredEmailSendOperations(
   now = new Date(),
 ): Promise<number> {
   const expiredWhere = expiredSendOperationWhere(now);
-  // An undo hold only matters while its send can still be retried.
+  // 撤销暂缓仅在发送仍可重试时才有意义。
   await prisma.scheduledEmail.deleteMany({
     where: {
       heldForUndo: true,

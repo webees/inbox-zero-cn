@@ -11,7 +11,7 @@ describe("formatStripeAmount", () => {
   });
 
   it("uses three decimal places where the currency has them", () => {
-    // Intl separates the code and amount with a non-breaking space.
+    // Intl 会用不换行空格分隔货币代码和金额。
     expect(formatStripeAmount(21_600, "bhd").replace(/\s/g, " ")).toBe(
       "BHD 21.600",
     );

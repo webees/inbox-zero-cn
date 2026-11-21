@@ -1,5 +1,5 @@
 /**
- * Not a CI test. Run with:
+ * 非 CI 测试。运行方式：
  *   cd apps/web && pnpm exec tsx utils/gmail/message-bodies.bench.ts
  */
 import { performance } from "node:perf_hooks";

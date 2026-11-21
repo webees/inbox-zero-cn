@@ -45,7 +45,7 @@ export async function sendMeetingBriefingToSlack({
 
   await postMessageWithJoin(client, channelId, {
     blocks,
-    text: `📅 Briefing for ${meetingTitle}, starting at ${formattedTime}`,
+    text: `📅 ${meetingTitle} 的会议简报，开始时间 ${formattedTime}`,
   });
 }
 
@@ -61,7 +61,7 @@ export async function sendChannelConfirmation({
   const client = createSlackClient(accessToken);
 
   await postMessageWithJoin(client, channelId, {
-    text: `✅ Inbox Zero connected! You can mention ${formatSlackAppMention(botUserId)} in this channel to chat about your emails. If you enable meeting briefs or attachment filing notifications, I can send those here too.`,
+    text: `✅ 已连接 Inbox Zero！你可以在本渠道中 @提及 ${formatSlackAppMention(botUserId)}，聊聊你的邮件。如果你启用了会议简报或附件归档通知，我也可以把它们发送到这里。`,
   });
 }
 
@@ -79,7 +79,7 @@ export async function sendConnectionOnboardingDirectMessage({
   await client.chat.postMessage(
     disableSlackLinkUnfurls({
       channel: userId,
-      text: `✅ Inbox Zero connected. Next, open Channels in Inbox Zero to choose where messages go. To use a private channel, invite ${formatSlackAppMention(botUserId)} there. You can also DM me anytime to chat about your emails.`,
+      text: `✅ 已连接 Inbox Zero。接下来，请在 Inbox Zero 中打开“渠道”页面，选择消息的发送位置。如需使用私密渠道，请把 ${formatSlackAppMention(botUserId)} 邀请进去。你也可以随时私信我，聊聊你的邮件。`,
     }),
   );
 }
@@ -109,7 +109,7 @@ export async function sendDocumentFiledToSlack({
 
   await postMessageWithJoin(client, channelId, {
     blocks,
-    text: `📨 Filed ${filename} to ${folderPath}`,
+    text: `📨 已将 ${filename} 归档到 ${folderPath}`,
   });
 }
 
@@ -130,7 +130,7 @@ export async function sendDocumentAskToSlack({
 
   await postMessageWithJoin(client, channelId, {
     blocks,
-    text: `📄 Where should I file ${filename}?`,
+    text: `📄 我该把 ${filename} 归档到哪里？`,
   });
 }
 
@@ -155,7 +155,7 @@ export async function sendDigestToSlack({
 
   await postMessageWithJoin(client, channelId, {
     blocks,
-    text: "📋 Your Inbox Zero digest",
+    text: "📋 你的 Inbox Zero 邮件摘要",
   });
 }
 
@@ -175,13 +175,13 @@ export async function sendFollowUpReminderToSlack({
 
   return postMessageWithJoin(client, channelId, {
     blocks,
-    text: `${emoji} Follow-up: ${blockParams.subject}`,
+    text: `${emoji} 跟进：${blockParams.subject}`,
   });
 }
 
 /**
- * Sentinel value for `channelId` that indicates messages should be sent
- * as a direct message to the `providerUserId` instead of a channel.
+ * `channelId` 的哨兵值，表示消息应作为私信发送给 `providerUserId`，
+ * 而不是发送到某个渠道。
  */
 export const SLACK_DM_CHANNEL_SENTINEL = "DM";
 
@@ -275,7 +275,7 @@ async function postMessageWithJoin(
           joinError.data?.error === "missing_scope"
         ) {
           throw new Error(
-            "Bot lacks channels:join scope. Please reconnect Slack in Settings to update permissions.",
+            "机器人缺少 channels:join 权限范围。请在设置中重新连接 Slack 以更新权限。",
           );
         }
         throw joinError;

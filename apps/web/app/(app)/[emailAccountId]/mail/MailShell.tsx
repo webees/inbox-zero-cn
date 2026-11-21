@@ -164,16 +164,16 @@ import type { ThreadsQuery } from "@/utils/threads/validation";
 import { getConversationSubject } from "@/utils/email/subject";
 import { printMessages } from "@/app/(app)/[emailAccountId]/mail/print-messages";
 
-// Module-level so an "empty" reader doesn't hand children a new array each render.
+// 放在模块级，这样“空”阅读器不会在每次渲染时向子组件传递新数组。
 const NO_MESSAGES: ThreadMessage[] = [];
 const ASSISTANT_SELECTION_WAIT_MS = 15_000;
 const NO_LABELS = {};
 
 /**
- * Owns the mail screen's URL, thread list, selection, and triage state, and
- * composes the sidebar, list, and reader from memoized parts. J/K and engine
- * snapshots re-render this component, so everything passed down is kept
- * referentially stable and only the parts whose inputs changed re-render.
+ * 管理邮件屏幕的 URL、会话列表、选择与分拣状态，并
+ * 用经过缓存的部件组合侧栏、列表和阅读器。J/K 和引擎
+ * 快照会重新渲染此组件，因此向下传递的一切都保持
+ * 引用稳定，只有输入发生变化的部件会重新渲染。
  */
 export function MailShell() {
   const { i18n, t } = useLingui();
@@ -191,11 +191,11 @@ export function MailShell() {
   const setIsHelpOpen = useSetAtom(shortcutsDialogOpenAtom);
   const senderCommandContext = useAtomValue(senderCommandContextAtom);
   const setMailCommandContext = useSetAtom(mailCommandContextAtom);
-  // The side panel viewer owns the triage keys while it's open, so this screen
-  // stands down rather than both archiving the same keystroke.
+  // 侧面板查看器打开时会占用分拣快捷键，因此此屏幕
+  // 会让出，而不是让双方都归档同一次按键。
   const { threadId: sidePanelThreadId } = useDisplayedEmail();
   const [preview, setPreview] = useAtom(mailPreviewAtom);
-  // A preview opened under another account can't load in this one.
+  // 在另一个账号下打开的预览无法在此账号中加载。
   const previewThreadId =
     preview?.emailAccountId === emailAccountId ? preview.threadId : null;
   const setMailScreenMounted = useSetAtom(mailScreenMountedAtom);
@@ -274,8 +274,8 @@ export function MailShell() {
   const expandedPreview = settings?.expandedPreview ?? false;
   const bundleInbox = settings?.bundleInbox ?? false;
 
-  // Written through the SWR cache rather than mirrored in local state, so the
-  // preference has one source of truth and every reader sees the new value.
+  // 通过 SWR 缓存写入，而不是镜像到本地状态，因此偏好设置
+  // 只有一个真实来源，每个阅读器都能看到新值。
   const updatePreferences = useCallback(
     (preferences: UpdateMailPreferencesBody) => {
       if (!settings) return;
@@ -287,8 +287,8 @@ export function MailShell() {
             emailAccountId,
             preferences,
           );
-          // Thrown so SWR rolls the optimistic value back rather than leaving
-          // the UI showing a preference the server never accepted.
+          // 抛出异常，让 SWR 回滚乐观值，而不是让界面
+          // 继续显示服务器从未接受的偏好设置。
           if (result?.serverError || result?.validationErrors)
             throw new Error(getActionErrorMessage(result));
           return { ...(current ?? loadedSettings), ...preferences };
@@ -302,9 +302,7 @@ export function MailShell() {
           rollbackOnError: true,
         },
       ).catch((error) => {
-        toast.error(
-          error instanceof Error ? error.message : t`Couldn't save that`,
-        );
+        toast.error(error instanceof Error ? error.message : t`无法保存`);
       });
     },
     [emailAccountId, mutateSettings, settings, t],
@@ -326,13 +324,13 @@ export function MailShell() {
   const toggleBundleInbox = useCallback(async () => {
     const enabling = !bundleInbox;
     await updatePreferences({ bundleInbox: enabling });
-    // Turning bundling on picks default splits on the server.
+    // 开启归集时会在服务器上选择默认分栏。
     if (enabling) mutateSettings();
   }, [bundleInbox, mutateSettings, updatePreferences]);
 
-  // A sidebar selection scopes the whole list, which replaces the split tabs —
-  // splits are a way of slicing the inbox, not of slicing an arbitrary view.
-  // Resolved once so the tab bar and the fetched rows can't disagree.
+  // 侧栏选择会限定整个列表的范围，这会替换分栏标签页——
+  // 分栏是切分收件箱的方式，而不是切分任意视图的方式。
+  // 只解析一次，确保标签栏与抓取的行不会不一致。
   const scopeQuery: ThreadsQuery | null = useMemo(() => {
     if (scopeLabelId) return { labelId: scopeLabelId };
     if (scopeFolderId) return { folderId: scopeFolderId };
@@ -349,7 +347,7 @@ export function MailShell() {
     scopeType,
     scopeLabelId,
     scopeFolderId,
-    // Opening setup drops a typed search, which would hide the tabs it previews.
+    // 打开设置会丢弃已输入的搜索，而该搜索会隐藏它预览的标签页。
     setupParam,
   ]);
   const [searchDraft, setSearchDraft] = useState<{
@@ -363,8 +361,8 @@ export function MailShell() {
       ? searchDraft.value
       : searchParam) ?? "";
   const searchQuery = searchValue.trim() || null;
-  // Scheduled sends live in our own database, so this view has no thread
-  // list to fetch.
+  // 定时发送邮件保存在我们自己的数据库中，因此此视图没有
+  // 会话列表需要抓取。
   const isScheduledView =
     !isAllAccounts && !searchQuery && scopeType === MAIL_SCHEDULED_TYPE;
   const [settledSearch, setSettledSearch] = useState(searchQuery);
@@ -385,8 +383,8 @@ export function MailShell() {
     (value: string) => setSearchDraft({ identity: searchEditIdentity, value }),
     [searchEditIdentity],
   );
-  // Picking the view that's already open leaves the URL unchanged, so an
-  // unsubmitted search would otherwise keep filtering the list.
+  // 选择已打开的视图不会改变 URL，因此未提交的搜索
+  // 否则会继续筛选列表。
   const discardSearchDraft = useCallback(() => setSearchDraft(undefined), []);
 
   const combinedLabelSplits = useMemo(
@@ -395,10 +393,10 @@ export function MailShell() {
   );
 
   const splits = useMemo(() => {
-    // Stored names stay as the user saved them; only the tabs the app adds
-    // itself are translated.
+    // 已保存的名称保持用户保存时的样子；只翻译应用
+    // 自己添加的标签页。
     const getDisplayName = (split: MailSplit) => {
-      if (isDefaultAllMailSplit(split)) return t`All`;
+      if (isDefaultAllMailSplit(split)) return t`全部`;
       const { name } = split;
       if (isGoogle && name.trim().toLowerCase() === "other")
         return t`${name} (custom)`;
@@ -408,14 +406,14 @@ export function MailShell() {
       ...(settings?.splits ?? []).map((split) => ({
         ...split,
         name: getDisplayName(split),
-        // Exclusions are served for Gmail only, the same limit as Other.
+        // 排除项仅对 Gmail 提供，与其他标签页适用同样的限制。
         hideFromAll: isGoogle && !isAllAccounts && split.hideFromAll,
       })),
       ...(isGoogle && !isAllAccounts
         ? [
             {
               id: OTHER_SPLIT_ID,
-              name: t`Other`,
+              name: t`其他`,
               matchAll: true,
               filters: [],
               hideFromAll: false,
@@ -467,8 +465,8 @@ export function MailShell() {
     (split) => split.id === displayedActiveSplitId,
   )?.labelNames;
   const query: ThreadsQuery = useMemo(() => {
-    // Search overrides split/scope and covers the whole mailbox, matching
-    // what Gmail's and Outlook's own search boxes do by default.
+    // 搜索会覆盖分栏/范围并涵盖整个邮箱，与 Gmail 和
+    // Outlook 自带搜索框的默认行为一致。
     if (searchQuery) return { q: searchQuery };
     if (scopeQuery) return scopeQuery;
 
@@ -545,7 +543,7 @@ export function MailShell() {
             threads: listedThreads,
             splits: settings?.splits ?? [],
             expandedBundleIds,
-            // A sign-in code is wanted now, so it never waits inside a bundle.
+            // 登录验证码需要立即显示，因此绝不会在归集中等待。
             keepVisible: (thread) => isOtpThread(thread, userLabels),
           })
         : { rows: listedThreads, rowBundles: undefined },
@@ -582,11 +580,11 @@ export function MailShell() {
     emptyListMessage = (
       <span className="inline-flex items-center gap-2">
         <LoadingMiniSpinner />
-        <Trans>Syncing your mail…</Trans>
+        <Trans>正在同步你的邮件…</Trans>
       </span>
     );
   } else if (searchQuery) {
-    emptyListMessage = t`No emails found`;
+    emptyListMessage = t`未找到邮件`;
   } else if (!scopeQuery) {
     emptyListMessage = (
       <InboxZeroCelebration
@@ -640,8 +638,8 @@ export function MailShell() {
     emailAccountId,
   });
 
-  // Defer the pair as one value: rendering a new id with the previous account
-  // would be worse than fetching eagerly when J/K moves between account rows.
+  // 将这对值作为一个整体延迟：用新 id 搭配之前的账号
+  // 比在 J/K 跨账号行移动时立即抓取更糟。
   const deferredReaderSelection = useDeferredValue(openThreadSelection);
   const readerThreadKey = getThreadSelectionKey(deferredReaderSelection);
   const openReaderThreadKey = getThreadSelectionKey(openThreadSelection);
@@ -668,8 +666,8 @@ export function MailShell() {
     },
     { includeDrafts: true, localMail: true },
   );
-  // Withheld until the deferred id catches up, so a fast J/K can't pair the new
-  // thread's header with the previous thread's body.
+  // 在延迟 id 追上之前暂不提供，这样快速 J/K 不会将新
+  // 会话的标题与之前会话的正文配对。
   const openMessages = readerSelectionSettled
     ? (openThreadData?.thread.messages ?? NO_MESSAGES)
     : NO_MESSAGES;
@@ -743,8 +741,8 @@ export function MailShell() {
   const teamCommentsAvailable = useTeamCommentsAvailable(readerEmailAccountId);
   const openTeamComments = useMemo(
     () =>
-      // The listener mounts with the thread's messages, so an earlier request
-      // would be dropped.
+      // 监听器会随会话消息一起挂载，因此更早的请求
+      // 会被丢弃。
       openThreadId &&
       readerSelectionSettled &&
       openMessages.length > 0 &&
@@ -779,7 +777,7 @@ export function MailShell() {
     readerSelectionSettled,
   ]);
   const actionTargets = useMemo(() => {
-    // Navigation can outpace the visible reader; do not act on an unseen email.
+    // 导航可能快于可见的阅读器；不要对尚未显示的邮件执行操作。
     if (
       openReaderThreadKey &&
       openReaderThreadKey !== visibleReaderThreadKey &&
@@ -807,7 +805,7 @@ export function MailShell() {
       selectedKeys: [...selection.selectedIds],
     });
     if (!rowBundles) return targets;
-    // A collapsed bundle row acts on every thread it stands for.
+    // 折叠的归集行会对其代表的每个会话执行操作。
     const targetsByKey = new Map(
       listTargets.map((target) => [target.key, target]),
     );
@@ -816,8 +814,8 @@ export function MailShell() {
         targets
           .flatMap((target) => {
             const bundleRow = rowBundles.get(target.key);
-            // An open email acts alone only when it's the implicit target;
-            // a selected bundle row always means the whole bundle.
+            // 打开的邮件仅在它是隐式目标时单独操作；
+            // 选中的归集行始终表示整个归集。
             if (
               bundleRow?.kind !== "collapsed" ||
               (target.key === openThreadKey && !selection.hasSelection)
@@ -846,11 +844,11 @@ export function MailShell() {
     readerTarget,
     selection.selectedIds,
   ]);
-  // Undo brings the thread back into the list, so return focus to it, and to
-  // the reader if one is showing, rather than leaving it where archive advanced.
+  // 撤销会将会话带回列表，因此让焦点回到该会话；如果有阅读器正在显示，
+  // 也让焦点回到阅读器，而不是留在归档时前进到的位置。
   const [restoredFocusKey, setRestoredFocusKey] = useState<string>();
-  // Archiving the last row closes the reader, so the open state has to be
-  // remembered from before the action rather than read at undo time.
+  // 归档最后一行会关闭阅读器，因此必须在操作前记住
+  // 打开状态，而不是在撤销时读取。
   const removedOpenThreadKeyRef = useRef<string | null>(null);
   const focusRestoredThread = useStableCallback(
     (targets: ThreadActionTarget[]) => {
@@ -898,7 +896,7 @@ export function MailShell() {
     emailAccountId,
     onRestore: focusRestoredThread,
     readerTarget,
-    // Collapsed bundles hide their threads from the rows, not from actions.
+    // 折叠的归集会从行中隐藏其会话，但不会从操作中隐藏。
     threads: listedThreads,
   });
   const markRead = useCallback(
@@ -961,9 +959,9 @@ export function MailShell() {
     }
   }, [composeTargetMessageId, openReaderThreadKey, readerSelectionSettled]);
 
-  // Let the fetched snapshot decide the initial read state. Once marking has
-  // been attempted, the optimistically patched row is the copy that stays in
-  // step while the fetched snapshot may still be stale.
+  // 让抓取的快照决定初始读取状态。尝试标记后，
+  // 乐观修补的行就是保持一致的那份副本，
+  // 而抓取的快照可能仍然是过期的。
   const initialReadStateMessages = openMessages.length
     ? openMessages
     : (openThread?.messages ?? openMessages);
@@ -984,7 +982,7 @@ export function MailShell() {
 
   const getOpenThreadKey = useStableCallback(() => openThreadKey);
   const getFocusedIndex = useStableCallback(() => focusedIndex);
-  /** Where the reader landed: an opened row, a bundle row it closed on, or nothing. */
+  /** 阅读器落脚的位置：已打开的行、它关闭时所处的归集行，或空。 */
   const advanceReaderPast = useStableCallback(
     (
       currentThreadKey: string,
@@ -1000,7 +998,7 @@ export function MailShell() {
       const nextRow = threads.find(
         (thread) => getListThreadKey(thread) === nextThread?.id,
       );
-      // A bundle row is not one email, so the reader closes on it.
+      // 归集行不是某一封邮件，因此阅读器会关闭它。
       const opensRow =
         nextRow &&
         rowBundles?.get(getListThreadKey(nextRow))?.kind !== "collapsed";
@@ -1027,8 +1025,8 @@ export function MailShell() {
       if (removedOpenThreadKey) {
         removedOpenThreadKeyRef.current = removedOpenThreadKey;
       }
-      // Advance before the list drops the row, so focus moves straight to
-      // the next row instead of briefly landing on none.
+      // 在列表移除该行之前前进，让焦点直接移到
+      // 下一行，而不是短暂落在空处。
       const advancedTo =
         removedOpenThreadKey && autoAdvanceReader
           ? advanceReaderPast(removedOpenThreadKey, ids)
@@ -1037,9 +1035,9 @@ export function MailShell() {
       const queuedOpenThread =
         removedOpenThreadKey !== null &&
         queuedThreadKeys.includes(removedOpenThreadKey);
-      // If it didn't queue, go back, unless the user has since moved on.
-      // A reader closed on a bundle row has stayed put while focus has too;
-      // one closed for any other reason can't tell staying from leaving.
+      // 如果没有进入队列，就返回，除非用户此后已经继续操作。
+      // 因归集行而关闭的阅读器与焦点一样保持原位；
+      // 因其他任何原因关闭的阅读器无法区分留下还是离开。
       const stayedWhereAdvanced =
         advancedTo !== null &&
         ("openedKey" in advancedTo
@@ -1075,7 +1073,7 @@ export function MailShell() {
     if (!thread) return;
     const bundleRow = rowBundles?.get(getListThreadKey(thread));
     if (bundleRow?.kind === "collapsed") {
-      // The selection held the bundle; once expanded it would mean one member.
+      // 选择状态原先代表整个归集；展开后它就只代表其中一个成员。
       selection.clear();
       setOpenThread(null);
       setFocusedIndex(index);
@@ -1096,7 +1094,7 @@ export function MailShell() {
     const leadIndex = members?.[0]
       ? orderedIds.indexOf(getListThreadKey(members[0]))
       : -1;
-    // The members are about to be hidden, so the reader can't stay on one.
+    // 成员即将被隐藏，因此阅读器不能停留在其中一个上面。
     if (
       openThreadKey &&
       members?.some((thread) => getListThreadKey(thread) === openThreadKey)
@@ -1111,14 +1109,14 @@ export function MailShell() {
     (delta: number) => {
       const next = clampIndex(clampedIndex + delta);
       setFocusedIndex(next);
-      // Once a reader is open, navigation keeps its content and position in
-      // step. A closed list view still lets J/K move the row cursor alone —
-      // there the cursor still signals intent, so warm the row for Enter.
+      // 阅读器打开后，导航会同步保持其内容和位置。
+      // 关闭的列表视图仍允许 J/K 单独移动行光标——
+      // 在那里光标仍表示意图，因此为 Enter 预热该行。
       const nextThread = threads[next];
       if ((layout === "split" || openThreadId) && nextThread) {
         setReplyToMessageId(undefined);
         setForwardToMessageId(undefined);
-        // A bundle row is not one email, so the reader shows nothing for it.
+        // 归集行不是某一封邮件，因此阅读器不会为它显示内容。
         const isBundleRow =
           rowBundles?.get(getListThreadKey(nextThread))?.kind === "collapsed";
         setOpenThread(
@@ -1163,12 +1161,12 @@ export function MailShell() {
       return;
     }
     if (!isOpenThreadUnread) {
-      // A cached read snapshot can arrive before a fresh unread response.
+      // 缓存的已读快照可能比最新的未读响应更早到达。
       return;
     }
 
-    // Remember the durable attempt so this reader doesn't queue duplicates
-    // while the outbox is waiting for connectivity or provider recovery.
+    // 记住持久化尝试，这样发件箱在等待连接或服务商恢复时，
+    // 此阅读器不会重复排队。
     readAttemptedForOpenThread.current = openThreadKey;
     markRead([openThreadKey]);
   }, [
@@ -1183,7 +1181,7 @@ export function MailShell() {
     () => runOn((ids) => optimisticArchive(ids, archive), true, true),
     [archive, optimisticArchive, runOn],
   );
-  // Archiving again would be a no-op, so archived targets offer the way back.
+  // 再次归档不会产生效果，因此已归档目标会提供返回方式。
   const moveToInboxTargets = useCallback(
     () => runOn(moveToInbox, true, true),
     [moveToInbox, runOn],
@@ -1233,7 +1231,7 @@ export function MailShell() {
       : accountsData?.emailAccounts.find(
           (account) => account.id === labelAccountId,
         );
-  // Outlook categories use the same engine membership command as Gmail labels.
+  // Outlook 类别使用与 Gmail 标签相同的引擎成员关系命令。
   const canLabel =
     currentLabelTargets.length > 0 &&
     (isGoogleProvider(labelAccount?.account.provider) ||
@@ -1431,8 +1429,8 @@ export function MailShell() {
     setSearchParam,
   ]);
 
-  // The field can be rendered but inert while the list is held during an open,
-  // so the request stays pending until focus actually lands.
+  // 打开期间列表被保持时，该字段可以渲染但不可用，
+  // 因此请求会保持挂起，直到焦点真正落在该字段上。
   const focusPendingSearch = useCallback(() => {
     const input = searchInputRef.current;
     if (!input) return;
@@ -1469,10 +1467,10 @@ export function MailShell() {
   const onToggleAssistant = useStableCallback(() =>
     toggleSidebar(["chat-sidebar"]),
   );
-  // `useShortcuts` keeps handlers in a ref, so these need no memoization.
-  // Opening from the list keeps the list on screen while the reader prepares
-  // the email out of sight, so the finished email replaces it in one frame.
-  // Once a thread is showing, the reader buffers moves between threads itself.
+  // `useShortcuts` 将处理器保存在 ref 中，因此这些无需缓存。
+  // 从列表打开时，阅读器会在不可见处准备邮件，同时列表保持在屏幕上，
+  // 完成后邮件会在一帧内替换列表。
+  // 会话显示后，阅读器会自行缓冲会话之间的移动。
   const readerPreparing =
     layout === "list" &&
     Boolean(openReaderThreadKey && readerEmailAccount) &&
@@ -1546,7 +1544,7 @@ export function MailShell() {
             else if (searchValue) setSearch("");
             else if (isScoped) goToInbox();
           },
-      // Hidden tabs would change the split out of sight.
+      // 隐藏的标签页会在视线之外改变分栏。
       nextSplit: canCycleSplits ? () => cycleSplit(1) : undefined,
       previousSplit: canCycleSplits ? () => cycleSplit(-1) : undefined,
       switchAccount: (event) => {
@@ -1571,8 +1569,8 @@ export function MailShell() {
         if (reader) selectThreadText(reader);
         else selection.selectAll();
       },
-      // The cursor travels with the extension; without that, every repeat
-      // re-extends from the same row and the range never grows.
+      // 光标会随扩展移动；否则每次重复都会从同一行
+      // 重新扩展，范围永远不会增长。
       extendSelectionDown: () => extendSelection(1),
       extendSelectionUp: () => extendSelection(-1),
       label: canLabel ? openLabelPicker : undefined,
@@ -1620,8 +1618,8 @@ export function MailShell() {
   })();
 
   useLayoutEffect(() => {
-    // The search field remounts when selection clears or the list returns, so
-    // consume a pending `/` focus after whichever commit actually rendered it.
+    // 选择清除或列表返回时搜索框会重新挂载，因此要在
+    // 真正渲染它的那次提交之后处理挂起的 `/` 聚焦。
     if (pendingSearchFocusRef.current) focusPendingSearch();
   });
 
@@ -1632,8 +1630,8 @@ export function MailShell() {
     return () => document.removeEventListener("copy", copySelectedThreadText);
   }, []);
 
-  // Senders the reader actually corresponds with, so "Describe it" can turn a
-  // person's name into an address instead of guessing a domain.
+  // 阅读器实际通信过的发件人，这样“描述一下”可以将
+  // 人名转换为地址，而不是猜测域名。
   const getSplitSenders = useStableCallback(() => {
     const seen = new Set<string>();
     for (const thread of listedThreads) {
@@ -1656,7 +1654,7 @@ export function MailShell() {
         settings?.splits?.some(
           (split) =>
             split.id === activeSplitId &&
-            // Deleting the label removes a split defined solely by it.
+            // 删除标签会移除仅由该标签定义的分栏。
             split.filters.length > 0 &&
             split.filters.every(
               (filter) =>
@@ -1674,8 +1672,8 @@ export function MailShell() {
         ]);
       }
       if (deletedActiveSplit) setActiveSplitId(null);
-      // The delete action drops the label from saved splits once the
-      // provider has deleted it, so splits reload only after that.
+      // 服务商删除标签后，删除操作才会从已保存的分栏中移除该标签，
+      // 因此分栏只在那之后重新加载。
       if (item.kind === "label" && (await deleted)) await mutateSettings();
     },
     [
@@ -1707,12 +1705,10 @@ export function MailShell() {
         },
       });
       if (admission.status === "rejected") {
-        toast.error(
-          admissionRejectionCopy(admission.code) ?? t`Couldn't remove label`,
-        );
+        toast.error(admissionRejectionCopy(admission.code) ?? t`无法移除标签`);
       }
     } catch {
-      toast.error(t`Couldn't remove label`);
+      toast.error(t`无法移除标签`);
     }
   });
 
@@ -1726,8 +1722,8 @@ export function MailShell() {
   });
   const onSendSuccess = useStableCallback(
     (_messageId: string, sentThreadId: string, repliedThreadId: string) => {
-      // A held send settles after the undo window, by which time the user may
-      // have moved on; only follow the reply if they are still on its thread.
+      // 暂存的发送会在撤销窗口之后完成，到那时用户可能
+      // 已经继续操作；只有仍在该会话上时才跟随回复。
       if (
         !openThreadSelection ||
         repliedThreadId !== openThreadSelection.threadId ||
@@ -1749,8 +1745,8 @@ export function MailShell() {
         : NO_SEARCH_OPTIONS,
     [folders, isAllAccounts, isOutlook],
   );
-  // With the sidebar collapsed to its rail, this is the only sign that the
-  // list isn't the inbox.
+  // 侧栏折叠为窄条时，这是列表并非收件箱
+  // 的唯一提示。
   const scopeTitle =
     isScoped && !searchQuery
       ? getScopeTitle({
@@ -1804,17 +1800,17 @@ export function MailShell() {
     return () => setMailView(null);
   }, [chatMailView, setMailView]);
 
-  // Threads the assistant asked to select, held until they show up in the list
-  // (e.g. after a search it just ran), the wait runs out, or the user changes
-  // the selection themselves.
+  // 助手要求选择的会话，会一直保留到它们出现在列表中
+  //（例如在刚运行搜索之后），或等待超时，或用户自行更改
+  // 选择。
   const [assistantSelection, setAssistantSelection] = useState<string[] | null>(
     null,
   );
   const appliedAssistantKeys = useRef<ReadonlySet<string>>(new Set());
   const applyMailScreenAction = useStableCallback(
     (action: MailScreenAction) => {
-      // A search or selection lands in the list, which an open email or
-      // preview would otherwise keep covering.
+      // 搜索或选择会落在列表中，否则打开的邮件或
+      // 预览会继续覆盖它。
       const revealList = () => {
         setPreview(null);
         if (layout === "list") setOpenThread(null);
@@ -1829,16 +1825,16 @@ export function MailShell() {
           return;
         case "select_threads":
           revealList();
-          // Replaces the selection outright, so an older one can't be left
-          // looking like the assistant's pick if no requested row shows up.
+          // 完全替换选择，这样如果没有请求的行显示出来，
+          // 先前的选择就不会看起来像助手的挑选结果。
           appliedAssistantKeys.current = new Set();
           selection.clear();
           setAssistantSelection(action.threadIds);
           return;
         case "show_split":
-          // The chat may have finished after the user switched accounts.
+          // 用户切换账号后，聊天可能已经完成。
           if (action.emailAccountId !== emailAccountId) return;
-          // Split tabs only show on this account's unscoped, unsearched inbox.
+          // 分栏标签页仅在此账号未限定范围、未搜索的收件箱中显示。
           revealList();
           setAssistantSelection(null);
           appliedAssistantKeys.current = new Set();
@@ -1887,8 +1883,8 @@ export function MailShell() {
     if (!assistantSelection) return;
     const applied = appliedAssistantKeys.current;
     const visibleKeys = new Set(orderedIds);
-    // Rows that leave the list (e.g. into a collapsed bundle) drop out of the
-    // selection on their own, so only the visible part shows a user's edit.
+    // 离开列表的行（例如进入折叠的归集）会自动退出选择，
+    // 因此只有可见部分能显示用户的编辑。
     if (
       !hasSameKeys(
         onlyKeys(applied, visibleKeys),
@@ -1924,7 +1920,7 @@ export function MailShell() {
   ]);
   const threadCount = threads.length;
   const { selectedCount, selectAll, clear: clearSelection } = selection;
-  // Only offered once something is selected, so the tabs sit flush otherwise.
+  // 仅在选中内容后提供，否则标签页会紧贴在一起。
   const selectAllCheckbox = useMemo(
     () =>
       selectedCount > 0 ? (
@@ -1970,8 +1966,8 @@ export function MailShell() {
                 ? await moveToFolder(threadKeys, target.id)
                 : await applyLabel(threadKeys, target.id, { archive: isMove });
             if (isMove && applied.length) {
-              // Undo reopens the reader only on a thread it was showing and
-              // that this move actually took away.
+              // 仅当阅读器正在显示某个会话且这次移动确实移走了它时，
+              // 撤销才会重新打开阅读器。
               removedOpenThreadKeyRef.current =
                 openThreadKey && applied.includes(openThreadKey)
                   ? openThreadKey
@@ -2078,8 +2074,8 @@ export function MailShell() {
                 onOpenSetup={
                   canShowSetup && !isSetupOpen
                     ? () => {
-                        // An emptied box can still hold a submitted search,
-                        // which would come back and hide the setup preview.
+                        // 清空的邮箱仍可能保留已提交的搜索，
+                        // 该搜索会返回并隐藏设置预览。
                         setSearchParam(null);
                         setSetupParam("1");
                       }
@@ -2130,12 +2126,12 @@ export function MailShell() {
                 {scopeTitle ? (
                   <div className="flex items-center gap-1 px-1.5 py-1">
                     <Tooltip
-                      shortcuts={[{ id: "backToList", label: t`Go to inbox` }]}
+                      shortcuts={[{ id: "backToList", label: t`前往收件箱` }]}
                     >
                       <button
                         type="button"
                         onClick={goToInbox}
-                        aria-label={t`Go to inbox`}
+                        aria-label={t`前往收件箱`}
                         className="flex size-7 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         <ChevronLeftIcon className="size-4" />
@@ -2150,8 +2146,7 @@ export function MailShell() {
                 combinedThreadState.failedAccountIds.length ? (
                   <div className="border-border border-b bg-amber-50 px-3 py-2 text-amber-900 text-xs dark:bg-amber-950/30 dark:text-amber-200">
                     <Trans>
-                      Some inboxes couldn&apos;t be loaded. Try again shortly or
-                      check their connections.
+                      部分收件箱无法加载。请稍后重试，或检查它们的连接。
                     </Trans>
                   </div>
                 ) : null}
@@ -2163,7 +2158,7 @@ export function MailShell() {
                     displayedActiveSplitId,
                     searchQuery,
                   ])}
-                  title={t`Unable to show your mail list`}
+                  title={t`无法显示你的邮件列表`}
                 >
                   {isScheduledView ? (
                     <ScheduledEmailList />
@@ -2199,7 +2194,7 @@ export function MailShell() {
                                   )
                                 }
                               >
-                                <Trans>Retry search</Trans>
+                                <Trans>重试搜索</Trans>
                               </Button>
                             </div>
                           ) : undefined
@@ -2212,9 +2207,9 @@ export function MailShell() {
                             >
                               <LoadingMiniSpinner />
                               {searchQuery ? (
-                                <Trans>Searching mail…</Trans>
+                                <Trans>正在搜索邮件…</Trans>
                               ) : (
-                                <Trans>Loading mail…</Trans>
+                                <Trans>正在加载邮件…</Trans>
                               )}
                             </span>
                           </div>
@@ -2264,7 +2259,7 @@ export function MailShell() {
                 "flex min-h-0 min-w-0 flex-1 flex-col",
                 readerPreparing && "invisible absolute inset-0",
               )}
-              // The chat's email preview covers the reader; keep focus out of it.
+              // 聊天的邮件预览会覆盖阅读器；不要让焦点进入其中。
               inert={Boolean(previewThreadId)}
             >
               <MailReaderPane
@@ -2389,8 +2384,8 @@ function getMailSearchVariant({
 
 function useStableOrderedIds(threads: ListThread[]) {
   const previous = useRef<string[]>([]);
-  // Selection callbacks close over the ids; keeping them while the order is
-  // unchanged means a snapshot that edits one row doesn't re-render every row.
+  // 选择回调会闭包捕获这些 id；顺序未变时继续保留它们，
+  // 意味着编辑一行的快照不会重新渲染每一行。
   return useMemo(() => {
     const ids = threads.map(getListThreadKey);
     const unchanged =

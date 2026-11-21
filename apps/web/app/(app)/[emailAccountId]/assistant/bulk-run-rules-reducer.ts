@@ -128,19 +128,19 @@ export function getProgressMessage(
   const total = state.processedThreadIds.size;
 
   if (remaining > 0) {
-    return t(i18n)`Progress: ${completed}/${total} emails completed`;
+    return t(i18n)`进度：已完成 ${completed}/${total} 封邮件`;
   }
 
   if (state.status === "stopped" && state.stoppedCount !== null) {
     const stoppedCount = state.stoppedCount;
     return t(
       i18n,
-    )`${plural(stoppedCount, { one: "Processed # email", other: "Processed # emails" })}`;
+    )`${plural(stoppedCount, { one: "已处理 # 封邮件", other: "已处理 # 封邮件" })}`;
   }
 
   return t(
     i18n,
-  )`${plural(total, { one: "Processed # email", other: "Processed # emails" })}`;
+  )`${plural(total, { one: "已处理 # 封邮件", other: "已处理 # 封邮件" })}`;
 }
 
 function isRunActive(status: ProcessingStatus) {

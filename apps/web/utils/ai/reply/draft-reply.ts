@@ -24,7 +24,7 @@ import {
 
 const logger = createScopedLogger("DraftReply");
 const DRAFT_OUTPUT_INSTRUCTION =
-  "Return plain text only. Do not use HTML tags. If a clickable link is necessary, use markdown links in the format [Label](https://example.com/path) or [Label](mailto:name@example.com).";
+  "仅返回纯文本。不要使用 HTML 标签。如果需要可点击的链接，请使用格式为 [标签](https://example.com/path) 或 [标签](mailto:name@example.com) 的 Markdown 链接。";
 
 const systemPrompt = `You write email replies as the user, in their voice. The user reviews and edits every draft before it is sent.
 
@@ -69,17 +69,16 @@ Write in a plainspoken, professional tone.
 Prefer short declarative sentences over polished or overly elaborate phrasing.`;
 
 /**
- * Appended whenever a user's own style replaces the default above, because
- * otherwise the only length guidance in the prompt disappears for them — which
- * is nearly everyone who has used the product long enough to have a style.
+ * 每当用户自己的写作风格替换了上面的默认风格时追加此内容，否则提示词中
+ * 唯一的篇幅指引就会消失——而这几乎影响所有使用产品足够久、已经形成风格的
+ * 用户。
  *
- * Deliberately about proportionality rather than a sentence count. A user whose
- * style asks for thorough replies is not contradicted by this: a long answer to
- * a complex question is still proportionate. It only rules out padding,
- * restatement, and unrequested additions, which no style asks for.
+ * 有意聚焦于篇幅比例而非句子数量。某位用户的风格要求详尽回复时，这与之
+ * 并不矛盾：对复杂问题的长答案仍然合乎比例。它只排除填充、重复以及无人
+ * 要求的附加内容，这些都不是任何风格所要求的。
  */
 const LENGTH_DISCIPLINE =
-  "Match the length of the reply to what was actually asked. Do not restate the incoming message, pad with filler, or add offers, next steps, or availability that nobody requested.";
+  "让回复的篇幅与实际所问相称。不要重复来件内容、用填充内容凑篇幅，也不要添加无人要求的提议、后续步骤或可用时间。";
 
 type DraftEmailAccount = EmailAccountWithAI & {
   bookingLinks?: { slug: string }[];
@@ -88,7 +87,7 @@ type DraftEmailAccount = EmailAccountWithAI & {
 export type DraftReplyInput = {
   messages: (EmailForLLM & { to: string })[];
   emailAccount: DraftEmailAccount;
-  /** The user's other send-as addresses, besides `emailAccount.email`. */
+  /** 除 `emailAccount.email` 之外，用户的其他发件地址。 */
   sendAsEmails?: string[];
   knowledgeBaseContent: string | null;
   replyMemoryContent?: string | null;
@@ -138,11 +137,11 @@ const getUserPrompt = (input: DraftReplyInput) => {
 
   return `${context}
 
-Here is the context of the email thread (from oldest to newest):
+以下是邮件会话的上下文（从最早到最新）：
 ${thread}
 
-Please write a reply to the email.
-Answer the sender directly as the user. If the answer depends on something only the user knows, write their most likely answer; they will edit it if it's wrong.
+请为这封邮件撰写回复。
+以用户身份直接回答发件人。如果答案取决于只有用户知道的事情，请写出他们最可能的答案；如果不对，他们会自行修改。
 ${temporalAndIdentityContext}`;
 };
 
@@ -181,9 +180,8 @@ IMPORTANT: You are writing an email as ${emailAccount.email}${sendAsEmails.lengt
 }
 
 /**
- * The complete non-thread context shown to the drafting model. Eval judges use
- * this same resolved representation so product precedence and formatting rules
- * cannot drift between generation and grading.
+ * 展示给起草模型的完整非会话上下文。评估评审使用同一份解析结果，以确保
+ * 产品优先级与格式规则不会在生成和评分之间发生偏移。
  */
 export function buildDraftReplyModelContext({
   emailAccount,
@@ -214,7 +212,7 @@ export function buildDraftReplyModelContext({
   const userAbout = getUserAboutPrompt(emailAccount.about);
 
   const relevantKnowledge = knowledgeBaseContent
-    ? `Relevant knowledge base content:
+    ? `相关知识库内容：
 
 <knowledge_base>
 ${knowledgeBaseContent}
@@ -223,7 +221,7 @@ ${knowledgeBaseContent}
     : "";
 
   const learnedReplyMemories = replyMemoryContent
-    ? `Learned reply memories from prior draft edits. These are advisory, not mandatory. Use them only when they clearly help with the current email, and ignore any memory that does not fit. Explicit user instructions and knowledge base content take precedence.
+    ? `从以往草稿修改中学到的回复记忆。这些内容仅供参考，并非强制要求。仅在它们明确有助于当前邮件时使用，并忽略任何不适用的记忆。用户的明确指示和知识库内容优先。
 
 <reply_memories>
 ${replyMemoryContent}
@@ -232,7 +230,7 @@ ${replyMemoryContent}
     : "";
 
   const historicalContext = emailHistorySummary
-    ? `Historical email context with this sender:
+    ? `与该发件人的历史邮件上下文：
 
 <sender_history>
 ${emailHistorySummary}
@@ -241,7 +239,7 @@ ${emailHistorySummary}
     : "";
 
   const precedentHistoryContext = emailHistoryContext?.relevantEmails.length
-    ? `Advisory context from similar email threads that may help draft a reply.
+    ? `来自相似邮件会话的参考上下文，可能有助于撰写回复。
 
 <email_history>
 ${emailHistoryContext.relevantEmails
@@ -254,13 +252,13 @@ ${item}
 </email_history>
 
 <email_history_notes>
-${emailHistoryContext.notes || "No notes"}
+${emailHistoryContext.notes || "无备注"}
 </email_history_notes>
 `
     : "";
 
   const senderReplyExamplesContext = senderReplyExamples
-    ? `Past replies to this sender. Use for relationship, tone, brevity, and directness; current thread/context facts still win.
+    ? `过去对这位发件人的回复。用于参考关系、语气、简洁度和直接程度；当前会话/上下文中的事实仍然优先。
 
 <sender_reply_examples>
 ${senderReplyExamples}
@@ -271,7 +269,7 @@ ${senderReplyExamples}
   const writingStylePrompt = getWritingStylePrompt(effectiveWritingStyle);
 
   const learnedWritingStylePrompt = advisoryLearnedWritingStyle
-    ? `Learned writing style from prior draft edits. This is advisory and lower priority than any explicit writing style provided by the user.
+    ? `从以往草稿修改中学到的写作风格。这仅供参考，优先级低于用户提供的任何明确写作风格。
 
 <learned_writing_style>
 ${advisoryLearnedWritingStyle}
@@ -286,7 +284,7 @@ ${advisoryLearnedWritingStyle}
   });
 
   const mcpToolsContext = mcpContext
-    ? `Additional context fetched from external tools (such as CRM systems, task managers, or other integrations) that may help draft a response:
+    ? `从外部工具（如 CRM 系统、任务管理器或其他集成）获取的额外上下文，可能有助于撰写回复：
 
 <external_tools_context>
 ${mcpContext}
@@ -302,23 +300,23 @@ ${mcpContext}
     !meetingContext &&
     !recordedMeetingContext &&
     !attachmentContext
-      ? `No additional factual context was provided beyond the email thread.
+      ? `除邮件会话外，未提供其他事实性上下文。
 `
       : "";
 
   const upcomingMeetingsContext = meetingContext || "";
   const selectedAttachments = attachmentContext
-    ? `Selected PDF attachments that will be included with this draft:
+    ? `将随此草稿附上的已选 PDF 附件：
 
 <selected_attachments>
 ${attachmentContext}
 </selected_attachments>
 
-Mention attached documents only when useful and only if this section is present.
+仅在有用且本节存在时才提及所附文档。
 `
     : "";
   const signatureContext = hasConfiguredSignature
-    ? `The user's email account already has a configured signature that will be appended after this draft. Do not write any closing, sign-off, name, title, contact details, or signature block.
+    ? `用户的邮箱账号已配置签名，将附加在此草稿之后。不要撰写任何结尾、落款、姓名、头衔、联系方式或签名块。
 `
     : "";
 
@@ -348,7 +346,7 @@ const draftSchema = z.object({
       "The complete email reply draft incorporating knowledge base information",
     ),
   confidence: llmDraftConfidenceSchema.describe(
-    "Use HIGH only when the draft is complete, grounded, and does not depend on missing facts, pending checks or follow-ups, unavailable calendar/business state, assumptions, or user-fillable details. Use MEDIUM for useful drafts that rely on reasonable assumptions, missing facts, or user-fillable details. Use LOW when the draft is highly uncertain, likely needs broader thread/context review, or mainly asks/checks/follows up.",
+    "仅在草稿完整、有依据，且不依赖缺失事实、待确认事项或后续跟进、不可用的日历/业务状态、假设或需用户填写的细节时使用 HIGH。对于依赖合理假设、缺失事实或需用户填写细节的有用草稿，使用 MEDIUM。当草稿高度不确定、可能需要更全面地审查会话/上下文，或主要是询问/确认/跟随时，使用 LOW。",
   ),
 });
 
@@ -368,7 +366,7 @@ export async function aiDraftReplyWithConfidence(
     emailHistorySummary,
     calendarAvailability,
   } = input;
-  logger.info("Drafting email reply", {
+  logger.info("正在起草邮件回复", {
     messageCount: messages.length,
     hasKnowledge: !!knowledgeBaseContent,
     hasHistory: !!emailHistorySummary,
@@ -390,7 +388,7 @@ export async function aiDraftReplyWithConfidence(
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Draft reply",
+    label: "草稿回复",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "full" },
     onModelUsed: attributionTracker.onModelUsed,
@@ -411,12 +409,12 @@ export async function aiDraftReplyWithConfidence(
   let result = await generate();
 
   if (REPETITIVE_TEXT_PATTERN.test(result.object.reply)) {
-    logger.warn("Draft reply rejected: repetitive output detected, retrying");
+    logger.warn("已拒绝草稿回复：检测到重复输出，正在重试");
     result = await generate();
 
     if (REPETITIVE_TEXT_PATTERN.test(result.object.reply)) {
-      logger.warn("Draft reply rejected: repetitive output on retry");
-      throw new Error("Draft reply generation produced invalid output");
+      logger.warn("已拒绝草稿回复：重试后仍出现重复输出");
+      throw new Error("草稿回复生成产生了无效输出");
     }
   }
 
@@ -494,9 +492,8 @@ function isLikelyListItem(line: string): boolean {
 }
 
 /**
- * Exported so the eval harness inverts this rather than restating it. The
- * harness reports the model-facing label, and a silent remap here would
- * otherwise leave it reporting the old semantics with nothing failing.
+ * 导出以便评估工具反转此处映射而不是重新陈述。评估工具报告面向模型的标签，
+ * 否则这里的静默重映射会让它继续报告旧的语义，而不会有任何检查失败。
  */
 export const DRAFT_CONFIDENCE_BY_LLM_LABEL = {
   LOW: DraftReplyConfidence.ALL_EMAILS,
@@ -513,7 +510,7 @@ function mapLlmDraftConfidence(confidence: unknown): DraftReplyConfidence {
   return DRAFT_CONFIDENCE_BY_LLM_LABEL[llmConfidence.data];
 }
 
-// Matches any non-separator, non-whitespace character repeated 50+ times in a row
+// 匹配连续重复 50 次以上的任何非分隔符、非空白字符
 const REPETITIVE_TEXT_PATTERN = /([^\s\-=_*.#~])\1{49,}/u;
 
 function getSchedulingContext({
@@ -533,14 +530,14 @@ function getSchedulingContext({
 ${calendarBookingLink}
 </booking_link>
 
-When scheduling with the user is clearly needed, prefer sharing this booking link over listing specific availability. Do not use it as a default call-to-action for non-scheduling emails.`);
+当明确需要与用户安排时间时，优先分享此预约链接，而不是列出具体可用时间。不要将其作为非安排时间类邮件的默认行动号召。`);
   }
 
   if (calendarAvailability?.noAvailability) {
     const timezoneLabel = getTimezoneLabel(timezone);
 
-    parts.push(`The user has no available time slots in the requested timeframe in ${timezoneLabel}.
-Do not suggest specific times. Acknowledge the request and suggest alternatives (e.g., "I'm fully booked tomorrow, but let's find another day that works"${calendarBookingLink ? " or share the booking link" : ""}).`);
+    parts.push(`用户在 ${timezoneLabel} 的所请求时间段内没有可用时间。
+不要建议具体时间。确认收到请求并提出替代方案（例如“我明天已经排满了，但我们另找一个合适的日子吧”${calendarBookingLink ? "，或者分享预约链接" : ""}）。`);
   } else if (calendarAvailability?.suggestedTimes.length) {
     const times = calendarAvailability.suggestedTimes
       .map((slot) =>
@@ -556,19 +553,19 @@ Do not suggest specific times. Acknowledge the request and suggest alternatives 
       calendarAvailability.suggestedTimes,
     );
 
-    parts.push(`Available time slots are in ${timezoneLabels}.
-If the sender requested or uses another timezone, express proposed times in that timezone after converting from the user's available slots.
-If you list specific times, include the user-facing timezone label shown for each slot, not a raw timezone identifier.
+    parts.push(`可用时间段采用 ${timezoneLabels} 时区。
+如果发件人请求或使用其他时区，请先将用户的可用时间段转换到该时区，再用该时区表达提议的时间。
+如果列出具体时间，请包含每个时间段显示给用户的时区标签，而不是原始时区标识符。
 
-Available time slots:
+可用时间段：
 ${times}
 
-${calendarBookingLink ? "Because the user has a booking link, share the booking link instead of listing specific times unless the sender explicitly asks the user to provide times, asks about a specific proposed time/date, or the booking link would not answer the scheduling request." : "When the sender is asking to schedule, respond concretely using these time slots. Treat supplied slots on or after today's date as valid; only ask for updated availability if every supplied slot is before today's date."} Propose one specific time rather than a list unless the sender asked for multiple options. If the sender asked for a specific number of options, provide that many when enough slots are available. If the sender has already declined one proposal, offer a different specific time.`);
+${calendarBookingLink ? "由于用户有预约链接，请分享预约链接而不是列出具体时间，除非发件人明确要求用户提供时间、询问某个具体提议的时间/日期，或者预约链接无法满足安排时间请求。" : "当发件人要求安排时间时，请使用这些时间段具体回复。将今天或今天之后的可用时间段视为有效；仅当所有提供的时间段都早于今天时，才询问更新的可用时间。"}除非发件人要求多个选项，否则提议一个具体时间而不是列表。如果发件人要求特定数量的选项，在可用时间段足够时提供该数量。如果发件人已拒绝一个提议，请提供另一个具体时间。`);
   }
 
   if (parts.length === 0) return "";
 
-  return `Scheduling context:
+  return `安排时间上下文：
 
 <scheduling>
 ${parts.join("\n\n")}
@@ -597,10 +594,10 @@ function formatAvailableSlotForPrompt(
   const utcEnd = formatLocalSlotTimeAsUtc(slot.end, timezone);
 
   if (!utcStart || !utcEnd) {
-    return `- ${slot.start} to ${slot.end}`;
+    return `- ${slot.start} 至 ${slot.end}`;
   }
 
-  return `- ${slot.start} to ${slot.end} (${timezoneLabel}; UTC ${utcStart} to ${utcEnd})`;
+  return `- ${slot.start} 至 ${slot.end}（${timezoneLabel}；UTC ${utcStart} 至 ${utcEnd}）`;
 }
 
 function formatLocalSlotTimeAsUtc(

@@ -33,7 +33,7 @@ export async function getPremiumTransferOperations({
     });
 
     if (!sourceUser) {
-      logger.warn("Source user not found", { sourceUserId });
+      logger.warn("未找到源用户", { sourceUserId });
       return [];
     }
 
@@ -49,33 +49,30 @@ export async function getPremiumTransferOperations({
     });
 
     if (!targetUser) {
-      logger.error("Target user not found", { targetUserId });
-      throw new Error(`Target user ${targetUserId} not found`);
+      logger.error("未找到目标用户", { targetUserId });
+      throw new Error(`未找到目标用户 ${targetUserId}`);
     }
 
     const operations: Prisma.PrismaPromise<unknown>[] = [];
     let resultingPremiumId = targetUser.premiumId;
 
-    // Handle premium subscription scenarios
+    // 处理高级版订阅的各种情况
     if (sourceUser.premiumId && targetUser.premiumId) {
-      // Both users have premium - choose the higher tier
+      // 两个用户都有高级版——选择更高的套餐层级
       const sourceTier = sourceUser.premium?.tier;
       const targetTier = targetUser.premium?.tier;
 
-      logger.warn(
-        "Both users have premium subscriptions - choosing higher tier",
-        {
-          sourcePremiumId: sourceUser.premiumId,
-          targetPremiumId: targetUser.premiumId,
-          sourceTier,
-          targetTier,
-          sourceUserId,
-          targetUserId,
-        },
-      );
+      logger.warn("两个用户都有高级版订阅——选择更高的套餐层级", {
+        sourcePremiumId: sourceUser.premiumId,
+        targetPremiumId: targetUser.premiumId,
+        sourceTier,
+        targetTier,
+        sourceUserId,
+        targetUserId,
+      });
 
-      // If same premium or source has higher tier, use source premium
-      // If target has higher tier, keep target premium
+      // 如果高级版相同或源用户层级更高，则使用源用户的高级版
+      // 如果目标用户层级更高，则保留目标用户的高级版
       const shouldUseSourcePremium =
         sourceUser.premiumId === targetUser.premiumId ||
         !isOnHigherTier(targetTier, sourceTier);

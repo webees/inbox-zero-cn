@@ -283,12 +283,12 @@ export function SplitTabs({
                       onPointerDown={(event: PointerEvent<HTMLButtonElement>) =>
                         trackSplitPress(event, split)
                       }
-                      // The count sits in this button, so innerText includes it.
-                      // The accessible name stays the split itself.
+                      // 数量位于此按钮内，因此 innerText 会包含它。
+                      // 无障碍名称仍保持为分栏本身。
                       aria-label={split.name}
                       aria-current={active ? "true" : undefined}
                       aria-description={
-                        countLabel ? t`${countLabel} in this view` : undefined
+                        countLabel ? t`此视图中有 ${countLabel}` : undefined
                       }
                       className={cn(
                         "relative flex shrink-0 select-none items-center gap-1.5 whitespace-nowrap py-2 text-sm focus-visible:outline-none",
@@ -327,12 +327,12 @@ export function SplitTabs({
                   <ContextMenuContent className="w-max min-w-44 max-w-64">
                     {openAllSettings && (
                       <ContextMenuItem onSelect={openAllSettings}>
-                        <Trans>Choose what All shows</Trans>
+                        <Trans>选择全部显示的内容</Trans>
                       </ContextMenuItem>
                     )}
                     {split.deletable && onEdit && (
                       <ContextMenuItem onSelect={() => onEdit(split.id)}>
-                        <Trans>Edit filters and name</Trans>
+                        <Trans>编辑筛选条件和名称</Trans>
                       </ContextMenuItem>
                     )}
                     {onToggleBundle && split.bundleEligible && (
@@ -342,7 +342,7 @@ export function SplitTabs({
                           onToggleBundle(split.id, checked)
                         }
                       >
-                        <Trans>Bundle in All</Trans>
+                        <Trans>在全部中归集</Trans>
                       </ContextMenuCheckboxItem>
                     )}
                     {split.deletable && (
@@ -350,7 +350,7 @@ export function SplitTabs({
                         className="text-destructive focus:text-destructive"
                         onSelect={() => onDelete(split.id)}
                       >
-                        <Trans>Turn off split</Trans>
+                        <Trans>关闭分栏</Trans>
                       </ContextMenuItem>
                     )}
                   </ContextMenuContent>

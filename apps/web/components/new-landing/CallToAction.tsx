@@ -34,7 +34,7 @@ export function CallToAction({
           href={href}
           onClick={() => landingPageAnalytics.getStartedClicked(posthog)}
         >
-          <span className="relative z-10">{text ?? t`Get started`}</span>
+          <span className="relative z-10">{text ?? t`开始使用`}</span>
         </LandingLink>
       </Button>
       {showSalesButton ? (
@@ -44,7 +44,7 @@ export function CallToAction({
             onClick={() => landingPageAnalytics.talkToSalesClicked(posthog)}
           >
             <Chat />
-            <Trans>Talk to sales</Trans>
+            <Trans>联系销售</Trans>
           </Link>
         </Button>
       ) : null}

@@ -30,7 +30,7 @@ export function AnnouncementVideo({
       ) : (
         <button
           type="button"
-          aria-label={`Play video: ${title}`}
+          aria-label={`播放视频：${title}`}
           onClick={() => setPlaying(true)}
           className="group absolute inset-0"
         >

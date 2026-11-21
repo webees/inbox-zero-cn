@@ -41,6 +41,6 @@ export async function enqueueDigestItem({
       logger,
     });
   } catch (error) {
-    logger.error("Failed to enqueue digest item", { error });
+    logger.error("将邮件摘要项入队失败", { error });
   }
 }

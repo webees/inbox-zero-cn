@@ -1,31 +1,31 @@
-# Security Policy
+# 安全政策
 
-## Reporting a Vulnerability
+## 报告漏洞
 
-If you discover a security vulnerability, please report it privately:
+如果你发现了安全漏洞，请私下报告：
 
-1. **GitHub Security Advisories (preferred):** [Report a vulnerability](https://github.com/elie222/inbox-zero/security/advisories/new)
-2. **Email:** [security@getinboxzero.com](mailto:security@getinboxzero.com)
+1. **GitHub 安全公告（首选）：** [报告漏洞](https://github.com/elie222/inbox-zero/security/advisories/new)
+2. **电子邮件：** [security@getinboxzero.com](mailto:security@getinboxzero.com)
 
-Please do **not** open a public GitHub issue for security vulnerabilities.
+请**不要**为安全漏洞创建公开的 GitHub issue。
 
-## What to Include
+## 需要包含的内容
 
-- A description of the vulnerability
-- Steps to reproduce
-- Potential impact
-- Any suggested remediation (optional)
+- 漏洞描述
+- 复现步骤
+- 潜在影响
+- 任何建议的修复方案（可选）
 
-## What to Expect
+## 你可以期待什么
 
-- Acknowledgement of your report within 3 business days
-- Initial assessment within 7 days
-- Coordinated disclosure timeline based on severity
+- 在 3 个工作日内确认收到你的报告
+- 在 7 天内给出初步评估
+- 根据严重程度协调披露时间表
 
-## Scope
+## 范围
 
-This policy covers the Inbox Zero application at getinboxzero.com and code in this repository.
+本政策涵盖 getinboxzero.com 上的 Inbox Zero 应用以及本仓库中的代码。
 
-## Recognition
+## 致谢
 
-We're grateful to researchers who help keep Inbox Zero and our users safe. With your permission, we're happy to credit you in our acknowledgments after the issue is resolved.
+我们感谢帮助 Inbox Zero 及其用户保持安全的研究人员。在征得你同意的情况下，我们很乐意在问题解决后于致谢名单中提及你。

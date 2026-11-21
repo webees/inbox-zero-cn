@@ -74,7 +74,7 @@ describe("createRuleBody", () => {
       });
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toContain("at least one action");
+        expect(result.error.issues[0].message).toContain("至少需要一项操作");
       }
     });
 
@@ -95,9 +95,7 @@ describe("createRuleBody", () => {
       });
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toContain(
-          "at least one condition",
-        );
+        expect(result.error.issues[0].message).toContain("至少需要一个条件");
       }
     });
 
@@ -134,7 +132,7 @@ describe("createRuleBody", () => {
       });
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toContain("duplicate");
+        expect(result.error.issues[0].message).toContain("重复");
       }
     });
 
@@ -164,7 +162,7 @@ describe("createRuleBody", () => {
         });
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error.issues[0].message).toContain("label name");
+          expect(result.error.issues[0].message).toContain("标签名称");
         }
       });
 
@@ -203,7 +201,7 @@ describe("createRuleBody", () => {
         });
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error.issues[0].message).toContain("email address");
+          expect(result.error.issues[0].message).toContain("邮箱地址");
         }
       });
 
@@ -235,7 +233,7 @@ describe("createRuleBody", () => {
         });
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error.issues[0].message).toContain("send to");
+          expect(result.error.issues[0].message).toContain("发送到");
         }
       });
 
@@ -264,9 +262,7 @@ describe("createRuleBody", () => {
 
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error.issues[0].message).toBe(
-            "Please choose a chat destination",
-          );
+          expect(result.error.issues[0].message).toBe("请选择聊天目标");
         }
       });
 
@@ -294,7 +290,7 @@ describe("createRuleBody", () => {
         });
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error.issues[0].message).toContain("webhook URL");
+          expect(result.error.issues[0].message).toContain("Webhook URL");
         }
       });
 
@@ -384,7 +380,7 @@ describe("createRuleBody", () => {
         });
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error.issues[0].message).toContain("folder");
+          expect(result.error.issues[0].message).toContain("文件夹");
         }
       });
 
@@ -467,7 +463,7 @@ describe("INTEGRATION action validation", () => {
     });
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].message).toContain("Unknown argument");
+      expect(result.error.issues[0].message).toContain("未知参数");
     }
   });
 
@@ -478,7 +474,7 @@ describe("INTEGRATION action validation", () => {
     });
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].message).toContain("Unknown integration");
+      expect(result.error.issues[0].message).toContain("未知集成");
     }
   });
 
@@ -489,9 +485,7 @@ describe("INTEGRATION action validation", () => {
     });
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].message).toContain(
-        "Unsupported integration tool",
-      );
+      expect(result.error.issues[0].message).toContain("不支持的集成工具");
     }
   });
 });

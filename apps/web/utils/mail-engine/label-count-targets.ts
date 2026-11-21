@@ -42,13 +42,13 @@ export function mailboxCountTargets(input: {
   const targets: MailboxCountTarget[] = [
     {
       id: "INBOX",
-      name: "Inbox",
+      name: "收件箱",
       kind: "system",
       predicate: { kind: "role", role: "inbox" },
     },
     {
       id: "DRAFT",
-      name: "Drafts",
+      name: "草稿",
       kind: "system",
       predicate: withoutHiddenDrafts(
         { kind: "role", role: "draft" },

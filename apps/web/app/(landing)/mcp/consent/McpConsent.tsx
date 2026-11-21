@@ -45,19 +45,13 @@ export function McpConsent({
         ...(accept && { scope: selected.join(" ") }),
       });
       if (result.error)
-        throw new Error(
-          result.error.message || "Could not save your decision.",
-        );
+        throw new Error(result.error.message || "无法保存你的决定。");
       redirectToSafeUrl(result.data.url, {
         allowExternal: true,
         allowNativeOAuthRedirect: true,
       });
     } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Could not authorize this application.",
-      );
+      setError(error instanceof Error ? error.message : "无法授权此应用。");
       setBusy(false);
     }
   }
@@ -66,7 +60,7 @@ export function McpConsent({
     <main className="mx-auto flex min-h-screen max-w-md items-center px-4 py-12">
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>Connect {clientName}?</CardTitle>
+          <CardTitle>连接 {clientName}？</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <fieldset className="space-y-4" disabled={busy}>
@@ -105,14 +99,14 @@ export function McpConsent({
               disabled={busy}
               onClick={() => respond(false)}
             >
-              Deny
+              拒绝
             </Button>
             <Button
               type="button"
               disabled={busy || selected.length === 0}
               onClick={() => respond(true)}
             >
-              Allow
+              允许
             </Button>
           </div>
         </CardContent>
@@ -124,13 +118,13 @@ export function McpConsent({
 function permissionLabel(scope: string) {
   switch (scope) {
     case "mcp:read":
-      return "Read and search mail (required)";
+      return "读取和搜索邮件（必需）";
     case "mcp:write":
-      return "Create drafts, organize mail, and manage rules";
+      return "创建草稿、整理邮件并管理规则";
     case "mcp:send":
-      return "Send email";
+      return "发送邮件";
     case "offline_access":
-      return "Stay connected when you are away";
+      return "离开时保持连接";
     default:
       return scope;
   }

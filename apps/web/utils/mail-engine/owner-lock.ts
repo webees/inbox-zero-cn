@@ -17,7 +17,7 @@ export async function holdMailEngineOwner(input: {
         input.signal.addEventListener("abort", () => resolve(), { once: true });
       });
     } finally {
-      // SQLite's OPFS handles must be gone before the next tab starts.
+      // 下一个标签页启动前，必须先释放 SQLite 的 OPFS 句柄。
       await input.close();
     }
   }

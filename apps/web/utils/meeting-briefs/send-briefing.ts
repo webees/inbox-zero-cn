@@ -57,7 +57,7 @@ export async function sendBriefing({
     internalTeamMembers,
   };
 
-  // Fetch delivery preferences
+  // 拉取投递偏好
   const emailAccount = await prisma.emailAccount.findUnique({
     where: { id: emailAccountId },
     select: { meetingBriefsSendEmail: true },
@@ -65,7 +65,7 @@ export async function sendBriefing({
 
   const sendEmail = emailAccount?.meetingBriefsSendEmail ?? true;
 
-  // Fetch connected messaging channels with briefs enabled
+  // 拉取已启用简报的已连接消息渠道
   const channels = await prisma.messagingChannel.findMany({
     where: {
       emailAccountId,
@@ -112,7 +112,7 @@ export async function sendBriefing({
     );
     if (!route) continue;
     if (!isMessagingChannelOperational(channel)) {
-      logger.warn("Skipping briefing delivery for invalid messaging channel", {
+      logger.warn("消息渠道无效，跳过简报投递", {
         messagingChannelId: channel.id,
         provider: channel.provider,
       });
@@ -163,13 +163,13 @@ export async function sendBriefing({
 
   if (failures.length > 0) {
     for (const failure of failures) {
-      logger.error("Delivery channel failed", {
+      logger.error("投递渠道失败", {
         reason: (failure as PromiseRejectedResult).reason,
       });
     }
 
     if (failures.length === results.length) {
-      throw new Error("All delivery channels failed");
+      throw new Error("所有投递渠道都失败了");
     }
   }
 }
@@ -248,11 +248,11 @@ async function sendBriefingViaSlack({
   });
 
   if (!destination) {
-    logger.warn("No Slack destination resolved for briefing");
+    logger.warn("未解析到简报的 Slack 目标");
     return;
   }
 
-  logger.info("Sending briefing to Slack");
+  logger.info("正在向 Slack 发送简报");
   await sendMeetingBriefingToSlack({
     accessToken,
     channelId: destination,
@@ -262,7 +262,7 @@ async function sendBriefingViaSlack({
     eventUrl,
     briefingContent,
   });
-  logger.info("Briefing sent successfully to Slack");
+  logger.info("简报已成功发送到 Slack");
 }
 
 async function sendBriefingViaMessagingApp({
@@ -298,7 +298,7 @@ async function sendBriefingViaMessagingApp({
   briefingContent: BriefingContent;
   logger: Logger;
 }) {
-  logger.info("Sending briefing to messaging app", {
+  logger.info("正在向消息应用发送简报", {
     provider: channel.provider,
   });
 
@@ -315,7 +315,7 @@ async function sendBriefingViaMessagingApp({
     logger,
   });
 
-  logger.info("Briefing sent successfully to messaging app", {
+  logger.info("简报已成功发送到消息应用", {
     provider: channel.provider,
   });
 }

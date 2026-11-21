@@ -49,7 +49,7 @@ export async function aiChooseRule<
   if (!rules.length) return { rules: [], reason: "No rules to evaluate" };
 
   const orderedRules = sortRulesByCanonicalOrder(rules);
-  // Schema values bypass prompt redaction, so only generated IDs belong there.
+  // Schema 值会绕过提示词脱敏，因此那里只应放置生成的 ID
   const rulesById = new Map<string, T>(
     orderedRules.map((rule, index) => [`rule-${index + 1}`, rule] as const),
   );
@@ -84,15 +84,14 @@ export async function aiChooseRule<
   if (aiResponse.noMatchFound) {
     return {
       rules: [],
-      reason: aiResponse.reasoning || "AI determined no rules matched",
+      reason: aiResponse.reasoning || "AI 判断没有匹配的规则",
     };
   }
 
-  // A claimed match must resolve to an offered ID rather than silently
-  // recording the email as skipped.
+  // 声明的匹配项必须能对应到已提供的 ID，而不是静默地将邮件记录为已跳过
   if (!rulesWithMetadata.length) {
     throw new Error(
-      `AI rule selection claimed a match but did not resolve to any offered rule (returned ${aiResponse.matchedRules.length} rule ID(s) for ${orderedRules.length} candidate(s))`,
+      `AI 规则选择声称有匹配项，但未能对应到任何候选规则（针对 ${orderedRules.length} 个候选项返回了 ${aiResponse.matchedRules.length} 个规则 ID）`,
     );
   }
 
@@ -122,7 +121,7 @@ async function getAiResponse(options: GetAiResponseOptions): Promise<{
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Choose rule",
+    label: "选择规则",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "full" },
     cacheSystemPrompt: true,
@@ -426,12 +425,12 @@ function logAiChooseRuleResult<
     reasoningPresent: !!aiResponse.reasoning,
   };
   if (rulesWithMetadata.length === 0) {
-    logger.warn("AI choose rule returned no usable rule", logPayload);
+    logger.warn("AI 选择规则未返回可用规则", logPayload);
   } else {
-    logger.info("AI choose rule completed", logPayload);
+    logger.info("AI 选择规则已完成", logPayload);
   }
   if (aiResponse.reasoning)
-    logger.trace("AI choose rule reasoning", {
+    logger.trace("AI 选择规则的理由", {
       reasoning: aiResponse.reasoning,
     });
 }
@@ -462,7 +461,7 @@ These are hints from past user actions. Still evaluate the current email on its 
 </classification_feedback>`;
 }
 
-// Per-sender feedback stays out of the system prompt so the prefix is cacheable.
+// 按发件人的反馈不进入系统提示词，以便该前缀可被缓存
 function appendClassificationFeedback(
   feedback: ClassificationFeedbackItem[] | null | undefined,
 ): string {
@@ -477,7 +476,7 @@ const OLLAMA_MULTI_RULE_SELECTION_GUIDANCE = [
   "Prefer one best rule when candidate rules refer to the same underlying event.",
 ] as const;
 
-// Multiple rules only make sense when the user has custom rules to combine.
+// 仅当用户有可组合的自定义规则时，多规则选择才有意义
 export function shouldSelectMultipleRules({
   rules,
   emailAccount,

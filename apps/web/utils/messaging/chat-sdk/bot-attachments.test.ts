@@ -107,7 +107,7 @@ describe("messaging attachment handling", () => {
     expect(post).toHaveBeenCalledOnce();
     expect(post).toHaveBeenCalledWith(
       expect.objectContaining({
-        raw: expect.stringContaining("can't access or email"),
+        raw: expect.stringContaining("无法读取或通过邮件发送"),
       }),
     );
     expect(aiProcessAssistantChat).not.toHaveBeenCalled();

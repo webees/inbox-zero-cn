@@ -1,9 +1,8 @@
 # @inboxzero/mail-react
 
-Thin `useSyncExternalStore` bindings for the mail engine facade. This package
-does not own mailbox state, talk to providers, or import React DOM.
+邮件引擎门面的轻量 `useSyncExternalStore` 绑定。此包不拥有邮箱状态、不与服务商通信，也不导入 React DOM。
 
-Peer dependency: React >= 19.2.
+对等依赖：React >= 19.2。
 
 ```ts
 import { MailEngineProvider } from "@inboxzero/mail-react/MailEngineProvider";

@@ -166,7 +166,7 @@ async function main() {
     }
   } catch (error) {
     console.error(
-      error instanceof Error ? error.message : "Unknown dev setup script error",
+      error instanceof Error ? error.message : "未知的开发设置脚本错误",
     );
     process.exit(getErrorExitCode(error));
   }
@@ -184,7 +184,7 @@ async function ensureWorktreeDatabase(
 
   const sourceDatabaseName = getDatabaseName(sourceDatabaseUrl);
   if (sourceDatabaseName === state.dbName) {
-    throw new Error("Refusing to reuse the template database as the branch database.");
+    throw new Error("拒绝将模板数据库复用为分支数据库。");
   }
 
   const adminUrl = toCliDatabaseUrl(sourceDatabaseUrl, "postgres");
@@ -199,7 +199,7 @@ async function ensureWorktreeDatabase(
 
   if (state.dbMode === "empty") {
     if (databaseExists) {
-      log(`Resetting database ${state.dbName} for empty mode`);
+      log(`为空模式重置数据库 ${state.dbName}`);
       await dropDatabase(adminUrl, state.dbName);
     }
 
@@ -208,14 +208,14 @@ async function ensureWorktreeDatabase(
     await createDatabase(adminUrl, state.dbName);
 
     if (state.dbMode === "clone-main") {
-      log(`Cloning database into ${state.dbName}`);
+      log(`正在将数据库克隆到 ${state.dbName}`);
       await runShellCommand(
         `pg_dump ${shellQuote(dumpSourceUrl)} | psql ${shellQuote(targetDatabaseUrl)}`,
       );
     }
   }
 
-  log(`Running Prisma migrations against ${state.dbName}`);
+  log(`正在对 ${state.dbName} 运行 Prisma 迁移`);
   await runCommand("pnpm", ["prisma:migrate:local"], {
     cwd: APP_DIR,
     env: buildRuntimeEnv(state),
@@ -223,7 +223,7 @@ async function ensureWorktreeDatabase(
 }
 
 async function runDev(state: WorktreeState) {
-  printStateSummary("Starting dev setup", state);
+  printStateSummary("正在启动开发设置", state);
 
   const appCommand = buildAppCommand(state);
   const childProcesses: Array<ReturnType<typeof spawn>> = [];
@@ -661,7 +661,7 @@ async function waitForPort(port: number, host = "localhost") {
   }
 
   throw new Error(
-    `Timed out waiting for ${host}:${port} to accept connections.`,
+    `等待 ${host}:${port} 接受连接超时`,
   );
 }
 
@@ -680,7 +680,7 @@ async function ensureLocalPostgres(localEnv: Record<string, string>) {
   const port = Number.parseInt(parsedUrl.port || "5432", 10);
   if (await canConnectToPort(port, parsedUrl.hostname)) return;
 
-  log(`Starting local Postgres on port ${port} with docker compose`);
+  log(`正在使用 docker compose 在端口 ${port} 启动本地 Postgres`);
 
   await runCommand(
     "docker",
@@ -711,7 +711,7 @@ async function ensureLocalRedis() {
 
   if (!needsTcpRedis && !needsHttpRedis) return;
 
-  log("Starting local Redis services with docker compose");
+  log("正在使用 docker compose 启动本地 Redis 服务");
 
   const env = { ...process.env };
   env.REDIS_BIND_HOST = LOCAL_REDIS_HOST;
@@ -768,7 +768,7 @@ async function waitForPostgres(databaseUrl: string) {
   }
 
   throw new Error(
-    `Timed out waiting for Postgres to become ready at ${new URL(databaseUrl).host}.`,
+    `等待位于 ${new URL(databaseUrl).host} 的 Postgres 就绪超时`,
   );
 }
 
@@ -794,7 +794,7 @@ async function runCommand(
     child.once("error", (error) => {
       reject(
         new CommandExecutionError(
-          error.message || `Failed to start ${command}`,
+          error.message || `启动 ${command} 失败`,
           { exitCode: 1 },
         ),
       );
@@ -803,7 +803,7 @@ async function runCommand(
     child.on("exit", (code, signal) => {
       if (signal) {
         reject(
-          new CommandExecutionError(`${command} exited with signal ${signal}`, {
+          new CommandExecutionError(`${command} 因信号 ${signal} 退出`, {
             signal,
           }),
         );
@@ -812,7 +812,7 @@ async function runCommand(
 
       if (code && code !== 0) {
         reject(
-          new CommandExecutionError(`${command} exited with code ${code}`, {
+          new CommandExecutionError(`${command} 以退出码 ${code} 退出`, {
             exitCode: code,
           }),
         );
@@ -844,7 +844,7 @@ async function captureCommand(command: string, args: string[]) {
     child.once("error", (error) => {
       reject(
         new CommandExecutionError(
-          error.message || `Failed to start ${command}`,
+          error.message || `启动 ${command} 失败`,
           { exitCode: 1 },
         ),
       );
@@ -853,7 +853,7 @@ async function captureCommand(command: string, args: string[]) {
     child.on("exit", (code, signal) => {
       if (signal) {
         reject(
-          new CommandExecutionError(`${command} exited with signal ${signal}`, {
+          new CommandExecutionError(`${command} 因信号 ${signal} 退出`, {
             signal,
           }),
         );
@@ -863,7 +863,7 @@ async function captureCommand(command: string, args: string[]) {
       if (code && code !== 0) {
         reject(
           new CommandExecutionError(
-            stderr.trim() || `${command} exited with code ${code}`,
+            stderr.trim() || `${command} 以退出码 ${code} 退出`,
             { exitCode: code },
           ),
         );
@@ -893,15 +893,15 @@ function printStateSummary(prefix: string, state: WorktreeState) {
 }
 
 function printHelp() {
-  console.log(`Usage: pnpm dev-setup <command> [options]
+  console.log(`用法: pnpm dev-setup <command> [options]
 
-Commands:
-  init                 Prepare env symlinks, the branch database, and emulator seed config
-  dev                  Start the app, and emulator processes when auth=emulate
-  exec -- <command>    Run a command with the branch dev env injected
-  clean                Drop the branch database and remove cached state
+命令:
+  init                 准备环境符号链接、分支数据库和模拟器种子配置
+  dev                  启动应用；当 auth=emulate 时同时启动模拟器进程
+  exec -- <command>    在注入分支开发环境的情况下运行命令
+  clean                删除分支数据库并清除缓存状态
 
-Options:
+选项:
   --db <clone-main|empty>
   --auth <emulate|real>
   --url <conductor|localhost|portless>
@@ -916,14 +916,14 @@ function assertOptionValue(
   flag: string,
   value: string | undefined,
 ): asserts value is string {
-  if (!value) throw new Error(`Missing value for ${flag}`);
+  if (!value) throw new Error(`${flag} 缺少值`);
 }
 
 function assertSafeLocalDatabaseUrl(databaseUrl: string) {
   const hostname = new URL(databaseUrl).hostname;
   if (!LOCAL_DATABASE_HOSTS.has(hostname)) {
     throw new Error(
-      `Refusing to manage a non-local database host: ${hostname}. Update ${SHARED_ENV_LOCAL_PATH} to use localhost for branch development.`,
+      `拒绝管理非本地数据库主机：${hostname}。请更新 ${SHARED_ENV_LOCAL_PATH} 以使用 localhost 进行分支开发`,
     );
   }
 }
@@ -931,7 +931,7 @@ function assertSafeLocalDatabaseUrl(databaseUrl: string) {
 function assertSafeWorktreeDatabaseName(databaseName: string) {
   if (!databaseName.startsWith(WORKTREE_DATABASE_PREFIX)) {
     throw new Error(
-      `Refusing to manage a database without the ${WORKTREE_DATABASE_PREFIX} prefix: ${databaseName}`,
+      `拒绝管理没有 ${WORKTREE_DATABASE_PREFIX} 前缀的数据库：${databaseName}`,
     );
   }
 
@@ -940,7 +940,7 @@ function assertSafeWorktreeDatabaseName(databaseName: string) {
     !SAFE_DATABASE_NAME_PATTERN.test(databaseName)
   ) {
     throw new Error(
-      `Refusing to manage an unsafe worktree database name: ${databaseName}`,
+      `拒绝管理不安全的 worktree 数据库名称：${databaseName}`,
     );
   }
 }

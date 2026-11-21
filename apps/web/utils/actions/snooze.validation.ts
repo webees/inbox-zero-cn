@@ -7,6 +7,6 @@ export const snoozeThreadsBody = z.object({
   snoozedUntil: z.coerce
     .date()
     .refine((date) => date.getTime() >= Date.now() + MIN_SNOOZE_DELAY_MS, {
-      message: "Snooze time must be at least one minute in the future",
+      message: "稍后提醒时间必须至少是未来一分钟后",
     }),
 });

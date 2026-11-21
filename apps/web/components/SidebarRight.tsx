@@ -1,6 +1,5 @@
 "use client";
 
-import { useLingui } from "@lingui/react/macro";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect } from "react";
 import {
@@ -25,10 +24,9 @@ export function SidebarRight({
 }: {
   name: string;
   className?: string;
-  /** Applies a width while the panel's edge is dragged. */
+  /** 拖动面板边缘时应用宽度。 */
   onResize: (width: number) => void;
 }) {
-  const { t } = useLingui();
   const { isOpen, close } = useSidebarPanel(name);
   const onResetWidth = useCallback(() => {
     onResize(CHAT_SIDEBAR_DEFAULT_WIDTH);
@@ -49,7 +47,7 @@ export function SidebarRight({
       </div>
       {isOpen ? (
         <PanelResizeHandle
-          label={t`Resize assistant`}
+          label="调整助手大小"
           edge="left"
           bounds={CHAT_SIDEBAR_WIDTH_BOUNDS}
           onResize={onResize}

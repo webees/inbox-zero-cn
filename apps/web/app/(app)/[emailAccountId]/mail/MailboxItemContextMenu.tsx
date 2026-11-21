@@ -73,8 +73,8 @@ const LABEL_LIST_OPTIONS = [
 ] as const;
 
 const MESSAGE_LIST_OPTIONS = [
-  { value: messageVisibility.show, name: msg`Show` },
-  { value: messageVisibility.hide, name: msg`Hide` },
+  { value: messageVisibility.show, name: msg`显示` },
+  { value: messageVisibility.hide, name: msg`隐藏` },
 ] as const;
 
 export type MailboxItemColorOption = EmailLabelColor & { name: string };
@@ -99,7 +99,7 @@ export function MailboxItemContextMenu({
     textColor?: string | null;
   };
   colorOptions?: readonly MailboxItemColorOption[];
-  /** Omitted for providers without visibility settings, which hides the menu section. */
+  /** 不支持可见性设置的提供商不提供此项，此时隐藏菜单分区。 */
   visibility?: MailboxItemVisibility;
   onEdit: (edit: MailboxItemEdit) => Promise<boolean>;
   onDelete: (item: MailboxItem) => Promise<boolean>;
@@ -201,20 +201,20 @@ export function MailboxItemContextMenu({
         <ContextMenuContent className="w-48">
           <ContextMenuItem className="gap-2" onSelect={openEditor}>
             <PencilIcon className="size-4" />
-            <Trans>Edit</Trans>
+            <Trans>编辑</Trans>
           </ContextMenuItem>
           <ContextMenuItem
             className="gap-2 text-destructive focus:text-destructive"
             onSelect={() => setIsDeleteOpen(true)}
           >
             <Trash2Icon className="size-4" />
-            <Trans>Delete</Trans>
+            <Trans>删除</Trans>
           </ContextMenuItem>
           {visibility && (
             <>
               <ContextMenuSeparator />
               <ContextMenuLabel className="text-muted-foreground text-xs">
-                <Trans>In {typeName} list</Trans>
+                <Trans>在{typeName}列表中</Trans>
               </ContextMenuLabel>
               <ContextMenuRadioGroup
                 value={visibility.labelList ?? labelVisibility.labelShow}
@@ -232,7 +232,7 @@ export function MailboxItemContextMenu({
               </ContextMenuRadioGroup>
               <ContextMenuSeparator />
               <ContextMenuLabel className="text-muted-foreground text-xs">
-                <Trans>In message list</Trans>
+                <Trans>在邮件列表中</Trans>
               </ContextMenuLabel>
               <ContextMenuRadioGroup
                 value={visibility.messageList ?? messageVisibility.show}
@@ -257,7 +257,7 @@ export function MailboxItemContextMenu({
         <DialogContent aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>
-              <Trans>Edit {typeName}</Trans>
+              <Trans>编辑{typeName}</Trans>
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={submitEdit}>
@@ -265,7 +265,7 @@ export function MailboxItemContextMenu({
               <Input
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                aria-label={t`${typeName} name`}
+                aria-label={t`${typeName}名称`}
                 autoFocus
                 maxLength={255}
               />
@@ -273,7 +273,7 @@ export function MailboxItemContextMenu({
             {showsColor && (
               <div
                 role="radiogroup"
-                aria-label={t`${typeName} color`}
+                aria-label={t`${typeName}颜色`}
                 className={cn(
                   "grid grid-cols-[repeat(auto-fit,minmax(2rem,1fr))] gap-3 py-1",
                   showsName && "mt-5",
@@ -308,7 +308,7 @@ export function MailboxItemContextMenu({
                 onClick={() => setIsEditOpen(false)}
                 disabled={isSaving}
               >
-                <Trans>Cancel</Trans>
+                <Trans>取消</Trans>
               </Button>
               <Button
                 type="submit"
@@ -318,7 +318,7 @@ export function MailboxItemContextMenu({
                   (editMode === "color" && !color)
                 }
               >
-                <Trans>Save</Trans>
+                <Trans>保存</Trans>
               </Button>
             </DialogFooter>
           </form>
@@ -329,25 +329,21 @@ export function MailboxItemContextMenu({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              <Trans>Delete {typeName}?</Trans>
+              <Trans>删除{typeName}？</Trans>
             </AlertDialogTitle>
             <AlertDialogDescription>
               {item.kind === "folder" ? (
-                <Trans>
-                  “{item.name}” and its contents will be removed from your
-                  mailbox.
-                </Trans>
+                <Trans>“{item.name}”及其内容将从你的邮箱中移除。</Trans>
               ) : (
                 <Trans>
-                  “{item.name}” will be removed from your mailbox. Emails using
-                  it will remain.
+                  “{item.name}”将从你的邮箱中移除。使用该标签的邮件会保留。
                 </Trans>
               )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeleting}>
-              <Trans>Cancel</Trans>
+              <Trans>取消</Trans>
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={async (event) => {
@@ -357,7 +353,7 @@ export function MailboxItemContextMenu({
               disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isDeleting ? <Trans>Deleting...</Trans> : <Trans>Delete</Trans>}
+              {isDeleting ? <Trans>正在删除...</Trans> : <Trans>删除</Trans>}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

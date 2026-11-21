@@ -59,23 +59,23 @@ export async function decideThreadStatus({
         ),
       },
     },
-    label: "Determine thread status",
+    label: "确定会话状态",
     logger,
   });
 
   const answer = response.answers[STATUS_QUESTION_KEY];
   if (answer?.type !== "choice") {
-    throw new Error("Decision model response is missing the thread status");
+    throw new Error("决策模型响应缺少会话状态");
   }
   if (!statuses.includes(answer.choice as ConversationStatus)) {
-    throw new Error("Decision model returned an unknown thread status");
+    throw new Error("决策模型返回了未知的会话状态");
   }
   if (answer.confidence < MIN_STATUS_CONFIDENCE) {
-    throw new Error("Decision model confidence is too low for thread status");
+    throw new Error("决策模型对会话状态的置信度过低");
   }
 
   return {
     status: answer.choice as ConversationStatus,
-    rationale: `Decision model chose ${answer.choice} with ${Math.round(answer.confidence * 100)}% confidence.`,
+    rationale: `决策模型以 ${Math.round(answer.confidence * 100)}% 的置信度选择了 ${answer.choice}。`,
   };
 }

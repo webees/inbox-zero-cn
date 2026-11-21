@@ -6,7 +6,7 @@ export function generateSecureToken(): string {
 }
 
 export function hashApiKey(apiKey: string): string {
-  if (!env.API_KEY_SALT) throw new Error("API_KEY_SALT is not set");
+  if (!env.API_KEY_SALT) throw new Error("API_KEY_SALT 未设置");
   const derivedKey = scryptSync(apiKey, env.API_KEY_SALT, 64);
   return `${env.API_KEY_SALT}:${derivedKey.toString("hex")}`;
 }

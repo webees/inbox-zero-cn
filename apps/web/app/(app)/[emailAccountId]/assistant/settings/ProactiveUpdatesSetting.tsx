@@ -185,12 +185,12 @@ export function ProactiveUpdatesSetting({
       <Item size="sm">
         <ItemContent>
           <ItemTitle>
-            <Trans>Scheduled check-ins</Trans>
+            <Trans>定时检查</Trans>
           </ItemTitle>
           <ItemDescription>{summaryText}</ItemDescription>
         </ItemContent>
         <ItemActions>
-          <Tooltip content={t`Configure`}>
+          <Tooltip content={t`配置`}>
             <Button variant="ghost" size="iconSm" onClick={() => setOpen(true)}>
               <Settings2Icon className="h-4 w-4" />
             </Button>
@@ -222,11 +222,11 @@ export function ProactiveUpdatesSetting({
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>
-              <Trans>Scheduled check-ins</Trans>
+              <Trans>定时检查</Trans>
             </DialogTitle>
             <DialogDescription>
               <Trans>
-                Configure when Inbox Zero sends scheduled summaries to{" "}
+                配置 Inbox Zero 何时向{" "}
                 {getMessagingProviderName(channel.provider)}.
               </Trans>
             </DialogDescription>
@@ -235,7 +235,7 @@ export function ProactiveUpdatesSetting({
           <div className="space-y-6">
             <div className="space-y-3">
               <Label>
-                <Trans>Schedule</Trans>
+                <Trans>时间表</Trans>
               </Label>
               <div className="grid grid-cols-3 gap-2">
                 {AUTOMATION_CRON_PRESETS.map((preset) => (
@@ -264,7 +264,7 @@ export function ProactiveUpdatesSetting({
                   size="xs"
                   onClick={() => setShowCronEditor((value) => !value)}
                 >
-                  {showCronEditor ? <Trans>done</Trans> : <Trans>edit</Trans>}
+                  {showCronEditor ? <Trans>完成</Trans> : <Trans>编辑</Trans>}
                 </Button>
               </div>
               {showCronEditor && (
@@ -272,12 +272,12 @@ export function ProactiveUpdatesSetting({
                   <Input
                     value={cronExpression}
                     onChange={(event) => setCronExpression(event.target.value)}
-                    placeholder={t`Cron expression in UTC`}
+                    placeholder={t`UTC 时区的 Cron 表达式`}
                   />
                   <p className="text-xs text-muted-foreground">
                     <Trans>
-                      This is a cron expression (UTC). Ask ChatGPT or Claude to
-                      generate one for your preferred schedule.
+                      这是一个 Cron 表达式（UTC）。你可以让 ChatGPT 或 Claude
+                      按你偏好的时间表生成一个
                     </Trans>
                   </p>
                 </>
@@ -290,12 +290,12 @@ export function ProactiveUpdatesSetting({
                 size="sm"
                 onClick={() => setShowCustomPrompt((value) => !value)}
               >
-                <Trans>+ Add check-in instructions</Trans>
+                <Trans>+ 添加检查说明</Trans>
               </Button>
               {showCustomPrompt && (
                 <Textarea
                   id={`scheduled-checkins-prompt-${channel.id}`}
-                  placeholder={t`Example: Only include emails that need a reply today or have a deadline in the next 2 days. Skip newsletters, receipts, and FYI updates.`}
+                  placeholder={t`示例：仅包含今天需要回复或未来 2 天内有截止日期的邮件。跳过新闻简报、收据和仅供参考的更新。`}
                   value={prompt}
                   onChange={(event) => setPrompt(event.target.value)}
                 />
@@ -310,9 +310,9 @@ export function ProactiveUpdatesSetting({
                   onClick={() => executeTestCheckIn({})}
                 >
                   {testCheckInStatus === "executing" ? (
-                    <Trans>Sending...</Trans>
+                    <Trans>发送中...</Trans>
                   ) : (
-                    <Trans>Send test check-in</Trans>
+                    <Trans>发送测试检查</Trans>
                   )}
                 </Button>
               ) : (
@@ -324,16 +324,16 @@ export function ProactiveUpdatesSetting({
                   onClick={() => setOpen(false)}
                   disabled={saveStatus === "executing"}
                 >
-                  <Trans>Cancel</Trans>
+                  <Trans>取消</Trans>
                 </Button>
                 <Button
                   onClick={handleSave}
                   disabled={saveStatus === "executing"}
                 >
                   {saveStatus === "executing" ? (
-                    <Trans>Saving...</Trans>
+                    <Trans>保存中...</Trans>
                   ) : (
-                    <Trans>Save</Trans>
+                    <Trans>保存</Trans>
                   )}
                 </Button>
               </div>

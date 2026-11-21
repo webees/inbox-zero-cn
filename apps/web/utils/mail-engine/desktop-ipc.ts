@@ -74,7 +74,7 @@ function legacyMailboxQuery<T extends { predicate: MailPredicate }>(
 
 function legacyMailboxPredicate(predicate: MailPredicate): MailPredicate {
   if (predicate.kind === "no_matching_message" || predicate.kind === "not") {
-    // Older desktop builds only support negation against a single message.
+    // 旧版桌面应用仅支持针对单封邮件进行取反。
     return {
       kind: "not",
       predicate: legacyMailboxPredicate(predicate.predicate),

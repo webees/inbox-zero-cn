@@ -74,9 +74,9 @@ export function MeetingRecorderOnboarding({
   return (
     <SetupCard
       imageSrc="/images/illustrations/calling-help.svg"
-      imageAlt={t`Meeting notetaker`}
-      title={t`Never write meeting notes again`}
-      description={t`Inbox Zero joins your calls, takes the notes, and drafts the follow-up email.`}
+      imageAlt={t`会议记录助手`}
+      title={t`再也不用写会议记录`}
+      description={t`Inbox Zero 会加入你的通话、记录会议要点并起草后续邮件。`}
       features={features.map((feature) => ({
         ...feature,
         title: i18n._(feature.title),
@@ -85,12 +85,12 @@ export function MeetingRecorderOnboarding({
     >
       {hasCalendarConnected ? (
         <Button onClick={() => setJoinRule(MeetingJoinRule.ALL)}>
-          <Trans>Get started</Trans>
+          <Trans>开始使用</Trans>
         </Button>
       ) : (
         <>
           <MessageText>
-            <Trans>Connect your calendar to get started:</Trans>
+            <Trans>连接日历以开始使用：</Trans>
           </MessageText>
           <ConnectCalendar
             analyticsPage="meetings"
@@ -126,21 +126,21 @@ function ChooseJoinRule({
     <div className="mx-4 mt-16 flex max-w-lg flex-col gap-6 md:mx-auto">
       <div className="flex flex-col gap-3">
         <PageHeading>
-          <Trans>Which meetings should we join?</Trans>
+          <Trans>我们应该加入哪些会议？</Trans>
         </PageHeading>
 
         <MutedText className="flex flex-wrap items-center gap-x-2">
           <CheckIcon className="size-4 shrink-0 text-green-600" />
-          <Trans>{userEmail} connected</Trans>
+          <Trans>{userEmail} 已连接</Trans>
           <TextLink href={`/${emailAccountId}/calendars`}>
-            <Trans>Change</Trans>
+            <Trans>更改</Trans>
           </TextLink>
         </MutedText>
       </div>
 
       <RadioCardGroup
         name="joinRule"
-        ariaLabel={t`Which meetings to join`}
+        ariaLabel={t`要加入哪些会议`}
         value={joinRule}
         onChange={onChange}
         options={JOIN_RULE_OPTIONS.map((option) => ({
@@ -151,12 +151,12 @@ function ChooseJoinRule({
       />
 
       <Button className="self-start" loading={isEnabling} onClick={onConfirm}>
-        <Trans>Start recording my meetings</Trans>
+        <Trans>开始录制我的会议</Trans>
       </Button>
 
       <MutedText className="flex items-start gap-2 text-xs">
         <ShieldIcon className="mt-0.5 size-3.5 shrink-0" />
-        <Trans>Joins as a visible participant called {botName}.</Trans>
+        <Trans>会以名为 {botName} 的可见参与者身份加入。</Trans>
       </MutedText>
     </div>
   );

@@ -95,8 +95,8 @@ async function syncCompletedCheckout(
       typeof session.subscription === "object" ? session.subscription : null;
     return subscription?.status === "trialing" ? "trial" : "subscribed";
   } catch (error) {
-    // The Stripe webhook still syncs the plan, so the page can carry on.
-    logger.error("Failed to sync a desktop checkout", { error });
+    // Stripe webhook 仍会同步套餐，因此页面可以继续。
+    logger.error("同步桌面端结账失败", { error });
     return "unconfirmed";
   }
 }
@@ -105,27 +105,26 @@ function getCopy(status: string | undefined) {
   switch (status) {
     case "canceled":
       return {
-        title: "Checkout canceled",
-        description:
-          "No charge was made. Switch back to the Inbox Zero app to pick a plan.",
+        title: "结账已取消",
+        description: "未产生任何费用。请切换回 Inbox Zero 应用选择套餐。",
       };
     case "trial":
       return {
-        title: "You're all set",
+        title: "一切就绪",
         description:
-          "Your trial has started. Switch back to the Inbox Zero app, which will open your inbox.",
+          "您的试用已开始。请切换回 Inbox Zero 应用，它将打开您的收件箱。",
       };
     case "subscribed":
       return {
-        title: "You're all set",
+        title: "一切就绪",
         description:
-          "Your subscription is active. Switch back to the Inbox Zero app, which will open your inbox.",
+          "您的订阅已生效。请切换回 Inbox Zero 应用，它将打开您的收件箱。",
       };
     default:
       return {
-        title: "Switch back to Inbox Zero",
+        title: "切换回 Inbox Zero",
         description:
-          "We're still confirming your checkout. Switch back to the Inbox Zero app, which will open your inbox once your plan is active.",
+          "我们仍在确认您的结账。请切换回 Inbox Zero 应用，套餐生效后它将打开您的收件箱。",
       };
   }
 }

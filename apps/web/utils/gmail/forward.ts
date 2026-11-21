@@ -1,4 +1,3 @@
-import { splitRecipientList, unquoteDisplayName } from "@/utils/email";
 import { formatEmailDate } from "@/utils/email/reply-quote";
 import type { ParsedMessage } from "@/utils/types";
 import { escapeHtml, textToHtmlParagraphs } from "@/utils/string";
@@ -16,15 +15,15 @@ export const forwardEmailHtml = ({
   const messageContent =
     message.textHtml || textToHtmlParagraphs(message.textPlain);
 
-  // Escape content and subject to prevent prompt injection attacks
+  // 转义内容和主题以防止提示注入攻击
   return `<div dir="ltr">${escapeHtml(content)}<br><br>
 <div class="gmail_quote gmail_quote_container">
   <div dir="ltr" class="gmail_attr">---------- Forwarded message ----------<br>
 From: ${formatFromEmailWithName(message.headers.from)}<br>
 Date: ${quotedDate}<br>
 Subject: ${escapeHtml(message.headers.subject)}<br>
-To: ${formatRecipientsWithNames(message.headers.to)}<br>
-${message.headers.cc ? `Cc: ${formatRecipientsWithNames(message.headers.cc)}<br>\n` : ""}</div><br><br>
+To: ${formatToEmailWithName(message.headers.to)}<br>
+</div><br><br>
 ${messageContent}
 </div></div>`.trim();
 };
@@ -42,36 +41,27 @@ From: ${message.headers.from}
 Date: ${message.headers.date}
 Subject: ${message.headers.subject}
 To: ${message.headers.to}
-${message.headers.cc ? `Cc: ${message.headers.cc}\n` : ""}
+
 ${message.textPlain}`;
 
 const formatFromEmailWithName = (emailHeader: string) => {
-  const address = parseNameAndAddress(emailHeader);
-  if (!address) return escapeHtml(emailHeader || "");
-
-  return `<strong class="gmail_sendername" dir="auto">${address.name}</strong> <span dir="auto">&lt;<a href="mailto:${address.email}">${address.email}</a>&gt;</span>`;
-};
-
-const formatRecipientsWithNames = (recipientList: string) =>
-  splitRecipientList(recipientList).map(formatRecipientWithName).join(", ");
-
-const formatRecipientWithName = (recipient: string) => {
-  // An unbalanced quote in a display name leaves several recipients in one
-  // entry; show them as text rather than linking only the first.
-  const address = parseNameAndAddress(recipient);
-  if (!address || recipient.split("<").length > 2 || !recipient.endsWith(">"))
-    return escapeHtml(recipient);
-
-  return `${address.name} &lt;<a href="mailto:${address.email}">${address.email}</a>&gt;`;
-};
-
-function parseNameAndAddress(emailHeader: string) {
   const match = emailHeader?.match(/(.*?)\s*<([^>]+)>/);
-  if (!match) return null;
+  if (!match) return escapeHtml(emailHeader || "");
 
   const [, name, email] = match;
-  return {
-    name: escapeHtml(unquoteDisplayName(name.trim())),
-    email: escapeHtml(email),
-  };
-}
+  const safeName = escapeHtml(name.trim());
+  const safeEmail = escapeHtml(email);
+
+  return `<strong class="gmail_sendername" dir="auto">${safeName}</strong> <span dir="auto">&lt;<a href="mailto:${safeEmail}">${safeEmail}</a>&gt;</span>`;
+};
+
+const formatToEmailWithName = (emailHeader: string) => {
+  const match = emailHeader?.match(/(.*?)\s*<([^>]+)>/);
+  if (!match) return escapeHtml(emailHeader || "");
+
+  const [, name, email] = match;
+  const safeName = escapeHtml(name.trim());
+  const safeEmail = escapeHtml(email);
+
+  return `${safeName} &lt;<a href="mailto:${safeEmail}">${safeEmail}</a>&gt;`;
+};

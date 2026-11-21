@@ -8,8 +8,8 @@ type CaptureSummary = (
 ) => void;
 
 /**
- * Calls `flush` every few minutes and as soon as the page is hidden, since a
- * hidden page may be discarded without ever becoming visible again.
+ * 每隔几分钟以及页面被隐藏时立即调用 `flush`，因为
+ * 被隐藏的页面可能在再次可见之前就被丢弃。
  */
 export function scheduleSummaryFlush(flush: (capture: CaptureSummary) => void) {
   setInterval(
@@ -36,8 +36,8 @@ function captureQueued(event: string, properties: Record<string, unknown>) {
   posthog.capture(event, properties);
 }
 
-// PostHog's batch queue is drained on its own `pagehide` listener, which may
-// already have run, so hidden-page summaries skip the queue.
+// PostHog 的批次队列由其自身的 `pagehide` 监听器排空，该监听器可能
+// 已经运行过，因此隐藏页面的摘要会跳过队列。
 function captureWithBeacon(event: string, properties: Record<string, unknown>) {
   posthog.capture(event, properties, { transport: "sendBeacon" });
 }

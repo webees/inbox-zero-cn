@@ -53,10 +53,10 @@ describe("ChatHistoryItem", () => {
       </DropdownMenu>,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Chat options" }));
+    fireEvent.click(screen.getByRole("button", { name: "聊天选项" }));
 
     expect(
-      await screen.findByRole("menuitem", { name: /rename/i }),
+      await screen.findByRole("menuitem", { name: /重命名/ }),
     ).toBeTruthy();
 
     const chatMenuItem = screen
@@ -70,7 +70,7 @@ describe("ChatHistoryItem", () => {
       pointerType: "mouse",
     });
 
-    expect(screen.getByRole("menuitem", { name: /rename/i })).toBeTruthy();
-    expect(screen.getByRole("menuitem", { name: /delete/i })).toBeTruthy();
+    expect(screen.getByRole("menuitem", { name: /重命名/ })).toBeTruthy();
+    expect(screen.getByRole("menuitem", { name: /删除/ })).toBeTruthy();
   });
 });

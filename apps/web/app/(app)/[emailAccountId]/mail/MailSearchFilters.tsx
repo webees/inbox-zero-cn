@@ -223,7 +223,7 @@ export function MailSearchFiltersForm({
                 {extraLocations.length ? (
                   <SelectGroup>
                     <SelectLabel>
-                      <Trans>Labels</Trans>
+                      <Trans>标签</Trans>
                     </SelectLabel>
                     {extraLocations.map((location) => (
                       <SelectItem
@@ -252,7 +252,7 @@ export function MailSearchFiltersForm({
                 htmlFor="mail-search-has-attachment"
                 className="font-normal text-sm"
               >
-                <Trans>Has attachment</Trans>
+                <Trans>包含附件</Trans>
               </Label>
             </div>
             <div className="flex items-center gap-2">
@@ -267,7 +267,7 @@ export function MailSearchFiltersForm({
                 htmlFor="mail-search-exclude-chats"
                 className="font-normal text-sm"
               >
-                <Trans>Don't include chats</Trans>
+                <Trans>不包含聊天</Trans>
               </Label>
             </div>
           </div>
@@ -276,7 +276,7 @@ export function MailSearchFiltersForm({
 
       <div className="flex justify-end pt-1">
         <Button type="submit" variant="gradient" size="sm">
-          <Trans>Search</Trans>
+          <Trans>搜索</Trans>
         </Button>
       </div>
     </form>

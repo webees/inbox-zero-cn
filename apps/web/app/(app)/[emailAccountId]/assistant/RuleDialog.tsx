@@ -140,16 +140,15 @@ function RuleDialogErrorState({ onClose }: { onClose: () => void }) {
     <div className="space-y-4 py-4">
       <p className="text-sm text-muted-foreground">
         <Trans>
-          An error occurred while opening this rule. Please contact support at{" "}
+          打开此规则时发生错误。如果问题仍然存在，请联系支持：{" "}
           <a href={`mailto:${SUPPORT_EMAIL}`} className="underline">
             {SUPPORT_EMAIL}
           </a>{" "}
-          if the problem persists.
         </Trans>
       </p>
       <div className="flex justify-end">
         <Button type="button" onClick={onClose}>
-          <Trans>Close</Trans>
+          <Trans>关闭</Trans>
         </Button>
       </div>
     </div>

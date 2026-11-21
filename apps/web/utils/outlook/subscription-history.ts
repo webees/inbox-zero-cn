@@ -18,7 +18,7 @@ export function parseSubscriptionHistory(
 
   try {
     if (Array.isArray(rawHistory)) {
-      // Validate that each entry has the required fields
+      // 验证每个条目都具有必需的字段
       return rawHistory.filter((entry): entry is SubscriptionHistoryEntry => {
         const hasRequiredFields =
           typeof entry === "object" &&

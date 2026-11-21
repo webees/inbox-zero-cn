@@ -7,9 +7,9 @@ import { LIVE_STATUSES } from "@/utils/meeting-recorder/recording-lifecycle";
 import prisma from "@/utils/prisma";
 
 /**
- * We keep transcripts, never media. Best effort: a failure here leaves
- * `mediaDeletedAt` unset, which is what the cron sweep looks for, so the debt
- * is always retried rather than lost.
+ * 我们保留转录，从不保留媒体。尽力而为：此处的失败会让
+ * `mediaDeletedAt` 保持未设置，而这正是 cron 清扫所查找的，
+ * 因此这笔欠账总是会被重试而不是丢失。
  */
 export async function deleteRecordingMedia({
   recording,
@@ -37,9 +37,9 @@ export async function deleteRecordingMedia({
 }
 
 /**
- * Recording rows are the only record of where a bot and its media live, and
- * they cascade with the account. Provider errors propagate so the account is
- * not deleted while a bot could still join a call or media remains.
+ * 录制行是机器人和其媒体所在位置的唯一记录，它们会随账号级联。
+ * 服务商错误会向上传播，因此在机器人仍可能加入通话或媒体仍存在时，
+ * 账号不会被删除。
  */
 export async function releaseAccountRecordings({
   emailAccountId,

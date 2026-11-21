@@ -29,8 +29,8 @@ import { getIntegrationActionLabelMessage } from "@/utils/mcp/tool-specs-message
 import { getMessagingProviderName } from "@/utils/messaging/platforms";
 
 /**
- * Hide messaging-channel draft entries when an email draft already exists,
- * so users don't see "Draft Reply" repeated once per connected chat app.
+ * 已有邮件草稿时，隐藏聊天频道草稿条目，
+ * 避免每个已连接的聊天应用都重复显示一次“草稿回复”。
  */
 export function getVisibleActions<T extends { type: ActionType }>(
   actions: T[],
@@ -68,54 +68,52 @@ export function getActionDisplay(
     case ActionType.DRAFT_EMAIL:
     case ActionType.DRAFT_MESSAGING_CHANNEL:
       if (action.content) {
-        return `Draft Reply: ${truncate(action.content, 10)}`;
+        return `草稿回复：${truncate(action.content, 10)}`;
       }
-      return "Draft Reply";
+      return "草稿回复";
     case ActionType.LABEL: {
       const labelName = getActionLabelName(action, labels);
       return labelName
-        ? `${terminology.label.action} as '${truncate(labelName, 15)}'`
+        ? `${terminology.label.action}为「${truncate(labelName, 15)}」`
         : terminology.label.action;
     }
     case ActionType.ARCHIVE:
-      return "Archive";
+      return "归档";
     case ActionType.DELETE:
-      return "Delete";
+      return "删除";
     case ActionType.MARK_READ:
-      return "Mark Read";
+      return "标记为已读";
     case ActionType.STAR:
-      return "Star";
+      return "加星标";
     case ActionType.MARK_SPAM:
-      return "Mark Spam";
+      return "标记为垃圾邮件";
     case ActionType.REPLY:
-      return "Reply";
+      return "回复";
     case ActionType.SEND_EMAIL:
-      return action.to
-        ? `Send Email to ${truncate(action.to, 8)}`
-        : "Send Email";
+      return action.to ? `发送邮件给${truncate(action.to, 8)}` : "发送邮件";
     case ActionType.FORWARD:
-      return action.to ? `Forward to ${truncate(action.to, 8)}` : "Forward";
+      return action.to ? `转发给${truncate(action.to, 8)}` : "转发";
     case ActionType.MOVE_FOLDER:
       return action.folderName
-        ? `Move to '${action.folderName}' folder`
-        : "Move to folder";
+        ? `移动到文件夹「${action.folderName}」`
+        : "移动到文件夹";
     case ActionType.DIGEST:
-      return "Digest";
+      return "邮件摘要";
     case ActionType.CALL_WEBHOOK:
-      return "Call Webhook";
+      return "调用 Webhook";
     case ActionType.NOTIFY_MESSAGING_CHANNEL:
       if (action.messagingChannel?.provider) {
-        return `Notify on ${getMessagingProviderName(action.messagingChannel.provider)}`;
+        return `通过${getMessagingProviderName(action.messagingChannel.provider)}通知`;
       }
       return action.notificationDestination
-        ? `Notify on ${truncate(action.notificationDestination, 18)}`
-        : "Notify";
+        ? `通过${truncate(action.notificationDestination, 18)}通知`
+        : "通知";
     case ActionType.NOTIFY_SENDER:
-      return "Notify Sender";
+      return "通知发件人";
     case ActionType.INTEGRATION: {
       const label = getIntegrationActionLabel(action);
       const displayValue = getIntegrationActionDisplayValue(action);
-      return displayValue ? `${label}: '${truncate(displayValue, 20)}'` : label;
+      return displayValue ? `${label}：${truncate(displayValue, 20)}` : label;
     }
     default: {
       const exhaustiveCheck: never = action.type;
@@ -125,24 +123,24 @@ export function getActionDisplay(
 }
 
 export const ACTION_TYPE_LABELS = {
-  [ActionType.LABEL]: msg({ message: "Label", context: "action" }),
-  [ActionType.ARCHIVE]: msg`Archive`,
-  [ActionType.DELETE]: msg`Delete`,
-  [ActionType.MARK_READ]: msg`Mark read`,
-  [ActionType.MARK_SPAM]: msg`Mark spam`,
-  [ActionType.STAR]: msg`Star`,
-  [ActionType.MOVE_FOLDER]: msg`Move to folder`,
-  [ActionType.FORWARD]: msg`Forward`,
-  [ActionType.REPLY]: msg`Reply`,
-  [ActionType.SEND_EMAIL]: msg`Send email`,
-  [ActionType.DRAFT_EMAIL]: msg`Draft reply`,
-  [ActionType.DRAFT_MESSAGING_CHANNEL]: msg`Draft to chat channel`,
-  [ActionType.NOTIFY_MESSAGING_CHANNEL]: msg`Notify chat channel`,
-  [ActionType.CALL_WEBHOOK]: msg`Call webhook`,
-  [ActionType.DIGEST]: msg`Add to digest`,
-  [ActionType.NOTIFY_SENDER]: msg`Notify sender`,
-  // ActionType alone cannot name a specific tool; getIntegrationActionLabel
-  // gives the precise name when the action is known.
+  [ActionType.LABEL]: msg({ message: "标签", context: "action" }),
+  [ActionType.ARCHIVE]: msg`归档`,
+  [ActionType.DELETE]: msg`删除`,
+  [ActionType.MARK_READ]: msg`标记为已读`,
+  [ActionType.MARK_SPAM]: msg`标记为垃圾邮件`,
+  [ActionType.STAR]: msg`加星标`,
+  [ActionType.MOVE_FOLDER]: msg`移动到文件夹`,
+  [ActionType.FORWARD]: msg`转发`,
+  [ActionType.REPLY]: msg`回复`,
+  [ActionType.SEND_EMAIL]: msg`发送邮件`,
+  [ActionType.DRAFT_EMAIL]: msg`草稿回复`,
+  [ActionType.DRAFT_MESSAGING_CHANNEL]: msg`为聊天频道创建草稿`,
+  [ActionType.NOTIFY_MESSAGING_CHANNEL]: msg`通知聊天频道`,
+  [ActionType.CALL_WEBHOOK]: msg`调用 Webhook`,
+  [ActionType.DIGEST]: msg`添加到邮件摘要`,
+  [ActionType.NOTIFY_SENDER]: msg`通知发件人`,
+  // 仅凭 ActionType 无法确定具体工具；getIntegrationActionLabel
+  // 在已知操作时给出准确名称。
   [ActionType.INTEGRATION]: getIntegrationActionLabelMessage(),
 } satisfies Record<ActionType, MessageDescriptor>;
 
@@ -150,13 +148,13 @@ export function getActionLabelName(
   action: { label?: string | null; labelId?: string | null },
   labels: Array<{ id: string; name: string }>,
 ): string | null {
-  // Priority 1: Use labelId to look up current name from labels
+  // 优先使用 labelId 从标签中查找当前名称
   if (action.labelId && labels?.length) {
     const foundLabel = labels.find((l) => l.id === action.labelId);
     if (foundLabel) return foundLabel.name;
   }
 
-  // Priority 2: Fallback to stored label name (may be outdated but better than nothing)
+  // 其次回退到保存的标签名称（可能已过时，但好过没有）
   return action.label || null;
 }
 

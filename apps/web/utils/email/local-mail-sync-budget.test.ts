@@ -187,7 +187,7 @@ describe("local mail sync admission", () => {
   it("rejects work larger than a bounded reservation", async () => {
     await expect(
       withLocalMailSyncBudget({ ...input, cost: 501 }, vi.fn()),
-    ).rejects.toThrow("Invalid local mail sync reservation");
+    ).rejects.toThrow("无效的本地邮件同步预留");
     expect(redis.eval).not.toHaveBeenCalled();
   });
 });

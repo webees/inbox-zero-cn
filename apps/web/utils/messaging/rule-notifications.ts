@@ -98,8 +98,8 @@ const RULE_NOTIFY_TRASH_ACTION_ID = "rule_notify_trash";
 const RULE_NOTIFY_MARK_SPAM_ACTION_ID = "rule_notify_mark_spam";
 export const SLACK_DRAFT_EDIT_MODAL_ID = "rule_draft_edit_modal";
 const SLACK_DRAFT_EDIT_FIELD_ID = "draft_content";
-const WEB_REPLY_HANDLED_TEXT = "Already replied on the web.";
-const DRAFT_ALREADY_SENT_TEXT = "Draft already sent. No action needed.";
+const WEB_REPLY_HANDLED_TEXT = "已在网页端回复。";
+const DRAFT_ALREADY_SENT_TEXT = "草稿已发送，无需操作";
 
 export const RULE_NOTIFICATION_ACTION_IDS = [
   RULE_DRAFT_SEND_ACTION_ID,
@@ -687,7 +687,7 @@ export async function handleRuleNotificationAction({
     await postNotificationFeedback({
       event,
       logger,
-      text: "That notification is invalid or expired.",
+      text: "该通知已失效或已过期。",
     });
     return;
   }
@@ -719,7 +719,7 @@ export async function handleRuleNotificationAction({
         await postNotificationFeedback({
           event,
           logger,
-          text: "Edit isn't available here yet. Reply here with what you want changed instead.",
+          text: "此处暂不支持编辑。请直接回复您想修改的内容。",
         });
         return;
       }
@@ -744,7 +744,7 @@ export async function handleRuleNotificationAction({
       await postNotificationFeedback({
         event,
         logger,
-        text: "That notification action is not supported.",
+        text: "不支持该通知操作。",
       });
   }
 }
@@ -776,7 +776,7 @@ export async function handleSlackRuleNotificationModalSubmit({
     return {
       action: "errors",
       errors: {
-        [SLACK_DRAFT_EDIT_FIELD_ID]: "Draft content is required.",
+        [SLACK_DRAFT_EDIT_FIELD_ID]: "草稿内容为必填项。",
       },
     };
   }
@@ -789,7 +789,7 @@ export async function handleSlackRuleNotificationModalSubmit({
     return {
       action: "errors",
       errors: {
-        [SLACK_DRAFT_EDIT_FIELD_ID]: "That draft has already been handled.",
+        [SLACK_DRAFT_EDIT_FIELD_ID]: "该草稿已处理过。",
       },
     };
   }
@@ -824,8 +824,7 @@ export async function handleSlackRuleNotificationModalSubmit({
       return {
         action: "errors",
         errors: {
-          [SLACK_DRAFT_EDIT_FIELD_ID]:
-            "I couldn't update that draft. Please try again.",
+          [SLACK_DRAFT_EDIT_FIELD_ID]: "无法更新该草稿，请重试。",
         },
       };
     }
@@ -865,8 +864,7 @@ export async function handleSlackRuleNotificationModalSubmit({
     return {
       action: "errors",
       errors: {
-        [SLACK_DRAFT_EDIT_FIELD_ID]:
-          "I couldn't send that draft. Please try again.",
+        [SLACK_DRAFT_EDIT_FIELD_ID]: "无法发送该草稿，请重试。",
       },
     };
   }
@@ -932,7 +930,7 @@ async function handleDraftSend({
     await postNotificationFeedback({
       event,
       logger,
-      text: "That draft has already been handled.",
+      text: "该草稿已处理过。",
     });
     return;
   }
@@ -950,19 +948,19 @@ async function handleDraftSend({
       await postNotificationFeedback({
         event,
         logger,
-        text: "This draft is no longer available.",
+        text: "该草稿已不可用。",
       });
     }
   } catch (error) {
     await releaseDraftSendClaim(context);
-    logger.warn("Failed to send Slack draft notification reply", {
+    logger.warn("发送 Slack 草稿通知回复失败", {
       executedActionId: context.id,
       error,
     });
     await postNotificationFeedback({
       event,
       logger,
-      text: "I couldn't send that draft. Please try again.",
+      text: "无法发送该草稿，请重试。",
     });
   }
 }
@@ -1040,8 +1038,8 @@ async function sendDraftReplyFromNotification({
 
       await editMessage(
         buildTerminalCard({
-          title: "Draft unavailable",
-          message: "This draft is no longer available.",
+          title: "草稿不可用",
+          message: "此草稿已不再可用。",
         }),
       );
 
@@ -1087,7 +1085,7 @@ async function sendDraftReplyFromNotification({
         : []),
     ]);
   } catch (error) {
-    logger.warn("Failed to mark notification draft reply as sent", {
+    logger.warn("无法将通知草稿回复标记为已发送", {
       executedActionId: context.id,
       mailboxDraftActionId: mailboxDraftAction?.id,
       error,
@@ -1105,7 +1103,7 @@ async function sendDraftReplyFromNotification({
         context,
         sourceMessageSummary.externalUrl,
       ),
-      status: "Reply sent. ✅",
+      status: "回复已发送。✅",
     }),
   });
 
@@ -1133,7 +1131,7 @@ async function updateSentDraftNotificationMessage({
     await editMessage(card);
     return;
   } catch (error) {
-    logger.warn("Failed to update sent draft notification message", {
+    logger.warn("更新已发送草稿通知消息失败", {
       executedActionId: context.id,
       error,
     });
@@ -1277,7 +1275,7 @@ async function handleDraftEdit({
     await postNotificationFeedback({
       event,
       logger,
-      text: "That draft has already been handled.",
+      text: "该草稿已处理过。",
     });
     return;
   }
@@ -1294,14 +1292,14 @@ async function handleDraftEdit({
   await event.openModal({
     type: "modal",
     callbackId: SLACK_DRAFT_EDIT_MODAL_ID,
-    title: "Edit draft",
-    submitLabel: "Send reply",
+    title: "编辑草稿",
+    submitLabel: "发送回复",
     privateMetadata: context.id,
     children: [
       {
         type: "text_input",
         id: SLACK_DRAFT_EDIT_FIELD_ID,
-        label: "Draft",
+        label: "草稿",
         multiline: true,
         initialValue: initialContent,
       },
@@ -1323,7 +1321,7 @@ async function handleDismissNotification({
       event,
       logger,
       text: isDraftReplyActionType(context.type)
-        ? "That draft has already been handled."
+        ? "该草稿已处理过。"
         : "That notification has already been handled.",
     });
     return;
@@ -1341,11 +1339,11 @@ async function handleDismissNotification({
     event.messageId,
     buildTerminalCard({
       title: isDraftReplyActionType(context.type)
-        ? "Draft reply"
+        ? "回复草稿"
         : getInfoNotificationTitle(
             context.executedRule.rule?.systemType ?? null,
           ),
-      message: "Dismissed.",
+      message: "已忽略。",
     }),
   );
 }
@@ -1373,7 +1371,7 @@ async function handleArchiveNotification({
       title: getInfoNotificationTitle(
         context.executedRule.rule?.systemType ?? null,
       ),
-      message: "Archived.",
+      message: "已归档。",
     }),
   );
 }
@@ -1398,7 +1396,7 @@ async function handleMarkReadNotification({
       title: getInfoNotificationTitle(
         context.executedRule.rule?.systemType ?? null,
       ),
-      message: "Marked as read.",
+      message: "已标记为已读。",
     }),
   );
 }
@@ -1427,7 +1425,7 @@ async function handleTrashNotification({
       title: getInfoNotificationTitle(
         context.executedRule.rule?.systemType ?? null,
       ),
-      message: "Moved to trash.",
+      message: "已移至垃圾箱。",
     }),
   );
 }
@@ -1452,7 +1450,7 @@ async function handleMarkSpamNotification({
       title: getInfoNotificationTitle(
         context.executedRule.rule?.systemType ?? null,
       ),
-      message: "Marked as spam.",
+      message: "已标记为垃圾邮件。",
     }),
   );
 }
@@ -1480,7 +1478,7 @@ async function getAuthorizedSlackNotificationContext({
       await postNotificationFeedback({
         event,
         logger,
-        text: "This notification is no longer active.",
+        text: "此通知已失效。",
       });
     }
     return null;
@@ -1494,7 +1492,7 @@ async function getAuthorizedSlackNotificationContext({
       await postNotificationFeedback({
         event,
         logger,
-        text: "You don't have permission to act on this notification.",
+        text: "你没有对此通知执行操作的权限。",
       });
     }
     return null;
@@ -1505,7 +1503,7 @@ async function getAuthorizedSlackNotificationContext({
       await postNotificationFeedback({
         event,
         logger,
-        text: "This notification no longer matches this workspace.",
+        text: "此通知已不再匹配当前工作区。",
       });
     }
     return null;
@@ -1538,7 +1536,7 @@ async function getAuthorizedTelegramNotificationContext({
       await postNotificationFeedback({
         event,
         logger,
-        text: "This notification is no longer active.",
+        text: "此通知已失效。",
       });
     }
     return null;
@@ -1552,7 +1550,7 @@ async function getAuthorizedTelegramNotificationContext({
       await postNotificationFeedback({
         event,
         logger,
-        text: "You don't have permission to act on this notification.",
+        text: "你没有对此通知执行操作的权限。",
       });
     }
     return null;
@@ -1569,7 +1567,7 @@ async function getAuthorizedTelegramNotificationContext({
       await postNotificationFeedback({
         event,
         logger,
-        text: "This notification no longer matches this chat.",
+        text: "此通知已不再匹配当前聊天。",
       });
     }
     return null;
@@ -1848,7 +1846,7 @@ function buildNotificationContent({
     const emailPreview = buildEmailPreview(email, { format });
     const draftPreview = buildDraftPreview(draftContent, { format });
 
-    const summary = `You got an email from *${senderDisplay}*.\n*Subject:* ${subject}`;
+    const summary = `你收到了来自 *${senderDisplay}* 的邮件。\n*主题：* ${subject}`;
 
     const details: string[] = [];
     if (emailPreview) {
@@ -1856,9 +1854,9 @@ function buildNotificationContent({
         format === "slack"
           ? quotePlainTextContent(emailPreview) || emailPreview
           : emailPreview;
-      details.push(`💬 *They wrote:*\n${preview}`);
+      details.push(`💬 *他们写道：*\n${preview}`);
     }
-    details.push(`✍️ *I drafted a reply for you:*\n${draftPreview}`);
+    details.push(`✍️ *我已为你起草了一封回复：*\n${draftPreview}`);
     const attachmentSummary = buildDraftAttachmentSummary(
       draftAttachmentNames,
       { format },
@@ -1868,7 +1866,7 @@ function buildNotificationContent({
     }
 
     return {
-      title: "✍️ I drafted a reply for you",
+      title: "✍️ 我已为你起草了一封回复",
       summary,
       details,
     };
@@ -1879,17 +1877,17 @@ function buildNotificationContent({
 
     const lines = [
       calendarEvent.eventTitle
-        ? `Event: ${calendarEvent.eventTitle}`
-        : `Subject: ${email.headers.subject}`,
+        ? `活动：${calendarEvent.eventTitle}`
+        : `主题：${email.headers.subject}`,
       calendarEvent.eventDateString
-        ? `When: ${calendarEvent.eventDateString}`
+        ? `时间：${calendarEvent.eventDateString}`
         : null,
-      calendarEvent.organizer ? `Organizer: ${calendarEvent.organizer}` : null,
+      calendarEvent.organizer ? `组织者：${calendarEvent.organizer}` : null,
       buildEmailPreview(email, { format }),
     ].filter(Boolean);
 
     return {
-      title: "📅 Calendar invite for you",
+      title: "📅 这是给你的日历邀请",
       summary: lines.join("\n"),
     };
   }
@@ -1899,7 +1897,7 @@ function buildNotificationContent({
     summary: buildEmailSummary(email),
     details: [
       buildNotificationDetailSection({
-        label: "Preview",
+        label: "预览",
         value: buildEmailPreview(email, { format }),
       }),
     ].filter(Boolean) as string[],
@@ -1916,14 +1914,14 @@ function getDraftReplyButtons({
   return {
     send: Button({
       id: RULE_DRAFT_SEND_ACTION_ID,
-      label: "Send reply",
+      label: "发送回复",
       style: "primary",
       value: actionId,
     }),
     open: openLink ? LinkButton(openLink) : null,
     dismiss: Button({
       id: RULE_DRAFT_DISMISS_ACTION_ID,
-      label: "Dismiss",
+      label: "忽略",
       value: actionId,
     }),
   };
@@ -1950,7 +1948,7 @@ function buildNotificationCard({
             draftButtons.send,
             Button({
               id: RULE_DRAFT_EDIT_ACTION_ID,
-              label: "Edit draft",
+              label: "编辑草稿",
               value: actionId,
             }),
             ...(draftButtons.open ? [draftButtons.open] : []),
@@ -1959,32 +1957,32 @@ function buildNotificationCard({
         : [
             Button({
               id: RULE_NOTIFY_ARCHIVE_ACTION_ID,
-              label: "Archive",
+              label: "归档",
               style: "primary",
               value: actionId,
             }),
             Button({
               id: RULE_NOTIFY_MARK_READ_ACTION_ID,
-              label: "Mark read",
+              label: "标为已读",
               value: actionId,
             }),
             ...(openLink ? [LinkButton(openLink)] : []),
             Button({
               id: RULE_DRAFT_DISMISS_ACTION_ID,
-              label: "Dismiss",
+              label: "忽略",
               value: actionId,
             }),
             Select({
               id: RULE_NOTIFY_MORE_ACTION_ID,
-              label: "More",
-              placeholder: "More",
+              label: "更多",
+              placeholder: "更多",
               options: [
                 SelectOption({
-                  label: "Delete",
+                  label: "删除",
                   value: `${RULE_NOTIFY_TRASH_ACTION_ID}:${actionId}`,
                 }),
                 SelectOption({
-                  label: "Spam",
+                  label: "垃圾邮件",
                   value: `${RULE_NOTIFY_MARK_SPAM_ACTION_ID}:${actionId}`,
                 }),
               ],
@@ -2154,7 +2152,7 @@ function buildDraftAttachmentSummary(
     .slice(0, MAX_DRAFT_ATTACHMENT_NAMES)
     .map((name) => formatNotificationText(name, format));
   const hiddenCount = uniqueNames.length - visibleNames.length;
-  const suffix = hiddenCount > 0 ? ` and ${hiddenCount} more` : "";
+  const suffix = hiddenCount > 0 ? ` 及另外 ${hiddenCount} 个` : "";
 
   return `${visibleNames.join(", ")}${suffix}`;
 }
@@ -2203,7 +2201,7 @@ function buildEmailSummary(email: {
 }) {
   return [
     `*From:* ${email.headers.from}`,
-    `*Subject:* ${email.headers.subject}`,
+    `*主题：* ${email.headers.subject}`,
   ].join("\n");
 }
 
@@ -2412,14 +2410,11 @@ async function replaceMessagingDraftNotificationWithTerminalState({
     !context.messagingChannel ||
     !isMessagingChannelOperational(context.messagingChannel)
   ) {
-    logger.warn(
-      "Skipping messaging draft notification cleanup for disconnected channel",
-      {
-        executedActionId: context.id,
-        messagingChannelId: context.messagingChannelId,
-        provider: context.messagingChannel?.provider,
-      },
-    );
+    logger.warn("跳过已断开频道中的消息草稿通知清理", {
+      executedActionId: context.id,
+      messagingChannelId: context.messagingChannelId,
+      provider: context.messagingChannel?.provider,
+    });
     return;
   }
 
@@ -2429,7 +2424,7 @@ async function replaceMessagingDraftNotificationWithTerminalState({
   );
 
   if (!route) {
-    logger.warn("Skipping messaging draft notification cleanup with no route", {
+    logger.warn("跳过未配置路由的消息草稿通知清理", {
       executedActionId: context.id,
       messagingChannelId: context.messagingChannelId,
       provider: context.messagingChannel.provider,
@@ -2438,7 +2433,7 @@ async function replaceMessagingDraftNotificationWithTerminalState({
   }
 
   const card = buildTerminalCard({
-    title: "Draft reply",
+    title: "草稿回复",
     message: terminalMessage,
   });
 
@@ -2451,13 +2446,10 @@ async function replaceMessagingDraftNotificationWithTerminalState({
         });
 
         if (!destinationChannelId) {
-          logger.warn(
-            "Skipping Slack draft notification cleanup with no destination",
-            {
-              executedActionId: context.id,
-              messagingChannelId: context.messagingChannelId,
-            },
-          );
+          logger.warn("跳过未指定目标频道的 Slack 草稿通知清理", {
+            executedActionId: context.id,
+            messagingChannelId: context.messagingChannelId,
+          });
           return;
         }
 
@@ -2732,15 +2724,15 @@ function getLinkedProviderLimitationText({
   provider: typeof MessagingProvider.TEAMS | typeof MessagingProvider.TELEGRAM;
 }) {
   const providerName =
-    provider === MessagingProvider.TEAMS ? "Teams" : "Telegram";
+    provider === MessagingProvider.TEAMS ? "Microsoft Teams" : "Telegram";
 
   if (isDraftReplyActionType(actionType)) {
     return provider === MessagingProvider.TEAMS
-      ? "One-click draft editing and sending aren't available in Teams yet. Use Inbox Zero to review or send this draft."
-      : "Draft editing isn't available in Telegram yet. You can send this draft from Telegram or use Inbox Zero to revise it first.";
+      ? "Microsoft Teams 暂不支持一键编辑和发送草稿。请在 Inbox Zero 中查看或发送此草稿。"
+      : "Telegram 暂不支持编辑草稿。您可以直接在 Telegram 中发送此草稿，或先在 Inbox Zero 中修改。";
   }
 
-  return `Quick actions like archive and mark read are Slack-only right now, so this ${providerName} message is view-only.`;
+  return `归档和标记已读等快捷操作目前仅在 Slack 中可用，因此这条 ${providerName} 消息只能查看。`;
 }
 
 function getNotificationTitleForSystemType(
@@ -2748,20 +2740,20 @@ function getNotificationTitleForSystemType(
 ): string {
   switch (systemType) {
     case SystemType.NEWSLETTER:
-      return "📰 New newsletter for you";
+      return "📰 您有新的邮件通讯";
     case SystemType.MARKETING:
-      return "📢 New marketing email for you";
+      return "📢 您有新的营销邮件";
     case SystemType.RECEIPT:
-      return "🧾 New receipt for you";
+      return "🧾 您有新的收据";
     case SystemType.COLD_EMAIL:
-      return "❄️ Cold email caught";
+      return "❄️ 已拦截冷邮件";
     case SystemType.FYI:
-      return "👀 FYI for you";
+      return "👀 供您了解";
     case SystemType.NOTIFICATION:
-      return "🔔 New notification for you";
+      return "🔔 您有新的通知";
     case SystemType.OTP:
-      return "🔐 New sign-in code for you";
+      return "🔐 您有新的登录验证码";
     default:
-      return "📬 New email for you";
+      return "📬 您有新邮件";
   }
 }

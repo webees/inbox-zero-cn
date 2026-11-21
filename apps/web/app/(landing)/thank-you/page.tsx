@@ -3,20 +3,18 @@ import { PageHeading, TypographyP } from "@/components/Typography";
 import { BasicLayout } from "@/components/layouts/BasicLayout";
 import { CardBasic } from "@/components/ui/card";
 
-// same component as not-found
+// 与 not-found 使用相同的组件
 export default function ThankYouPage() {
   return (
     <BasicLayout>
       <div className="pb-40 pt-60">
         <CardBasic className="mx-auto max-w-xl text-center">
-          <PageHeading>Thank you!</PageHeading>
+          <PageHeading>谢谢！</PageHeading>
           <div className="mt-2">
-            <TypographyP>
-              Your premium purchase was successful. Thank you for supporting us!
-            </TypographyP>
+            <TypographyP>你的高级版购买已成功。感谢你的支持！</TypographyP>
           </div>
           <Button className="mt-4" size="xl" link={{ href: "/setup" }}>
-            Continue
+            继续
           </Button>
         </CardBasic>
       </div>

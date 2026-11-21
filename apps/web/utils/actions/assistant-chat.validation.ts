@@ -276,7 +276,7 @@ const assistantChatFilePartSchema = z.object({
     .string()
     .max(6_000_000)
     .refine((url) => /^data:image\/(jpeg|png|webp|gif);base64,/.test(url), {
-      message: "URL must be a base64 data URL with an allowed image MIME type",
+      message: "URL 必须是使用允许的图片 MIME 类型的 base64 data URL",
     }),
   filename: z.string().optional(),
   mediaType: z.enum(["image/jpeg", "image/png", "image/webp", "image/gif"]),
@@ -295,7 +295,7 @@ export const assistantInputSchema = z.object({
     parts: z
       .array(assistantChatMessagePartSchema)
       .refine((parts) => parts.filter((p) => p.type === "file").length <= 5, {
-        message: "Maximum 5 file attachments per message",
+        message: "每条消息最多附加 5 个文件",
       }),
   }),
   context: messageContextSchema.optional(),

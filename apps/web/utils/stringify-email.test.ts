@@ -50,7 +50,7 @@ describe("stringifyEmail", () => {
   });
 
   it("handles messages without from or subject headers", () => {
-    // real provider messages can lack these headers (drafts, calendar invites)
+    // 真实服务商的邮件可能缺少这些头（草稿、日历邀请）
     const email = {
       id: "1",
       to: "to@example.com",
@@ -144,8 +144,8 @@ describe("stringifyEmailSimple", () => {
       from: "test@example.com",
       subject: "Test Subject",
       content: "Hello world",
-      replyTo: "reply@example.com", // Should be ignored
-      cc: "cc@example.com", // Should be ignored
+      replyTo: "reply@example.com", // 应被忽略
+      cc: "cc@example.com", // 应被忽略
       to: "to@example.com",
     };
 
@@ -177,10 +177,10 @@ describe("stringifyEmailFromBody", () => {
     const email: EmailForLLM = {
       id: "1",
       from: "test@example.com",
-      subject: "Test Subject", // Should be ignored
+      subject: "Test Subject", // 应被忽略
       content: "Hello world",
-      replyTo: "reply@example.com", // Should be ignored
-      cc: "cc@example.com", // Should be ignored
+      replyTo: "reply@example.com", // 应被忽略
+      cc: "cc@example.com", // 应被忽略
       to: "to@example.com",
     };
 

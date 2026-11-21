@@ -23,7 +23,7 @@ describe("validateWebhookUrl", () => {
       const result = await validateWebhookUrl("not-a-url");
       expect(result.valid).toBe(false);
       if (!result.valid) {
-        expect(result.error).toBe("Invalid URL format");
+        expect(result.error).toBe("无效的 URL 格式");
       }
     });
 
@@ -43,7 +43,7 @@ describe("validateWebhookUrl", () => {
         const result = await validateWebhookUrl("http://example.com/webhook");
         expect(result.valid).toBe(false);
         if (!result.valid) {
-          expect(result.error).toBe("Only HTTPS URLs are allowed for webhooks");
+          expect(result.error).toBe("webhook 仅允许使用 HTTPS URL");
         }
       });
 
@@ -51,7 +51,7 @@ describe("validateWebhookUrl", () => {
         const result = await validateWebhookUrl("ftp://example.com/file");
         expect(result.valid).toBe(false);
         if (!result.valid) {
-          expect(result.error).toBe("Only HTTPS URLs are allowed for webhooks");
+          expect(result.error).toBe("webhook 仅允许使用 HTTPS URL");
         }
       });
 
@@ -59,7 +59,7 @@ describe("validateWebhookUrl", () => {
         const result = await validateWebhookUrl("file:///etc/passwd");
         expect(result.valid).toBe(false);
         if (!result.valid) {
-          expect(result.error).toBe("Only HTTPS URLs are allowed for webhooks");
+          expect(result.error).toBe("webhook 仅允许使用 HTTPS URL");
         }
       });
     });
@@ -81,9 +81,7 @@ describe("validateWebhookUrl", () => {
         const result = await validateWebhookUrl("ftp://example.com/file");
         expect(result.valid).toBe(false);
         if (!result.valid) {
-          expect(result.error).toBe(
-            "Only HTTP and HTTPS URLs are allowed for webhooks",
-          );
+          expect(result.error).toBe("webhook 仅允许使用 HTTP 和 HTTPS URL");
         }
       });
     });
@@ -94,7 +92,7 @@ describe("validateWebhookUrl", () => {
       const result = await validateWebhookUrl("https://localhost/webhook");
       expect(result.valid).toBe(false);
       if (!result.valid) {
-        expect(result.error).toBe("Webhook URL hostname is not allowed");
+        expect(result.error).toBe("不允许使用该 webhook URL 主机名");
       }
     });
 
@@ -104,7 +102,7 @@ describe("validateWebhookUrl", () => {
       );
       expect(result.valid).toBe(false);
       if (!result.valid) {
-        expect(result.error).toBe("Webhook URL hostname is not allowed");
+        expect(result.error).toBe("不允许使用该 webhook URL 主机名");
       }
     });
 
@@ -114,7 +112,7 @@ describe("validateWebhookUrl", () => {
       );
       expect(result.valid).toBe(false);
       if (!result.valid) {
-        expect(result.error).toBe("Webhook URL hostname is not allowed");
+        expect(result.error).toBe("不允许使用该 webhook URL 主机名");
       }
     });
   });
@@ -124,9 +122,7 @@ describe("validateWebhookUrl", () => {
       const result = await validateWebhookUrl("https://127.0.0.1/webhook");
       expect(result.valid).toBe(false);
       if (!result.valid) {
-        expect(result.error).toBe(
-          "Webhook URL cannot point to private IP addresses",
-        );
+        expect(result.error).toBe("webhook URL 不能指向私有 IP 地址");
       }
     });
 
@@ -134,9 +130,7 @@ describe("validateWebhookUrl", () => {
       const result = await validateWebhookUrl("https://10.0.0.1/webhook");
       expect(result.valid).toBe(false);
       if (!result.valid) {
-        expect(result.error).toBe(
-          "Webhook URL cannot point to private IP addresses",
-        );
+        expect(result.error).toBe("webhook URL 不能指向私有 IP 地址");
       }
     });
 
@@ -144,9 +138,7 @@ describe("validateWebhookUrl", () => {
       const result = await validateWebhookUrl("https://172.16.0.1/webhook");
       expect(result.valid).toBe(false);
       if (!result.valid) {
-        expect(result.error).toBe(
-          "Webhook URL cannot point to private IP addresses",
-        );
+        expect(result.error).toBe("webhook URL 不能指向私有 IP 地址");
       }
     });
 
@@ -154,9 +146,7 @@ describe("validateWebhookUrl", () => {
       const result = await validateWebhookUrl("https://192.168.1.1/webhook");
       expect(result.valid).toBe(false);
       if (!result.valid) {
-        expect(result.error).toBe(
-          "Webhook URL cannot point to private IP addresses",
-        );
+        expect(result.error).toBe("webhook URL 不能指向私有 IP 地址");
       }
     });
 
@@ -166,9 +156,7 @@ describe("validateWebhookUrl", () => {
       );
       expect(result.valid).toBe(false);
       if (!result.valid) {
-        expect(result.error).toBe(
-          "Webhook URL cannot point to private IP addresses",
-        );
+        expect(result.error).toBe("webhook URL 不能指向私有 IP 地址");
       }
     });
   });
@@ -183,9 +171,7 @@ describe("validateWebhookUrl", () => {
       );
       expect(result.valid).toBe(false);
       if (!result.valid) {
-        expect(result.error).toBe(
-          "Webhook URL cannot resolve to private IP addresses",
-        );
+        expect(result.error).toBe("webhook URL 不能解析为私有 IP 地址");
       }
     });
 
@@ -198,9 +184,7 @@ describe("validateWebhookUrl", () => {
       );
       expect(result.valid).toBe(false);
       if (!result.valid) {
-        expect(result.error).toBe(
-          "Webhook URL cannot resolve to private IP addresses",
-        );
+        expect(result.error).toBe("webhook URL 不能解析为私有 IP 地址");
       }
     });
 
@@ -213,9 +197,7 @@ describe("validateWebhookUrl", () => {
       );
       expect(result.valid).toBe(false);
       if (!result.valid) {
-        expect(result.error).toBe(
-          "Webhook URL cannot resolve to private IP addresses",
-        );
+        expect(result.error).toBe("webhook URL 不能解析为私有 IP 地址");
       }
     });
 
@@ -230,9 +212,7 @@ describe("validateWebhookUrl", () => {
       );
       expect(result.valid).toBe(false);
       if (!result.valid) {
-        expect(result.error).toBe(
-          "Webhook URL cannot resolve to private IP addresses",
-        );
+        expect(result.error).toBe("webhook URL 不能解析为私有 IP 地址");
       }
     });
 
@@ -247,9 +227,7 @@ describe("validateWebhookUrl", () => {
       );
       expect(result.valid).toBe(false);
       if (!result.valid) {
-        expect(result.error).toBe(
-          "Webhook URL cannot resolve to private IP addresses",
-        );
+        expect(result.error).toBe("webhook URL 不能解析为私有 IP 地址");
       }
     });
 
@@ -263,7 +241,7 @@ describe("validateWebhookUrl", () => {
       );
       expect(result.valid).toBe(false);
       if (!result.valid) {
-        expect(result.error).toBe("Webhook URL hostname could not be resolved");
+        expect(result.error).toBe("无法解析 webhook URL 主机名");
       }
     });
   });
@@ -404,7 +382,7 @@ describe("WEBHOOK_ALLOW_PRIVATE_IPS flag", () => {
       const result = await validateWebhookUrl("https://localhost/webhook");
       expect(result.valid).toBe(false);
       if (!result.valid) {
-        expect(result.error).toBe("Webhook URL hostname is not allowed");
+        expect(result.error).toBe("不允许使用该 webhook URL 主机名");
       }
     });
 
@@ -414,7 +392,7 @@ describe("WEBHOOK_ALLOW_PRIVATE_IPS flag", () => {
       );
       expect(result.valid).toBe(false);
       if (!result.valid) {
-        expect(result.error).toBe("Webhook URL hostname is not allowed");
+        expect(result.error).toBe("不允许使用该 webhook URL 主机名");
       }
     });
 
@@ -423,7 +401,7 @@ describe("WEBHOOK_ALLOW_PRIVATE_IPS flag", () => {
       const result = validateWebhookUrlFormat("http://192.168.1.10/webhook");
       expect(result.valid).toBe(false);
       if (!result.valid) {
-        expect(result.error).toBe("Only HTTPS URLs are allowed for webhooks");
+        expect(result.error).toBe("webhook 仅允许使用 HTTPS URL");
       }
     });
   });
@@ -449,9 +427,7 @@ describe("WEBHOOK_ALLOW_PRIVATE_IPS flag", () => {
       const result = await validateWebhookUrl("https://internal.example.com/h");
       expect(result.valid).toBe(false);
       if (!result.valid) {
-        expect(result.error).toBe(
-          "Webhook URL cannot resolve to private IP addresses",
-        );
+        expect(result.error).toBe("webhook URL 不能解析为私有 IP 地址");
       }
     });
   });
@@ -465,7 +441,7 @@ describe("validateWebhookUrlFormat", () => {
   it("rejects invalid URLs", () => {
     const result = validateWebhookUrlFormat("not-a-url");
     expect(result.valid).toBe(false);
-    if (!result.valid) expect(result.error).toBe("Invalid URL format");
+    if (!result.valid) expect(result.error).toBe("无效的 URL 格式");
   });
 
   it("rejects file:// scheme", () => {
@@ -482,7 +458,7 @@ describe("validateWebhookUrlFormat", () => {
     const result = validateWebhookUrlFormat("https://localhost/webhook");
     expect(result.valid).toBe(false);
     if (!result.valid)
-      expect(result.error).toBe("Webhook URL hostname is not allowed");
+      expect(result.error).toBe("不允许使用该 webhook URL 主机名");
   });
 
   it("rejects cloud metadata endpoints", () => {
@@ -491,7 +467,7 @@ describe("validateWebhookUrlFormat", () => {
     );
     expect(result.valid).toBe(false);
     if (!result.valid)
-      expect(result.error).toBe("Webhook URL hostname is not allowed");
+      expect(result.error).toBe("不允许使用该 webhook URL 主机名");
   });
 
   it("rejects private IPv4 addresses", () => {

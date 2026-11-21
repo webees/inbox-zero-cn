@@ -2,7 +2,7 @@ import prisma from "@/utils/prisma";
 import type { Logger } from "@/utils/logger";
 
 /**
- * Auto-populates EmailAccount timezone from calendars if not already set
+ * 如果尚未设置，则从日历自动填充 EmailAccount 时区
  */
 export async function autoPopulateTimezone(
   emailAccountId: string,
@@ -13,7 +13,7 @@ export async function autoPopulateTimezone(
   }>,
   logger: Logger,
 ): Promise<void> {
-  // Try primary calendar first (Google uses 'primary', Microsoft uses 'isDefaultCalendar')
+  // 先尝试主日历（Google 使用 'primary'，Microsoft 使用 'isDefaultCalendar'）
   const primaryCalendar = calendars.find(
     (cal) => cal.primary || cal.isDefaultCalendar,
   );
@@ -28,7 +28,7 @@ export async function autoPopulateTimezone(
 
   if (result.count === 0) return;
 
-  logger.info("Auto-populated EmailAccount timezone", {
+  logger.info("已自动填充 EmailAccount 时区", {
     emailAccountId,
     timezone: timezoneToSet,
   });

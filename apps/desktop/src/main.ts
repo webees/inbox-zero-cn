@@ -89,11 +89,11 @@ const PENDING_CALLBACK_PATH_FILE = "pending-auth-callback-path";
 const LAST_APP_URL_FILE = "last-app-url";
 const WINDOWS_STATE_FILE = "windows.json";
 
-// A tab owns one page. Every window currently holds exactly one tab.
+// 一个标签页对应一个页面。目前每个窗口都恰好包含一个标签页。
 type AppTab = {
   view: WebContentsView;
   contents: WebContents;
-  // Last URL worth restoring on the next launch; unset on the login page.
+  // 下次启动时值得恢复的最近 URL；登录页上不设置。
   restoreUrl?: string;
 };
 type AppWindow = { window: BaseWindow; tabs: AppTab[]; activeTab: AppTab };
@@ -268,7 +268,7 @@ function startDesktopApp() {
     "desktop-auth:start",
     async (event, provider: unknown, options: unknown) => {
       if (!isTrustedDesktopEvent(event) || !isDesktopAuthProvider(provider)) {
-        throw new Error("Unsupported sign-in provider");
+        throw new Error("不支持的登录提供商");
       }
       const callbackPath = getStartAuthCallbackPath(options);
       persistPendingCallbackPath(callbackPath);
@@ -294,7 +294,7 @@ function startDesktopApp() {
 
   app.on("before-quit", () => {
     isQuitting = true;
-    // Skip if windows already closed; last-window `close` already wrote the snapshot.
+    // 如果窗口已经关闭则跳过；最后一个窗口的 `close` 已经写入了快照。
     if (appWindows.length > 0) persistWindowsNow();
     closeDesktopMailOwner().catch(() => undefined);
   });
@@ -310,9 +310,12 @@ function startDesktopApp() {
             installUpdate();
             return;
           }
-          checkForDesktopUpdatesManually(prepareToQuitForUpdate, {
-            showsProgressInApp: hasVisibleUpdateStatusSubscriber,
-          }).catch(logDesktopUpdateError);
+          checkForDesktopUpdatesManually(
+            () => {
+              isQuitting = true;
+            },
+            { showsProgressInApp: hasVisibleUpdateStatusSubscriber },
+          ).catch(logDesktopUpdateError);
         },
         createWindow: () => createAppWindow(),
         getActiveContents: (window) =>
@@ -332,7 +335,7 @@ function startDesktopApp() {
     refreshDesktopMenu = applyDesktopMenu;
     applyDesktopMenu();
     if (!shouldSmokeLocalMail()) {
-      // Overlap TLS/socket setup with window creation and page load.
+      // 让 TLS/套接字建立与窗口创建、页面加载并行进行。
       session
         .fromPartition(PARTITION)
         .preconnect({ url: appOrigin, numSockets: 2 });
@@ -345,8 +348,7 @@ function startDesktopApp() {
           .get(details.webContentsId)
           ?.recordRequestError(details);
       });
-    // A page fetched just before sleep, or while the network was coming back,
-    // is the usual cause of a window that never boots.
+    // 在休眠前或网络恢复过程中加载的页面，通常是窗口无法启动的常见原因。
     powerMonitor.on("resume", () => {
       lastResumedAt = Date.now();
       for (const recovery of loadRecoveryByContents.values()) {
@@ -368,7 +370,6 @@ function startDesktopApp() {
           setDownloadProgress(null);
         },
         onDownloadProgress: setDownloadProgress,
-        prepareToQuit: prepareToQuitForUpdate,
       }).catch(logDesktopUpdateError);
     }
   });
@@ -385,16 +386,9 @@ function startDesktopApp() {
 }
 
 function installUpdate() {
-  installDownloadedDesktopUpdate(prepareToQuitForUpdate).catch(
-    logDesktopUpdateError,
-  );
-}
-
-function prepareToQuitForUpdate() {
-  // On macOS the updater closes every window before `before-quit`, which then
-  // has no windows left to snapshot for the relaunch.
-  if (appWindows.length > 0) persistWindowsNow();
-  isQuitting = true;
+  installDownloadedDesktopUpdate(() => {
+    isQuitting = true;
+  }).catch(logDesktopUpdateError);
 }
 
 function setDownloadProgress(progress: DesktopDownloadProgress | null) {
@@ -412,8 +406,8 @@ function setUpdateStatus(status: DesktopUpdateStatus) {
   }
 }
 
-// A full navigation can land on a page that never subscribes, so it drops the
-// subscription; the new page subscribes again if it shows update status.
+// 完整导航可能落到一个从不订阅的页面，从而丢失订阅；
+// 如果新页面展示更新状态，它会重新订阅。
 function subscribeToUpdateStatus(contents: WebContents) {
   if (updateStatusSubscribers.has(contents)) return;
   const unsubscribe = () => {
@@ -426,8 +420,7 @@ function subscribeToUpdateStatus(contents: WebContents) {
   contents.on("destroyed", unsubscribe);
 }
 
-// On macOS the last window hides instead of closing, so a toast there would
-// go unseen.
+// 在 macOS 上最后一个窗口会隐藏而非关闭，因此那里的 toast 会被看不到。
 function hasVisibleUpdateStatusSubscriber() {
   return [...updateStatusSubscribers.keys()].some((contents) => {
     const match = findTab((tab) => tab.contents === contents);
@@ -511,8 +504,8 @@ function createAppWindow(options?: {
   window.on("resized", schedulePersistWindows);
   window.on("maximize", schedulePersistWindows);
   window.on("unmaximize", schedulePersistWindows);
-  // Keep the last window alive on macOS so reopening from the dock is instant
-  // instead of a cold page load. Extra windows close for real.
+  // 在 macOS 上保留最后一个窗口，这样从程序坞重新打开是即时的，
+  // 而不是冷启动加载页面。额外的窗口会真正关闭。
   window.on("close", (event) => {
     if (
       process.platform === "darwin" &&
@@ -522,7 +515,7 @@ function createAppWindow(options?: {
       event.preventDefault();
       window.hide();
     } else if (!isQuitting && appWindows.length === 1) {
-      // Persist before the last window is removed so quit/close cannot write [].
+      // 在最后一个窗口被移除前持久化，避免退出/关闭时写入 []。
       persistWindowsNow();
     }
   });
@@ -582,8 +575,7 @@ function createAppTab(startUrl: string): AppTab {
   return tab;
 }
 
-// Unlike a BrowserWindow, a BaseWindow does not destroy its views' pages when
-// it closes.
+// 与 BrowserWindow 不同，BaseWindow 关闭时不会销毁其视图的页面。
 function destroyAppTab(tab: AppTab) {
   unreadByContents.delete(tab.contents.id);
   loadRecoveryByContents.delete(tab.contents.id);
@@ -597,7 +589,7 @@ function layoutActiveTab({ window, activeTab }: AppWindow) {
 
 function reportBootFailure(failure: DesktopBootFailure) {
   captureDesktopError(
-    new Error("Desktop web app did not boot"),
+    new Error("桌面网页应用未能启动"),
     { area: "load-recovery", reason: failure.reason },
     {
       extra: {
@@ -686,7 +678,7 @@ function persistWindowsNow() {
     );
     fs.rmSync(userDataFile(LAST_APP_URL_FILE), { force: true });
   } catch {
-    // Restoring windows is best-effort; never break navigation over it.
+    // 恢复窗口是尽力而为；不要因此中断导航。
   }
 }
 
@@ -811,22 +803,21 @@ async function handleAuthCallbackUrl(url: string) {
   const contents = focusAppWindow().activeTab.contents;
   const callback = parseDesktopAuthCallback(url);
   if (!callback.ok) {
-    // The callback text comes from the URL, so keep it out of telemetry.
+    // 回调文本来自 URL，因此不要将其写入遥测数据。
     captureDesktopError(new Error("Authentication callback failed"), {
       area: "sign-in",
     });
     showSignInError(new Error(callback.error));
     return;
   }
-  // The server can issue more than one code per sign-in when the browser
-  // repeats the callback request.
+  // 当浏览器重复发送回调请求时，服务器可能为一次登录签发多个 code。
   if (handledAuthStates.has(callback.state)) return;
   handledAuthStates.add(callback.state);
 
   try {
     const proof = pendingAuthProof;
     if (!proof || proof.expiresAt <= Date.now()) {
-      throw new Error("Start signing in again from the desktop app");
+      throw new Error("请从桌面应用重新开始登录");
     }
     await exchangeAuthCode(
       contents.session,
@@ -860,7 +851,7 @@ async function exchangeAuthCode(
   );
 
   if (!response.ok) {
-    throw new Error("Could not finish signing in");
+    throw new Error("无法完成登录");
   }
 }
 
@@ -919,8 +910,8 @@ function reportSignInError(error: unknown) {
 
 function showSignInError(error: unknown) {
   dialog.showErrorBox(
-    "Sign in failed",
-    error instanceof Error ? error.message : "Could not finish signing in",
+    "登录失败",
+    error instanceof Error ? error.message : "无法完成登录",
   );
 }
 
@@ -949,7 +940,7 @@ function createDesktopMailProcess() {
       utilityProcess.fork(
         path.join(import.meta.dirname, "mail-engine-child.js"),
         [],
-        { serviceName: "Inbox Zero Mail Engine" },
+        { serviceName: "Inbox Zero 邮件引擎" },
       ),
     cookieHeader: async (url) => {
       const cookies = await ses.cookies.get({ url });
@@ -991,7 +982,7 @@ function readMailboxBytes() {
     try {
       bytes += fs.statSync(file).size;
     } catch {
-      // The WAL file only exists while the database is open.
+      // 仅当数据库打开时 WAL 文件才存在。
     }
   }
   return bytes;
@@ -1069,4 +1060,7 @@ function finishLocalMailSmoke(code: number) {
   setTimeout(() => {
     process.exit(code);
   }, 250);
+}
+it(code);
+}, 250)
 }

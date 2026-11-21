@@ -1,4 +1,4 @@
-// NOTE: this only works for English. May want to support other languages in the future.
+// 注意：这仅适用于英文。将来可能希望支持其他语言。
 export function snippetRemoveReply(snippet?: string | null): string {
   if (!snippet) return "";
   try {

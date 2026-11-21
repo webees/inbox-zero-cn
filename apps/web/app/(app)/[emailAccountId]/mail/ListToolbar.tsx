@@ -76,42 +76,42 @@ export type ListToolbarProps = {
   onSearch: (query: string) => void;
   searchValue: string;
   onSearchChange: (query: string) => void;
-  /** Lets `/` focus the mail search field from the shortcut handler. */
+  /** 让 `/` 可从快捷键处理器聚焦邮件搜索框。 */
   searchInputRef?: RefObject<HTMLInputElement | null>;
-  /** Gmail labels or Outlook categories offered in the Search dropdown. */
+  /** 搜索下拉框中提供的 Gmail 标签或 Outlook 类别。 */
   searchLabels?: { name: string }[];
   searchFolders?: { name: string }[];
   searchVariant?: "gmail" | "outlook" | "common";
   onToggleLayout: () => void;
   onTogglePreview: () => void;
   bundleInbox: boolean;
-  /** Omitted outside the single-account inbox, where bundling never applies. */
+  /** 在单账号收件箱之外省略，因为那里从不应用归集。 */
   onToggleBundleInbox?: () => void;
   onToggleAssistant: () => void;
   onOpenAllSettings?: () => void;
-  /** Omitted where the setup card can't apply, or while it's open. */
+  /** 在设置卡片不适用或已打开时省略。 */
   onOpenSetup?: () => void;
-  /** Marks the view options menu until the reader has been through setup once. */
+  /** 在读者完成一次设置之前标记视图选项菜单。 */
   isSetupSuggested: boolean;
-  /** Rendered here only when the split tabs row isn't showing to hold it. */
+  /** 仅当分栏标签页行未显示并承载它时在此渲染。 */
   selectAll?: ReactNode;
   selectedCount: number;
   onArchiveSelected: () => void;
-  /** Set when every selected conversation is already archived; replaces Archive. */
+  /** 选中的每个会话都已归档时设置；替代归档。 */
   onMoveToInboxSelected?: () => void;
   onDeleteSelected: () => void;
   isUnreadSelected: boolean;
   onMarkReadSelected: () => void;
   onMarkUnreadSelected: () => void;
-  /** True when every selected conversation is already starred. */
+  /** 选中的每个会话都已加星标时为真。 */
   isStarredSelected: boolean;
   onStarSelected: () => void;
-  /** Omitted when the current view can't label (combined inboxes). */
+  /** 当前视图无法添加标签（合并收件箱）时省略。 */
   onLabelSelected?: () => void;
-  /** Omitted when there's no split the senders could join. */
+  /** 没有发件人可加入的分栏时省略。 */
   onAddToSplitSelected?: () => void;
   onClearSelection: () => void;
-  /** Opens the mail navigation panel on screens too narrow for the rail. */
+  /** 在屏幕过窄而无法显示侧栏时打开邮件导航面板。 */
   onOpenMailNav: () => void;
 };
 
@@ -165,30 +165,34 @@ export const ListToolbar = memo(function ListToolbar({
       <button
         type="button"
         onClick={onOpenMailNav}
-        aria-label={t`Open navigation`}
+        aria-label={t`打开导航`}
         className={cn(toolbarButton, "w-8 justify-center px-0 lg:hidden")}
       >
         <PanelLeftIcon className="size-3.5" />
       </button>
       {selectAll}
 
-      {/* Selection swaps the toolbar's controls in place so the list never
-          shifts down to make room for a new row. */}
+      {/* 选择会就地替换工具栏控件，让列表不会
+          为了给新行腾出空间而向下移动。 */}
       {selectedCount > 0 ? (
         <>
           <span
             aria-live="polite"
             className="min-w-0 flex-1 truncate font-medium text-sm"
           >
-            <Plural value={selectedCount} one="# selected" other="# selected" />
+            <Plural
+              value={selectedCount}
+              one="已选择 # 项"
+              other="已选择 # 项"
+            />
           </span>
 
           {onMoveToInboxSelected ? (
-            <Tooltip content={t`Move to inbox`}>
+            <Tooltip content={t`移至收件箱`}>
               <button
                 type="button"
                 onClick={onMoveToInboxSelected}
-                aria-label={t`Move to inbox`}
+                aria-label={t`移至收件箱`}
                 className={cn(toolbarButton, "w-8 justify-center px-0")}
               >
                 <ArchiveRestoreIcon className="size-3.5" />
@@ -199,7 +203,7 @@ export const ListToolbar = memo(function ListToolbar({
               <button
                 type="button"
                 onClick={onArchiveSelected}
-                aria-label={t`Archive`}
+                aria-label={t`归档`}
                 className={cn(toolbarButton, "w-8 justify-center px-0")}
               >
                 <ArchiveIcon className="size-3.5" />
@@ -208,7 +212,7 @@ export const ListToolbar = memo(function ListToolbar({
           )}
 
           <Tooltip
-            content={isUnreadSelected ? t`Mark as read` : undefined}
+            content={isUnreadSelected ? t`标记为已读` : undefined}
             shortcuts={isUnreadSelected ? undefined : ["markUnread"]}
           >
             <button
@@ -216,9 +220,7 @@ export const ListToolbar = memo(function ListToolbar({
               onClick={
                 isUnreadSelected ? onMarkReadSelected : onMarkUnreadSelected
               }
-              aria-label={
-                isUnreadSelected ? t`Mark as read` : t`Mark as unread`
-              }
+              aria-label={isUnreadSelected ? t`标记为已读` : t`标记为未读`}
               className={cn(toolbarButton, "w-8 justify-center px-0")}
             >
               {isUnreadSelected ? (
@@ -233,7 +235,7 @@ export const ListToolbar = memo(function ListToolbar({
             <button
               type="button"
               onClick={onStarSelected}
-              aria-label={isStarredSelected ? t`Unstar` : t`Star`}
+              aria-label={isStarredSelected ? t`取消星标` : t`加星标`}
               className={cn(toolbarButton, "w-8 justify-center px-0")}
             >
               {isStarredSelected ? (
@@ -248,7 +250,7 @@ export const ListToolbar = memo(function ListToolbar({
             <button
               type="button"
               onClick={onDeleteSelected}
-              aria-label={t`Delete`}
+              aria-label={t`删除`}
               className={cn(
                 toolbarButton,
                 "w-8 justify-center px-0 hover:bg-destructive/10 hover:text-destructive",
@@ -263,7 +265,7 @@ export const ListToolbar = memo(function ListToolbar({
               <button
                 type="button"
                 onClick={onLabelSelected}
-                aria-label={t`Label`}
+                aria-label={t`标签`}
                 className={cn(toolbarButton, "w-8 justify-center px-0")}
               >
                 <TagIcon className="size-3.5" />
@@ -276,7 +278,7 @@ export const ListToolbar = memo(function ListToolbar({
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
-                  aria-label={t`More selection actions`}
+                  aria-label={t`更多选择操作`}
                   className={cn(toolbarButton, "w-8 justify-center px-0")}
                 >
                   <MoreHorizontalIcon className="size-3.5" />
@@ -285,19 +287,17 @@ export const ListToolbar = memo(function ListToolbar({
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onSelect={onAddToSplitSelected}>
                   <SplitIcon className="mr-2 size-4" />
-                  <Trans>Add senders to split</Trans>
+                  <Trans>将发件人添加到分栏</Trans>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : null}
 
-          <Tooltip
-            shortcuts={[{ id: "backToList", label: t`Clear selection` }]}
-          >
+          <Tooltip shortcuts={[{ id: "backToList", label: t`清除选择` }]}>
             <button
               type="button"
               onClick={onClearSelection}
-              aria-label={t`Clear selection`}
+              aria-label={t`清除选择`}
               className={cn(toolbarButton, "w-8 justify-center px-0")}
             >
               <XIcon className="size-3.5" />
@@ -338,7 +338,7 @@ export const ListToolbar = memo(function ListToolbar({
           <button
             type="button"
             onClick={onToggleAssistant}
-            aria-label={t`Toggle the assistant`}
+            aria-label={t`切换 AI 助手`}
             className={cn(
               toolbarButton,
               "w-8 justify-center bg-blue-500/10 px-0 text-blue-600 hover:bg-blue-500/20 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300",
@@ -427,7 +427,7 @@ function MailSearchInput({
               <PopoverTrigger asChild>
                 <button
                   type="button"
-                  aria-label={t`Show search options`}
+                  aria-label={t`显示搜索选项`}
                   aria-expanded={filtersOpen}
                   className={cn(
                     "flex h-full w-7 shrink-0 items-center justify-center rounded-r-lg text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
@@ -457,10 +457,10 @@ function MailSearchInput({
           <input
             ref={inputRef}
             value={draft}
-            placeholder={t`Search mail`}
+            placeholder={t`搜索邮件`}
             enterKeyHint="search"
             role="combobox"
-            aria-label={t`Search mail`}
+            aria-label={t`搜索邮件`}
             aria-autocomplete="list"
             aria-expanded={suggestionsOpen}
             aria-controls={suggestionsOpen ? suggestionListId : undefined}
@@ -469,8 +469,8 @@ function MailSearchInput({
                 ? suggestionOptionId(suggestionListId, highlightedIndex)
                 : undefined
             }
-            // The forms plugin sizes untyped inputs at 1rem, so the size has
-            // to be stated for the field to match the rest of the toolbar.
+            // 表单插件会将未设置类型的输入框设为 1rem，因此需要显式
+            // 设置尺寸，让该字段与工具栏其余部分保持一致。
             className="h-full min-w-0 flex-1 border-0 bg-transparent p-0 text-foreground text-sm outline-none focus:ring-0 placeholder:text-muted-foreground"
             onChange={(event) => {
               onSearchChange(event.target.value);
@@ -504,8 +504,8 @@ function MailSearchInput({
                 return;
               }
               if (event.key !== "Escape") return;
-              // The mail-wide Escape shortcut also clears the search, so a
-              // press handled here must not reach it.
+              // 邮件全局的 Escape 快捷键也会清空搜索，因此这里
+              // 处理过的按键必须不能传给全局快捷键。
               if (suggestionsOpen || filtersOpen || draft || searchQuery) {
                 event.preventDefault();
               }
@@ -529,7 +529,7 @@ function MailSearchInput({
           {draft || searchQuery ? (
             <button
               type="button"
-              aria-label={t`Clear search`}
+              aria-label={t`清除搜索`}
               onClick={() => onSearch("")}
               className="shrink-0 rounded p-0.5 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
@@ -627,11 +627,11 @@ function ViewOptionsMenu({
   const { t } = useLingui();
   return (
     <DropdownMenu>
-      <Tooltip content={t`View options`}>
+      <Tooltip content={t`视图选项`}>
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            aria-label={t`View options`}
+            aria-label={t`视图选项`}
             className={cn(toolbarButton, "relative w-8 justify-center px-0")}
           >
             <SlidersHorizontalIcon className="size-3.5" />
@@ -650,14 +650,14 @@ function ViewOptionsMenu({
             checked={bundleInbox}
             onCheckedChange={onToggleBundleInbox}
           >
-            <Trans>Bundle low-priority emails</Trans>
+            <Trans>归集低优先级邮件</Trans>
           </DropdownMenuCheckboxItem>
         ) : null}
         <DropdownMenuCheckboxItem
           checked={expandedPreview}
           onCheckedChange={onTogglePreview}
         >
-          <Trans>Expanded preview text</Trans>
+          <Trans>展开预览文本</Trans>
           <DropdownMenuShortcut>
             {getShortcutHint("togglePreview")}
           </DropdownMenuShortcut>
@@ -666,7 +666,7 @@ function ViewOptionsMenu({
           checked={layout === "split"}
           onCheckedChange={onToggleLayout}
         >
-          <Trans>Split view</Trans>
+          <Trans>分栏视图</Trans>
           <DropdownMenuShortcut>
             {getShortcutHint("toggleLayout")}
           </DropdownMenuShortcut>
@@ -674,16 +674,16 @@ function ViewOptionsMenu({
         {(onOpenAllSettings || onOpenSetup) && <DropdownMenuSeparator />}
         {onOpenAllSettings && (
           <DropdownMenuItem onSelect={onOpenAllSettings} inset>
-            <Trans>Choose what All shows</Trans>
+            <Trans>选择全部显示的内容</Trans>
           </DropdownMenuItem>
         )}
         {onOpenSetup && (
           <DropdownMenuItem onSelect={onOpenSetup}>
             <SettingsIcon className="size-4" />
             {isSetupSuggested ? (
-              <Trans>Set up your inbox</Trans>
+              <Trans>设置你的收件箱</Trans>
             ) : (
-              <Trans>Run mail setup again</Trans>
+              <Trans>重新运行邮件设置</Trans>
             )}
           </DropdownMenuItem>
         )}

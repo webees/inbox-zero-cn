@@ -114,8 +114,8 @@ export function useUnsubscribeSender(
     setIsUpdatingAutoArchive(true);
     const toastId = toast.loading(
       isAutoArchived
-        ? t`Disabling auto archive for ${senderName}`
-        : t`Enabling auto archive for ${senderName}`,
+        ? t`正在为 ${senderName} 关闭自动归档`
+        : t`正在为 ${senderName} 开启自动归档`,
     );
 
     try {
@@ -133,8 +133,8 @@ export function useUnsubscribeSender(
       captureException(error);
       toast.error(
         isAutoArchived
-          ? t`Couldn't disable auto archive for ${senderName}`
-          : t`Couldn't enable auto archive for ${senderName}`,
+          ? t`无法为 ${senderName} 关闭自动归档`
+          : t`无法为 ${senderName} 开启自动归档`,
         { id: toastId },
       );
       return;
@@ -143,21 +143,19 @@ export function useUnsubscribeSender(
     }
 
     if (isAutoArchived) {
-      toast.success(
-        t`Future emails from ${senderName} will stay in the inbox`,
-        {
-          id: toastId,
-        },
-      );
+      toast.success(t`来自 ${senderName} 的后续邮件将保留在收件箱中`, {
+        id: toastId,
+      });
       return;
     }
 
-    toast.success(t`Future emails from ${senderName} will be archived`, {
+    toast.success(t`来自 ${senderName} 的后续邮件将被归档`, {
       id: toastId,
     });
 
     // These follow-up tasks do not change the provider filter that was just
-    // committed, so their failures must not report the enable as unsuccessful.
+    // 这些后续任务不会改变刚刚提交的服务商筛选条件，因此它们的失败不应
+    // 将启用操作报告为失败。
     queueArchiveSenders({ senders: [senderEmail] }).catch(captureException);
     decrementUnsubscribeCreditAction()
       .then(() => refetchPremium())

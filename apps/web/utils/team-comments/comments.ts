@@ -247,6 +247,6 @@ function toCommentDto(
             comment.author.emailAccount.email,
           image: comment.author.emailAccount.image,
         }
-      : { memberId: null, name: "Former member", image: null },
+      : { memberId: null, name: "前成员", image: null },
   };
 }

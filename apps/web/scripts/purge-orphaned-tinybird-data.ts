@@ -34,7 +34,7 @@ async function main() {
     );
     for (const email of orphaned) orphanedEmails.add(email);
     console.log(
-      `email_action: ${owners.length} mailboxes, ${orphaned.length} orphaned`,
+      `email_action: ${owners.length} 个邮箱账号，${orphaned.length} 个孤立`,
     );
   } else {
     console.log("email_action: datasource not found, skipping");
@@ -50,7 +50,7 @@ async function main() {
   for (const email of orphanedAiCallEmails) orphanedEmails.add(email);
   console.log(
     aiCallUsers
-      ? `aiCall: ${orphanedAiCallEmails.length} orphaned email-keyed users`
+      ? `aiCall: ${orphanedAiCallEmails.length} 个以邮箱为键的孤立用户`
       : "aiCall: datasource not found, skipping",
   );
 
@@ -81,7 +81,7 @@ async function getDistinctValues(datasource: string, column: string) {
   if (response.status === 404) return null;
   if (!response.ok) {
     throw new Error(
-      `Tinybird query on ${datasource} failed: [${response.status}] ${await response.text()}`,
+      `对 ${datasource} 的 Tinybird 查询失败：[${response.status}] ${await response.text()}`,
     );
   }
 

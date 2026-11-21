@@ -49,7 +49,7 @@ describe("CategorizeSendersProgress", () => {
       expect.objectContaining({
         totalItems: 10,
         remainingItems: 6,
-        completedText: "Categorization complete! 4 categorized!",
+        completedText: "分类完成！已分类 4 个！",
       }),
     );
   });

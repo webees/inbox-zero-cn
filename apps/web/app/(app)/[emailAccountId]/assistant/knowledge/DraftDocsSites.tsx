@@ -28,7 +28,7 @@ export function DraftDocsSites() {
       },
       onError: (error) => {
         toastError({
-          title: t`Failed to update documentation sites`,
+          title: t`更新文档站点失败`,
           description: getActionErrorMessage(error.error),
         });
       },
@@ -47,12 +47,11 @@ export function DraftDocsSites() {
     <div className="mt-6 space-y-2">
       <div>
         <h3 className="font-medium">
-          <Trans>Documentation sites</Trans>
+          <Trans>文档站点</Trans>
         </h3>
         <p className="text-sm text-muted-foreground">
           <Trans>
-            Public docs the assistant can look things up in when drafting
-            replies. Only pages under these URLs are read.
+            AI 助手撰写回复时可查阅的公开文档。仅会读取这些 URL 下的页面
           </Trans>
         </p>
       </div>
@@ -67,7 +66,7 @@ export function DraftDocsSites() {
               <Button
                 variant="ghost"
                 size="sm"
-                aria-label={t`Remove ${url}`}
+                aria-label={t`移除 ${url}`}
                 disabled={isExecuting}
                 onClick={() =>
                   execute({ urls: urls.filter((item) => item !== url) })
@@ -88,7 +87,7 @@ export function DraftDocsSites() {
           />
           <Button type="submit" size="sm" loading={isExecuting}>
             <Plus className="mr-2 h-4 w-4" />
-            <Trans>Add site</Trans>
+            <Trans>添加站点</Trans>
           </Button>
         </form>
       </LoadingContent>

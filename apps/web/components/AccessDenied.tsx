@@ -2,8 +2,8 @@ import { ShieldX } from "lucide-react";
 import { TypographyH3, TypographyP } from "@/components/Typography";
 
 export function AccessDenied({
-  title = "Access Denied",
-  message = "You don't have permission to access this page.",
+  title = "访问被拒绝",
+  message = "你没有权限访问此页面。",
 }: {
   title?: string;
   message?: string;

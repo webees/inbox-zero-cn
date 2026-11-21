@@ -86,6 +86,6 @@ describe("signInWithSocialRedirect", () => {
         errorCallbackURL: "/login/error",
         provider: "google",
       }),
-    ).rejects.toThrow("Request failed with status 500");
+    ).rejects.toThrow("请求失败，状态码 500");
   });
 });
