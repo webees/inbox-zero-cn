@@ -925,9 +925,7 @@ export async function assertIntegrationActionsConnected(
     if (connectedNames.has(name)) continue;
 
     const displayName = findIntegration(name)?.displayName ?? name;
-    throw new SafeError(
-      `${displayName} isn't connected. Connect it to use this action.`,
-    );
+    throw new SafeError(`${displayName} 尚未连接。请先连接后再使用此操作。`);
   }
 }
 
@@ -938,7 +936,7 @@ async function assertIntegrationActionsEnabled(
   if (!actions.some((action) => action.type === ActionType.INTEGRATION)) return;
 
   if (!(await isIntegrationActionEnabledForEmailAccountId(emailAccountId))) {
-    throw new SafeError("Integration actions are not enabled for this user.");
+    throw new SafeError("此用户未启用集成操作。");
   }
 }
 
@@ -965,7 +963,7 @@ async function assertMessagingChannelsBelongToEmailAccount(
   });
 
   if (channels.length !== messagingChannelIds.length) {
-    throw new SafeError("Messaging channel not found");
+    throw new SafeError("未找到消息渠道");
   }
 }
 
@@ -984,7 +982,7 @@ function validateWebhookUrlsInActions(actions: RuleActionCreateData[]) {
 
     const result = validateWebhookUrlFormat(action.url);
     if (!result.valid) {
-      throw new SafeError(`Invalid webhook URL: ${result.error}`, 400);
+      throw new SafeError(`Webhook URL 无效：${result.error}`, 400);
     }
   }
 }

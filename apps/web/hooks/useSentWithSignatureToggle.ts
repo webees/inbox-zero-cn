@@ -19,7 +19,7 @@ export function useSentWithSignatureToggle(emailAccountId?: string) {
       },
       onError: createSettingActionErrorHandler({
         mutate,
-        prefix: `Failed to update 'Sent with ${BRAND_NAME}' setting`,
+        prefix: `更新“Sent with ${BRAND_NAME}”设置失败`,
       }),
     },
   );

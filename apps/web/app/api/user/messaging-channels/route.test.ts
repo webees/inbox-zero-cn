@@ -153,7 +153,7 @@ describe("GET /api/user/messaging-channels", () => {
           meetingBriefs: {
             enabled: true,
             targetId: "U123",
-            targetLabel: "Direct message",
+            targetLabel: "私信",
             isDm: true,
           },
           documentFilings: {
@@ -231,7 +231,7 @@ describe("GET /api/user/messaging-channels", () => {
     expect(body.channels[0].destinations.ruleNotifications).toEqual({
       enabled: true,
       targetId: "C_REMOVED",
-      targetLabel: "Channel unavailable",
+      targetLabel: "渠道不可用",
       isDm: false,
     });
   });

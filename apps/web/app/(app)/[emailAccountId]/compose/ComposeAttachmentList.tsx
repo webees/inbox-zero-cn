@@ -69,7 +69,7 @@ export function ComposeAttachmentList({
               : i18n._(ATTACHMENT_STATUS_LABELS[attachment.status])}
           </span>
           <button
-            aria-label={t`Remove ${attachment.filename}`}
+            aria-label={t`移除 ${attachment.filename}`}
             className="rounded-sm p-0.5 hover:bg-muted"
             onClick={() => onRemove(attachment)}
             type="button"
@@ -86,8 +86,8 @@ const ATTACHMENT_STATUS_LABELS: Record<
   Exclude<ComposeAttachment["status"], "uploaded">,
   MessageDescriptor
 > = {
-  uploading: msg`Uploading…`,
-  failed: msg`Not attached`,
+  uploading: msg`正在上传…`,
+  failed: msg`未附加`,
 };
 
 function AttachmentIcon({ attachment }: { attachment: ComposeAttachment }) {

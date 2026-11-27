@@ -10,7 +10,7 @@ export function shouldSkipAutoDraft({
 }) {
   if (!env.NEXT_PUBLIC_AUTO_DRAFT_DISABLED) return false;
 
-  logger.info("Skipping auto-draft because auto-drafting is disabled", {
+  logger.info("跳过自动草稿，因为自动起草已禁用", {
     source,
   });
   return true;

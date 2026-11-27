@@ -58,8 +58,8 @@ export async function createDesktopMailOwner(
       return handleOwnerIpc(owned, payload);
     },
     /**
-     * Keeps an observation open and pushes each changed snapshot, so the
-     * renderer doesn't poll every query on a timer.
+     * 保持观察连接开启，并在每次快照变化时推送，
+     * 这样渲染进程无需定时轮询每个查询。
      */
     subscribe(payload: unknown, onSnapshot: (snapshot: unknown) => void) {
       const parsed = parseMailIpcRequest(payload);
@@ -108,7 +108,7 @@ type OwnedEngineInput = {
   assistant?: AssistantStateSource;
   idleCatchUpIntervalMs?: number;
   onSyncPageCommitted?: (page: SyncPage) => void;
-  /** The loop keeps retrying after a failed run; the host decides whether to report it. */
+  /** 运行失败后循环会持续重试；由宿主决定是否上报 */
   onEngineError?: (error: unknown) => void;
   onSqliteTransaction?: SqliteTransactionTimer;
   followMailboxSignal?: (

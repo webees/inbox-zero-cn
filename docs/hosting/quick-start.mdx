@@ -1,34 +1,34 @@
 ---
-title: 'Quick Start'
-description: 'Self-host Inbox Zero in under 5 minutes'
+title: '快速开始'
+description: '在 5 分钟内自托管 Inbox Zero'
 ---
 
-The fastest way to self-host Inbox Zero is with two commands:
+自托管 Inbox Zero 最快的方式是用两条命令：
 
 ```bash
 npx @inbox-zero/cli setup      # One-time setup wizard
 npx @inbox-zero/cli start      # Start containers
 ```
 
-Then open [http://localhost:3000](http://localhost:3000) (or your domain).
+然后打开 [http://localhost:3000](http://localhost:3000)（或你的域名）。
 
 <Info>
-  **Prerequisites:** [Docker](https://docs.docker.com/engine/install/) and [Node.js](https://nodejs.org/) v24+ must be installed.
+  **前置要求：** 必须安装 [Docker](https://docs.docker.com/engine/install/) 和 [Node.js](https://nodejs.org/) v24+。
 </Info>
 
-The CLI will walk you through configuring [Google OAuth](/hosting/google-oauth) or [Microsoft OAuth](/hosting/microsoft-oauth) and your AI provider. For manual configuration, see the [Setup Guides](/hosting/setup-guides).
+CLI 会引导你配置 [Google OAuth](/hosting/google-oauth) 或 [Microsoft OAuth](/hosting/microsoft-oauth) 以及你的 AI 服务商。手动配置请参阅[设置指南](/hosting/setup-guides)。
 
 <Info>
-  **CLI is optional:** The setup command is a convenience wrapper that helps prepare your `.env` and run Docker Compose with sensible defaults.
+  **CLI 是可选的：** setup 命令是一个便捷封装，它帮助你准备 `.env`，并以合理的默认值运行 Docker Compose。
 
-  Prefer manual setup? Clone the repo, copy `apps/web/.env.example` to `apps/web/.env`, then link it for Compose once with `ln -s apps/web/.env .env`, and run the Docker/Node commands that match your environment.
+  更喜欢手动设置？克隆仓库，把 `apps/web/.env.example` 复制为 `apps/web/.env`，然后用 `ln -s apps/web/.env .env` 为 Compose 链接它一次，再运行与你的环境匹配的 Docker/Node 命令。
 </Info>
 
-On Windows, run the Docker commands printed by the CLI in PowerShell. The manual shell examples in these guides use POSIX syntax (Git Bash or WSL on Windows).
+在 Windows 上，请在 PowerShell 中运行 CLI 打印出的 Docker 命令。这些指南中的手动 shell 示例使用 POSIX 语法（Windows 上的 Git Bash 或 WSL）。
 
-## Install Options
+## 安装方式
 
-You can also install the CLI globally instead of using `npx`:
+除了使用 `npx`，你也可以全局安装 CLI：
 
 <CodeGroup>
 
@@ -46,70 +46,70 @@ inbox-zero start
 
 </CodeGroup>
 
-## CLI Command Reference
+## CLI 命令参考
 
-| Command | Description |
+| 命令 | 说明 |
 |---------|-------------|
-| `inbox-zero setup` | One-time setup wizard |
-| `inbox-zero start` | Start containers |
-| `inbox-zero stop` | Stop containers |
-| `inbox-zero update` | Pull latest image and restart |
-| `inbox-zero logs -f` | Follow container logs |
-| `inbox-zero status` | Show container status |
-| `inbox-zero config` | Interactive configuration editor |
-| `inbox-zero config set <key> <value>` | Set a config value |
-| `inbox-zero config get <key>` | Get a config value |
-| `inbox-zero setup-google` | Configure Google APIs, OAuth guidance, and Pub/Sub using `gcloud` |
-| `inbox-zero setup-aws` | Deploy to AWS using Copilot (ECS/Fargate) |
-| `inbox-zero setup-terraform` | Generate Terraform files for an AWS deployment |
-| `inbox-zero setup-vercel` | Link Vercel, provision optional Neon/Upstash resources, and seed environment variables |
+| `inbox-zero setup` | 一次性设置向导 |
+| `inbox-zero start` | 启动容器 |
+| `inbox-zero stop` | 停止容器 |
+| `inbox-zero update` | 拉取最新镜像并重启 |
+| `inbox-zero logs -f` | 跟踪容器日志 |
+| `inbox-zero status` | 显示容器状态 |
+| `inbox-zero config` | 交互式配置编辑器 |
+| `inbox-zero config set <key> <value>` | 设置一个配置值 |
+| `inbox-zero config get <key>` | 获取一个配置值 |
+| `inbox-zero setup-google` | 使用 `gcloud` 配置 Google API、OAuth 指引和 Pub/Sub |
+| `inbox-zero setup-aws` | 使用 Copilot（ECS/Fargate）部署到 AWS |
+| `inbox-zero setup-terraform` | 为 AWS 部署生成 Terraform 文件 |
+| `inbox-zero setup-vercel` | 关联 Vercel、预配可选的 Neon/Upstash 资源并写入环境变量 |
 
-Run `inbox-zero <command> --help` for command-specific options. Deployment commands are also covered in the [Google OAuth](/hosting/google-oauth), [AWS](/hosting/aws), and [Vercel](/hosting/vercel) guides.
+运行 `inbox-zero <command> --help` 查看具体命令的选项。部署命令也在 [Google OAuth](/hosting/google-oauth)、[AWS](/hosting/aws) 和 [Vercel](/hosting/vercel) 指南中有所介绍。
 
-## Updating
+## 更新
 
-To update to the latest version:
+要更新到最新版本：
 
 ```bash
 inbox-zero update
 ```
 
-Or manually with Docker Compose:
+或使用 Docker Compose 手动操作：
 
 ```bash
 docker compose pull web
 NEXT_PUBLIC_BASE_URL=https://yourdomain.com docker compose --profile all up -d
 ```
 
-## Uninstalling / Starting Over
+## 卸载 / 重新开始
 
-Need to remove Inbox Zero or start fresh? See the [full cleanup guide](/hosting/troubleshooting#uninstalling--starting-over) in Troubleshooting.
+需要移除 Inbox Zero 或重新开始？请参阅故障排查中的[完整清理指南](/hosting/troubleshooting#uninstalling--starting-over)。
 
-## Next Steps
+## 后续步骤
 
 <CardGroup cols={2}>
   <Card title="Google OAuth" icon="google" href="/hosting/google-oauth">
-    Configure Google OAuth credentials and Gmail API access.
+    配置 Google OAuth 凭据和 Gmail API 访问权限。
   </Card>
   <Card title="Microsoft OAuth" icon="microsoft" href="/hosting/microsoft-oauth">
-    Configure Azure app registration and Graph permissions.
+    配置 Azure 应用注册和 Graph 权限。
   </Card>
-  <Card title="All Guides" icon="wrench" href="/hosting/setup-guides">
-    PubSub, AI providers, and more manual configuration options.
+  <Card title="所有指南" icon="wrench" href="/hosting/setup-guides">
+    PubSub、AI 服务商以及更多手动配置选项。
   </Card>
-  <Card title="Docker/VPS Deployment Guide" icon="server" href="/hosting/self-hosting">
-    Production deployment, Docker profiles, and scheduled tasks.
+  <Card title="Docker/VPS 部署指南" icon="server" href="/hosting/self-hosting">
+    生产部署、Docker 配置文件和定时任务。
   </Card>
-  <Card title="Image Proxy" icon="image" href="/hosting/image-proxy">
-    Deploy the optional remote-image proxy without editing Worker config files.
+  <Card title="图片代理" icon="image" href="/hosting/image-proxy">
+    部署可选的远程图片代理，无需编辑 Worker 配置文件。
   </Card>
-  <Card title="Vercel Deployment" icon="cloud" href="/hosting/vercel">
-    Deploy on Vercel with Neon Postgres and Upstash Redis.
+  <Card title="Vercel 部署" icon="cloud" href="/hosting/vercel">
+    使用 Neon Postgres 和 Upstash Redis 在 Vercel 上部署。
   </Card>
-  <Card title="AWS Deployment" icon="aws" href="/hosting/aws">
-    Deploy on AWS using EC2, Terraform, or AWS Copilot.
+  <Card title="AWS 部署" icon="aws" href="/hosting/aws">
+    使用 EC2、Terraform 或 AWS Copilot 在 AWS 上部署。
   </Card>
-  <Card title="Troubleshooting" icon="life-ring" href="/hosting/troubleshooting">
-    Solutions for common issues like OAuth errors, rate limiting, and more.
+  <Card title="故障排查" icon="life-ring" href="/hosting/troubleshooting">
+    OAuth 错误、速率限制等常见问题的解决方案。
   </Card>
 </CardGroup>

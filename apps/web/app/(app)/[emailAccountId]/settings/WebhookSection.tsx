@@ -52,19 +52,18 @@ function WebhookSectionContent() {
         >
           <DialogTrigger asChild>
             <Button variant="outline" size="sm">
-              {data?.hasWebhookSecret ? t`Manage Secret` : t`Generate Secret`}
+              {data?.hasWebhookSecret ? t`管理密钥` : t`生成密钥`}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
-                <Trans>Webhook Secret</Trans>
+                <Trans>Webhook 密钥</Trans>
               </DialogTitle>
               <DialogDescription>
                 <Trans>
-                  Include this in the X-Webhook-Secret header when setting up
-                  webhook endpoints. Existing secrets are not shown again. When
-                  you generate a new secret, copy it before closing this dialog.
+                  设置 Webhook 端点时，请将此密钥包含在 X-Webhook-Secret header
+                  中。现有密钥不会再次显示。生成新密钥后，请在关闭此对话框前复制它。
                 </Trans>
               </DialogDescription>
             </DialogHeader>
@@ -76,8 +75,7 @@ function WebhookSectionContent() {
                   ) : (
                     <p className="text-sm text-muted-foreground">
                       <Trans>
-                        Generate a new webhook secret to reveal it once for
-                        copying.
+                        生成新的 Webhook 密钥，以便显示一次供你复制。
                       </Trans>
                     </p>
                   )}

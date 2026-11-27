@@ -70,7 +70,7 @@ describe("sendAutomationMessageToSlack", () => {
     expect(mockPostMessage).toHaveBeenCalledWith(
       expect.objectContaining({
         channel: "C123",
-        text: expect.stringContaining("_Reply with <@UAPP123>"),
+        text: expect.stringContaining("_回复 <@UAPP123>"),
         unfurl_links: false,
         unfurl_media: false,
       }),

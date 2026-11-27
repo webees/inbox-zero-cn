@@ -377,9 +377,9 @@ export async function confirmAssistantCreateRuleForAccount({
         error: processingError,
       });
     });
-    logger.error("Failed to confirm assistant create rule", { error });
+    logger.error("确认 AI 助手创建规则失败", { error });
     throw new SafeError(
-      error instanceof Error ? error.message : "Failed to create rule",
+      error instanceof Error ? error.message : "创建规则失败",
     );
   }
 
@@ -650,7 +650,7 @@ export async function confirmAssistantBulkInboxActionForAccount({
         where: { id: jobId, emailAccountId, status: "RUNNING" },
         data: { status: "CANCELLED", completedAt: new Date() },
       });
-      throw new SafeError("This action was cancelled.");
+      throw new SafeError("此操作已取消");
     }
     // The job is queued and runs either way, so the card should show its
     // progress. After a reload the stored part is still processing; once that
@@ -1178,7 +1178,7 @@ async function findChatMessageForPendingAction({
 
     if (hintedChatMessage && matchParts(hintedChatMessage.parts)) {
       if (attemptCount > 1) {
-        logger.info(`${logPrefix} resolved after persistence wait`, {
+        logger.info(`${logPrefix} 持久化等待后已找到`, {
           chatId,
           requestedChatMessageId: chatMessageId,
           resolvedChatMessageId: hintedChatMessage.id,
@@ -1209,7 +1209,7 @@ async function findChatMessageForPendingAction({
 
     if (matchingMessages.length === 1) {
       if (attemptCount > 1) {
-        logger.info(`${logPrefix} resolved after persistence wait`, {
+        logger.info(`${logPrefix} 持久化等待后已找到`, {
           chatId,
           requestedChatMessageId: chatMessageId,
           resolvedChatMessageId: matchingMessages[0].id,
@@ -1217,7 +1217,7 @@ async function findChatMessageForPendingAction({
           lookupAttempts: attemptCount,
         });
       } else if (chatMessageId && matchingMessages[0].id !== chatMessageId) {
-        logger.warn(`${logPrefix} resolved pending action by tool lookup`, {
+        logger.warn(`${logPrefix} 通过工具查找定位到待处理操作`, {
           chatId,
           requestedChatMessageId: chatMessageId,
           resolvedChatMessageId: matchingMessages[0].id,
@@ -1227,7 +1227,7 @@ async function findChatMessageForPendingAction({
     }
 
     if (matchingMessages.length > 1) {
-      logger.warn(`${logPrefix} found multiple pending action matches`, {
+      logger.warn(`${logPrefix} 找到多个匹配的待处理操作`, {
         chatId,
         requestedChatMessageId: chatMessageId,
         matchedChatMessageIds: matchingMessages.map((message) => message.id),
@@ -1246,7 +1246,7 @@ async function findChatMessageForPendingAction({
       continue;
     }
 
-    logger.warn(`${logPrefix} pending action not found`, {
+    logger.warn(`${logPrefix} 未找到待处理操作`, {
       chatId,
       requestedChatMessageId: chatMessageId,
       hintedMessageFound: Boolean(hintedChatMessage),
@@ -1283,7 +1283,7 @@ async function dismissPendingAssistantPart({
   } | null;
   logPrefix: string;
   notFoundError: string;
-  /** Lets a start whose processing lease expired be dismissed, after undoing what it may have begun. */
+  /** 允许在撤销可能已开始的操作后，取消处理租约已过期的启动 */
   cancelAbandonedStart?: (chatMessageId: string) => Promise<void>;
 }) {
   const chatMessage = await findChatMessageForPendingAction({
@@ -1305,12 +1305,11 @@ async function dismissPendingAssistantPart({
     state === "processing" &&
     hasProcessingLeaseExpired(lookup.output.confirmationProcessingAt);
   if (state !== "pending" && !isAbandonedStart) {
-    throw new SafeError("This action has already started.");
+    throw new SafeError("此操作已开始");
   }
   const { confirmationProcessingAt } = lookup.output;
 
-  // Saved before cancelling the job, so a confirmation that took over the
-  // expired lease in the meantime makes this dismissal fail instead.
+  // 在取消任务前保存，这样如果确认在这期间接管了已过期的租约，本次撤销就会失败。
   await persistConfirmedAssistantPart({
     chatMessageId: chatMessage.id,
     emailAccountId,
@@ -1396,15 +1395,15 @@ async function reservePendingAssistantPart<
 
   const chatMessage = await findMessage();
   if (!chatMessage) {
-    logger.warn(`${logPrefix} failed: chat message not found`, {
+    logger.warn(`${logPrefix} 失败：未找到聊天消息`, {
       chatMessageId,
     });
-    throw new SafeError("Chat message not found");
+    throw new SafeError("未找到聊天消息");
   }
 
   const lookup = findPart(chatMessage.parts);
   if (!lookup) {
-    logger.warn(`${logPrefix} failed: pending action not found`, {
+    logger.warn(`${logPrefix} 失败：未找到待处理操作`, {
       chatMessageId: chatMessage.id,
     });
     throw new SafeError(notFoundError);
@@ -1456,10 +1455,10 @@ async function reservePendingAssistantPart<
 
   const latestMessage = await findMessage();
   if (!latestMessage) {
-    logger.warn(`${logPrefix} failed after reservation race`, {
+    logger.warn(`${logPrefix} 预留竞争后失败`, {
       chatMessageId: chatMessage.id,
     });
-    throw new SafeError("Chat message not found");
+    throw new SafeError("未找到聊天消息");
   }
 
   const latestLookup = findPart(latestMessage.parts);

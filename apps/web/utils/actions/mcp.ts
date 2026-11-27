@@ -1,13 +1,11 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
-import { StreamableHTTPError } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { actionClient } from "@/utils/actions/safe-action";
 import {
   createCustomMcpServerBody,
   disconnectMcpConnectionBody,
   removeCustomMcpServerBody,
-  testMcpConnectionBody,
   toggleMcpConnectionBody,
   toggleMcpToolBody,
 } from "@/utils/actions/mcp.validation";
@@ -34,9 +32,9 @@ export const disconnectMcpConnectionAction = actionClient
         where: { id: connectionId, emailAccountId },
         select: { integration: { select: { name: true } } },
       });
-      if (!connection) throw new SafeError("Connection not found");
+      if (!connection) throw new SafeError("未找到连接");
 
-      // Revoke at the provider first so it never keeps tokens we no longer track
+      // 先在服务商处撤销，这样它不会保留我们已不再追踪的令牌
       const provider = findIntegration(connection.integration.name)?.provider;
       if (provider) {
         await getIntegrationProvider(provider.id).disconnect({
@@ -63,45 +61,6 @@ export const toggleMcpConnectionAction = actionClient
         where: { id: connectionId, emailAccountId },
         data: { isActive },
       });
-    },
-  );
-
-export const testMcpConnectionAction = actionClient
-  .metadata({ name: "testMcpConnection" })
-  .inputSchema(testMcpConnectionBody)
-  .action(
-    async ({
-      ctx: { emailAccountId, logger },
-      parsedInput: { connectionId },
-    }) => {
-      const connection = await prisma.mcpConnection.findUnique({
-        where: { id: connectionId, emailAccountId },
-        select: { isActive: true, integration: { select: { name: true } } },
-      });
-      if (!connection) throw new SafeError("Connection not found");
-      if (!connection.isActive) {
-        throw new SafeError("Resume this integration to test it.");
-      }
-
-      try {
-        const { toolsCount } = await syncMcpTools(
-          connection.integration.name,
-          emailAccountId,
-          logger,
-        );
-        return { toolsCount };
-      } catch (error) {
-        // A failed token refresh deactivates the connection
-        const latest = await prisma.mcpConnection.findUnique({
-          where: { id: connectionId, emailAccountId },
-          select: { isActive: true },
-        });
-        throw new SafeError(
-          !latest?.isActive || isAuthRejection(error)
-            ? "Authorization expired or was revoked. Reconnect and try again."
-            : "Could not reach the server. Check that it is online and try again.",
-        );
-      }
     },
   );
 
@@ -136,7 +95,7 @@ export const createCustomMcpServerAction = actionClient
 
       if (existingCount >= MAX_CUSTOM_SERVERS_PER_ACCOUNT) {
         throw new SafeError(
-          `You can add up to ${MAX_CUSTOM_SERVERS_PER_ACCOUNT} custom servers.`,
+          `你最多可以添加 ${MAX_CUSTOM_SERVERS_PER_ACCOUNT} 个自定义服务器。`,
         );
       }
 
@@ -168,12 +127,12 @@ export const createCustomMcpServerAction = actionClient
 
         await syncMcpTools(name, emailAccountId, logger);
       } catch (error) {
-        logger.error("Failed to connect custom MCP server", { error });
+        logger.error("连接自定义 MCP 服务器失败", { error });
         await prisma.mcpIntegration.delete({ where: { id: integration.id } });
         throw new SafeError(
           authType === "api-token"
-            ? "Could not connect to the server. Check the URL and API key."
-            : "Could not connect to the server. Check the URL, or choose an authentication method if the server requires one.",
+            ? "无法连接到服务器。请检查 URL 和 API 密钥。"
+            : "无法连接到服务器。请检查 URL，或在该服务器需要时选择一种认证方式。",
         );
       }
 
@@ -189,19 +148,5 @@ export const removeCustomMcpServerAction = actionClient
       where: { name, emailAccountId },
     });
 
-    if (!count) throw new SafeError("Server not found");
+    if (!count) throw new SafeError("未找到服务器");
   });
-
-function isAuthRejection(error: unknown): boolean {
-  let current = error;
-  while (current instanceof Error) {
-    if (
-      current instanceof StreamableHTTPError &&
-      (current.code === 401 || current.code === 403)
-    ) {
-      return true;
-    }
-    current = current.cause;
-  }
-  return false;
-}

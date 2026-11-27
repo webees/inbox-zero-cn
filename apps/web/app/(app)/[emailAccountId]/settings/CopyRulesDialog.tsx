@@ -176,20 +176,17 @@ export function CopyRulesDialog({
       <DialogContent className="max-w-md">
         <DialogHeader className="pr-6">
           <DialogTitle className="break-words">
-            <Trans>Transfer rules to {targetAccountEmail}</Trans>
+            <Trans>将规则转移到 {targetAccountEmail}</Trans>
           </DialogTitle>
           <DialogDescription>
-            <Trans>
-              Select an account to transfer rules from. Rules with matching
-              names will be replaced.
-            </Trans>
+            <Trans>选择要从中转移规则的账号。名称相同的规则将被替换。</Trans>
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           <div>
             <span className="text-sm font-medium">
-              <Trans>Transfer from</Trans>
+              <Trans>转移自</Trans>
             </span>
             <Select
               value={selectedSourceId}
@@ -199,7 +196,7 @@ export function CopyRulesDialog({
               }}
             >
               <SelectTrigger className="mt-1.5">
-                <SelectValue placeholder={t`Select source account`} />
+                <SelectValue placeholder={t`选择源账号`} />
               </SelectTrigger>
               <SelectContent>
                 {sourceAccounts.map((account) => (
@@ -230,12 +227,12 @@ export function CopyRulesDialog({
                                 allSelected || (someSelected && "indeterminate")
                               }
                               onCheckedChange={handleSelectAll}
-                              aria-label={t`Select all`}
+                              aria-label={t`全选`}
                             />
                           </div>
                         </TableHead>
                         <TableHead>
-                          <Trans>Rule</Trans>
+                          <Trans>规则</Trans>
                         </TableHead>
                       </TableRow>
                     </TableHeader>
@@ -249,7 +246,7 @@ export function CopyRulesDialog({
                                 onCheckedChange={(checked) =>
                                   handleToggleRule(rule.id, !!checked)
                                 }
-                                aria-label={t`Select ${rule.name}`}
+                                aria-label={t`选择 ${rule.name}`}
                               />
                             </div>
                           </TableCell>
@@ -262,14 +259,14 @@ export function CopyRulesDialog({
                   </Table>
                   <div className="border-t bg-muted/50 px-3 py-2 text-xs text-muted-foreground">
                     {t`${plural(selectedRuleIds.size, {
-                      one: `# of ${ruleCount} selected`,
-                      other: `# of ${ruleCount} selected`,
+                      one: `已选择 # 个，共 ${ruleCount} 个`,
+                      other: `已选择 # 个，共 ${ruleCount} 个`,
                     })}`}
                   </div>
                 </div>
               ) : (
                 <MutedText className="py-4 text-center">
-                  <Trans>No rules found in {selectedSource?.email}</Trans>
+                  <Trans>{selectedSource?.email} 中未找到规则</Trans>
                 </MutedText>
               )}
             </LoadingContent>
@@ -278,7 +275,7 @@ export function CopyRulesDialog({
 
         <DialogFooter>
           <Button variant="outline" onClick={() => handleOpenChange(false)}>
-            <Trans>Cancel</Trans>
+            <Trans>取消</Trans>
           </Button>
           <Button
             onClick={handleCopy}
@@ -287,10 +284,10 @@ export function CopyRulesDialog({
           >
             {selectedRuleIds.size > 0
               ? t`${plural(selectedRuleIds.size, {
-                  one: "Transfer # rule",
-                  other: "Transfer # rules",
+                  one: "转移 # 条规则",
+                  other: "转移 # 条规则",
                 })}`
-              : t`Transfer rules`}
+              : t`转移规则`}
           </Button>
         </DialogFooter>
       </DialogContent>

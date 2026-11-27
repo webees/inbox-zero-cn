@@ -34,14 +34,14 @@ export async function scheduleEmail(
   const sendAt = input.sendAt ? new Date(input.sendAt) : now;
   const remindAt = input.remindAt ? new Date(input.remindAt) : null;
   if (input.sendAt && sendAt <= now)
-    throw new SafeError("Choose a future send time.");
+    throw new SafeError("请选择未来的发送时间。");
   if (remindAt && remindAt <= sendAt)
-    throw new SafeError("The reminder must be after the send time.");
+    throw new SafeError("提醒时间必须晚于发送时间。");
   if (
     input.email.replyToEmail &&
     input.email.replyToEmail.threadId !== input.threadId
   )
-    throw new SafeError("The reply belongs to a different conversation.");
+    throw new SafeError("该回复属于另一个会话。");
   try {
     return await prisma.scheduledEmail.create({
       data: {
@@ -72,8 +72,8 @@ export async function scheduleEmail(
 }
 
 /**
- * Holds a just-sent email on the server for its undo window, so it still goes
- * out if the client that sent it goes away. Repeats return the same hold.
+ * 在服务器上保留刚发送的邮件以度过其撤销窗口，因此即使
+ * 发送它的客户端离开，它仍会发出。重复调用返回同一个保留项。
  */
 export async function holdEmailForUndo({
   emailAccountId,
@@ -139,16 +139,16 @@ export async function holdEmailForUndo({
   return row;
 }
 
-/** Sends a held email once its undo window is over. */
+/** 在保留邮件的撤销窗口结束后发送该邮件。 */
 export async function releaseHeldEmail(
   row: ScheduledEmail,
   logger: Logger,
   now = new Date(),
 ) {
-  // A user-scheduled email keeps its own time and explicit retry.
+  // 用户计划发送的邮件保留自己的时间和显式重试。
   if (!row.heldForUndo) return row;
   if (row.status === "BLOCKED_AUTH") {
-    // The client asked again, so the account may be reconnected by now.
+    // 客户端再次发起请求，因此账号此时可能已重新连接。
     await prisma.scheduledEmail.updateMany({
       where: { id: row.id, status: "BLOCKED_AUTH" },
       data: {
@@ -166,9 +166,9 @@ export async function releaseHeldEmail(
 }
 
 /**
- * Stops a held email unless it has started sending. Undo can reach the server
- * before the send does, so an unknown email is recorded as cancelled and
- * never held afterwards.
+ * 停止保留的邮件，除非它已开始发送。撤销可能先于发送
+ * 到达服务器，因此未知邮件会被记录为已取消，
+ * 之后不再被保留。
  */
 export async function cancelHeldEmail(
   emailAccountId: string,
@@ -236,9 +236,7 @@ export async function cancelScheduledEmail(emailAccountId: string, id: string) {
     select: { status: true },
   });
   if (existing?.status !== "CANCELLED")
-    throw new SafeError(
-      "This email has started sending or is no longer scheduled.",
-    );
+    throw new SafeError("此邮件已开始发送，或不再处于计划发送状态。");
 }
 
 export async function cancelEmailReminder(emailAccountId: string, id: string) {
@@ -247,9 +245,7 @@ export async function cancelEmailReminder(emailAccountId: string, id: string) {
     data: { reminderStatus: "CANCELLED" },
   });
   if (!result.count)
-    throw new SafeError(
-      "This reminder has already started or is no longer pending.",
-    );
+    throw new SafeError("此提醒已开始，或不再处于待处理状态。");
 }
 
 export async function retryScheduledEmail(
@@ -261,7 +257,7 @@ export async function retryScheduledEmail(
     where: { id, emailAccountId },
   });
   if (!row || (row.status !== "FAILED" && row.status !== "BLOCKED_AUTH"))
-    throw new SafeError("This email cannot be retried safely.");
+    throw new SafeError("无法安全地重试此邮件。");
   const operation = await prisma.emailSendOperation.findUnique({
     where: {
       emailAccountId_clientMutationId: {
@@ -272,9 +268,7 @@ export async function retryScheduledEmail(
     select: { id: true },
   });
   if (operation)
-    throw new SafeError(
-      "This email cannot be retried safely. Check Sent before sending again.",
-    );
+    throw new SafeError("无法安全地重试此邮件。发送前请检查「已发送」。");
   const result = await prisma.scheduledEmail.updateMany({
     where: { id, emailAccountId, updatedAt: row.updatedAt, status: row.status },
     data: {
@@ -285,8 +279,7 @@ export async function retryScheduledEmail(
       error: null,
     },
   });
-  if (!result.count)
-    throw new SafeError("This email cannot be retried safely.");
+  if (!result.count) throw new SafeError("无法安全地重试此邮件。");
 }
 
 export async function processScheduledEmail(
@@ -359,10 +352,10 @@ export async function processScheduledEmail(
         data: {
           status: "SENT",
           sentAt: sentOperation.processingStartedAt,
-          // The reminder needs the thread the send actually landed in.
+          // 提醒需要发送实际落入的会话。
           threadId: row.threadId ?? getSentThreadId(outcome.result),
           error: null,
-          // Nothing lists a sent undo hold, so its body and files can go.
+          // 没有任何地方会列出已发送的撤销保留项，因此其正文和文件可以释放。
           ...(row.heldForUndo ? { payload: {} } : {}),
         },
       });
@@ -376,7 +369,7 @@ export async function processScheduledEmail(
         },
         select: { id: true },
       });
-      // A durable worker may still be sending. Only absent operations are known unsent.
+      // 持久化工作进程可能仍在发送。只有不存在的操作才被确认为未发送。
       if (operation) return;
       await prisma.scheduledEmail.updateMany({
         where: claimedWhere,
@@ -398,17 +391,17 @@ export async function processScheduledEmail(
                 : "FAILED",
           error:
             outcome.status === "blocked_auth"
-              ? "Reconnect your email account to send this reply."
+              ? "请重新连接邮箱账号以发送此回复。"
               : outcome.status === "uncertain"
-                ? "This email may have been sent. Check Sent before sending again."
+                ? "此邮件可能已发送。发送前请检查「已发送」。"
                 : outcome.error,
         },
       });
     }
   } catch (error) {
-    // Keep the lease: the durable operation may have sent before a DB failure.
-    // A later cron reconciles the same immutable operation, never a new send.
-    logger.error("Scheduled email execution failed", {
+    // 保留租约：持久化操作可能在数据库故障之前已经发送。
+    // 后续的 cron 会对同一个不可变操作进行核对，而绝不会是新的发送。
+    logger.error("计划邮件执行失败", {
       error,
       scheduledEmailId: id,
     });
@@ -479,8 +472,8 @@ async function processReminder(row: ScheduledEmail, logger: Logger, now: Date) {
       data: { reminderStatus: "COMPLETED" },
     });
   } catch (error) {
-    logger.error("Email reminder failed", { error, scheduledEmailId: row.id });
-    // Retain the lease to avoid tight retries and recover on the next stale scan.
+    logger.error("邮件提醒失败", { error, scheduledEmailId: row.id });
+    // 保留租约以避免密集重试，并在下一次过期扫描时恢复。
   }
 }
 
@@ -515,7 +508,7 @@ export async function processDueScheduledEmails(
       if (row.status === "SENT") await processReminder(row, scopedLogger, now);
       else await processScheduledEmail(row.id, scopedLogger, now);
     } catch (error) {
-      scopedLogger.error("Failed to process scheduled email", { error });
+      scopedLogger.error("处理计划邮件失败", { error });
     }
   });
   return { processed: rows.length };
@@ -538,11 +531,7 @@ function assertReusableRequest(
   payloadHash: string,
 ) {
   if (row.payloadHash !== payloadHash)
-    throw new SafeError(
-      "This send request was already used for a different email.",
-    );
+    throw new SafeError("此发送请求已用于另一封邮件。");
   if (row.status === "CANCELLED")
-    throw new SafeError(
-      "This scheduled reply was cancelled. Start a new reply to send this message.",
-    );
+    throw new SafeError("此计划回复已取消。请新建回复以发送此消息。");
 }

@@ -4,16 +4,16 @@ import { admissionRejectionCopy } from "./admission-notice";
 describe("admissionRejectionCopy", () => {
   it("explains a full local command queue", () => {
     expect(admissionRejectionCopy("queue_full")).toBe(
-      "Mail is full of pending actions. Wait for some to finish, then try again.",
+      "邮件中存在大量待处理操作。请等待部分操作完成后再试。",
     );
   });
 
   it("explains disk pressure for blob and mailbox rejects", () => {
     expect(admissionRejectionCopy("too_large")).toBe(
-      "This device does not have enough storage for that mail action.",
+      "此设备没有足够的存储空间来执行该邮件操作。",
     );
     expect(admissionRejectionCopy("storage_unavailable")).toBe(
-      "This device does not have enough storage for that mail action.",
+      "此设备没有足够的存储空间来执行该邮件操作。",
     );
   });
 

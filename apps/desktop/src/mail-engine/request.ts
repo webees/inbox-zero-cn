@@ -32,7 +32,7 @@ export function mailApiHeaders(
 
 export function createOriginMailRequest(input: {
   origin: string;
-  /** `<client>/<version>`, e.g. `desktop/0.1.29`. */
+  /** 类似 `desktop/0.1.29` 的客户端版本，格式为 `<客户端>/<版本>`。 */
   client?: string;
   cookieHeader?: (url: string) => Promise<string> | string;
 }): MailHttpRequestFn {

@@ -33,13 +33,13 @@ async function getEmailReportData({
   emailAccountId: string;
   logger: Logger;
 }) {
-  logger.info("getEmailReportData started");
+  logger.info("getEmailReportData 已开始");
 
   const emailAccount = await getEmailAccountWithAi({ emailAccountId });
 
   if (!emailAccount) {
-    logger.error("Email account not found");
-    throw new Error("Email account not found");
+    logger.error("未找到邮箱账号");
+    throw new Error("未找到邮箱账号");
   }
 
   const { receivedEmails, sentEmails, totalReceived, totalSent } =
@@ -52,14 +52,14 @@ async function getEmailReportData({
       ),
       emailAccount,
     ).catch((error) => {
-      logger.error("Error summarizing received emails", { error });
+      logger.error("汇总收到的邮件时出错", { error });
       return [];
     }),
     aiSummarizeEmails(
       sentEmails.map((message) => getEmailForLLM(message, { maxLength: 1000 })),
       emailAccount,
     ).catch((error) => {
-      logger.error("Error summarizing sent emails", { error });
+      logger.error("汇总已发送邮件时出错", { error });
       return [];
     }),
   ]);
@@ -85,7 +85,7 @@ async function getEmailReportData({
       gmailLabels,
       emailAccount,
     ).catch((error) => {
-      logger.error("Error generating executive summary", { error });
+      logger.error("生成摘要概览时出错", { error });
     }),
     aiBuildUserPersona(
       receivedSummaries,
@@ -93,28 +93,28 @@ async function getEmailReportData({
       sentSummaries,
       gmailSignature,
     ).catch((error) => {
-      logger.error("Error generating user persona", { error });
+      logger.error("生成用户画像时出错", { error });
     }),
     aiAnalyzeEmailBehavior(
       receivedSummaries,
       emailAccount,
       sentSummaries,
     ).catch((error) => {
-      logger.error("Error generating email behavior", { error });
+      logger.error("生成邮件行为分析时出错", { error });
     }),
     aiAnalyzeResponsePatterns(
       receivedSummaries,
       emailAccount,
       sentSummaries,
     ).catch((error) => {
-      logger.error("Error generating response patterns", { error });
+      logger.error("生成回复模式分析时出错", { error });
     }),
     aiAnalyzeLabelOptimization(
       receivedSummaries,
       emailAccount,
       gmailLabels,
     ).catch((error) => {
-      logger.error("Error generating label optimization", { error });
+      logger.error("生成标签优化建议时出错", { error });
     }),
   ]);
 
@@ -124,7 +124,7 @@ async function getEmailReportData({
         emailAccount,
         userPersona,
       ).catch((error) => {
-        logger.error("Error generating actionable recommendations", { error });
+        logger.error("生成可执行建议时出错", { error });
       })
     : null;
 
@@ -196,7 +196,7 @@ async function fetchGmailLabels(
               threadsUnread: labelDetail.data.threadsUnread || 0,
             };
           } catch (error) {
-            logger.warn("Failed to get details for label", {
+            logger.warn("获取标签详情失败", {
               labelName: label.name,
               error,
             });
@@ -217,7 +217,7 @@ async function fetchGmailLabels(
 
     return sortedLabels;
   } catch (error) {
-    logger.warn("Failed to fetch Gmail labels", { error });
+    logger.warn("获取 Gmail 标签失败", { error });
     return [];
   }
 }
@@ -233,7 +233,7 @@ async function fetchGmailSignature(
 
     return defaultSignature?.signature || "";
   } catch (error) {
-    logger.warn("Failed to fetch Gmail signature", { error });
+    logger.warn("获取 Gmail 签名失败", { error });
     return "";
   }
 }

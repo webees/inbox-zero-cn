@@ -47,7 +47,7 @@ describe("watchGmail", () => {
     } as any;
 
     await expect(watchGmail(gmail, logger)).rejects.toThrow(
-      "GOOGLE_PUBSUB_VERIFICATION_TOKEN is required to watch Gmail",
+      "监控 Gmail 需要 GOOGLE_PUBSUB_VERIFICATION_TOKEN",
     );
 
     expect(watchMock).not.toHaveBeenCalled();

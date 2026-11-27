@@ -64,8 +64,7 @@ export function EmailAttachments({ message }: { message: ThreadMessage }) {
     const signal = controller.current.signal;
     setDownloading(id);
 
-    // Fetch everything first so the saves run back-to-back, and keep going
-    // past a failed file so the rest still download.
+    // 先全部获取，再连续保存，并跳过失败的文件，让其余文件继续下载
     const results = await Promise.allSettled(
       targets.map(async (attachment) => ({
         attachment,
@@ -86,11 +85,11 @@ export function EmailAttachments({ message }: { message: ThreadMessage }) {
       else failed++;
     }
     if (failed === 1 && targets.length === 1)
-      toastError({ description: t`Failed to download attachment` });
+      toastError({ description: t`下载附件失败` });
     else if (failed) {
       const total = targets.length;
       toastError({
-        description: t`${failed} of ${total} attachments failed to download`,
+        description: t`${total} 个附件中有 ${failed} 个下载失败`,
       });
     }
   };
@@ -171,7 +170,7 @@ export function EmailAttachments({ message }: { message: ThreadMessage }) {
           ) : (
             <DownloadIcon className="size-4" aria-hidden="true" />
           )}
-          <Trans>Download all</Trans>
+          <Trans>全部下载</Trans>
         </button>
       ) : null}
     </div>
@@ -209,13 +208,11 @@ function AttachmentTile({
       title={filename}
     >
       {children}
-      {/* Files without a preview download when the tile is clicked. */}
+      {/* 无预览的文件在点击卡片时下载 */}
       <button
         type="button"
         className="absolute inset-0 rounded-[inherit] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset disabled:cursor-default"
-        aria-label={
-          onPreview ? t`Preview ${filename}` : t`Download ${filename}`
-        }
+        aria-label={onPreview ? t`预览 ${filename}` : t`下载 ${filename}`}
         disabled={!onPreview && downloadDisabled}
         onClick={onPreview ?? onDownload}
       />
@@ -228,7 +225,7 @@ function AttachmentTile({
             "absolute right-2 bottom-2 size-7 bg-background/90 shadow-sm backdrop-blur transition-opacity",
             revealClassName,
           )}
-          aria-label={t`Download ${filename}`}
+          aria-label={t`下载 ${filename}`}
           disabled={downloadDisabled}
           onClick={onDownload}
         >

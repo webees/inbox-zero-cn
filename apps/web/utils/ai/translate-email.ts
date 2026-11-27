@@ -71,22 +71,18 @@ function translationSchema(textCount: number) {
     translations: z
       .array(
         z.object({
-          text: z.string().describe("The translated text"),
+          text: z.string().describe("翻译后的文本"),
           sourceLanguage: z
             .string()
-            .describe(
-              "BCP 47 tag of the original text's language (e.g. de, fr)",
-            ),
+            .describe("原文语言的 BCP 47 标签（例如 de、fr）"),
         }),
       )
       // `.length()` would emit minItems/maxItems, which some providers'
       // structured outputs reject. A refinement validates without them.
       .refine((translations) => translations.length === textCount, {
-        message: `Expected ${textCount} translations`,
+        message: `需要 ${textCount} 条翻译`,
       })
-      .describe(
-        "Translated texts in the same order and length as the input texts",
-      ),
+      .describe("与输入文本顺序和数量一致的翻译文本"),
   });
 }
 

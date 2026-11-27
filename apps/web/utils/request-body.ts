@@ -1,6 +1,6 @@
 /**
- * Reads a request body of a declared size. Stops as soon as the body passes
- * that size, so a body larger than it claims never gets buffered.
+ * 读取声明了大小的请求体。一旦请求体超过该大小就立即停止，
+ * 因此比声明更大的请求体永远不会被缓冲。
  */
 export async function readRequestBytes(request: Request, maxBytes: number) {
   const header = request.headers.get("content-length");

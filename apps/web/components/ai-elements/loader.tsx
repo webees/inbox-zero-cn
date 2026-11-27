@@ -1,4 +1,3 @@
-import { Trans } from "@lingui/react/macro";
 import { cn } from "@/utils/index";
 import type { HTMLAttributes } from "react";
 
@@ -14,9 +13,7 @@ const LoaderIcon = ({ size = 16 }: LoaderIconProps) => (
     viewBox="0 0 16 16"
     width={size}
   >
-    <title>
-      <Trans>Loader</Trans>
-    </title>
+    <title>加载中</title>
     <g clipPath="url(#clip0_2393_1490)">
       <path d="M8 0V4" stroke="currentColor" strokeWidth="1.5" />
       <path

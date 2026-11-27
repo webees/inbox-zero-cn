@@ -73,7 +73,7 @@ export function DigestSetting() {
     if (!hasDigestAccess) {
       return (
         <UpgradeToPlusButton
-          tooltip={t`Upgrade to the Plus plan to enable daily digest emails.`}
+          tooltip={t`升级到 Plus 套餐以启用每日邮件摘要。`}
         />
       );
     }
@@ -84,7 +84,7 @@ export function DigestSetting() {
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button variant="outline" size="sm">
-                <Trans>Configure</Trans>
+                <Trans>配置</Trans>
               </Button>
             </DialogTrigger>
             <DigestSettingsDialogContent onSuccess={() => setOpen(false)} />
@@ -101,8 +101,8 @@ export function DigestSetting() {
 
   return (
     <SettingCard
-      title={t`Digest`}
-      description={t`Get a summary of emails matched by the rules you pick, on your schedule.`}
+      title={t`邮件摘要`}
+      description={t`按你设定的时间，获取符合所选规则的邮件摘要。`}
       right={renderRight()}
     />
   );
@@ -119,13 +119,10 @@ export function DigestSettingsDialogContent({
     <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>
-          <Trans>Digest settings</Trans>
+          <Trans>邮件摘要设置</Trans>
         </DialogTitle>
         <DialogDescription>
-          <Trans>
-            Configure when your digest emails are sent and which rules are
-            included.
-          </Trans>
+          <Trans>配置邮件摘要的发送时间以及包含哪些规则</Trans>
         </DialogDescription>
       </DialogHeader>
 

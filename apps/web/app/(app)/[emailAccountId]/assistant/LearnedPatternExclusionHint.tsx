@@ -30,7 +30,7 @@ export function LearnedPatternExclusionHint({
 
   return (
     <div className={cn("text-sm text-muted-foreground", className)}>
-      <Trans>Some rules were excluded by learned patterns.</Trans>{" "}
+      <Trans>部分规则已被学习到的模式排除。</Trans>{" "}
       <HoverCard
         className="w-96"
         content={
@@ -43,7 +43,7 @@ export function LearnedPatternExclusionHint({
                   </div>
                   <div>
                     <Trans>
-                      Excluded by {i18n._(ITEM_TYPE_LABELS[group.itemType])}:{" "}
+                      已根据{i18n._(ITEM_TYPE_LABELS[group.itemType])}排除：{" "}
                       <span className="font-medium text-foreground">
                         {group.itemValue}
                       </span>
@@ -60,7 +60,7 @@ export function LearnedPatternExclusionHint({
         }
       >
         <button className="underline underline-offset-2" type="button">
-          <Trans>View exclusions</Trans>
+          <Trans>查看排除项</Trans>
         </button>
       </HoverCard>
     </div>

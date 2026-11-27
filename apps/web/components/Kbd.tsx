@@ -9,8 +9,8 @@ const kbdVariants = cva(
     variants: {
       variant: {
         default: "border-border bg-muted text-muted-foreground",
-        // Sits on a coloured/gradient surface, where a token background would
-        // read as a hole rather than a key
+        // 位于彩色/渐变表面上，此时使用 token 背景会看起来像
+        // 一个洞而不是按键
         onColor: "border-white/30 bg-white/20 text-white",
       },
     },

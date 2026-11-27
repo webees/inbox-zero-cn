@@ -24,7 +24,7 @@ function PureExamples({
   return (
     <div>
       <SectionHeader className="text-xl">
-        <Trans>Examples</Trans>
+        <Trans>示例</Trans>
       </SectionHeader>
 
       <ScrollArea className={className}>

@@ -49,7 +49,7 @@ export function getLinkingOAuth2Client() {
   );
 }
 
-// we should potentially use this everywhere instead of getGmailClient as this handles refreshing the access token and saving it to the db
+// 我们可能应该在各处都使用它而不是 getGmailClient，因为它会处理访问令牌的刷新并保存到数据库
 export const getGmailClientWithRefresh = async ({
   accessToken,
   refreshToken,
@@ -64,21 +64,19 @@ export const getGmailClientWithRefresh = async ({
   logger: Logger;
 }): Promise<gmail_v1.Gmail> => {
   if (!refreshToken) {
-    // expected for disconnected accounts
-    logger.warn("No refresh token", { emailAccountId });
+    // 对于已断开连接的账号是预期行为
+    logger.warn("没有刷新令牌", { emailAccountId });
     await cleanupInvalidTokens({
       emailAccountId,
       reason: "invalid_grant",
       failedAccessToken: accessToken ?? undefined,
       failedRefreshToken: null,
       logger,
-    }).catch((error) =>
-      logger.warn("Failed to record missing refresh token", { error }),
-    );
+    }).catch((error) => logger.warn("记录缺失的刷新令牌失败", { error }));
     throw new SafeError("No refresh token");
   }
 
-  // we handle refresh ourselves so not passing in expiresAt
+  // 我们自己处理刷新，因此不传入 expiresAt
   const auth = getAuth({ accessToken, refreshToken });
   const g = gmail({ version: "v1", auth, rootUrl: getGoogleGmailApiRootUrl() });
 
@@ -87,7 +85,7 @@ export const getGmailClientWithRefresh = async ({
     return g;
   }
 
-  // may throw `invalid_grant` error
+  // 可能抛出 `invalid_grant` 错误
   try {
     const tokens = await auth.refreshAccessToken();
     const newAccessToken = tokens.credentials.access_token;
@@ -109,14 +107,14 @@ export const getGmailClientWithRefresh = async ({
 
     return g;
   } catch (error) {
-    // Only this refresh knows which credentials failed, so it owns cleanup for
-    // every account-level refusal (revoked grant, blocking security policy).
+    // 只有这次刷新知道哪些凭据失败，因此它负责处理
+    // 每一种账号级拒绝（撤销授权、阻止性安全策略）。
     const issue = classifyEmailAccountProviderIssue({
       error,
       provider: "google",
     });
     if (issue) {
-      logger.warn("Error refreshing Gmail access token", {
+      logger.warn("刷新 Gmail 访问令牌时出错", {
         emailAccountId,
         reason: issue.reason,
         error: error instanceof Error ? error.message : String(error),
@@ -147,8 +145,8 @@ export const getGmailClientWithRefresh = async ({
   }
 };
 
-// doesn't handle refreshing the access token
-// should probably use the same auth object as getGmailClientWithRefresh but not critical for now
+// 不处理访问令牌的刷新
+// 可能应该使用与 getGmailClientWithRefresh 相同的 auth 对象，但目前并不关键
 export const getContactsClient = ({
   accessToken,
   refreshToken,
@@ -167,6 +165,6 @@ export const getAccessTokenFromClient = (client: gmail_v1.Gmail): string => {
   // biome-ignore lint/suspicious/noExplicitAny: existing loose external shape
   const accessToken = (client.context._options.auth as any).credentials
     .access_token;
-  if (!accessToken) throw new Error("No access token");
+  if (!accessToken) throw new Error("没有访问令牌");
   return accessToken;
 };

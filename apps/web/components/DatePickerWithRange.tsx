@@ -104,7 +104,7 @@ export function DatePickerWithRange({
                 )
               ) : (
                 <span>
-                  <Trans>Pick a date</Trans>
+                  <Trans>选择日期</Trans>
                 </span>
               ))}
           </div>

@@ -120,14 +120,14 @@ export function ThreadActionsMenu({
             variant="outline"
           >
             <MailXIcon className="mr-1.5 size-3.5" />
-            <Trans>Unsubscribe</Trans>
+            <Trans>退订</Trans>
           </Button>
         </Tooltip>
       ) : null}
 
       <DropdownMenu onOpenChange={onOpenChange} open={open}>
         <DropdownMenuTrigger asChild>
-          <Button aria-label={t`More actions`} size="iconXs" variant="ghost">
+          <Button aria-label={t`更多操作`} size="iconXs" variant="ghost">
             <MoreHorizontalIcon className="size-3.5" />
           </Button>
         </DropdownMenuTrigger>
@@ -140,7 +140,7 @@ export function ThreadActionsMenu({
           {onLabel && (
             <DropdownMenuItem onSelect={onLabel}>
               <TagIcon className="mr-2 size-4" />
-              <Trans>Label</Trans>
+              <Trans>标签</Trans>
               <MenuShortcut id="label" />
             </DropdownMenuItem>
           )}
@@ -148,7 +148,7 @@ export function ThreadActionsMenu({
           {onMove && (
             <DropdownMenuItem onSelect={onMove}>
               <FolderInputIcon className="mr-2 size-4" />
-              <Trans>Move</Trans>
+              <Trans>移动</Trans>
               <MenuShortcut id="move" />
             </DropdownMenuItem>
           )}
@@ -159,7 +159,7 @@ export function ThreadActionsMenu({
             ) : (
               <StarIcon className="mr-2 size-4" />
             )}
-            {isStarred ? <Trans>Unstar</Trans> : <Trans>Star</Trans>}
+            {isStarred ? <Trans>取消星标</Trans> : <Trans>加星标</Trans>}
             <MenuShortcut id="star" />
           </DropdownMenuItem>
 
@@ -167,13 +167,13 @@ export function ThreadActionsMenu({
 
           <DropdownMenuItem onSelect={onDelete}>
             <Trash2Icon aria-hidden className="mr-2 size-4" />
-            <Trans>Delete</Trans>
+            <Trans>删除</Trans>
             <MenuShortcut id="delete" />
           </DropdownMenuItem>
 
           <DropdownMenuItem onSelect={onMarkSpam}>
             <ShieldAlertIcon className="mr-2 size-4" />
-            <Trans>Mark as spam</Trans>
+            <Trans>标记为垃圾邮件</Trans>
             <MenuShortcut id="markSpam" />
           </DropdownMenuItem>
 
@@ -198,7 +198,7 @@ export function ThreadActionsMenu({
           {onComment && (
             <DropdownMenuItem onSelect={onComment}>
               <MessageSquareIcon className="mr-2 size-4" />
-              <Trans>Comment</Trans>
+              <Trans>评论</Trans>
               <MenuShortcut id="openTeamComments" />
             </DropdownMenuItem>
           )}
@@ -214,9 +214,9 @@ export function ThreadActionsMenu({
                 <ArchiveIcon className="mr-2 size-4" />
               )}
               {isAutoArchived ? (
-                <Trans>Disable auto archive</Trans>
+                <Trans>关闭自动归档</Trans>
               ) : (
-                <Trans>Auto archive future emails</Trans>
+                <Trans>自动归档未来的邮件</Trans>
               )}
               <MenuShortcut id="toggleAutoArchive" />
             </DropdownMenuItem>
@@ -225,14 +225,14 @@ export function ThreadActionsMenu({
           {senderEmail ? (
             <DropdownMenuItem onSelect={() => setIsRuleDialogOpen(true)}>
               <WandSparklesIcon className="mr-2 size-4" />
-              <Trans>Create rule for sender</Trans>
+              <Trans>为此发件人创建规则</Trans>
             </DropdownMenuItem>
           ) : null}
 
           {onTranslate && (
             <DropdownMenuItem onSelect={onTranslate}>
               <LanguagesIcon className="mr-2 size-4" />
-              <Trans>Translate</Trans>
+              <Trans>翻译</Trans>
               <MenuShortcut id="translate" />
             </DropdownMenuItem>
           )}
@@ -240,7 +240,7 @@ export function ThreadActionsMenu({
           {onCopy && (
             <DropdownMenuItem onSelect={onCopy}>
               <CopyIcon className="mr-2 size-4" />
-              <Trans>Copy email</Trans>
+              <Trans>复制邮件</Trans>
               <MenuShortcut id="copyEmail" />
             </DropdownMenuItem>
           )}
@@ -248,7 +248,7 @@ export function ThreadActionsMenu({
           {onPrint && (
             <DropdownMenuItem onSelect={onPrint}>
               <PrinterIcon className="mr-2 size-4" />
-              <Trans>Print</Trans>
+              <Trans>打印</Trans>
             </DropdownMenuItem>
           )}
 
@@ -258,7 +258,7 @@ export function ThreadActionsMenu({
             <DropdownMenuItem asChild>
               <a href={openUrl} rel="noopener noreferrer" target="_blank">
                 <ExternalLinkIcon className="mr-2 size-4" />
-                {getOpenInMailboxLabel(provider) ?? t`Open in email provider`}
+                {getOpenInMailboxLabel(provider) ?? t`在邮件服务商中打开`}
                 <MenuShortcut id="openExternal" />
               </a>
             </DropdownMenuItem>
@@ -273,7 +273,7 @@ export function ThreadActionsMenu({
           isOpen={isRuleDialogOpen}
           onClose={() => setIsRuleDialogOpen(false)}
           initialRule={{
-            name: `Emails from ${extractNameFromEmail(senderFrom)}`,
+            name: `来自 ${extractNameFromEmail(senderFrom)} 的邮件`,
             conditions: [{ type: ConditionType.STATIC, from: senderEmail }],
           }}
         />

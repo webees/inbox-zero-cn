@@ -88,7 +88,7 @@ export async function removeConflictingThreadStatusLabels({
   }
 
   if (removeLabelIds.length === 0) {
-    logger.info("No conflicting labels to remove");
+    logger.info("没有需要移除的冲突标签");
     return true;
   }
 
@@ -99,7 +99,7 @@ export async function removeConflictingThreadStatusLabels({
       logger,
       emailAccountId,
       scope: "label-helpers",
-      message: "Failed to remove conflicting thread labels",
+      message: "无法移除冲突的会话标签",
       operation: "remove-conflicting-thread-status-labels",
       error,
       context: {
@@ -109,18 +109,18 @@ export async function removeConflictingThreadStatusLabels({
     return false;
   }
 
-  logger.info("Removed conflicting thread status labels", {
+  logger.info("已移除冲突的会话状态标签", {
     removedCount: removeLabelIds.length,
   });
   return true;
 }
 
 /**
- * Applies a thread status label to a message/thread.
- * 1. Removes other mutually exclusive thread status labels from the thread
- * 2. Adds the new label
+ * 为邮件/会话应用会话状态标签。
+ * 1. 从会话中移除其他互斥的会话状态标签
+ * 2. 添加新标签
  *
- * Used primarily for outbound reply tracking where we both remove and add.
+ * 主要用于出站回复跟踪，该场景需要同时移除和添加标签。
  */
 export async function applyThreadStatusLabel({
   emailAccountId,
@@ -178,13 +178,12 @@ export async function applyThreadStatusLabel({
       });
       return true;
     } catch (error) {
-      // A missing entity can also be a stale label; verify the message before
-      // treating this as an expected deletion race.
+      // 实体缺失也可能是过期标签；在将其视为预期的删除竞争前，先确认邮件状态。
       if (
         isThreadNotFoundError(error) &&
         (await isMessageMissing(provider, messageId))
       ) {
-        logger.warn("Message no longer exists, skipping thread status label");
+        logger.warn("邮件已不存在，跳过会话状态标签");
         return false;
       }
 
@@ -192,7 +191,7 @@ export async function applyThreadStatusLabel({
         logger,
         emailAccountId,
         scope: "label-helpers",
-        message: "Failed to apply thread status label",
+        message: "无法应用会话状态标签",
         operation: "apply-thread-status-label",
         error,
         context: {
@@ -204,8 +203,8 @@ export async function applyThreadStatusLabel({
     }
   };
 
-  // Sequential: Outlook rewrites the whole category list per message, so
-  // overlapping writes to the same message conflict or lose a change.
+  // 串行执行：Outlook 会重写每封邮件的完整类别列表，因此对同一邮件的重叠写入
+  // 会发生冲突或丢失更改。
   const removedConflicts = await removeConflictingThreadStatusLabels({
     emailAccountId,
     threadId,
@@ -218,7 +217,7 @@ export async function applyThreadStatusLabel({
   const addedTargetLabel = await addLabel();
 
   if (!removedConflicts || !addedTargetLabel) {
-    logger.warn("Thread status label application completed with errors", {
+    logger.warn("会话状态标签应用完成，但存在错误", {
       removedConflicts,
       addedTargetLabel,
     });

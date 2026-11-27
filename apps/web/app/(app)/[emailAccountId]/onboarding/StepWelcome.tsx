@@ -15,16 +15,16 @@ export function StepWelcome({ onNext }: { onNext: () => void }) {
           <MailIcon className="size-6" />
         </IconCircle>
         <PageHeading className="mb-3">
-          <Trans>Welcome to {BRAND_NAME}</Trans>
+          <Trans>欢迎使用 {BRAND_NAME}</Trans>
         </PageHeading>
         <TypographyP className="mb-8 text-pretty text-muted-foreground">
           <Trans>
-            Your AI email assistant. It sorts your inbox, drafts your replies,
-            and clears out the clutter, right inside Gmail or Outlook.
+            你的 AI 邮件助手。直接在 Gmail 或 Outlook
+            中整理收件箱、撰写回复，并清理杂乱邮件。
           </Trans>
         </TypographyP>
         <Button className="w-full max-w-xs" onClick={onNext}>
-          <Trans>See how it works</Trans>
+          <Trans>了解工作原理</Trans>
           <ArrowRightIcon className="ml-2 size-4" />
         </Button>
       </div>

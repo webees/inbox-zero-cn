@@ -1,26 +1,26 @@
 ---
-title: 'Kubernetes Deployment'
-description: 'Run Inbox Zero on Kubernetes with the Helm chart'
+title: 'Kubernetes 部署'
+description: '使用 Helm chart 在 Kubernetes 上运行 Inbox Zero'
 ---
 
-Inbox Zero can run on Kubernetes as the same pieces used by Docker Compose:
+Inbox Zero 可以在 Kubernetes 上运行，使用与 Docker Compose 相同的组件：
 
-- A `web` Deployment for the Next.js app.
-- A migration Job that runs Prisma migrations before Helm installs or upgrades the app when managed Postgres is enabled.
-- An optional BullMQ `worker` Deployment for durable background jobs.
-- CronJobs for scheduled endpoints like watch renewal, meeting briefs, follow-up reminders, and retention.
-- Postgres and Redis, either managed externally or installed in-cluster for a simple self-hosted stack.
-- An Ingress in front of the web Service.
+- 用于 Next.js 应用的 `web` Deployment。
+- 一个迁移 Job，在启用托管 Postgres 时于 Helm 安装或升级应用之前运行 Prisma 迁移。
+- 一个用于持久后台任务的可选 BullMQ `worker` Deployment。
+- 用于计划端点（如 watch 续订、会议简报、跟进提醒和保留清理）的 CronJobs。
+- Postgres 和 Redis，可外部托管，也可安装在集群内以构成简单的自托管栈。
+- 位于 Web Service 前面的 Ingress。
 
-## Chart Location
+## Chart 位置
 
-The chart lives in the repository at:
+Chart 位于仓库中的：
 
 ```bash
 charts/inbox-zero
 ```
 
-Install it with:
+使用以下命令安装：
 
 ```bash
 helm upgrade --install inbox-zero ./charts/inbox-zero \
@@ -29,11 +29,11 @@ helm upgrade --install inbox-zero ./charts/inbox-zero \
   -f values.prod.yaml
 ```
 
-## Values File
+## Values 文件
 
-The Helm chart does not replace the normal app configuration. Use the [Environment Variables reference](/hosting/environment-variables), [Google OAuth guide](/hosting/google-oauth), [Microsoft OAuth guide](/hosting/microsoft-oauth), and [LLM setup guide](/hosting/llm-setup) for the full app configuration.
+Helm chart 不会取代常规的应用配置。完整的应用配置请参阅[环境变量参考](/hosting/environment-variables)、[Google OAuth 指南](/hosting/google-oauth)、[Microsoft OAuth 指南](/hosting/microsoft-oauth)和 [LLM 设置指南](/hosting/llm-setup)。
 
-Create `values.prod.yaml` with your public URL, ingress settings, and app configuration. Put app secrets in `secretEnv` or point the chart at an existing Kubernetes Secret.
+创建 `values.prod.yaml`，填入你的公开 URL、Ingress 设置和应用配置。将应用密钥放入 `secretEnv`，或让 chart 指向现有的 Kubernetes Secret。
 
 ```yaml
 ingress:
@@ -57,9 +57,9 @@ env:
 existingSecret: inbox-zero-secrets
 ```
 
-`inbox-zero-secrets` should contain the required app environment variables from the [Environment Variables reference](/hosting/environment-variables). You can use `secretEnv` instead for simple installs.
+`inbox-zero-secrets` 应包含[环境变量参考](/hosting/environment-variables)中列出的必需应用环境变量。对于简单安装，你也可以改用 `secretEnv`。
 
-For a first install with bundled Postgres and Redis, also provide generated values for the bundled services:
+对于首次安装并附带内置 Postgres 和 Redis 的情况，还需要为这些内置服务提供生成的值：
 
 ```yaml
 existingSecret: ""
@@ -76,11 +76,11 @@ redisHttp:
   token: replace-with-random-value
 ```
 
-The default chart includes Postgres, Redis, the Redis HTTP bridge, web, worker, and CronJobs. That is useful for a first Kubernetes install. For production, use managed Postgres and Redis with backups, failover, monitoring, and tested restores.
+默认 chart 包含 Postgres、Redis、Redis HTTP 桥接、web、worker 和 CronJobs。这对首次 Kubernetes 安装很有用。生产环境请使用具备备份、故障转移、监控和经过测试的恢复的托管 Postgres 和 Redis。
 
-## Recommended Production Setup
+## 推荐的生产设置
 
-Use managed Postgres and Redis through existing Kubernetes Secrets:
+通过现有的 Kubernetes Secret 使用托管 Postgres 和 Redis：
 
 ```yaml
 externalDatabase:
@@ -94,17 +94,17 @@ externalRedis:
     name: inbox-zero-redis
 ```
 
-`inbox-zero-database` should contain `DATABASE_URL` and `DIRECT_URL`.
+`inbox-zero-database` 应包含 `DATABASE_URL` 和 `DIRECT_URL`。
 
-`inbox-zero-redis` should contain `REDIS_URL`, `REDIS_HTTP_URL`, and `REDIS_HTTP_TOKEN`. Secrets that still use `UPSTASH_REDIS_URL` and `UPSTASH_REDIS_TOKEN` keep working: leave `redisHttpUrlKey` and `redisHttpTokenKey` empty, or point those keys at the legacy names.
+`inbox-zero-redis` 应包含 `REDIS_URL`、`REDIS_HTTP_URL` 和 `REDIS_HTTP_TOKEN`。仍使用 `UPSTASH_REDIS_URL` 和 `UPSTASH_REDIS_TOKEN` 的 Secret 可继续工作：将 `redisHttpUrlKey` 和 `redisHttpTokenKey` 留空，或将这些键指向遗留名称。
 
-You can use plain Kubernetes Secrets, External Secrets, Sealed Secrets, SOPS, or a cloud secret controller.
+你可以使用普通 Kubernetes Secrets、External Secrets、Sealed Secrets、SOPS 或云密钥控制器。
 
-Use `existingSecret` for app secrets too. See the [Environment Variables reference](/hosting/environment-variables) for the full list, including OAuth, LLM, Redis, and QStash variables.
+应用密钥也请使用 `existingSecret`。完整列表（包括 OAuth、LLM、Redis 和 QStash 变量）请参阅[环境变量参考](/hosting/environment-variables)。
 
-## Background Jobs
+## 后台任务
 
-BullMQ is the default Kubernetes queue mode:
+BullMQ 是 Kubernetes 的默认队列模式：
 
 ```yaml
 env:
@@ -113,9 +113,9 @@ worker:
   enabled: true
 ```
 
-The worker reads from Redis and forwards jobs to the internal web Service using `INTERNAL_API_KEY`.
+Worker 从 Redis 读取任务，并使用 `INTERNAL_API_KEY` 将任务转发到内部 Web Service。
 
-To use QStash instead, disable the worker:
+要改用 QStash，请禁用 worker：
 
 ```yaml
 env:
@@ -124,38 +124,38 @@ worker:
   enabled: false
 ```
 
-Provide the QStash secrets using `secretEnv` or `existingSecret`; see the [Environment Variables reference](/hosting/environment-variables).
+使用 `secretEnv` 或 `existingSecret` 提供 QStash 密钥；参见[环境变量参考](/hosting/environment-variables)。
 
-## Smoke Test
+## 冒烟测试
 
-After installing, check the rollout:
+安装后，检查发布状态：
 
 ```bash
 kubectl get pods -n inbox-zero
 kubectl rollout status deploy/inbox-zero-web -n inbox-zero
 ```
 
-Test the health endpoint:
+测试健康检查端点：
 
 ```bash
 kubectl port-forward svc/inbox-zero-web 3000:80 -n inbox-zero
 curl http://localhost:3000/api/health
 ```
 
-Test one scheduled job:
+测试一个计划任务：
 
 ```bash
 kubectl create job --from=cronjob/inbox-zero-watch-renewal test-watch-renewal -n inbox-zero
 kubectl logs job/test-watch-renewal -n inbox-zero
 ```
 
-## Operational Notes
+## 运维说明
 
-- Set `NEXT_PUBLIC_BASE_URL` to the external HTTPS URL used by users and OAuth providers.
-- With managed Postgres, Helm runs Prisma migrations in a pre-install/pre-upgrade Job.
-- Web pods set `SKIP_DB_MIGRATIONS=true` when the migration Job is enabled.
-- With bundled Postgres, the web container runs migrations during startup.
-- Bundled Postgres, Redis, and Redis HTTP require explicit secret values. Generate them before installing, for example with `openssl rand -hex 32`.
-- CronJobs call the internal Service, not the public Ingress.
-- Cron schedules are configured under `cron.jobs`. The defaults follow the Docker self-hosting setup, so some schedules differ from hosted deployment schedules.
-- The `/api/health` endpoint supports lightweight Kubernetes probes without an API key.
+- 将 `NEXT_PUBLIC_BASE_URL` 设置为用户和 OAuth 提供方使用的外部 HTTPS URL。
+- 使用托管 Postgres 时，Helm 会在 pre-install/pre-upgrade Job 中运行 Prisma 迁移。
+- 启用迁移 Job 时，Web Pod 会设置 `SKIP_DB_MIGRATIONS=true`。
+- 使用内置 Postgres 时，Web 容器会在启动期间运行迁移。
+- 内置 Postgres、Redis 和 Redis HTTP 需要显式密钥值。请在安装前生成它们，例如使用 `openssl rand -hex 32`。
+- CronJobs 调用内部 Service，而不是公共 Ingress。
+- Cron 计划在 `cron.jobs` 下配置。默认值遵循 Docker 自托管设置，因此某些计划与托管部署的计划不同。
+- `/api/health` 端点支持无需 API 密钥的轻量级 Kubernetes 探针。

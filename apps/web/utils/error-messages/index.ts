@@ -199,7 +199,7 @@ export async function clearAccountDisconnectedErrorIfResolved({
   });
 }
 
-// Callers must confirm the account's watch is healthy before calling this.
+// 调用方必须先确认账号的邮件监控状态正常，再调用此函数。
 export async function clearWatchErrorsIfResolved({
   userId,
   emailAccountId,
@@ -224,60 +224,60 @@ const errorTypeConfig: Record<
   { label: string; actionUrl: string; actionLabel: string }
 > = {
   [ErrorType.INCORRECT_API_KEY]: {
-    label: "API Key Issue",
+    label: "API 密钥问题",
     actionUrl: "/settings",
-    actionLabel: "Update API Key",
+    actionLabel: "更新 API 密钥",
   },
   [ErrorType.INVALID_AI_MODEL]: {
-    label: "Invalid AI Model",
+    label: "AI 模型无效",
     actionUrl: "/settings",
-    actionLabel: "Update Settings",
+    actionLabel: "更新设置",
   },
   [ErrorType.API_KEY_DEACTIVATED]: {
-    label: "API Key Deactivated",
+    label: "API 密钥已停用",
     actionUrl: "/settings",
-    actionLabel: "Update API Key",
+    actionLabel: "更新 API 密钥",
   },
   [ErrorType.AI_QUOTA_ERROR]: {
-    label: "AI Rate Limited",
+    label: "AI 速率受限",
     actionUrl: "/settings",
-    actionLabel: "Update Settings",
+    actionLabel: "更新设置",
   },
   [ErrorType.INSUFFICIENT_CREDITS]: {
-    label: "Insufficient Credits",
+    label: "额度不足",
     actionUrl: "/settings",
-    actionLabel: "Update Settings",
+    actionLabel: "更新设置",
   },
   [ErrorType.ACCOUNT_DISCONNECTED]: {
-    label: "Account Disconnected",
+    label: "账号已断开连接",
     actionUrl: "/accounts",
-    actionLabel: "Reconnect Account",
+    actionLabel: "重新连接账号",
   },
   [ErrorType.EMAIL_WATCH_LAPSED]: {
-    label: "Email Automation Stopped",
+    label: "邮件自动化已停止",
     actionUrl: "/accounts",
-    actionLabel: "Reconnect Account",
+    actionLabel: "重新连接账号",
   },
   [ErrorType.MAILBOX_FULL]: {
-    label: "Mailbox Full",
+    label: "邮箱已满",
     actionUrl: "/accounts",
-    actionLabel: "Manage Accounts",
+    actionLabel: "管理账号",
   },
-  // Legacy keys — only needed so old stored errors can still render
+  // 旧版键 — 仅用于让已存储的旧错误仍能正常显示
   [ErrorType.INCORRECT_OPENAI_API_KEY]: {
-    label: "API Key Issue",
+    label: "API 密钥问题",
     actionUrl: "/settings",
-    actionLabel: "Update API Key",
+    actionLabel: "更新 API 密钥",
   },
   [ErrorType.OPENAI_API_KEY_DEACTIVATED]: {
-    label: "API Key Deactivated",
+    label: "API 密钥已停用",
     actionUrl: "/settings",
-    actionLabel: "Update API Key",
+    actionLabel: "更新 API 密钥",
   },
   [ErrorType.ANTHROPIC_INSUFFICIENT_BALANCE]: {
-    label: "Insufficient Credits",
+    label: "额度不足",
     actionUrl: "/settings",
-    actionLabel: "Update Settings",
+    actionLabel: "更新设置",
   },
 };
 

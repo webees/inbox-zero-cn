@@ -97,7 +97,7 @@ export async function sendFacebookConversionEvent({
   });
 
   if (!response.ok) {
-    throw new Error(`Facebook conversion event failed: ${response.status}`);
+    throw new Error(`Facebook 转化事件失败：${response.status}`);
   }
 
   return { success: true };

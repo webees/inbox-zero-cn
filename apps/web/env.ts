@@ -679,7 +679,7 @@ if (
   !(acceptsLlmApiKey && process.env.LLM_API_KEY?.trim())
 ) {
   throw new Error(
-    `${decisionModelApiKeyName}${acceptsLlmApiKey ? " or LLM_API_KEY" : ""} is required for DEFAULT_DECISION_MODEL=${process.env.DEFAULT_DECISION_MODEL}.`,
+    `DEFAULT_DECISION_MODEL=${process.env.DEFAULT_DECISION_MODEL} 需要设置 ${decisionModelApiKeyName}${acceptsLlmApiKey ? " 或 LLM_API_KEY" : ""}`,
   );
 }
 

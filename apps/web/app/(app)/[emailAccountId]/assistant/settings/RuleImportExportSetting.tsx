@@ -136,7 +136,7 @@ export function RuleImportExportSetting({
       <Item size="sm">
         <ItemContent>
           <ItemTitle>
-            <Trans>Import / Export Rules</Trans>
+            <Trans>导入 / 导出规则</Trans>
           </ItemTitle>
         </ItemContent>
         <ItemActions>
@@ -146,7 +146,7 @@ export function RuleImportExportSetting({
             accept=".json"
             onChange={importRules}
             className="hidden"
-            aria-label={t`Import rules from JSON file`}
+            aria-label={t`从 JSON 文件导入规则`}
           />
           <Button
             size="sm"
@@ -154,7 +154,7 @@ export function RuleImportExportSetting({
             onClick={() => fileInputRef.current?.click()}
           >
             <UploadIcon className="mr-2 size-4" />
-            <Trans>Import</Trans>
+            <Trans>导入</Trans>
           </Button>
           <Button
             size="sm"
@@ -163,7 +163,7 @@ export function RuleImportExportSetting({
             disabled={!data?.length}
           >
             <DownloadIcon className="mr-2 size-4" />
-            <Trans>Export</Trans>
+            <Trans>导出</Trans>
           </Button>
         </ItemActions>
       </Item>

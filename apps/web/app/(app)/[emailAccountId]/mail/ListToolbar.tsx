@@ -266,7 +266,7 @@ export const ListToolbar = memo(function ListToolbar({
               <button
                 type="button"
                 onClick={onLabelSelected}
-                aria-label={t`Label`}
+                aria-label={t`标签`}
                 className={cn(toolbarButton, "w-8 justify-center px-0")}
               >
                 <TagIcon className="size-3.5" />
@@ -279,7 +279,7 @@ export const ListToolbar = memo(function ListToolbar({
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
-                  aria-label={t`More selection actions`}
+                  aria-label={t`更多选择操作`}
                   className={cn(toolbarButton, "w-8 justify-center px-0")}
                 >
                   <MoreHorizontalIcon className="size-3.5" />
@@ -288,19 +288,17 @@ export const ListToolbar = memo(function ListToolbar({
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onSelect={onAddToSplitSelected}>
                   <SplitIcon className="mr-2 size-4" />
-                  <Trans>Add senders to split</Trans>
+                  <Trans>将发件人添加到拆分收件箱</Trans>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : null}
 
-          <Tooltip
-            shortcuts={[{ id: "backToList", label: t`Clear selection` }]}
-          >
+          <Tooltip shortcuts={[{ id: "backToList", label: t`清除选择` }]}>
             <button
               type="button"
               onClick={onClearSelection}
-              aria-label={t`Clear selection`}
+              aria-label={t`清除选择`}
               className={cn(toolbarButton, "w-8 justify-center px-0")}
             >
               <XIcon className="size-3.5" />
@@ -309,7 +307,7 @@ export const ListToolbar = memo(function ListToolbar({
         </>
       ) : (
         <MailSearchInput
-          // Reset the advanced-search form when the committed query changes.
+          // 已提交的查询变化时，重置高级搜索表单。
           key={searchQuery}
           searchQuery={searchQuery}
           onSearch={onSearch}
@@ -640,7 +638,7 @@ function ViewOptionsMenu({
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            aria-label={t`View options`}
+            aria-label={t`查看选项`}
             className={cn(toolbarButton, "relative w-8 justify-center px-0")}
           >
             <SlidersHorizontalIcon className="size-3.5" />
@@ -659,7 +657,7 @@ function ViewOptionsMenu({
             checked={bundleInbox}
             onCheckedChange={onToggleBundleInbox}
           >
-            <Trans>Bundle low-priority emails</Trans>
+            <Trans>合并低优先级邮件</Trans>
           </DropdownMenuCheckboxItem>
         ) : null}
         {onToggleGroupBySender ? (
@@ -667,14 +665,14 @@ function ViewOptionsMenu({
             checked={groupBySender}
             onCheckedChange={onToggleGroupBySender}
           >
-            <Trans>Group by sender</Trans>
+            <Trans>按发件人分组</Trans>
           </DropdownMenuCheckboxItem>
         ) : null}
         <DropdownMenuCheckboxItem
           checked={expandedPreview}
           onCheckedChange={onTogglePreview}
         >
-          <Trans>Expanded preview text</Trans>
+          <Trans>展开预览文本</Trans>
           <DropdownMenuShortcut>
             {getShortcutHint("togglePreview")}
           </DropdownMenuShortcut>
@@ -683,7 +681,7 @@ function ViewOptionsMenu({
           checked={layout === "split"}
           onCheckedChange={onToggleLayout}
         >
-          <Trans>Split view</Trans>
+          <Trans>分栏视图</Trans>
           <DropdownMenuShortcut>
             {getShortcutHint("toggleLayout")}
           </DropdownMenuShortcut>
@@ -691,16 +689,16 @@ function ViewOptionsMenu({
         {(onOpenAllSettings || onOpenSetup) && <DropdownMenuSeparator />}
         {onOpenAllSettings && (
           <DropdownMenuItem onSelect={onOpenAllSettings} inset>
-            <Trans>Choose what All shows</Trans>
+            <Trans>选择“全部”显示的内容</Trans>
           </DropdownMenuItem>
         )}
         {onOpenSetup && (
           <DropdownMenuItem onSelect={onOpenSetup}>
             <SettingsIcon className="size-4" />
             {isSetupSuggested ? (
-              <Trans>Set up your inbox</Trans>
+              <Trans>设置你的收件箱</Trans>
             ) : (
-              <Trans>Run mail setup again</Trans>
+              <Trans>重新运行邮件设置</Trans>
             )}
           </DropdownMenuItem>
         )}

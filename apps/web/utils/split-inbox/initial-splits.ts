@@ -1,12 +1,12 @@
 import type { MailSplit } from "@/utils/split-inbox/split-query";
 import { MailSplitFilterKind } from "@/generated/prisma/enums";
 
-const ALL_MAIL_SPLIT_NAME = "All";
+const ALL_MAIL_SPLIT_NAME = "全部";
 
 export const INITIAL_MAIL_SPLITS = [
   { name: ALL_MAIL_SPLIT_NAME, matchAll: true, filters: { create: [] } },
   {
-    name: "Unread",
+    name: "未读",
     matchAll: true,
     filters: {
       create: [{ kind: MailSplitFilterKind.UNREAD, value: null, order: 0 }],
@@ -23,7 +23,7 @@ export function ensureAllMailSplit(
 ) {
   if (splits.some((split) => split.filters.length === 0)) return splits;
 
-  // Older accounts may have deleted All before the default tab was protected.
+  // 旧账号可能在默认标签页受到保护之前删除了“全部”。
   return [
     {
       id: "all",
@@ -38,8 +38,7 @@ export function ensureAllMailSplit(
   ];
 }
 
-// The app's own All tab, still under the name it was created with. A tab the
-// user renamed keeps their name.
+// 应用自带的“全部”标签页，仍使用创建时的名称。用户重命名过的标签页保留其名称。
 export function isDefaultAllMailSplit(
   split: Pick<MailSplit, "name" | "filters">,
 ) {

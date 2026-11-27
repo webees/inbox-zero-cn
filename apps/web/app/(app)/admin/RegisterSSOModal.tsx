@@ -47,13 +47,13 @@ export function RegisterSSOModal() {
 
       if (result?.serverError) {
         toastError({
-          title: "Error registering SSO",
+          title: "注册 SSO 时出错",
           description: result.serverError,
         });
       } else {
         toastSuccess({
-          title: "SSO registered successfully",
-          description: `ACS URL: ${result?.data?.callbackUrl}`,
+          title: "SSO 注册成功",
+          description: `ACS URL：${result?.data?.callbackUrl}`,
         });
         reset();
         onClose();
@@ -65,15 +65,15 @@ export function RegisterSSOModal() {
   return (
     <Dialog open={isOpen} onOpenChange={onToggle}>
       <DialogTrigger asChild>
-        <Button>Register SSO Provider</Button>
+        <Button>注册 SSO 提供商</Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Enterprise SSO Registration (SAML)</DialogTitle>
+          <DialogTitle>企业版 SSO 注册（SAML）</DialogTitle>
           <DialogDescription>
-            Configure Single Sign-On (SAML) for your organization. This will
-            enable your team to sign in using your SAML identity provider.
+            为你的组织配置单点登录（SAML）。这样你的团队就能使用 SAML
+            身份提供商登录。
           </DialogDescription>
         </DialogHeader>
 
@@ -82,8 +82,8 @@ export function RegisterSSOModal() {
             <Input
               type="text"
               name="organizationName"
-              label="Organization Name"
-              placeholder="e.g., Your Company"
+              label="组织名称"
+              placeholder="例如：你的公司"
               registerProps={register("organizationName")}
               error={errors.organizationName}
             />
@@ -91,8 +91,8 @@ export function RegisterSSOModal() {
             <Input
               type="text"
               name="organizationId"
-              label="Existing Organization ID (optional)"
-              placeholder="Required when attaching SSO to an existing organization"
+              label="现有组织 ID（可选）"
+              placeholder="将 SSO 附加到现有组织时必填"
               registerProps={register("organizationId", {
                 setValueAs: (value) => value || undefined,
               })}
@@ -102,8 +102,8 @@ export function RegisterSSOModal() {
             <Input
               type="text"
               name="providerId"
-              label="Provider ID"
-              placeholder="e.g., your-company-saml"
+              label="提供商 ID"
+              placeholder="例如：your-company-saml"
               registerProps={register("providerId")}
               error={errors.providerId}
             />
@@ -111,20 +111,20 @@ export function RegisterSSOModal() {
             <Input
               type="text"
               name="domain"
-              label="Domain"
-              placeholder="e.g., your-company.com"
+              label="域名"
+              placeholder="例如：your-company.com"
               registerProps={register("domain")}
               error={errors.domain}
             />
 
             <div className="space-y-2">
-              <Label name="idpMetadata" label="IDP Metadata (XML)" />
+              <Label name="idpMetadata" label="IDP 元数据（XML）" />
               <AutosizeTextarea
                 id="idpMetadata"
                 minRows={3}
                 rows={3}
                 {...register("idpMetadata")}
-                placeholder="Paste your SAML IDP metadata XML from your identity provider here."
+                placeholder="在此粘贴来自你的身份提供商的 SAML IDP 元数据 XML。"
               />
               {errors.idpMetadata && (
                 <ErrorMessage message={errors.idpMetadata.message ?? ""} />
@@ -134,10 +134,10 @@ export function RegisterSSOModal() {
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline">取消</Button>
             </DialogClose>
             <Button type="submit" loading={isExecuting}>
-              Register SSO
+              注册 SSO
             </Button>
           </DialogFooter>
         </form>

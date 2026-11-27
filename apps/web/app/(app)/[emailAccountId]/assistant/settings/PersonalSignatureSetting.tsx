@@ -42,8 +42,8 @@ export function PersonalSignatureSetting() {
 
   return (
     <SettingCard
-      title={t`Email signature`}
-      description={t`Set your email signature to include in drafted messages.`}
+      title={t`邮件签名`}
+      description={t`设置邮件签名，以便包含在草稿消息中。`}
       right={
         <LoadingContent
           loading={isLoading}
@@ -52,7 +52,7 @@ export function PersonalSignatureSetting() {
         >
           <SignatureDialog currentSignature={data?.signature || ""}>
             <Button variant="outline" size="sm">
-              <Trans>Edit</Trans>
+              <Trans>编辑</Trans>
             </Button>
           </SignatureDialog>
         </LoadingContent>
@@ -105,7 +105,7 @@ function SignatureDialog({
 
     if (result?.serverError) {
       toastError({
-        title: t`Error loading signature from ${providerName}`,
+        title: t`从 ${providerName} 加载签名时出错`,
         description: result.serverError,
       });
       return;
@@ -115,10 +115,10 @@ function SignatureDialog({
 
     if (fetchedSignatures.length === 0) {
       toastInfo({
-        title: t`No signatures found`,
+        title: t`未找到签名`,
         description: isGmail
-          ? t`No signatures found in your Gmail account`
-          : t`No signature found in recent sent emails`,
+          ? t`在你的 Gmail 账号中未找到签名`
+          : t`在最近的已发送邮件中未找到签名`,
       });
       return;
     }
@@ -134,10 +134,10 @@ function SignatureDialog({
     }
 
     toastSuccess({
-      title: t`Signatures loaded`,
+      title: t`签名已加载`,
       description: t`Found ${plural(fetchedSignatures.length, {
-        one: "# signature",
-        other: "# signatures",
+        one: "# 个签名",
+        other: "# 个签名",
       })}`,
     });
   }, [executeFetchSignatures, isGmail, providerName, t]);
@@ -168,19 +168,18 @@ function SignatureDialog({
       <DialogContent className="max-w-4xl">
         <DialogHeader>
           <DialogTitle>
-            <Trans>Email signature</Trans>
+            <Trans>邮件签名</Trans>
           </DialogTitle>
           <DialogDescription>
             {isGmail ? (
               <Trans>
-                Set your email signature to include in all drafted messages. You
-                can load signatures from Gmail or enter manually.
+                设置邮件签名，以便包含在所有草稿消息中。你可以从 Gmail
+                加载签名，也可以手动输入。
               </Trans>
             ) : (
               <Trans>
-                Set your email signature to include in all drafted messages. For
-                Outlook, we can extract from recent sent emails or you can enter
-                manually.
+                设置邮件签名，以便包含在所有草稿消息中。对于
+                Outlook，我们可以从最近的已发送邮件中提取，也可以手动输入。
               </Trans>
             )}
           </DialogDescription>
@@ -194,9 +193,9 @@ function SignatureDialog({
               disabled={isFetching}
             >
               {isFetching ? (
-                <Trans>Loading...</Trans>
+                <Trans>加载中…</Trans>
               ) : (
-                <Trans>Load from {providerName}</Trans>
+                <Trans>从 {providerName} 加载</Trans>
               )}
             </Button>
             {signatures.length > 1 && (
@@ -205,7 +204,7 @@ function SignatureDialog({
                 onValueChange={handleSelectSignature}
               >
                 <SelectTrigger className="w-full sm:w-[250px]">
-                  <SelectValue placeholder={t`Select signature`} />
+                  <SelectValue placeholder={t`选择签名`} />
                 </SelectTrigger>
                 <SelectContent>
                   {signatures.map((sig) => (
@@ -214,7 +213,7 @@ function SignatureDialog({
                       {sig.isDefault && (
                         <>
                           {" "}
-                          <Trans>(default)</Trans>
+                          <Trans>（默认）</Trans>
                         </>
                       )}
                     </SelectItem>
@@ -227,7 +226,7 @@ function SignatureDialog({
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="signature">
-                <Trans>Signature (HTML supported)</Trans>
+                <Trans>签名（支持 HTML）</Trans>
               </Label>
               <Textarea
                 id="signature"
@@ -235,13 +234,13 @@ function SignatureDialog({
                 onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
                   setManualSignature(e.target.value)
                 }
-                placeholder={t`Enter your email signature...`}
+                placeholder={t`输入你的邮件签名…`}
                 className="min-h-[200px] font-mono text-sm"
               />
             </div>
             <div className="space-y-2">
               <Label>
-                <Trans>Preview</Trans>
+                <Trans>预览</Trans>
               </Label>
               <SignaturePreview signature={manualSignature} />
             </div>
@@ -249,14 +248,10 @@ function SignatureDialog({
 
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={handleClear}>
-              <Trans>Clear</Trans>
+              <Trans>清空</Trans>
             </Button>
             <Button onClick={handleSave} disabled={isSaving}>
-              {isSaving ? (
-                <Trans>Saving...</Trans>
-              ) : (
-                <Trans>Save Signature</Trans>
-              )}
+              {isSaving ? <Trans>保存中…</Trans> : <Trans>保存签名</Trans>}
             </Button>
           </div>
         </div>
@@ -273,7 +268,7 @@ export function SignaturePreview({
   className?: string;
 }) {
   const { t } = useLingui();
-  const emptyPreview = t`Your signature preview will appear here...`;
+  const emptyPreview = t`你的签名预览将显示在这里…`;
   const previewHtml = `
     <!DOCTYPE html>
     <html>

@@ -194,16 +194,16 @@ export function Rules({
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-16 px-2 sm:px-4">
-                    <Trans>Enabled</Trans>
+                    <Trans>已启用</Trans>
                   </TableHead>
                   <TableHead className="px-2 sm:px-4">
-                    <Trans>Name</Trans>
+                    <Trans>名称</Trans>
                   </TableHead>
                   <TableHead className="hidden sm:table-cell px-2 sm:px-4">
-                    <Trans>Prompt</Trans>
+                    <Trans>提示词</Trans>
                   </TableHead>
                   <TableHead className="px-2 sm:px-4">
-                    <Trans>Action</Trans>
+                    <Trans>操作</Trans>
                   </TableHead>
                   <TableHead className="w-fit whitespace-nowrap px-1">
                     {showAddRuleButton && (
@@ -211,7 +211,7 @@ export function Rules({
                         <div className="my-2">
                           <Button size="sm" onClick={onCreateRule}>
                             <PlusIcon className="mr-2 hidden size-4 md:block" />
-                            <Trans>Add Rule</Trans>
+                            <Trans>添加规则</Trans>
                           </Button>
                         </div>
                       </div>
@@ -244,7 +244,7 @@ export function Rules({
                         className="text-center p-2 sm:p-4"
                       >
                         <Tooltip
-                          content={t`Disabled by your organization`}
+                          content={t`已由你的组织禁用`}
                           hide={!isDisabledByOrg}
                         >
                           <span>
@@ -263,9 +263,9 @@ export function Rules({
                         <div className="flex items-center gap-2">
                           {rule.name}
                           {isOrgManaged && (
-                            <Tooltip content={t`Managed by Organization`}>
+                            <Tooltip content={t`由组织管理`}>
                               <Badge color="blue">
-                                <Trans>Org</Trans>
+                                <Trans>组织</Trans>
                               </Badge>
                             </Tooltip>
                           )}
@@ -297,7 +297,7 @@ export function Rules({
                               >
                                 <MoreHorizontalIcon className="size-4" />
                                 <span className="sr-only">
-                                  <Trans>Toggle menu</Trans>
+                                  <Trans>切换菜单</Trans>
                                 </span>
                               </Button>
                             </DropdownMenuTrigger>
@@ -316,7 +316,7 @@ export function Rules({
                                     }}
                                   >
                                     <PenIcon className="mr-2 size-4" />
-                                    <Trans>Edit manually</Trans>
+                                    <Trans>手动编辑</Trans>
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={() => {
@@ -330,7 +330,7 @@ export function Rules({
                                     }}
                                   >
                                     <SparklesIcon className="mr-2 size-4" />
-                                    <Trans>Edit via AI</Trans>
+                                    <Trans>通过 AI 编辑</Trans>
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={() => {
@@ -340,7 +340,7 @@ export function Rules({
                                     }}
                                   >
                                     <CopyIcon className="mr-2 size-4" />
-                                    <Trans>Duplicate</Trans>
+                                    <Trans>复制</Trans>
                                   </DropdownMenuItem>
                                 </>
                               )}
@@ -352,7 +352,7 @@ export function Rules({
                                   )}
                                 >
                                   <HistoryIcon className="mr-2 size-4" />
-                                  <Trans>History</Trans>
+                                  <Trans>历史记录</Trans>
                                 </Link>
                               </DropdownMenuItem>
                               {!rule.systemType && !isOrgManaged && (
@@ -362,7 +362,7 @@ export function Rules({
                                   <DropdownMenuItem
                                     onClick={async () => {
                                       const yes = confirm(
-                                        t`Are you sure you want to delete the rule "${rule.name}"?`,
+                                        t`你确定要删除规则“${rule.name}”吗？`,
                                       );
                                       if (yes) {
                                         toast.promise(
@@ -393,13 +393,13 @@ export function Rules({
                                             mutate();
                                           },
                                           {
-                                            loading: t`Deleting rule...`,
-                                            success: t`Rule deleted`,
+                                            loading: t`正在删除规则...`,
+                                            success: t`规则已删除`,
                                             error: (error: unknown) =>
-                                              t`Error deleting rule. ${
+                                              t`删除规则时出错。${
                                                 error instanceof Error
                                                   ? error.message
-                                                  : t`There was an error deleting your rule`
+                                                  : t`删除规则时出现问题`
                                               }`,
                                             finally: () => {
                                               mutate();
@@ -410,7 +410,7 @@ export function Rules({
                                     }}
                                   >
                                     <Trash2Icon className="mr-2 size-4" />
-                                    <Trans>Delete</Trans>
+                                    <Trans>删除</Trans>
                                   </DropdownMenuItem>
                                 </>
                               )}
@@ -491,13 +491,13 @@ function NoRules() {
   return (
     <CardHeader>
       <CardDescription className="flex flex-col items-center gap-4 py-20">
-        <Trans>You don't have any rules yet.</Trans>
+        <Trans>你还没有任何规则</Trans>
         <div>
           <Button asChild size="sm">
             <Link
               href={getOnboardingStepHref(emailAccountId, STEP_KEYS.LABELS)}
             >
-              <Trans>Set up default rules</Trans>
+              <Trans>设置默认规则</Trans>
             </Link>
           </Button>
         </div>

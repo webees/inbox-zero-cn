@@ -18,24 +18,24 @@ export function markdownToTelegramText(text: string): string {
 function normalizeTelegramLine(line: string): string {
   return (
     line
-      // Markdown hard line break marker.
+      // Markdown 硬换行标记。
       .replace(/\\$/, "")
-      // List markers in model markdown responses.
+      // 模型 markdown 回复中的列表标记。
       .replace(/^(\s*)\\?[*-]\s+/, "$1• ")
-      // Heading markers.
+      // 标题标记。
       .replace(/^#{1,6}\s+/, "")
-      // Markdown links.
+      // Markdown 链接。
       .replace(/\[([^[\]]+)\]\(([^()\s]+)\)/g, "$1: $2")
-      // Markdown escapes.
+      // Markdown 转义。
       .replace(/\\([\\`*_{}[\]()#+\-.!|>~])/g, "$1")
-      // Strong/emphasis/code.
+      // 加粗/斜体/代码。
       .replace(/\*\*(.+?)\*\*/g, "$1")
       .replace(/__(.+?)__/g, "$1")
       .replace(/`([^`]+)`/g, "$1")
-      // Single-character emphasis (after list conversion).
+      // 单字符斜体（在列表转换之后）。
       .replace(/(^|[\s([{>])\*([^*\n]+)\*(?=$|[\s)\]}>.,!?;:])/g, "$1$2")
       .replace(/(^|[\s([{>])_([^_\n]+)_(?=$|[\s)\]}>.,!?;:])/g, "$1$2")
-      // Cleanup for partially broken markdown tokens.
+      // 清理部分损坏的 markdown 标记。
       .replace(/\*\*/g, "")
       .replace(/__+/g, "")
   );

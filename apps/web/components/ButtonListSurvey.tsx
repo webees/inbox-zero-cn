@@ -33,7 +33,7 @@ export function ButtonListSurvey({
           </span>
           {option.recommended && (
             <span className="relative ml-auto">
-              <Badge className="ml-2">Recommended</Badge>
+              <Badge className="ml-2">推荐</Badge>
             </span>
           )}
         </Button>

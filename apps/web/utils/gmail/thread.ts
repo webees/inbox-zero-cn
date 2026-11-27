@@ -29,7 +29,7 @@ export async function getCompleteGmailThread(
     );
   });
   const result = await readCompleteThreadJson<gmail_v1.Schema$Thread>(
-    // Node's web stream type is a separate declaration from the DOM one.
+    // Node 的 web stream 类型是与 DOM 分开的声明。
     Readable.toWeb(response.data) as unknown as ReadableStream<Uint8Array>,
     createCompleteThreadBudget(),
     signal,
@@ -37,7 +37,7 @@ export async function getCompleteGmailThread(
   if (
     result.id !== threadId ||
     !Array.isArray(result.messages) ||
-    // A thread is its messages, so an empty list is a truncated response.
+    // 会话就是其邮件，因此空列表是截断的响应。
     !result.messages.length ||
     result.messages.length > COMPLETE_THREAD_MESSAGE_LIMIT ||
     result.messages.some(
@@ -46,7 +46,7 @@ export async function getCompleteGmailThread(
     new Set(result.messages.map((message) => message.id)).size !==
       result.messages.length
   )
-    throw new Error("Incomplete or oversized conversation snapshot");
+    throw new Error("会话快照不完整或过大");
   return result;
 }
 
@@ -254,7 +254,7 @@ export async function getThreadMessages(
     .filter((m) => !m.labelIds?.includes(GmailLabel.DRAFT));
 }
 
-/** Gmail drops spam and trash unless `includeSpamTrash` is set, even for `in:spam`. */
+/** 除非设置 `includeSpamTrash`，否则 Gmail 会丢弃垃圾邮件和废纸篓内容，即便查询的是 `in:spam`。 */
 export function queryIncludesSpamOrTrash(query: string) {
   return /(?:^|[\s(])(?:in|label):(spam|trash)\b/i.test(query);
 }

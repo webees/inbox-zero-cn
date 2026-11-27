@@ -7,7 +7,7 @@ export function isWhitelistedSender(
   const address = extractEmailAddress(from).toLowerCase();
   if (!address) return false;
 
-  // Application exemptions are mailbox-specific; domain terms are only for the Gmail filter.
+  // 应用程序豁免是邮箱专属的；域条目仅用于 Gmail 过滤器。
   return (
     whitelist?.split(/\s+OR\s+/i).some((entry) => {
       const whitelistedAddress = extractEmailAddress(entry).toLowerCase();

@@ -1,101 +1,101 @@
 ---
 title: "CLI"
-description: "Use the Inbox Zero API CLI from npm or npx."
+description: "通过 npm 或 npx 使用 Inbox Zero API CLI。"
 ---
 
-Use the Inbox Zero API CLI when you want a thin wrapper around the public API for scripts, bots, or local automation.
+当你需要为脚本、机器人或本地自动化提供一个围绕公开 API 的轻量封装时，可以使用 Inbox Zero API CLI。
 
-The package is published to npm as `@inbox-zero/api`, and the executable name is `inbox-zero-api`.
+该包以 `@inbox-zero/api` 发布到 npm，可执行文件名为 `inbox-zero-api`。
 
-## Run with npx
+## 使用 npx 运行
 
-Requires Node.js `18+`.
+需要 Node.js `18+`。
 
 ```bash
 npx @inbox-zero/api --help
 ```
 
-You can also install it globally:
+你也可以全局安装它：
 
 ```bash
 npm install -g @inbox-zero/api
 ```
 
-## Configure access
+## 配置访问
 
-The CLI reads configuration in this order:
+CLI 按以下顺序读取配置：
 
-1. Command flags
-2. Environment variables
+1. 命令标志
+2. 环境变量
 3. `~/.inbox-zero-api/config.json`
 
-Supported environment variables:
+支持的环境变量：
 
 - `INBOX_ZERO_API_KEY`
-- `INBOX_ZERO_BASE_URL` for self-hosted or custom API deployments
+- `INBOX_ZERO_BASE_URL`，用于自托管或自定义 API 部署
 
-Example:
+示例：
 
 ```bash
 inbox-zero-api rules list
 ```
 
-`base-url` is optional. The CLI defaults to `https://www.getinboxzero.com` and only needs an override for self-hosted or custom deployments.
+`base-url` 是可选的。CLI 默认使用 `https://www.getinboxzero.com`，只有自托管或自定义部署才需要覆盖它。
 
-Set `INBOX_ZERO_API_KEY` in your shell or secret manager before running commands. Avoid passing API keys as CLI arguments because they can leak into shell history and process listings.
+在运行命令前，请在 shell 或密钥管理器中设置 `INBOX_ZERO_API_KEY`。避免将 API 密钥作为 CLI 参数传入，因为它们可能泄漏到 shell 历史和进程列表中。
 
-## Common commands
+## 常用命令
 
-List rules:
+列出规则：
 
 ```bash
 inbox-zero-api rules list
 inbox-zero-api rules list --json
 ```
 
-Get a rule:
+获取一条规则：
 
 ```bash
 inbox-zero-api rules get rule_123 --json
 ```
 
-Create a rule from JSON:
+从 JSON 创建规则：
 
 ```bash
 inbox-zero-api rules create --file rule.json
 cat rule.json | inbox-zero-api rules create --file -
 ```
 
-Update a rule from JSON:
+从 JSON 更新规则：
 
 ```bash
 cat rule.json | inbox-zero-api rules update rule_123 --file -
 ```
 
-Delete a rule:
+删除规则：
 
 ```bash
 inbox-zero-api rules delete rule_123
 ```
 
-Read stats:
+读取统计数据：
 
 ```bash
 inbox-zero-api stats by-period --period week --json
 inbox-zero-api stats response-time --json
 ```
 
-Unsubscribe from a sender:
+退订某个发件人：
 
 ```bash
 inbox-zero-api senders unsubscribe news@example.com
 inbox-zero-api senders unsubscribe news@example.com --json
 ```
 
-Fetch the live OpenAPI document:
+获取实时 OpenAPI 文档：
 
 ```bash
 inbox-zero-api openapi --json
 ```
 
-For bots, prefer `--json` so the output is stable and machine-readable.
+对于机器人，请优先使用 `--json`，以便输出稳定且可机器读取。

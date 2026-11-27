@@ -1,27 +1,27 @@
 ---
-title: 'Image Proxy'
-description: 'Deploy the optional email image proxy for stronger privacy in web and desktop clients'
+title: '图片代理'
+description: '部署可选的电子邮件图片代理，为 Web 和桌面客户端提供更强的隐私保护'
 ---
 
-Inbox Zero can proxy remote email images and CSS-loaded assets so senders do not see the end user's IP address when an email is rendered.
+Inbox Zero 可以代理远程电子邮件图片和 CSS 加载的资源，使发件人在邮件渲染时看不到最终用户的 IP 地址。
 
-This is optional, but recommended if you host Inbox Zero for other people.
+这是可选的，但如果你为其他人托管 Inbox Zero，则推荐启用。
 
-## What It Does
+## 它的作用
 
-When enabled:
+启用后：
 
-- Remote `img`, `srcset`, `background`, `poster`, inline `style`, and `<style>` asset URLs are rewritten at render time.
-- The browser loads those assets from your proxy instead of directly from the sender-controlled host.
-- The iframe renderer also applies a restrictive CSP so direct remote fetches are blocked even if the rewriter misses a case.
+- 远程 `img`、`srcset`、`background`、`poster`、内联 `style` 和 `<style>` 资源 URL 会在渲染时被重写。
+- 浏览器会从你的代理加载这些资源，而不是直接从发件人控制的宿主加载。
+- iframe 渲染器还会应用严格的 CSP，因此即使重写器遗漏了某种情况，直接远程获取也会被阻止。
 
-The proxy is a separate service from the main app. The app signs proxy URLs, and the proxy fetches the upstream image.
+代理是与主应用分离的服务。应用会为代理 URL 签名，由代理获取上游图片。
 
-## Deploy On Cloudflare Workers
+## 部署到 Cloudflare Workers
 
-The repo includes a ready-to-deploy Worker in [apps/image-proxy](https://github.com/elie222/inbox-zero/tree/main/apps/image-proxy).
+仓库在 [apps/image-proxy](https://github.com/elie222/inbox-zero/tree/main/apps/image-proxy) 中包含一个可直接部署的 Worker。
 
-### 1. Log In To Cloudflare
+### 1. 登录 Cloudflare
 
 ```bash
 cd apps/image-proxy
@@ -29,48 +29,48 @@ pnpm exec wrangler login
 pnpm exec wrangler whoami
 ```
 
-### 2. Create a Signing Secret
+### 2. 创建签名密钥
 
-Use the same secret in both the Worker and the web app:
+在 Worker 和 Web 应用中使用相同的密钥：
 
 ```bash
 openssl rand -hex 32
 ```
 
-### 3. Set the Worker Secret
+### 3. 设置 Worker 密钥
 
 ```bash
 cd apps/image-proxy
 pnpm exec wrangler secret put IMAGE_PROXY_SIGNING_SECRET
 ```
 
-### 4. Deploy Without Editing Any Repo Files
+### 4. 无需编辑任何仓库文件即可部署
 
-Replace `img.example.com` with your own hostname:
+将 `img.example.com` 替换为你自己的主机名：
 
 ```bash
 cd apps/image-proxy
 pnpm exec wrangler deploy --domains img.example.com
 ```
 
-This is the recommended self-hosting path because it avoids editing `wrangler.jsonc` just to choose a domain.
+这是推荐的自托管路径，因为它无需仅为选择域名而编辑 `wrangler.jsonc`。
 
-### 5. Configure the Inbox Zero App
+### 5. 配置 Inbox Zero 应用
 
-In your app environment:
+在你的应用环境中：
 
 ```bash
 NEXT_PUBLIC_IMAGE_PROXY_BASE_URL=https://img.example.com/proxy
 IMAGE_PROXY_SIGNING_SECRET=your-generated-secret
 ```
 
-The values must match:
+这些值必须匹配：
 
-- `NEXT_PUBLIC_IMAGE_PROXY_BASE_URL` tells the app where to send proxied asset requests.
-- `IMAGE_PROXY_SIGNING_SECRET` must match the Worker secret so the proxy can validate signed URLs.
+- `NEXT_PUBLIC_IMAGE_PROXY_BASE_URL` 告诉应用将代理资源请求发送到哪里。
+- `IMAGE_PROXY_SIGNING_SECRET` 必须与 Worker 密钥匹配，以便代理验证已签名的 URL。
 
-If you need separate secrets for different clients, configure each signer with its own single `IMAGE_PROXY_SIGNING_SECRET`, and configure the proxy validator with a comma-separated list.
-Example:
+如果你需要为不同客户端使用不同密钥，请为每个签名方配置各自的单一 `IMAGE_PROXY_SIGNING_SECRET`，并为代理验证器配置逗号分隔的列表。
+示例：
 
 ```bash
 # web app signer
@@ -83,75 +83,75 @@ IMAGE_PROXY_SIGNING_SECRET=desktop-secret
 IMAGE_PROXY_SIGNING_SECRET=server-secret,desktop-secret
 ```
 
-## Unsigned Custom Proxy Mode
+## 未签名自定义代理模式
 
-If you set `NEXT_PUBLIC_IMAGE_PROXY_BASE_URL` without `IMAGE_PROXY_SIGNING_SECRET`, Inbox Zero emits unsigned `?u=` proxy URLs.
+如果你设置了 `NEXT_PUBLIC_IMAGE_PROXY_BASE_URL` 但没有设置 `IMAGE_PROXY_SIGNING_SECRET`，Inbox Zero 会发出未签名的 `?u=` 代理 URL。
 
-That mode is only for a custom proxy that intentionally accepts unsigned requests. The bundled Cloudflare Worker expects signed URLs when `IMAGE_PROXY_SIGNING_SECRET` is set.
+该模式仅适用于有意接受未签名请求的自定义代理。当设置了 `IMAGE_PROXY_SIGNING_SECRET` 时，内置的 Cloudflare Worker 期望已签名的 URL。
 
-For production use, signed mode is recommended.
+生产环境推荐使用签名模式。
 
-## AWS Option
+## AWS 选项
 
-If you do not want Cloudflare, the repo also includes an AWS Lambda adapter in [apps/image-proxy-aws](https://github.com/elie222/inbox-zero/tree/main/apps/image-proxy-aws).
+如果你不想使用 Cloudflare，仓库还在 [apps/image-proxy-aws](https://github.com/elie222/inbox-zero/tree/main/apps/image-proxy-aws) 中包含一个 AWS Lambda 适配器。
 
-The deployment model is:
+部署模型为：
 
-- deploy the Lambda
-- put CloudFront in front of it
-- set `NEXT_PUBLIC_IMAGE_PROXY_BASE_URL` to your CloudFront URL
-- use the same `IMAGE_PROXY_SIGNING_SECRET`
+- 部署 Lambda
+- 在其前面放置 CloudFront
+- 将 `NEXT_PUBLIC_IMAGE_PROXY_BASE_URL` 设置为你的 CloudFront URL
+- 使用相同的 `IMAGE_PROXY_SIGNING_SECRET`
 
-## Self-Hosted Next.js Option
+## 自托管 Next.js 选项
 
-If you are self-hosting and want the simplest setup, Inbox Zero can proxy remote images through its own Next.js app route instead of a separate service.
+如果你正在自托管并希望获得最简单的设置，Inbox Zero 可以通过其自身的 Next.js 应用路由代理远程图片，而不是使用单独的服务。
 
-Set these app environment variables:
+设置以下应用环境变量：
 
 ```bash
 NEXT_PUBLIC_IMAGE_PROXY_USE_APP_ROUTE=true
 IMAGE_PROXY_SIGNING_SECRET=your-generated-secret
 ```
 
-In this mode, Inbox Zero signs image proxy URLs and routes them to `${NEXT_PUBLIC_BASE_URL}/api/image-proxy`.
+在此模式下，Inbox Zero 会为图片代理 URL 签名，并将它们路由到 `${NEXT_PUBLIC_BASE_URL}/api/image-proxy`。
 
-Notes:
+说明：
 
-- this runs in the main app process, so it is simpler but less isolated than a separate proxy service
-- the Next.js route uses the same SSRF protections as the AWS adapter, including DNS resolution and pinned public-address lookups
-- keep `IMAGE_PROXY_SIGNING_SECRET` set; production rewriting stays disabled without it
+- 这运行在主应用进程中，因此更简单，但隔离性不如单独的代理服务
+- Next.js 路由使用与 AWS 适配器相同的 SSRF 保护，包括 DNS 解析和固定公网地址查询
+- 请保持设置 `IMAGE_PROXY_SIGNING_SECRET`；没有它，生产环境的 URL 重写将保持禁用
 
-## Troubleshooting
+## 故障排查
 
-### Health Check
+### 健康检查
 
-Once deployed, this should return `200`:
+部署后，这应返回 `200`：
 
 ```bash
 curl -I https://img.example.com/health
 ```
 
-### A Specific Image Fails
+### 特定图片加载失败
 
-If an upstream image has redirect issues or unsupported content, the image will fail closed instead of leaking the user's IP.
+如果上游图片存在重定向问题或不受支持的内容，图片会安全失败，而不是泄露用户的 IP。
 
-The Worker logs redirect-chain failures with sanitized URLs that omit query strings, which helps debug upstream redirect loops without logging tracking parameters.
+Worker 会记录重定向链失败，使用省略查询字符串的已清理 URL，这有助于在不记录跟踪参数的情况下调试上游重定向循环。
 
-### The App Still Loads Images Directly
+### 应用仍直接加载图片
 
-Double-check:
+请再次确认：
 
-- `NEXT_PUBLIC_IMAGE_PROXY_BASE_URL` is set
-- the browser is rendering email through the normal HTML email viewer
-- your proxy hostname is reachable from the browser
+- `NEXT_PUBLIC_IMAGE_PROXY_BASE_URL` 已设置
+- 浏览器正在通过正常的 HTML 电子邮件查看器渲染邮件
+- 你的代理主机名可从浏览器访问
 
-## Recommended Setup
+## 推荐设置
 
-For most self-hosters:
+对大多数自托管用户而言：
 
-1. Deploy the main app normally.
-2. Choose one proxy mode:
-3. Simplest: set `NEXT_PUBLIC_IMAGE_PROXY_USE_APP_ROUTE=true` and `IMAGE_PROXY_SIGNING_SECRET`.
-4. More isolated: deploy the image proxy separately on Cloudflare Workers and set `NEXT_PUBLIC_IMAGE_PROXY_BASE_URL` plus `IMAGE_PROXY_SIGNING_SECRET`.
+1. 正常部署主应用。
+2. 选择一种代理模式：
+3. 最简单：设置 `NEXT_PUBLIC_IMAGE_PROXY_USE_APP_ROUTE=true` 和 `IMAGE_PROXY_SIGNING_SECRET`。
+4. 隔离性更强：在 Cloudflare Workers 上单独部署图片代理，并设置 `NEXT_PUBLIC_IMAGE_PROXY_BASE_URL` 加上 `IMAGE_PROXY_SIGNING_SECRET`。
 
-The in-app route is the easiest self-hosted setup. The separate proxy service is still the better fit when you want stronger isolation or independent scaling.
+应用内路由是最简单的自托管设置。当你需要更强的隔离或独立扩展时，单独的代理服务仍然是更合适的选择。

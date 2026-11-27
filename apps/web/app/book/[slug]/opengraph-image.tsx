@@ -9,7 +9,7 @@ import { getClientIp } from "@/utils/rate-limit";
 
 const logger = createScopedLogger("public/booking-link-og-image");
 
-export const alt = "Booking link";
+export const alt = "预约链接";
 
 export const size = {
   width: 1200,
@@ -45,8 +45,10 @@ export default async function Image({
   const bookingLink = await getBookingLinkOrNull(slug);
   const hostName = bookingLink?.hostName?.trim() || BRAND_NAME;
   const duration = bookingLink?.durationMinutes ?? null;
-  const meetingType = duration ? `${duration} Min Meeting` : "Meeting";
-  const headline = bookingLink ? `Meet ${hostName}` : `Meet with ${BRAND_NAME}`;
+  const meetingType = duration ? `${duration} 分钟会议` : "会议";
+  const headline = bookingLink
+    ? `与 ${hostName} 会面`
+    : `与 ${BRAND_NAME} 会面`;
 
   return new ImageResponse(
     <div

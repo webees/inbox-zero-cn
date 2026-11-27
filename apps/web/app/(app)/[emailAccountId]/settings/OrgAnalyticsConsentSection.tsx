@@ -73,16 +73,15 @@ export function OrgAnalyticsConsentSection({
           <Item size="sm">
             <ItemContent>
               <ItemTitle>
-                <Trans>Organization Analytics</Trans>
+                <Trans>组织分析</Trans>
               </ItemTitle>
               <ItemDescription>
                 {data.organizationName ? (
                   <Trans>
-                    Allow organization admins from {data.organizationName} to
-                    view your usage
+                    允许 {data.organizationName} 的组织管理员查看你的使用情况
                   </Trans>
                 ) : (
-                  <Trans>Allow organization admins to view your usage</Trans>
+                  <Trans>允许组织管理员查看你的使用情况</Trans>
                 )}
               </ItemDescription>
             </ItemContent>

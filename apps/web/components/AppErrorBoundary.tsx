@@ -20,7 +20,7 @@ import { createClientLogger } from "@/utils/logger-client";
 export function AppErrorBoundary({
   error,
   reset,
-  title = "Something went wrong",
+  title = "出错了",
   description,
   onBack,
 }: {
@@ -52,10 +52,10 @@ export function AppErrorBoundary({
       pathname,
       searchParams,
     });
-    // Correlate with the exception details without copying raw error text into Axiom.
+    // 与异常详情关联，但不把原始错误文本复制到 Axiom。
     const sentryEventId = Sentry.captureException(error, { extra: context });
     setCapturedError({ error, eventId: sentryEventId });
-    logger.error("App error boundary triggered", {
+    logger.error("应用错误边界已触发", {
       ...context,
       sentryEventId,
     });
@@ -72,36 +72,36 @@ export function AppErrorBoundary({
           <EmptyTitle>{title}</EmptyTitle>
           <EmptyDescription>
             {description ||
-              "We couldn’t load this view. Try again. If the problem continues, contact support with the reference below."}
+              "无法加载此视图。请重试。如果问题仍然存在，请使用下方的参考编号联系支持团队。"}
           </EmptyDescription>
         </EmptyHeader>
         <div className="mt-6 flex flex-col flex-wrap justify-center gap-2 sm:flex-row">
           <Button onClick={reset} variant="outline">
             <RotateCcw className="mr-2 size-4" />
-            Try again
+            重试
           </Button>
           {onBack && (
             <Button type="button" onClick={onBack} variant="outline">
-              Back to inbox
+              返回收件箱
             </Button>
           )}
           <Button asChild>
             <Link href="/">
               <Home className="mr-2 size-4" />
-              Go home
+              返回首页
             </Link>
           </Button>
         </div>
         {supportReference && (
           <p className="break-all text-xs text-muted-foreground">
-            Support reference:{" "}
+            支持参考编号：{" "}
             <span className="select-all font-mono">{supportReference}</span>
           </p>
         )}
         <p className="mt-6 text-sm text-muted-foreground">
-          If this error persists, please contact support at{" "}
+          如果此错误仍然存在，请联系支持团队：{" "}
           <a
-            href={`mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}?${new URLSearchParams({ subject: "App error report", body: `Support reference: ${supportReference || error.digest || "Unavailable"}` })}`}
+            href={`mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}?${new URLSearchParams({ subject: "应用错误报告", body: `支持参考编号：${supportReference || error.digest || "不可用"}` })}`}
             className="break-all underline"
           >
             {env.NEXT_PUBLIC_SUPPORT_EMAIL}

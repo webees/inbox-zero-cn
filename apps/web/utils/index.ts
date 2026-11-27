@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Removes null and undefined properties from an object
+ * 从对象中移除 null 和 undefined 属性
  */
 // biome-ignore lint/suspicious/noExplicitAny: existing loose external shape
 export function filterNullProperties<T extends Record<string, any>>(

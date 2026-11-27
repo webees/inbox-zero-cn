@@ -21,7 +21,7 @@ export async function canEnableAutomationJobs(userId: string) {
 
 export async function assertCanEnableAutomationJobs(userId: string) {
   if (!(await canEnableAutomationJobs(userId))) {
-    throw new SafeError("Premium is required for scheduled check-ins");
+    throw new SafeError("定时检查需要高级版");
   }
 }
 
@@ -67,12 +67,12 @@ export async function createAutomationJob({
     },
   });
 
-  if (!channel) throw new SafeError("Messaging channel not found");
+  if (!channel) throw new SafeError("未找到消息渠道");
   if (!isSupportedAutomationMessagingProvider(channel.provider)) {
-    throw new SafeError("Messaging provider is not supported");
+    throw new SafeError("不支持的消息服务商");
   }
   if (!isMessagingChannelOperational(channel)) {
-    throw new SafeError("Messaging channel is not connected");
+    throw new SafeError("消息渠道未连接");
   }
 
   if (
@@ -94,7 +94,7 @@ export async function createAutomationJob({
       routes: channel.routes,
     });
     if (!route) {
-      throw new SafeError("Select a messaging destination first");
+      throw new SafeError("请先选择一个消息目标");
     }
   }
 

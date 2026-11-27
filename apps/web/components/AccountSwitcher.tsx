@@ -115,7 +115,7 @@ export function AccountSwitcherInternal({
                 </>
               ) : (
                 <div>
-                  <Trans>Choose account</Trans>
+                  <Trans>选择账号</Trans>
                 </div>
               )}
               <ChevronsUpDown className="ml-auto" />
@@ -128,7 +128,7 @@ export function AccountSwitcherInternal({
             sideOffset={4}
           >
             <DropdownMenuLabel className="text-xs text-muted-foreground">
-              <Trans>Accounts</Trans>
+              <Trans>账号</Trans>
             </DropdownMenuLabel>
             {emailAccounts.map((emailAccount) => (
               <DropdownMenuItem
@@ -161,7 +161,7 @@ export function AccountSwitcherInternal({
                   <Plus className="size-4" />
                 </div>
                 <div className="font-medium text-muted-foreground">
-                  <Trans>Add or manage accounts</Trans>
+                  <Trans>添加或管理账号</Trans>
                 </div>
               </DropdownMenuItem>
             </Link>

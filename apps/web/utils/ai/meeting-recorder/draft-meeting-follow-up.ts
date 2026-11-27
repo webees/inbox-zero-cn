@@ -48,7 +48,7 @@ export async function aiDraftMeetingFollowUp(
   input: MeetingFollowUpInput,
 ): Promise<MeetingFollowUpDraft> {
   const { emailAccount, recipients } = input;
-  logger.info("Drafting meeting follow-up", {
+  logger.info("正在起草会议跟进邮件", {
     recipientCount: recipients.length,
   });
 
@@ -59,7 +59,7 @@ export async function aiDraftMeetingFollowUp(
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Draft meeting follow-up",
+    label: "起草会议跟进邮件",
     modelOptions,
     promptHardening: {
       trust: "untrusted",

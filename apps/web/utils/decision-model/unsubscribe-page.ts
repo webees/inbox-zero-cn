@@ -32,7 +32,7 @@ export async function decideUnsubscribePageState({
         },
       },
     },
-    label: "Unsubscribe page state",
+    label: "退订页面状态",
     logger,
   });
   const answer = response.answers[CONFIRMED_KEY];

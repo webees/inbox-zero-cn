@@ -5,8 +5,8 @@ import { searchableBody, searchableText } from "./search-text";
 
 const BACKLOG_BATCH_ROWS = 100;
 
-// contentless_delete (SQLite 3.43+) lets rows be replaced and removed by rowid
-// without the index keeping the text it tokenized.
+// contentless_delete（SQLite 3.43+）让行可以按 rowid 替换和删除，
+// 而索引无需保留它分词后的文本。
 const MESSAGE_FTS_SQL = `
 CREATE VIRTUAL TABLE IF NOT EXISTS message_fts USING fts5(
   subject,
@@ -19,11 +19,10 @@ CREATE VIRTUAL TABLE IF NOT EXISTS message_fts USING fts5(
 );
 `;
 
-// Rebuilds the index empty whenever what it stores changes: 0006 dropped the
-// index's own copy of every message's text, 0007 replaced raw HTML bodies
-// with their visible text and split unspaced scripts into characters.
-// Dropping is fast; indexSearchBacklog re-adds rows in engine-paced batches
-// so opening the mailbox never waits on a full rebuild.
+// 只要索引存储的内容发生变化，就把它清空重建：0006 去掉了索引里每封邮件
+// 文本的副本，0007 用可见文本替换了原始 HTML 正文，并把无空格的文字
+// 拆成单个字符。删除很快；indexSearchBacklog 会按引擎节奏分批重新添加行，
+// 因此打开邮箱时不必等待完整重建。
 export async function migrateMessageSearchIndex(tx: SqlTransaction) {
   const applied = await tx.query(
     "SELECT 1 FROM schema_migrations WHERE id = 7",
@@ -52,9 +51,8 @@ export async function indexMessageContent(
   if (!indexed) await abandonSearchRow(tx, key);
 }
 
-// Indexes the next batch of stored bodies that have no search row, such as
-// those left by a rebuild, in key order after `after`. Resolves the batch's
-// last key, or null once none remain.
+// 按 key 顺序在 `after` 之后，为下一批还没有搜索行的已存储正文建立索引，
+// 例如重建后遗留的正文。返回该批次的最后一个 key，若一个都没有则返回 null。
 export async function indexSearchBacklog(
   tx: SqlTransaction,
   codec: MessageBodyCodec,
@@ -87,10 +85,9 @@ export async function indexSearchBacklog(
   return indexed ? { indexed: true, last } : { indexed: false };
 }
 
-// Re-indexes a message whose subject, preview, or sender is new or changed.
-// Without a stored body its metadata is indexed directly. With one, its row is
-// dropped for the body backlog to rebuild with the text, and search leans on
-// the substring fallback until then.
+// 重新索引主题、预览或发件人有变动或新增的邮件。没有存储正文时直接为其
+// 元数据建立索引；有正文时则删除该行，交由正文待办随文本一起重建，
+// 在此之前搜索依赖子串回退。
 export async function indexMessageMetadata(
   tx: SqlTransaction,
   key: MessageKey,
@@ -108,10 +105,9 @@ export async function indexMessageMetadata(
   else if (stored) await markSearchIndexIncomplete(tx);
 }
 
-// Indexes the metadata of the next batch of messages that still have no
-// search row once the body backlog is done, such as mail synced without its
-// body before metadata was indexed. Messages with a stored body are left to the
-// body backlog. Resolves like indexSearchBacklog.
+// 在正文待办处理完后，为下一批仍没有搜索行的邮件建立元数据索引，
+// 例如在元数据建立索引前就同步进来、但还没有正文的邮件。已存储正文的
+// 邮件留给正文待办处理。返回结果与 indexSearchBacklog 相同。
 export async function indexMetadataBacklog(
   tx: SqlTransaction,
   after: MessageKey | null,
@@ -147,8 +143,8 @@ export async function indexMetadataBacklog(
   return indexed ? { indexed: true, last } : { indexed: false };
 }
 
-// Marks the index complete once every message has a search row, which lets
-// search start from index matches. Resolves whether it is complete.
+// 当每封邮件都有搜索行后，将索引标记为完成，这样搜索就能从索引匹配开始。
+// 返回索引是否已完成。
 export async function completeSearchIndexIfFull(tx: SqlTransaction) {
   const [missing] = await tx.query(
     `SELECT 1 FROM messages m
@@ -182,7 +178,7 @@ export async function deleteAccountSearchIndex(
       [accountId],
     ),
   );
-  // The keys are the only way back to rows a failed delete left behind.
+  // 这些 key 是找回失败删除所遗留行的唯一途径。
   if (!purged) return;
   await tx.execute("DELETE FROM message_fts_keys WHERE account_id = ?", [
     accountId,
@@ -238,9 +234,8 @@ async function writeSearchRow(
   );
 }
 
-// Rowids are assigned above the current maximum up front so a whole batch
-// indexes in one multi-row INSERT; row-at-a-time inserts were several times
-// slower through the drivers. Resolves the batch's last key.
+// 预先在当前最大值之上分配 rowid，让整批数据通过一次多行 INSERT 建立索引；
+// 逐行插入经过驱动时慢好几倍。返回该批次的最后一个 key。
 async function insertSearchRows(
   tx: SqlTransaction,
   batch: Array<Record<string, SqlValue>>,
@@ -295,9 +290,8 @@ async function dropSearchRow(tx: SqlTransaction, key: MessageKey) {
   await deleteKey(tx, key);
 }
 
-// A failed write leaves the message's previous row in place, so its key is
-// dropped: the backlog then rebuilds the row and the substring fallback covers
-// it meanwhile. An orphaned FTS row without a key never matches a message.
+// 写入失败会保留邮件原来的行，因此删除它的 key：随后待办会重建该行，
+// 在此期间由子串回退兜底。没有 key 的孤立 FTS 行永远不会匹配到邮件。
 async function abandonSearchRow(tx: SqlTransaction, key: MessageKey) {
   await deleteKey(tx, key);
   await markSearchIndexIncomplete(tx);
@@ -316,8 +310,8 @@ function deleteKey(tx: SqlTransaction, key: MessageKey) {
   );
 }
 
-// FTS is optional when the runtime SQLite build omits it; a failure must not
-// abort the surrounding write. Resolves whether the index work succeeded.
+// 运行时的 SQLite 构建可能省略 FTS，此时 FTS 是可选的；失败不能中断
+// 外层写入。返回索引操作是否成功。
 async function withSearchIndex(
   tx: SqlTransaction,
   savepoint: string,
@@ -333,7 +327,7 @@ async function withSearchIndex(
       await tx.exec(`ROLLBACK TO ${savepoint}`);
       await tx.exec(`RELEASE ${savepoint}`);
     } catch {
-      // savepoint missing
+      // 缺少 savepoint
     }
     return false;
   }

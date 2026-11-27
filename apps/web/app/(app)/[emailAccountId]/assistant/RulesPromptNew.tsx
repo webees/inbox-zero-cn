@@ -149,7 +149,7 @@ function RulesPromptForm({
             }}
           >
             <Label className="font-title text-xl leading-7">
-              <Trans>Add new rules</Trans>
+              <Trans>添加新规则</Trans>
             </Label>
 
             <div className="mt-1.5 space-y-2">
@@ -162,14 +162,14 @@ function RulesPromptForm({
                   defaultValue={undefined}
                   minHeight={180}
                   userLabels={userLabels}
-                  placeholder={t`* Label urgent emails as "Urgent"
-* Forward receipts to jane@accounting.com`}
+                  placeholder={t`* 将紧急邮件标记为“紧急”
+* 将收据转发至 jane@accounting.com`}
                 />
               </LoadingContent>
 
               <div className="flex flex-col sm:flex-row flex-wrap gap-2">
                 <Button type="submit" size="sm" loading={isSubmitting}>
-                  <Trans>Create rules</Trans>
+                  <Trans>创建规则</Trans>
                 </Button>
 
                 <Button
@@ -180,9 +180,9 @@ function RulesPromptForm({
                 >
                   <UserPenIcon className="mr-2 size-4" />
                   {examples ? (
-                    <Trans>Hide examples</Trans>
+                    <Trans>隐藏示例</Trans>
                   ) : (
-                    <Trans>Choose from examples</Trans>
+                    <Trans>从示例中选择</Trans>
                   )}
                 </Button>
 
@@ -194,7 +194,7 @@ function RulesPromptForm({
                   onClick={() => ruleDialog.onOpen()}
                   Icon={PlusIcon}
                 >
-                  <Trans>Add rule manually</Trans>
+                  <Trans>手动添加规则</Trans>
                 </Button>
               </div>
             </div>
@@ -209,7 +209,7 @@ function RulesPromptForm({
       {examples && (
         <div className="mt-2">
           <Label className="font-title text-xl leading-7">
-            <Trans>Examples</Trans>
+            <Trans>示例</Trans>
           </Label>
           <div className="mt-1.5">
             <ExamplesGrid examples={examples} onSelect={addExamplePrompt} />

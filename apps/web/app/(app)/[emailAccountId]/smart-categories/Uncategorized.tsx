@@ -66,7 +66,7 @@ export function Uncategorized({
               disabled={!hasAiAccess}
               onClick={async () => {
                 if (!senderAddresses?.length) {
-                  toastError({ description: t`No senders to categorize` });
+                  toastError({ description: t`没有可分类的发件人` });
                   return;
                 }
 
@@ -77,7 +77,7 @@ export function Uncategorized({
               }}
             >
               <SparklesIcon className="mr-2 size-4" />
-              <Trans>Categorize all with AI</Trans>
+              <Trans>使用 AI 全部分类</Trans>
             </Button>
           </PremiumTooltip>
 
@@ -89,17 +89,14 @@ export function Uncategorized({
               }}
             >
               <StopCircleIcon className="mr-2 size-4" />
-              <Trans>Stop</Trans>
+              <Trans>停止</Trans>
             </Button>
           )}
         </div>
 
         <div className="flex items-center">
           <div className="mr-1.5">
-            <TooltipExplanation
-              size="sm"
-              text={t`Automatically categorize new senders when they email you`}
-            />
+            <TooltipExplanation size="sm" text={t`新发件人来信时自动分类`} />
           </div>
           <AutoCategorizeToggle
             autoCategorizeSenders={autoCategorizeSenders}
@@ -122,14 +119,14 @@ export function Uncategorized({
                 ) : (
                   <ChevronsDownIcon className="mr-2 size-4" />
                 )}
-                <Trans>Load More</Trans>
+                <Trans>加载更多</Trans>
               </Button>
             )}
           </>
         ) : (
           !isLoading && (
             <SectionDescription className="p-4">
-              <Trans>No senders left to categorize!</Trans>
+              <Trans>没有剩余可分类的发件人！</Trans>
             </SectionDescription>
           )
         )}
@@ -151,7 +148,7 @@ function AutoCategorizeToggle({
   return (
     <Toggle
       name="autoCategorizeSenders"
-      label={t`Auto categorize`}
+      label={t`自动分类`}
       enabled={autoCategorizeSenders}
       onChange={async (enabled) => {
         await setAutoCategorizeAction(emailAccountId, {

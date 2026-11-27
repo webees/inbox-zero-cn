@@ -8,12 +8,12 @@ type Collected = {
 };
 
 /**
- * Gmail's message parser keeps only the last text part. Apple Mail does not
- * send one part: a photo in the middle splits the message into several
- * text/plain or text/html parts, and the HTML alternative is sometimes only
- * the signature while text/plain has the message. Readers prefer HTML, so
- * either shape shows the signature and drops the text the list snippet came
- * from.
+ * Gmail 的邮件解析器只保留最后一个文本部分。Apple Mail 不会
+ * 只发送一个部分：中间插入的照片会将邮件拆分成多个
+ * text/plain 或 text/html 部分，而 HTML 替代版本有时只有
+ * 签名，而 text/plain 才有正文。阅读器优先使用 HTML，因此
+ * 两种形态都会显示签名并丢掉列表摘要来自的
+ * 文本。
  */
 export function gmailMessageBodies(
   payload: Part | null | undefined,
@@ -36,8 +36,8 @@ function collect(part: Part | null | undefined): Collected {
   const mime = part.mimeType?.toLowerCase() ?? "";
   if (part.parts?.length) {
     const children = part.parts.map(collect);
-    // Alternatives are two formats of one message. Every other container,
-    // including multipart/mixed around an inline image, is sequential.
+    // alternative 是一封邮件的两种格式。其他所有容器，
+    // 包括内联图片外层的 multipart/mixed，都是顺序的。
     if (mime === "multipart/alternative") return preferAlternative(children);
     return {
       html: children.flatMap((child) => child.html),
@@ -125,10 +125,10 @@ function htmlBodyContents(html: string) {
 }
 
 /**
- * The HTML part is only the tail of the plain message, and that tail does
- * not contain the list snippet. A short reply qualifies: "Hi" in front of
- * the signature is enough. HTML that contains the snippet stays, which keeps
- * a formatted reply, a link, or a quoted thread.
+ * HTML 部分只是纯文本邮件的尾部，而该尾部
+ * 不包含列表摘要。一段简短的回复就符合：“Hi” 加在
+ * 签名之前就足够了。包含摘要的 HTML 会保留，从而保留
+ * 格式化的回复、链接或引用的会话。
  */
 function htmlOmitsPlainMessage(
   html: string,
@@ -137,8 +137,8 @@ function htmlOmitsPlainMessage(
 ) {
   const plainText = normalize(plain);
   if (!plainText) return false;
-  // A tail has to fit in the plain part. Markup with no tags or entities
-  // is already the visible text, so a longer string cannot be that tail.
+  // 尾部必须能放进纯文本部分。没有任何标签或实体的标记
+  // 已经是可见文本，因此更长的字符串不可能是该尾部。
   if (html.indexOf("<") === -1 && html.indexOf("&") === -1) {
     const visible = normalize(html);
     if (visible.length > plainText.length) return false;
@@ -171,7 +171,7 @@ function plainTailOmitsMessage(
 }
 
 /**
- * One left-to-right pass. Script and style bodies are skipped, including
+ * 一次从左到右的遍历。script 和 style 内容会被跳过，包括
  * `</script >`. Returns undefined once the visible text is longer than
  * `maxLength`, because that text cannot be a tail of the plain part.
  */
@@ -186,7 +186,7 @@ function visibleText(html: string, maxLength: number): string | undefined {
     let cursor = 0;
     while (cursor < chunk.length) {
       const code = chunk.charCodeAt(cursor);
-      // ASCII outside the `\s` controls and space cannot match `\s`.
+      // ASCII 之外的 `\s` 控制符和空格无法匹配 `\s`。
       if (code <= 32 || code >= 0xa0) {
         if (!isWhitespace(chunk[cursor])) nonWhitespace++;
       } else {
@@ -253,7 +253,7 @@ function closingTag(html: string, from: number, name: string) {
 }
 
 /**
- * Reads the tag at `start`. The search for `>` stops at the next `<`, and
+ * 读取 `start` 处的标签。对 `>` 的搜索在下一个 `<` 处停止，且
  * `resume` is the first index the caller has not already consumed.
  */
 function readTag(

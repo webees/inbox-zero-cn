@@ -104,7 +104,7 @@ export default function ToolsPage() {
             }}
           />
 
-          <MutedText>Pending confirmation:</MutedText>
+          <MutedText>待确认：</MutedText>
           <PendingCreateRulePreviewCard
             args={{
               name: "AutoReply VIP",
@@ -125,11 +125,11 @@ export default function ToolsPage() {
               ],
             }}
             riskMessages={[
-              "High Risk: The AI can automatically generate and send any email content. A malicious actor could potentially trick the AI into generating unwanted or inappropriate content.",
+              "高风险：AI 可以自动生成并发送任意邮件内容。恶意行为者可能诱骗 AI 生成多余或不当的内容。",
             ]}
           />
 
-          <MutedText>Updated conditions (no diff):</MutedText>
+          <MutedText>已更新条件（无差异）：</MutedText>
           <UpdatedRuleConditions
             preview
             ruleId="demo-rule"
@@ -148,7 +148,7 @@ export default function ToolsPage() {
             ]}
           />
 
-          <MutedText>Updated conditions (with diff):</MutedText>
+          <MutedText>已更新条件（含差异）：</MutedText>
           <UpdatedRuleConditions
             preview
             ruleId="demo-rule"
@@ -177,7 +177,7 @@ export default function ToolsPage() {
             }}
           />
 
-          <MutedText>Updated actions:</MutedText>
+          <MutedText>已更新操作：</MutedText>
           <UpdatedRuleActions
             preview
             ruleId="demo-rule"
@@ -231,7 +231,7 @@ export default function ToolsPage() {
             ]}
           />
 
-          <MutedText>Updated rule status:</MutedText>
+          <MutedText>已更新规则状态：</MutedText>
           <UpdatedRule
             preview
             args={{

@@ -1,64 +1,64 @@
 ---
-title: "Connect MCP"
-description: "Let ChatGPT, Claude, or Cursor search your inbox, create drafts, and manage rules."
+title: "连接 MCP"
+description: "让 ChatGPT、Claude 或 Cursor 搜索你的收件箱、创建草稿并管理规则。"
 icon: "plug"
 ---
 
-Inbox Zero exposes a remote MCP server so ChatGPT, Claude, Cursor, or another MCP client can work with your linked Gmail and Outlook accounts.
+Inbox Zero 提供了一个远程 MCP 服务器，让 ChatGPT、Claude、Cursor 或其他 MCP 客户端可以操作你已关联的 Gmail 和 Outlook 账号。
 
-The assistant can search and read mail, create mailbox drafts, manage automation rules, and read email statistics. It cannot send email. Drafts stay in your mailbox until you send them.
+助手可以搜索和阅读邮件、创建邮箱草稿、管理自动化规则并读取邮件统计。它无法发送邮件。草稿会留在你的邮箱中，直到你发送它们。
 
-This is different from [Integrations](/essentials/context-integrations), which let Inbox Zero call other products during assistant rules.
+这与[集成](/essentials/context-integrations)不同，后者让 Inbox Zero 在助手规则执行期间调用其他产品。
 
 <iframe
   src="https://player.mux.com/xi1i9Qc75MWepkZv87ptyc5sFhBMhkbUJ4lr6stOS6U?metadata-video-title=Connect%20MCP%20walkthrough&accent-color=%233b82f6"
-  title="Connect MCP walkthrough"
+  title="连接 MCP 使用演示"
   style={{ width: "100%", border: "none", aspectRatio: "16/9" }}
   loading="lazy"
   allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
   allowFullScreen
 ></iframe>
 
-## Turn on MCP for your account
+## 为你的账号开启 MCP
 
-1. Open the account menu at the bottom of the left sidebar and choose **Settings**.
-2. In the Settings dialog, scroll to **Account → MCP**.
-3. Turn on **MCP**. The **Connect MCP** dialog opens.
-4. Copy the MCP URL.
+1. 打开左侧边栏底部的账号菜单，选择**设置**。
+2. 在设置对话框中，滚动到**账号 → MCP**。
+3. 打开 **MCP**。会打开**连接 MCP**对话框。
+4. 复制 MCP URL。
 
-To see the URL again later, choose **Connect** on the MCP row.
+要稍后再次查看该 URL，请在 MCP 行上选择**连接**。
 
-Use this Streamable HTTP URL:
+使用这个 Streamable HTTP URL：
 
 ```text
 https://www.getinboxzero.com/mcp
 ```
 
-Self-hosted deployments use `https://your-inbox-zero-host/mcp` after setting `MCP_SERVER_ENABLED=true`, `NEXT_PUBLIC_EXTERNAL_API_ENABLED=true`, and `API_KEY_SALT`. See the [MCP API reference](/api-reference/mcp).
+自托管部署在设置 `MCP_SERVER_ENABLED=true`、`NEXT_PUBLIC_EXTERNAL_API_ENABLED=true` 和 `API_KEY_SALT` 后，使用 `https://your-inbox-zero-host/mcp`。参见 [MCP API 参考](/api-reference/mcp)。
 
-If MCP is still off when the assistant connects, the consent screen can turn it on for you after you sign in with Google or Microsoft. Email-code sign-in cannot authorize MCP clients.
+如果助手连接时 MCP 仍处于关闭状态，在你用 Google 或 Microsoft 登录后，授权页面可以为你开启它。邮箱验证码登录无法为 MCP 客户端授权。
 
 ## ChatGPT
 
-ChatGPT needs a public HTTPS MCP URL and Developer mode. Availability depends on your ChatGPT plan.
+ChatGPT 需要一个公开的 HTTPS MCP URL 和开发者模式。可用性取决于你的 ChatGPT 套餐。
 
-1. Open ChatGPT on the web and go to **Settings → Apps**.
-2. Turn on **Developer mode**.
-3. Create a new app or connector and paste the Inbox Zero MCP URL.
-4. Scan tools, then sign in to Inbox Zero and choose **Allow**.
-5. Start a new chat and enable the Inbox Zero app from the tools menu before asking it to search mail or draft a reply.
+1. 在网页版打开 ChatGPT，前往**设置 → 应用**。
+2. 打开**开发者模式**。
+3. 创建一个新应用或连接器，并粘贴 Inbox Zero MCP URL。
+4. 扫描工具，然后登录 Inbox Zero 并选择**允许**。
+5. 开始一个新聊天，在要求它搜索邮件或起草回复前，先从工具菜单中启用 Inbox Zero 应用。
 
-If ChatGPT asks how to authenticate, choose OAuth. Do not paste an Inbox Zero API key.
+如果 ChatGPT 询问如何认证，请选择 OAuth。不要粘贴 Inbox Zero API 密钥。
 
 ## Claude
 
-1. Open Claude and go to **Customize → Connectors**.
-2. Choose **Add custom connector**.
-3. Paste the Inbox Zero MCP URL. Leave OAuth client ID and secret empty unless you registered a client yourself.
-4. Add the connector, then choose **Connect** and **Allow** on the Inbox Zero consent screen.
-5. In a chat, open **+ → Connectors** and enable Inbox Zero before asking it to search mail or draft a reply.
+1. 打开 Claude，前往**自定义 → 连接器**。
+2. 选择**添加自定义连接器**。
+3. 粘贴 Inbox Zero MCP URL。除非你自己注册了客户端，否则把 OAuth 客户端 ID 和密钥留空。
+4. 添加该连接器，然后在 Inbox Zero 授权页面选择**连接**和**允许**。
+5. 在聊天中，打开 **+ → 连接器**并在要求它搜索邮件或起草回复前启用 Inbox Zero。
 
-On Team and Enterprise, an owner adds the connector under **Organization settings → Connectors** first. Members then connect it from **Customize → Connectors**.
+在 Team 和 Enterprise 上，所有者需先在**组织设置 → 连接器**下添加该连接器。成员随后从**自定义 → 连接器**连接它。
 
 ### Claude Code
 
@@ -66,11 +66,11 @@ On Team and Enterprise, an owner adds the connector under **Organization setting
 claude mcp add --transport http inbox-zero https://www.getinboxzero.com/mcp
 ```
 
-Claude Code then signs you in with OAuth.
+Claude Code 随后会用 OAuth 让你登录。
 
 ## Cursor
 
-Add this to `~/.cursor/mcp.json` or the project `.cursor/mcp.json`:
+把以下内容添加到 `~/.cursor/mcp.json` 或项目的 `.cursor/mcp.json`：
 
 ```json
 {
@@ -82,23 +82,23 @@ Add this to `~/.cursor/mcp.json` or the project `.cursor/mcp.json`:
 }
 ```
 
-Cursor then signs you in with OAuth. You can also add the same URL from **Cursor Settings → MCP**. This repository also includes a local Cursor plugin under `plugins/inbox-zero-mcp`.
+Cursor 随后会用 OAuth 让你登录。你也可以从 **Cursor 设置 → MCP** 添加同一个 URL。本仓库还在 `plugins/inbox-zero-mcp` 下包含一个本地 Cursor 插件。
 
-## What the assistant can do
+## 助手能做什么
 
-| Permission | Tools |
+| 权限 | 工具 |
 | --- | --- |
-| Read | List inboxes, search mail, read threads, list rules, read stats |
-| Write | Create a draft (does not send), create/update/delete rules |
+| 读取 | 列出发件箱、搜索邮件、读取会话、列出规则、读取统计 |
+| 写入 | 创建草稿（不发送）、创建/更新/删除规则 |
 
-Ask it to search recent mail, summarize a thread, draft an email, or update an automation rule. Sending stays in Inbox Zero or your mailbox.
+让它搜索近期邮件、总结某个会话、起草一封邮件，或更新一条自动化规则。发送操作仍留在 Inbox Zero 或你的邮箱中。
 
-Drafts are created as new messages with a recipient, subject, and body. A drafted reply appears in your Drafts folder as a separate message, not inside the original thread.
+草稿会作为带有收件人、主题和正文的新邮件创建。起草的回复会作为单独的邮件出现在你的草稿文件夹中，而不是在原始会话内。
 
-## Disconnect an app
+## 断开某个应用
 
-1. Open **Settings → Account → MCP**.
-2. Choose **MCP apps (N)**, where N is the number of connected apps. The button appears once at least one app is connected.
-3. Choose **Disconnect** next to the application you no longer trust.
+1. 打开**设置 → 账号 → MCP**。
+2. 选择 **MCP 应用（N）**，其中 N 是已连接应用的数量。至少连接一个应用后才会显示该按钮。
+3. 在你不再信任的应用旁选择**断开连接**。
 
-That revokes only that app. Other connected apps keep working. Turn off **MCP** to disconnect every app at once. Refresh tokens survive logging out of Inbox Zero in the browser; disconnecting or turning MCP off is what revokes them.
+这只会撤销该应用。其他已连接的应用会继续工作。关闭 **MCP** 可一次断开所有应用。刷新令牌在浏览器中登出 Inbox Zero 后仍然有效；断开连接或关闭 MCP 才会撤销它们。

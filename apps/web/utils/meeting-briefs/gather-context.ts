@@ -69,7 +69,7 @@ export async function gatherContextForEvent({
     ),
   ];
 
-  logger.info("Gathering context for meeting attendees", {
+  logger.info("正在为会议出席者收集上下文", {
     guestCount: externalAttendees.length,
     internalTeamCount: internalAttendees.length,
   });
@@ -79,7 +79,7 @@ export async function gatherContextForEvent({
     createCalendarEventProviders(emailAccountId, logger),
   ]);
 
-  // Fetch email threads and past meetings in parallel
+  // 并行拉取邮件会话和过往会议
   const [emailThreads, pastMeetings] = await Promise.all([
     fetchEmailThreadsWithParticipants({
       emailProvider,
@@ -96,7 +96,7 @@ export async function gatherContextForEvent({
     }),
   ]);
 
-  // Limit messages per thread to avoid overwhelming the AI
+  // 限制每个会话的消息数量，以免压垮 AI
   const cappedThreads = emailThreads.map((thread) => ({
     ...thread,
     messages: [...thread.messages]
@@ -104,7 +104,7 @@ export async function gatherContextForEvent({
       .slice(-MAX_MESSAGES_PER_THREAD),
   }));
 
-  logger.info("Gathered context for meeting", {
+  logger.info("已收集会议上下文", {
     threadCount: cappedThreads.length,
     meetingCount: pastMeetings.length,
   });
@@ -145,7 +145,7 @@ async function fetchEmailThreadsWithParticipants({
           maxThreads: threadsPerParticipant,
         });
       } catch (error) {
-        logger.error("Failed to fetch threads for participant", { error });
+        logger.error("为参与者拉取会话失败", { error });
         return [];
       }
     },
@@ -188,7 +188,7 @@ async function fetchPastMeetingsWithParticipants({
             if (!meetings.has(event.id)) meetings.set(event.id, event);
           }
         } catch (error) {
-          logger.error("Failed to fetch events for participant", { error });
+          logger.error("为参与者拉取事件失败", { error });
         }
       }
       return [...meetings.values()].sort(
@@ -202,7 +202,7 @@ async function fetchPastMeetingsWithParticipants({
   );
 }
 
-// Take one result per participant at a time so early attendees cannot exhaust the budget.
+// 每次为每位参与者取一个结果，这样早到的参与者不会耗尽预算。
 function selectParticipantContext<T extends { id: string }>(
   groups: T[][],
   limit: number,

@@ -163,7 +163,7 @@ function ModelSectionForm(props: {
             }
             explainText={
               hasStoredAiApiKey
-                ? t`Leave this blank to keep the current API key, or enter a new key to replace it.`
+                ? t`留空以保留当前 API 密钥，或输入新密钥进行替换。`
                 : undefined
             }
           />
@@ -171,7 +171,7 @@ function ModelSectionForm(props: {
       )}
 
       {globalError?.message && (
-        <AlertError title={t`Error saving`} description={globalError.message} />
+        <AlertError title={t`保存失败`} description={globalError.message} />
       )}
 
       {aiProvider === Provider.OPEN_AI &&
@@ -179,24 +179,24 @@ function ModelSectionForm(props: {
         modelSelectOptions.length === 0 &&
         (hasStoredAiApiKey ? (
           <AlertError
-            title={t`Invalid API Key`}
-            description={t`We couldn't validate your API key. Please try again.`}
+            title={t`API 密钥无效`}
+            description={t`我们无法验证你的 API 密钥，请重试。`}
           />
         ) : (
           <AlertBasic
-            title={t`API Key`}
-            description={t`Click Save to view available models for your API key.`}
+            title={t`API 密钥`}
+            description={t`点击保存以查看你的 API 密钥可用的模型。`}
           />
         ))}
 
       <div className="flex items-center gap-2">
         <Button type="submit" size="sm" loading={isSubmitting}>
-          <Trans>Save</Trans>
+          <Trans>保存</Trans>
         </Button>
         <Button asChild variant="outline" size="sm">
           <Link href={prefixPath(emailAccountId, "/usage")}>
             <BarChartIcon className="mr-2 size-4" />
-            <Trans>View usage</Trans>
+            <Trans>查看用量</Trans>
           </Link>
         </Button>
       </div>

@@ -281,7 +281,7 @@ async function main() {
       ["google", googlePort],
       ["microsoft", microsoftPort],
     ] as const) {
-      processes.start(`${service} emulator`, PNPM, [
+      processes.start(`${service} 模拟器`, PNPM, [
         "exec",
         "emulate",
         "start",
@@ -292,7 +292,7 @@ async function main() {
         "--port",
         String(port),
       ]);
-      await processes.ready(`${service} emulator`, () =>
+      await processes.ready(`${service} 模拟器`, () =>
         checkUrl(`http://localhost:${port}/.well-known/openid-configuration`),
       );
     }
@@ -435,7 +435,7 @@ async function assertAppPortFree(port: number) {
     server.once("error", () =>
       reject(
         new Error(
-          `Port ${port} is already in use. Stop that server or use pnpm local:start --port ${port + 1}.`,
+          `端口 ${port} 已被占用。请停止该服务，或使用 pnpm local:start --port ${port + 1}。`,
         ),
       ),
     );
@@ -450,6 +450,6 @@ async function checkUrl(url: string, headers?: Record<string, string>) {
     headers,
     signal: AbortSignal.timeout(2000),
   });
-  if (!response.ok) throw new Error(`HTTP ${response.status} from ${url}`);
+  if (!response.ok) throw new Error(`来自 ${url} 的 HTTP ${response.status}`);
   await response.body?.cancel();
 }

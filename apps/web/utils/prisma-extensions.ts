@@ -2,15 +2,14 @@ import { Prisma } from "@/generated/prisma/client";
 import { decryptToken, encryptToken } from "@/utils/encryption";
 
 /**
- * Fields that are transparently encrypted at rest. To add a new field:
- *   1. Add it here under the Prisma model name (camelCase).
- *   2. If the field already has plaintext values in the DB, nothing else is
- *      needed: reads pass plaintext through untouched until the row is next
- *      written. Optional: run a backfill to re-save the values so they adopt
- *      the versioned ciphertext format.
+ * 静态透明加密的字段。要添加新字段：
+ *   1. 在此处以 Prisma 模型名（camelCase）添加。
+ *   2. 如果该字段在数据库中已有明文值，则无需其他操作：
+ *      读取会原样透传明文，直到该行下次写入。
+ *      可选：运行回填以重新保存这些值，使其采用带版本的密文格式。
  *
- * Do NOT add fields that are queried by value (e.g. Session.sessionToken,
- * EmailToken.token): random-IV encryption breaks WHERE lookups.
+ * 不要添加按值查询的字段（例如 Session.sessionToken、EmailToken.token）：
+ * 随机 IV 加密会破坏 WHERE 查找。
  */
 const ENCRYPTED_FIELDS = {
   account: ["access_token", "refresh_token"],
@@ -19,9 +18,9 @@ const ENCRYPTED_FIELDS = {
   messagingChannel: ["accessToken", "refreshToken"],
   mcpConnection: ["accessToken", "refreshToken", "apiKey"],
   mcpIntegration: ["oauthClientSecret"],
-  // The raw join link carries the meeting password for Zoom and Teams. Dedup
-  // queries use normalizedMeetingUrl and activeKey, never this field, so
-  // encrypting it does not break any lookup.
+  // 原始加入链接携带 Zoom 和 Teams 的会议密码。去重查询使用
+  // normalizedMeetingUrl 和 activeKey，绝不使用该字段，
+  // 因此加密它不会破坏任何查找。
   meetingRecording: ["meetingUrl"],
   user: ["aiApiKey", "webhookSecret"],
 } as const satisfies Record<string, readonly string[]>;

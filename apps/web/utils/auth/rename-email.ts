@@ -5,8 +5,8 @@ import { assertAllowedAuthSignupEmail } from "@/utils/auth-signup-policy";
 import { invalidateAccountValidation } from "@/utils/redis/account-validation";
 import { fetchGoogleOpenIdProfile } from "@/utils/gmail/oauth";
 
-// Gmail push notifications identify the mailbox only by its current address,
-// so a renamed address stops matching until the stored email catches up.
+// Gmail 推送通知仅通过邮箱当前地址来识别它，
+// 因此改名的地址在存储的邮箱更新之前将无法匹配。
 export async function syncGoogleEmailFromProfile({
   account,
   mailbox,
@@ -55,8 +55,8 @@ export async function renameGoogleEmail({
   const email = profile.email.trim().toLowerCase();
   if (email === mailbox.email) return;
 
-  // Google is not authoritative for third-party email addresses, even when
-  // email_verified is true. Microsoft profile emails are not identity proofs.
+  // Google 对第三方邮箱地址并不具备权威性，即便
+  // email_verified 为 true。Microsoft 资料邮箱也不能作为身份证明。
   if (
     account.providerId !== "google" ||
     profile.sub !== account.accountId ||
@@ -68,8 +68,8 @@ export async function renameGoogleEmail({
   assertAllowedAuthSignupEmail(email);
 
   const isPrimary = userEmail === mailbox.email;
-  // Secondary-mailbox updates do not touch User.email, so its unique
-  // constraint cannot catch a conflicting login owned by another user.
+  // 次要邮箱更新不会触及 User.email，因此其唯一
+  // 约束无法捕获归属于其他用户的冲突登录。
   if (!isPrimary) {
     const existingUser = await prisma.user.findUnique({
       where: { email },

@@ -27,12 +27,10 @@ export function DriveConnections() {
         <Empty>
           <EmptyHeader>
             <EmptyTitle>
-              <Trans>No drive connections found</Trans>
+              <Trans>未找到云盘连接</Trans>
             </EmptyTitle>
             <EmptyDescription>
-              <Trans>
-                Connect your drive to start organizing your documents.
-              </Trans>
+              <Trans>连接你的云盘，开始整理文档。</Trans>
             </EmptyDescription>
           </EmptyHeader>
         </Empty>

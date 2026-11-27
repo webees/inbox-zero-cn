@@ -27,12 +27,12 @@ export function DraftKnowledgeSetting() {
   return (
     <SettingCard
       title={t`Draft knowledge base`}
-      description={t`Information the assistant uses when writing replies.`}
+      description={t`AI 助手撰写回复时使用的信息。`}
       right={
         isEnabled ? (
           kb
         ) : (
-          <Tooltip content={t`Enable draft replies to edit the knowledge base`}>
+          <Tooltip content={t`启用草稿回复后才能编辑知识库`}>
             <span>{kb}</span>
           </Tooltip>
         )
@@ -46,16 +46,16 @@ function KnowledgeDialog({ enabled }: { enabled: boolean }) {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" disabled={!enabled}>
-          <Trans>Manage</Trans>
+          <Trans>管理</Trans>
         </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[80vh] max-w-4xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            <Trans>Draft knowledge base</Trans>
+            <Trans>草稿知识库</Trans>
           </DialogTitle>
           <DialogDescription>
-            <Trans>This is used to help the assistant draft replies.</Trans>
+            <Trans>用于帮助 AI 助手撰写回复草稿。</Trans>
           </DialogDescription>
         </DialogHeader>
         <KnowledgeBase />

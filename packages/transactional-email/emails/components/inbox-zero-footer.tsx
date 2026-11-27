@@ -15,7 +15,7 @@ export function InboxZeroFooter() {
           <table cellPadding="0" cellSpacing="0">
             <tr>
               <td className="pr-1 align-middle text-[11px] text-gray-500">
-                Sent via
+                发送自
               </td>
               <td className="pr-1.5 align-middle">
                 <Img

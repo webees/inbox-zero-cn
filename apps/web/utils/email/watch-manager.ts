@@ -159,7 +159,7 @@ async function watchEmailAccount(
   );
 
   if (!userHasAiAccess) {
-    logger.info("User does not have access to AI or cold email");
+    logger.info("用户无权使用 AI 或冷邮件");
 
     if (
       watchEmailsExpirationDate &&
@@ -178,16 +178,16 @@ async function watchEmailAccount(
   }
 
   if (!account?.access_token || !account?.refresh_token) {
-    logger.info("User has no access token or refresh token");
+    logger.info("用户没有访问令牌或刷新令牌");
 
     return {
       emailAccountId: emailAccount.id,
       status: "error",
-      message: "Missing authentication tokens.",
+      message: "缺少身份验证令牌。",
     };
   }
 
-  logger.info("Watching emails for account");
+  logger.info("正在监控账号的邮件");
 
   const provider = await createEmailProvider({
     emailAccountId: emailAccount.id,
@@ -204,7 +204,7 @@ async function watchEmailAccount(
   if (!result.success) {
     await logErrorWithDedupe({
       logger,
-      message: "Failed to watch emails for account",
+      message: "无法监控该账号的邮件",
       error: result.error,
       dedupeKeyParts: {
         scope: "watch/all",
@@ -219,7 +219,7 @@ async function watchEmailAccount(
     return {
       emailAccountId: emailAccount.id,
       status: "error",
-      message: "Failed to set up watch for this account.",
+      message: "无法为此账号设置邮件监控。",
       errorDetails:
         result.error instanceof Error
           ? result.error.message
@@ -243,9 +243,9 @@ async function watchEmailAccount(
         userEmail: user.email,
         accessToken: provider.getAccessToken(),
       });
-      if (renamed) logger.info("Synced renamed Google mailbox address");
+      if (renamed) logger.info("已同步重命名的 Google 邮箱地址");
     } catch (error) {
-      logger.warn("Failed to sync Google mailbox address", { error });
+      logger.warn("无法同步 Google 邮箱地址", { error });
     }
   }
 

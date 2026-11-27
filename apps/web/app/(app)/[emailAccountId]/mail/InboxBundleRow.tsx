@@ -125,20 +125,20 @@ export const InboxBundleRow = memo(function InboxBundleRow({
       selectionEnabled={selectionEnabled}
       snippet={summary.preview}
       strings={{
-        selectConversation: (bundleName) => t`Select bundle with ${bundleName}`,
+        selectConversation: (bundleName) => t`选择包含 ${bundleName} 的捆绑组`,
       }}
       subject={summary.headline}
     />
   );
 });
 
-/** Sits above an expanded bundle's threads so the reader can fold it back. */
+/** 位于已展开捆绑组的会话上方，便于阅读器将其折叠回去。 */
 export function InboxBundleHeader({
   bundle,
   onCollapse,
 }: {
   bundle: InboxBundle;
-  /** Told whether the keyboard did it, so focus can follow to the row. */
+  /** 告知是否由键盘触发，以便焦点跟随到该行。 */
   onCollapse: (fromKeyboard: boolean) => void;
 }) {
   return (
@@ -153,7 +153,7 @@ export function InboxBundleHeader({
       <span className="font-medium text-foreground">{bundle.name}</span>
       <span>{bundle.threads.length}</span>
       <span className="ml-auto">
-        <Trans>Collapse</Trans>
+        <Trans>折叠</Trans>
       </span>
     </button>
   );

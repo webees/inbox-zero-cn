@@ -13,7 +13,7 @@ async function getEmailStatsByPeriod(
 ) {
   const { period, fromDate, toDate, emailAccountId } = options;
 
-  // Build date conditions without starting with AND
+  // 构建日期条件，避免以 AND 开头
   const dateConditions: Prisma.Sql[] = [];
   if (fromDate) {
     dateConditions.push(Prisma.sql`date >= ${new Date(fromDate)}`);
@@ -22,7 +22,7 @@ async function getEmailStatsByPeriod(
     dateConditions.push(Prisma.sql`date <= ${new Date(toDate)}`);
   }
 
-  // Using raw query with properly typed parameters
+  // 使用原生查询，并提供正确类型的参数
   type StatsResult = {
     startOfPeriod: Date;
     totalCount: bigint;
@@ -33,7 +33,7 @@ async function getEmailStatsByPeriod(
     notInbox: bigint;
   };
 
-  // Create WHERE clause properly
+  // 正确构建 WHERE 子句
   const whereClause = Prisma.sql`WHERE "emailAccountId" = ${emailAccountId}`;
   const dateClause =
     dateConditions.length > 0
@@ -61,10 +61,10 @@ export async function getStatsByPeriod(
     emailAccountId: string;
   },
 ) {
-  // Get all stats in a single query
+  // 用单次查询获取所有统计数据
   const stats = await getEmailStatsByPeriod(options);
 
-  // Transform stats to match the expected format
+  // 转换统计数据以匹配预期格式
   const formattedStats = stats.map((stat) => {
     const startOfPeriodFormatted = format(stat.startOfPeriod, "LLL dd, y");
 

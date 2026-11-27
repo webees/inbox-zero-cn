@@ -71,7 +71,7 @@ describe("POST /api/user/scheduled-emails/[id]/retry", () => {
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toMatchObject({
-      error: expect.stringContaining("safely"),
+      error: expect.stringContaining("无法安全地重试此邮件。"),
       isKnownError: true,
     });
     expect(prisma.scheduledEmail.updateMany).not.toHaveBeenCalled();

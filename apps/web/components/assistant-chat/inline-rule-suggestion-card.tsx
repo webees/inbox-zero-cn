@@ -7,7 +7,6 @@ import {
   type ReactElement,
   type ReactNode,
 } from "react";
-import { Trans, useLingui } from "@lingui/react/macro";
 import { CheckIcon, Loader2Icon } from "lucide-react";
 import { Badge } from "@/components/Badge";
 import { Button } from "@/components/ui/button";
@@ -54,13 +53,10 @@ export function InlineRuleSuggestionCard({
   markread,
   children,
 }: InlineRuleSuggestionCardProps) {
-  const { t } = useLingui();
   const { submitTextMessage } = useChat();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRuleCreated, setIsRuleCreated] = useState(false);
-  const ruleName = normalizeTagAttribute(name);
-  // The fallback title is sent to the assistant, so it stays English.
-  const title = ruleName || "Suggested rule";
+  const title = normalizeTagAttribute(name) || "建议的规则";
   const whenText = normalizeTagAttribute(when);
   const actionText = normalizeTagAttribute(action);
   const summary = nodeToText(children).trim();
@@ -83,10 +79,10 @@ export function InlineRuleSuggestionCard({
     try {
       await submitTextMessage(
         [
-          `Create this suggested rule: ${title}`,
-          whenText ? `It should catch: ${whenText}` : null,
-          actionInstruction ? `It should do: ${actionInstruction}` : null,
-          summary ? `Context: ${summary}` : null,
+          `创建这条建议的规则：${title}`,
+          whenText ? `它应该匹配：${whenText}` : null,
+          actionInstruction ? `它应该执行：${actionInstruction}` : null,
+          summary ? `上下文：${summary}` : null,
         ]
           .filter(Boolean)
           .join("\n"),
@@ -99,12 +95,12 @@ export function InlineRuleSuggestionCard({
 
   return (
     <RuleSummaryCard
-      title={ruleName || t`Suggested rule`}
+      title={title}
       actions={
         isRuleCreated ? (
           <Badge color="green" className="shrink-0 gap-1.5">
             <CheckIcon className="size-3.5" />
-            <Trans>Rule created</Trans>
+            规则已创建
           </Badge>
         ) : (
           <Button
@@ -119,19 +115,19 @@ export function InlineRuleSuggestionCard({
             ) : (
               <CheckIcon className="size-3.5" />
             )}
-            <Trans>Approve</Trans>
+            批准
           </Button>
         )
       }
     >
       {whenText && (
-        <RuleSummaryRow label={t`When`}>
+        <RuleSummaryRow label="当">
           <RuleSummaryText>{whenText}</RuleSummaryText>
         </RuleSummaryRow>
       )}
 
       {(actionText || suggestedActions.length > 0) && (
-        <RuleSummaryRow label={t`Then`}>
+        <RuleSummaryRow label="则">
           <div className="flex flex-wrap items-center gap-1.5">
             {suggestedActions.length > 0 && (
               <SuggestedActionBadgeList actions={suggestedActions} />

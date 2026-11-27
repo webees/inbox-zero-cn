@@ -44,8 +44,8 @@ export default function SummaryEmail(props: SummaryEmailProps) {
     unsubscribeToken,
   } = props;
 
-  const archiveTitle = `${archivedEmailCount} ${pluralize(archivedEmailCount, "email")} archived`;
-  const coldTitle = `${coldEmailCount} cold ${pluralize(coldEmailCount, "email")} flagged`;
+  const archiveTitle = `${archivedEmailCount} 封邮件已归档`;
+  const coldTitle = `${coldEmailCount} 封冷邮件已标记`;
   const preview = [
     archivedEmailCount ? archiveTitle : "",
     coldEmailCount ? coldTitle : "",
@@ -59,10 +59,10 @@ export default function SummaryEmail(props: SummaryEmailProps) {
     <StatsEmailLayout
       baseUrl={baseUrl}
       unsubscribeToken={unsubscribeToken}
-      preview={preview || "Your week in email"}
-      eyebrow={<>Weekly Update &middot; {formatPeriod(periodEnd)}</>}
-      title="Your week in email"
-      subtitle="Here's how your assistant handled your inbox this week."
+      preview={preview || "你的每周邮件摘要"}
+      eyebrow={<>每周更新 &middot; {formatPeriod(periodEnd)}</>}
+      title="你的每周邮件摘要"
+      subtitle="以下是你的助手本周处理收件箱的情况。"
     >
       <ArchivedEmails
         title={archiveTitle}
@@ -159,15 +159,15 @@ function ArchivedEmails({
   return (
     <StatsEmailCard
       title={title}
-      description="Moved out of your inbox by your rules."
+      description="已由你的规则移出收件箱。"
       footnote={
         archivedEmails.length > 0 && hiddenCount > 0
-          ? `And ${hiddenCount} more archived ${pluralize(hiddenCount, "email")}.`
+          ? `另有 ${hiddenCount} 封邮件已归档。`
           : undefined
       }
       cta={{
         href: `${accountUrl}/automation?tab=history`,
-        label: "View rule activity",
+        label: "查看规则动态",
       }}
     >
       {archivedEmailGroups.map((group) => (
@@ -199,15 +199,15 @@ function ColdEmails({
   return (
     <StatsEmailCard
       title={title}
-      description="If a sender was flagged by mistake, you can mark them as not cold."
+      description="如果发件人被误标记，你可以将其标记为非冷邮件。"
       footnote={
         coldEmailers.length > 0 && hiddenCount > 0
-          ? `And ${hiddenCount} more cold ${pluralize(hiddenCount, "email")}.`
+          ? `另有 ${hiddenCount} 封冷邮件。`
           : undefined
       }
       cta={{
         href: `${accountUrl}/cold-email-blocker`,
-        label: "Review cold emails",
+        label: "查看冷邮件",
       }}
     >
       <EmailList emails={coldEmailers} />
@@ -294,7 +294,7 @@ function SenderRow({
         {hiddenCount > 0 && (
           <OptionalLink href={latest.senderUrl}>
             <Text className="m-0 pt-0.5 text-[13px] leading-5 text-[#848484]">
-              +{hiddenCount} more
+              另有 {hiddenCount} 封
             </Text>
           </OptionalLink>
         )}
@@ -306,9 +306,9 @@ function SenderRow({
         <Text className="m-0 text-[12px] leading-5 text-[#6D6E70]">
           {formatDay(latest.sentAt)}
           {latest.notColdUrl && (
-            <RowAction href={latest.notColdUrl}>Mark not cold</RowAction>
+            <RowAction href={latest.notColdUrl}>标记为非冷邮件</RowAction>
           )}
-          {senderHref && <RowAction href={senderHref}>View</RowAction>}
+          {senderHref && <RowAction href={senderHref}>查看</RowAction>}
         </Text>
       </Column>
     </Row>
@@ -398,9 +398,9 @@ function formatDay(date: Date) {
 }
 
 function formatPeriod(end: Date) {
-  // Subtract in UTC milliseconds so local DST transitions cannot shift the day.
+  // 按 UTC 毫秒相减，避免本地夏令时切换导致日期偏移。
   const start = new Date(new Date(end).getTime() - 6 * 24 * 60 * 60 * 1000);
-  return `${formatDay(start)} to ${formatDay(end)}`;
+  return `${formatDay(start)} 至 ${formatDay(end)}`;
 }
 
 function pluralize(count: number, word: string) {

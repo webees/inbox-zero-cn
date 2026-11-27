@@ -42,27 +42,25 @@ export function ApiKeysSection() {
     <Item size="sm">
       <ItemContent>
         <ItemTitle>
-          <Trans>API Access</Trans>
+          <Trans>API 访问</Trans>
         </ItemTitle>
       </ItemContent>
       <ItemActions>
         <Dialog>
           <DialogTrigger asChild>
             <Button variant="outline" size="sm">
-              <Trans>View keys</Trans>
+              <Trans>查看密钥</Trans>
               {keyCount > 0 ? ` (${keyCount})` : ""}
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-2xl">
             <DialogHeader>
               <DialogTitle>
-                <Trans>API Keys</Trans>
+                <Trans>API 密钥</Trans>
               </DialogTitle>
             </DialogHeader>
             <p className="text-sm text-muted-foreground">
-              <Trans>
-                Keys created here are limited to the current inbox account.
-              </Trans>
+              <Trans>此处创建的密钥仅限当前收件箱账号使用</Trans>
             </p>
             <LoadingContent loading={isLoading} error={error}>
               {keyCount > 0 ? (
@@ -70,19 +68,19 @@ export function ApiKeysSection() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>
-                        <Trans>Name</Trans>
+                        <Trans>名称</Trans>
                       </TableHead>
                       <TableHead>
-                        <Trans>Permissions</Trans>
+                        <Trans>权限</Trans>
                       </TableHead>
                       <TableHead>
-                        <Trans>Created</Trans>
+                        <Trans>创建时间</Trans>
                       </TableHead>
                       <TableHead>
-                        <Trans>Expires</Trans>
+                        <Trans>到期时间</Trans>
                       </TableHead>
                       <TableHead>
-                        <Trans>Last used</Trans>
+                        <Trans>上次使用</Trans>
                       </TableHead>
                       <TableHead />
                     </TableRow>

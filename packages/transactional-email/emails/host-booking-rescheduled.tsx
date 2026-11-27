@@ -30,12 +30,12 @@ export default function HostBookingRescheduledEmail({
 }: HostBookingRescheduledEmailProps) {
   return (
     <BookingEmailLayout
-      headline={`${guestName} rescheduled their booking`}
+      headline={`${guestName} 重新安排了预约`}
       subline={formattedTime}
     >
       <Section className="mb-5 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
         <Text className="m-0 text-[13px] text-amber-800">
-          Previously: <strong>{previousFormattedTime}</strong>
+          之前：<strong>{previousFormattedTime}</strong>
         </Text>
       </Section>
 
@@ -80,25 +80,23 @@ export default function HostBookingRescheduledEmail({
 
         <Section className="px-6 py-3">
           <Text className="m-0 mb-1 text-[13px] text-gray-700">
-            Guest: <strong>{guestName}</strong> ({guestEmail})
+            访客：<strong>{guestName}</strong>（{guestEmail}）
           </Text>
           {location ? (
             <Text className="m-0 text-[13px] text-gray-700">
-              Location: <strong>{location}</strong>
+              地点：<strong>{location}</strong>
             </Text>
           ) : null}
         </Section>
       </Section>
 
-      <Text className="m-0 text-[13px] text-gray-600">
-        Your calendar has been updated.
-      </Text>
+      <Text className="m-0 text-[13px] text-gray-600">您的日历已更新。</Text>
     </BookingEmailLayout>
   );
 }
 
 HostBookingRescheduledEmail.PreviewProps = {
-  eventTitle: "15 min intro",
+  eventTitle: "15 分钟简介",
   formattedTime: "Fri, Nov 13, 2026 · 10:00 AM",
   previousFormattedTime: "Thu, Nov 12, 2026 · 10:00 AM",
   guestEmail: "sarah@acme.co",

@@ -43,7 +43,7 @@ describe("strict sync message retrieval", () => {
         accessToken: "test-token",
         messageIds: ["requested"],
       }),
-    ).rejects.toThrow("unexpected sync message ID");
+    ).rejects.toThrow("意外的同步邮件 ID");
   });
 
   it("propagates throttling while recovering an omitted batch item", async () => {

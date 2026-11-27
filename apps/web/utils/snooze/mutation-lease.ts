@@ -10,8 +10,8 @@ export async function withSnoozeMutationLease<T>(
 ): Promise<T | null> {
   const now = new Date();
   const leaseUntil = new Date(now.getTime() + SNOOZE_EXECUTION_LEASE_MS);
-  // A rollback may touch messages that moved to another conversation, so the
-  // competing-snooze check and provider write share a mailbox-wide lease.
+  // 回滚可能会触及已移至其他会话的邮件，因此竞争性稍后提醒检查与提供商写入
+  // 共享一个邮箱级租约。
   const claimed = await prisma.$executeRaw`
     UPDATE "EmailAccount" SET "snoozeMutationLeaseUntil" = ${leaseUntil}
     WHERE "id" = ${emailAccountId}
@@ -28,7 +28,7 @@ export async function withSnoozeMutationLease<T>(
         WHERE "id" = ${emailAccountId} AND "snoozeMutationLeaseUntil" = ${leaseUntil}
       `;
     } catch (error) {
-      logger.warn("Failed to release the snooze mutation lease", {
+      logger.warn("释放稍后提醒变更租约失败", {
         emailAccountId,
         error,
       });

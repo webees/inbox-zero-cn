@@ -602,7 +602,7 @@ export function MailShell() {
     emptyListMessage = (
       <span className="inline-flex items-center gap-2">
         <LoadingMiniSpinner />
-        <Trans>Syncing your mail…</Trans>
+        <Trans>正在同步你的邮件…</Trans>
       </span>
     );
   } else if (searchQuery) {
@@ -1040,12 +1040,12 @@ export function MailShell() {
       const nextRow = threads.find(
         (thread) => getListThreadKey(thread) === nextThread?.id,
       );
-      // A bundle row is not one email, so the reader closes on it.
+      // 聚合行不是单封邮件，因此阅读器会对其关闭。
       const opensRow =
         nextRow &&
         rowBundles?.get(getListThreadKey(nextRow))?.kind !== "collapsed";
-      // The removed email is leaving the list, and a failed action rolls back
-      // by replacing too, so the history never holds it twice.
+      // 被移除的邮件正在离开列表，失败的操作也会通过替换来回滚，
+      // 因此历史记录不会重复保存它。
       setOpenThread(
         opensRow ? getListThreadSelection(nextRow, emailAccountId) : null,
         { history: "replace" },
@@ -1070,8 +1070,8 @@ export function MailShell() {
       if (removedOpenThreadKey) {
         removedOpenThreadKeyRef.current = removedOpenThreadKey;
       }
-      // Advance before the list drops the row, so focus moves straight to
-      // the next row instead of briefly landing on none.
+      // 在列表移除该行之前先前进，让焦点直接移到下一行，
+      // 而不是短暂落到空处。
       const advancedTo =
         removedOpenThreadKey && autoAdvanceReader
           ? advanceReaderPast(removedOpenThreadKey, ids)
@@ -1080,9 +1080,9 @@ export function MailShell() {
       const queuedOpenThread =
         removedOpenThreadKey !== null &&
         queuedThreadKeys.includes(removedOpenThreadKey);
-      // If it didn't queue, go back, unless the user has since moved on.
-      // A reader closed on a bundle row has stayed put while focus has too;
-      // one closed for any other reason can't tell staying from leaving.
+      // 如果没有进入队列，就返回，除非用户此后已经切换了位置。
+      // 因聚合行而关闭的阅读器保持原地，焦点也保持原地；
+      // 因其他原因关闭的阅读器无法区分停留与离开。
       const stayedWhereAdvanced =
         advancedTo !== null &&
         ("openedKey" in advancedTo
@@ -2307,7 +2307,7 @@ export function MailShell() {
                                   )
                                 }
                               >
-                                <Trans>Retry search</Trans>
+                                <Trans>重试搜索</Trans>
                               </Button>
                             </div>
                           ) : undefined
@@ -2320,9 +2320,9 @@ export function MailShell() {
                             >
                               <LoadingMiniSpinner />
                               {searchQuery ? (
-                                <Trans>Searching mail…</Trans>
+                                <Trans>正在搜索邮件…</Trans>
                               ) : (
-                                <Trans>Loading mail…</Trans>
+                                <Trans>正在加载邮件…</Trans>
                               )}
                             </span>
                           </div>

@@ -19,7 +19,7 @@ export function LabelCombobox({
     id: string | null;
     name: string | null;
   };
-  onChangeValue: (label: { id: string; name: string }) => void;
+  onChangeValue: (value: string) => void;
   userLabels: EmailLabel[];
   isLoading: boolean;
   mutate: () => Promise<unknown>;
@@ -38,16 +38,13 @@ export function LabelCombobox({
         label: label.name || "",
       }))}
       value={value.id || ""}
-      onChangeValue={(id) => {
-        const label = userLabels.find((label) => label.id === id);
-        onChangeValue({ id, name: label?.name ?? "" });
-      }}
+      onChangeValue={onChangeValue}
       search={search}
       onSearch={setSearch}
-      placeholder={selectedLabel?.name || "Select a label"}
+      placeholder={selectedLabel?.name || "选择标签"}
       emptyText={
         <div>
-          <div>No labels</div>
+          <div>暂无标签</div>
           {search && (
             <Button
               className="mt-2"
@@ -66,21 +63,18 @@ export function LabelCombobox({
 
                     setSearch("");
 
-                    // Auto-select the newly created label
+                    // 自动选中新建的标签
                     if (res?.data?.id) {
-                      onChangeValue({
-                        id: res.data.id,
-                        name: res.data.name || searchValue,
-                      });
+                      onChangeValue(res.data.id);
                     }
 
                     return res;
                   },
                   {
-                    loading: `Creating label "${searchValue}"...`,
-                    success: `Created label "${searchValue}"`,
+                    loading: `正在创建标签“${searchValue}”...`,
+                    success: `已创建标签“${searchValue}”`,
                     error: (errorMessage: unknown) =>
-                      `Error creating label "${searchValue}": ${
+                      `创建标签“${searchValue}”时出错：${
                         errorMessage instanceof Error
                           ? errorMessage.message
                           : String(errorMessage)
@@ -89,7 +83,7 @@ export function LabelCombobox({
                 );
               }}
             >
-              {`Create "${search}" label`}
+              {`创建“${search}”标签`}
             </Button>
           )}
         </div>

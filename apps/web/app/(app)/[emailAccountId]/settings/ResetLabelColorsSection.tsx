@@ -44,13 +44,13 @@ export function ResetLabelColorsSection({
           return;
         }
         if (data.updated === 0) {
-          toast.success(t`Label colors are already set to the defaults.`);
+          toast.success(t`标签颜色已设置为默认值。`);
           return;
         }
         toast.success(
           t`${plural(data.updated, {
-            one: "Reset # label to the default colors.",
-            other: "Reset # labels to the default colors.",
+            one: "已将 # 个标签重置为默认颜色。",
+            other: "已将 # 个标签重置为默认颜色。",
           })}`,
         );
       },
@@ -66,13 +66,10 @@ export function ResetLabelColorsSection({
       <Item size="sm">
         <ItemContent>
           <ItemTitle>
-            <Trans>Reset Label Colors</Trans>
+            <Trans>重置标签颜色</Trans>
           </ItemTitle>
           <ItemDescription>
-            <Trans>
-              Restore the default colors for Inbox Zero labels like To Reply and
-              Newsletter
-            </Trans>
+            <Trans>恢复 Inbox Zero 标签（如待回复和新闻简报）的默认颜色</Trans>
           </ItemDescription>
         </ItemContent>
         <ItemActions>
@@ -82,7 +79,7 @@ export function ResetLabelColorsSection({
             loading={isExecuting}
             onClick={() => execute()}
           >
-            <Trans>Reset</Trans>
+            <Trans>重置</Trans>
           </Button>
         </ItemActions>
       </Item>

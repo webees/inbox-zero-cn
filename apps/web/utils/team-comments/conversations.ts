@@ -238,7 +238,7 @@ export async function shareConversation(
         error.code === "P2003" ||
         (error.code === "P2010" && rawSqlState === "23503")
       )
-        throw new SafeError("Teammate is no longer a member");
+        throw new SafeError("队友已不再是成员");
       if (
         error.code === "P2002" ||
         (error.code === "P2010" && rawSqlState === "23505")
@@ -309,7 +309,7 @@ export async function stopSharing(
         throw error;
     }
   }
-  throw new Error("Unreachable transaction state");
+  throw new Error("不可达的事务状态");
 }
 
 async function restartSharing(
@@ -396,7 +396,7 @@ async function restartSharing(
         throw error;
     }
   }
-  throw new Error("Unreachable transaction state");
+  throw new Error("不可达的事务状态");
 }
 
 export async function setParticipantAccess(
@@ -408,8 +408,7 @@ export async function setParticipantAccess(
     logger: Logger;
   },
 ) {
-  if (input.memberId === actor.memberId)
-    throw new SafeError("The publisher cannot be removed");
+  if (input.memberId === actor.memberId) throw new SafeError("无法移除发布者");
   for (let attempt = 0; attempt < 4; attempt++) {
     const { conversation } = await getPublisherConversation(
       actor,
@@ -422,8 +421,7 @@ export async function setParticipantAccess(
       },
       select: { id: true },
     });
-    if (!member && input.access)
-      throw new SafeError("Teammate is no longer a member");
+    if (!member && input.access) throw new SafeError("队友已不再是成员");
     if (!member) return getSharedConversation(actor, input.conversationId);
     const oldGrant = await prisma.conversationParticipant.findUnique({
       where: {
@@ -493,7 +491,7 @@ export async function setParticipantAccess(
         throw error;
     }
   }
-  throw new Error("Unreachable transaction state");
+  throw new Error("不可达的事务状态");
 }
 
 export async function retryConflicts<T>(
@@ -511,5 +509,5 @@ export async function retryConflicts<T>(
         throw error;
     }
   }
-  throw new Error("Unreachable transaction state");
+  throw new Error("不可达的事务状态");
 }

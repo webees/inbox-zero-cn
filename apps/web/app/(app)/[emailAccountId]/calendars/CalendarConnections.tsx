@@ -26,20 +26,20 @@ export function CalendarConnections() {
             <CardContent className="pt-6">
               <div className="space-y-2">
                 <TypographyP className="text-sm">
-                  <Trans>Connect your calendar to unlock:</Trans>
+                  <Trans>连接日历以解锁：</Trans>
                 </TypographyP>
 
                 <TypographyP className="text-sm flex items-center gap-2">
                   <CalendarCheckIcon className="size-4 text-blue-600" />
                   <span className="min-w-0">
-                    <Trans>AI replies based on your real availability</Trans>
+                    <Trans>基于你实际空闲时间的 AI 回复</Trans>
                   </span>
                 </TypographyP>
 
                 <TypographyP className="text-sm flex items-center gap-2">
                   <FileTextIcon className="size-4 text-blue-600" />
                   <span className="min-w-0">
-                    <Trans>Meeting briefs before every call</Trans>
+                    <Trans>每次通话前的会议简报</Trans>
                   </span>
                 </TypographyP>
               </div>

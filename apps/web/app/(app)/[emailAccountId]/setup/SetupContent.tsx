@@ -311,18 +311,18 @@ function Checklist({
         );
 
         if (result?.serverError || result?.validationErrors) {
-          toastError({ description: t`Failed to skip this step` });
+          toastError({ description: t`跳过此步骤失败` });
           return;
         }
 
         onSetupProgressChanged(stepKey);
       } catch (error) {
-        logger.warn("Setup step dismissal failed", {
+        logger.warn("跳过设置步骤失败", {
           stepKey,
-          error: error instanceof Error ? error.message : "Unknown error",
+          error: error instanceof Error ? error.message : "未知错误",
         });
         toastError({
-          description: t`Failed to skip this step. Please try again.`,
+          description: t`跳过此步骤失败，请重试。`,
         });
       } finally {
         setPendingStep(null);
@@ -340,12 +340,12 @@ function Checklist({
       <div className="border-b border-border p-4">
         <div className="flex items-center justify-between">
           <h2 className="font-semibold text-foreground">
-            <Trans>Complete your setup</Trans>
+            <Trans>完成设置</Trans>
           </h2>
           <div className="flex items-center gap-3">
             <span className="text-sm text-muted-foreground hidden sm:block">
               <Trans>
-                {completedCount} of {totalSteps} completed
+                已完成 {completedCount} 项，共 {totalSteps} 项
               </Trans>
             </span>
             <div className="h-2 w-32 overflow-hidden rounded-full bg-muted">
@@ -362,10 +362,10 @@ function Checklist({
         <StepItem
           href={prefixPath(emailAccountId, "/mail")}
           icon={<MailIcon size={18} />}
-          title={t`Try the ${BRAND_NAME} email app`}
-          timeEstimate={t`1 minute`}
+          title={t`体验 ${BRAND_NAME} 邮件应用`}
+          timeEstimate={t`1 分钟`}
           completed={isEmailAppOpened}
-          actionText={t`Open`}
+          actionText={t`打开`}
           onMarkDone={() => handleMarkStepDone("emailApp")}
           showMarkDone
           markDoneDisabled={pendingStep !== null}
@@ -376,10 +376,10 @@ function Checklist({
       <StepItem
         href={getOnboardingStepHref(emailAccountId, STEP_KEYS.LABELS)}
         icon={<BotIcon size={18} />}
-        title={t`Set up your Personal Assistant`}
-        timeEstimate={t`5 minutes`}
+        title={t`设置你的个人助手`}
+        timeEstimate={t`5 分钟`}
         completed={isAiAssistantConfigured}
-        actionText={t`Set up`}
+        actionText={t`设置`}
         onMarkDone={() => handleMarkStepDone("aiAssistant")}
         showMarkDone
         markDoneDisabled={pendingStep !== null}
@@ -389,10 +389,10 @@ function Checklist({
       <StepItem
         href={prefixPath(emailAccountId, "/bulk-unsubscribe")}
         icon={<ArchiveIcon size={18} />}
-        title={t`Unsubscribe from a newsletter you don't read`}
-        timeEstimate={t`2 minutes`}
+        title={t`退订你不再阅读的新闻简报`}
+        timeEstimate={t`2 分钟`}
         completed={isBulkUnsubscribeConfigured}
-        actionText={t`View`}
+        actionText={t`查看`}
         onMarkDone={() => handleMarkStepDone("bulkUnsubscribe")}
         showMarkDone
         markDoneDisabled={pendingStep !== null}

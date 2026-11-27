@@ -26,8 +26,8 @@ export const createReplyContent = ({
     ${quotedContentHtml}
   </blockquote>
 </div>`;
-  // Without content this is the composer's quote block, which sits below the
-  // user's reply, so it carries no empty reply block of its own.
+  // 没有内容时，这是编辑器的引用块，位于用户回复的下方，
+  // 因此它自身不携带空的回复块。
   const html = contentHtml
     ? `<div ${dirAttribute}>${contentHtml}</div>\n<br>\n${quoteHtml}`
     : quoteHtml;

@@ -1,76 +1,75 @@
 ---
-title: 'Context Integrations'
-description: 'Connect read-oriented business tools so drafts and meeting briefs can use relevant external context.'
+title: '上下文集成'
+description: '连接面向读取的业务工具，让草稿和会议简报可以使用相关的外部上下文。'
 icon: 'plug'
 ---
 
 <Note>
-Context Integrations are in Early Access.
+上下文集成处于抢先体验阶段。
 </Note>
 
-Context Integrations let Inbox Zero look up relevant information in connected services while preparing email drafts and meeting briefs. For example, the assistant may search for a sender in a CRM, fetch a Notion page, or check billing information in Stripe before it writes.
+上下文集成让 Inbox Zero 在准备邮件草稿和会议简报时，可以在已连接的服务中查找相关信息。例如，助手在撰写前可能在 CRM 中搜索发件人、获取某个 Notion 页面，或查看 Stripe 中的计费信息。
 
-They are context sources, not general workflow automations.
+它们是上下文来源，而不是通用的工作流自动化。
 
-## Requirements
+## 要求
 
-- Early Access must be enabled for the account.
-- Connecting an integration requires the **Plus plan or higher**.
+- 该账号必须已启用抢先体验。
+- 连接集成需要 **Plus 套餐或更高版本**。
 
-## Available integrations
+## 可用的集成
 
-- **Notion**: search and fetch approved Notion content.
-- **Stripe**: look up customers, invoices, subscriptions, and other billing data.
-- **Linear**: look up issues, projects, and other workspace data (read-only access).
-- **Attio**: look up people, companies, deals, notes, and tasks in your CRM.
-- **Intercom**: look up conversations, contacts, companies, and Help Center articles.
-- **Monday.com**: look up boards, board items, and workspaces.
-- **Todoist**: write-only — adds tasks via the "Add Todoist task" rule action. Leave the task and description blank and the AI writes them from each matching email; fill them in to use your own wording. It is not used for drafting context.
-- **HubSpot, Salesforce, Airtable, Google Sheets, Slack, Asana, ClickUp, Jira, Zendesk, QuickBooks, and Calendly**: look up records such as contacts, deals, tickets, tasks, and invoices. These connections are hosted by Composio, and each one exposes a curated set of read-only lookups.
-- **Pipedream**: connect read-oriented tools from hundreds of other apps through a Pipedream account.
+- **Notion**：搜索并获取已批准的 Notion 内容。
+- **Stripe**：查找客户、发票、订阅和其他计费数据。
+- **Linear**：查找 issue、项目和其他工作区数据（只读访问）。
+- **Attio**：在你的 CRM 中查找人物、公司、交易、笔记和任务。
+- **Intercom**：查找对话、联系人、公司和帮助中心文章。
+- **Monday.com**：查找看板、看板项和工作区。
+- **Todoist**：只写 —— 通过「添加 Todoist 任务」规则操作添加任务。把任务和描述留空，AI 会根据每封匹配的邮件撰写它们；填写则可使用你自己的文字。它不用于起草上下文。
+- **HubSpot、Salesforce、Airtable、Google Sheets、Slack、Asana、ClickUp、Jira、Zendesk、QuickBooks 和 Calendly**：查找联系人、交易、工单、任务和发票等记录。这些连接由 Composio 托管，每一个都只开放一组精选的只读查询。
+- **Pipedream**：通过 Pipedream 账号连接数百个其他应用的面向读取的工具。
 
-## Connect a service
+## 连接服务
 
-1. Open **Integrations** in the left sidebar.
-2. Select **Connect** beside a service.
-3. Review the provider's authorization screen and approve only the workspace and data you intend to share.
-4. Return to Inbox Zero and confirm that the row says **Connected**.
+1. 打开左侧边栏中的**集成**。
+2. 在某个服务旁选择**连接**。
+3. 查看服务商的授权页面，只批准你打算共享的工作区和数据。
+4. 返回 Inbox Zero，确认该行显示**已连接**。
 
-That's it: read-oriented tools are enabled automatically after connecting. Expand **Tools** if you want to turn off specific lookups.
+就是这样：连接后，面向读取的工具会自动启用。如果你想关闭特定的查询，请展开**工具**。
 
-## How context is used
+## 上下文如何使用
 
-For email drafting, Inbox Zero searches enabled tools for information related to the sender and the current thread. For meeting briefs, enabled integration tools are available alongside email, calendar, and web-research context.
+对于邮件起草，Inbox Zero 会在已启用的工具中搜索与发件人和当前会话相关的信息。对于会议简报，已启用的集成工具会与邮件、日历和网络调研上下文一起可用。
 
-An integration may return stale, incomplete, or incorrectly matched information, so double-check consequential facts such as prices and payment state before sending a draft.
+集成可能返回过时、不完整或错误匹配的信息，因此在发送草稿前，请对价格和支付状态等关键事实进行复核。
 
-## Safety and access control
+## 安全与访问控制
 
-- Enable the smallest set of tools needed for your workflow.
-- Prefer read-only tools. Do not enable tools that create, update, or delete data merely because their provider makes them available.
-- Provider authorization controls which workspaces and records Inbox Zero can access; tool switches control which of those capabilities the assistant may call.
-- Disconnecting removes the connection from Inbox Zero. It does not delete data in the external service.
-- Pausing an integration from its row menu keeps the connection and your tool settings but stops its tools from being used until you resume it.
+- 只启用工作流所需的最小工具集。
+- 优先使用只读工具。不要仅仅因为服务商提供，就启用会创建、更新或删除数据的工具。
+- 服务商授权控制 Inbox Zero 可以访问哪些工作区和记录；工具开关控制助手可以调用其中的哪些能力。
+- 断开连接会从 Inbox Zero 中移除该连接。它不会删除外部服务中的数据。
+- 从集成的行菜单中暂停某个集成，会保留连接和你的工具设置，但在你恢复它之前会停止使用其工具。
 
-## Troubleshooting
+## 故障排查
 
-### Integrations are not enabled
+### 集成未启用
 
-Select **Join Early Access** from the Integrations page.
+在集成页面选择**加入抢先体验**。
 
-### Connect asks for an upgrade
+### 连接时要求升级
 
-Context Integrations require Plus or higher. Upgrade the account that owns the selected email address, then restart the connection flow.
+上下文集成需要 Plus 或更高版本。升级拥有所选邮箱地址的账号，然后重新开始连接流程。
 
-### A tool does not appear
+### 某个工具没有出现
 
-Reconnect the service to resync its tool list. Some integrations intentionally allow only an approved subset, and Pipedream write-oriented tools may be filtered out.
+重新连接该服务以重新同步其工具列表。有些集成有意只允许一个已批准的子集，Pipedream 中面向写入的工具可能会被过滤掉。
 
-### Drafts do not include expected context
+### 草稿未包含预期的上下文
 
-Confirm that the integration is not paused, the relevant tool is enabled, and the connected provider account can access the record. The assistant only calls tools it judges relevant to the email or meeting.
+确认该集成未被暂停、相关工具已启用，并且已连接的服务商账号可以访问该记录。助手只会调用它认为与邮件或会议相关的工具。
 
-### OAuth fails or is cancelled
+### OAuth 失败或被取消
 
-Return to **Integrations** and start a fresh connection. If failure continues, disconnect the partial connection if present and retry.
-
+返回**集成**并重新开始一次连接。如果仍然失败，请断开（如果存在）不完整的连接并重试。

@@ -96,7 +96,7 @@ describe("public-api-error", () => {
     });
 
     await expect(readPublicApiJson(request)).rejects.toMatchObject({
-      safeMessage: "Request body must be valid JSON",
+      safeMessage: "请求体必须是有效的 JSON",
       statusCode: 400,
     });
   });
@@ -109,7 +109,7 @@ describe("public-api-error", () => {
     expect(response.headers.get("allow")).toBe("GET, POST");
     expect(body.error).toMatchObject({
       code: "METHOD_NOT_ALLOWED",
-      message: "Method not allowed",
+      message: "方法不允许",
     });
   });
 
@@ -123,7 +123,7 @@ describe("public-api-error", () => {
     expect(response.headers.get("allow")).toBeNull();
     expect(body.error).toMatchObject({
       code: "NOT_FOUND",
-      message: "External API is not enabled",
+      message: "外部 API 未启用",
     });
   });
 });

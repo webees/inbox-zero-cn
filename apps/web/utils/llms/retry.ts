@@ -95,13 +95,12 @@ export function isTransientNetworkError(error: unknown): boolean {
 }
 
 /**
- * Escape hatch for lower-level calls that do not already go through our shared
- * `createGenerateText()` / `createGenerateObject()` wrappers. Most LLM call
- * sites should not use this directly because those wrappers already apply
- * network and provider-level retries.
+ * 为尚未经过我们共享的 `createGenerateText()` / `createGenerateObject()`
+ * 封装的底层调用提供的逃生通道。大多数 LLM 调用点不应直接使用它，
+ * 因为那些封装已经应用了网络与提供商级别的重试。
  *
- * Retries an async function on transient network errors with exponential
- * backoff. Also supports custom retry conditions (e.g., validation errors).
+ * 以指数退避的方式在瞬时网络错误上重试异步函数。
+ * 也支持自定义重试条件（例如校验错误）。
  */
 export async function withNetworkRetry<T>(
   fn: () => Promise<T>,
@@ -122,7 +121,7 @@ export async function withNetworkRetry<T>(
 
       if (isRetryable && attempt < MAX_RETRIES) {
         const errorType = isNetworkError ? "network" : "validation";
-        logger.warn(`Retrying after ${errorType} error`, {
+        logger.warn(`遇到 ${errorType} 错误后重试`, {
           label,
           attempt,
           maxRetries: MAX_RETRIES,
@@ -130,7 +129,7 @@ export async function withNetworkRetry<T>(
           error,
         });
 
-        // Exponential backoff: 1s, 2s, 4s
+        // 指数退避：1s、2s、4s
         const delayMs = 1000 * 2 ** attempt;
         await sleep(delayMs);
         continue;
@@ -140,8 +139,8 @@ export async function withNetworkRetry<T>(
     }
   }
 
-  // Should never reach here, but TypeScript needs it
-  throw new Error("Unexpected: exceeded retry loop");
+  // 理论上不应执行到此，但 TypeScript 需要它
+  throw new Error("意外情况：超出了重试循环");
 }
 
 interface LLMErrorInfo {

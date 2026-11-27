@@ -11,25 +11,25 @@ describe("validateAutomationCronExpression", () => {
 
   it("rejects cron with non-wildcard day-of-month", () => {
     expect(() => validateAutomationCronExpression("0 9 1 * *")).toThrow(
-      "Automation cron supports wildcard day-of-month and month only",
+      "自动化 cron 仅支持通配符形式的日期和月份",
     );
   });
 
   it("rejects cron with invalid step", () => {
     expect(() => validateAutomationCronExpression("*/0 9 * * *")).toThrow(
-      "Invalid minute step: 0",
+      "分钟步长无效：0",
     );
   });
 
   it("rejects cron with multiple step delimiters", () => {
     expect(() => validateAutomationCronExpression("1/2/3 9 * * *")).toThrow(
-      "Invalid minute token 1/2/3: too many step delimiters",
+      "分钟 标记 1/2/3 无效：步长分隔符过多",
     );
   });
 
   it("rejects cron with multiple range delimiters", () => {
     expect(() => validateAutomationCronExpression("1-2-3 9 * * *")).toThrow(
-      "Invalid minute token 1-2-3: too many range delimiters",
+      "分钟 标记 1-2-3 无效：范围分隔符过多",
     );
   });
 });

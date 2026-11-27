@@ -214,26 +214,26 @@ async function fetchUpstreamAsset(
   if (isRedirectResponse(upstreamResponse.status)) {
     if (redirectsRemaining <= 0) {
       upstreamResponse.body?.cancel();
-      logger?.warn("Image proxy redirect limit exceeded", {
+      logger?.warn("图片代理重定向次数超出上限", {
         initialUrl: sanitizeUrlForLogs(initialAssetUrl),
         method,
         redirectChain,
       });
-      return new Response("Too many redirects", { status: 508 });
+      return new Response("重定向次数过多", { status: 508 });
     }
 
     const location = upstreamResponse.headers.get("location");
     upstreamResponse.body?.cancel();
 
     if (!location) {
-      return new Response("Redirect missing location", { status: 502 });
+      return new Response("重定向缺少目标位置", { status: 502 });
     }
 
     let redirectedUrl: URL;
     try {
       redirectedUrl = new URL(location, assetUrl);
     } catch {
-      logger?.warn("Image proxy redirect target is invalid", {
+      logger?.warn("图片代理重定向目标无效", {
         initialUrl: sanitizeUrlForLogs(initialAssetUrl),
         method,
         redirectChain,

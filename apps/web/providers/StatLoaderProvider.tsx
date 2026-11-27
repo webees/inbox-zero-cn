@@ -15,11 +15,11 @@ import { useAccount } from "@/providers/EmailAccountProvider";
 import { fetchWithAccount } from "@/utils/fetch";
 import { getRetryAfterDelayMs } from "@/utils/retry/provider-retry";
 
-// Gmail's per-user quota is per minute, and a rate-limited load can report a
-// much shorter Retry-After, so resuming sooner only hits the limit again.
+// Gmail 的单用户配额按分钟计算，受到限流的加载可能返回短得多的
+// Retry-After，因此过早恢复只会再次触发限流。
 const MIN_RATE_LIMIT_WAIT_MS = 60_000;
-// Waiting this long without a single successful load means the provider is
-// not recovering soon, so the import stops and the user can start it again.
+// 等待这么久仍没有一次成功加载，说明提供商短期内不会恢复，
+// 因此导入会停止，用户之后可以重新启动。
 const MAX_RATE_LIMIT_WAIT_MS = 15 * 60_000;
 
 type Context = {
@@ -60,7 +60,7 @@ class StatLoader {
     const existing = this.#inFlight.get(key);
     if (existing) return existing;
 
-    // Reads use an independent request so they cannot queue ahead of UI saves.
+    // 读取使用独立请求，避免排在界面保存请求之前。
     const request = fetchWithAccount({
       url: "/api/user/stats/load",
       emailAccountId,
@@ -80,7 +80,7 @@ class StatLoader {
         }
         const result = await response.json();
         if (!response.ok || isError(result))
-          throw new Error("Error loading stats.");
+          throw new Error("加载统计数据时出错。");
       })
       .finally(() => this.#inFlight.delete(key));
     this.#inFlight.set(key, request);
@@ -98,8 +98,8 @@ export function StatLoaderProvider(props: { children: React.ReactNode }) {
   const [rateLimitResumeAts, setRateLimitResumeAts] = useState<
     Record<string, Date | undefined>
   >({});
-  // Cancelling aborts every batch started before it, including one that is
-  // waiting out a rate limit; batches started afterwards get a fresh signal.
+  // 取消会中止此前启动的每一批任务，包括正在等待限流结束的批次；
+  // 之后启动的批次会获得新的信号。
   const cancelControllerRef = useRef(new AbortController());
   const { emailAccountId } = useAccount();
   const rateLimitResumeAt = rateLimitResumeAts[emailAccountId] ?? null;
@@ -117,10 +117,11 @@ export function StatLoaderProvider(props: { children: React.ReactNode }) {
           emailAccountId,
           loadBefore: options.loadBefore,
         });
-        if (options.showToast) toastSuccess({ description: "Stats loaded!" });
+        if (options.showToast)
+          toastSuccess({ description: "统计数据已加载！" });
       } catch (error) {
         if (options.showToast)
-          toastError({ description: "Error loading stats." });
+          toastError({ description: "加载统计数据时出错。" });
         throw error;
       } finally {
         setLoadingCounts((counts) => ({
@@ -158,7 +159,7 @@ export function StatLoaderProvider(props: { children: React.ReactNode }) {
       try {
         for (let i = 0; i < batchSize; ) {
           if (signal.aborted) return;
-          console.log("Loading batch", i);
+          console.log("正在加载批次", i);
           try {
             await onLoad({ ...options, showToast: false });
           } catch (error) {
@@ -179,14 +180,15 @@ export function StatLoaderProvider(props: { children: React.ReactNode }) {
           i++;
         }
         if (signal.aborted) return;
-        if (options.showToast) toastSuccess({ description: "Stats loaded!" });
+        if (options.showToast)
+          toastSuccess({ description: "统计数据已加载！" });
       } catch (error) {
         if (!options.showToast) return;
         toastError({
           description:
             error instanceof StatsRateLimitError
-              ? t`Your email provider kept limiting requests, so loading stopped. Try again in a few minutes.`
-              : "Error loading stats.",
+              ? t`你的邮件提供商持续限制请求，因此加载已停止。请几分钟后重试。`
+              : "加载统计数据时出错。",
         });
       }
     },

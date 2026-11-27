@@ -96,7 +96,7 @@ describe("getAutomationJobMessage", () => {
     });
 
     expect(message).toBe(
-      "Your inbox looks clear right now. Want me to keep monitoring and ping again later?",
+      "你的收件箱现在看起来很清爽。需要我继续监控并在稍后再提醒你吗？",
     );
     expect(mockAiGenerateAutomationCheckInMessage).not.toHaveBeenCalled();
   });

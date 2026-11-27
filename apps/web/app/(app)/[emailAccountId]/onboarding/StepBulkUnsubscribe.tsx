@@ -192,20 +192,19 @@ export function StepBulkUnsubscribe({ onNext }: { onNext: () => void }) {
           <PageHeading className="mb-3">
             <Plural
               value={suggestions.length}
-              one="We found # sender you rarely read"
-              other="We found # senders you rarely read"
+              one="我们找到 # 位你很少阅读的发件人"
+              other="我们找到 # 位你很少阅读的发件人"
             />
           </PageHeading>
           <TypographyP className="text-muted-foreground">
             <Trans>
-              We'll unsubscribe and archive these for you. Uncheck any you want
-              to keep.
+              我们会为你退订并归档这些邮件。取消勾选你想保留的项目。
             </Trans>
           </TypographyP>
         </div>
 
         <section
-          aria-label={t`Senders you rarely read`}
+          aria-label={t`你很少阅读的发件人`}
           className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
         >
           <ul className="divide-y divide-slate-100 dark:divide-border py-1.5">
@@ -224,8 +223,8 @@ export function StepBulkUnsubscribe({ onNext }: { onNext: () => void }) {
         <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-sm text-muted-foreground">
           <SparklesIcon className="size-3.5 text-amber-500" />
           {hasMore
-            ? t`Showing your top ${previewSenders.length}. We'll keep spotting more as you use Inbox Zero.`
-            : t`We'll keep spotting more as you use Inbox Zero.`}
+            ? t`显示前 ${previewSenders.length} 位。随着你使用 Inbox Zero，我们会继续发现更多。`
+            : t`随着你使用 Inbox Zero，我们会继续发现更多。`}
         </p>
 
         <div className="mt-7 flex flex-col items-center gap-3">
@@ -239,11 +238,11 @@ export function StepBulkUnsubscribe({ onNext }: { onNext: () => void }) {
             {selectedSenders.length > 0 ? (
               <>
                 <MailXIcon className="size-4 mr-2" />
-                <Trans>Unsubscribe from {selectedSenders.length}</Trans>
+                <Trans>退订 {selectedSenders.length} 位发件人</Trans>
               </>
             ) : (
               <>
-                <Trans>Continue</Trans>
+                <Trans>继续</Trans>
                 <ArrowRightIcon className="size-4 ml-2" />
               </>
             )}
@@ -255,7 +254,7 @@ export function StepBulkUnsubscribe({ onNext }: { onNext: () => void }) {
               onClick={onSkip}
               disabled={submitting}
             >
-              <Trans>Skip for now</Trans>
+              <Trans>暂时跳过</Trans>
             </Button>
           )}
         </div>
@@ -269,7 +268,7 @@ function LoadingBulkUnsubscribeStep() {
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center bg-slate-50 dark:bg-background px-4 py-10">
-      <output className="w-full max-w-xl" aria-label={t`Loading senders`}>
+      <output className="w-full max-w-xl" aria-label={t`正在加载发件人`}>
         <div className="mb-6 flex flex-col items-center">
           <Skeleton className="mb-3 h-8 w-80 max-w-full" />
           <Skeleton className="h-5 w-96 max-w-full" />
@@ -308,19 +307,16 @@ function StaticBulkUnsubscribeStep({ onNext }: { onNext: () => void }) {
         </div>
 
         <PageHeading className="mb-3">
-          <Trans>Bulk unsubscribe and archive</Trans>
+          <Trans>批量退订并归档</Trans>
         </PageHeading>
 
         <TypographyP className="text-muted-foreground mb-8">
-          <Trans>
-            See which emails you never read. One-click unsubscribe and archive
-            them in bulk.
-          </Trans>
+          <Trans>查看你从未阅读的邮件。一键批量退订并归档。</Trans>
         </TypographyP>
 
         <div className="flex flex-col gap-2 w-full max-w-xs">
           <Button className="w-full" onClick={onNext}>
-            <Trans>Continue</Trans>
+            <Trans>继续</Trans>
             <ArrowRightIcon className="size-4 ml-2" />
           </Button>
         </div>

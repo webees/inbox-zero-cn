@@ -102,8 +102,7 @@ export async function discardDraftReplacedBySend({
   const kept: string[] = [];
   for (const draftId of draftIds)
     if (!(await discardWithRetry({ draftId, provider }))) kept.push(draftId);
-  if (kept.length)
-    throw new Error(`Could not remove ${kept.length} replaced draft(s)`);
+  if (kept.length) throw new Error(`无法删除 ${kept.length} 个被替换的草稿`);
 }
 
 export async function discardComposeDraft({
@@ -121,12 +120,10 @@ export async function discardComposeDraft({
     (await provider.deleteDraft(reference.id, reference.version))
   )
     return;
-  // Something else, such as the mail engine's own discard, may have deleted
-  // it meanwhile; only a draft that is still there has really changed.
+  // 其他逻辑（例如邮件引擎自身的丢弃操作）可能已经在此期间删除了它；
+  // 只有仍然存在的草稿才真正发生了变更。
   if (await provider.getDraft(draftId))
-    throw new SafeError(
-      "The mailbox draft changed. Reopen it before discarding.",
-    );
+    throw new SafeError("邮箱中的草稿已变更。丢弃前请重新打开。");
 }
 
 export async function sendComposeDraft({

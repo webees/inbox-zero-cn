@@ -17,16 +17,13 @@ export function BulkUnsubscribe() {
     <Section>
       <SectionHeading>
         <Trans>
-          Get to Inbox Zero fast.
+          快速实现 Inbox Zero。
           <br />
-          Bulk unsubscribe from emails you never read.
+          批量退订你从不阅读的邮件。
         </Trans>
       </SectionHeading>
       <SectionSubtitle>
-        <Trans>
-          See which emails you never read, and one-click unsubscribe and archive
-          them.
-        </Trans>
+        <Trans>查看你从不阅读的邮件，一键退订并归档。</Trans>
       </SectionSubtitle>
       <SectionContent className="flex justify-center items-center">
         <CardWrapper
@@ -36,7 +33,7 @@ export function BulkUnsubscribe() {
         >
           <Image
             src="/images/new-landing/bulk-unsubscribe.png"
-            alt={t`bulk unsubscribe`}
+            alt={t`批量退订`}
             width={1000}
             height={1000}
           />
@@ -45,7 +42,7 @@ export function BulkUnsubscribe() {
           <CardWrapper padding="xs" rounded="md" className="block md:hidden">
             <Image
               src="/images/new-landing/bulk-unsubscribe-mobile.png"
-              alt={t`bulk unsubscribe`}
+              alt={t`批量退订`}
               width={1000}
               height={1000}
             />

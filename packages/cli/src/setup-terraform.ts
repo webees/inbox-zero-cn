@@ -120,7 +120,7 @@ interface TerraformVarsConfig {
 }
 
 export async function runTerraformSetup(options: TerraformSetupOptions) {
-  p.intro("Terraform Setup for Inbox Zero");
+  p.intro("Inbox Zero 的 Terraform 配置");
 
   const nonInteractive = options.yes === true;
   const outputDir = resolveOutputDir(options.outputDir);
@@ -131,7 +131,7 @@ export async function runTerraformSetup(options: TerraformSetupOptions) {
     (nonInteractive
       ? DEFAULT_ENVIRONMENT
       : await promptRequiredText({
-          message: "Environment name:",
+          message: "环境名称：",
           placeholder: DEFAULT_ENVIRONMENT,
           initialValue: DEFAULT_ENVIRONMENT,
         }));
@@ -141,7 +141,7 @@ export async function runTerraformSetup(options: TerraformSetupOptions) {
     (nonInteractive
       ? DEFAULT_REGION
       : await promptRequiredText({
-          message: "AWS region:",
+          message: "AWS 区域：",
           placeholder: DEFAULT_REGION,
           initialValue: DEFAULT_REGION,
         }));
@@ -151,7 +151,7 @@ export async function runTerraformSetup(options: TerraformSetupOptions) {
     (nonInteractive
       ? ""
       : await promptOptionalText({
-          message: "Public base URL (leave empty to use ALB DNS name):",
+          message: "公开基础 URL（留空则使用 ALB DNS 名称）：",
           placeholder: "https://app.example.com",
         }));
 
@@ -159,7 +159,7 @@ export async function runTerraformSetup(options: TerraformSetupOptions) {
   let domainName = options.domainName || normalizedBaseUrl.domainName;
   if (!nonInteractive && !normalizedBaseUrl.baseUrl && !domainName) {
     const domainInput = await promptOptionalText({
-      message: "Custom domain name (optional):",
+      message: "自定义域名（可选）：",
       placeholder: "app.example.com",
     });
     domainName = domainInput || domainName;
@@ -170,7 +170,7 @@ export async function runTerraformSetup(options: TerraformSetupOptions) {
     (nonInteractive
       ? ""
       : await promptOptionalText({
-          message: "ACM certificate ARN (optional for HTTPS):",
+          message: "ACM 证书 ARN（HTTPS 可选）：",
           placeholder: "arn:aws:acm:us-east-1:123456789012:certificate/...",
         }));
 
@@ -179,20 +179,20 @@ export async function runTerraformSetup(options: TerraformSetupOptions) {
     (nonInteractive
       ? ""
       : await promptOptionalText({
-          message: "Route53 hosted zone ID (optional):",
+          message: "Route53 托管区 ID（可选）：",
           placeholder: "Z123EXAMPLE",
         }));
 
   if (!nonInteractive && domainName) {
     if (!acmCertificateArn) {
       acmCertificateArn = await promptOptionalText({
-        message: "ACM certificate ARN for HTTPS (optional):",
+        message: "用于 HTTPS 的 ACM 证书 ARN（可选）：",
         placeholder: "arn:aws:acm:us-east-1:123456789012:certificate/...",
       });
     }
     if (!route53ZoneId) {
       route53ZoneId = await promptOptionalText({
-        message: "Route53 hosted zone ID for DNS (optional):",
+        message: "用于 DNS 的 Route53 托管区 ID（可选）：",
         placeholder: "Z123EXAMPLE",
       });
     }
@@ -202,14 +202,14 @@ export async function runTerraformSetup(options: TerraformSetupOptions) {
     options.rdsInstanceClass,
     RDS_INSTANCE_OPTIONS,
     nonInteractive,
-    "RDS instance class",
+    "RDS 实例类型",
   );
   const rdsInstanceClass =
     validatedRdsInstanceClass ||
     (nonInteractive
       ? "db.t3.micro"
       : await promptSelect({
-          message: "RDS instance size:",
+          message: "RDS 实例规格：",
           options: RDS_INSTANCE_OPTIONS,
         }));
 
@@ -219,7 +219,7 @@ export async function runTerraformSetup(options: TerraformSetupOptions) {
       : nonInteractive
         ? false
         : await promptConfirm({
-            message: "Enable Redis for real-time features?",
+            message: "是否为实时功能启用 Redis？",
             initialValue: true,
           });
 
@@ -228,7 +228,7 @@ export async function runTerraformSetup(options: TerraformSetupOptions) {
         options.redisInstanceClass,
         REDIS_INSTANCE_OPTIONS,
         nonInteractive,
-        "Redis instance class",
+        "Redis 实例类型",
       )
     : undefined;
   const redisInstanceClass = enableRedis
@@ -236,7 +236,7 @@ export async function runTerraformSetup(options: TerraformSetupOptions) {
       (nonInteractive
         ? "cache.t4g.micro"
         : await promptSelect({
-            message: "Redis instance size:",
+            message: "Redis 实例规格：",
             options: REDIS_INSTANCE_OPTIONS,
           }))
     : "cache.t4g.micro";
@@ -247,7 +247,7 @@ export async function runTerraformSetup(options: TerraformSetupOptions) {
     (nonInteractive
       ? ""
       : await promptRequiredText({
-          message: "Google OAuth Client ID:",
+          message: "Google OAuth 客户端 ID：",
           placeholder: "1234567890.apps.googleusercontent.com",
         }));
 
@@ -257,7 +257,7 @@ export async function runTerraformSetup(options: TerraformSetupOptions) {
     (nonInteractive
       ? ""
       : await promptRequiredText({
-          message: "Google OAuth Client Secret:",
+          message: "Google OAuth 客户端密钥：",
           placeholder: "GOCSPX-...",
         }));
 
@@ -267,7 +267,7 @@ export async function runTerraformSetup(options: TerraformSetupOptions) {
     (nonInteractive
       ? ""
       : await promptRequiredText({
-          message: "Google Pub/Sub topic name:",
+          message: "Google Pub/Sub 主题名称：",
           placeholder: "projects/your-project/topics/inbox-zero-emails",
         }));
 
@@ -286,11 +286,11 @@ export async function runTerraformSetup(options: TerraformSetupOptions) {
     (nonInteractive
       ? ""
       : await promptSelect({
-          message: "Default LLM provider:",
+          message: "默认 LLM 提供商：",
           options: LLM_PROVIDER_OPTIONS,
         }));
   if (nonInteractive) {
-    assertNonEmpty("LLM provider", llmProvider);
+    assertNonEmpty("LLM 提供商", llmProvider);
   }
 
   const llmModel =
@@ -298,8 +298,8 @@ export async function runTerraformSetup(options: TerraformSetupOptions) {
     (nonInteractive
       ? ""
       : await promptOptionalText({
-          message: "Default LLM model (optional):",
-          placeholder: "leave empty for provider default",
+          message: "默认 LLM 模型（可选）：",
+          placeholder: "留空则使用服务商默认值",
         }));
 
   const llmSecrets = await getLlmSecrets({
@@ -317,7 +317,7 @@ export async function runTerraformSetup(options: TerraformSetupOptions) {
     getProviderDefaultLlmModel(llmProvider) ||
     "";
   if (nonInteractive) {
-    assertNonEmpty("LLM model", defaultLlmModel);
+    assertNonEmpty("LLM 模型", defaultLlmModel);
   }
 
   const configureMicrosoft =
@@ -328,7 +328,7 @@ export async function runTerraformSetup(options: TerraformSetupOptions) {
     (nonInteractive
       ? false
       : await promptConfirm({
-          message: "Configure Microsoft OAuth?",
+          message: "是否配置 Microsoft OAuth？",
           initialValue: false,
         }));
 
@@ -338,7 +338,7 @@ export async function runTerraformSetup(options: TerraformSetupOptions) {
       (nonInteractive
         ? ""
         : await promptRequiredText({
-            message: "Microsoft OAuth Client ID:",
+            message: "Microsoft OAuth 客户端 ID：",
             placeholder: "00000000-0000-0000-0000-000000000000",
           }))
     : "";
@@ -349,8 +349,8 @@ export async function runTerraformSetup(options: TerraformSetupOptions) {
       (nonInteractive
         ? ""
         : await promptRequiredText({
-            message: "Microsoft OAuth Client Secret:",
-            placeholder: "paste your secret",
+            message: "Microsoft OAuth 客户端密钥：",
+            placeholder: "粘贴你的密钥",
           }))
     : "";
 
@@ -385,19 +385,19 @@ export async function runTerraformSetup(options: TerraformSetupOptions) {
   }
 
   p.note(
-    `Terraform files written to:\n${outputDir}\n\n` +
-      "Note: terraform.tfvars contains secrets. Do not commit it.",
-    "Output",
+    `Terraform 文件已写入：\n${outputDir}\n\n` +
+      "注意：terraform.tfvars 包含密钥，请勿提交。",
+    "输出",
   );
   const verificationTokenPath = `/${DEFAULT_APP_NAME}/${environment}/secrets/GOOGLE_PUBSUB_VERIFICATION_TOKEN`;
   p.note(
     `cd ${outputDir}\nterraform init\nterraform apply\n\n` +
-      "After apply, use `terraform output service_url` for the URL.\n" +
-      `Google Pub/Sub verification token (SSM): ${verificationTokenPath}\n` +
+      "应用后，使用 `terraform output service_url` 获取 URL。\n" +
+      `Google Pub/Sub 验证令牌（SSM）：${verificationTokenPath}\n` +
       `aws ssm get-parameter --name ${verificationTokenPath} --with-decryption`,
-    "Next Steps",
+    "后续步骤",
   );
-  p.outro("Terraform setup complete!");
+  p.outro("Terraform 配置完成！");
 }
 
 function resolveOutputDir(outputDir?: string) {
@@ -422,17 +422,17 @@ async function ensureOutputDir(outputDir: string, nonInteractive: boolean) {
   if (nonInteractive) {
     p.log.error(
       `Output directory is not empty: ${outputDir}\n` +
-        "Choose a new directory or remove existing files.",
+        "请另选一个目录，或删除现有文件。",
     );
     process.exit(1);
   }
 
   const confirm = await p.confirm({
-    message: `Output directory is not empty. Overwrite files in ${outputDir}?`,
+    message: `输出目录不为空。要覆盖 ${outputDir} 中的文件吗？`,
     initialValue: false,
   });
   if (p.isCancel(confirm) || !confirm) {
-    p.cancel("Setup cancelled.");
+    p.cancel("已取消设置。");
     process.exit(0);
   }
 }
@@ -451,7 +451,7 @@ async function getLlmSecrets(config: {
         (config.nonInteractive
           ? ""
           : await promptRequiredText({
-              message: "Anthropic API key:",
+              message: "Anthropic API 密钥：",
               placeholder: "sk-ant-...",
             }));
       if (config.nonInteractive) {
@@ -467,7 +467,7 @@ async function getLlmSecrets(config: {
         (config.nonInteractive
           ? ""
           : await promptRequiredText({
-              message: "OpenAI API key:",
+              message: "OpenAI API 密钥：",
               placeholder: "sk-...",
             }));
       if (config.nonInteractive) {
@@ -483,7 +483,7 @@ async function getLlmSecrets(config: {
         (config.nonInteractive
           ? ""
           : await promptRequiredText({
-              message: "Google API key:",
+              message: "Google API 密钥：",
               placeholder: "AIza...",
             }));
       if (config.nonInteractive) {
@@ -499,7 +499,7 @@ async function getLlmSecrets(config: {
         (config.nonInteractive
           ? ""
           : await promptRequiredText({
-              message: "OpenRouter API key:",
+              message: "OpenRouter API 密钥：",
               placeholder: "sk-or-...",
             }));
       if (config.nonInteractive) {
@@ -515,7 +515,7 @@ async function getLlmSecrets(config: {
         (config.nonInteractive
           ? ""
           : await promptRequiredText({
-              message: "Groq API key:",
+              message: "Groq API 密钥：",
               placeholder: "gsk_...",
             }));
       if (config.nonInteractive) {
@@ -531,7 +531,7 @@ async function getLlmSecrets(config: {
         (config.nonInteractive
           ? ""
           : await promptRequiredText({
-              message: "Cerebras API key:",
+              message: "Cerebras API 密钥：",
               placeholder: "sk-...",
             }));
       if (config.nonInteractive) {
@@ -547,7 +547,7 @@ async function getLlmSecrets(config: {
         (config.nonInteractive
           ? ""
           : await promptRequiredText({
-              message: "AI Gateway API key:",
+              message: "AI Gateway API 密钥：",
               placeholder: "sk-...",
             }));
       if (config.nonInteractive) {
@@ -562,7 +562,7 @@ async function getLlmSecrets(config: {
         (config.nonInteractive
           ? ""
           : await promptRequiredText({
-              message: "AWS access key (Bedrock):",
+              message: "AWS 访问密钥（Bedrock）：",
               placeholder: "AKIA...",
             }));
       const bedrockSecretKey =
@@ -571,8 +571,8 @@ async function getLlmSecrets(config: {
         (config.nonInteractive
           ? ""
           : await promptRequiredText({
-              message: "AWS secret key (Bedrock):",
-              placeholder: "paste your secret",
+              message: "AWS 私密密钥（Bedrock）：",
+              placeholder: "粘贴你的密钥",
             }));
       const bedrockRegion =
         config.options.bedrockRegion ||
@@ -580,7 +580,7 @@ async function getLlmSecrets(config: {
         (config.nonInteractive
           ? "us-west-2"
           : await promptOptionalText({
-              message: "AWS region for Bedrock:",
+              message: "Bedrock 的 AWS 区域：",
               placeholder: "us-west-2",
               initialValue: "us-west-2",
             }));
@@ -597,7 +597,7 @@ async function getLlmSecrets(config: {
         (config.nonInteractive
           ? ""
           : await promptRequiredText({
-              message: "Ollama base URL:",
+              message: "Ollama 基础 URL：",
               placeholder: "http://localhost:11434/api",
             }));
       const ollamaModel =
@@ -608,7 +608,7 @@ async function getLlmSecrets(config: {
         (config.nonInteractive
           ? "qwen3.5:4b"
           : await promptRequiredText({
-              message: "Ollama model:",
+              message: "Ollama 模型：",
               placeholder: "qwen3.5:4b",
               initialValue: "qwen3.5:4b",
             }));
@@ -625,7 +625,7 @@ async function getLlmSecrets(config: {
         (config.nonInteractive
           ? ""
           : await promptRequiredText({
-              message: "OpenAI-compatible base URL:",
+              message: "OpenAI 兼容的基础 URL：",
               placeholder: "http://localhost:1234/v1",
             }));
       const openaiCompatibleModel =
@@ -636,7 +636,7 @@ async function getLlmSecrets(config: {
         (config.nonInteractive
           ? "qwen3.5:4b"
           : await promptRequiredText({
-              message: "Model name:",
+              message: "模型名称：",
               placeholder: "qwen3.5:4b",
               initialValue: "qwen3.5:4b",
             }));
@@ -646,8 +646,8 @@ async function getLlmSecrets(config: {
         (config.nonInteractive
           ? ""
           : await promptOptionalText({
-              message: "API key (optional — press Enter to skip):",
-              placeholder: "leave blank if not required",
+              message: "API 密钥（可选 — 按 Enter 跳过）：",
+              placeholder: "无需填写时留空",
             }));
       if (config.nonInteractive) {
         assertNonEmpty("OPENAI_COMPATIBLE_BASE_URL", openaiCompatibleBaseUrl);

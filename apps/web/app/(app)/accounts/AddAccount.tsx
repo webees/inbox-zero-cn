@@ -26,15 +26,13 @@ export function AddAccount({ helperText }: { helperText: ReactNode }) {
       const url = await getAccountLinkingUrl(provider);
       redirectToSafeUrl(url, { allowExternal: true });
     } catch (error) {
-      console.error(`Error initiating ${provider} link:`, error);
+      console.error(`发起 ${provider} 关联时出错：`, error);
       toastError({
         title: isGoogleProvider(provider)
-          ? t`Error initiating Google link`
-          : t`Error initiating Microsoft link`,
+          ? t`发起 Google 关联时出错`
+          : t`发起 Microsoft 关联时出错`,
         description:
-          error instanceof Error
-            ? error.message
-            : t`Please try again or contact support`,
+          error instanceof Error ? error.message : t`请重试或联系支持团队`,
       });
       setLoading(false);
     }
@@ -58,7 +56,7 @@ export function AddAccount({ helperText }: { helperText: ReactNode }) {
             unoptimized
           />
           <span className="ml-2">
-            <Trans>Add Google</Trans>
+            <Trans>添加 Google</Trans>
           </span>
         </Button>
         <Button
@@ -76,7 +74,7 @@ export function AddAccount({ helperText }: { helperText: ReactNode }) {
             unoptimized
           />
           <span className="ml-2">
-            <Trans>Add Microsoft</Trans>
+            <Trans>添加 Microsoft</Trans>
           </span>
         </Button>
       </div>

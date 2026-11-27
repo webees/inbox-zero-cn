@@ -4,17 +4,17 @@ import type { RecallTranscriptDownload } from "@/utils/recall/types";
 const UNKNOWN_SPEAKER = "Unknown speaker";
 
 /**
- * Collapses Recall's per-word transcript into one utterance per participant
- * turn. Consecutive turns by the same speaker are merged so the transcript
- * reads as speech rather than as a word stream.
+ * 将 Recall 的逐词转录折叠为每位参与者每轮发言的一句话
+ * 。同一说话者的连续发言会被合并，使转录
+ * 读起来像语音而非词流。
  */
 export function normalizeRecallTranscript(
   download: RecallTranscriptDownload,
 ): NormalizedTranscript {
   const utterances: NormalizedTranscript = [];
-  // Two people can share a display name, so merging on the name alone would
-  // attribute one person's speech to the other. The participant id is the only
-  // thing that reliably tells them apart.
+  // 两个人可能共用同一个显示名，因此仅按姓名合并会把
+  // 一个人的话归到另一个人身上。参与者 id 是唯一能
+  // 可靠区分他们的依据。
   let previousSpeakerKey: string | null = null;
 
   for (const turn of download) {

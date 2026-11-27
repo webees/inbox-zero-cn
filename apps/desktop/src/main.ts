@@ -513,8 +513,8 @@ function createAppWindow(options?: {
   window.on("resized", schedulePersistWindows);
   window.on("maximize", schedulePersistWindows);
   window.on("unmaximize", schedulePersistWindows);
-  // Keep the last window alive on macOS so reopening from the dock is instant
-  // instead of a cold page load. Extra windows close for real.
+  // 在 macOS 上保留最后一个窗口，这样从程序坞重新打开时可立即显示，
+  // 而无需冷加载页面。其他窗口会真正关闭。
   window.on("close", (event) => {
     if (
       process.platform === "darwin" &&
@@ -524,7 +524,7 @@ function createAppWindow(options?: {
       event.preventDefault();
       window.hide();
     } else if (!isQuitting && appWindows.length === 1) {
-      // Persist before the last window is removed so quit/close cannot write [].
+      // 在移除最后一个窗口前先持久化，这样退出/关闭时不会写入 []。
       persistWindowsNow();
     }
   });
@@ -921,8 +921,8 @@ function reportSignInError(error: unknown) {
 
 function showSignInError(error: unknown) {
   dialog.showErrorBox(
-    "Sign in failed",
-    error instanceof Error ? error.message : "Could not finish signing in",
+    "登录失败",
+    error instanceof Error ? error.message : "无法完成登录",
   );
 }
 
@@ -951,7 +951,7 @@ function createDesktopMailProcess() {
       utilityProcess.fork(
         path.join(import.meta.dirname, "mail-engine-child.js"),
         [],
-        { serviceName: "Inbox Zero Mail Engine" },
+        { serviceName: "Inbox Zero 邮件引擎" },
       ),
     cookieHeader: async (url) => {
       const cookies = await ses.cookies.get({ url });

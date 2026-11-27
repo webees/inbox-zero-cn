@@ -141,10 +141,10 @@ const getUserPrompt = (input: DraftReplyInput) => {
 
   return `${context}
 
-Here is the context of the email thread (from oldest to newest):
+以下是邮件会话的上下文（从最早到最新）：
 ${thread}
 
-Please write a reply to the email.
+请为这封邮件撰写回复。
 ${temporalAndIdentityContext}`;
 };
 
@@ -316,17 +316,17 @@ ${mcpContext}
 
   const upcomingMeetingsContext = meetingContext || "";
   const selectedAttachments = attachmentContext
-    ? `Selected PDF attachments that will be included with this draft:
+    ? `将随此草稿附上的已选 PDF 附件：
 
 <selected_attachments>
 ${attachmentContext}
 </selected_attachments>
 
-Mention attached documents only when useful and only if this section is present.
+仅在有用且此部分存在时提及附件文档。
 `
     : "";
   const signatureContext = hasConfiguredSignature
-    ? `The user's email account already has a configured signature that will be appended after this draft. Do not write any closing, sign-off, name, title, contact details, or signature block.
+    ? `用户的邮箱账号已配置签名，该签名将追加到此草稿之后。请勿撰写任何结束语、署名、姓名、头衔、联系方式或签名区块。
 `
     : "";
 
@@ -398,7 +398,7 @@ export async function aiDraftReplyWithConfidence(
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Draft reply",
+    label: "草稿回复",
     modelOptions,
     promptHardening: { trust: "untrusted", level: "full" },
     onModelUsed: attributionTracker.onModelUsed,
@@ -605,10 +605,10 @@ function formatAvailableSlotForPrompt(
   const utcEnd = formatLocalSlotTimeAsUtc(slot.end, timezone);
 
   if (!utcStart || !utcEnd) {
-    return `- ${slot.start} to ${slot.end}`;
+    return `- ${slot.start} 至 ${slot.end}`;
   }
 
-  return `- ${slot.start} to ${slot.end} (${timezoneLabel}; UTC ${utcStart} to ${utcEnd})`;
+  return `- ${slot.start} 至 ${slot.end}（${timezoneLabel}；UTC ${utcStart} 至 ${utcEnd}）`;
 }
 
 function formatLocalSlotTimeAsUtc(

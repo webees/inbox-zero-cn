@@ -43,7 +43,7 @@ describe("CreateBookingLinkDialog", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Create" }));
+    fireEvent.click(screen.getByRole("button", { name: "创建" }));
 
     await waitFor(() => {
       expect(onCreate).toHaveBeenCalledWith(

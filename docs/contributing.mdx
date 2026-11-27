@@ -1,41 +1,41 @@
 ---
-title: 'Contributing'
-description: 'Set up Inbox Zero for local development'
+title: '贡献指南'
+description: '在本地设置 Inbox Zero 以便开发'
 ---
 
-This guide is for developers who want to run Inbox Zero locally and contribute to the project.
+本指南面向希望在本地运行 Inbox Zero 并为项目做贡献的开发者。
 
 <iframe
   width="560"
   height="315"
   src="https://www.youtube.com/embed/hVQENQ4WT2Y"
-  title="Set up Inbox Zero locally"
+  title="在本地设置 Inbox Zero"
   frameBorder="0"
   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
   allowFullScreen
   style={{ width: '100%', borderRadius: '0.5rem' }}
 ></iframe>
 
-## Prerequisites
+## 前提条件
 
 - [Node.js](https://nodejs.org/) >= 24.0.0
 - [pnpm](https://pnpm.io/) >= 10.0.0
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (for Postgres and Redis)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)（用于 Postgres 和 Redis）
 
-## Local Development Setup
+## 本地开发设置
 
-### Option A: Devcontainer
+### 方式 A：Devcontainer
 
-The fastest way to get started is using [devcontainers](https://containers.dev/), supported by VS Code ([Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)) and JetBrains IDEs:
+最快的上手方式是使用 [devcontainers](https://containers.dev/)，它受 VS Code（[Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)）和 JetBrains IDE 支持：
 
-1. Open the project and select "Reopen in Container" when prompted
-2. Wait for the container to build and `postCreateCommand` to complete
-3. Configure at least one OAuth provider in `apps/web/.env` (see [Setup Guides](/hosting/setup-guides))
-4. Run `pnpm dev`
+1. 打开项目，并在提示时选择 "Reopen in Container"
+2. 等待容器构建完成以及 `postCreateCommand` 执行完毕
+3. 在 `apps/web/.env` 中配置至少一个 OAuth 服务商（参见 [设置指南](/hosting/setup-guides)）
+4. 运行 `pnpm dev`
 
-### Option B: Manual Setup
+### 方式 B：手动设置
 
-1. **Start PostgreSQL and Redis:**
+1. **启动 PostgreSQL 和 Redis：**
    ```bash
    docker compose -f docker-compose.dev.yml up -d
    ```

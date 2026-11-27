@@ -269,37 +269,37 @@ function CategoryCard({
             }}
           >
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder={t`Select action`} />
+              <SelectValue placeholder={t`选择操作`} />
             </SelectTrigger>
             <SelectContent>
               {isMicrosoftProvider(provider) && (
                 <>
                   <SelectItem value="label">
-                    <Trans>Categorise</Trans>
+                    <Trans>分类</Trans>
                   </SelectItem>
                   <SelectItem value="move_folder">
-                    <Trans>Move to folder</Trans>
+                    <Trans>移动到文件夹</Trans>
                   </SelectItem>
                   {/* <SelectItem value="move_folder_delayed">
-                    Move to folder after a week
+                    一周后移动到文件夹
                   </SelectItem> */}
                 </>
               )}
               {isGoogleProvider(provider) && (
                 <>
                   <SelectItem value="label">
-                    <Trans>Label</Trans>
+                    <Trans>标签</Trans>
                   </SelectItem>
                   <SelectItem value="label_archive">
-                    <Trans>Label & archive</Trans>
+                    <Trans>标签并归档</Trans>
                   </SelectItem>
                   {/* <SelectItem value="label_archive_delayed">
-                    Label & archive after a week
+                    一周后添加标签并归档
                   </SelectItem> */}
                 </>
               )}
               <SelectItem value="none">
-                <Trans>Do nothing</Trans>
+                <Trans>不执行任何操作</Trans>
               </SelectItem>
             </SelectContent>
           </Select>
@@ -316,10 +316,10 @@ function CustomCategoryCard() {
         <IconCircle size="sm" color="purple" Icon={PencilLineIcon} />
         <div>
           <div className="flex flex-1 items-center font-medium">
-            <Trans>Custom</Trans>
+            <Trans>自定义</Trans>
           </div>
           <div className="ml-auto flex items-center gap-4 text-muted-foreground text-sm">
-            <Trans>You can set your own custom categories later</Trans>
+            <Trans>你可以稍后设置自己的自定义分类</Trans>
           </div>
         </div>
       </CardContent>

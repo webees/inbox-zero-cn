@@ -21,9 +21,7 @@ import type { ApiKeyExpiryValue } from "@/utils/api-key-scopes";
 
 const apiKeyActionClient = actionClient.use(async ({ ctx, next }) => {
   if (ctx.session.session.emailOtp) {
-    throw new SafeError(
-      "Sign in with your connected provider to manage API keys.",
-    );
+    throw new SafeError("请使用已连接的服务商登录以管理 API 密钥。");
   }
   return next();
 });
@@ -37,7 +35,7 @@ export const createApiKeyAction = apiKeyActionClient
       parsedInput: { name, scopes, expiresIn },
     }) => {
       if (!env.NEXT_PUBLIC_EXTERNAL_API_ENABLED) {
-        throw new SafeError("External API is not enabled");
+        throw new SafeError("未启用外部 API");
       }
       const secretKey = generateSecureToken();
       const hashedKey = hashApiKey(secretKey);
@@ -46,7 +44,7 @@ export const createApiKeyAction = apiKeyActionClient
         data: {
           userId,
           emailAccountId,
-          name: name || "Management key",
+          name: name || "管理密钥",
           hashedKey,
           isActive: true,
           scopes,
@@ -73,12 +71,10 @@ export const updateMcpServerAccessAction = actionClientUser
   .inputSchema(updateMcpServerAccessBody)
   .action(async ({ ctx: { userId, session }, parsedInput: { enabled } }) => {
     if (session.session.emailOtp) {
-      throw new SafeError(
-        "Sign in with your connected provider to manage MCP access.",
-      );
+      throw new SafeError("请使用已连接的服务商登录以管理 MCP 访问权限。");
     }
     if (enabled && !isMcpServerAvailable()) {
-      throw new SafeError("MCP server is not enabled");
+      throw new SafeError("未启用 MCP 服务器");
     }
 
     await prisma.$transaction([
@@ -106,9 +102,7 @@ export const revokeMcpConnectionAction = actionClientUser
   .inputSchema(revokeMcpConnectionBody)
   .action(async ({ ctx: { userId, session }, parsedInput: { clientId } }) => {
     if (session.session.emailOtp) {
-      throw new SafeError(
-        "Sign in with your connected provider to manage MCP access.",
-      );
+      throw new SafeError("请使用已连接的服务商登录以管理 MCP 访问权限。");
     }
 
     await revokeMcpConnection({ userId, clientId });
@@ -120,9 +114,7 @@ export const reduceMcpConnectionScopesAction = actionClientUser
   .inputSchema(reduceMcpConnectionScopesBody)
   .action(async ({ ctx: { userId, session }, parsedInput }) => {
     if (session.session.emailOtp) {
-      throw new SafeError(
-        "Sign in with your connected provider to manage MCP access.",
-      );
+      throw new SafeError("请使用已连接的服务商登录以管理 MCP 访问权限。");
     }
     return reduceMcpConnectionScopes({ userId, ...parsedInput });
   });

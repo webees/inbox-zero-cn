@@ -45,7 +45,7 @@ export type IntegrationArgControl =
 
 export type IntegrationArgSpec = {
   key: string; // key inside Action.integrationArgs
-  label: string;
+  label: string; // shown to the user
   control: IntegrationArgControl;
   placeholder?: string; // plain-English description of what the AI will write
   aiPrompt?: string; // set => this arg can be filled by the AI at execution time
@@ -67,35 +67,35 @@ export type IntegrationToolSpec = {
   buildPayload: (resolved: Record<string, string>) => Record<string, unknown>;
 };
 
-// Todoist's virtual inbox: always selectable, even before projects load.
+// Todoist 的虚拟收件箱：即使项目尚未加载，也始终可选。
 const TODOIST_INBOX_PROJECT: IntegrationArgOption = {
   value: "inbox",
-  label: "Inbox",
+  label: "收件箱",
 };
 
 const TODOIST_DUE_DATE_AI_VALUE = "ai";
 
 const TODOIST_DUE_DATE_OPTIONS: readonly IntegrationArgOption[] = [
-  { value: TODOIST_DUE_DATE_AI_VALUE, label: "AI decides from email" },
-  { value: "none", label: "No due date" },
-  { value: "today", label: "Today", payloadValue: "today" },
-  { value: "tomorrow", label: "Tomorrow", payloadValue: "tomorrow" },
-  { value: "in-7-days", label: "In a week", payloadValue: "in 7 days" },
+  { value: TODOIST_DUE_DATE_AI_VALUE, label: "由 AI 根据邮件决定" },
+  { value: "none", label: "无截止日期" },
+  { value: "today", label: "今天", payloadValue: "today" },
+  { value: "tomorrow", label: "明天", payloadValue: "tomorrow" },
+  { value: "in-7-days", label: "一周后", payloadValue: "in 7 days" },
 ];
 
 const todoistAddTasksSpec: IntegrationToolSpec = {
   integration: "todoist",
   tool: "add-tasks",
-  actionLabel: "Add Todoist task",
+  actionLabel: "添加 Todoist 任务",
   displayArgKey: "content",
   llmDescription:
     "Add a task to the user's Todoist for the matching email. Only use this when the user explicitly asks to create Todoist tasks. Fails if Todoist isn't connected.",
   args: [
     {
       key: "content",
-      label: "Task",
+      label: "任务",
       control: { type: "text" },
-      placeholder: "AI writes a short action item from the email",
+      placeholder: "AI 会从邮件中生成简短的行动事项",
       aiPrompt:
         "A short task title describing what the recipient needs to do about this email. Use a few words, not a sentence.",
       required: true,
@@ -104,9 +104,9 @@ const todoistAddTasksSpec: IntegrationToolSpec = {
     },
     {
       key: "description",
-      label: "Description",
+      label: "描述",
       control: { type: "text" },
-      placeholder: "AI writes one line of context",
+      placeholder: "AI 会写一行上下文",
       aiPrompt:
         "One short line of context for the task. Return an empty string if the email adds no useful context.",
       llmDescription:
@@ -114,7 +114,7 @@ const todoistAddTasksSpec: IntegrationToolSpec = {
     },
     {
       key: "projectId",
-      label: "Project",
+      label: "项目",
       control: {
         type: "remote-select",
         optionsTool: "find-projects",
@@ -127,7 +127,7 @@ const todoistAddTasksSpec: IntegrationToolSpec = {
     },
     {
       key: "dueString",
-      label: "Due date",
+      label: "截止日期",
       control: { type: "select", options: TODOIST_DUE_DATE_OPTIONS },
       defaultValue: TODOIST_DUE_DATE_AI_VALUE,
       aiValue: TODOIST_DUE_DATE_AI_VALUE,

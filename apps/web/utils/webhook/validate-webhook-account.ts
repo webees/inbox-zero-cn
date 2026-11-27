@@ -89,7 +89,7 @@ export async function getWebhookEmailAccount(
     });
 
     if (!emailAccount) {
-      logger.info("Subscription not found in current field, checking history", {
+      logger.info("当前字段中未找到订阅，正在检查历史记录", {
         subscriptionId: where.watchEmailsSubscriptionId,
       });
 
@@ -105,7 +105,7 @@ export async function getWebhookEmailAccount(
       });
 
       if (emailAccount) {
-        logger.info("Found account by historical subscription ID", {
+        logger.info("通过历史订阅 ID 找到账号", {
           subscriptionId: where.watchEmailsSubscriptionId,
           email: emailAccount.email,
           currentSubscriptionId: emailAccount.watchEmailsSubscriptionId,
@@ -117,8 +117,8 @@ export async function getWebhookEmailAccount(
   if (!emailAccount) {
     await logErrorWithDedupe({
       logger,
-      message: "Account not found",
-      // expected: providers keep sending webhooks for a while after an account is deleted
+      message: "未找到账号",
+      // 预期情况：账号被删除后，服务商仍会继续发送一段时间的 webhook
       level: "warn",
       context: {
         hasSubscriptionIdLookup: "watchEmailsSubscriptionId" in where,

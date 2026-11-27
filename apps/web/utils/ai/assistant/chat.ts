@@ -546,14 +546,14 @@ function formatSerializedMatchMetadata(
   return matchMetadata.map((matchReason) => {
     switch (matchReason.type) {
       case "STATIC":
-        return "Matched by static sender, recipient, or subject conditions.";
+        return "通过静态发件人、收件人或主题条件匹配。";
       case "AI":
-        return "Matched by AI instructions.";
+        return "通过 AI 指令匹配。";
       case "PRESET":
-        return `Matched preset classification ${matchReason.systemType}.`;
+        return `匹配预设分类 ${matchReason.systemType}。`;
       case "LEARNED_PATTERN": {
         const qualifier = matchReason.groupItem.exclude ? "exclude" : "include";
-        return `${matchReason.group.name} learned pattern ${qualifier} on ${matchReason.groupItem.type}: ${matchReason.groupItem.value}`;
+        return `${matchReason.group.name} 学习模式“${qualifier}”针对 ${matchReason.groupItem.type}：${matchReason.groupItem.value}`;
       }
     }
   });
@@ -563,11 +563,11 @@ function formatFixRuleExpectedOutcome(context: MessageContext) {
   if (context.type !== "fix-rule") return "";
 
   if (context.expected === "none") {
-    return "No rule should be applied";
+    return "不应应用任何规则";
   }
 
   if (context.expected !== "new") {
-    return `Should match the "${context.expected.name}" rule`;
+    return `应匹配“${context.expected.name}”规则`;
   }
 
   const matchedRuleNames = context.results
@@ -575,10 +575,10 @@ function formatFixRuleExpectedOutcome(context: MessageContext) {
     .filter((ruleName): ruleName is string => Boolean(ruleName));
 
   if (!matchedRuleNames.length) {
-    return "The user wants new rule behavior because the current behavior was wrong. Create a new rule only if no existing rule can be safely updated without causing overlap.";
+    return "用户希望获得新的规则行为，因为当前行为有误。只有在无法安全更新现有规则以避免重叠时，才创建新规则。";
   }
 
-  return `The user wants new rule behavior for this email. This email already matched ${matchedRuleNames.map((name) => `"${name}"`).join(", ")}. Treat that as intent about the desired behavior, not as an instruction to duplicate a matching rule. Prefer updating the matched rule when it already covers the sender or domain scope, and create a new rule only if no existing rule can be safely updated without causing overlap.`;
+  return `用户希望针对这封邮件获得新的规则行为。这封邮件已匹配 ${matchedRuleNames.map((name) => `"${name}"`).join(", ")}。应将其视为对目标行为的意图，而不是复制匹配规则的指令。如果已匹配的规则已覆盖发件人或域名范围，优先更新该规则；只有在无法安全更新现有规则以避免重叠时，才创建新规则。`;
 }
 
 function getChatProviderOptionsForCaching({ chatId }: { chatId?: string }) {
@@ -746,9 +746,9 @@ export function buildInboxSnapshotMessage(
   return {
     role: "user",
     content:
-      `[Automated inbox snapshot — not a message from the user] At conversation start: ${inboxStats.total} emails total, ${inboxStats.unread} unread. ` +
-      "This snapshot is a starting point only — counts may have changed since then as new mail arrives or actions are taken. " +
-      "Always call searchInbox to confirm the current state before answering questions about unread, new, or recent emails; do not rely on this number alone.",
+      `[自动收件箱快照——并非来自用户的消息] 会话开始时：共 ${inboxStats.total} 封邮件，其中 ${inboxStats.unread} 封未读。` +
+      "此快照仅供参考——此后可能因新邮件到达或执行操作而发生变化。 " +
+      "在回答有关未读、新邮件或近期邮件的问题前，始终调用 searchInbox 确认当前状态；不要仅依赖此数字。",
   };
 }
 

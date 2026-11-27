@@ -30,7 +30,7 @@ export function createDocsTools(sources: string[], logger: Logger): ToolSet {
             queries.slice(0, 5),
           );
           if (!entries.length) {
-            return "No matching pages found in the docs index. Try other phrasings, or read a docs URL directly with read_docs_page.";
+            return "文档索引中没有找到匹配的页面。请尝试其他表述，或直接使用 read_docs_page 读取文档 URL。";
           }
           return entries
             .map(
@@ -39,8 +39,8 @@ export function createDocsTools(sources: string[], logger: Logger): ToolSet {
             )
             .join("\n");
         } catch (error) {
-          logger.warn("Docs search failed", { error });
-          return "Docs search failed.";
+          logger.warn("文档搜索失败", { error });
+          return "文档搜索失败。";
         }
       },
     }),
@@ -54,8 +54,8 @@ export function createDocsTools(sources: string[], logger: Logger): ToolSet {
           return await readDocsPage(url, sources);
         } catch (error) {
           if (error instanceof DocsFetchError) return error.message;
-          logger.warn("Docs page read failed", { error });
-          return "Could not read that page.";
+          logger.warn("文档页面读取失败", { error });
+          return "无法读取该页面。";
         }
       },
     }),

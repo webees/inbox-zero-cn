@@ -6,9 +6,9 @@ import {
   parseCronSchedule,
 } from "@/utils/automation-jobs/describe";
 
-// describeCronSchedule in utils/automation-jobs/describe also feeds the AI
-// assistant, so it stays English and the UI uses this translated copy.
-// Custom weekday sets and unusual crons still come from cronstrue in English.
+// utils/automation-jobs/describe 中的 describeCronSchedule 也会供 AI 助手使用，
+// 因此它保持英文，界面使用这份已翻译的副本。
+// 自定义星期组合和不常见的 cron 仍由 cronstrue 以英文提供。
 export function describeCronScheduleText(
   cronExpression: string,
   i18n: I18n,
@@ -26,13 +26,13 @@ export function describeCronScheduleText(
   const times =
     localTimes.length === 1
       ? lastTime
-      : i18n._(msg`${leadingTimes} and ${lastTime}`);
+      : i18n._(msg`${leadingTimes} 和 ${lastTime}`);
 
-  return i18n._(msg`${days} at ${times} ${timeZoneName}`);
+  return i18n._(msg`${days} ${times} ${timeZoneName}`);
 }
 
 const WEEKDAY_MESSAGES: Record<NamedCronWeekdays, MessageDescriptor> = {
-  everyDay: msg`Every day`,
-  weekdays: msg`Weekdays`,
-  weekends: msg`Weekends`,
+  everyDay: msg`每天`,
+  weekdays: msg`工作日`,
+  weekends: msg`周末`,
 };

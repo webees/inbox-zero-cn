@@ -72,7 +72,7 @@ export function InviteMemberModal({
         (trigger ?? (
           <DialogTrigger asChild>
             <Button size="sm">
-              <Trans>Invite Members</Trans>
+              <Trans>邀请成员</Trans>
             </Button>
           </DialogTrigger>
         ))}
@@ -80,12 +80,12 @@ export function InviteMemberModal({
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>
-            <Trans>Invite teammates</Trans>
+            <Trans>邀请队友</Trans>
           </DialogTitle>
           <DialogDescription>
             {organizationId
-              ? t`We'll send each teammate an email with a link to join your organization. The link expires in two weeks.`
-              : t`Enter email addresses to invite team members.`}
+              ? t`我们会给每位队友发送一封包含加入组织链接的电子邮件。链接将在两周后失效。`
+              : t`输入电子邮件地址以邀请团队成员。`}
           </DialogDescription>
         </DialogHeader>
 
@@ -144,7 +144,7 @@ function InviteForm({
       .filter((i) => i.email.length > 0);
 
     if (filled.length === 0) {
-      toastError({ description: t`Please enter at least one email address` });
+      toastError({ description: t`请至少输入一个电子邮件地址` });
       return;
     }
 
@@ -155,7 +155,7 @@ function InviteForm({
 
     if (result?.serverError) {
       toastError({
-        title: t`Error sending invitations`,
+        title: t`发送邀请时出错`,
         description: result.serverError,
       });
       return;
@@ -218,10 +218,10 @@ function InviteForm({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="member">
-                    <Trans>Member</Trans>
+                    <Trans>成员</Trans>
                   </SelectItem>
                   <SelectItem value="admin">
-                    <Trans>Admin</Trans>
+                    <Trans>管理员</Trans>
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -232,7 +232,7 @@ function InviteForm({
               size="icon"
               onClick={() => remove(index)}
               disabled={fields.length === 1}
-              aria-label={t`Remove invitation`}
+              aria-label={t`移除邀请`}
             >
               <XIcon className="size-4" />
             </Button>
@@ -248,17 +248,17 @@ function InviteForm({
         className="px-2 -ml-2"
       >
         <PlusIcon className="size-4 mr-2" />
-        <Trans>Add another email</Trans>
+        <Trans>添加另一个电子邮件地址</Trans>
       </Button>
 
       <DialogFooter>
         <DialogClose asChild>
           <Button variant="outline">
-            <Trans>Cancel</Trans>
+            <Trans>取消</Trans>
           </Button>
         </DialogClose>
         <Button type="submit" loading={isSubmitting}>
-          <Trans>Send invites</Trans>
+          <Trans>发送邀请</Trans>
         </Button>
       </DialogFooter>
     </form>
@@ -283,7 +283,7 @@ function CreateOrgAndInviteForm({
 
   const handleSubmit = useCallback(async () => {
     if (emails.length === 0) {
-      toastError({ description: t`Please enter at least one email address` });
+      toastError({ description: t`请至少输入一个电子邮件地址` });
       return;
     }
 
@@ -297,7 +297,7 @@ function CreateOrgAndInviteForm({
 
     if (result?.serverError) {
       toastError({
-        description: t`Failed to create organization and send invitations`,
+        description: t`创建组织并发送邀请失败`,
       });
     } else if (result?.data) {
       const successCount = result.data.results.filter((r) => r.success).length;
@@ -326,17 +326,17 @@ function CreateOrgAndInviteForm({
         value={emails}
         onChange={handleEmailsChange}
         validate={(email) =>
-          isValidEmail(email) ? null : t`Please enter a valid email address`
+          isValidEmail(email) ? null : t`请输入有效的电子邮件地址`
         }
-        label={t`Email addresses`}
+        label={t`电子邮件地址`}
         id="email-input"
-        placeholder={t`Enter email addresses separated by commas`}
+        placeholder={t`输入电子邮件地址，用逗号分隔`}
       />
 
       <DialogFooter>
         <DialogClose asChild>
           <Button variant="outline">
-            <Trans>Cancel</Trans>
+            <Trans>取消</Trans>
           </Button>
         </DialogClose>
         <Button

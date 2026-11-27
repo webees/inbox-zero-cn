@@ -15,8 +15,8 @@ export type DurationSummary = {
 };
 
 /**
- * Samples how late this process's event loop runs a timer. Each `drain`
- * summarizes the samples since the previous one.
+ * 采样本进程事件循环执行定时器的延迟。每次 `drain`
+ * 会汇总自上次调用以来的样本。
  */
 export function startEventLoopDelayMonitor() {
   const histogram = monitorEventLoopDelay({
@@ -24,8 +24,7 @@ export function startEventLoopDelayMonitor() {
   });
   histogram.enable();
   return {
-    // Samples are the full time between timer ticks, so an idle loop would
-    // otherwise report the resolution as its delay.
+    // 样本是定时器两次触发之间的完整时长，因此空闲循环会把分辨率误报为延迟。
     drain: () => drainHistogram(histogram, EVENT_LOOP_RESOLUTION_MS),
   };
 }

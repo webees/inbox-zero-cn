@@ -117,14 +117,14 @@ describe("mobile authentication authorization", () => {
   it("rejects states that were never issued", async () => {
     await expect(
       redeemMobileAuthState({ state, sessionToken: "ambient-session" }),
-    ).rejects.toThrow("Invalid authentication state");
+    ).rejects.toThrow("无效的认证 state");
   });
 
   it("rejects an issued state before provider completion even with an ambient session", async () => {
     await storeMobileAuthState(pending);
     await expect(
       redeemMobileAuthState({ state, sessionToken: "ambient-session" }),
-    ).rejects.toThrow("Invalid authentication state");
+    ).rejects.toThrow("无效的认证 state");
   });
 
   it.each([

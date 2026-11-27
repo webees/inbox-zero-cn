@@ -3,12 +3,12 @@ import type { Logger } from "@/utils/logger";
 import prisma from "@/utils/prisma";
 
 /**
- * Labels a message and automatically updates the database if a stale label ID was detected and fixed.
+ * 为邮件打标签，并在检测到并修复了过期的标签 ID 时自动更新数据库。
  *
- * This handles the case where labels/categories are deleted and recreated with new IDs:
- * - Tries to label with the provided ID
- * - If that fails and labelName is provided, falls back to looking up by name
- * - If the actual ID used differs from the stored ID, updates ALL Actions with that stale ID
+ * 这处理了标签/分类被删除并以新 ID 重新创建的情况：
+ * - 尝试使用提供的 ID 打标签
+ * - 如果失败且提供了 labelName，则回退为按名称查找
+ * - 如果实际使用的 ID 与存储的 ID 不同，则更新所有带有该过期 ID 的 Action
  */
 export async function labelMessageAndSync({
   provider,
@@ -33,13 +33,13 @@ export async function labelMessageAndSync({
     labelName,
   });
 
-  // If we had to use fallback and got a different ID, update all Actions with the stale ID
+  // 如果不得不使用回退且得到的 ID 不同，则更新所有带有该过期 ID 的 Action
   if (
     result.usedFallback &&
     result.actualLabelId &&
     result.actualLabelId !== labelId
   ) {
-    logger.info("Detected stale label ID, updating all instances in database", {
+    logger.info("检测到过期的标签 ID，正在更新数据库中的所有实例", {
       oldLabelId: labelId,
       newLabelId: result.actualLabelId,
     });
@@ -53,13 +53,13 @@ export async function labelMessageAndSync({
         data: { labelId: result.actualLabelId },
       });
 
-      logger.info("Updated stale label IDs across all actions", {
+      logger.info("已更新所有操作中的过期标签 ID", {
         newLabelId: result.actualLabelId,
         updatedCount: updateResult.count,
       });
     } catch (error) {
-      // Don't fail the whole operation if DB update fails
-      logger.error("Failed to update stale label IDs", {
+      // 如果数据库更新失败，不要让整个操作失败
+      logger.error("更新过期标签 ID 失败", {
         newLabelId: result.actualLabelId,
         error,
       });

@@ -378,22 +378,22 @@ export const startSenderCategorizationTool = ({
         });
       } catch (error) {
         if (error instanceof SafeError && error.statusCode === 403) {
-          logger.info("Sender categorization needs AI access");
+          logger.info("发件人分类需要 AI 访问权限");
           return {
             upgradeRequired: true as const,
             message:
-              "Nothing was started. Sender categorization needs AI access on this account, and the chat is showing the user how to enable it.",
+              "未启动任何操作。此账号的发件人分类需要 AI 访问权限，聊天中正在向用户说明如何启用。",
           };
         }
 
         if (error instanceof SafeError) {
-          logger.warn("Unable to start sender categorization", { error });
+          logger.warn("无法启动发件人分类", { error });
           return { error: error.message };
         }
 
-        logger.error("Failed to start sender categorization", { error });
+        logger.error("启动发件人分类失败", { error });
         return {
-          error: "Failed to start sender categorization",
+          error: "启动发件人分类失败",
         };
       }
     },
@@ -435,9 +435,9 @@ export const getSenderCategorizationStatusTool = ({
         const progress = await getCategorizationProgress({ emailAccountId });
         return getCategorizationStatusSnapshot(progress);
       } catch (error) {
-        logger.error("Failed to load sender categorization status", { error });
+        logger.error("加载发件人分类状态失败", { error });
         return {
-          error: "Failed to load sender categorization status",
+          error: "加载发件人分类状态失败",
         };
       }
     },
@@ -898,7 +898,7 @@ export const readAttachmentTool = ({
             mimeType: resolvedMimeType,
             contentAvailable: false,
             message:
-              "This attachment type cannot be read as text. Only PDF, DOCX, plain text, CSV, and HTML are supported.",
+              "此类附件无法作为文本读取，仅支持 PDF、DOCX、纯文本、CSV 和 HTML",
           };
         }
 
@@ -921,7 +921,7 @@ export const readAttachmentTool = ({
             mimeType: resolvedMimeType,
             size: attachment.size,
             contentAvailable: false,
-            message: "Failed to extract text from this attachment.",
+            message: "从此附件提取文本失败",
           };
         }
 
@@ -934,8 +934,8 @@ export const readAttachmentTool = ({
           truncated: extracted.truncated,
         };
       } catch (error) {
-        logger.error("Failed to read attachment", { error });
-        return { error: "Failed to read attachment" };
+        logger.error("读取附件失败", { error });
+        return { error: "读取附件失败" };
       }
     },
   });
@@ -1847,15 +1847,15 @@ export async function deleteChatDrafts({
       const drafts = thread.messages.filter((message) =>
         message.labelIds?.includes("DRAFT"),
       );
-      // A thread with no drafts left is already in the requested state, which
-      // also lets a retry succeed after an earlier attempt deleted them.
+      // 没有剩余草稿的会话已经处于请求的状态，这也能让先前尝试
+      // 删除草稿后的重试成功。
       let failedDraftCount = 0;
       for (const draft of drafts) {
         const deleted = await deleteDraftForMessage(emailProvider, draft.id);
         if (deleted) deletedDraftCount += 1;
         else failedDraftCount += 1;
       }
-      if (failedDraftCount) throw new Error("Some drafts were not deleted");
+      if (failedDraftCount) throw new Error("部分草稿未能删除");
     },
   });
   const failedThreadIds = results
@@ -1900,7 +1900,7 @@ async function runThreadActionsInParallel({
       try {
         await runAction(threadId);
       } catch (error) {
-        // Models often pass a message ID where a thread ID belongs.
+        // 模型经常在本该传会话 ID 的地方传入消息 ID。
         const resolvedThreadId = isThreadNotFoundError(error)
           ? await findThreadIdForMessageId(emailProvider, threadId)
           : null;

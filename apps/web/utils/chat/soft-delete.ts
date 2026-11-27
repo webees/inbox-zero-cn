@@ -5,20 +5,20 @@ export const REDACTED_TEXT = "[REDACTED]";
 const REDACTED_PARTS = [{ type: "text", text: REDACTED_TEXT }];
 
 /**
- * Soft-deletes a chat owned by `emailAccountId`.
+ * 软删除归属于 `emailAccountId` 的聊天。
  *
- * The Chat row itself is preserved (with `deletedAt` set) so platform-level
- * analytics and audit trails still work, but every piece of user-supplied or
- * model-generated content tied to the chat is replaced with a redacted
- * placeholder. This includes:
+ * Chat 行本身会保留（设置 `deletedAt`），以便平台级
+ * 分析和审计记录仍可工作，但所有用户提供或
+ * 模型生成的、与聊天相关的内容都会被替换为已脱敏的
+ * 占位符。包括：
  *  - `Chat.name`
  *  - `ChatMessage.parts` for every message in the chat
  *  - `ChatCompaction.summary` for every compaction in the chat
  *  - `ChatMemory.content` for memories linked to this chat
  *
- * Returns `true` if the chat existed and is now soft-deleted (or was already
- * soft-deleted), `false` if no chat with the given id was owned by this
- * account.
+ * 如果聊天存在且现已软删除（或此前已是软删除状态）
+ * 则返回 `true`；若该 id 对应的聊天不归此
+ * 账号所有，则返回 `false`。
  */
 export async function softDeleteChat({
   chatId,
@@ -35,9 +35,9 @@ export async function softDeleteChat({
   if (!chat) return false;
   if (chat.deletedAt) return true;
 
-  // Run as a single transaction so a failed redaction can't leave a chat
-  // marked as deleted while messages, compactions, or memories are still
-  // readable.
+  // 作为单个事务运行，以免脱敏失败导致聊天
+  // 被标记为已删除，而消息、压缩记录或记忆仍
+  // 可读。
   await prisma.$transaction([
     prisma.chat.update({
       where: { id: chat.id },

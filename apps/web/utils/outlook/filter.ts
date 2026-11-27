@@ -5,9 +5,9 @@ import { isAlreadyExistsError } from "./errors";
 import { withMicrosoftGraphWriteRetry } from "@/utils/outlook/retry";
 import { getLabelById, getOrCreateLabel } from "@/utils/outlook/label";
 
-// Microsoft Graph API doesn't have a direct equivalent to Gmail filters
-// Instead, we can work with mail rules which are more complex but provide similar functionality
-// Note: Mail rules in Outlook are more limited and require different permissions
+// Microsoft Graph API 没有与 Gmail 过滤器直接对应的功能
+// 因此我们改用邮件规则，它们更复杂但能提供类似的功能
+// 注意：Outlook 中的邮件规则限制更多，且需要不同的权限
 
 export async function createFilter(options: {
   client: OutlookClient;
@@ -46,7 +46,7 @@ export async function createFilter(options: {
     return { status: 201, data: response };
   } catch (error) {
     if (isAlreadyExistsError(error)) {
-      logger.warn("Filter already exists", { from });
+      logger.warn("过滤器已存在", { from });
       return { status: 200 };
     }
     throw error;
@@ -65,7 +65,7 @@ export async function createAutoArchiveFilter({
   logger: Logger;
 }) {
   try {
-    // For Outlook, we'll create a rule that moves messages to archive
+    // 对于 Outlook，我们将创建一条将邮件移动到归档的规则
     const rule: MessageRule = {
       displayName: `Auto-archive filter for ${from}`,
       sequence: 1,
@@ -89,7 +89,7 @@ export async function createAutoArchiveFilter({
     return { status: 201, data: response };
   } catch (error) {
     if (isAlreadyExistsError(error)) {
-      logger.warn("Auto-archive filter already exists", { from });
+      logger.warn("自动归档过滤器已存在", { from });
       return { status: 200 };
     }
     throw error;
@@ -117,7 +117,7 @@ export async function deleteFilter({
 
     return { status: 204 };
   } catch (error) {
-    logger.error("Error deleting Outlook filter", { id, error });
+    logger.error("删除 Outlook 过滤器时出错", { id, error });
     throw error;
   }
 }
@@ -137,16 +137,16 @@ export async function getFiltersList({
 
     return response;
   } catch (error) {
-    logger.error("Error getting Outlook filters list", {
+    logger.error("获取 Outlook 过滤器列表时出错", {
       error,
-      errorMessage: error instanceof Error ? error.message : "Unknown error",
+      errorMessage: error instanceof Error ? error.message : "未知错误",
       errorStack: error instanceof Error ? error.stack : undefined,
     });
     throw error;
   }
 }
 
-// Additional helper functions for Outlook-specific operations
+// 针对 Outlook 专属操作的额外辅助函数
 
 export async function createCategoryFilter({
   client,
@@ -165,19 +165,18 @@ export async function createCategoryFilter({
     logger,
   });
 
-  // Note: Microsoft Graph API doesn't support applying categories directly in mail rules
-  // This function ensures the category exists; assignment happens when processing messages
-  logger.info("Category ensured for filter", {
+  // 注意：Microsoft Graph API 不支持在邮件规则中直接应用类别
+  // 该函数确保类别存在；实际分配在处理邮件时进行
+  logger.info("已确保过滤器的类别", {
     categoryName: category.displayName,
     categoryId: category.id,
   });
-  logger.trace("Category ensure filter context", { from });
+  logger.trace("确保分类的筛选上下文", { from });
 
   return {
     status: 200,
     category,
-    message:
-      "Category ensured. Note: Categories must be applied to individual messages.",
+    message: "已确保分类。注意：类别必须应用到单封邮件上。",
   };
 }
 
@@ -226,16 +225,16 @@ export async function updateFilter({
 
     return response;
   } catch (error) {
-    logger.error("Error updating Outlook filter", { id, error });
+    logger.error("更新 Outlook 过滤器时出错", { id, error });
     throw error;
   }
 }
 
-// Helper functions
+// 辅助函数
 
 /**
- * Resolves label IDs to category names for Outlook rules.
- * Outlook rules use category names, not IDs.
+ * 为 Outlook 规则将标签 ID 解析为类别名称。
+ * Outlook 规则使用类别名称，而不是 ID。
  */
 async function resolveCategoryNames(
   client: OutlookClient,
@@ -250,10 +249,10 @@ async function resolveCategoryNames(
       if (category?.displayName) {
         categoryNames.push(category.displayName);
       } else {
-        logger.error("Category not found by ID", { labelId });
+        logger.error("按 ID 未找到类别", { labelId });
       }
     } catch (error) {
-      logger.error("Failed to resolve category ID", {
+      logger.error("解析类别 ID 失败", {
         labelId,
         error,
       });
@@ -264,8 +263,8 @@ async function resolveCategoryNames(
 }
 
 /**
- * Builds the actions object for Outlook message rules.
- * Microsoft API requires at least one action.
+ * 为 Outlook 邮件规则构建 actions 对象。
+ * Microsoft API 至少需要一个 action。
  */
 async function buildFilterActions(options: {
   client: OutlookClient;
@@ -285,7 +284,7 @@ async function buildFilterActions(options: {
     assignCategories?: string[];
   } = {};
 
-  // Handle label additions (categories in Outlook)
+  // 处理标签新增（Outlook 中的类别）
   if (addLabelIds && addLabelIds.length > 0) {
     const categoryNames = await resolveCategoryNames(
       client,
@@ -297,7 +296,7 @@ async function buildFilterActions(options: {
     }
   }
 
-  // Handle label removals
+  // 处理标签移除
   if (removeLabelIds?.includes("INBOX")) {
     actions.moveToFolder = "archive";
   }
@@ -306,10 +305,10 @@ async function buildFilterActions(options: {
     actions.markAsRead = true;
   }
 
-  // If no actions were specified, default to marking as read
-  // (Microsoft API requires at least one action)
+  // 如果未指定任何 action，则默认标记为已读
+  // (Microsoft API 至少需要一个 action)
   if (Object.keys(actions).length === 0) {
-    logger.warn("No actions specified for filter, defaulting to markAsRead", {
+    logger.warn("过滤器未指定任何操作，默认标记为已读", {
       addLabelIds,
       removeLabelIds,
       ...context,

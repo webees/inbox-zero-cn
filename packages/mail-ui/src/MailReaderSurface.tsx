@@ -43,8 +43,8 @@ export type MailReaderToolbarProps = {
 };
 
 const DEFAULT_TOOLBAR_STRINGS = {
-  starredConversation: "Starred conversation",
-  threadActions: "Thread actions",
+  starredConversation: "已加星标会话",
+  threadActions: "会话操作",
 };
 
 export function MailReaderToolbar({
@@ -69,10 +69,10 @@ export function MailReaderToolbar({
     ? "collapse_all"
     : "expand_all";
   const expansionLabel = messageExpansion?.allExpanded
-    ? "Collapse all messages"
-    : "Expand all messages";
+    ? "收起所有邮件"
+    : "展开所有邮件";
   const readAction = isUnread ? "mark_read" : "mark_unread";
-  const readLabel = isUnread ? "Mark as read" : "Mark as unread";
+  const readLabel = isUnread ? "标记为已读" : "标记为未读";
 
   const actionButton = (button: MailReaderToolbarButton) =>
     renderActionTooltip(button, renderButton(button));
@@ -82,8 +82,8 @@ export function MailReaderToolbar({
       <div className="flex items-center gap-1">
         {renderButton({
           action: "back",
-          ariaLabel: "Back to inbox",
-          title: "Back to inbox",
+          ariaLabel: "返回收件箱",
+          title: "返回收件箱",
           icon: icons?.back,
           onClick: onBackToInbox,
         })}
@@ -126,13 +126,13 @@ export function MailReaderToolbar({
           onMoveToInbox
             ? {
                 action: "move_to_inbox",
-                ariaLabel: "Move to inbox",
+                ariaLabel: "移至收件箱",
                 icon: icons?.move_to_inbox,
                 onClick: onMoveToInbox,
               }
             : {
                 action: "archive",
-                ariaLabel: "Archive",
+                ariaLabel: "归档",
                 icon: icons?.archive,
                 onClick: onArchive,
               },
@@ -176,7 +176,7 @@ export function MailReaderSurface({
   localAvailability,
   renderLoadMoreButton = ({ disabled, loading, onClick }) => (
     <button disabled={disabled} onClick={onClick} type="button">
-      {loading ? "Loading messages…" : "Load older messages"}
+      {loading ? "正在加载邮件…" : "加载更早的邮件"}
     </button>
   ),
 }: MailReaderSurfaceProps) {
@@ -214,7 +214,7 @@ export type MailMessageStackMessage = {
 
 export function MailMessageStack({
   messages,
-  empty = "No messages in this conversation.",
+  empty = "此会话中没有邮件。",
 }: {
   messages: MailMessageStackMessage[];
   empty?: ReactNode;

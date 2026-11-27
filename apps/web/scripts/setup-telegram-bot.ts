@@ -73,10 +73,10 @@ function parseSetupOptions(args: string[]): SetupOptions {
 function printHelpAndExit(): never {
   process.stdout.write("Usage: tsx scripts/setup-telegram-bot.ts [options]\n");
   process.stdout.write("Options:\n");
-  process.stdout.write("  --bot-token <token>          Telegram bot token\n");
   process.stdout.write(
-    "  --profile-photo-url <url>    Optional profile photo URL\n",
+    "  --bot-token <token>          Telegram 机器人 token\n",
   );
+  process.stdout.write("  --profile-photo-url <url>    可选的资料照片 URL\n");
   process.stdout.write(
     "  -h, --help                   Show this help message\n",
   );

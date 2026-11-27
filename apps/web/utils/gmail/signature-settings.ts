@@ -15,7 +15,7 @@ export interface GmailSignature {
 }
 
 /**
- * Fetches all signatures from Gmail using the sendAs settings API
+ * 使用 sendAs 设置 API 从 Gmail 获取所有签名
  * https://developers.google.com/gmail/api/reference/rest/v1/users.settings.sendAs
  */
 export async function getGmailSignatures(
@@ -29,7 +29,7 @@ export async function getGmailSignatures(
     );
 
     if (!sendAsList.data.sendAs || sendAsList.data.sendAs.length === 0) {
-      logger.warn("No sendAs settings found");
+      logger.warn("未找到 sendAs 设置");
       return [];
     }
 
@@ -48,13 +48,13 @@ export async function getGmailSignatures(
       });
     }
 
-    logger.info("Gmail signatures fetched successfully", {
+    logger.info("已成功获取 Gmail 签名", {
       count: signatures.length,
     });
 
     return signatures;
   } catch (error) {
-    logger.error("Failed to fetch Gmail signatures", { error });
+    logger.error("获取 Gmail 签名失败", { error });
     throw error;
   }
 }

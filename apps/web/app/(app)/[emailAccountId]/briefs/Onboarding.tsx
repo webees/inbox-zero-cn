@@ -42,9 +42,9 @@ export function BriefsOnboarding({
   return (
     <SetupCard
       imageSrc="/images/illustrations/communication.svg"
-      imageAlt={t`Meeting Briefs`}
-      title={t`Meeting Briefs`}
-      description={t`Receive briefings by email or in your chat app before meetings with external guests.`}
+      imageAlt={t`会议简报`}
+      title={t`会议简报`}
+      description={t`在与外部嘉宾会面前，通过邮件或聊天应用接收简报。`}
       features={features.map((feature) => ({
         ...feature,
         title: i18n._(feature.title),
@@ -54,16 +54,16 @@ export function BriefsOnboarding({
       {hasCalendarConnected ? (
         <>
           <MessageText>
-            <Trans>You're all set! Enable meeting briefs to get started:</Trans>
+            <Trans>一切就绪！启用会议简报即可开始：</Trans>
           </MessageText>
           <Button onClick={onEnable} loading={isEnabling}>
-            <Trans>Enable Meeting Briefs</Trans>
+            <Trans>启用会议简报</Trans>
           </Button>
         </>
       ) : (
         <>
           <MessageText>
-            <Trans>Connect your calendar to get started:</Trans>
+            <Trans>连接你的日历以开始使用：</Trans>
           </MessageText>
           <ConnectCalendar
             analyticsPage="meeting_briefs"

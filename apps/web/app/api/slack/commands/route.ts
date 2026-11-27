@@ -45,7 +45,7 @@ export const POST = withError("slack/commands", async (request) => {
   const responseUrl = params.get("response_url") ?? "";
 
   if (!command || !userId || !teamId || !responseUrl) {
-    return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
+    return NextResponse.json({ error: "缺少参数" }, { status: 400 });
   }
 
   if (command.replace(/^\//, "") === "help") {
@@ -70,6 +70,6 @@ export const POST = withError("slack/commands", async (request) => {
 
   return NextResponse.json({
     response_type: "ephemeral",
-    text: "Working on it...",
+    text: "正在处理...",
   });
 });

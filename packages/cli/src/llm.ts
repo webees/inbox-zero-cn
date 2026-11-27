@@ -8,21 +8,21 @@ export const LLM_PROVIDER_OPTIONS = [
   {
     value: "openrouter",
     label: "OpenRouter",
-    hint: "access multiple models",
+    hint: "访问多个模型",
   },
   {
     value: "aigateway",
     label: "Vercel AI Gateway",
-    hint: "access multiple models",
+    hint: "访问多个模型",
   },
   { value: "bedrock", label: "AWS Bedrock" },
   { value: "groq", label: "Groq" },
-  { value: "cerebras", label: "Cerebras", hint: "fast inference" },
-  { value: "ollama", label: "Ollama", hint: "self-hosted" },
+  { value: "cerebras", label: "Cerebras", hint: "快速推理" },
+  { value: "ollama", label: "Ollama", hint: "自托管" },
   {
     value: "openai-compatible",
-    label: "OpenAI-Compatible",
-    hint: "self-hosted (LM Studio, vLLM, etc.)",
+    label: "OpenAI 兼容",
+    hint: "自托管（LM Studio、vLLM 等）",
   },
 ] as const;
 
@@ -143,7 +143,7 @@ export function getDefaultLlmModels(provider: string) {
   const models = DEFAULT_MODELS[provider as DefaultModelProvider];
   if (models) return models;
 
-  throw new Error(`Unsupported LLM provider: ${provider}`);
+  throw new Error(`不支持的 LLM 服务商：${provider}`);
 }
 
 function setRoleLlms(
@@ -157,7 +157,7 @@ function setRoleLlms(
 }
 
 function cancelSetup(): never {
-  cancel("Setup cancelled.");
+  cancel("设置已取消");
   process.exit(0);
 }
 
@@ -169,16 +169,16 @@ async function promptOllamaCreds(): Promise<{
     {
       baseUrl: () =>
         text({
-          message: "Ollama Base URL",
+          message: "Ollama 基础 URL",
           placeholder: DEFAULT_OLLAMA_BASE_URL,
           initialValue: DEFAULT_OLLAMA_BASE_URL,
         }),
       model: () =>
         text({
-          message: "Ollama Model",
+          message: "Ollama 模型",
           placeholder: "qwen3.5:4b",
           initialValue: "qwen3.5:4b",
-          validate: (value) => (!value ? "Model name is required" : undefined),
+          validate: (value) => (!value ? "模型名称为必填项" : undefined),
         }),
     },
     { onCancel: cancelSetup },
@@ -199,21 +199,21 @@ async function promptOpenAICompatibleCreds(): Promise<{
     {
       baseUrl: () =>
         text({
-          message: "OpenAI-Compatible Base URL",
+          message: "OpenAI 兼容基础 URL",
           placeholder: "http://localhost:1234/v1",
           initialValue: "http://localhost:1234/v1",
         }),
       model: () =>
         text({
-          message: "Model Name",
+          message: "模型名称",
           placeholder: "qwen3.5:4b",
           initialValue: "qwen3.5:4b",
-          validate: (value) => (!value ? "Model name is required" : undefined),
+          validate: (value) => (!value ? "模型名称为必填项" : undefined),
         }),
       apiKey: () =>
         text({
-          message: "API Key (optional - press Enter to skip)",
-          placeholder: "leave blank if not required",
+          message: "API 密钥（可选 - 按 Enter 跳过）",
+          placeholder: "如不需要可留空",
         }),
     },
     { onCancel: cancelSetup },
@@ -232,25 +232,25 @@ async function promptBedrockCreds(): Promise<{
   region: string;
 }> {
   log.info(
-    "Get your AWS credentials from the AWS Console:\nhttps://console.aws.amazon.com/iam/",
+    "请从 AWS 控制台获取你的 AWS 凭证：\nhttps://console.aws.amazon.com/iam/",
   );
   const creds = await group(
     {
       accessKey: () =>
         text({
-          message: "Bedrock Access Key",
+          message: "Bedrock 访问密钥",
           placeholder: "AKIA...",
-          validate: (value) => (!value ? "Access key is required" : undefined),
+          validate: (value) => (!value ? "访问密钥为必填项" : undefined),
         }),
       secretKey: () =>
         text({
-          message: "Bedrock Secret Key",
+          message: "Bedrock 私有密钥",
           placeholder: "your-secret-key",
-          validate: (value) => (!value ? "Secret key is required" : undefined),
+          validate: (value) => (!value ? "私有密钥为必填项" : undefined),
         }),
       region: () =>
         text({
-          message: "Bedrock Region",
+          message: "Bedrock 区域",
           placeholder: "us-west-2",
           initialValue: "us-west-2",
         }),
@@ -266,11 +266,11 @@ async function promptBedrockCreds(): Promise<{
 }
 
 async function promptApiKey(provider: string): Promise<string> {
-  log.info(`Get your API key at:\n${LLM_LINKS[provider]}`);
+  log.info(`请在此获取你的 API 密钥：\n${LLM_LINKS[provider]}`);
   const apiKey = await text({
-    message: `${provider.charAt(0).toUpperCase() + provider.slice(1)} API Key`,
-    placeholder: "paste your API key here",
-    validate: (value) => (!value ? "API key is required" : undefined),
+    message: `${provider.charAt(0).toUpperCase() + provider.slice(1)} API 密钥`,
+    placeholder: "在此粘贴你的 API 密钥",
+    validate: (value) => (!value ? "API 密钥为必填项" : undefined),
   });
 
   if (isCancel(apiKey)) cancelSetup();

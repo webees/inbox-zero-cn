@@ -33,13 +33,13 @@ export function PlanBadge(props: { plan?: Plan; provider: string }) {
   const { plan, provider } = props;
   const { i18n } = useLingui();
 
-  // if (!plan) return <Badge color="gray">Not planned</Badge>;
+  // if (!plan) return <Badge color="gray">未计划</Badge>;
   if (!plan) return null;
 
   if (!plan.rule) {
     const component = (
       <Badge color="yellow">
-        <Trans>No plan</Trans>
+        <Trans>无计划</Trans>
       </Badge>
     );
 
@@ -50,7 +50,7 @@ export function PlanBadge(props: { plan?: Plan; provider: string }) {
           content={
             <div className="max-w-full whitespace-pre-wrap text-sm">
               <strong>
-                <Trans>Reason:</Trans>
+                <Trans>原因：</Trans>
               </strong>{" "}
               {plan.reason}
             </div>
@@ -112,33 +112,33 @@ function getActionLabel(
     case ActionType.LABEL:
       return i18n._(terminology.label.action);
     case ActionType.ARCHIVE:
-      return i18n._(msg`Archive`);
+      return i18n._(msg`归档`);
     case ActionType.FORWARD:
-      return i18n._(msg`Forward`);
+      return i18n._(msg`转发`);
     case ActionType.REPLY:
-      return i18n._(msg`Reply`);
+      return i18n._(msg`回复`);
     case ActionType.SEND_EMAIL:
-      return i18n._(msg`Send`);
+      return i18n._(msg`发送`);
     case ActionType.DRAFT_EMAIL:
     case ActionType.DRAFT_MESSAGING_CHANNEL:
-      return i18n._(msg`Draft`);
+      return i18n._(msg`草稿`);
     case ActionType.CALL_WEBHOOK:
       return i18n._(msg`Webhook`);
     case ActionType.MARK_SPAM:
-      return i18n._(msg`Mark as spam`);
+      return i18n._(msg`标记为垃圾邮件`);
     case ActionType.MARK_READ:
-      return i18n._(msg`Mark as read`);
+      return i18n._(msg`标记为已读`);
     case ActionType.STAR:
-      return i18n._(msg`Star`);
+      return i18n._(msg`加星标`);
     case ActionType.NOTIFY_MESSAGING_CHANNEL: {
-      if (!action?.messagingChannel?.provider) return i18n._(msg`Notify`);
+      if (!action?.messagingChannel?.provider) return i18n._(msg`通知`);
       const providerName = getMessagingProviderName(
         action.messagingChannel.provider,
       );
-      return i18n._(msg`Notify on ${providerName}`);
+      return i18n._(msg`在 ${providerName} 上通知`);
     }
     case ActionType.NOTIFY_SENDER:
-      return i18n._(msg`Notify Sender`);
+      return i18n._(msg`通知发件人`);
     case ActionType.INTEGRATION:
       return i18n._(getIntegrationActionLabelMessage(action));
     default:
@@ -168,7 +168,7 @@ function getActionMessage(
       if (action.to) {
         const actionLabel = getActionLabel(action.type, provider, i18n, action);
         const to = action.to;
-        const summary = i18n._(msg`${actionLabel} to ${to}`);
+        const summary = i18n._(msg`${actionLabel}至 ${to}`);
         return `${summary}${action.content ? `:\n${action.content}` : ""}`;
       }
     default:

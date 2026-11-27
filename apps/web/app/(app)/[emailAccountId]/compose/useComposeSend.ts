@@ -164,12 +164,11 @@ export function useComposeSend({
         pendingRecipients: pendingRecipientsRef.current,
       });
       if (!recipients.to) {
-        toastError({ description: t`Enter a valid recipient email address.` });
+        toastError({ description: t`请输入有效的收件人邮箱地址。` });
         return;
       }
 
-      // Files go to the mailbox draft as they are attached, so a send waits
-      // for them and never carries their bytes itself.
+      // 文件在附加时就会进入邮箱草稿，因此发送会等待它们，自身从不携带文件字节。
       if (attachmentsRef.current.length)
         await waitForDraftOperations(draftQueueKey);
       const failedAttachment = attachmentsRef.current.find(
@@ -177,7 +176,7 @@ export function useComposeSend({
       );
       if (failedAttachment) {
         toastError({
-          description: t`${failedAttachment.filename} isn't attached. Remove it or attach it again before sending.`,
+          description: t`${failedAttachment.filename} 未能附加。请移除它或在发送前重新附加。`,
         });
         return;
       }

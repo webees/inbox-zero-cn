@@ -404,7 +404,7 @@ export async function cleanupThreadAIDrafts({
               );
             }
             logger.info(
-              deleted ? "Deleted unmodified draft." : "Draft was not deleted.",
+              deleted ? "已删除未修改的草稿。" : "草稿未被删除。",
               actionLoggerOptions,
             );
           } else {
@@ -414,10 +414,7 @@ export async function cleanupThreadAIDrafts({
             );
           }
         } else {
-          logger.info(
-            "Draft no longer exists, tracking cleanup status.",
-            actionLoggerOptions,
-          );
+          logger.info("草稿已不存在，正在跟踪清理状态。", actionLoggerOptions);
           const statusData = getDraftCleanupStatusData({
             draftStatus: action.draftStatus,
             status: DraftEmailStatus.MISSING_FROM_PROVIDER,
@@ -438,7 +435,7 @@ export async function cleanupThreadAIDrafts({
           logger,
           emailAccountId,
           scope: "draft-tracking",
-          message: "Error checking draft for cleanup",
+          message: "检查待清理草稿时出错",
           operation: "check-draft-for-cleanup",
           context: actionLoggerOptions,
           error,
@@ -446,9 +443,9 @@ export async function cleanupThreadAIDrafts({
       }
     }
 
-    // Also clean up follow-up drafts for this thread (safety net).
-    // clearFollowUpLabel already handles this synchronously, so this will
-    // typically find nothing. Kept as a fallback for non-standard code paths.
+    // 同时清理此会话的跟进草稿（兜底措施）。
+    // clearFollowUpLabel 已同步处理此操作，因此这里通常
+    // 不会找到任何内容。保留它作为非标准代码路径的兜底。
     const followUpTrackers = await prisma.threadTracker.findMany({
       where: {
         emailAccountId,
@@ -462,7 +459,7 @@ export async function cleanupThreadAIDrafts({
     });
 
     if (followUpTrackers.length > 0) {
-      logger.info("Found follow-up drafts to cleanup", {
+      logger.info("发现待清理的跟进草稿", {
         count: followUpTrackers.length,
       });
 

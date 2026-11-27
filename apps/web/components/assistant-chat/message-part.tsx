@@ -165,7 +165,7 @@ export function MessagePart({
   const key = `${messageId}-${partIndex}`;
 
   if (part.type === "reasoning") {
-    // Skip rendering if reasoning is redacted (limited token output from provider)
+    // 如果推理内容已被删改（提供商限制了 token 输出），则跳过渲染
     if (!part.text || part.text === "[REDACTED]") return null;
     return (
       <Reasoning key={key} isStreaming={isStreaming} className="w-full">
@@ -216,8 +216,8 @@ export function MessagePart({
     );
   }
 
-  // Tool handling
-  // Hidden errors are mistakes the model is expected to correct on its own.
+  // 工具处理
+  // 隐藏的错误是模型应自行纠正的失误。
   if (
     part.type.startsWith("tool-") &&
     "state" in part &&
@@ -553,9 +553,8 @@ export function MessagePart({
     }
   }
 
-  // These tools are no longer exposed to the assistant; updateRule replaces
-  // them. Keep render-only support so older persisted chat messages still show
-  // their historical tool cards instead of falling through to raw JSON.
+  // 这些工具不再向 AI 助手开放，已由 updateRule 取代。保留仅用于渲染的支持，
+  // 让较早保存的聊天消息仍显示其历史工具卡片，而不是退化为原始 JSON。
   const legacyRulePart = part as unknown as LegacyRuleToolPart;
 
   if (legacyRulePart.type === "tool-updateRuleConditions") {
@@ -856,7 +855,7 @@ export function MessagePart({
 
     if (state === "input-available") {
       return (
-        <BasicToolInfo key={toolCallId} text="Checking matching emails..." />
+        <BasicToolInfo key={toolCallId} text={t`Checking matching emails...`} />
       );
     }
 
@@ -883,7 +882,7 @@ export function MessagePart({
           key={toolCallId}
           text={
             getOutputField<string>(part.output, "message") ||
-            "No emails matched, so nothing changed."
+            t`没有匹配的邮件，因此未做任何更改。`
           }
         />
       );
@@ -1082,27 +1081,26 @@ function normalizeManageInboxActionForDisplay(action: unknown) {
   return isManageInboxAction(action) ? action : undefined;
 }
 
-// The browser applies these on its own and never reports back, so the labels
-// describe the request rather than claim the result.
+// 浏览器会自行执行这些操作且不会回报结果，因此标签描述的是请求，而不是声称结果。
 function getMailScreenActionLabel(input: unknown, i18n: I18n) {
   const action = parseMailScreenAction(input);
-  if ("error" in action) return i18n._(msg`Updating your mail screen`);
+  if ("error" in action) return i18n._(msg`正在更新你的邮件界面`);
   switch (action.action) {
     case "select_threads":
       return i18n._(
-        msg`Selecting ${plural(action.threadIds.length, {
+        msg`正在界面上选择 ${plural(action.threadIds.length, {
           one: "# email",
           other: "# emails",
-        })} on screen`,
+        })}`,
       );
     case "open_thread":
-      return i18n._(msg`Opening the email on screen`);
+      return i18n._(msg`正在界面上打开邮件`);
     case "search": {
       const query = action.query;
-      return i18n._(msg`Searching for "${query}" on screen`);
+      return i18n._(msg`正在界面上搜索“${query}”`);
     }
     case "show_split":
-      return i18n._(msg`Showing the split on screen`);
+      return i18n._(msg`正在界面上显示分栏`);
   }
 }
 
@@ -1251,17 +1249,17 @@ function getStartSenderCategorizationSuccessText(
   const totalQueued = getOutputField<number>(output, "totalQueuedSenders") ?? 0;
 
   if (alreadyRunning) {
-    return i18n._(msg`Sender categorization already in progress`);
+    return i18n._(msg`发件人分类已在进行中`);
   }
   if (totalQueued > 0) {
     return i18n._(
-      msg`Categorizing ${plural(totalQueued, {
+      msg`正在分类 ${plural(totalQueued, {
         one: "# sender",
         other: "# senders",
       })}`,
     );
   }
-  return i18n._(msg`No senders to categorize`);
+  return i18n._(msg`没有需要分类的发件人`);
 }
 
 function getSenderCategorizationStatusSuccessText(
@@ -1273,12 +1271,12 @@ function getSenderCategorizationStatusSuccessText(
   const completed = getOutputField<number>(output, "completedItems") ?? 0;
 
   if (status === "completed") {
-    return i18n._(msg`Categorization complete`);
+    return i18n._(msg`分类完成`);
   }
   if (status === "running") {
-    return i18n._(msg`Categorizing senders (${completed} of ${total})`);
+    return i18n._(msg`正在分类发件人（${completed}/${total}）`);
   }
-  return i18n._(msg`Categorization hasn't started`);
+  return i18n._(msg`分类尚未开始`);
 }
 
 function toMessageString(value: unknown): string | null {
@@ -1302,16 +1300,12 @@ function getSplitInboxLabel(
 ) {
   switch (action) {
     case "create":
-      return name
-        ? i18n._(msg`Created split "${name}"`)
-        : i18n._(msg`Created split`);
+      return name ? i18n._(msg`已创建分栏“${name}”`) : i18n._(msg`已创建分栏`);
     case "update":
     case "hideFromAll":
     case "showInAll":
-      return name
-        ? i18n._(msg`Updated split "${name}"`)
-        : i18n._(msg`Updated split`);
+      return name ? i18n._(msg`已更新分栏“${name}”`) : i18n._(msg`已更新分栏`);
     default:
-      return i18n._(msg`Read your split inbox`);
+      return i18n._(msg`已读取你的分栏收件箱`);
   }
 }

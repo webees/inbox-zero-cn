@@ -124,7 +124,7 @@ describe("server conversion tracking", () => {
     expect(sendCompleteRegistrationEvent).toHaveBeenCalledTimes(1);
     expect(trackUserSignedUp).toHaveBeenCalledTimes(1);
     expect(logger.error).toHaveBeenCalledWith(
-      "Conversion tracking dedupe failed",
+      "转化跟踪去重失败",
       expect.objectContaining({
         provider: "facebook",
         userId: "user-id",

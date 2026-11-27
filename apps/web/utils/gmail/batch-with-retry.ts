@@ -10,8 +10,8 @@ const RATE_LIMIT_RETRY_BATCH_SIZE = 10;
 const MAX_BATCH_RETRIES = 3;
 const MAX_RETRY_JITTER_MS = 1000;
 
-// Gmail counts each subrequest toward per-user concurrency. Leave headroom for
-// other account activity, then reduce rate-limited retries even further.
+// Gmail 会将每个子请求计入每用户并发。为其他账号活动留出
+// 余量，然后进一步减少被限流的重试。
 export async function getBatchWithRetry<TRaw, TParsed>({
   ids,
   endpoint,
@@ -31,7 +31,7 @@ export async function getBatchWithRetry<TRaw, TParsed>({
   retryCount?: number;
   retryError?: BatchError["error"];
 }): Promise<TParsed[]> {
-  if (!accessToken) throw new Error("No access token");
+  if (!accessToken) throw new Error("没有访问令牌");
 
   const results: TParsed[] = [];
   for (const idsChunk of chunk(ids, GMAIL_BATCH_SIZE)) {
@@ -86,8 +86,8 @@ async function getBatchChunkWithRetry<TRaw, TParsed>({
   );
 
   if (batch.some((item) => isBatchError(item) && item.error.code === 401)) {
-    logger.error("Error fetching batch", { firstBatchItem: batch?.[0] });
-    throw new Error("Invalid access token");
+    logger.error("获取批量请求时出错", { firstBatchItem: batch?.[0] });
+    throw new Error("无效的访问令牌");
   }
 
   const missingIds = new Set<string>();
@@ -109,7 +109,7 @@ async function getBatchChunkWithRetry<TRaw, TParsed>({
         });
 
         if (!retryable) {
-          logger.warn("Skipping batch item due to non-retryable error", {
+          logger.warn("由于不可重试的错误跳过批量项", {
             code,
             reason,
             errorMessage,
@@ -145,7 +145,7 @@ async function getBatchChunkWithRetry<TRaw, TParsed>({
         logger,
       });
 
-    logger.warn("Retrying Gmail batch items", {
+    logger.warn("正在重试 Gmail 批量项", {
       batchSize: ids.length,
       retryableItemCount,
       rateLimitedItemCount,
@@ -195,9 +195,9 @@ function throwBatchRetryLimit({
   retryError?: BatchError["error"];
   logger: Logger;
 }): never {
-  logger.warn("Too many Gmail batch retries", { batchSize, retryCount });
-  if (!retryError) throw new Error("Gmail batch retry limit exceeded");
+  logger.warn("Gmail 批量重试次数过多", { batchSize, retryCount });
+  if (!retryError) throw new Error("超出 Gmail 批量重试上限");
 
-  // Preserve the provider error so account-level rate-limit protection can pause follow-on calls.
+  // 保留服务商错误，以便账号级限流保护能暂停后续调用。
   throw new Error(retryError.message, { cause: retryError });
 }

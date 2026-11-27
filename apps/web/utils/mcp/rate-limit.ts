@@ -42,7 +42,7 @@ export async function getMcpIpRateLimitResponse({
   });
   if (!result.limited) return null;
 
-  logger?.warn("MCP IP rate limit exceeded", {
+  logger?.warn("MCP IP 限流已触发", {
     limit: result.limit,
     retryAfterSeconds: result.retryAfterSeconds,
   });
@@ -74,7 +74,7 @@ export async function getMcpOAuthRateLimitResponse({
   });
   if (!result.limited) return null;
 
-  logger?.warn("MCP OAuth rate limit exceeded", {
+  logger?.warn("MCP OAuth 限流已触发", {
     kind,
     limit: result.limit,
     retryAfterSeconds: result.retryAfterSeconds,

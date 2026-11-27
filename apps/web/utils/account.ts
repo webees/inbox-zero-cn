@@ -39,7 +39,7 @@ export async function redirectToEmailAccountPath(
 
   let emailAccountId = lastEmailAccountId;
 
-  // If no last account is available, fall back to the first account.
+  // 如果没有可用的上次账号，则回退到第一个账号。
   if (!emailAccountId) {
     const emailAccount = await measureRedirectStep(
       timing,
@@ -146,7 +146,7 @@ function logRedirectTiming(
   },
 ) {
   const durationMs = Date.now() - timing.startedAt;
-  logger.info("Resolved account redirect", {
+  logger.info("已解析账号重定向", {
     path: timing.path,
     searchParamKeys: timing.searchParamKeys,
     durationMs,

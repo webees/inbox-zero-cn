@@ -30,12 +30,11 @@ export function ScheduledEmailList() {
           {rows.length === 0 ? (
             <div className="px-6 py-12 text-center text-muted-foreground text-sm">
               <Trans>
-                Nothing scheduled. Emails you send later show up here until
-                they&apos;re on their way.
+                没有已安排的邮件。你稍后发送的邮件在发出前会显示在这里。
               </Trans>
             </div>
           ) : (
-            <ul aria-label={t`Scheduled emails`}>
+            <ul aria-label={t`已安排的邮件`}>
               {rows.map((row) => (
                 <li
                   key={row.id}
@@ -43,10 +42,10 @@ export function ScheduledEmailList() {
                 >
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium text-foreground text-sm">
-                      {row.subject?.trim() || t`(no subject)`}
+                      {row.subject?.trim() || t`（无主题）`}
                     </p>
                     <p className="truncate text-muted-foreground text-xs">
-                      {row.to?.trim() || t`No recipient`}
+                      {row.to?.trim() || t`无收件人`}
                     </p>
                   </div>
                   <p
@@ -61,22 +60,21 @@ export function ScheduledEmailList() {
                       row.status,
                     ) && (
                       <InlineActionButton onClick={() => cancelSend(row.id)}>
-                        <Trans>Cancel send</Trans>
+                        <Trans>取消发送</Trans>
                       </InlineActionButton>
                     )}
                     {row.status === "UNCERTAIN" && (
-                      // Neither cancel nor retry accepts an uncertain row, so
-                      // this is the only way to resolve one.
+                      // 取消和重试都不接受状态不确定的邮件，因此这是解决它的唯一方式。
                       <a
                         className="text-xs underline underline-offset-4"
                         href={prefixPath(emailAccountId, "/mail?type=sent")}
                       >
-                        <Trans>Check Sent</Trans>
+                        <Trans>查看已发送</Trans>
                       </a>
                     )}
                     {["BLOCKED_AUTH", "FAILED"].includes(row.status) && (
                       <InlineActionButton onClick={() => retrySend(row.id)}>
-                        <Trans>Retry send</Trans>
+                        <Trans>重试发送</Trans>
                       </InlineActionButton>
                     )}
                   </div>
@@ -107,13 +105,13 @@ function statusLabel(row: ScheduledEmail, i18n: I18n) {
     case "PENDING":
       return formatTime(row.sendAt, i18n);
     case "PROCESSING":
-      return i18n._(msg`Sending…`);
+      return i18n._(msg`正在发送…`);
     case "UNCERTAIN":
-      return i18n._(msg`Couldn't confirm delivery`);
+      return i18n._(msg`无法确认送达`);
     case "BLOCKED_AUTH":
-      return i18n._(msg`Reconnect your account to send this`);
+      return i18n._(msg`请重新连接账号以发送此邮件`);
     default:
-      return i18n._(msg`Needs attention`);
+      return i18n._(msg`需要处理`);
   }
 }
 

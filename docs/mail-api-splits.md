@@ -1,53 +1,49 @@
-# Split inbox REST API
+# 拆分收件箱 REST API
 
-Base path: `/api/mail/v1/accounts/{accountId}/splits`.
+基础路径：`/api/mail/v1/accounts/{accountId}/splits`。
 
-These installed-client routes use the same `withEmailProvider` middleware as
-other account-scoped mail v1 routes. Send the normal authenticated session or
-bearer credentials and the `X-Email-Account-ID` header. The header account must
-belong to the authenticated user and match `{accountId}`. The path alone does
-not authorize access.
+这些已安装客户端路由使用与其他账号范围的邮件 v1 路由相同的
+`withEmailProvider` 中间件。请发送常规的已认证会话或 Bearer 凭据，以及
+`X-Email-Account-ID` 请求头。请求头中的账号必须属于已认证用户，并与
+`{accountId}` 匹配。仅凭路径并不能授权访问。
 
-| Method | Path suffix | JSON request |
+| 方法 | 路径后缀 | JSON 请求 |
 | --- | --- | --- |
 | POST | (base path) | `{ "name": "Unread", "filters": [{ "kind": "UNREAD", "value": null }], "matchAll": true }` or `{ "presetId": "Receipts" }` |
 | PATCH | `/{splitId}` | `{ "name": "Receipts", "filters": [{ "kind": "LABEL", "value": "provider-label-id" }], "matchAll": true }` |
-| DELETE | `/{splitId}` | No body |
+| DELETE | `/{splitId}` | 无请求体 |
 | POST | `/reorder` | `{ "ids": ["split-2", "split-1"] }` |
-| GET | `/presets` | No body |
+| GET | `/presets` | 无请求体 |
 
-Every successful mutation returns HTTP 200 with
-`{ "protocolVersion": 1, "requestId": "...", "splits": [...] }`.
-Each split has `{ id, name, order, matchAll, filters: [{ kind, value }] }`,
-exactly the `splits` array from `/api/mail/settings`, including the synthetic
-All tab for older accounts. Use the returned array to replace local settings.
-The existing settings endpoint's response is unchanged.
+每次成功的变更操作都会返回 HTTP 200，内容为
+`{ "protocolVersion": 1, "requestId": "...", "splits": [...] }`。
+每个分区具有 `{ id, name, order, matchAll, filters: [{ kind, value }] }` 结构，
+与 `/api/mail/settings` 中的 `splits` 数组完全一致，包括为旧账号生成的合成
+“全部”标签页。请使用返回的数组替换本地设置。现有设置端点的响应保持不变。
 
-Create and update use the existing web action schemas in
-`apps/web/utils/actions/mail-split.validation.ts`. PATCH replaces the name and
-entire filter list; it is not a partial field patch. Its ID comes from the path,
-not the body. `matchAll` defaults to true on both create and update. Names are
-trimmed and must contain 1–60 characters. There are at most 25 filters per split
-and 14 persisted splits per account. Filter kinds are `LABEL`, `CATEGORY`,
-`FROM`, `TO` (a recipient address or `@domain` in To or Cc), `UNREAD`,
-`STARRED`, and `OLDER_THAN`; value requirements and allowed age values follow
-`split-filters.ts` and `split-query.ts`. Multiple distinct senders, multiple
-distinct recipients, or both Outlook inbox sections require `matchAll: false`. As on web, the action
-schemas allow an empty filter list; such a split cannot later be deleted.
+创建和更新使用 `apps/web/utils/actions/mail-split.validation.ts` 中现有的 Web
+操作 schema。PATCH 会替换名称和整个筛选条件列表；它不是字段级的部分更新。
+其 ID 来自路径，而不是请求体。创建和更新时 `matchAll` 均默认为 true。名称
+会被去除首尾空白，且必须包含 1–60 个字符。每个分区最多 25 个筛选条件，每个
+账号最多 14 个持久化分区。筛选条件类型为 `LABEL`、`CATEGORY`、`FROM`、
+`TO`（收件人或抄送中的收件人地址或 `@domain`）、`UNREAD`、`STARRED` 和
+`OLDER_THAN`；取值要求与允许的时长值参见 `split-filters.ts` 和
+`split-query.ts`。存在多个不同发件人、多个不同收件人，或同时包含两个
+Outlook 收件箱分区时，需要 `matchAll: false`。与 Web 端一样，操作 schema
+允许空的筛选条件列表；此类分区之后无法删除。
 
-DELETE uses the web action's account-scoped deletion and lock. Filterless
-splits (including All) are rejected with `Split not found or cannot be removed`.
-Unknown IDs and IDs in another account receive that same error. Reorder accepts
-1–14 unique nonempty IDs. It reorders only the account's selected slots,
-preserving omitted splits' positions; unknown/foreign IDs are ignored just as
-in the web action. Include the persisted All ID when ordering its slot; the
-synthetic `all` ID is not persisted.
+DELETE 使用 Web 操作中按账号范围进行的删除和锁定。无筛选条件的分区（包括
+“全部”）会被拒绝，并返回 `Split not found or cannot be removed`。未知 ID
+和属于其他账号的 ID 也会收到同样的错误。重新排序接受 1–14 个唯一且非空的
+ID。它只会重排该账号已选中的位置，未包含的分区保持原位置；未知或外部 ID
+会像在 Web 操作中一样被忽略。重排“全部”的位置时请包含持久化的“全部”ID；
+合成的 `all` ID 不会持久化。
 
-## Presets
+## 预设
 
-GET `/presets` returns
-`{ "protocolVersion": 1, "requestId": "...", "presets": [...] }`.
-Each preset has:
+GET `/presets` 返回
+`{ "protocolVersion": 1, "requestId": "...", "presets": [...] }`。
+每个预设包含：
 
 ```json
 {
@@ -63,30 +59,26 @@ Each preset has:
 }
 ```
 
-`presetId` is the catalogue entry name; use the exact value returned by GET.
-POST with `presetId` resolves the current account's labels again rather than
-trusting client label IDs. Ordinary presets use the same create operation as
-the web action, including duplicate-name and split-limit errors.
+`presetId` 是目录条目的名称；请使用 GET 返回的精确值。使用 `presetId` 的
+POST 会重新解析当前账号的标签，而不是信任客户端提供的标签 ID。普通预设使用
+与 Web 操作相同的创建操作，包括重名和分区数量上限错误。
 
-Availability follows web's Add from library: user labels are sorted and matched
-case-insensitively by name (including hidden labels), Gmail's Important label is
-added explicitly, and Starred is hidden for Microsoft. Missing-label presets
-are hidden, except opt-in system-rule presets. The current catalogue has no
-native-category conditions. The shared web matcher marks an ordinary preset
-added only when its name, conjunction, and unordered filters match an existing
-split. System-rule presets match by case-insensitive split name. `splitId` is
-null when not added.
+可用性遵循 Web 端的“从库中添加”：用户标签会排序并按名称不区分大小写匹配
+（包括隐藏标签），Gmail 的“重要”标签会显式添加，Microsoft 则隐藏“已加星标”。
+缺少标签的预设会被隐藏，选择启用的系统规则预设除外。当前目录中没有原生分类
+条件。共享的 Web 匹配器只有在普通预设的名称、连接方式和无序筛选条件均与
+现有分区匹配时，才会将其标记为已添加。系统规则预设按不区分大小写的分区名称
+匹配。未添加时 `splitId` 为 null。
 
-OTP has `createsSystemType: "OTP"` and may have `filters: []` before its label
-exists. POST `{ "presetId": "OTP" }` calls the same shared toggle function as
-`toggleRuleAction`, enabling or creating the account's OTP rule and its default
-split. It does not make a separate custom split or invoke an LLM. Existing web
-toggle semantics remain intact, including its best-effort default-split setup;
-a successful toggle may therefore return no new split if that setup fails or
-the split limit is reached. Inspect the returned split list.
+OTP 具有 `createsSystemType: "OTP"`，在其标签存在之前可能有 `filters: []`。
+POST `{ "presetId": "OTP" }` 会调用与 `toggleRuleAction` 相同的共享切换函数，
+启用或创建该账号的 OTP 规则及其默认分区。它不会单独创建自定义分区，也不会
+调用 LLM。现有 Web 端的切换语义保持不变，包括尽力而为的默认分区设置；因此
+如果该设置失败或达到分区数量上限，成功的切换可能不会返回新分区。请检查返回
+的分区列表。
 
-DELETE removes a split using the same action as web's tab removal; it does not
-disable its rule. For an existing rule, the existing
+DELETE 使用与 Web 端移除标签页相同的操作删除分区；它不会停用对应的规则。
+对于现有规则，现有的
 `POST /api/mobile/rules/{id}/toggle` endpoint accepts `{ "enabled": false }`
 (or true). That endpoint requires the rule ID and cannot create a missing system
 rule. Use create-from-preset for first-time OTP setup. Clients that also want

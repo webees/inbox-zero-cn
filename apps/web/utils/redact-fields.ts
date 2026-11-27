@@ -1,8 +1,8 @@
-// Field-name sets shared by the logger (hashes/redacts in logs) and the Sentry
-// scrubber (redacts before sending to a third party). Pure string Sets only —
-// no env, no crypto — so this is safe in client and edge bundles.
+// 由 logger（在日志中哈希/脱敏）和 Sentry 清理器（在发送给第三方之前脱敏）
+// 共享的字段名集合。仅使用纯字符串 Set —— 不涉及 env、不涉及 crypto ——
+// 因此可安全用于客户端和边缘 bundle。
 
-// PII identifiers (correspondent addresses). Hashed in logs, redacted for Sentry.
+// PII 标识符（通信方地址）。在日志中哈希，在 Sentry 中脱敏。
 export const SENSITIVE_FIELD_NAMES = new Set([
   "from",
   "sender",
@@ -10,7 +10,7 @@ export const SENSITIVE_FIELD_NAMES = new Set([
   "replyTo",
 ]);
 
-// Secrets and encoded payloads that must never leave the process.
+// 绝不能离开进程的密钥和编码载荷。
 export const REDACTED_FIELD_NAMES = new Set([
   "accessToken",
   "access_token",
@@ -28,7 +28,7 @@ export const REDACTED_FIELD_NAMES = new Set([
   "contents",
 ]);
 
-// Email/message content.
+// 邮件/消息内容。
 export const CONTENT_FIELD_NAMES = new Set([
   "text",
   "body",

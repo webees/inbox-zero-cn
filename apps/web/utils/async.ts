@@ -9,7 +9,7 @@ export async function mapWithConcurrency<TItem, TResult>(
   run: (item: TItem, index: number) => Promise<TResult>,
 ): Promise<TResult[]> {
   if (!Number.isInteger(concurrency) || concurrency < 1) {
-    throw new Error("concurrency must be a positive integer");
+    throw new Error("concurrency 必须是正整数");
   }
 
   const results = new Array<TResult>(items.length);
@@ -42,7 +42,7 @@ export async function runWithBoundedConcurrency<TItem, TResult>({
   ) => Promise<void> | void;
 }) {
   if (concurrency < 1) {
-    throw new Error("concurrency must be at least 1");
+    throw new Error("concurrency 必须至少为 1");
   }
 
   const results: BoundedConcurrencyResult<TItem, TResult>[] = [];
@@ -56,7 +56,7 @@ export async function runWithBoundedConcurrency<TItem, TResult>({
     const batchResults = settled.map((result, index) => {
       const item = batch[index];
       if (item === undefined) {
-        throw new Error("Batch result index out of bounds");
+        throw new Error("批次结果索引越界");
       }
 
       return { item, result };

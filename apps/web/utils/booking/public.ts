@@ -962,11 +962,11 @@ function getProviderEventDescription({
   manageUrl: string;
 }) {
   return [
-    `Booked with ${cleanCalendarDescriptionText(guestName)}`,
-    `Guest email: ${cleanCalendarDescriptionText(guestEmail)}`,
-    guestNote ? `Guest note: ${cleanCalendarDescriptionText(guestNote)}` : null,
+    `预约人：${cleanCalendarDescriptionText(guestName)}`,
+    `访客邮箱：${cleanCalendarDescriptionText(guestEmail)}`,
+    guestNote ? `访客备注：${cleanCalendarDescriptionText(guestNote)}` : null,
     "",
-    `Need to reschedule or cancel? ${manageUrl}`,
+    `需要改期或取消？${manageUrl}`,
   ]
     .filter((line) => line !== null)
     .join("\n");
@@ -981,12 +981,12 @@ function getProviderEventTitle({
   guestName: string;
   hostName: string | null;
 }) {
-  const title = cleanCalendarTitleText(bookingLinkTitle) || "Meeting";
+  const title = cleanCalendarTitleText(bookingLinkTitle) || "会议";
   const host = hostName ? cleanCalendarTitleText(hostName) : "";
   const guest = cleanCalendarTitleText(guestName);
   const participant = guest || host;
-  const participants = host && guest ? ` between ${host} and ${guest}` : "";
-  const fallbackParticipant = participant ? ` with ${participant}` : "";
+  const participants = host && guest ? `：${host} 与 ${guest}` : "";
+  const fallbackParticipant = participant ? `：与 ${participant}` : "";
 
   return `${title}${participants || fallbackParticipant}`;
 }

@@ -36,21 +36,10 @@ export const GET = withEmailProvider(
 );
 
 export const POST = withEmailProvider("user/drafts", async (request) => {
-  const { composeSessionId, ...body } = saveComposeDraftBody.parse(
-    await request.json(),
-  );
+  const body = saveComposeDraftBody.parse(await request.json());
   const saved = await saveComposeDraft({
     provider: request.emailProvider,
     ...body,
-    ...(composeSessionId
-      ? {
-          composeSession: {
-            id: composeSessionId,
-            emailAccountId: request.auth.emailAccountId,
-            logger: request.logger,
-          },
-        }
-      : {}),
   });
   return NextResponse.json(saved satisfies SaveComposeDraftResponse);
 });

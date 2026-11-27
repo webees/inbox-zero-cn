@@ -36,7 +36,7 @@ export function getNextAutomationJobRunAt({
   }
 
   throw new Error(
-    `Could not find next run within ${MAX_SEARCH_MINUTES} minutes for cron: ${cronExpression}`,
+    `在 ${MAX_SEARCH_MINUTES} 分钟内找不到 cron 的下一次运行时间：${cronExpression}`,
   );
 }
 
@@ -47,16 +47,14 @@ function parseAutomationCronExpression(
 
   if (parts.length !== CRON_PART_COUNT) {
     throw new Error(
-      `Invalid cron expression: expected ${CRON_PART_COUNT} fields, got ${parts.length}`,
+      `无效的 cron 表达式：期望 ${CRON_PART_COUNT} 个字段，实际得到 ${parts.length} 个`,
     );
   }
 
   const [minute, hour, dayOfMonth, month, dayOfWeek] = parts;
 
   if (dayOfMonth !== "*" || month !== "*") {
-    throw new Error(
-      "Automation cron supports wildcard day-of-month and month only",
-    );
+    throw new Error("自动化 cron 仅支持通配符形式的日期和月份");
   }
 
   return {
@@ -64,21 +62,21 @@ function parseAutomationCronExpression(
       field: minute,
       min: 0,
       max: 59,
-      label: "minute",
+      label: "分钟",
       normalize: identity,
     }),
     hours: parseCronField({
       field: hour,
       min: 0,
       max: 23,
-      label: "hour",
+      label: "小时",
       normalize: identity,
     }),
     weekdays: parseCronField({
       field: dayOfWeek,
       min: 0,
       max: 7,
-      label: "day-of-week",
+      label: "星期",
       normalize: normalizeDayOfWeek,
     }),
   };
@@ -117,14 +115,12 @@ function parseCronField({
   for (const segment of segments) {
     const token = segment.trim();
     if (!token) {
-      throw new Error(`Invalid empty segment in ${label} field`);
+      throw new Error(`${label}字段中存在无效的空片段`);
     }
 
     const stepParts = token.split("/");
     if (stepParts.length > 2) {
-      throw new Error(
-        `Invalid ${label} token ${token}: too many step delimiters`,
-      );
+      throw new Error(`${label} 标记 ${token} 无效：步长分隔符过多`);
     }
 
     const [rangeToken, stepToken] = stepParts;
@@ -142,7 +138,7 @@ function parseCronField({
 
       if (normalized < min || normalized > max) {
         throw new Error(
-          `Invalid value ${normalized} in ${label} field. Expected ${min}-${max}`,
+          `${label}字段中的值 ${normalized} 无效。期望 ${min}-${max}`,
         );
       }
 
@@ -151,7 +147,7 @@ function parseCronField({
   }
 
   if (!values.size) {
-    throw new Error(`No values resolved for ${label} field`);
+    throw new Error(`${label}字段未解析出任何值`);
   }
 
   return values;
@@ -173,23 +169,19 @@ function parseRangeToken({
   if (token.includes("-")) {
     const rangeParts = token.split("-");
     if (rangeParts.length !== 2) {
-      throw new Error(
-        `Invalid ${label} token ${token}: too many range delimiters`,
-      );
+      throw new Error(`${label} 标记 ${token} 无效：范围分隔符过多`);
     }
 
     const [startToken, endToken] = rangeParts;
-    const start = parsePositiveInt(startToken, `${label} range start`);
-    const end = parsePositiveInt(endToken, `${label} range end`);
+    const start = parsePositiveInt(startToken, `${label}范围起点`);
+    const end = parsePositiveInt(endToken, `${label}范围终点`);
 
     if (start > end) {
-      throw new Error(`Invalid ${label} range ${token}: start must be <= end`);
+      throw new Error(`${label}范围 ${token} 无效：起点必须小于等于终点`);
     }
 
     if (start < min || end > max) {
-      throw new Error(
-        `Invalid ${label} range ${token}: expected ${min}-${max}`,
-      );
+      throw new Error(`${label}范围 ${token} 无效：期望 ${min}-${max}`);
     }
 
     return [start, end];
@@ -198,7 +190,7 @@ function parseRangeToken({
   const value = parsePositiveInt(token, label);
 
   if (value < min || value > max) {
-    throw new Error(`Invalid ${label} value ${value}: expected ${min}-${max}`);
+    throw new Error(`${label}值 ${value} 无效：期望 ${min}-${max}`);
   }
 
   return [value, value];
@@ -206,25 +198,25 @@ function parseRangeToken({
 
 function parsePositiveInt(value: string, label: string) {
   if (!/^\d+$/.test(value)) {
-    throw new Error(`Invalid ${label}: ${value}`);
+    throw new Error(`${label}无效：${value}`);
   }
 
   const parsed = Number.parseInt(value, 10);
 
   if (!Number.isSafeInteger(parsed)) {
-    throw new Error(`Invalid ${label}: ${value}`);
+    throw new Error(`${label}无效：${value}`);
   }
 
   if (parsed <= 0 && value !== "0") {
-    throw new Error(`Invalid ${label}: ${value}`);
+    throw new Error(`${label}无效：${value}`);
   }
 
   return parsed;
 }
 
 function parseStep(value: string, label: string) {
-  const step = parsePositiveInt(value, `${label} step`);
-  if (step <= 0) throw new Error(`Invalid ${label} step: ${value}`);
+  const step = parsePositiveInt(value, `${label}步长`);
+  if (step <= 0) throw new Error(`${label}步长无效：${value}`);
   return step;
 }
 

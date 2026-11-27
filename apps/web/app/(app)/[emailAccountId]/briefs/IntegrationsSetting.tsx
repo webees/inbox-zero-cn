@@ -37,22 +37,22 @@ export function IntegrationsSetting() {
 
   return (
     <SettingCard
-      title={t`Integrations`}
+      title={t`集成`}
       description={
         hasConnectedIntegrations
-          ? t`Connected to ${connectedNames} with ${plural(enabledToolsCount, {
-              one: "# tool",
-              other: "# tools",
-            })} enabled`
-          : t`Connect to CRM, databases, and other tools to enrich briefings with more context`
+          ? t`已连接到 ${connectedNames}，并启用了 ${plural(enabledToolsCount, {
+              one: "# 个工具",
+              other: "# 个工具",
+            })}`
+          : t`连接 CRM、数据库和其他工具，为简报提供更多上下文`
       }
       right={
         <Button variant="outline" asChild>
           <Link href={`/${emailAccountId}/integrations`}>
             {hasConnectedIntegrations ? (
-              <Trans>Manage</Trans>
+              <Trans>管理</Trans>
             ) : (
-              <Trans>Connect</Trans>
+              <Trans>连接</Trans>
             )}
           </Link>
         </Button>

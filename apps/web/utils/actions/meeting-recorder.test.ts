@@ -110,7 +110,7 @@ describe("deleteMeetingNotesAction", () => {
     expect(prisma.meeting.update).not.toHaveBeenCalled();
     expect(prisma.meetingRecording.delete).not.toHaveBeenCalled();
     expect(prisma.$transaction).not.toHaveBeenCalled();
-    expect(result?.serverError).toBe("Meeting not found");
+    expect(result?.serverError).toBe("未找到会议");
   });
 });
 

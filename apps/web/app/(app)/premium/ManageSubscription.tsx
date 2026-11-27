@@ -64,9 +64,9 @@ export function ManageSubscription({
           onClick={openBillingPortal}
         >
           {hasBothStripeAndLemon ? (
-            <Trans>Manage Stripe subscription</Trans>
+            <Trans>管理 Stripe 订阅</Trans>
           ) : (
-            <Trans>Manage subscription</Trans>
+            <Trans>管理订阅</Trans>
           )}
         </Button>
       )}
@@ -80,9 +80,9 @@ export function ManageSubscription({
           >
             {Icon && <Icon className="mr-2 h-4 w-4" />}
             {hasBothStripeAndLemon ? (
-              <Trans>Manage Lemon subscription</Trans>
+              <Trans>管理 Lemon 订阅</Trans>
             ) : (
-              <Trans>Manage subscription</Trans>
+              <Trans>管理订阅</Trans>
             )}
           </Link>
         </Button>
@@ -96,7 +96,7 @@ export function ManageSubscription({
             rel="noopener noreferrer"
           >
             {Icon && <Icon className="mr-2 h-4 w-4" />}
-            <Trans>Manage in App Store</Trans>
+            <Trans>在 App Store 中管理</Trans>
           </Link>
         </Button>
       )}
@@ -127,7 +127,7 @@ export function ViewInvoicesButton({
           loading={loading}
           onClick={openBillingPortal}
         >
-          {hasBoth ? <Trans>Stripe invoices</Trans> : <Trans>Invoices</Trans>}
+          {hasBoth ? <Trans>Stripe 发票</Trans> : <Trans>发票</Trans>}
         </Button>
       )}
 
@@ -138,7 +138,7 @@ export function ViewInvoicesButton({
             target="_blank"
             rel="noopener noreferrer"
           >
-            {hasBoth ? <Trans>Lemon invoices</Trans> : <Trans>Invoices</Trans>}
+            {hasBoth ? <Trans>Lemon 发票</Trans> : <Trans>发票</Trans>}
           </Link>
         </Button>
       )}

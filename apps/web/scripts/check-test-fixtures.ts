@@ -69,19 +69,19 @@ const findings = [
 ];
 
 if (findings.length === 0) {
-  console.log("check-test-fixtures: clean");
+  console.log("check-test-fixtures: 无问题");
   process.exit(0);
 }
 
-console.error(`check-test-fixtures: ${findings.length} problem(s)\n`);
+console.error(`check-test-fixtures: 发现 ${findings.length} 个问题\n`);
 for (const finding of findings) {
   console.error(`  ${finding.file}:${finding.line}:${finding.column}`);
   console.error(`    ${finding.reason}: ${finding.snippet}\n`);
 }
 console.error(
-  "Fixtures must use example.com, *.test, or *.invalid so a test can never\n" +
-    "reach a real address or host. Eval case data loads at runtime via\n" +
-    "EVAL_DATA_DIRS rather than being committed.",
+  "测试固件必须使用 example.com、*.test 或 *.invalid，以确保测试绝不会\n" +
+    "访问真实地址或主机。评估用例数据在运行时通过\n" +
+    "EVAL_DATA_DIRS 加载，而不是提交到仓库。",
 );
 process.exit(1);
 
@@ -96,8 +96,8 @@ function findCommittedDatasets(stagedOnly: boolean): Finding[] {
     column: 1,
     file,
     line: 1,
-    reason: "committed eval dataset",
-    snippet: "case data loads at runtime via EVAL_DATA_DIRS",
+    reason: "已提交的评估数据集",
+    snippet: "用例数据在运行时通过 EVAL_DATA_DIRS 加载",
   }));
 }
 

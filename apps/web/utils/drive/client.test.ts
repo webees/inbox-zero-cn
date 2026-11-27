@@ -85,7 +85,7 @@ describe("google drive oauth", () => {
     } as any);
 
     await expect(exchangeGoogleDriveCode("code")).rejects.toThrow(
-      "Could not get email from Google profile",
+      "无法从 Google 资料获取邮箱",
     );
     expect(verifyIdToken).not.toHaveBeenCalled();
   });

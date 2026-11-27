@@ -44,13 +44,10 @@ export async function categorizeSender(
   const categoryName = aiResult?.category ?? fallbackCategory?.name;
 
   if (!categoryName) {
-    logger.info(
-      "AI categorization abstained with no Other category available",
-      {
-        userEmail: emailAccount.email,
-        senderAddress,
-      },
-    );
+    logger.info("AI 分类在无法使用「其他」分类时选择弃权", {
+      userEmail: emailAccount.email,
+      senderAddress,
+    });
 
     return { categoryId: undefined };
   }
@@ -90,7 +87,7 @@ export async function updateSenderCategory({
   let newCategory: Category | undefined;
 
   if (!category) {
-    // create category
+    // 创建分类
     newCategory = await prisma.category.create({
       data: {
         name: categoryName,
@@ -101,7 +98,7 @@ export async function updateSenderCategory({
     category = newCategory;
   }
 
-  // save category
+  // 保存分类
   const newsletter = await upsertSenderRecord({
     emailAccountId,
     senderEmail: sender,
@@ -138,9 +135,9 @@ export async function updateCategoryForSender({
   });
 }
 
-// Use static rules to categorize senders if we can, before sending to LLM.
-// Only apply a rule if the user has the matching category, so we don't invent
-// categories the user deleted or renamed.
+// 如果可以，尽量在发送给 LLM 之前先用静态规则对发件人分类。
+// 仅当用户拥有匹配的分类时才应用规则，以免凭空创建
+// 用户已删除或重命名的分类。
 function preCategorizeSendersWithStaticRules(
   senders: string[],
   categories: Pick<Category, "name">[],
@@ -170,7 +167,7 @@ export async function getCategories({
   emailAccountId: string;
 }) {
   const categories = await getUserCategories({ emailAccountId });
-  if (categories.length === 0) throw new SafeError("No categories found");
+  if (categories.length === 0) throw new SafeError("未找到分类");
   return { categories };
 }
 
@@ -192,7 +189,7 @@ export async function categorizeWithAi({
     .filter((sender) => !sender.category)
     .map((sender) => sender.sender);
 
-  logger.info("Found senders to categorize with AI", {
+  logger.info("找到可用 AI 分类的发件人", {
     userEmail: emailAccount.email,
     count: sendersToCategorizeWithAi.length,
   });

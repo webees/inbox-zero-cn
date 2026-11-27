@@ -1,32 +1,32 @@
 ---
-title: 'Self-Hosting Setup CLI'
-description: 'Use the Inbox Zero setup CLI for local, cloud, and automated deployments.'
+title: '自托管设置 CLI'
+description: '使用 Inbox Zero 设置 CLI 进行本地、云端和自动化部署。'
 icon: 'terminal'
 ---
 
-The self-hosting setup CLI is different from the public [API CLI](/api-reference/cli). It creates deployment configuration and can guide provider setup; it does not manage an existing inbox through the public API.
+自托管设置 CLI 不同于公开的 [API CLI](/api-reference/cli)。它创建部署配置并可引导提供方设置；它不会通过公开 API 管理现有收件箱。
 
-## Start the wizard
+## 启动向导
 
-Run the latest setup wizard with:
+使用以下命令运行最新设置向导：
 
 ```bash
 npx @inbox-zero/cli@latest setup
 ```
 
-The interactive wizard asks which deployment target and providers you want to configure. Review generated files before committing or deploying them because they can contain environment-specific values.
+交互式向导会询问你要配置哪种部署目标和提供方。在提交或部署生成的文件之前请先审查它们，因为它们可能包含特定环境的值。
 
-## Setup commands
+## 设置命令
 
-The CLI includes dedicated flows for:
+CLI 包含以下专用流程：
 
-- Local or Docker-based setup
-- Google OAuth, required APIs, and Gmail Pub/Sub
-- AWS deployment
-- Terraform generation and deployment
-- Vercel deployment
+- 本地或基于 Docker 的设置
+- Google OAuth、所需 API 和 Gmail Pub/Sub
+- AWS 部署
+- Terraform 生成与部署
+- Vercel 部署
 
-Run the CLI with `--help`, or a command followed by `--help`, for the flags supported by the installed version:
+使用 `--help` 运行 CLI，或在某个命令后加 `--help`，以查看已安装版本支持的标志：
 
 ```bash
 npx @inbox-zero/cli@latest --help
@@ -36,22 +36,22 @@ npx @inbox-zero/cli@latest setup-terraform --help
 npx @inbox-zero/cli@latest setup-vercel --help
 ```
 
-## Automation guidance
+## 自动化指南
 
-Interactive setup is recommended for a first deployment. For repeatable environments:
+首次部署推荐使用交互式设置。对于可重复的环境：
 
-1. Run the wizard in a disposable or staging workspace.
-2. Review the generated configuration and identify secrets.
-3. Move secrets into your deployment's secret manager.
-4. Commit only safe templates and infrastructure files.
-5. Use the generated output as the basis for your normal deployment pipeline.
+1. 在一次性或暂存工作区中运行向导。
+2. 审查生成的配置并识别密钥。
+3. 将密钥移入部署的密钥管理器。
+4. 仅提交安全的模板和基础设施文件。
+5. 以生成的输出作为常规部署流水线的基础。
 
-Never place OAuth client secrets, database credentials, encryption keys, or AI-provider keys in source control.
+绝不要将 OAuth 客户端密钥、数据库凭据、加密密钥或 AI 提供方密钥放入源代码管理。
 
-## Related guides
+## 相关指南
 
-- [Quick Start](/hosting/quick-start)
+- [快速开始](/hosting/quick-start)
 - [Google OAuth](/hosting/google-oauth)
-- [Vercel Deployment](/hosting/vercel)
-- [AWS Deployment](/hosting/aws)
-- [Terraform Deployment](/hosting/terraform)
+- [Vercel 部署](/hosting/vercel)
+- [AWS 部署](/hosting/aws)
+- [Terraform 部署](/hosting/terraform)

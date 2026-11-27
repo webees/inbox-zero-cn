@@ -3,7 +3,7 @@ export type DesktopAuthProvider = "apple" | "google" | "microsoft";
 
 export const DESKTOP_WEB_UPDATE_CHECK_INTERVAL_MS = 15 * 60 * 1000;
 export type InboxZeroDesktopApi = {
-  /** Tells the shell this page hydrated; without it the shell reloads the page. */
+  /** 通知宿主外壳此页面已完成水合；若未通知，外壳会重新加载页面 */
   signalReady?: () => void;
   setUnreadCount?: (count: number) => void;
   openWindow?: (path: string) => Promise<void>;
@@ -22,7 +22,7 @@ export type InboxZeroDesktopApi = {
   onUpdateStatus?: (
     listener: (status: DesktopUpdateStatus) => void,
   ) => () => void;
-  /** True while the app opens the local mailbox, including any migrations. */
+  /** 应用正在打开本地邮箱时为 true，包括执行迁移期间 */
   onMailEngineOpening?: (listener: (opening: boolean) => void) => () => void;
   installUpdate?: () => Promise<void>;
   wipeMailbox?: () => Promise<unknown>;
@@ -51,7 +51,7 @@ type DesktopMailSyncFreshness = {
   oldestStreamCaughtUpAgeMs: number | null;
 };
 
-/** Aggregated since the previous call from any window. */
+/** 自上次在任意窗口调用以来汇总的数据。 */
 export type DesktopHealth = {
   version: string;
   intervalMs: number;
@@ -64,7 +64,7 @@ export type DesktopHealth = {
       sqliteReadMs: DesktopDurationSummary | null;
       sqliteWriteMs: DesktopDurationSummary | null;
       mailCommandMs?: DesktopDurationSummary | null;
-      /** Missing from older desktop builds; one entry per local account. */
+      /** 旧版桌面应用可能缺少此字段；每个本地账号一项。 */
       mailSync?: DesktopMailSyncFreshness[] | null;
     } | null;
   } | null;

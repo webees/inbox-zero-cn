@@ -2,25 +2,25 @@ import type { MessageDescriptor } from "@lingui/core";
 import { msg } from "@lingui/core/macro";
 import { isMicrosoftProvider } from "@/utils/email/provider-types";
 
-// The English terms in utils/terminology also feed server-side text (chat
-// bots, example prompts), so the UI keeps its translatable copies here.
+// utils/terminology 中的英文术语也会用于服务端文本（聊天机器人、
+// 示例提示词），因此界面在此保留可翻译副本。
 const OUTLOOK_TERMINOLOGY = {
   label: {
-    singular: msg`category`,
-    plural: msg`categories`,
-    singularCapitalized: msg`Category`,
-    pluralCapitalized: msg`Categories`,
-    action: msg({ message: "Categorize", context: "action" }),
+    singular: msg`类别`,
+    plural: msg`类别`,
+    singularCapitalized: msg`类别`,
+    pluralCapitalized: msg`类别`,
+    action: msg({ message: "分类", context: "action" }),
   },
 } satisfies EmailTerminologyMessages;
 
 const GMAIL_TERMINOLOGY = {
   label: {
-    singular: msg`label`,
-    plural: msg`labels`,
-    singularCapitalized: msg`Label`,
-    pluralCapitalized: msg`Labels`,
-    action: msg({ message: "Label", context: "action" }),
+    singular: msg`标签`,
+    plural: msg`标签`,
+    singularCapitalized: msg`标签`,
+    pluralCapitalized: msg`标签`,
+    action: msg({ message: "打标签", context: "action" }),
   },
 } satisfies EmailTerminologyMessages;
 

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const testAiCustomContentBody = z.object({
-  content: z.string().min(1, "Please enter a message"),
+  content: z.string().min(1, "请输入消息"),
 });
 export type TestAiCustomContentBody = z.infer<typeof testAiCustomContentBody>;
 

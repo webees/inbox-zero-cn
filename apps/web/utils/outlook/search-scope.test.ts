@@ -42,7 +42,7 @@ describe("Outlook search scopes", () => {
     ).rejects.toThrow("ambiguous");
     await expect(
       resolveOutlookFolderId({ emailProvider, folderName: "Missing" }),
-    ).rejects.toThrow("not found");
+    ).rejects.toThrow("未找到");
   });
 
   it.each([

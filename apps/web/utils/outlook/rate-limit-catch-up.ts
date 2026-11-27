@@ -6,14 +6,14 @@ import {
   takeOutlookRateLimitCatchUp,
 } from "@/utils/redis/outlook-rate-limit-catch-up";
 
-// Covers mail that arrived just before the first skipped notification.
+// 覆盖在第一个被跳过的通知之前刚好到达的邮件。
 const CATCH_UP_BUFFER_MS = 5 * 60 * 1000;
 const CATCH_UP_MAX_MESSAGES = 100;
 
 /**
- * Processes mail whose notifications were skipped while Microsoft was rate
- * limiting the account. If the account is rate limited again partway through,
- * the window is put back so a later notification can finish it.
+ * 处理在 Microsoft 对该账号限流期间通知被跳过的邮件。
+ * 如果账号在过程中再次被限流，则把窗口放回，
+ * 以便后续通知能完成它。
  */
 export async function catchUpAfterOutlookRateLimit({
   emailAccount,

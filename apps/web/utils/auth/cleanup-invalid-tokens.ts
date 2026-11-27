@@ -17,13 +17,13 @@ const clearedCredentials = {
 };
 
 /**
- * Cleans up invalid tokens when authentication fails permanently.
- * Used for:
- * - invalid_grant: User revoked access or tokens expired
- * - insufficientPermissions: User hasn't granted all required scopes
- * - policy_enforced: Provider policy blocks access until user changes settings
- * - mail_service_not_enabled: Gmail is disabled for this Google account
- * - mailbox_unavailable: Outlook mailbox is inactive, deleted, or on-premise
+ * 认证永久失败时清理无效令牌
+ * 用于：
+ * - invalid_grant：用户撤销了访问权限或令牌已过期
+ * - insufficientPermissions：用户尚未授予所有必需的权限范围
+ * - policy_enforced：服务商策略会阻止访问，直到用户更改设置
+ * - mail_service_not_enabled：此 Google 账号的 Gmail 已被禁用
+ * - mailbox_unavailable：Outlook 邮箱处于非活动、已删除或本地部署状态
  */
 export async function cleanupInvalidTokens({
   emailAccountId,
@@ -44,12 +44,10 @@ export async function cleanupInvalidTokens({
   logger: Logger;
 }) {
   if (failedAccessToken === undefined && failedRefreshToken === undefined) {
-    logger.info(
-      "Skipping credential cleanup without a failed credential snapshot",
-    );
+    logger.info("没有失败的凭证快照，跳过凭证清理");
     return { status: "skipped" as const };
   }
-  logger.info("Cleaning up invalid tokens", { reason });
+  logger.info("正在清理无效令牌", { reason });
 
   const emailAccount = await prisma.emailAccount.findUnique({
     where: { id: emailAccountId },
@@ -77,7 +75,7 @@ export async function cleanupInvalidTokens({
   });
 
   if (!emailAccount) {
-    logger.warn("Email account not found");
+    logger.warn("未找到邮箱账号");
     return { status: "skipped" as const };
   }
 
@@ -89,7 +87,7 @@ export async function cleanupInvalidTokens({
     (failedRefreshToken !== undefined &&
       account.refresh_token !== failedRefreshToken)
   ) {
-    logger.info("Skipping cleanup of superseded credentials");
+    logger.info("跳过已被取代的凭证清理");
     return { status: "skipped" as const };
   }
 
@@ -108,7 +106,7 @@ export async function cleanupInvalidTokens({
       });
     }
 
-    logger.info("Account already marked as disconnected");
+    logger.info("账号已标记为断开连接");
     return;
   }
 
@@ -122,7 +120,7 @@ export async function cleanupInvalidTokens({
   });
 
   if (updated.count === 0) {
-    logger.info("Account changed before credential cleanup");
+    logger.info("凭证清理前账号已发生变化");
     return { status: "skipped" as const };
   }
 
@@ -164,7 +162,7 @@ export async function cleanupInvalidTokens({
     });
   }
 
-  logger.info("Tokens cleared - user must re-authenticate", { reason });
+  logger.info("令牌已清除，用户必须重新认证", { reason });
 }
 
 async function sendWatchedAccountReconnectionEmail({
@@ -184,7 +182,7 @@ async function sendWatchedAccountReconnectionEmail({
     !!watchEmailsExpirationDate && watchEmailsExpirationDate > new Date();
 
   if (!isWatched) {
-    logger.info("Skipping reconnection email - account not currently watched");
+    logger.info("跳过重连邮件，账号当前未被监听");
     return false;
   }
 
@@ -200,10 +198,10 @@ async function sendWatchedAccountReconnectionEmail({
         unsubscribeToken,
       },
     });
-    logger.info("Reconnection email sent", { email, recipientEmail });
+    logger.info("重连邮件已发送", { email, recipientEmail });
     return true;
   } catch (error) {
-    logger.error("Failed to send reconnection email", {
+    logger.error("发送重连邮件失败", {
       email,
       error,
     });
@@ -222,14 +220,14 @@ function getAccountActionRequiredMessage(
 ) {
   switch (reason) {
     case "insufficient_permissions":
-      return `The connection for ${email} is missing required permissions. Please reconnect your account and approve the requested permissions to resume automation.`;
+      return `${email} 的连接缺少必需权限。请重新连接你的账号并批准所请求的权限，以恢复自动化。`;
     case "policy_enforced":
-      return `The connection for ${email} is blocked by your Google account security policy. Please review your Google security settings and reconnect your account to resume automation.`;
+      return `${email} 的连接被你的 Google 账号安全策略阻止。请检查 Google 安全设置并重新连接你的账号，以恢复自动化。`;
     case "mail_service_not_enabled":
-      return `Gmail is not enabled for ${email}. Please enable Gmail for this account and reconnect it to resume automation.`;
+      return `${email} 尚未启用 Gmail。请为此账号启用 Gmail 并重新连接，以恢复自动化。`;
     case "mailbox_unavailable":
-      return `The mailbox for ${email} can't be reached. It may be inactive, unlicensed, or hosted on-premise. Please fix the mailbox in Microsoft 365 and reconnect it to resume automation.`;
+      return `无法访问 ${email} 的邮箱。该邮箱可能处于非活动状态、未获得许可证，或部署在本地。请在 Microsoft 365 中修复该邮箱并重新连接，以恢复自动化。`;
     default:
-      return `The connection for ${email} was disconnected. Please reconnect your account to resume automation.`;
+      return `${email} 的连接已断开。请重新连接你的账号，以恢复自动化。`;
   }
 }

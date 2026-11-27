@@ -33,18 +33,18 @@ const starterPrice = tiers[0].price.annually;
 const reasons = [
   {
     icon: <Gift className="size-5" />,
-    title: msg`Try it free for 7 days`,
-    description: msg`Every plan includes the email app and the AI.`,
+    title: msg`免费试用 7 天`,
+    description: msg`每个套餐都包含邮件应用和 AI。`,
   },
   {
     icon: <Repeat className="size-5" />,
-    title: msg`No need to switch`,
-    description: msg`Prefer Gmail or Outlook? The AI works there too.`,
+    title: msg`无需切换`,
+    description: msg`更喜欢用 Gmail 或 Outlook？AI 同样可以在那里使用。`,
   },
   {
     icon: <Zap className="size-5" />,
-    title: msg`Less than Superhuman`,
-    description: msg`AI drafts and a sorted inbox from $${starterPrice}/month, less than Superhuman charges.`,
+    title: msg`价格低于 Superhuman`,
+    description: msg`AI 起草和整理收件箱，每月只需 $${starterPrice} 起，比 Superhuman 收费更低。`,
   },
 ];
 
@@ -55,12 +55,12 @@ export function EmailClient() {
   return (
     <Section id={EMAIL_CLIENT_SECTION_ID}>
       <SectionHeading>
-        <Trans>Fly through email on desktop and mobile</Trans>
+        <Trans>在桌面和移动设备上畅快处理邮件</Trans>
       </SectionHeading>
       <SectionSubtitle>
         <Trans>
-          Every Gmail and Outlook account in one inbox, on the web, Mac,
-          Windows, and iPhone. Like Superhuman, for less.
+          将所有 Gmail 和 Outlook 账号汇聚到同一个收件箱，在网页、Mac、Windows
+          和 iPhone 上皆可使用。体验媲美 Superhuman，价格更低。
         </Trans>
       </SectionSubtitle>
       <SectionContent>
@@ -102,7 +102,7 @@ export function EmailClient() {
           <Button size="lg" asChild>
             <Link href={MAIL_CLIENT_SIGNUP_PATH}>
               <span className="relative z-10">
-                <Trans>Try the email app free for 7 days</Trans>
+                <Trans>免费试用邮件应用 7 天</Trans>
               </span>
             </Link>
           </Button>

@@ -1,20 +1,14 @@
-# Database tests
+# 数据库测试
 
-Tests that run against a real Postgres instead of a mocked Prisma client.
+针对真实 Postgres 而非模拟 Prisma 客户端运行的测试。
 
-Use this tier when the behaviour under test *is* the database: unique
-constraints, conditional `updateMany` count guards, `onDelete` behaviour,
-partial-index semantics. A mocked Prisma can only confirm that the mock matches
-your mental model of Postgres, which is exactly the assumption these bugs hide
-in.
+当被测行为**就是**数据库时使用这一层：唯一约束、带条件的 `updateMany` 计数保护、`onDelete` 行为、部分索引语义。模拟的 Prisma 只能确认 mock 符合你对 Postgres 的心智模型，而这些 bug 恰恰藏在那个假设里。
 
-Everything else belongs in a unit test (mocked) or an integration test
-(emulator-backed). See `.claude/skills/testing/`.
+其他测试应放在单元测试（使用 mock）或集成测试（由模拟器支持）中。参见 `.claude/skills/testing/`。
 
-## Running
+## 运行
 
-These are skipped unless `RUN_DB_TESTS` is set, so they stay out of the default
-suite and out of CI until someone wires up a Postgres service.
+除非设置 `RUN_DB_TESTS`，否则这些测试会被跳过，因此在有人接入 Postgres 服务之前，它们不会进入默认测试套件和 CI。
 
 ```bash
 # One-time: create a throwaway database and apply migrations
@@ -28,18 +22,12 @@ DATABASE_URL="postgresql://postgres:password@localhost:5432/inboxzero_test?schem
   pnpm test-db
 ```
 
-Point `DATABASE_URL` at a throwaway database. These tests delete rows in
-`beforeEach`, so never aim them at a database you care about.
+将 `DATABASE_URL` 指向一次性数据库。这些测试会在 `beforeEach` 中删除行，所以绝不要将它们指向你在意的数据库。
 
-The group item normalization migration regression should also run on PostgreSQL 15.
-Its string escape behavior differs from newer versions, which can hide invalid
-whitespace normalization.
+组项规范化迁移回归也应在 PostgreSQL 15 上运行。其字符串转义行为与较新版本不同，可能掩盖无效的空白规范化。
 
-## Conventions
+## 约定
 
-- Seed the rows the test needs in `beforeEach` and delete them again, rather
-  than relying on a shared fixture. Each test should be able to run alone.
-- Mock the outside world (bot providers, calendar APIs, queues) and leave the
-  database real. `fake-bot-provider.ts` is the in-memory `MeetingBotProvider`.
-- Assert on rows read back from the database, not on mock calls, wherever the
-  point of the test is a persisted state transition.
+- 在 `beforeEach` 中为测试写入所需行并再次删除，而不是依赖共享夹具。每个测试都应能单独运行。
+- 模拟外部世界（机器人服务商、日历 API、队列），保持数据库真实。`fake-bot-provider.ts` 是内存版 `MeetingBotProvider`。
+- 当测试重点是持久化状态转换时，应断言从数据库读回的行，而不是 mock 调用。

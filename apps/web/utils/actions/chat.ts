@@ -14,7 +14,7 @@ export const deleteChatAction = actionClient
   .inputSchema(deleteChatBody)
   .action(async ({ ctx: { emailAccountId }, parsedInput: { chatId } }) => {
     const deleted = await softDeleteChat({ chatId, emailAccountId });
-    if (!deleted) throw new SafeError("Chat not found.");
+    if (!deleted) throw new SafeError("未找到对话。");
   });
 
 export const renameChatAction = actionClient
@@ -27,6 +27,6 @@ export const renameChatAction = actionClient
         data: { name },
       });
 
-      if (result.count === 0) throw new SafeError("Chat not found.");
+      if (result.count === 0) throw new SafeError("未找到对话。");
     },
   );

@@ -73,7 +73,7 @@ export function toastUndo(options: {
     action: {
       label: (
         <>
-          Undo
+          撤销
           {options.shortcut && (
             <Kbd className={cn("ml-1.5", ACCENT_TEXT)}>{options.shortcut}</Kbd>
           )}
@@ -84,7 +84,7 @@ export function toastUndo(options: {
   });
 }
 
-/** Retires the latest Undo toast, so an action that can't be undone isn't followed by undoing an older one. */
+/** 关闭最新的撤销提示，避免不可撤销的操作随后撤销了更早的操作。 */
 export function releaseLatestToastUndo() {
   const current = latestToastUndo;
   if (!current) return;

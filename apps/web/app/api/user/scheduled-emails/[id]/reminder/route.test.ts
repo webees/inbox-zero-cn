@@ -55,7 +55,7 @@ describe("DELETE /api/user/scheduled-emails/[id]/reminder", () => {
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toMatchObject({
-      error: expect.stringContaining("pending"),
+      error: expect.stringContaining("待处理"),
       isKnownError: true,
     });
   });

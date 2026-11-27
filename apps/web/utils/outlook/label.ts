@@ -78,7 +78,7 @@ export async function createLabel({
   logger: Logger;
 }) {
   const sanitizedName = sanitizeOutlookCategoryName(name);
-  if (!sanitizedName) throw new Error("Label name cannot be empty");
+  if (!sanitizedName) throw new Error("标签名称不能为空");
 
   try {
     const outlookColor =
@@ -101,18 +101,18 @@ export async function createLabel({
   } catch (error) {
     let { errorMessage } = extractErrorInfo(error);
     if (!errorMessage) {
-      errorMessage = error instanceof Error ? error.message : "Unknown error";
+      errorMessage = error instanceof Error ? error.message : "未知错误";
     }
     if (
       errorMessage.includes("already exists") ||
       errorMessage.includes("conflict with the current state")
     ) {
-      logger.warn("Label already exists", { name: sanitizedName });
+      logger.warn("标签已存在", { name: sanitizedName });
       const label = await getLabel({ client, name: sanitizedName });
       if (label) return label;
-      throw new Error("Label conflict but not found");
+      throw new Error("标签冲突但未找到");
     }
-    throw new Error(`Failed to create Outlook category: ${errorMessage}`);
+    throw new Error(`创建 Outlook 类别失败：${errorMessage}`);
   }
 }
 
@@ -143,7 +143,7 @@ export async function getOrCreateLabel({
   logger: Logger;
 }) {
   const sanitizedName = sanitizeOutlookCategoryName(name);
-  if (!sanitizedName) throw new Error("Label name cannot be empty");
+  if (!sanitizedName) throw new Error("标签名称不能为空");
 
   const label = await getLabel({ client, name: sanitizedName });
   if (label) return label;
@@ -173,7 +173,7 @@ export async function getOrCreateLabels({
   }));
 
   const emptyNames = entries.filter((entry) => !entry.sanitizedName);
-  if (emptyNames.length) throw new Error("Label names cannot be empty");
+  if (emptyNames.length) throw new Error("标签名称不能为空");
 
   assertNoNormalizedInputCollisions(entries);
 
@@ -198,7 +198,7 @@ export async function getOrCreateLabels({
       if (existingLabelsForName?.length === 1) return existingLabelsForName[0];
       if (existingLabelsForName?.length)
         throw new Error(
-          `Ambiguous Outlook category match for "${rawName}". Please use a unique category name.`,
+          `Outlook 类别匹配存在歧义："${rawName}"。请使用唯一的类别名称。`,
         );
 
       const pendingCreate = createLabelMap.get(normalizedName);
@@ -239,10 +239,9 @@ export async function labelMessage({
 }
 
 /**
- * Read-modify-write of a message's categories. Graph rejects the PATCH with a
- * 412 conflict when another write lands on the message first; the rejected
- * write was not applied, so re-read and recompute instead of overwriting.
- * Returns whether the categories changed.
+ * 对邮件类别进行读取—修改—写入。当另一写入先落到该邮件上时，Graph 会以
+ * 412 冲突拒绝 PATCH；被拒绝的写入未生效，因此应重新读取并重新计算，而不是
+ * 覆盖。返回类别是否发生变化。
  */
 export async function updateMessageCategories({
   client,
@@ -277,8 +276,8 @@ export async function updateMessageCategories({
     }
 
     try {
-      // If-Match turns a write over a concurrent change into a 412 we retry,
-      // instead of silently dropping the other writer's categories.
+      // If-Match 会把并发变更上的写入变成可重试的 412，
+      // 而不是静默丢弃另一写入方的类别。
       const etag = message["@odata.etag"];
       await withMicrosoftGraphWriteRetry(() => {
         const request = client.getClient().api(`/me/messages/${messageId}`);
@@ -291,7 +290,7 @@ export async function updateMessageCategories({
       if (!isConflictError || attempt >= MAX_CATEGORY_CONFLICT_ATTEMPTS) {
         throw error;
       }
-      logger.warn("Category update conflicted, retrying with fresh state", {
+      logger.warn("类别更新发生冲突，使用最新状态重试", {
         attempt,
       });
       await sleep(CATEGORY_CONFLICT_RETRY_DELAY_MS * attempt);
@@ -310,7 +309,7 @@ export async function labelThread({
   categories: string[];
   logger: Logger;
 }) {
-  // In Outlook, we need to update each message in the thread
+  // 在 Outlook 中，需要更新会话中的每封邮件
   const messages = await listThreadMessages({
     client,
     threadId,
@@ -324,7 +323,7 @@ export async function labelThread({
     logger,
     messageHandler: (messageId) =>
       labelMessage({ client, messageId, categories, logger }),
-    failureMessage: "Failed to label message in thread",
+    failureMessage: "未能为会话中的邮件添加标签",
   });
 }
 
@@ -340,7 +339,7 @@ export async function removeThreadLabel({
   logger: Logger;
 }) {
   if (!categoryName) {
-    logger.warn("Category name is empty, skipping removal", { threadId });
+    logger.warn("类别名称为空，跳过移除", { threadId });
     return;
   }
 
@@ -363,7 +362,7 @@ export async function removeThreadLabel({
           categories.filter((cat) => cat !== categoryName),
         logger,
       }),
-    failureMessage: "Failed to remove category from message",
+    failureMessage: "未能从邮件移除类别",
     continueOnError: true,
   });
 }
@@ -384,7 +383,7 @@ export async function archiveThread({
   logger: Logger;
 }) {
   if (!folderId) {
-    logger.warn("No folderId provided, skipping archive operation", {
+    logger.warn("未提供 folderId，跳过归档操作", {
       threadId,
       ownerEmail,
       actionSource,
@@ -392,26 +391,23 @@ export async function archiveThread({
     return;
   }
 
-  // Check if the destination folder exists (only for custom folders, well-known names can be trusted and used directly)
+  // 检查目标文件夹是否存在（仅限自定义文件夹，已知名称可直接信任使用）
   const wellKnownFolders = Object.keys(WELL_KNOWN_FOLDERS);
   if (!wellKnownFolders.includes(folderId.toLowerCase())) {
     try {
       await client.getClient().api(`/me/mailFolders/${folderId}`).get();
     } catch (error) {
-      logger.warn(
-        "Custom destination folder not found, skipping archive operation",
-        {
-          folderId,
-          threadId,
-          error,
-        },
-      );
+      logger.warn("未找到自定义目标文件夹，跳过归档操作", {
+        folderId,
+        threadId,
+        error,
+      });
       return;
     }
   }
 
-  // In Outlook, archiving is moving to a folder
-  // We need to move each message in the thread individually
+  // 在 Outlook 中，归档就是移动到文件夹
+  // 需要逐封移动会话中的邮件
   let messages: { id: string }[];
   try {
     messages = await listThreadMessages({
@@ -445,7 +441,7 @@ export async function archiveThread({
           }),
         logger,
       ),
-    failureMessage: "Failed to move message to folder",
+    failureMessage: "未能将邮件移动到文件夹",
     continueOnError: true,
   });
 
@@ -463,7 +459,7 @@ export async function archiveThread({
 
   // Handle publish errors as non-fatal (just log)
   if (publishResult.status === "rejected") {
-    logger.error("Failed to publish action to move thread to folder", {
+    logger.error("发布将会话移动到文件夹的操作失败", {
       folderId,
       threadId,
       error: publishResult.reason,
@@ -474,10 +470,10 @@ export async function archiveThread({
   if (archiveResult.status === "rejected") {
     const error = archiveResult.reason;
     if (error.message?.includes("Requested entity was not found")) {
-      logger.warn("Thread not found", { threadId, userEmail: ownerEmail });
-      return { status: 404, message: "Thread not found" };
+      logger.warn("未找到会话", { threadId, userEmail: ownerEmail });
+      return { status: 404, message: "未找到会话" };
     }
-    logger.error("Failed to move thread to folder", {
+    logger.error("未能将会话移动到文件夹", {
       folderId,
       threadId,
       error,
@@ -489,18 +485,15 @@ export async function archiveThread({
 }
 
 const SOURCE_FOLDER_LABELS = {
-  archive: "Archive",
-  deleteditems: "Deleted items",
+  archive: "归档",
+  deleteditems: "已删除邮件",
 } as const;
 
 /**
- * Moves a conversation's messages out of one well-known folder and into the
- * inbox.
+ * 将会话中的邮件从某个已知文件夹移回收件箱。
  *
- * Scoping to a source folder is what keeps the sent and deleted messages of the
- * same conversation where they are. Outlook has no thread-level state to
- * restore, so the source folder is the only signal for which messages the user
- * actually meant.
+ * 限定来源文件夹可以把同一会话中已发送和已删除的邮件留在原处。Outlook 没有
+ * 会话级状态可供恢复，因此来源文件夹是判断用户实际所指邮件的唯一依据。
  */
 async function moveThreadFromFolderToInbox({
   client,
@@ -521,12 +514,11 @@ async function moveThreadFromFolderToInbox({
   const sourceFolderId =
     folderIds[WELL_KNOWN_FOLDERS[sourceFolder]] ?? fallbackSourceFolderId;
 
-  // Without the source folder we can't tell the messages apart from the sent
-  // and deleted ones in the same conversation, and moving those into the inbox
-  // would be worse than failing.
+  // 没有来源文件夹，就无法区分同一会话中已发送和已删除的邮件，而把这些邮件
+  // 一并移入收件箱比直接失败更糟。
   if (!sourceFolderId) {
     throw new Error(
-      `${SOURCE_FOLDER_LABELS[sourceFolder]} folder not found, cannot move thread to inbox`,
+      `未找到${SOURCE_FOLDER_LABELS[sourceFolder]}文件夹，无法将会话移入收件箱`,
     );
   }
 
@@ -551,7 +543,7 @@ async function moveThreadFromFolderToInbox({
             .post({ destinationId: WELL_KNOWN_FOLDERS.inbox }),
         logger,
       ),
-    failureMessage: "Failed to move message back to inbox",
+    failureMessage: "未能将邮件移回收件箱",
   });
 }
 
@@ -576,11 +568,10 @@ export async function unarchiveThread({
 }
 
 /**
- * Moves a trashed thread back to the inbox.
+ * 将已移入垃圾箱的会话移回收件箱。
  *
- * Unlike Gmail's untrash this cannot restore the thread to wherever it was
- * before, because Outlook does not record that. Messages deleted from a custom
- * folder come back to the inbox.
+ * 与 Gmail 的恢复不同，Outlook 不记录会话原先所在位置，因此无法恢复到原处。
+ * 从自定义文件夹中删除的邮件会回到收件箱。
  */
 export async function untrashThread({
   client,
@@ -611,7 +602,7 @@ export async function markReadThread({
   logger: Logger;
 }) {
   try {
-    // In Outlook, we need to mark each message in the thread as read
+    // 在 Outlook 中，需要将会话中的每封邮件标记为已读
     const messages = await listThreadMessages({
       client,
       threadId,
@@ -624,7 +615,7 @@ export async function markReadThread({
       threadId,
       logger,
       messageHandler: (messageId) =>
-        // Idempotent absolute write: safe to retry on conflicts and network errors.
+        // 幂等的绝对值写入：发生冲突和网络错误时可安全重试。
         withMicrosoftGraphRetry(
           () =>
             client.getClient().api(`/me/messages/${messageId}`).patch({
@@ -632,12 +623,12 @@ export async function markReadThread({
             }),
           logger,
         ),
-      failureMessage: "Failed to mark message as read",
+      failureMessage: "未能将邮件标记为已读",
     });
   } catch (error) {
     if (error instanceof OutlookThreadPaginationError) throw error;
-    // If the filter fails, try a different approach
-    logger.warn("Filter failed, trying alternative approach", {
+    // 如果筛选失败，尝试其他方式
+    logger.warn("筛选失败，尝试其他方式", {
       threadId,
       error,
     });
@@ -656,11 +647,10 @@ export async function markReadThread({
                 .patch({ isRead: read }),
             logger,
           ),
-        noMessagesMessage:
-          "No messages found for conversationId, skipping mark read",
+        noMessagesMessage: "未找到该会话的消息，跳过标记已读",
       });
     } catch (directError) {
-      logger.error("Failed to mark message as read", {
+      logger.error("未能将邮件标记为已读", {
         threadId,
         error: directError,
       });
@@ -680,7 +670,7 @@ export async function markImportantMessage({
   important: boolean;
   logger: Logger;
 }) {
-  // In Outlook, we use the "Important" flag
+  // 在 Outlook 中，使用“重要”标记
   await withMicrosoftGraphWriteRetry(
     () =>
       client
@@ -704,9 +694,8 @@ export async function markStarredMessage({
   logger: Logger;
   starred?: boolean;
 }) {
-  // Setting the flag to an absolute value is idempotent, so the full retry
-  // policy is safe, including the 412 Graph returns when another write on the
-  // message (such as a label action) lands first.
+  // 将标记设为绝对值是幂等的，因此可以安全使用完整重试策略，包括另一写入
+  // （如标签操作）先落到该邮件时 Graph 返回的 412。
   await withMicrosoftGraphRetry(
     () =>
       client
@@ -729,11 +718,11 @@ export async function getOrCreateInboxZeroLabel({
   const { name } = inboxZeroLabels[key];
   const labels = await getLabels(client);
 
-  // Return label if it exists
+  // 如果标签存在则返回
   const label = labels?.find((label) => label.displayName === name);
   if (label) return label;
 
-  // Create label if it doesn't exist
+  // 如果标签不存在则创建
   const createdLabel = await createLabel({ client, name, logger });
   return createdLabel;
 }
@@ -750,7 +739,7 @@ function assertNoNormalizedInputCollisions(
     const existingRawName = normalizedMap.get(normalizedName);
     if (existingRawName && existingRawName !== rawName) {
       throw new Error(
-        `Ambiguous Outlook category names "${existingRawName}" and "${rawName}" normalize to the same value. Please keep category names unique.`,
+        `Outlook 类别名称“${existingRawName}”和“${rawName}”规范化后相同。请保持类别名称唯一。`,
       );
     }
 
@@ -775,7 +764,7 @@ async function archiveThreadWithFallback({
   logger: Logger;
   filterError: unknown;
 }) {
-  logger.warn("Filter failed, trying alternative approach", {
+  logger.warn("筛选失败，尝试其他方式", {
     threadId,
     error: filterError,
   });
@@ -794,8 +783,7 @@ async function archiveThreadWithFallback({
               .post({ destinationId: folderId }),
           logger,
         ),
-      noMessagesMessage:
-        "No messages found for conversationId, skipping folder move",
+      noMessagesMessage: "未找到该会话的消息，跳过文件夹移动",
     });
 
     try {

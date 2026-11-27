@@ -25,7 +25,7 @@ export async function publishAppHome({
   });
 
   if (!channel?.accessToken) {
-    logger.warn("No access token for App Home publish", { teamId });
+    logger.warn("发布 App Home 时缺少访问令牌", { teamId });
     return false;
   }
 

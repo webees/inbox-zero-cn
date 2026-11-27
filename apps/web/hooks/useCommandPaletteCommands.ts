@@ -83,14 +83,13 @@ export function useCommandPaletteCommands({
           ]
         : []),
     ];
-    // Kept even while a conversation is selected: jumping to another mailbox
-    // is as likely then as from anywhere else.
+    // 即使已选中某个会话也保留：此时跳转到其他邮箱的概率与在其他地方时相同。
     const mailboxItems = env.NEXT_PUBLIC_MAIL_APP_ENABLED ? MAILBOX_ITEMS : [];
     const mailboxCommands: Command[] = mailboxItems.map((item, index) => {
       const mailbox = i18n._(item.label);
       return {
         id: `nav-mailbox-${item.type}`,
-        label: t`Go to ${mailbox}`,
+        label: t`前往${mailbox}`,
         icon: item.Icon,
         section: "navigation",
         priority: index + 30,
@@ -110,8 +109,8 @@ export function useCommandPaletteCommands({
       ...(env.NEXT_PUBLIC_MAIL_APP_ENABLED
         ? [
             {
-              name: "Mail",
-              label: t`Go to Mail`,
+              name: "邮件",
+              label: t`前往邮件`,
               href: prefixPath(emailAccountId, "/mail"),
               icon: InboxIcon,
               keywords: ["mail", "inbox", "email"],
@@ -119,29 +118,29 @@ export function useCommandPaletteCommands({
           ]
         : []),
       {
-        name: "Assistant",
-        label: t`Go to Assistant`,
+        name: "AI 助手",
+        label: t`前往 AI 助手`,
         href: prefixPath(emailAccountId, "/automation"),
         icon: SparklesIcon,
         keywords: ["ai", "assistant", "rules", "auto"],
       },
       {
-        name: "Bulk Unsubscribe",
-        label: t`Go to Bulk Unsubscribe`,
+        name: "批量退订",
+        label: t`前往批量退订`,
         href: prefixPath(emailAccountId, "/bulk-unsubscribe"),
         icon: MailsIcon,
         keywords: ["unsubscribe", "newsletters", "spam"],
       },
       {
-        name: "Analytics",
-        label: t`Go to Analytics`,
+        name: "分析",
+        label: t`前往分析`,
         href: prefixPath(emailAccountId, "/stats"),
         icon: BarChartBigIcon,
         keywords: ["statistics", "charts", "data"],
       },
       {
-        name: "Calendars",
-        label: t`Go to Calendars`,
+        name: "日历",
+        label: t`前往日历`,
         href: prefixPath(emailAccountId, "/calendars"),
         icon: CalendarIcon,
         keywords: ["calendar", "scheduling", "meetings"],
@@ -149,8 +148,8 @@ export function useCommandPaletteCommands({
       ...(showIntegrations
         ? [
             {
-              name: "Integrations",
-              label: t`Go to Integrations`,
+              name: "集成",
+              label: t`前往集成`,
               href: prefixPath(emailAccountId, "/integrations"),
               icon: ZapIcon,
               keywords: ["integrations", "apps", "connect"],
@@ -160,8 +159,8 @@ export function useCommandPaletteCommands({
       ...(showMeetingBriefs
         ? [
             {
-              name: "Meeting Briefs",
-              label: t`Go to Meeting Briefs`,
+              name: "会议简报",
+              label: t`前往会议简报`,
               href: prefixPath(emailAccountId, "/briefs"),
               icon: FileTextIcon,
               keywords: ["briefs", "meeting", "summaries"],
@@ -171,8 +170,8 @@ export function useCommandPaletteCommands({
       ...(isGoogleProvider(provider) && showCleaner
         ? [
             {
-              name: "Deep Clean",
-              label: t`Go to Deep Clean`,
+              name: "深度清理",
+              label: t`前往深度清理`,
               href: prefixPath(emailAccountId, "/clean"),
               icon: BrushIcon,
               keywords: ["clean", "organize", "tidy"],
@@ -180,8 +179,8 @@ export function useCommandPaletteCommands({
           ]
         : []),
       {
-        name: "Cold Email Blocker",
-        label: t`Go to Cold Email Blocker`,
+        name: "冷邮件拦截",
+        label: t`前往冷邮件拦截`,
         href: prefixPath(emailAccountId, "/cold-email-blocker"),
         icon: ShieldCheckIcon,
         keywords: ["block", "cold", "spam", "filter"],
@@ -194,7 +193,7 @@ export function useCommandPaletteCommands({
         icon: item.icon,
         section: "navigation",
         priority: index + 10,
-        keywords: [item.name.toLowerCase(), ...item.keywords],
+        keywords: [item.name, ...item.keywords],
         action: () => router.push(item.href),
       }),
     );
@@ -202,8 +201,8 @@ export function useCommandPaletteCommands({
     const settingsCommands: Command[] = [
       {
         id: "settings-assistant",
-        label: t`Assistant Settings`,
-        description: t`Configure AI assistant behavior`,
+        label: t`助手设置`,
+        description: t`配置 AI 助手行为`,
         icon: SparklesIcon,
         section: "settings",
         priority: 2,
@@ -213,8 +212,8 @@ export function useCommandPaletteCommands({
       },
       {
         id: "settings-usage",
-        label: t`Usage`,
-        description: t`View usage statistics`,
+        label: t`用量`,
+        description: t`查看用量统计`,
         icon: BarChartBigIcon,
         section: "settings",
         priority: 3,
@@ -223,8 +222,8 @@ export function useCommandPaletteCommands({
       },
       {
         id: "settings-organization",
-        label: t`Organization`,
-        description: t`Manage organization settings`,
+        label: t`组织`,
+        description: t`管理组织设置`,
         icon: UsersIcon,
         section: "settings",
         priority: 4,
@@ -233,8 +232,8 @@ export function useCommandPaletteCommands({
       },
       {
         id: "manage-accounts",
-        label: t`Manage Accounts`,
-        description: t`Add or switch email accounts`,
+        label: t`管理账号`,
+        description: t`添加或切换邮箱账号`,
         icon: UserIcon,
         section: "settings",
         priority: 5,
@@ -246,7 +245,7 @@ export function useCommandPaletteCommands({
     const ruleCommands: Command[] = (rulesData ?? []).map((rule, index) => ({
       id: `rule-${rule.id}`,
       label: rule.name,
-      description: rule.instructions || t`View rule`,
+      description: rule.instructions || t`查看规则`,
       icon: ScrollTextIcon,
       section: "rules" as const,
       priority: index + 1,

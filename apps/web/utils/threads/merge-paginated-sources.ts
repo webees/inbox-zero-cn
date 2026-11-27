@@ -1,11 +1,10 @@
 import { mapWithConcurrency } from "@/utils/async";
 
 /**
- * Merges several independently paginated providers into one ordered list.
+ * 将多个独立分页的服务商合并为一个有序列表。
  *
- * Each source keeps its own page token, so a slow or exhausted source never
- * holds the others back. Unreturned rows can be buffered between requests;
- * consumed IDs also let an expired buffer resume from the provider page.
+ * 每个来源保留自己的分页令牌，因此缓慢或已耗尽的来源永远不会阻塞其他来源。
+ * 未返回的行可以在请求之间缓冲；已消费的 ID 也能让过期的缓冲区从服务商页面继续。
  */
 export async function mergePaginatedSources<
   TSource extends { id: string },
@@ -27,14 +26,14 @@ export async function mergePaginatedSources<
   cursor: string | null;
   limit: number;
   concurrency: number;
-  /** Orders the merged rows; the first `limit` are returned. */
+  /** 对合并后的行排序；返回前 `limit` 行。 */
   compare: (left: TItem, right: TItem) => number;
-  /** Identifies a row within its own source, for consumed-row tracking. */
+  /** 标识某行在其自身来源中的身份，用于跟踪已消费的行。 */
   getItemId: (item: TItem) => string;
   /**
-   * Identifies a row across sources, for sources that can return the same one.
-   * Rows sharing a key are served once and remembered so a later page cannot
-   * repeat them. Leave unset when sources never overlap.
+   * 跨来源标识同一行，适用于可能返回同一行的来源。
+   * 共享同一键的行只返回一次并被记住，以免后续页面重复返回。
+   * 当来源之间从不重叠时，保持未设置。
    */
   dedupeItemKey?: (item: TItem) => string;
   loadPage: (input: {
@@ -45,7 +44,7 @@ export async function mergePaginatedSources<
   onSourceError: (input: { source: TSource; error: unknown }) => void;
 }) {
   if (!Number.isInteger(limit) || limit < 1) {
-    throw new Error("limit must be a positive integer");
+    throw new Error("limit 必须是正整数");
   }
 
   const previousCursor = decodeCursor(cursor);
@@ -87,14 +86,14 @@ export async function mergePaginatedSources<
 
   const failedSourceIds: string[] = [];
   const metaBySourceId: Record<string, TMeta> = {};
-  // Each source keeps the row's own id, because two sources can identify the
-  // same row differently and each needs its own id marked consumed.
+  // 每个来源保留该行自身的 ID，因为两个来源可能以不同方式标识同一行，
+  // 且每个来源都需要将各自的 ID 标记为已消费。
   const candidatesByKey = new Map<
     string,
     { item: TItem; itemIdBySource: Map<string, string> }
   >();
-  // A key stays here until every source has run past the row, so a row two
-  // sources share is served once however far apart their pages are.
+  // 键会保留到所有来源都越过该行，因此共享同一行的两个来源无论分页相隔多远，
+  // 该行都只会被返回一次。
   const pendingByEmittedKey = new Map(
     previousCursor.emitted.map((entry) => [entry.key, new Set(entry.pending)]),
   );
@@ -115,8 +114,8 @@ export async function mergePaginatedSources<
       const key = keyFor(item, source);
       const stillPending = pendingByEmittedKey.get(key);
       if (stillPending) {
-        // This source has now caught up to a row already served, so consume it
-        // here rather than leaving the page looking unfinished forever.
+        // 该来源现在已追上已经返回过的行，因此在此处将其消费，
+        // 而不是让该页永远看起来未完成。
         stillPending.delete(source.id);
         const skipped = skippedItemIdsBySource.get(source.id) ?? [];
         skipped.push(getItemId(item));
@@ -208,8 +207,8 @@ export async function mergePaginatedSources<
         ),
       );
     }
-    // A source that is finished will never surface the row, so it stops
-    // holding the key and the ledger drains instead of growing.
+    // 已完成的来源永远不会再返回该行，因此它不再持有该键，
+    // 记录也会随之清空，而不是持续增长。
     nextCursor.emitted = [...pendingByEmittedKey]
       .map(([key, pending]) => ({
         key,
@@ -260,8 +259,8 @@ type MergedCursor = {
   version: 3;
   sources: Record<string, SourceCursorState>;
   /**
-   * Rows already served, each with the sources that have yet to reach them, so
-   * a row two sources share is served once and then forgotten.
+   * 已返回的行，以及尚未到达这些行的来源，因此两个来源共享的行
+   * 只会返回一次，随后即被遗忘。
    */
   emitted: EmittedKey[];
 };
@@ -291,8 +290,8 @@ function decodeCursor(cursor: string | null): MergedCursor {
       Buffer.from(cursor, "base64url").toString("utf8"),
     );
     if (!isRecord(parsed)) return emptyCursor();
-    // A page loaded before this shipped still holds a v2 cursor. Reading it
-    // keeps "load more" moving forward instead of restarting from page one.
+    // 此功能上线前加载的页面仍持有 v2 游标。读取它可让“加载更多”
+    // 继续向前，而不是从第一页重新开始。
     const rawSources = parsed.version === 3 ? parsed.sources : parsed.accounts;
     if (!isRecord(rawSources)) return emptyCursor();
 
@@ -326,7 +325,7 @@ function toSourceCursorState(value: unknown): SourceCursorState | null {
     return null;
   }
   if (typeof value.done !== "boolean") return null;
-  // v2 named this field consumedThreadIds.
+  // v2 将该字段命名为 consumedThreadIds。
   const consumed = value.consumedIds ?? value.consumedThreadIds;
   if (!Array.isArray(consumed)) return null;
 

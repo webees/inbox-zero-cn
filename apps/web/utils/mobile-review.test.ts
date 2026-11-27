@@ -98,8 +98,8 @@ describe("mobile review access", () => {
         logger: createTestLogger(),
       } as never),
     ).rejects.toMatchObject({
-      message: "Invalid review access code",
-      safeMessage: "Invalid review access code",
+      message: "无效的审核访问码",
+      safeMessage: "无效的审核访问码",
       statusCode: 401,
     });
 
@@ -116,8 +116,8 @@ describe("mobile review access", () => {
         logger: createTestLogger(),
       } as never),
     ).rejects.toMatchObject({
-      message: "Review access is unavailable",
-      safeMessage: "Review access is unavailable",
+      message: "审核访问不可用",
+      safeMessage: "审核访问不可用",
     });
   });
 

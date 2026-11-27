@@ -191,8 +191,8 @@ export function useComposeDraft({
       },
     });
 
-  // The open thread holds its drafts still until the save says which mailbox
-  // message is this composer's, so a copy that syncs in first can't replace it.
+  // 打开的会话会保持草稿不动，直到保存过程确认哪一封邮箱邮件属于此写信窗口，
+  // 这样先同步进来的副本就无法替换它。
   const whileSaving = async <T>(save: () => Promise<T>) => {
     const end = localDraftIdentity
       ? startDraftSave(emailAccountId, localDraftIdentity.threadId)
@@ -204,8 +204,8 @@ export function useComposeDraft({
     }
   };
 
-  // Every compose with files needs a mailbox draft to hold them. New messages
-  // also get one from autosave; replies and forwards get one on first attach.
+  // 每个带文件的写信窗口都需要一份邮箱草稿来保存它们。新邮件也会通过自动保存获得一份；
+  // 回复和转发则在首次附加文件时获得。
   const ensureProviderDraft = () => whileSaving(createProviderDraft);
   const createProviderDraft = async () => {
     if (providerDraftId.current) return providerDraftId.current;
@@ -215,14 +215,11 @@ export function useComposeDraft({
         messageId: providerDraftMessageId,
       });
       if (!draftId)
-        throw new Error(
-          t`Could not find this draft in your mailbox. Reopen it and try again.`,
-        );
+        throw new Error(t`无法在你的邮箱中找到这封草稿。请重新打开后再试。`);
       providerDraftId.current = draftId;
       return draftId;
     }
-    if (!localDraftIdentity)
-      throw new Error("Local draft storage is required to save attachments.");
+    if (!localDraftIdentity) throw new Error("保存附件需要本地草稿存储。");
     const deletedDraftId = storedDraft?.content?.providerDraftId;
     if (initialDraftMissing && deletedDraftId)
       await forgetReplyDraftProvider(localDraftIdentity, deletedDraftId);

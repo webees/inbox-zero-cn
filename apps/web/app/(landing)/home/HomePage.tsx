@@ -45,15 +45,14 @@ export function HomePage({ locale }: { locale: Locale }) {
       <Hero
         badge={
           <SectionLink sectionId={EMAIL_CLIENT_SECTION_ID}>
-            <Trans>New: Inbox Zero Mail app →</Trans>
+            <Trans>新功能：Inbox Zero Mail 应用 →</Trans>
           </SectionLink>
         }
         title={<HeroTitle />}
         subtitle={
           <Trans>
-            {BRAND_NAME} organizes your inbox and calendar, drafts replies in
-            your voice, and helps you reach inbox zero fast. Never miss an
-            important email again.
+            {BRAND_NAME}{" "}
+            可整理你的收件箱和日历，以你的语气起草回复，并帮助你快速实现收件箱清零。再也不会错过重要邮件。
           </Trans>
         }
       >
@@ -62,36 +61,31 @@ export function HomePage({ locale }: { locale: Locale }) {
       <OrganizedInbox
         title={
           <Trans>
-            Automatically organized.
+            自动整理。
             <br />
-            Never miss an important email again.
+            再也不会错过重要邮件。
           </Trans>
         }
         subtitle={
           <Trans>
-            Drowning in emails? Don't waste energy trying to prioritize your
-            emails. Our AI assistant will label everything automatically.
+            被邮件淹没了吗？不要把精力浪费在手动给邮件排优先级上。我们的 AI
+            助手会自动为所有内容添加标签。
           </Trans>
         }
       />
       <PreWrittenDrafts
-        title={<Trans>Pre-written drafts waiting in your inbox</Trans>}
+        title={<Trans>收件箱里已有预先写好的草稿</Trans>}
         subtitle={
           <Trans>
-            When you check your inbox, every email needing a response will have
-            a pre-drafted reply in your tone, ready for you to send.
+            当你查看收件箱时，每封需要回复的邮件都会有一份以你的语气预先起草的回复，随时可以发送。
           </Trans>
         }
       />
       <ManageFromAnywhere />
       <EmailClient />
       <StartedInMinutes
-        title={<Trans>Get started in minutes</Trans>}
-        subtitle={
-          <Trans>
-            One-click setup. Start organizing and drafting replies in minutes.
-          </Trans>
-        }
+        title={<Trans>几分钟即可开始</Trans>}
+        subtitle={<Trans>一键设置。几分钟内即可开始整理邮件和起草回复。</Trans>}
       />
       <BulkUnsubscribe />
       <EverythingElseSection />

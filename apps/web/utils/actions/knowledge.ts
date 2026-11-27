@@ -30,7 +30,7 @@ export const createKnowledgeAction = actionClient
         where: { emailAccountId },
       });
 
-      // premium check
+      // 高级版检查
       if (
         knowledgeCount >= KNOWLEDGE_BASIC_MAX_ITEMS ||
         content.length > KNOWLEDGE_BASIC_MAX_CHARS
@@ -42,7 +42,7 @@ export const createKnowledgeAction = actionClient
 
         if (!hasAccess) {
           throw new SafeError(
-            `You can save up to ${KNOWLEDGE_BASIC_MAX_CHARS} characters and ${KNOWLEDGE_BASIC_MAX_ITEMS} item to your knowledge base. Upgrade to a higher tier to save unlimited content.`,
+            `你最多可以向知识库保存 ${KNOWLEDGE_BASIC_MAX_CHARS} 个字符和 ${KNOWLEDGE_BASIC_MAX_ITEMS} 个条目。升级到更高档位即可保存无限内容。`,
           );
         }
       }
@@ -73,7 +73,7 @@ export const updateKnowledgeAction = actionClient
 
         if (!hasAccess) {
           throw new SafeError(
-            `You can save up to ${KNOWLEDGE_BASIC_MAX_CHARS} characters to your knowledge base. Upgrade to a higher tier to save unlimited content.`,
+            `你最多可以向知识库保存 ${KNOWLEDGE_BASIC_MAX_CHARS} 个字符。升级到更高档位即可保存无限内容。`,
           );
         }
       }
@@ -103,7 +103,7 @@ export const updateDraftDocsUrlsAction = actionClient
       const url = normalizeDocsSourceUrl(input);
       if (!url) {
         throw new SafeError(
-          `"${input}" is not a public https URL, like https://docs.example.com`,
+          `"${input}" 不是公开的 https URL，例如 https://docs.example.com`,
         );
       }
       if (!urls.includes(url)) urls.push(url);
@@ -113,7 +113,7 @@ export const updateDraftDocsUrlsAction = actionClient
       where: { id: emailAccountId },
       select: { draftDocsUrls: true },
     });
-    // Removals stay open after a downgrade; only adding a site needs the tier
+    // 降级后仍可移除；只有添加站点才需要相应套餐
     const addsSite = urls.some((url) => !current?.draftDocsUrls.includes(url));
 
     if (addsSite && urls.length > DRAFT_DOCS_BASIC_MAX_URLS) {
@@ -124,7 +124,7 @@ export const updateDraftDocsUrlsAction = actionClient
 
       if (!hasAccess) {
         throw new SafeError(
-          `You can add ${DRAFT_DOCS_BASIC_MAX_URLS} documentation site. Upgrade to a higher tier to add more.`,
+          `你最多可以添加 ${DRAFT_DOCS_BASIC_MAX_URLS} 个文档站点。升级到更高套餐即可添加更多。`,
         );
       }
     }

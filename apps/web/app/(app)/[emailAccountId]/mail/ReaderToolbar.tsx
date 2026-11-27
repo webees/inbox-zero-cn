@@ -156,13 +156,13 @@ function renderActionTooltip(
     return <Tooltip shortcuts={["archive"]}>{children}</Tooltip>;
   }
   if (button.action === "move_to_inbox") {
-    return <Tooltip content={i18n._(msg`Move to inbox`)}>{children}</Tooltip>;
+    return <Tooltip content={i18n._(msg`移到收件箱`)}>{children}</Tooltip>;
   }
   if (button.action === "mark_unread") {
     return <Tooltip shortcuts={["markUnread"]}>{children}</Tooltip>;
   }
   if (button.action === "mark_read") {
-    return <Tooltip content={i18n._(msg`Mark as read`)}>{children}</Tooltip>;
+    return <Tooltip content={i18n._(msg`标记为已读`)}>{children}</Tooltip>;
   }
   return children;
 }
@@ -171,11 +171,11 @@ const TOOLBAR_BUTTON_LABELS: Record<
   MailReaderToolbarButton["action"],
   MessageDescriptor
 > = {
-  back: msg`Back to inbox`,
-  expand_all: msg`Expand all messages`,
-  collapse_all: msg`Collapse all messages`,
-  archive: msg`Archive`,
-  move_to_inbox: msg`Move to inbox`,
-  mark_read: msg`Mark as read`,
-  mark_unread: msg`Mark as unread`,
+  back: msg`返回收件箱`,
+  expand_all: msg`展开所有邮件`,
+  collapse_all: msg`折叠所有邮件`,
+  archive: msg`归档`,
+  move_to_inbox: msg`移到收件箱`,
+  mark_read: msg`标记为已读`,
+  mark_unread: msg`标记为未读`,
 };

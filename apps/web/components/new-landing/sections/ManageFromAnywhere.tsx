@@ -19,11 +19,11 @@ type Platform = {
 };
 
 export function ManageFromAnywhere({
-  title = <Trans>Your inbox, wherever you work</Trans>,
+  title = <Trans>无论在哪里工作，都能处理你的收件箱</Trans>,
   subtitle = (
     <Trans>
-      Read emails, draft replies, and manage your inbox from Slack, Telegram,
-      Microsoft Teams, mobile, or the web, without switching apps.
+      无需切换应用，即可通过 Slack、Telegram、Microsoft
+      Teams、移动端或网页阅读邮件、起草回复并管理收件箱。
     </Trans>
   ),
   platforms,
@@ -54,15 +54,20 @@ export function ManageFromAnywhere({
     {
       name: "Teams",
       icon: (
-        <Image src="/images/teams.png" alt="Teams" width={56} height={56} />
+        <Image
+          src="/images/teams.png"
+          alt="Teams 团队协作平台"
+          width={56}
+          height={56}
+        />
       ),
     },
     {
-      name: t`iOS & Android`,
+      name: t`iOS 和 Android`,
       icon: <Smartphone className="size-10 text-gray-600" strokeWidth={1.5} />,
     },
     {
-      name: t`Web`,
+      name: t`网页`,
       icon: <Globe className="size-10 text-gray-600" strokeWidth={1.5} />,
     },
   ];

@@ -59,8 +59,8 @@ export async function publishToQstash<T>(
 }
 
 /**
- * Delivers `body` to `path` no earlier than `notBefore`. Resolves `false` when
- * QStash is unavailable, so callers keep their own fallback, such as the cron.
+ * 不早于 `notBefore` 将 `body` 投递到 `path`。当
+ * QStash 不可用时返回 `false`，因此调用方保留自己的回退方案，例如 cron。
  */
 export async function publishToQstashAt<T>({
   path,
@@ -147,7 +147,7 @@ export async function publishToQstashQueue<T>({
         deduplicationId,
       });
     } catch (error) {
-      logger.error("Failed to publish to Qstash queue", {
+      logger.error("发布到 Qstash 队列失败", {
         qstashUrl,
         queueName,
         error,
@@ -182,7 +182,7 @@ async function fallbackPublishToQstash<T>(
   headers?: HeadersInit,
   includeInternalApiHeaders = true,
 ) {
-  logger.warn("Qstash client not found");
+  logger.warn("未找到 Qstash 客户端");
 
   const internalHeaders = createHeaders(headers);
   internalHeaders.set("Content-Type", "application/json");
@@ -200,7 +200,7 @@ async function fallbackPublishToQstash<T>(
         body: JSON.stringify(body),
       });
     } catch (error) {
-      logger.error("Fallback QStash fetch failed", { url, error });
+      logger.error("回退 QStash 请求失败", { url, error });
     }
   });
 }

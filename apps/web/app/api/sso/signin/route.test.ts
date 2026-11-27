@@ -240,7 +240,7 @@ describe("SSO Signin Route", () => {
 
       expect(response.status).toBe(500);
       expect(responseBody).toEqual({
-        error: "An unexpected error occurred",
+        error: "发生了意外错误",
       });
     });
   });

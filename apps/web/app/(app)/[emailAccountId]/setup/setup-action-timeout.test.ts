@@ -26,9 +26,7 @@ describe("withSetupActionTimeout", () => {
       new Promise<never>(() => undefined),
       1000,
     );
-    const expectation = expect(result).rejects.toThrow(
-      "Setup action timed out",
-    );
+    const expectation = expect(result).rejects.toThrow("设置操作超时");
 
     await vi.advanceTimersByTimeAsync(1000);
 

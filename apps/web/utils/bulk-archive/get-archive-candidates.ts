@@ -16,10 +16,10 @@ export type ArchiveCandidate = {
 };
 
 /**
- * Classifies email senders into archive confidence levels based on their category.
- * - High confidence: marketing, promotions, newsletters, sales
- * - Medium confidence: notifications, alerts, receipts, updates
- * - Low confidence: everything else
+ * 根据发件人的分类，将其归入不同的归档置信度级别。
+ * - 高置信度：营销、促销、简报、销售
+ * - 中置信度：通知、提醒、收据、更新
+ * - 低置信度：其余全部
  */
 export function getArchiveCandidates(
   emailGroups: EmailGroup[],
@@ -27,7 +27,7 @@ export function getArchiveCandidates(
   return emailGroups.map((group) => {
     const categoryName = group.category?.name?.toLowerCase() || "";
 
-    // High confidence: marketing, promotions, newsletters
+    // 高置信度：营销、促销、简报
     if (
       categoryName.includes("marketing") ||
       categoryName.includes("promotion") ||
@@ -41,7 +41,7 @@ export function getArchiveCandidates(
       };
     }
 
-    // Medium confidence: notifications, receipts, automated
+    // 中置信度：通知、收据、自动化
     if (
       categoryName.includes("notification") ||
       categoryName.includes("alert") ||
@@ -51,15 +51,15 @@ export function getArchiveCandidates(
       return {
         ...group,
         confidence: "medium" as ConfidenceLevel,
-        reason: "Automated notification",
+        reason: "自动通知",
       };
     }
 
-    // Low confidence: everything else
+    // 低置信度：其余全部
     return {
       ...group,
       confidence: "low" as ConfidenceLevel,
-      reason: "Other category",
+      reason: "其他分类",
     };
   });
 }

@@ -33,16 +33,16 @@ import type { MailSplit } from "@/utils/split-inbox/split-query";
 type Step = "layout" | "tabs" | "all" | "default" | "bundles";
 
 const STEP_QUESTIONS: Record<Step, MessageDescriptor> = {
-  layout: msg`How do you want to read email?`,
-  tabs: msg`Which tabs do you want?`,
-  all: msg`What should All show?`,
-  default: msg`Which tab should open first?`,
-  bundles: msg`Bundle low-priority email?`,
+  layout: msg`你想如何阅读邮件？`,
+  tabs: msg`你想要哪些标签页？`,
+  all: msg`全部应显示什么？`,
+  default: msg`哪个标签页应最先打开？`,
+  bundles: msg`要归集低优先级邮件吗？`,
 };
 
 /**
- * Floats over the mail client rather than covering it, and every choice saves
- * as it's made, so the inbox behind the card is the preview.
+ * 浮在邮件客户端上方而不是将其遮住，并且每次选择都会立即保存，
+ * 因此卡片后面的收件箱就是预览。
  */
 export function MailSetupPanel({
   splits,
@@ -58,7 +58,7 @@ export function MailSetupPanel({
   canHideFromAll,
   supportsStarred,
 }: {
-  /** The tabs as shown, including Other. */
+  /** 按显示顺序排列的标签页，包括其他。 */
   splits: (MailSplit & MailSplitTab)[];
   allSplitId: string | undefined;
   editAllOnly: boolean;
@@ -91,8 +91,8 @@ export function MailSetupPanel({
     ? defaultSplitId
     : splits[0]?.id;
 
-  // The category tabs onboarding sets up from the account's labelling rules,
-  // then the two that need no label.
+  // 引导流程会先根据账号的标签规则设置分类标签页，
+  // 然后是那两个不需要标签的标签页。
   const tabChoices = useMemo(
     () => [
       ...getDefaultMailSplitDrafts(
@@ -101,13 +101,13 @@ export function MailSetupPanel({
         ),
       ).map(({ name, filters }) => ({ name, filters })),
       {
-        name: "Unread",
+        name: "未读",
         filters: [{ kind: MailSplitFilterKind.UNREAD, value: null }],
       },
       ...(supportsStarred
         ? [
             {
-              name: "Starred",
+              name: "已加星标",
               filters: [{ kind: MailSplitFilterKind.STARRED, value: null }],
             },
           ]
@@ -115,8 +115,8 @@ export function MailSetupPanel({
     ],
     [rules, supportsStarred],
   );
-  // Name and matchAll must match too, so a custom tab that happens to share
-  // the filters is never the one a switch deletes.
+  // 名称和 matchAll 也必须匹配，这样碰巧使用相同筛选条件的自定义标签页
+  // 就不会被开关误删。
   const findTabSplit = ({ name, filters }: (typeof tabChoices)[number]) =>
     settings?.splits.find(
       (split) =>
@@ -133,7 +133,7 @@ export function MailSetupPanel({
 
   const goTo = (index: number) => {
     setStepIndex(index);
-    // These steps change what the inbox tab shows, so show it.
+    // 这些步骤会改变收件箱标签页的显示内容，所以要显示它。
     if ((steps[index] === "all" || steps[index] === "bundles") && allSplitId)
       onSelectSplit(allSplitId);
   };
@@ -151,10 +151,10 @@ export function MailSetupPanel({
       if (result?.serverError || result?.validationErrors)
         toast.error(getActionErrorMessage(result));
     } catch {
-      toast.error(t`Couldn't save that`);
+      toast.error(t`无法保存`);
     } finally {
-      // Also drops an optimistic switch state the server never saved. The
-      // lock holds until then so the next click reads fresh settings.
+      // 同时丢弃服务器从未保存的乐观开关状态。
+      // 在此之前保持锁定，以便下一次点击读取最新设置。
       await mutateSettings().catch(() => undefined);
       setBusyId(null);
     }
@@ -196,7 +196,7 @@ export function MailSetupPanel({
 
   return (
     <section
-      aria-label={editAllOnly ? question : t`Mail setup`}
+      aria-label={editAllOnly ? question : t`邮件设置`}
       className={cn(
         "fixed right-4 bottom-4 left-4 z-40 flex max-h-[min(32rem,calc(100vh-2rem))] flex-col overflow-hidden rounded-xl border bg-popover text-popover-foreground text-sm shadow-xl sm:left-auto sm:w-96",
         !editAllOnly && "border-blue-200 dark:border-blue-900",
@@ -221,13 +221,13 @@ export function MailSetupPanel({
           <div className="flex items-center justify-between">
             <span className="font-medium text-blue-600 dark:text-blue-400">
               <Trans>
-                Step {stepIndex + 1} of {steps.length}
+                第 {stepIndex + 1} 步，共 {steps.length} 步
               </Trans>
             </span>
             <button
               type="button"
               onClick={onClose}
-              aria-label={t`Close mail setup`}
+              aria-label={t`关闭邮件设置`}
               className="-mr-1.5 flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
             >
               <XIcon className="size-4" />
@@ -259,7 +259,7 @@ export function MailSetupPanel({
                 )}
               >
                 <LayoutSketch mode={mode} />
-                {mode === "list" ? <Trans>List</Trans> : <Trans>Split</Trans>}
+                {mode === "list" ? <Trans>列表</Trans> : <Trans>分栏</Trans>}
               </button>
             ))}
           </div>
@@ -291,14 +291,14 @@ export function MailSetupPanel({
             ))
           ) : (
             <p className="px-2 py-1.5 text-muted-foreground">
-              <Trans>No tabs yet</Trans>
+              <Trans>还没有标签页</Trans>
             </p>
           ))}
 
         {step === "default" && (
           <fieldset>
             <legend className="sr-only">
-              <Trans>Default tab</Trans>
+              <Trans>默认标签页</Trans>
             </legend>
             {splits.map((split) => (
               <label
@@ -310,8 +310,8 @@ export function MailSetupPanel({
                   name="default-tab"
                   value={split.id}
                   checked={split.id === defaultId}
-                  // Handled on click, which also fires for the option already
-                  // shown as checked (the fallback when nothing is saved yet).
+                  // 在点击时处理，这样也会对已显示为选中的选项触发
+                  //（在尚未保存任何内容时作为回退）。
                   onChange={() => undefined}
                   onClick={() => {
                     if (defaultSplitId !== split.id)
@@ -331,7 +331,7 @@ export function MailSetupPanel({
           <>
             <BundleSketch bundled={bundleInbox} />
             <SwitchRow
-              label={t`Bundle my inbox`}
+              label={t`归集我的收件箱`}
               checked={bundleInbox}
               disabled={isBundlePending}
               onCheckedChange={async () => {
@@ -365,7 +365,7 @@ export function MailSetupPanel({
       <footer className="flex justify-end gap-2 border-t px-4 py-3">
         {stepIndex > 0 && (
           <Button size="sm" variant="ghost" onClick={() => goTo(stepIndex - 1)}>
-            <Trans>Back</Trans>
+            <Trans>返回</Trans>
           </Button>
         )}
         <Button
@@ -373,7 +373,7 @@ export function MailSetupPanel({
           variant={editAllOnly ? "outline" : "gradient"}
           onClick={() => (isLastStep ? onClose() : goTo(stepIndex + 1))}
         >
-          {isLastStep ? <Trans>Done</Trans> : <Trans>Next</Trans>}
+          {isLastStep ? <Trans>完成</Trans> : <Trans>下一步</Trans>}
         </Button>
       </footer>
     </section>
@@ -394,7 +394,7 @@ function SwitchRow({
   onCheckedChange: (checked: boolean) => void;
 }) {
   return (
-    // biome-ignore lint/a11y/noLabelWithoutControl: the Switch inside is the control
+    // biome-ignore lint/a11y/noLabelWithoutControl: 内部的 Switch 就是控件
     <label
       className={cn(
         "flex cursor-pointer items-center gap-3 rounded-md px-2 py-1.5 hover:bg-muted",
@@ -428,7 +428,7 @@ function LayoutSketch({ mode }: { mode: MailLayoutMode }) {
   );
 }
 
-/** Three rows from one tab folding into a single row as bundling turns on. */
+/** 开启归集后，来自同一标签页的三行会折叠成一行。 */
 function BundleSketch({ bundled }: { bundled: boolean }) {
   const row = (key: number, className?: string) => (
     <div key={key} className={cn("flex items-center gap-2", className)}>

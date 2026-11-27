@@ -37,7 +37,7 @@ const pushTokenSchema = z
     if (!tokenType) {
       ctx.addIssue({
         code: "custom",
-        message: "tokenType is required for a raw device token",
+        message: "原始设备令牌必须提供 tokenType",
         path: ["tokenType"],
       });
       return;
@@ -45,14 +45,14 @@ const pushTokenSchema = z
     if (value.platform === "macos" && tokenType !== "apns") {
       ctx.addIssue({
         code: "custom",
-        message: "macOS registers raw APNs tokens only",
+        message: "macOS 仅支持注册原始 APNs 令牌",
         path: ["tokenType"],
       });
     }
     if (tokenType === "expo" && !EXPO_PUSH_TOKEN.test(value.token)) {
       ctx.addIssue({
         code: "custom",
-        message: "Expected an Expo push token",
+        message: "需要 Expo 推送令牌",
         path: ["token"],
       });
     }
@@ -60,14 +60,14 @@ const pushTokenSchema = z
       if (value.platform === "android") {
         ctx.addIssue({
           code: "custom",
-          message: "APNs tokens are iOS or macOS only",
+          message: "APNs 令牌仅适用于 iOS 或 macOS",
           path: ["platform"],
         });
       }
       if (!APNS_DEVICE_TOKEN.test(value.token)) {
         ctx.addIssue({
           code: "custom",
-          message: "Expected a hex APNs device token",
+          message: "需要十六进制的 APNs 设备令牌",
           path: ["token"],
         });
       }
@@ -76,14 +76,14 @@ const pushTokenSchema = z
       if (value.platform !== "android") {
         ctx.addIssue({
           code: "custom",
-          message: "FCM tokens are Android only",
+          message: "FCM 令牌仅适用于 Android",
           path: ["platform"],
         });
       }
       if (!FCM_REGISTRATION_TOKEN.test(value.token)) {
         ctx.addIssue({
           code: "custom",
-          message: "Expected an FCM registration token",
+          message: "需要 FCM 注册令牌",
           path: ["token"],
         });
       }

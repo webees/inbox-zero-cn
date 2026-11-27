@@ -33,20 +33,19 @@ async function checkGmailPermissions({
   error?: string;
 }> {
   if (!accessToken) {
-    logger.error("No access token available", { emailAccountId });
+    logger.error("没有可用的访问令牌", { emailAccountId });
     return {
       hasAllPermissions: false,
       missingScopes: [...REQUIRED_SCOPES],
-      error: "No access token available",
+      error: "没有可用的访问令牌",
     };
   }
 
   if (isGoogleOauthEmulationEnabled()) {
     if (!grantedScope?.trim()) {
-      logger.warn(
-        "Missing stored Gmail scope in emulation, assuming permissions granted",
-        { emailAccountId },
-      );
+      logger.warn("模拟环境中缺少已存储的 Gmail scope，假定权限已授予", {
+        emailAccountId,
+      });
       return {
         hasAllPermissions: true,
         missingScopes: [],
@@ -57,7 +56,7 @@ async function checkGmailPermissions({
     const missingScopes = getMissingRequiredScopes(grantedScopes);
 
     if (missingScopes.length > 0) {
-      logger.info("Missing Gmail permissions", {
+      logger.info("缺少 Gmail 权限", {
         emailAccountId,
         missingScopes,
       });
@@ -82,22 +81,22 @@ async function checkGmailPermissions({
 
     if (data.error) {
       if (!AUTH_ERRORS.includes(data.error)) {
-        // Unrecognized error (rate-limit envelope, backend failure): not
-        // confirmable as an auth failure, fail open rather than prompting re-auth
+        // 无法识别的错误（限流封套、后端故障）：无法确认为
+        // 认证失败，宁可放行也不要提示重新认证
         throw new Error(
           `Token info request failed with error ${JSON.stringify(data.error)}`,
         );
       }
 
-      // Recognized token error (4xx body, or error body on 200): fail closed
-      // so the refresh flow can run
-      logger.error("Invalid token or Google API error", {
+      // 已识别的令牌错误（4xx 响应体，或 200 上的错误响应体）：失败关闭
+      // 以便刷新流程可以运行
+      logger.error("无效的令牌或 Google API 错误", {
         emailAccountId,
         error: data.error,
       });
       return {
         hasAllPermissions: false,
-        missingScopes: [...REQUIRED_SCOPES], // Assume all scopes are missing if we can't check
+        missingScopes: [...REQUIRED_SCOPES], // 如果无法检查，则假定所有 scope 都缺失
         error: data.error,
       };
     }
@@ -114,14 +113,14 @@ async function checkGmailPermissions({
     const hasAllPermissions = missingScopes.length === 0;
 
     if (!hasAllPermissions)
-      logger.info("Missing Gmail permissions", {
+      logger.info("缺少 Gmail 权限", {
         emailAccountId,
         missingScopes,
       });
 
     return { hasAllPermissions, missingScopes };
   } catch (error) {
-    logger.error("Error checking Gmail permissions", { emailAccountId, error });
+    logger.error("检查 Gmail 权限时出错", { emailAccountId, error });
     return {
       hasAllPermissions: true,
       missingScopes: [],
@@ -150,19 +149,19 @@ export async function handleGmailPermissionsCheck({
     permissionsBeforeRefresh.error &&
     AUTH_ERRORS.includes(permissionsBeforeRefresh.error)
   ) {
-    // attempt to refresh the token one last time using only the refresh token
+    // 仅使用刷新令牌再尝试刷新一次令牌
     if (refreshToken) {
       try {
         const gmailClient = await getGmailClientWithRefresh({
           accessToken: null,
           refreshToken,
-          // force refresh even if existing expiry suggests it's valid
+          // 即使现有过期时间表明它有效也强制刷新
           expiresAt: null,
           emailAccountId,
           logger,
         });
 
-        // re-check permissions with the new access token
+        // 使用新的访问令牌重新检查权限
         const accessToken = getAccessTokenFromClient(gmailClient);
         const permissionsAfterRefresh = await checkGmailPermissions({
           accessToken,
@@ -174,7 +173,7 @@ export async function handleGmailPermissionsCheck({
           permissionsAfterRefresh.error &&
           permissionsAfterRefresh.error === "invalid_grant"
         ) {
-          logger.info("Cleaning up invalid Gmail tokens", { emailAccountId });
+          logger.info("正在清理无效的 Gmail 令牌", { emailAccountId });
           const emailAccount = await prisma.emailAccount.findUnique({
             where: { id: emailAccountId },
             select: { accountId: true },
@@ -182,7 +181,7 @@ export async function handleGmailPermissionsCheck({
           if (!emailAccount)
             return {
               hasAllPermissions: false,
-              error: "Email account not found",
+              error: "未找到邮箱账号",
             };
 
           await prisma.account.update({
@@ -196,7 +195,7 @@ export async function handleGmailPermissionsCheck({
 
           return {
             hasAllPermissions: false,
-            error: "Gmail access expired. Please reconnect your account.",
+            error: "Gmail 访问已过期。请重新连接你的账号。",
             missingScopes: permissionsBeforeRefresh.missingScopes,
           };
         }
@@ -205,12 +204,12 @@ export async function handleGmailPermissionsCheck({
       } catch {
         return {
           hasAllPermissions: false,
-          error: "Gmail access expired. Please reconnect your account.",
+          error: "Gmail 访问已过期。请重新连接你的账号。",
           missingScopes: permissionsBeforeRefresh.missingScopes,
         };
       }
     } else {
-      logger.warn("Got no refresh token to attempt refresh", {
+      logger.warn("没有可用于尝试刷新的刷新令牌", {
         emailAccountId,
       });
     }

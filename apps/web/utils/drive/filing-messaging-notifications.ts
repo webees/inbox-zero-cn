@@ -166,9 +166,9 @@ function formatDocumentAskText({
   reasoning: string | null;
   senderEmail?: string | null;
 }) {
-  const fromPart = senderEmail ? ` from ${senderEmail}` : "";
+  const fromPart = senderEmail ? `（来自 ${senderEmail}）` : "";
   const reasonPart = reasoning ? ` — ${reasoning}` : "";
-  return `📄 Where should I file ${filename}${fromPart}?${reasonPart}`;
+  return `📄 应该把 ${filename}${fromPart}归档到哪里？${reasonPart}`;
 }
 
 function formatDocumentFiledText({
@@ -180,6 +180,6 @@ function formatDocumentFiledText({
   folderPath: string;
   senderEmail?: string | null;
 }) {
-  const fromPart = senderEmail ? ` from ${senderEmail}` : "";
-  return `📨 Filed ${filename}${fromPart} to ${folderPath}`;
+  const fromPart = senderEmail ? `（来自 ${senderEmail}）` : "";
+  return `📨 已将 ${filename}${fromPart}归档到 ${folderPath}`;
 }

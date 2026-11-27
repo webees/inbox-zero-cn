@@ -92,7 +92,7 @@ async function resolveMissingName({
   if (!id || !env.LOOPS_API_SECRET) return null;
 
   const key = cacheKey(id);
-  // A database outage must not turn every open into a Loops API call.
+  // 数据库故障不能让每次打开都变成一次 Loops API 调用。
   const cached = readCachedName(key);
   if (cached) return cached;
   if (recentlyMissed(key)) return null;
@@ -114,17 +114,15 @@ async function resolveMissingName({
           loopName: sourceType === "loop" ? name : identity.loopName,
           campaignName:
             sourceType === "campaign" ? name : identity.campaignName,
-          // Opens and clicks are later than the send. Storing that timestamp
-          // would let this version outrank a newer send.
+          // 打开和点击晚于发送。保存该时间戳会让此版本排在更新的发送记录之前。
           eventTime: null,
         },
         logger,
       );
       return name;
     } catch (error) {
-      // Timeouts and rate limits are retried on a later event. A definitive
-      // empty name is the only result cached above.
-      logger.warn("Could not load Loops email source name", {
+      // 超时和速率限制会在后续事件中重试。上面只缓存了明确为空名称的结果。
+      logger.warn("无法加载 Loops 邮件来源名称", {
         error,
         loopsSourceKey: key,
       });
@@ -140,7 +138,7 @@ async function readSafely(
   try {
     return await readRemembered(identity);
   } catch (error) {
-    logger.warn("Could not read remembered Loops email source", { error });
+    logger.warn("无法读取已记住的 Loops 邮件来源", { error });
     return { loopName: null, campaignName: null };
   }
 }
@@ -185,7 +183,7 @@ async function rememberSafely(identity: LoopsEmailIdentity, logger: Logger) {
   try {
     await rememberLoopsEmailSource(identity);
   } catch (error) {
-    logger.warn("Could not remember Loops email source", { error });
+    logger.warn("无法记住 Loops 邮件来源", { error });
   }
 }
 
@@ -329,7 +327,7 @@ function recentlyMissed(key: string) {
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
-      reject(new Error("Loops name lookup timed out"));
+      reject(new Error("Loops 名称查询超时"));
     }, ms);
     promise.then(
       (value) => {
@@ -362,7 +360,7 @@ function readCachedName(key: string): string | null {
     resolvedNames.delete(key);
     return null;
   }
-  // Reinsert so a full cache evicts names that have not been used recently.
+  // 重新插入，以便缓存写满时优先淘汰最近未使用的名称。
   resolvedNames.delete(key);
   resolvedNames.set(key, cached);
   return cached.name;

@@ -69,7 +69,7 @@ export const sendBriefAction = actionClient
       });
 
       if (!emailAccount) {
-        throw new SafeError("Email account not found");
+        throw new SafeError("未找到邮箱账号");
       }
 
       const calendarEvent: CalendarEvent = {

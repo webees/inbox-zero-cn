@@ -36,7 +36,7 @@ export class ProviderRateLimitModeError extends Error {
     retryAt?: Date;
   }) {
     const providerLabel = getProviderRateLimitMessageLabel(provider);
-    const message = `${providerLabel} is temporarily rate limiting this account. Retry after ${retryAt?.toISOString()}.`;
+    const message = `${providerLabel} 正在临时限制此账号的请求频率。请在 ${retryAt?.toISOString()} 之后重试。`;
 
     super(message);
     this.name = "ProviderRateLimitModeError";

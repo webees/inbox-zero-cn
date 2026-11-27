@@ -14,8 +14,8 @@ const logger = createScopedLogger("auth/email-otp");
 
 export const emailOtpPlugin = emailOTP({
   disableSignUp: true,
-  // VerificationToken.token is globally unique; randomized encryption avoids
-  // collisions when two accounts receive the same short code.
+  // VerificationToken.token 全局唯一；随机化加密可避免
+  // 两个账号收到相同短验证码时的冲突。
   storeOTP: "encrypted",
   expiresIn: 300,
   allowedAttempts: 5,
@@ -28,16 +28,16 @@ export const emailOtpPlugin = emailOTP({
         const result = await deliverTransactionalEmail({
           from: env.RESEND_FROM_EMAIL,
           to: email,
-          subject: "Your Inbox Zero sign-in code",
-          html: `<p>Your Inbox Zero sign-in code is <strong>${otp}</strong>.</p><p>It expires in 5 minutes and gives access to your entire Inbox Zero account, including all connected mailboxes and calendars.</p><p>If you did not request this code, you can ignore this email.</p>`,
-          text: `Your Inbox Zero sign-in code is ${otp}.\n\nThis code expires in 5 minutes and can be used once. It gives access to your entire Inbox Zero account, including all connected mailboxes and calendars.\n\nIf you did not request this code, you can ignore this email.`,
+          subject: "你的 Inbox Zero 登录验证码",
+          html: `<p>你的 Inbox Zero 登录验证码是 <strong>${otp}</strong>。</p><p>它将在 5 分钟后过期，并可访问你的整个 Inbox Zero 账号，包括所有已连接的邮箱和日历。</p><p>如果这不是你本人发起的请求，请忽略此邮件。</p>`,
+          text: `你的 Inbox Zero 登录验证码是 ${otp}。\n\n此验证码将在 5 分钟后过期，且只能使用一次。它可访问你的整个 Inbox Zero 账号，包括所有已连接的邮箱和日历。\n\n如果这不是你本人发起的请求，请忽略此邮件。`,
         });
         if (!result) {
-          logger.error("Failed to deliver sign-in code");
+          logger.error("发送登录验证码失败");
         }
       } catch {
-        // Provider errors can include the message body and its sign-in code.
-        logger.error("Failed to deliver sign-in code");
+        // 服务商错误可能包含邮件正文及其登录验证码。
+        logger.error("发送登录验证码失败");
       }
     });
   },
@@ -58,8 +58,8 @@ export const emailOtpBeforeHook = createAuthMiddleware(async (ctx) => {
     }
     return;
   }
-  // The plugin also exposes password reset and email-change endpoints. This
-  // feature only authorizes sign-in to an existing, explicitly enabled account.
+  // 该插件还会暴露密码重置和邮箱变更端点。此
+  // 功能仅授权登录到已存在且显式启用的账号。
   if (
     ctx.path?.startsWith("/email-otp/") ||
     ctx.path === "/forget-password/email-otp"
@@ -74,7 +74,7 @@ export const emailOtpBeforeHook = createAuthMiddleware(async (ctx) => {
   if (!session?.emailOtp) return;
   await assertEmailOtpSession(session);
   throw new APIError("FORBIDDEN", {
-    message: "Sign in with your connected provider to manage authentication.",
+    message: "请使用已连接的服务商登录以管理认证。",
   });
 });
 
@@ -140,7 +140,7 @@ async function assertEmailOtpSession(session: EmailOtpSession) {
   });
   if (!active)
     throw new APIError("UNAUTHORIZED", {
-      message: "Session expired. Please sign in again.",
+      message: "会话已过期。请重新登录。",
     });
 }
 
@@ -170,6 +170,6 @@ function normalizeEmail(value: unknown) {
 
 function invalidCode() {
   return new APIError("BAD_REQUEST", {
-    message: "Invalid or expired sign-in code.",
+    message: "登录验证码无效或已过期。",
   });
 }

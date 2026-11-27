@@ -176,13 +176,13 @@ export function WeeklyHoursEditor({
                       {rangeIndex === 0 ? (
                         <>
                           <IconButton
-                            title={t`Add another range`}
+                            title={t`添加另一个时间段`}
                             onClick={() => addRange(dayIndex)}
                           >
                             <Plus className="size-4" />
                           </IconButton>
                           <IconButton
-                            title={t`Copy to other days`}
+                            title={t`复制到其他日期`}
                             onClick={() => copyDayToOthers(dayIndex)}
                           >
                             <Copy className="size-3.5" />
@@ -190,7 +190,7 @@ export function WeeklyHoursEditor({
                         </>
                       ) : (
                         <IconButton
-                          title={t`Remove range`}
+                          title={t`移除时间段`}
                           onClick={() => removeRange(dayIndex, rangeIndex)}
                         >
                           <X className="size-3.5" />
@@ -200,7 +200,7 @@ export function WeeklyHoursEditor({
                   ))
                 ) : (
                   <div className="flex h-8 items-center text-sm text-muted-foreground">
-                    <Trans>Unavailable</Trans>
+                    <Trans>不可用</Trans>
                   </div>
                 )}
               </div>

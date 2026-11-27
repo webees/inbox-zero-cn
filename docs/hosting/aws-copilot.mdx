@@ -228,32 +228,32 @@ setup flow creates `DATABASE_URL`, `DIRECT_URL`, and `REDIS_URL` after the envir
 
 ### Domain Not Working
 
-1. Verify DNS settings for your domain
-2. Check that the load balancer is properly configured
-3. Ensure SSL certificate is provisioned (Copilot handles this automatically)
+1. 验证你域名的 DNS 设置
+2. 检查负载均衡器是否正确配置
+3. 确保 SSL 证书已预配（Copilot 会自动处理）
 
-## Firewalled Deployments (Webhook Gateway)
+## 防火墙部署（Webhook 网关）
 
-For deployments where the main application is behind a firewall or private network (e.g., only accessible to employees via VPN), you need a way for Google Pub/Sub to deliver Gmail webhook notifications. The webhook gateway addon solves this by creating a public API Gateway endpoint that validates Google's OIDC tokens before forwarding to your private infrastructure.
+对于主应用位于防火墙或私有网络之后（例如仅员工可通过 VPN 访问）的部署，你需要一种方式让 Google Pub/Sub 投递 Gmail webhook 通知。Webhook 网关插件通过创建一个公开的 API Gateway 端点来解决此问题，该端点会先验证 Google 的 OIDC 令牌，然后再转发到你的私有基础设施。
 
-For the other endpoints a private deployment may need to expose, see [Security Hardening](/hosting/security-hardening#keep-the-app-on-a-private-network).
+关于私有部署可能需要暴露的其他端点，请参阅[安全加固](/hosting/security-hardening#keep-the-app-on-a-private-network)。
 
-### Prerequisites
+### 前置条件
 
-- **IAM User (not root)**: AWS Copilot requires IAM role assumption, which doesn't work with root account credentials. Create an IAM user with `AdministratorAccess` policy.
-- **AWS CLI Profile**: Configure an AWS CLI profile for your deployment:
+- **IAM 用户（非 root）**：AWS Copilot 需要承担 IAM 角色，而 root 账号凭据无法做到这一点。请创建一个具有 `AdministratorAccess` 策略的 IAM 用户。
+- **AWS CLI 配置文件**：为你的部署配置一个 AWS CLI 配置文件：
   ```bash
   aws configure --profile inbox-zero
   # Enter your IAM user's access key and secret
   # Set region (e.g., us-east-1)
   ```
-- **Set environment variables** before running Copilot commands:
+- **设置环境变量**，然后再运行 Copilot 命令：
   ```bash
   export AWS_PROFILE=inbox-zero
   export AWS_REGION=us-east-1
   ```
 
-### Architecture
+### 架构
 
 ```
 Google Pub/Sub → API Gateway (public) → VPC Link → Internal ALB → ECS
@@ -262,33 +262,33 @@ Google Pub/Sub → API Gateway (public) → VPC Link → Internal ALB → ECS
                (Google OIDC)
 ```
 
-- **API Gateway**: Public endpoint that Google Pub/Sub can reach
-- **JWT Authorizer**: Validates Google's OIDC tokens cryptographically
-- **VPC Link**: Connects API Gateway to your private VPC
-- **Internal ALB**: Your Copilot-managed load balancer
+- **API Gateway**：Google Pub/Sub 可以访问的公开端点
+- **JWT Authorizer**：以加密方式验证 Google 的 OIDC 令牌
+- **VPC Link**：将 API Gateway 连接到你的私有 VPC
+- **Internal ALB**：由 Copilot 管理的负载均衡器
 
-### How It Works
+### 工作原理
 
-1. Google Pub/Sub sends webhook requests with a signed JWT in the `Authorization` header
-2. API Gateway validates the JWT:
-   - Verifies signature using Google's public keys
-   - Checks issuer is `https://accounts.google.com`
-   - Validates audience matches your configured endpoint
-   - Ensures token is not expired
-3. Valid requests are forwarded to your internal ALB via VPC Link
-4. Invalid requests are rejected with 401 (never reach your app)
+1. Google Pub/Sub 会在 `Authorization` 请求头中携带已签名的 JWT 发送 webhook 请求
+2. API Gateway 验证该 JWT：
+   - 使用 Google 的公钥验证签名
+   - 检查签发者是否为 `https://accounts.google.com`
+   - 验证受众是否与你配置的端点一致
+   - 确保令牌未过期
+3. 有效请求会经由 VPC Link 转发到你的内部 ALB
+4. 无效请求会以 401 被拒绝（永远不会到达你的应用）
 
-### Deployment
+### 部署
 
-The webhook gateway is an **environment addon**. However, it requires the ALB's HTTPS listener which is only created when a Load Balanced Web Service is deployed. Follow this specific order:
+Webhook 网关是一个**环境插件**。但它需要 ALB 的 HTTPS 侦听器，而该侦听器只有在部署负载均衡 Web 服务时才会创建。请按以下特定顺序操作：
 
-> **Important**: The addon references `HTTPSListenerArn` which only exists after a service is deployed. If you try to deploy the environment addon before the service, it will fail.
+> **重要**：该插件会引用 `HTTPSListenerArn`，它只在服务部署后才存在。如果你在部署服务之前尝试部署环境插件，将会失败。
 
-#### First-time Setup (New Deployment)
+#### 首次设置（新部署）
 
-Keep the webhook gateway template in `copilot/templates/` until the service is deployed.
+在服务部署完成之前，请把 webhook 网关模板保留在 `copilot/templates/` 中。
 
-1. **Deploy the environment** (without the addon):
+1. **部署环境**（不带该插件）：
    ```bash
    copilot env deploy --name production
    ```

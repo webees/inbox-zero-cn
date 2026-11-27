@@ -67,7 +67,7 @@ describe("clearLocalMailAccountState", () => {
   it("throws when the mail engine is not ready", async () => {
     account.hasClient = false;
     await expect(clearLocalMailAccountState("account-1")).rejects.toThrow(
-      "Mail engine is not ready to remove this mailbox.",
+      "邮件引擎尚未准备好移除该邮箱。",
     );
     expect(account.purge).not.toHaveBeenCalled();
   });

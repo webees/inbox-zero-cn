@@ -14,13 +14,13 @@ export const AdminSyncStripe = () => {
   const { execute, isExecuting } = useAction(adminSyncStripeForAllUsersAction, {
     onSuccess: () => {
       toastSuccess({
-        title: "Stripe synced",
-        description: "Stripe synced",
+        title: "Stripe 已同步",
+        description: "Stripe 已同步",
       });
     },
     onError: (error) => {
       toastError({
-        title: "Error syncing Stripe",
+        title: "同步 Stripe 时出错",
         description: getActionErrorMessage(error.error),
       });
     },
@@ -28,7 +28,7 @@ export const AdminSyncStripe = () => {
 
   return (
     <Button onClick={() => execute()} loading={isExecuting} variant="outline">
-      Sync Stripe
+      同步 Stripe
     </Button>
   );
 };
@@ -37,13 +37,13 @@ export const AdminBackfillPremiumAdmins = () => {
   const { execute, isExecuting } = useAction(adminBackfillPremiumAdminsAction, {
     onSuccess: (result) => {
       toastSuccess({
-        title: "Premium admins backfilled",
-        description: `Backfilled ${result.data?.backfilled ?? 0} premiums, skipped ${result.data?.skipped ?? 0}`,
+        title: "高级版管理员已回填",
+        description: `已回填 ${result.data?.backfilled ?? 0} 个高级版，跳过 ${result.data?.skipped ?? 0} 个`,
       });
     },
     onError: (error) => {
       toastError({
-        title: "Error backfilling premium admins",
+        title: "回填高级版管理员时出错",
         description: getActionErrorMessage(error.error),
       });
     },
@@ -51,7 +51,7 @@ export const AdminBackfillPremiumAdmins = () => {
 
   return (
     <Button onClick={() => execute()} loading={isExecuting} variant="outline">
-      Backfill Premium Admins
+      回填高级版管理员
     </Button>
   );
 };
@@ -62,14 +62,13 @@ export const AdminSyncStripeCustomers = () => {
     {
       onSuccess: (result) => {
         toastSuccess({
-          title: "Stripe customers synced",
-          description:
-            result.data?.success || "All Stripe customers synced to database",
+          title: "Stripe 客户已同步",
+          description: result.data?.success || "所有 Stripe 客户已同步到数据库",
         });
       },
       onError: (error) => {
         toastError({
-          title: "Error syncing Stripe customers",
+          title: "同步 Stripe 客户时出错",
           description: getActionErrorMessage(error.error),
         });
       },
@@ -78,7 +77,7 @@ export const AdminSyncStripeCustomers = () => {
 
   return (
     <Button onClick={() => execute()} loading={isExecuting} variant="outline">
-      Sync All Stripe Customers to DB
+      同步所有 Stripe 客户到数据库
     </Button>
   );
 };

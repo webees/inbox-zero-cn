@@ -26,7 +26,7 @@ export function ViewEmailButton({
   }
 
   return (
-    <Tooltip content={t`View email`}>
+    <Tooltip content={t`查看邮件`}>
       <Button
         variant="outline"
         size={size || "icon"}
@@ -35,7 +35,7 @@ export function ViewEmailButton({
       >
         <MailIcon className="h-4 w-4" />
         <span className="sr-only">
-          <Trans>View email</Trans>
+          <Trans>查看邮件</Trans>
         </span>
       </Button>
     </Tooltip>

@@ -24,7 +24,7 @@ const SCOPES: readonly ShortcutScope[] = ["global", "mail"];
 
 /**
  * Rendered straight from the shortcut registry, so a binding can never be
- * documented here without also being bound — or bound without being documented.
+ * 在此记录它而不让它生效——或者让它生效却不记录。
  */
 export function ShortcutsDialog() {
   const { i18n } = useLingui();
@@ -41,10 +41,10 @@ export function ShortcutsDialog() {
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>
-            <Trans>Keyboard shortcuts</Trans>
+            <Trans>键盘快捷键</Trans>
           </DialogTitle>
           <DialogDescription>
-            <Trans>Everything here works without the mouse.</Trans>
+            <Trans>这里的所有操作都无需使用鼠标。</Trans>
           </DialogDescription>
         </DialogHeader>
 

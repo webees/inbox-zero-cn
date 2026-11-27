@@ -69,11 +69,11 @@ function FilingRulesFormContent({
 
       if (result?.serverError) {
         toastError({
-          title: t`Error saving rules`,
+          title: t`保存规则时出错`,
           description: result.serverError,
         });
       } else {
-        toastSuccess({ description: t`Filing rules saved` });
+        toastSuccess({ description: t`归档规则已保存` });
         mutateEmail();
       }
     },
@@ -84,10 +84,10 @@ function FilingRulesFormContent({
     <Card size="sm">
       <CardHeader>
         <CardTitle>
-          <Trans>Filing rules</Trans>
+          <Trans>归档规则</Trans>
         </CardTitle>
         <CardDescription>
-          <Trans>How should we organize your files?</Trans>
+          <Trans>我们应该如何整理你的文件？</Trans>
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -95,7 +95,7 @@ function FilingRulesFormContent({
           <Input
             type="textarea"
             name="filingPrompt"
-            placeholder={t`Receipts go to Expenses, in a subfolder per year and month. Contracts go to Legal, one subfolder per counterparty.`}
+            placeholder={t`收据归入费用，按年份和月份创建子文件夹。合同归入法务，每个交易对手一个子文件夹。`}
             registerProps={register("filingPrompt")}
             error={errors.filingPrompt}
             autosizeTextarea
@@ -103,7 +103,7 @@ function FilingRulesFormContent({
           />
           <div className="flex justify-end">
             <Button type="submit" size="sm" loading={isSubmitting}>
-              <Trans>Save</Trans>
+              <Trans>保存</Trans>
             </Button>
           </div>
         </form>

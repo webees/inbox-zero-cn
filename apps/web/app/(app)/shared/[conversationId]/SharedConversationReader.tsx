@@ -35,11 +35,11 @@ export function SharedConversationReader({
       <main className="mx-auto max-w-3xl p-6">
         <p>
           <Trans>
-            Open this conversation from{" "}
+            请从
             <Link href="/shared" className="text-primary underline">
-              Discussions
+              讨论
             </Link>
-            .
+            打开此会话。
           </Trans>
         </p>
       </main>
@@ -77,21 +77,19 @@ function AuthorizedReader({
   if (access.revoked || accessDenied)
     return (
       <main className="mx-auto max-w-3xl p-6" role="alert">
-        <Trans>Your access to this conversation has ended.</Trans>
+        <Trans>你对此会话的访问权限已结束。</Trans>
       </main>
     );
   if (access.summary.error)
     return (
       <main className="mx-auto max-w-3xl p-6" role="alert">
-        <Trans>
-          Could not check conversation access. Retry or refresh this page.
-        </Trans>
+        <Trans>无法检查会话访问权限。请重试或刷新此页面。</Trans>
       </main>
     );
   if (!access.summary.data)
     return (
       <main className="mx-auto max-w-3xl p-6">
-        <Trans>Checking access…</Trans>
+        <Trans>正在检查访问权限…</Trans>
       </main>
     );
   const publisher = access.summary.data.participants.find(
@@ -107,12 +105,12 @@ function AuthorizedReader({
         <Button asChild size="xs-2" variant="ghostMuted" className="-ml-2">
           <Link href={`/shared?memberId=${encodeURIComponent(memberId)}`}>
             <ArrowLeftIcon className="mr-1.5 size-3.5" />
-            <Trans>Discussions</Trans>
+            <Trans>讨论</Trans>
           </Link>
         </Button>
-        <Tooltip content={t`Refresh email`}>
+        <Tooltip content={t`刷新邮件`}>
           <Button
-            aria-label={t`Refresh email`}
+            aria-label={t`刷新邮件`}
             onClick={() => messages.mutate()}
             size="iconXs"
             variant="ghostMuted"
@@ -128,11 +126,11 @@ function AuthorizedReader({
       </div>
       <header className="space-y-1">
         <h1 className="font-semibold text-foreground text-xl">
-          {subject || t`Shared conversation`}
+          {subject || t`共享会话`}
         </h1>
         {publisher && (
           <p className="text-muted-foreground text-sm">
-            <Trans>Shared by {publisher.name}</Trans>
+            <Trans>分享者：{publisher.name}</Trans>
           </p>
         )}
       </header>
@@ -143,8 +141,7 @@ function AuthorizedReader({
             role="status"
           >
             <Trans>
-              Email content is unavailable ({messages.data.reason}). Internal
-              comments remain available.
+              邮件内容不可用（{messages.data.reason}）。内部评论仍然可用。
             </Trans>
           </p>
         )}
@@ -152,7 +149,7 @@ function AuthorizedReader({
           <div className="space-y-3">
             {!available.complete && (
               <p className="text-muted-foreground text-xs" role="status">
-                <Trans>This email history is incomplete.</Trans>
+                <Trans>此邮件历史记录不完整。</Trans>
               </p>
             )}
             <div className="divide-y overflow-hidden rounded-xl border bg-card">

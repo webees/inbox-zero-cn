@@ -88,7 +88,7 @@ function nativeAuthorizationProxy() {
       const { authorizationURL } = ctx.query;
       if (authorizationURL.includes("#")) {
         throw new APIError("BAD_REQUEST", {
-          message: "Invalid authorizationURL",
+          message: "授权 URL 无效",
         });
       }
       let url: URL;
@@ -96,7 +96,7 @@ function nativeAuthorizationProxy() {
         url = new URL(authorizationURL);
       } catch {
         throw new APIError("BAD_REQUEST", {
-          message: "Invalid authorizationURL",
+          message: "授权 URL 无效",
         });
       }
       if (
@@ -110,7 +110,7 @@ function nativeAuthorizationProxy() {
         )
       ) {
         throw new APIError("BAD_REQUEST", {
-          message: "Invalid authorizationURL",
+          message: "授权 URL 无效",
         });
       }
       // Sets the encrypted state cookie in the browser session started by the

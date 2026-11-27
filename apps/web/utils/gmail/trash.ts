@@ -5,9 +5,9 @@ import { withGmailRetry } from "@/utils/gmail/retry";
 
 const logger = createScopedLogger("gmail/trash");
 
-// trash moves the thread/message to the trash folder
-// delete immediately deletes the thread/message
-// trash does not require delete access from Gmail API
+// trash 将会话/邮件移动到垃圾箱文件夹
+// delete 立即删除会话/邮件
+// trash 不需要来自 Gmail API 的删除访问权限
 
 export async function trashThread(options: {
   gmail: gmail_v1.Gmail;
@@ -40,15 +40,15 @@ export async function trashThread(options: {
     const error = trashResult.reason;
 
     if (error.message === "Requested entity was not found.") {
-      // thread doesn't exist, so it's already been deleted
-      logger.warn("Failed to trash non-existant thread", {
+      // 会话不存在，因此它已被删除
+      logger.warn("未能将不存在的会话移入垃圾箱", {
         email: ownerEmail,
         threadId,
         error,
       });
       return { status: 200 };
     } else {
-      logger.error("Failed to trash thread", {
+      logger.error("将会话移入垃圾箱失败", {
         email: ownerEmail,
         threadId,
         error,
@@ -58,7 +58,7 @@ export async function trashThread(options: {
   }
 
   if (publishResult.status === "rejected") {
-    logger.error("Failed to publish delete action", {
+    logger.error("发布删除操作失败", {
       email: ownerEmail,
       threadId,
       error: publishResult.reason,
@@ -69,8 +69,8 @@ export async function trashThread(options: {
 }
 
 /**
- * Restores a trashed thread. Gmail returns it to the labels it held before the
- * trash, so a thread trashed from the inbox lands back in the inbox.
+ * 恢复已删除的会话。Gmail 会将其恢复到删除前所持有的
+ * 标签，因此从收件箱删除的会话会回到收件箱。
  */
 export async function untrashThread(options: {
   gmail: gmail_v1.Gmail;

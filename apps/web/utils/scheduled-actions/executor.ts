@@ -209,7 +209,7 @@ async function executeDelayedAction({
   });
 
   if (!executedRule) {
-    throw new Error(`ExecutedRule ${scheduledAction.executedRuleId} not found`);
+    throw new Error(`未找到 ExecutedRule ${scheduledAction.executedRuleId}`);
   }
 
   const email: EmailForAction = {
@@ -224,7 +224,7 @@ async function executeDelayedAction({
     internalDate: emailMessage.internalDate,
   };
 
-  log.info("Executing delayed action", {
+  log.info("正在执行延迟操作", {
     actionType: executedAction.type,
     executedActionId: executedAction.id,
     messageId: email.id,

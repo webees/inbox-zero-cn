@@ -152,13 +152,12 @@ export function createMailNotifier(input: {
           title: mail.title,
           body: mail.body,
           ...(otpCode
-            ? { actions: [{ type: "button", text: "Copy code" }] }
+            ? { actions: [{ type: "button", text: "复制验证码" }] }
             : {}),
         });
         active.add(notification);
         if (otpCode) {
-          // Copying on click, not on arrival, keeps whatever the user had on
-          // the clipboard until they ask for the code.
+          // 在点击时而非到达时复制，能让剪贴板内容一直保持不变，直到用户主动请求验证码。
           const copy = () => input.copyText(otpCode);
           notification.on("click", copy);
           notification.on("action", copy);

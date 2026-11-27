@@ -57,7 +57,6 @@ type MicrosoftEvent = {
   isOnlineMeeting?: boolean;
   onlineMeetingProvider?: string;
   isCancelled?: boolean;
-  isAllDay?: boolean;
   singleValueExtendedProperties?: Array<{ id: string; value: string }>;
   responseStatus?: { response?: string };
 };
@@ -394,7 +393,6 @@ export class MicrosoftCalendarEventProvider implements CalendarEventProvider {
         ),
       startTime: new Date(event.start?.dateTime || Date.now()),
       endTime: new Date(event.end?.dateTime || Date.now()),
-      ...(event.isAllDay ? { isAllDay: true } : {}),
       organizerEmail: event.organizer?.emailAddress?.address || undefined,
       isOrganizer: event.isOrganizer,
       userDeclined: event.responseStatus?.response

@@ -21,87 +21,85 @@ const faqs: {
   answerText: MessageDescriptor;
 }[] = [
   {
-    question: msg`Which email providers does ${BRAND_NAME} support?`,
-    answerText: msg`We support Gmail, Google Workspace, and Microsoft Outlook email accounts.`,
+    question: msg`${BRAND_NAME} 支持哪些邮箱服务商？`,
+    answerText: msg`我们支持 Gmail、Google Workspace 和 Microsoft Outlook 邮箱账号。`,
   },
   {
-    question: msg`How can I request a feature?`,
+    question: msg`如何请求新功能？`,
     answer: (
       <span>
         <Trans>
-          Email us or post an issue on{" "}
+          给我们发邮件，或在{" "}
           <Anchor href="/github" newTab>
             GitHub
           </Anchor>
-          . We're happy to hear how we can improve your email experience.
+          上提交问题。我们很乐意听取如何改进您的邮件体验。
         </Trans>
       </span>
     ),
-    answerText: msg`Email us or post an issue on GitHub. We're happy to hear how we can improve your email experience.`,
+    answerText: msg`给我们发邮件，或在 GitHub 上提交问题。我们很乐意听取如何改进您的邮件体验。`,
   },
   {
-    question: msg`Will ${BRAND_NAME} replace my current email app?`,
+    question: msg`${BRAND_NAME} 会取代我当前的邮件应用吗？`,
     answer: (
       <span>
         <Trans>
-          It doesn't have to. {BRAND_NAME} works inside Gmail and Outlook, so
-          you can keep using them as normal while the assistant works in the
-          background. {BRAND_NAME} also has its own{" "}
-          <Anchor href="/email-client">email app</Anchor> for the web, desktop,
-          and iPhone if you'd like to use it.
+          不一定。{BRAND_NAME} 在 Gmail 和 Outlook
+          内运行，您可以继续正常使用它们，同时助手在后台工作。如果您愿意，
+          {BRAND_NAME} 还提供自己的{" "}
+          <Anchor href="/email-client">邮件应用</Anchor>，适用于网页、桌面和
+          iPhone。
         </Trans>
       </span>
     ),
-    answerText: msg`It doesn't have to. ${BRAND_NAME} works inside Gmail and Outlook, so you can keep using them as normal while the assistant works in the background. ${BRAND_NAME} also has its own email app for the web, desktop, and iPhone if you'd like to use it.`,
+    answerText: msg`不一定。${BRAND_NAME} 在 Gmail 和 Outlook 内运行，您可以继续正常使用它们，同时助手在后台工作。如果您愿意，${BRAND_NAME} 还提供自己的邮件应用，适用于网页、桌面和 iPhone。`,
   },
   {
-    question: msg`Is there a mobile app?`,
+    question: msg`有移动应用吗？`,
     answer: (
       <span>
         <Trans>
-          Yes. Our native iPhone app lets you triage your inbox and manage your
-          assistant on the go. We also have an Android app, which is due for an
-          update. Learn more on the{" "}
-          <Anchor href="/mobile-app">mobile app</Anchor> page.
+          有。我们的原生 iPhone 应用让您随时随地整理收件箱并管理助手。我们还有
+          Android 应用，目前待更新。了解更多请访问{" "}
+          <Anchor href="/mobile-app">移动应用</Anchor>页面。
         </Trans>
       </span>
     ),
-    answerText: msg`Yes. Our native iPhone app lets you triage your inbox and manage your assistant on the go. We also have an Android app, which is due for an update. Learn more on the mobile app page.`,
+    answerText: msg`有。我们的原生 iPhone 应用让您随时随地整理收件箱并管理助手。我们还有 Android 应用，目前待更新。了解更多请访问移动应用页面。`,
   },
   {
-    question: msg`Is the code open-source?`,
+    question: msg`代码是开源的吗？`,
     answer: (
       <span>
         <Trans>
-          Yes! The AI assistant, the web app, and the desktop email app are open
-          source in our{" "}
+          AI 助手、网页应用和桌面邮件应用都在我们的{" "}
           <Anchor href="/github" newTab>
-            GitHub repo
+            GitHub 仓库
           </Anchor>
-          . The iPhone app isn't open source yet, but we plan to open it.
+          中开源。iPhone 应用尚未开源，但我们计划将其开源。
         </Trans>
       </span>
     ),
-    answerText: msg`Yes! The AI assistant, the web app, and the desktop email app are open source in our GitHub repo. The iPhone app isn't open source yet, but we plan to open it.`,
+    answerText: msg`AI 助手、网页应用和桌面邮件应用都在我们的 GitHub 仓库中开源。iPhone 应用尚未开源，但我们计划将其开源。`,
   },
   {
-    question: msg`Do you offer refunds?`,
+    question: msg`你们提供退款吗？`,
     answer: (
       <span>
         <Trans>
-          Yes, if you don't think we provided you with value send us an{" "}
+          提供。如果您认为我们没有为您带来价值，请在升级后 14 天内给我们发送{" "}
           <Anchor href={`mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}`}>
             email
           </Anchor>{" "}
-          within 14 days of upgrading and we'll refund you.
+          ，我们将为您退款。
         </Trans>
       </span>
     ),
-    answerText: msg`Yes, if you don't think we provided you with value send us an email within 14 days of upgrading and we'll refund you.`,
+    answerText: msg`提供。如果您认为我们没有为您带来价值，请在升级后 14 天内给我们发送邮件，我们将为您退款。`,
   },
   {
-    question: msg`Can I try ${BRAND_NAME} for free?`,
-    answerText: msg`Yes. Every plan includes a 7-day free trial of the email app and the AI assistant. A credit card is required to start your trial, but you won't be charged until the trial ends. Cancel anytime during the trial to avoid being charged.`,
+    question: msg`可以免费试用 ${BRAND_NAME} 吗？`,
+    answerText: msg`可以。每个套餐都包含邮件应用和 AI 助手的 7 天免费试用。开始试用需要绑定信用卡，但试用结束前不会扣费。试用期间可随时取消以避免扣费。`,
   },
 ];
 
@@ -125,7 +123,7 @@ export function FAQs() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <SectionHeading>
-        <Trans>Frequently asked questions</Trans>
+        <Trans>常见问题</Trans>
       </SectionHeading>
       <SectionContent>
         <CardWrapper>

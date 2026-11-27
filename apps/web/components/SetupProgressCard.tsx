@@ -26,11 +26,11 @@ export function SetupProgressCard() {
 
               <div>
                 <h3 className="text-sm font-semibold">
-                  <Trans>Complete setup</Trans>
+                  <Trans>完成设置</Trans>
                 </h3>
                 <p className="text-xs text-muted-foreground">
                   <Trans>
-                    {data.completed}/{data.total} Completed
+                    {data.completed}/{data.total} 已完成
                   </Trans>
                 </p>
               </div>

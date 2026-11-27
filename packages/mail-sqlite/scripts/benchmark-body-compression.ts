@@ -198,9 +198,9 @@ function token(random: () => number, length: number) {
   return out;
 }
 
-// Newsletter-shaped HTML: inline-styled nested tables, tracking links with
-// unique ids, and article copy. Averages roughly 17KB, like the measured
-// real-mailbox HTML average.
+// 新闻通讯风格的 HTML：内联样式的嵌套表格、带唯一 id 的
+// 跟踪链接，以及文章正文。平均约 17KB，与实测的
+// 真实邮箱 HTML 平均值相近。
 function newsletterHtml(random: () => number) {
   const articles = 5 + Math.floor(random() * 10);
   const blocks: string[] = [];
@@ -211,13 +211,13 @@ function newsletterHtml(random: () => number) {
 <h2 style="margin:0;font-family:Helvetica,Arial,sans-serif;font-size:22px;line-height:28px;color:#111111;font-weight:bold;">${sentence(random, 6)}</h2></td></tr>
 <tr><td style="padding:0 0 16px 0;"><img src="https://img.example.com/${token(random, 24)}.png" width="536" alt="${sentence(random, 4)}" style="display:block;width:100%;max-width:536px;border:0;" /></td></tr>
 <tr><td style="padding:0;"><p style="margin:0 0 16px 0;">${sentence(random, 40 + Math.floor(random() * 80))}</p>
-<a href="${link}" style="display:inline-block;padding:12px 24px;background-color:#0066ff;color:#ffffff;text-decoration:none;border-radius:4px;font-weight:bold;">Read more</a></td></tr></table></td></tr>`);
+<a href="${link}" style="display:inline-block;padding:12px 24px;background-color:#0066ff;color:#ffffff;text-decoration:none;border-radius:4px;font-weight:bold;">阅读更多</a></td></tr></table></td></tr>`);
   }
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><style type="text/css">body{margin:0;padding:0;}table{border-collapse:collapse;}img{border:0;outline:none;}@media only screen and (max-width:600px){.container{width:100%!important;}.stack{display:block!important;width:100%!important;}}</style></head>
 <body style="margin:0;padding:0;background-color:#f4f4f4;"><img src="https://open.example.com/o/${token(random, 64)}" width="1" height="1" alt="" />
 <table role="presentation" class="container" width="600" align="center" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;background-color:#ffffff;">
 ${blocks.join("\n")}
-<tr><td style="padding:24px 32px;font-size:12px;line-height:18px;color:#888888;">You are receiving this email because you signed up. <a href="https://example.com/unsubscribe?u=${token(random, 48)}" style="color:#888888;">Unsubscribe</a></td></tr>
+<tr><td style="padding:24px 32px;font-size:12px;line-height:18px;color:#888888;">您收到此邮件是因为您已注册。 <a href="https://example.com/unsubscribe?u=${token(random, 48)}" style="color:#888888;">退订</a></td></tr>
 </table></body></html>`;
 }
 

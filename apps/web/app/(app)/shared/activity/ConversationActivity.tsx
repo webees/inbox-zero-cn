@@ -16,9 +16,9 @@ const ACTIVITY_LABELS: Record<
   TeamActivityResponse["items"][number]["kind"],
   MessageDescriptor
 > = {
-  INVITED: msg`Conversation shared`,
-  MENTION: msg`You were mentioned`,
-  COMMENT: msg`New comment`,
+  INVITED: msg`会话已共享`,
+  MENTION: msg`你被提及`,
+  COMMENT: msg`新评论`,
 };
 
 export function ConversationActivity() {
@@ -51,7 +51,7 @@ export function ConversationActivity() {
           <div className="space-y-2">
             {!items.length && (
               <p className="text-muted-foreground text-sm">
-                <Trans>No activity yet.</Trans>
+                <Trans>暂无动态</Trans>
               </p>
             )}
             {items.map((item) => (
@@ -65,7 +65,7 @@ export function ConversationActivity() {
                     {i18n._(ACTIVITY_LABELS[item.kind])}
                     {item.unread && (
                       <Badge>
-                        <Trans>Unread</Trans>
+                        <Trans>未读</Trans>
                       </Badge>
                     )}
                   </span>
@@ -83,14 +83,14 @@ export function ConversationActivity() {
             {activity.error ? (
               <div className="flex items-center gap-2" role="alert">
                 <p className="text-destructive text-sm">
-                  <Trans>Could not load activity.</Trans>
+                  <Trans>无法加载动态</Trans>
                 </p>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => activity.mutate()}
                 >
-                  <Trans>Retry</Trans>
+                  <Trans>重试</Trans>
                 </Button>
               </div>
             ) : (
@@ -99,7 +99,7 @@ export function ConversationActivity() {
                   variant="outline"
                   onClick={() => activity.setSize(activity.size + 1)}
                 >
-                  <Trans>Load older activity</Trans>
+                  <Trans>加载更早的动态</Trans>
                 </Button>
               )
             )}

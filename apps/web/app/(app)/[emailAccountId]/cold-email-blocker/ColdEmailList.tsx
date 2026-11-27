@@ -115,26 +115,24 @@ export function ColdEmailList() {
                 <TableHead className="text-center">
                   <Checkbox
                     label={
-                      isAllSelected
-                        ? t`Deselect all cold emails`
-                        : t`Select all cold emails`
+                      isAllSelected ? t`取消选择所有冷邮件` : t`选择所有冷邮件`
                     }
                     checked={isAllSelected}
                     onChange={onToggleSelectAll}
                   />
                 </TableHead>
                 <TableHead>
-                  <Trans>Email</Trans>
+                  <Trans>邮件</Trans>
                 </TableHead>
                 <TableHead>
-                  <Trans>AI Reason</Trans>
+                  <Trans>AI 判断理由</Trans>
                 </TableHead>
                 <TableHead>
-                  <Trans>Date</Trans>
+                  <Trans>日期</Trans>
                 </TableHead>
                 <TableHead>
                   <span className="sr-only">
-                    <Trans>Actions</Trans>
+                    <Trans>操作</Trans>
                   </span>
                 </TableHead>
               </TableRow>
@@ -175,24 +173,23 @@ export function ColdEmailList() {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
-                <Trans>Mark Not Cold Email</Trans>
+                <Trans>标记为非冷邮件</Trans>
               </AlertDialogTitle>
               <AlertDialogDescription className="break-words">
                 <Trans>
-                  Future emails from {confirmSender} will be excluded from your
-                  Cold Email rule.
+                  来自 {confirmSender} 的后续邮件将被排除在你的冷邮件规则之外。
                 </Trans>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel disabled={isExecuting}>
-                <Trans>Cancel</Trans>
+                <Trans>取消</Trans>
               </AlertDialogCancel>
               <Button
                 onClick={() => markNotColdEmail({ senderId })}
                 loading={isExecuting}
               >
-                <Trans>Not cold email</Trans>
+                <Trans>非冷邮件</Trans>
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -227,7 +224,7 @@ function Row({
     <TableRow key={row.id}>
       <TableCell className="text-center">
         <Checkbox
-          label={t`Select ${fromEmail}`}
+          label={t`选择 ${fromEmail}`}
           checked={selected.get(row.id) || false}
           onChange={() => onToggleSelect(row.id)}
         />
@@ -260,7 +257,7 @@ function Row({
             }}
             loading={isExecuting}
           >
-            <Trans>Not cold email</Trans>
+            <Trans>非冷邮件</Trans>
           </Button>
         </div>
       </TableCell>
@@ -281,7 +278,7 @@ function NoColdEmails() {
         mutateRules();
       },
       onError: () => {
-        toastError({ description: t`Error enabling cold email blocker` });
+        toastError({ description: t`启用冷邮件拦截时出错` });
       },
     },
   );
@@ -290,11 +287,11 @@ function NoColdEmails() {
     return (
       <div className="mb-10">
         <EnableFeatureCard
-          title={t`Cold Email Blocker`}
-          description={t`Our AI identifies cold outreach from senders you've never communicated with before. You can customize the prompt after enabling.`}
+          title={t`冷邮件拦截`}
+          description={t`我们的 AI 会识别你从未联系过的发件人发来的冷邮件。启用后你可以自定义提示词。`}
           imageSrc="/images/illustrations/calling-help.svg"
-          imageAlt={t`Cold email blocker`}
-          buttonText={t`Enable`}
+          imageAlt={t`冷邮件拦截`}
+          buttonText={t`启用`}
           onEnable={async () => {
             await enableColdEmailBlocker({
               systemType: SystemType.COLD_EMAIL,

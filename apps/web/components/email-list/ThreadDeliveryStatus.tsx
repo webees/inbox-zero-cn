@@ -128,15 +128,13 @@ export function ThreadDeliveryStatus({
       await action();
       await mutate();
       await refreshOutbox();
-      // Which drafts are hidden follows whether their sends are still pending.
+      // 草稿是否隐藏取决于其发送是否仍在等待处理。
       await mutateCache(upcomingScheduledEmailsKey(emailAccountId)).catch(
         () => {},
       );
     } catch (failure) {
       setActionError(
-        failure instanceof Error
-          ? failure.message
-          : t`Could not update delivery.`,
+        failure instanceof Error ? failure.message : t`无法更新投递状态`,
       );
     } finally {
       setBusy(false);
@@ -192,12 +190,12 @@ export function ThreadDeliveryStatus({
                 className="underline underline-offset-4"
                 href={`/${emailAccountId}/mail?type=sent`}
               >
-                <Trans>Check Sent</Trans>
+                <Trans>检查已发送邮件</Trans>
               </a>
             )}
             {row.status === "failed" && (
               <InlineActionButton
-                aria-label={t`Dismiss failed reply`}
+                aria-label={t`忽略发送失败的回复`}
                 disabled={busy}
                 onClick={() =>
                   setDismissedSendIds((current) => [
@@ -206,7 +204,7 @@ export function ThreadDeliveryStatus({
                   ])
                 }
               >
-                <Trans>Dismiss</Trans>
+                <Trans>忽略</Trans>
               </InlineActionButton>
             )}
             {canEditReply && canEditEngineSend(row.status, online) && (
@@ -229,7 +227,7 @@ export function ThreadDeliveryStatus({
                       });
                       if (result && result.status !== "cancelled") {
                         throw new Error(
-                          t`This reply's status changed. Refresh the thread and try again.`,
+                          t`此回复的状态已发生变化，请刷新会话后重试`,
                         );
                       }
                     }
@@ -256,7 +254,7 @@ export function ThreadDeliveryStatus({
                   })
                 }
               >
-                <Trans>Edit reply</Trans>
+                <Trans>编辑回复</Trans>
               </InlineActionButton>
             )}
           </div>
@@ -278,20 +276,20 @@ export function ThreadDeliveryStatus({
             {["PENDING", "BLOCKED_AUTH", "FAILED"].includes(row.status) &&
               !isUnconfirmedScheduledEmail(row) && (
                 <InlineActionButton
-                  aria-label={t`Cancel send`}
+                  aria-label={t`取消发送`}
                   disabled={!online}
                   onClick={() => cancelSend(row.id)}
                 >
-                  <Trans>Cancel</Trans>
+                  <Trans>取消</Trans>
                 </InlineActionButton>
               )}
             {["BLOCKED_AUTH", "FAILED"].includes(row.status) && (
               <InlineActionButton
-                aria-label={t`Retry send`}
+                aria-label={t`重试发送`}
                 disabled={!online}
                 onClick={() => retrySend(row.id)}
               >
-                <Trans>Retry</Trans>
+                <Trans>重试</Trans>
               </InlineActionButton>
             )}
             {row.status === "UNCERTAIN" && (
@@ -299,7 +297,7 @@ export function ThreadDeliveryStatus({
                 className="underline underline-offset-4"
                 href={`/${emailAccountId}/mail?type=sent`}
               >
-                <Trans>Check Sent</Trans>
+                <Trans>检查已发送邮件</Trans>
               </a>
             )}
           </div>
@@ -310,18 +308,18 @@ export function ThreadDeliveryStatus({
                 <p className="flex items-center gap-2">
                   <BellIcon aria-hidden className="size-3.5 shrink-0" />
                   <Trans>
-                    Reminder if no reply by{" "}
+                    若到时仍未回复则提醒：
                     {formatTime(row.remindAt, i18n.locale)}
                   </Trans>
                 </p>
                 {row.reminderStatus === "PENDING" &&
                   !isUnconfirmedScheduledEmail(row) && (
                     <InlineActionButton
-                      aria-label={t`Cancel reminder`}
+                      aria-label={t`取消提醒`}
                       disabled={!online}
                       onClick={() => cancelReminder(row.id)}
                     >
-                      <Trans>Cancel</Trans>
+                      <Trans>取消</Trans>
                     </InlineActionButton>
                   )}
               </div>
@@ -330,19 +328,19 @@ export function ThreadDeliveryStatus({
       ))}
       {!online && scheduledRows.length > 0 && (
         <p role="status" className="text-muted-foreground text-xs">
-          <Trans>Offline. Showing the last known status.</Trans>
+          <Trans>当前离线，显示最近一次已知状态</Trans>
         </p>
       )}
       {online && error && scheduledRows.length > 0 && (
         <div className="flex items-center gap-2 text-muted-foreground text-xs">
           <p role="status">
-            <Trans>Could not refresh. Showing the last known status.</Trans>
+            <Trans>无法刷新，显示最近一次已知状态</Trans>
           </p>
           <InlineActionButton
             disabled={isValidating}
             onClick={() => mutate().catch(() => undefined)}
           >
-            <Trans>Retry</Trans>
+            <Trans>重试</Trans>
           </InlineActionButton>
         </div>
       )}

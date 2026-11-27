@@ -11,8 +11,8 @@ interface EmailTerminology {
 }
 
 /**
- * Get email terminology based on the provider
- * Gmail uses "labels" while Outlook uses "categories"
+ * 根据邮箱服务商获取邮件术语
+ * Gmail 使用 "labels"，而 Outlook 使用 "categories"
  */
 export function getEmailTerminology(provider: string): EmailTerminology {
   const isOutlook = isMicrosoftProvider(provider);
@@ -20,23 +20,23 @@ export function getEmailTerminology(provider: string): EmailTerminology {
   if (isOutlook) {
     return {
       label: {
-        singular: "category",
-        plural: "categories",
-        singularCapitalized: "Category",
-        pluralCapitalized: "Categories",
-        action: "Categorize",
+        singular: "分类",
+        plural: "分类",
+        singularCapitalized: "分类",
+        pluralCapitalized: "分类",
+        action: "归类",
       },
     };
   }
 
-  // Default to Gmail terminology
+  // 默认为 Gmail 术语
   return {
     label: {
-      singular: "label",
-      plural: "labels",
-      singularCapitalized: "Label",
-      pluralCapitalized: "Labels",
-      action: "Label",
+      singular: "标签",
+      plural: "标签",
+      singularCapitalized: "标签",
+      pluralCapitalized: "标签",
+      action: "打标签",
     },
   };
 }

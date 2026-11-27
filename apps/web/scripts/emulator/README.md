@@ -1,77 +1,32 @@
-# Local emulator
+# 本地模拟器
 
-Runs the real web backend with the Google and Microsoft emulators and throwaway
-Postgres and Redis. Use it for local development, agents, and any client.
-Nothing here talks to production.
+使用 Google 和 Microsoft 模拟器以及一次性的 Postgres 和 Redis 运行真实的 Web 后端。用于本地开发、代理以及任何客户端。
+这里不会与生产环境通信。
 
-Playwright's `webServer` starts one provider for a spec and exits. This stack
-stays up until you stop it.
+Playwright 的 `webServer` 会为每个测试规范启动一个服务商进程然后退出。这个栈会一直运行，直到你停止它。
 
-## Integration test mode
+## 集成测试模式
 
 `node scripts/emulator/stack.mjs up --integration-tests --owner-token <token>`
-adds deterministic provider fixtures, a local model service, and a response-loss
-proxy. Any HTTP client can use this mode; it is independent of a mobile app.
-The returned `controlUrl` exposes test controls under `/__test-control`.
+会添加确定性的服务商测试数据、本地模型服务和响应丢失代理。任何 HTTP 客户端都可以使用此模式，它不依赖于移动应用。
+返回的 `controlUrl` 在 `/__test-control` 下提供测试控制接口。
 
-`node scripts/emulator/stack.mjs reset` resets the owned integration stack
-between scenarios. Stop it with:
+`node scripts/emulator/stack.mjs reset` 会在场景之间重置所属的集成栈。用以下命令停止：
 
 ```sh
 node scripts/emulator/stack.mjs down --owner-token <token>
 ```
 
-### Lost responses
+## 运行
 
-The proxy in front of Next can complete a write on the server and then drop
-its reply, so a client sees a lost response for work that actually happened.
-Arm it with:
-
-```sh
-curl -X POST "$CONTROL_URL/response-loss" \
-  -H "content-type: application/json" \
-  -d '{ "provider": "microsoft", "count": 2, "kind": "send" }'
-```
-
-- `provider`: `google` or `microsoft`, the provider of the mailbox the write
-  targets.
-- `count`: how many matching replies to drop, 1 to 100.
-- `kind`: `metadata` (default) or `send` for a `mail/v1` operation `PUT`,
-  `draft` for `POST`/`PUT /api/user/drafts`, or `any` for all of them.
-
-The proxy finds the mailbox's provider through `GET /api/user/email-accounts`
-with the caller's own session, so requests must carry it. `GET` returns
-`{ "remaining": <n>, "dropped": <n> }`; `DELETE` disarms it, and `reset` does
-too.
-
-### Android devices
-
-The stack binds to `127.0.0.1`. An Android emulator or device reaches it through
-`adb reverse`, which keeps the same loopback URLs, OAuth redirect URIs, and
-loopback checks:
-
-```sh
-node scripts/emulator/stack.mjs ports | while read -r name port; do
-  adb reverse "tcp:$port" "tcp:$port"
-done
-```
-
-`ports` prints one `<name> <port>` line per distinct port: `base`, `google`,
-`microsoft`, and in integration mode `llm`, `google-control`, and
-`microsoft-control` (`control` shares the `base` port). The stack sets no image
-proxy, so rendered mail returns `proxyBaseUrl: null` and remote images load
-from their own origin.
-
-## Run
-
-Docker must be running. From a clone of this repo:
+Docker 必须正在运行。在此仓库的克隆目录中：
 
 ```sh
 pnpm install
 pnpm -F inbox-zero-ai emulator:up
 ```
 
-The command prints:
+该命令会输出：
 
 ```text
 BASE_URL=http://127.0.0.1:<port>
@@ -79,49 +34,43 @@ GOOGLE_BASE_URL=http://127.0.0.1:<port>
 MICROSOFT_BASE_URL=http://127.0.0.1:<port>
 ```
 
-Point a client at `BASE_URL`.
+让客户端指向 `BASE_URL`。
 
-Stop it, including the database volume:
+停止它，包括数据库卷：
 
 ```sh
 pnpm -F inbox-zero-ai emulator:down
 ```
 
-`up` refuses to start when `DATABASE_URL`, `GOOGLE_BASE_URL`,
-`MICROSOFT_BASE_URL`, or `NEXT_PUBLIC_BASE_URL` already point off loopback.
-The Next process receives only local URLs and the emulator client ids
-(`emulate-google-client.apps.googleusercontent.com` /
-`emulate-microsoft-client-id`). Those are not production credentials.
+当 `DATABASE_URL`、`GOOGLE_BASE_URL`、`MICROSOFT_BASE_URL` 或 `NEXT_PUBLIC_BASE_URL`
+已经指向非回环地址时，`up` 会拒绝启动。Next 进程只会收到本地 URL 和模拟器客户端 ID
+（`emulate-google-client.apps.googleusercontent.com` /
+`emulate-microsoft-client-id`）。这些不是生产凭据。
 
-`up --foreground` stays attached and tears the stack down on Ctrl-C.
+`up --foreground` 会保持前台运行，并在按下 Ctrl-C 时拆除整个栈。
 
-## Seed
+## 种子数据
 
-`up` writes the existing dual-provider seed, plus one extra empty mailbox on
-each provider so two users can sign in:
+`up` 会写入现有的双服务商种子数据，并为每个服务商额外创建一个空邮箱，以便两个用户可以登录：
 
-| Provider | Mailbox | Contents |
+| 服务商 | 邮箱 | 内容 |
 | --- | --- | --- |
-| Google | `developer@example.com` | Demo inbox from `scripts/emulate-seed.ts` |
-| Google | `teammate@example.com` | Empty mailbox |
-| Microsoft | `developer@outlook.test` | Empty mailbox |
-| Microsoft | `teammate@outlook.test` | Empty mailbox |
+| Google | `developer@example.com` | 来自 `scripts/emulate-seed.ts` 的演示收件箱 |
+| Google | `teammate@example.com` | 空邮箱 |
+| Microsoft | `developer@outlook.test` | 空邮箱 |
+| Microsoft | `teammate@outlook.test` | 空邮箱 |
 
-A new `up` after `down` migrates a fresh database and reloads that seed.
+在 `down` 之后再次执行 `up` 会迁移全新的数据库并重新加载该种子数据。
 
-## Scheduled send and drafts
+## 定时发送与草稿
 
-Call these with the Better Auth session cookie and the `X-Email-Account-ID`
-header. The same Next.js app still serves the server actions used by the web
-composer.
+调用这些接口时请使用 Better Auth 会话 Cookie 和 `X-Email-Account-ID` 请求头。
+同一个 Next.js 应用仍会提供 Web 撰写器使用的服务器操作。
 
-The stack sets a local `CRON_SECRET` and polls
-`GET /api/cron/scheduled-actions` with `Authorization: Bearer $CRON_SECRET`
-every few seconds. A future `sendAt` is delivered by that timer. There is no
-QStash process.
+该栈会设置一个本地 `CRON_SECRET`，并每隔几秒使用 `Authorization: Bearer $CRON_SECRET` 轮询 `GET /api/cron/scheduled-actions`。
+未来的 `sendAt` 由该定时器投递。没有 QStash 进程。
 
-Schedule a send. `sendAt` and `remindAt` are ISO timestamps, or `null`. A null
-`sendAt` sends immediately.
+安排发送。`sendAt` 和 `remindAt` 是 ISO 时间戳或 `null`。`sendAt` 为 `null` 时会立即发送。
 
 ```sh
 curl -X POST "$BASE_URL/api/user/scheduled-emails" \
@@ -142,8 +91,7 @@ curl -X POST "$BASE_URL/api/user/scheduled-emails" \
   }'
 ```
 
-Repeating that request with the same `clientMutationId` and payload returns
-the original id. A different payload for that id is rejected.
+使用相同的 `clientMutationId` 和请求负载重复该请求会返回原始 ID。同一个 ID 使用不同负载会被拒绝。
 
 ```sh
 curl -X DELETE "$BASE_URL/api/user/scheduled-emails/$SCHEDULED_EMAIL_ID" \
@@ -159,8 +107,7 @@ curl -X DELETE "$BASE_URL/api/user/scheduled-emails/$SCHEDULED_EMAIL_ID/reminder
   -H "X-Email-Account-ID: $EMAIL_ACCOUNT_ID"
 ```
 
-Create, update, and discard a provider draft. The response is
-`{draftId, messageId, threadId}`.
+创建、更新和丢弃服务商草稿。响应为 `{draftId, messageId, threadId}`。
 
 ```sh
 curl -X POST "$BASE_URL/api/user/drafts" \
@@ -192,12 +139,9 @@ curl -X DELETE "$BASE_URL/api/user/drafts/$DRAFT_ID" \
   -H "X-Email-Account-ID: $EMAIL_ACCOUNT_ID"
 ```
 
-Send that saved draft by admitting a `mail/v1` send operation whose intent
-includes `providerDraftId` set to `draftId`. The executor passes it through
-the same durable send used by `sendEmailBody.providerDraftId`, which updates
-the provider draft and sends it. `queuedAtMs` is the current time in
-milliseconds. `notBeforeMs` is only the undo-send and offline hold, so it does
-not schedule this send.
+通过提交一个 `mail/v1` 发送操作来发送已保存的草稿，该操作的意图中包含设置为 `draftId` 的 `providerDraftId`。
+执行器会通过 `sendEmailBody.providerDraftId` 使用的同一套持久化发送流程传递它，该流程会更新服务商草稿并发送。
+`queuedAtMs` 是当前时间（毫秒）。`notBeforeMs` 仅用于撤销发送和离线等待，因此不会安排此次发送。
 
 ```sh
 curl -X PUT "$BASE_URL/api/mail/v1/accounts/$EMAIL_ACCOUNT_ID/operations/$OPERATION_ID" \
@@ -237,39 +181,32 @@ curl -X PUT "$BASE_URL/api/mail/v1/accounts/$EMAIL_ACCOUNT_ID/operations/$OPERAT
   }'
 ```
 
-`POST /api/messages/send` accepts the same id on `sendEmailBody.providerDraftId`
-when the client is not using `mail/v1`.
+当客户端未使用 `mail/v1` 时，`POST /api/messages/send` 会在 `sendEmailBody.providerDraftId` 上接受相同的 ID。
 
-## Account, subscription, and push routes
+## 账号、订阅和推送路由
 
-These use the same session cookie. Routes marked with the email-account header
-also require `X-Email-Account-ID`.
+这些路由使用相同的会话 Cookie。标记需要邮箱账号请求头的路由还要求提供 `X-Email-Account-ID`。
 
-The stack enables local Apple signed-transaction checks
-(`APPLE_IAP_LOCAL_TESTING=true`) and fake APNs and FCM transports
-(`APNS_TRANSPORT=fake`, `FCM_TRANSPORT=fake`). It does not set App Store Server
-API, APNs `.p8`, or Firebase service account secrets.
+该栈启用了本地 Apple 签名交易校验（`APPLE_IAP_LOCAL_TESTING=true`）和伪造的 APNs 传输
+（`APNS_TRANSPORT=fake`）。它不会设置 App Store Server API 或 APNs `.p8` 密钥。
 
-Delete the signed-in user. Response `{ "deleted": true }`. Sessions for that
-user are removed. An ownership conflict returns `400`
-`{ "error": "...", "isKnownError": true }`.
+删除已登录用户。响应 `{ "deleted": true }`。该用户的会话会被移除。归属冲突会返回 `400`
+`{ "error": "...", "isKnownError": true }`。
 
 ```sh
 curl -X DELETE "$BASE_URL/api/user/account" \
   -H "cookie: $SESSION_COOKIE"
 ```
 
-Remove one connected mailbox. Refusing the only mailbox returns `400` with
-`isKnownError: true`. Response `{ "deleted": true }`.
+移除一个已连接的邮箱。拒绝移除唯一邮箱会返回 `400` 和 `isKnownError: true`。响应 `{ "deleted": true }`。
 
 ```sh
 curl -X DELETE "$BASE_URL/api/user/email-accounts/$EMAIL_ACCOUNT_ID" \
   -H "cookie: $SESSION_COOKIE"
 ```
 
-Sync a StoreKit 2 JWS. Response `{ "premium": { ... } }`. In this stack the JWS
-must be signed with the local testing key. A `transactionId` without
-`signedTransaction` still calls Apple and returns `503` here.
+同步 StoreKit 2 JWS。响应 `{ "premium": { ... } }`。在此栈中，JWS 必须使用本地测试密钥签名。
+没有 `signedTransaction` 的 `transactionId` 仍会调用 Apple，并在此处返回 `503`。
 
 ```sh
 curl -X POST "$BASE_URL/api/apple/subscription/sync" \
@@ -278,9 +215,7 @@ curl -X POST "$BASE_URL/api/apple/subscription/sync" \
   -d '{ "signedTransaction": "<jws>" }'
 ```
 
-Register an APNs device token or an Android FCM registration token, then send
-through the fake transports. The test routes return `{ "sends": [...] }` and are
-`404` unless `APNS_TRANSPORT=fake` or `FCM_TRANSPORT=fake`.
+注册 APNs 设备令牌，然后通过伪造传输发送。测试路由返回 `{ "sends": [...] }`，除非 `APNS_TRANSPORT=fake`，否则返回 `404`。
 
 ```sh
 curl -X POST "$BASE_URL/api/mobile/push-token" \
@@ -292,52 +227,14 @@ curl -X POST "$BASE_URL/api/mobile/push-token" \
     "tokenType": "apns"
   }'
 
-curl -X POST "$BASE_URL/api/mobile/push-token" \
-  -H "content-type: application/json" \
-  -H "cookie: $SESSION_COOKIE" \
-  -d '{ "token": "<fcm registration token>", "platform": "android", "tokenType": "fcm" }'
-
 curl -X POST "$BASE_URL/api/mobile/push/test" \
   -H "content-type: application/json" \
   -H "cookie: $SESSION_COOKIE" \
   -d '{ "title": "Hello", "body": "From the emulator" }'
 ```
 
-`POST /api/mail/v1/devices` registers the device for silent mailbox hints:
-`{ "token": "<hex>", "appVersion": "2.0.4" }` for iOS, or
-`{ "token": "<fcm token>", "platform": "android", "appVersion": "1.0.0" }`.
-
-Each send carries `type`. An APNs send is
-`{ "type": "apns", "token", "topic", "sandbox", "payload" }`. An FCM send is
-`{ "type": "fcm", "token", "projectId", "message" }`, where `message` is the
-HTTP v1 message body: `data` with `android.priority: "NORMAL"` for a silent
-hint, or `notification`, `data`, and `android.priority: "HIGH"` with
-`android.notification.channel_id` (`mail` for To Reply, `otp` for codes) for an
-alert.
-
-The emulators never deliver Gmail or Graph push, so trigger the pushes that
-push would cause for one of your accounts:
-
-```sh
-curl -X POST "$BASE_URL/api/mobile/push/test/trigger" \
-  -H "content-type: application/json" \
-  -H "cookie: $SESSION_COOKIE" \
-  -d '{ "type": "mailbox", "emailAccountId": "'"$EMAIL_ACCOUNT_ID"'" }'
-
-curl -X POST "$BASE_URL/api/mobile/push/test/trigger" \
-  -H "content-type: application/json" \
-  -H "cookie: $SESSION_COOKIE" \
-  -d '{ "type": "to_reply", "emailAccountId": "'"$EMAIL_ACCOUNT_ID"'", "messageId": "'"$MESSAGE_ID"'" }'
-```
-
-`mailbox` runs the provider-webhook hint, including its 20-second per-account
-coalescing, so a second trigger inside that window records no sends. `to_reply`
-reads the message from the provider and sends the To Reply alert as if the
-message had just arrived; each message alerts once. Another user's account
-returns `404`.
-
-List, snooze, and unsnooze. `snoozedUntil` must be at least one minute ahead.
-List response `{ "threads": [{ "id", "threadId", "scheduledFor", "status" }] }`.
+列出、暂停和恢复会话。`snoozedUntil` 必须至少提前一分钟。列表响应
+`{ "threads": [{ "id", "threadId", "scheduledFor", "status" }] }`。
 
 ```sh
 curl "$BASE_URL/api/user/snoozed-threads" \
@@ -351,7 +248,7 @@ curl -X POST "$BASE_URL/api/user/snoozed-threads" \
   -d '{ "threadIds": ["THREAD_ID"], "snoozedUntil": "2026-10-06T09:00:00.000Z" }'
 ```
 
-List inbox categories and user splits.
+列出收件箱分类和用户分区。
 
 ```sh
 curl "$BASE_URL/api/user/mail-splits" \
@@ -359,8 +256,7 @@ curl "$BASE_URL/api/user/mail-splits" \
   -H "X-Email-Account-ID: $EMAIL_ACCOUNT_ID"
 ```
 
-`GET /api/threads?inboxSection=newsletters` and `?category=promotions` are
-accepted. A search scoped to spam or trash includes those folders:
+`GET /api/threads?inboxSection=newsletters` 和 `?category=promotions` 会被接受。范围限定为垃圾邮件或回收站的搜索会包含这些文件夹：
 
 ```sh
 curl "$BASE_URL/api/threads?type=spam&q=invoice" \
@@ -368,4 +264,4 @@ curl "$BASE_URL/api/threads?type=spam&q=invoice" \
   -H "X-Email-Account-ID: $EMAIL_ACCOUNT_ID"
 ```
 
-Logs from a failed run stay under `apps/web/.tmp/emulator/`.
+运行失败时的日志会保存在 `apps/web/.tmp/emulator/` 下。

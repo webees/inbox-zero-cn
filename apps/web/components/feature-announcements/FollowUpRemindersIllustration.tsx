@@ -38,8 +38,7 @@ export function FollowUpRemindersIllustration() {
     return () => clearTimeout(timeout);
   }, []);
 
-  const daysText =
-    stage >= 5 ? "3 days ago" : stage >= 4 ? "2 days ago" : "1 day ago";
+  const daysText = stage >= 5 ? "3天前" : stage >= 4 ? "2天前" : "1天前";
 
   return (
     <div className="relative h-44 overflow-hidden rounded-lg bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-900 dark:to-gray-900">
@@ -56,12 +55,12 @@ export function FollowUpRemindersIllustration() {
             >
               <div className="flex items-center gap-2.5">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pink-100 text-xs font-semibold text-pink-600 dark:bg-pink-900/50 dark:text-pink-300">
-                  SM
+                  莎
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">
-                      Sarah Miller
+                      莎拉·米勒
                     </span>
                     <AnimatePresence>
                       {stage >= 6 && (
@@ -71,18 +70,18 @@ export function FollowUpRemindersIllustration() {
                           transition={{ duration: 0.375, ease: "easeOut" }}
                           className="rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-semibold text-amber-700 dark:bg-amber-800/50 dark:text-amber-300"
                         >
-                          Follow up
+                          跟进
                         </motion.span>
                       )}
                     </AnimatePresence>
                   </div>
                   <div className="text-[11px] font-medium text-gray-700 dark:text-gray-300">
-                    Meeting follow-up
+                    会议跟进
                   </div>
                 </div>
               </div>
               <div className="mt-2 text-[10px] leading-relaxed text-gray-500 dark:text-gray-400">
-                Thanks for your time today. I wanted to follow up on...
+                感谢您今天抽出时间。我想就以下内容跟进……
               </div>
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
@@ -95,7 +94,7 @@ export function FollowUpRemindersIllustration() {
               >
                 <div className="mt-2.5 flex items-center gap-1.5 border-t border-gray-100 pt-2 dark:border-gray-700">
                   <span className="text-[10px] text-gray-400 dark:text-gray-500">
-                    ↩ You replied
+                    ↩ 你已回复
                     {stage >= 3 && (
                       <motion.span
                         key={daysText}

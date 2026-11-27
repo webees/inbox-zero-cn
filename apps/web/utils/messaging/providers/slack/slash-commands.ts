@@ -43,7 +43,7 @@ export async function processSlackSlashCommand({
   if (!expandedText) {
     await postToSlackResponseUrl(responseUrl, {
       response_type: "ephemeral",
-      text: `Unknown command: ${command}`,
+      text: `未知命令：${command}`,
     });
     return;
   }
@@ -63,7 +63,7 @@ export async function processSlackSlashCommand({
   if (!channel) {
     await postToSlackResponseUrl(responseUrl, {
       response_type: "ephemeral",
-      text: "Your Slack account isn't connected to Inbox Zero. Connect it from your Inbox Zero settings page.",
+      text: "你的 Slack 账号尚未连接到 Inbox Zero。请在 Inbox Zero 的设置页面进行连接。",
     });
     return;
   }
@@ -75,7 +75,7 @@ export async function processSlackSlashCommand({
   if (!emailAccountUser) {
     await postToSlackResponseUrl(responseUrl, {
       response_type: "ephemeral",
-      text: "Could not find your linked email account. Please reconnect from settings.",
+      text: "找不到你已关联的邮箱账号。请在设置中重新连接。",
     });
     return;
   }
@@ -95,7 +95,7 @@ export async function processSlackSlashCommand({
       text: markdownToSlackMrkdwn(responseText),
     });
   } catch (error) {
-    logger.error("Slack slash command AI processing failed", {
+    logger.error("Slack 斜杠命令 AI 处理失败", {
       error,
       command,
     });
@@ -103,10 +103,10 @@ export async function processSlackSlashCommand({
     try {
       await postToSlackResponseUrl(responseUrl, {
         response_type: "ephemeral",
-        text: "Something went wrong processing your request. Please try again.",
+        text: "处理你的请求时出现问题。请重试。",
       });
     } catch (postError) {
-      logger.error("Failed to post error to Slack response_url", {
+      logger.error("向 Slack response_url 发送错误消息失败", {
         error: postError,
       });
     }
@@ -153,12 +153,12 @@ async function runSlackSlashCommandAi({
   });
 
   if (chat.emailAccountId !== emailAccountId) {
-    logger.error("Slack slash command chat ownership mismatch", {
+    logger.error("Slack 斜杠命令会话归属不匹配", {
       chatId: chat.id,
       expectedEmailAccountId: emailAccountId,
       actualEmailAccountId: chat.emailAccountId,
     });
-    throw new Error("Slack slash command chat ownership mismatch");
+    throw new Error("Slack 斜杠命令会话归属不匹配");
   }
 
   const existingMessages: UIMessage[] = [...chat.messages]
@@ -235,7 +235,7 @@ async function runSlackSlashCommandAi({
   }
 
   if (!assistantMessage) {
-    throw new Error("Missing assistant message in slash command response");
+    throw new Error("斜杠命令响应中缺少助手消息");
   }
 
   const fullText = (assistantMessage.parts || [])
@@ -262,7 +262,7 @@ async function runSlackSlashCommandAi({
     });
   }
 
-  return normalizeMessagingAssistantText({ text: fullText || "Done." });
+  return normalizeMessagingAssistantText({ text: fullText || "已完成。" });
 }
 
 function getSlackSlashCommandChatId({
@@ -288,7 +288,7 @@ async function postToSlackResponseUrl(
 ): Promise<void> {
   const url = new URL(responseUrl);
   if (url.hostname !== "hooks.slack.com") {
-    throw new Error(`Unexpected Slack response_url domain: ${url.hostname}`);
+    throw new Error(`意外的 Slack response_url 域名：${url.hostname}`);
   }
 
   const response = await fetch(responseUrl, {
@@ -299,7 +299,7 @@ async function postToSlackResponseUrl(
 
   if (!response.ok) {
     throw new Error(
-      `Failed to post to Slack response_url (status ${response.status})`,
+      `向 Slack response_url 发送失败（状态码 ${response.status}）`,
     );
   }
 }

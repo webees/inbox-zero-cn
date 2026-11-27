@@ -1,14 +1,13 @@
-# Email updates
+# 邮件更新
 
-This package provides transactional email templates and delivery APIs. Email
-delivery uses a provider interface, with Resend as the current implementation.
+此包提供事务性邮件模板和投递 API。邮件投递使用服务商接口，当前实现为 Resend。
 
-## Running locally
+## 本地运行
 
-To run:
+运行：
 
 ```bash
 pnpm dev
 ```
 
-Then visit http://localhost:3010/ to view email previews.
+然后访问 http://localhost:3010/ 查看邮件预览。

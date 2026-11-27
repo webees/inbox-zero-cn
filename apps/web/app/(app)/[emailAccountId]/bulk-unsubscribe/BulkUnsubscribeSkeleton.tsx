@@ -58,17 +58,17 @@ export function BulkUnsubscribeDesktopSkeleton() {
           </TableHead>
           <TableHead>
             <span className="text-sm font-medium">
-              <Trans>From</Trans>
+              <Trans>发件人</Trans>
             </span>
           </TableHead>
           <TableHead>
             <span className="text-sm font-medium">
-              <Trans>Emails</Trans>
+              <Trans>邮件数</Trans>
             </span>
           </TableHead>
           <TableHead>
             <span className="text-sm font-medium">
-              <Trans>Read</Trans>
+              <Trans>已读</Trans>
             </span>
           </TableHead>
           <TableHead />

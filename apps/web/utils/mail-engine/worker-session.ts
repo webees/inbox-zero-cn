@@ -84,7 +84,7 @@ export function createMailWorkerHost(hooks: {
         hooks.post({
           id: message.id,
           type: "error",
-          message: `unsupported method ${message.method}`,
+          message: `不支持的方法 ${message.method}`,
         });
         return;
       }

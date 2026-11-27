@@ -6,7 +6,7 @@ const logger = createScopedLogger("gmail/batch");
 
 const BATCH_LIMIT = 100;
 
-// Uses Gmail batch API to get multiple responses in one request
+// 使用 Gmail 批量 API 在一次请求中获取多个响应
 // https://developers.google.com/gmail/api/guides/batch
 export async function getBatch(
   ids: string[],
@@ -49,37 +49,37 @@ export async function getBatch(
 function parseBatchResponse(batchResponse: string, contentType: string | null) {
   checkBatchResponseForError(batchResponse);
 
-  // Extracting boundary from the Content-Type header
+  // 从 Content-Type 头中提取边界
   const boundaryRegex = /boundary=(.*?)(;|$)/;
   const boundaryMatch = contentType?.match(boundaryRegex);
   const boundary = boundaryMatch ? boundaryMatch[1] : null;
 
   if (!boundary) {
-    logger.error("No boundary found in response", { batchResponse });
-    throw new Error("parseBatchResponse: No boundary found in response");
+    logger.error("响应中未找到边界", { batchResponse });
+    throw new Error("parseBatchResponse：响应中未找到边界");
   }
 
   const parts = batchResponse.split(`--${boundary}`);
 
-  // Process each part
+  // 处理每个部分
   const decodedParts = parts.map((part) => {
-    // Skip empty parts
+    // 跳过空部分
     if (!part.trim()) return;
 
-    // Find where the JSON part of the response starts
+    // 找到响应中 JSON 部分的起始位置
     const jsonStartIndex = part.indexOf("{");
     if (jsonStartIndex === -1) return; // Skip if no JSON data found
 
-    // Extract the JSON string
+    // 提取 JSON 字符串
     const jsonResponse = part.slice(jsonStartIndex);
 
-    // Parse the JSON string
+    // 解析 JSON 字符串
     try {
       const data = JSON.parse(jsonResponse);
 
       return data;
     } catch (error) {
-      logger.error("Error parsing JSON", { error });
+      logger.error("解析 JSON 时出错", { error });
     }
   });
 
@@ -97,6 +97,6 @@ function checkBatchResponseForError(batchResponse: string) {
       );
     }
   } catch {
-    // not json. skipping
+    // 不是 json。跳过
   }
 }

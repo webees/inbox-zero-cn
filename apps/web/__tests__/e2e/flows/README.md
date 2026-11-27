@@ -1,60 +1,60 @@
-# E2E Flow Tests
+# E2E 流程测试
 
-End-to-end tests that verify complete email processing flows with real accounts, webhooks, and AI processing.
+使用真实账号、webhook 和 AI 处理来验证完整邮件处理流程的端到端测试。
 
-## Overview
+## 概览
 
-These flow tests verify multi-step scenarios:
+这些流程测试验证多步骤场景：
 
-- **Full Reply Cycle**: Gmail → Outlook → Rule Processing → Draft → Send → Reply Received
-- **Auto-Labeling**: Email classification and label application
-- **Outbound Tracking**: Sent message handling and reply tracking
-- **Draft Cleanup**: AI draft deletion when user sends manual reply
+- **完整回复周期**：Gmail → Outlook → 规则处理 → 草稿 → 发送 → 收到回复
+- **自动打标签**：邮件分类和标签应用
+- **出站跟踪**：已发送邮件处理与回复跟踪
+- **草稿清理**：用户发送手动回复时删除 AI 草稿
 
-## Setup
+## 设置
 
-### 1. Test Accounts
+### 1. 测试账号
 
-You need two email accounts connected to your test database:
+你需要两个连接到测试数据库的邮箱账号：
 
-1. **Gmail account** - Connected via OAuth with valid refresh token
-2. **Outlook account** - Connected via OAuth with valid refresh token
+1. **Gmail 账号** - 通过 OAuth 连接，并具有有效的 refresh token
+2. **Outlook 账号** - 通过 OAuth 连接，并具有有效的 refresh token
 
-The test setup automatically verifies premium status and creates default rules if missing.
+测试设置会自动验证高级版状态，并在缺失时创建默认规则。
 
-### 2. Required Secrets (GitHub Actions)
+### 2. 所需 secrets（GitHub Actions）
 
-Configure these secrets in your repository:
+在仓库中配置这些 secrets：
 
-**E2E-specific secrets:**
+**E2E 专用 secrets：**
 
-| Secret | Description |
+| Secret | 描述 |
 |--------|-------------|
-| `E2E_GMAIL_EMAIL` | Gmail test account email |
-| `E2E_OUTLOOK_EMAIL` | Outlook test account email |
-| `E2E_NGROK_AUTH_TOKEN` | ngrok auth token for tunnel |
+| `E2E_GMAIL_EMAIL` | Gmail 测试账号邮箱 |
+| `E2E_OUTLOOK_EMAIL` | Outlook 测试账号邮箱 |
+| `E2E_NGROK_AUTH_TOKEN` | 用于隧道的 ngrok 认证令牌 |
 
-**Standard app secrets** (same as production - see [environment-variables.md](/docs/hosting/environment-variables.md)):
+**标准应用 secrets**（与生产环境相同 - 参见 [environment-variables.md](/docs/hosting/environment-variables.md)）：
 
 - `DATABASE_URL`, `AUTH_SECRET`, `INTERNAL_API_KEY`
 - `EMAIL_ENCRYPT_SECRET`, `EMAIL_ENCRYPT_SALT`
-- `REDIS_HTTP_URL`, `REDIS_HTTP_TOKEN` (`UPSTASH_REDIS_URL` and `UPSTASH_REDIS_TOKEN` still work)
+- `REDIS_HTTP_URL`、`REDIS_HTTP_TOKEN`（`UPSTASH_REDIS_URL` 和 `UPSTASH_REDIS_TOKEN` 仍可使用）
 - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
 - `GOOGLE_PUBSUB_TOPIC_NAME`, `GOOGLE_PUBSUB_VERIFICATION_TOKEN`
 - `MICROSOFT_CLIENT_ID`, `MICROSOFT_CLIENT_SECRET`, `MICROSOFT_WEBHOOK_CLIENT_STATE`
 - `LLM_API_KEY`
 
-Also set the repository variable `E2E_FLOWS_ENABLED=true` to enable the workflow.
+同时设置仓库变量 `E2E_FLOWS_ENABLED=true` 以启用该工作流。
 
-### 3. Local Development
+### 3. 本地开发
 
-For local testing, set the equivalent environment variables and run:
+本地测试时，设置等效的环境变量并运行：
 
 ```bash
 RUN_E2E_FLOW_TESTS=true pnpm test-e2e:flows
 ```
 
-## Running Tests
+## 运行测试
 
 ```bash
 # Run all flow tests
@@ -67,7 +67,7 @@ pnpm test-e2e:flows full-reply-cycle
 E2E_VERBOSE=true pnpm test-e2e:flows
 ```
 
-## Test Structure
+## 测试结构
 
 ```text
 flows/
@@ -88,55 +88,55 @@ flows/
 └── sent-reply-deletion.test.ts
 ```
 
-## Test Scenarios
+## 测试场景
 
-### Full Reply Cycle
+### 完整回复周期
 
-1. Gmail sends email to Outlook
-2. Outlook receives via webhook
-3. Rule matches and creates draft
-4. User sends the draft
-5. Gmail receives the reply
-6. Outbound handling cleans up
+1. Gmail 向 Outlook 发送邮件
+2. Outlook 通过 webhook 接收
+3. 规则匹配并创建草稿
+4. 用户发送草稿
+5. Gmail 收到回复
+6. 出站处理完成清理
 
-### Auto-Labeling
+### 自动打标签
 
-- Emails needing reply → labeled + draft created
-- FYI emails → labeled, no draft
-- Thank you emails → appropriate handling
+- 需要回复的邮件 → 打标签 + 创建草稿
+- 仅供参考的邮件 → 打标签，不创建草稿
+- 感谢邮件 → 适当处理
 
-### Outbound Tracking
+### 出站跟踪
 
-- SENT folder webhook triggers
-- Reply tracking updates
-- No duplicate rule execution
+- SENT 文件夹 webhook 触发
+- 回复跟踪更新
+- 规则不会重复执行
 
-### Draft Cleanup
+### 草稿清理
 
-- Draft deleted when user sends manual reply
-- DraftSendLog properly recorded
-- Multiple drafts in thread cleaned up
+- 用户发送手动回复时删除草稿
+- 正确记录 `DraftSendLog`
+- 清理会话中的多个草稿
 
-### Sent Reply Preservation (sent-reply-preservation.test.ts)
+### 已发送回复保留（sent-reply-preservation.test.ts）
 
-Tests that sent replies (from AI drafts) are preserved when follow-ups arrive:
+测试在后续消息到达时保留已发送的回复（来自 AI 草稿）：
 
-1. User A sends email to User B → AI draft created
-2. User B sends the AI draft without editing (clicks send directly)
-3. User A replies again to the thread (3rd message)
-4. Verify: User B's sent reply remains in the thread
+1. 用户 A 向用户 B 发送邮件 → 创建 AI 草稿
+2. 用户 B 不编辑直接发送 AI 草稿（直接点击发送）
+3. 用户 A 再次回复该会话（第 3 条消息）
+4. 验证：用户 B 的已发送回复仍保留在会话中
 
-### Message Preservation
+### 邮件保留
 
-- Follow-up messages from sender are not deleted
-- All thread messages preserved after user reply
-- Tests both Gmail and Outlook as receivers
+- 发件人的后续消息不会被删除
+- 用户回复后保留会话中的所有消息
+- 分别测试 Gmail 和 Outlook 作为接收方
 
-## Debugging
+## 调试
 
-### Logs
+### 日志
 
-Tests output detailed logs with the run ID:
+测试会输出带运行 ID 的详细日志：
 
 ```text
 [E2E-abc123] Step 1: Sending email from Gmail to Outlook
@@ -144,24 +144,24 @@ Tests output detailed logs with the run ID:
 [E2E-abc123] Step 2: Waiting for Outlook to receive email
 ```
 
-### Verbose Mode
+### 详细模式
 
 ```bash
 E2E_VERBOSE=true pnpm test-e2e:flows
 ```
 
-## Timeouts
+## 超时
 
-| Operation | Timeout |
+| 操作 | 超时 |
 |-----------|---------|
-| Email delivery | 90s |
-| Webhook processing | 60s |
-| Full test cycle | 300s |
-| Polling interval | 3s |
+| 邮件投递 | 90s |
+| Webhook 处理 | 60s |
+| 完整测试周期 | 300s |
+| 轮询间隔 | 3s |
 
-## Local Setup Guide
+## 本地设置指南
 
-### Quick Start
+### 快速开始
 
 ```bash
 # 1. Run setup with a named config (won't overwrite your existing .env)
@@ -186,44 +186,44 @@ pnpm dev:e2e
 pnpm test-e2e:flows
 ```
 
-### Using the Local Script (with ngrok)
+### 使用本地脚本（配合 ngrok）
 
-For running tests with webhook support, use the convenience script.
+如需在测试中支持 webhook，请使用便捷脚本。
 
-#### Prerequisites
+#### 前提条件
 
-- **ngrok**: Install with `brew install ngrok`
-- **ngrok account**: Get an auth token from [ngrok dashboard](https://dashboard.ngrok.com)
-- **Static domain** (recommended): Configure a free static domain in ngrok for consistent webhook URLs
+- **ngrok**：使用 `brew install ngrok` 安装
+- **ngrok 账号**：从 [ngrok dashboard](https://dashboard.ngrok.com) 获取认证令牌
+- **静态域名**（推荐）：在 ngrok 中配置一个免费静态域名，以获得一致的 webhook URL
 
-#### Config File Setup
+#### 配置文件设置
 
-Create `~/.config/inbox-zero/.env.e2e` with your E2E configuration:
+创建 `~/.config/inbox-zero/.env.e2e` 并写入你的 E2E 配置：
 
 ```bash
 mkdir -p ~/.config/inbox-zero
 # Add your config to ~/.config/inbox-zero/.env.e2e
 ```
 
-**Required variables:**
+**必需变量：**
 
-| Variable | Description |
+| 变量 | 描述 |
 |----------|-------------|
-| `E2E_NGROK_AUTH_TOKEN` | ngrok authentication token |
-| `E2E_GMAIL_EMAIL` | Test Gmail account email |
-| `E2E_OUTLOOK_EMAIL` | Test Outlook account email |
+| `E2E_NGROK_AUTH_TOKEN` | ngrok 认证令牌 |
+| `E2E_GMAIL_EMAIL` | 测试 Gmail 账号邮箱 |
+| `E2E_OUTLOOK_EMAIL` | 测试 Outlook 账号邮箱 |
 
-**Optional variables:**
+**可选变量：**
 
-| Variable | Description |
+| 变量 | 描述 |
 |----------|-------------|
-| `E2E_NGROK_DOMAIN` | Static ngrok domain (e.g., `my-e2e.ngrok-free.app`) |
-| `E2E_PORT` | Port to run Next.js on (default: 3000) |
-| `WEBHOOK_URL` | Public URL for Microsoft webhooks (e.g., `https://your-domain.ngrok-free.app`) |
+| `E2E_NGROK_DOMAIN` | 静态 ngrok 域名（例如 `my-e2e.ngrok-free.app`） |
+| `E2E_PORT` | 运行 Next.js 的端口（默认：3000） |
+| `WEBHOOK_URL` | Microsoft webhook 的公网 URL（例如 `https://your-domain.ngrok-free.app`） |
 
-**Webhook URL configuration:**
+**Webhook URL 配置：**
 
-Microsoft webhooks require a publicly accessible URL. Set `WEBHOOK_URL` to your ngrok domain:
+Microsoft webhook 需要可公开访问的 URL。将 `WEBHOOK_URL` 设为你的 ngrok 域名：
 
 ```bash
 # Keep NEXT_PUBLIC_BASE_URL as localhost for easy browser access
@@ -233,34 +233,34 @@ NEXT_PUBLIC_BASE_URL=http://localhost:3000
 WEBHOOK_URL=https://your-domain.ngrok-free.app
 ```
 
-The app uses `WEBHOOK_URL` (with fallback to `NEXT_PUBLIC_BASE_URL`) for webhook registration.
+应用使用 `WEBHOOK_URL`（回退到 `NEXT_PUBLIC_BASE_URL`）进行 webhook 注册。
 
-**Google Pub/Sub configuration (required for Gmail-as-receiver tests):**
+**Google Pub/Sub 配置（Gmail 作为接收方的测试需要）：**
 
-Unlike Microsoft webhooks which are registered dynamically with the ngrok URL, Gmail webhooks use Google Pub/Sub with a **fixed push subscription URL** configured in Google Cloud Console.
+与使用 ngrok URL 动态注册的 Microsoft webhook 不同，Gmail webhook 使用 Google Pub/Sub，并需要**固定的推送订阅 URL**，在 Google Cloud Console 中配置。
 
-To run tests that use Gmail as the receiver:
+要运行以 Gmail 作为接收方的测试：
 
-1. Go to [Google Cloud Pub/Sub Subscriptions](https://console.cloud.google.com/cloudpubsub/subscription/list)
-2. Find your push subscription (created during initial setup)
-3. Click **Edit** and update the **Endpoint URL** to:
+1. 前往 [Google Cloud Pub/Sub Subscriptions](https://console.cloud.google.com/cloudpubsub/subscription/list)
+2. 找到你的推送订阅（在初始设置期间创建）
+3. 点击 **编辑**，将 **Endpoint URL** 更新为：
    ```
    https://your-ngrok-domain.ngrok-free.app/api/google/webhook?token=YOUR_VERIFICATION_TOKEN
    ```
-4. Save the subscription
+4. 保存订阅
 
-**Tip:** Use `E2E_NGROK_DOMAIN` with a static ngrok domain so you only need to configure the Pub/Sub URL once.
+**提示：** 配合静态 ngrok 域名使用 `E2E_NGROK_DOMAIN`，这样只需配置一次 Pub/Sub URL。
 
-**Standard app secrets** (same as production):
+**标准应用 secrets**（与生产环境相同）：
 
 - `DATABASE_URL`, `AUTH_SECRET`, `INTERNAL_API_KEY`
 - `EMAIL_ENCRYPT_SECRET`, `EMAIL_ENCRYPT_SALT`
-- `REDIS_HTTP_URL`, `REDIS_HTTP_TOKEN` (`UPSTASH_REDIS_URL` and `UPSTASH_REDIS_TOKEN` still work)
-- Google OAuth + PubSub credentials
-- Microsoft OAuth credentials
-- AI provider API key (OpenAI, Anthropic, etc.)
+- `REDIS_HTTP_URL`、`REDIS_HTTP_TOKEN`（`UPSTASH_REDIS_URL` 和 `UPSTASH_REDIS_TOKEN` 仍可使用）
+- Google OAuth 与 PubSub 凭证
+- Microsoft OAuth 凭证
+- AI 服务商 API 密钥（OpenAI、Anthropic 等）
 
-#### Running with the Script
+#### 使用脚本运行
 
 ```bash
 # Run all flow tests
@@ -274,88 +274,88 @@ To run tests that use Gmail as the receiver:
 E2E_PORT=3007 ./scripts/run-e2e-local.sh
 ```
 
-#### What the Script Does
+#### 脚本的作用
 
-1. Loads environment from `~/.config/inbox-zero/.env.e2e`
-2. Starts ngrok tunnel (uses static domain if `E2E_NGROK_DOMAIN` is set)
-3. **Exports `WEBHOOK_URL`** to the ngrok URL (for Microsoft webhook registration)
-4. Creates symlinks in `apps/web/` so Next.js and vitest pick up the env vars
-5. Starts the Next.js dev server
-6. Runs E2E flow tests
-7. Cleans up processes on exit (Ctrl+C or completion)
+1. 从 `~/.config/inbox-zero/.env.e2e` 加载环境变量
+2. 启动 ngrok 隧道（如果设置了 `E2E_NGROK_DOMAIN` 则使用静态域名）
+3. 将 `WEBHOOK_URL` 导出为 ngrok URL（用于 Microsoft webhook 注册）
+4. 在 `apps/web/` 中创建符号链接，使 Next.js 和 vitest 能读取环境变量
+5. 启动 Next.js 开发服务器
+6. 运行 E2E 流程测试
+7. 退出时清理进程（Ctrl+C 或完成后）
 
-## Troubleshooting
+## 故障排查
 
-### "No account found"
+### “No account found”
 
-Test accounts aren't in the database. Run `pnpm dev:e2e`, visit http://localhost:3000, and sign in with each account.
+测试账号不在数据库中。运行 `pnpm dev:e2e`，访问 http://localhost:3000，并用每个账号登录。
 
-### Token expired
+### 令牌已过期
 
-OAuth tokens may expire. Run `pnpm dev:e2e` and sign in again at http://localhost:3000.
+OAuth 令牌可能会过期。运行 `pnpm dev:e2e` 并再次访问 http://localhost:3000 登录。
 
-### Draft not created
+### 未创建草稿
 
-Check AI API key is configured. Rules are created automatically by the test setup.
+检查是否配置了 AI API 密钥。测试设置会自动创建规则。
 
-### ngrok tunnel fails to start
+### ngrok 隧道启动失败
 
-- Check `/tmp/ngrok-e2e.log` for errors
-- Verify your auth token is correct
-- Make sure the port isn't already in use
-- **Session limit error (ERR_NGROK_108)**: Free ngrok accounts only allow 1 simultaneous session. Kill existing ngrok processes:
+- 查看 `/tmp/ngrok-e2e.log` 中的错误
+- 确认认证令牌正确
+- 确认端口未被占用
+- **会话数限制错误（ERR_NGROK_108）**：免费 ngrok 账号只允许 1 个同时会话。终止现有的 ngrok 进程：
   ```bash
   pkill -9 ngrok
   ```
 
-### App fails health check
+### 应用健康检查失败
 
-- Check `/tmp/nextjs-e2e.log` for errors
-- Ensure all required env vars are set
+- 查看 `/tmp/nextjs-e2e.log` 中的错误
+- 确保所有必需的环境变量都已设置
 
-### Webhooks not received
+### 未收到 webhook
 
-- Without a static domain, webhook URLs change each run
-- Use `E2E_NGROK_DOMAIN` for consistent webhook registration
+- 如果没有静态域名，webhook URL 每次运行都会变化
+- 使用 `E2E_NGROK_DOMAIN` 以获得一致的 webhook 注册
 
-### Gmail webhooks not triggering (tests with Gmail as receiver fail)
+### Gmail webhook 未触发（以 Gmail 作为接收方的测试失败）
 
-Gmail uses Google Pub/Sub which requires **manual configuration** of the push subscription URL:
+Gmail 使用 Google Pub/Sub，需要**手动配置**推送订阅 URL：
 
-1. Check that `GOOGLE_PUBSUB_TOPIC_NAME` and `GOOGLE_PUBSUB_VERIFICATION_TOKEN` are set
-2. Go to [Google Cloud Pub/Sub Subscriptions](https://console.cloud.google.com/cloudpubsub/subscription/list)
-3. Verify the push subscription URL points to your ngrok domain:
+1. 检查是否设置了 `GOOGLE_PUBSUB_TOPIC_NAME` 和 `GOOGLE_PUBSUB_VERIFICATION_TOKEN`
+2. 前往 [Google Cloud Pub/Sub Subscriptions](https://console.cloud.google.com/cloudpubsub/subscription/list)
+3. 确认推送订阅 URL 指向你的 ngrok 域名：
    ```
    https://your-ngrok-domain.ngrok-free.app/api/google/webhook?token=YOUR_TOKEN
    ```
-4. If using a dynamic ngrok URL, you must update the subscription URL each time ngrok restarts
+4. 如果使用动态 ngrok URL，每次 ngrok 重启后都必须更新订阅 URL
 
-**Note:** Microsoft/Outlook webhooks work automatically with ngrok because the URL is set dynamically when the subscription is created. Gmail requires manual Pub/Sub configuration.
+**注意：** Microsoft/Outlook webhook 配合 ngrok 可自动工作，因为订阅创建时会动态设置 URL。Gmail 需要手动配置 Pub/Sub。
 
-### Microsoft webhook subscription fails
+### Microsoft webhook 订阅失败
 
-**"NotificationUrl references a local address"**
+**“NotificationUrl references a local address”**
 
-Microsoft requires a publicly accessible URL. Set `WEBHOOK_URL` to your ngrok domain:
+Microsoft 需要可公开访问的 URL。将 `WEBHOOK_URL` 设为你的 ngrok 域名：
 
 ```bash
 WEBHOOK_URL=https://your-domain.ngrok-free.app
 ```
 
-**"Subscription validation request failed. HTTP status code is 'NotFound'"**
+**“Subscription validation request failed. HTTP status code is 'NotFound'”**
 
-Microsoft can reach your ngrok URL but the webhook endpoint returned 404. This usually means:
-- The ngrok tunnel disconnected (check if another session took over)
-- The Next.js app crashed (check `/tmp/nextjs-e2e.log`)
-- There's a stale `.next/dev/lock` file. Remove it and restart:
+Microsoft 能访问你的 ngrok URL，但 webhook 端点返回 404。这通常意味着：
+- ngrok 隧道已断开（检查是否有另一个会话接管）
+- Next.js 应用崩溃（检查 `/tmp/nextjs-e2e.log`）
+- `.next/dev/lock` 文件残留。删除它并重启：
   ```bash
   rm -rf apps/web/.next/dev/lock
   pkill -f "next dev"
   ```
 
-### Next.js dev server lock error
+### Next.js 开发服务器锁错误
 
-If you see "Unable to acquire lock", another instance may be running:
+如果看到 “Unable to acquire lock”，可能有另一个实例正在运行：
 
 ```bash
 rm -rf apps/web/.next/dev/lock

@@ -25,7 +25,6 @@ import {
 } from "@/utils/messaging/routes";
 import { isMessagingChannelOperational } from "@/utils/messaging/channel-validity";
 import prisma from "@/utils/prisma";
-import { pluralize } from "@/utils/string";
 import {
   getFollowUpCopy,
   normalizeFollowUpText,
@@ -102,13 +101,10 @@ export async function sendFollowUpNotification({
     );
     if (!route) continue;
     if (!isMessagingChannelOperational(channel)) {
-      logger.warn(
-        "Skipping follow-up notification for invalid messaging channel",
-        {
-          messagingChannelId: channel.id,
-          provider: channel.provider,
-        },
-      );
+      logger.warn("消息渠道无效，跳过跟进通知", {
+        messagingChannelId: channel.id,
+        provider: channel.provider,
+      });
       continue;
     }
 
@@ -154,7 +150,7 @@ export async function sendFollowUpNotification({
   const deliveries: FollowUpNotificationDelivery[] = [];
   for (const result of results) {
     if (result.status === "rejected") {
-      logger.error("Follow-up delivery channel failed", {
+      logger.error("跟进投递渠道失败", {
         reason: result.reason,
       });
       continue;
@@ -185,7 +181,7 @@ async function sendFollowUpViaSlack({
   });
 
   if (!destination) {
-    logger.warn("No Slack destination resolved for follow-up notification");
+    logger.warn("跟进通知未能解析出 Slack 目标");
     return null;
   }
 
@@ -248,13 +244,13 @@ async function sendFollowUpViaTelegram({
     route.targetId || channel.teamId || channel.providerUserId;
 
   if (!destination) {
-    logger.warn("No Telegram destination resolved for follow-up notification");
+    logger.warn("跟进通知未能解析出 Telegram 目标");
     return null;
   }
 
   const telegramAdapter = getMessagingAdapterRegistry().typedAdapters.telegram;
   if (!telegramAdapter) {
-    throw new Error("Telegram adapter is not configured");
+    throw new Error("未配置 Telegram 适配器");
   }
 
   const threadId = await telegramAdapter.openDM(destination);
@@ -286,14 +282,14 @@ function formatFollowUpText({
     getFollowUpCopy(trackerType);
 
   const lines = [
-    `${emoji} Follow-up nudge — ${directionLine}`,
+    `${emoji} 跟进提醒 — ${directionLine}`,
     normalizeFollowUpText(subject),
-    `${counterpartyPrefix} ${normalizeFollowUpText(counterpartyName)} <${counterpartyEmail}> · ${daysSinceSent} ${pluralize(daysSinceSent, "day")} ago`,
+    `${counterpartyPrefix} ${normalizeFollowUpText(counterpartyName)} <${counterpartyEmail}> · ${daysSinceSent} 天前`,
   ];
 
   const formattedSnippet = snippet ? formatQuotedSnippet(snippet) : "";
   if (formattedSnippet) lines.push(formattedSnippet);
-  if (threadLink) lines.push(`Open: ${threadLink}`);
+  if (threadLink) lines.push(`打开：${threadLink}`);
 
   return lines.join("\n");
 }
@@ -316,7 +312,7 @@ function buildTelegramFollowUpCard({
       [
         directionLine,
         normalizeFollowUpText(subject),
-        `${counterpartyPrefix} ${normalizeFollowUpText(counterpartyName)} <${counterpartyEmail}> · ${daysSinceSent} ${pluralize(daysSinceSent, "day")} ago`,
+        `${counterpartyPrefix} ${normalizeFollowUpText(counterpartyName)} <${counterpartyEmail}> · ${daysSinceSent} 天前`,
       ].join("\n\n"),
     ),
   ];
@@ -326,7 +322,7 @@ function buildTelegramFollowUpCard({
     : "";
 
   if (formattedSnippet) {
-    children.push(CardText(`${snippetLabel}:\n${formattedSnippet}`));
+    children.push(CardText(`${snippetLabel}：\n${formattedSnippet}`));
   }
 
   children.push(
@@ -334,21 +330,21 @@ function buildTelegramFollowUpCard({
       ...(threadLink
         ? [
             LinkButton({
-              label: threadLinkLabel ?? "Open email",
+              label: threadLinkLabel ?? "打开邮件",
               url: threadLink,
             }),
           ]
         : []),
       Button({
         id: FOLLOW_UP_MARK_DONE_ACTION_ID,
-        label: "Mark done",
+        label: "标记完成",
         value: trackerId,
       }),
     ]),
   );
 
   return Card({
-    title: `${emoji} Follow-up nudge`,
+    title: `${emoji} 跟进提醒`,
     children,
   });
 }

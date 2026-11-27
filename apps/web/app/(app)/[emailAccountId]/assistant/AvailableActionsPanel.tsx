@@ -22,27 +22,27 @@ const actionNames: Record<
   Exclude<ActionType, typeof ActionType.INTEGRATION>,
   MessageDescriptor
 > = {
-  [ActionType.LABEL]: msg`Label`,
-  [ActionType.MOVE_FOLDER]: msg`Move to folder`,
-  [ActionType.ARCHIVE]: msg`Archive`,
-  [ActionType.DELETE]: msg`Delete`,
-  [ActionType.DRAFT_EMAIL]: msg`Draft replies`,
-  [ActionType.DRAFT_MESSAGING_CHANNEL]: msg`Draft replies`,
-  [ActionType.REPLY]: msg`Send replies`,
-  [ActionType.FORWARD]: msg`Forward`,
-  [ActionType.MARK_READ]: msg`Mark as read`,
-  [ActionType.STAR]: msg`Star`,
-  [ActionType.MARK_SPAM]: msg`Mark as spam`,
-  [ActionType.SEND_EMAIL]: msg`Send email`,
-  [ActionType.CALL_WEBHOOK]: msg`Call webhook`,
-  [ActionType.DIGEST]: msg`Add to digest`,
-  [ActionType.NOTIFY_MESSAGING_CHANNEL]: msg`Notify`,
-  [ActionType.NOTIFY_SENDER]: msg`Notify sender`,
+  [ActionType.LABEL]: msg`打标签`,
+  [ActionType.MOVE_FOLDER]: msg`移动到文件夹`,
+  [ActionType.ARCHIVE]: msg`归档`,
+  [ActionType.DELETE]: msg`删除`,
+  [ActionType.DRAFT_EMAIL]: msg`起草回复`,
+  [ActionType.DRAFT_MESSAGING_CHANNEL]: msg`起草回复`,
+  [ActionType.REPLY]: msg`发送回复`,
+  [ActionType.FORWARD]: msg`转发`,
+  [ActionType.MARK_READ]: msg`标记为已读`,
+  [ActionType.STAR]: msg`加星标`,
+  [ActionType.MARK_SPAM]: msg`标记为垃圾邮件`,
+  [ActionType.SEND_EMAIL]: msg`发送邮件`,
+  [ActionType.CALL_WEBHOOK]: msg`调用 Webhook`,
+  [ActionType.DIGEST]: msg`添加到邮件摘要`,
+  [ActionType.NOTIFY_MESSAGING_CHANNEL]: msg`通知`,
+  [ActionType.NOTIFY_SENDER]: msg`通知发件人`,
 };
 
 const actionTooltips: Partial<Record<ActionType, MessageDescriptor>> = {
-  [ActionType.CALL_WEBHOOK]: msg`For developers: trigger external integrations by sending email data to a custom URL`,
-  [ActionType.DIGEST]: msg`Group emails together and receive them as a daily summary`,
+  [ActionType.CALL_WEBHOOK]: msg`面向开发者：将邮件数据发送到自定义 URL，以触发外部集成`,
+  [ActionType.DIGEST]: msg`将邮件汇总，并以每日摘要的形式接收`,
 };
 
 export function AvailableActionsPanel() {

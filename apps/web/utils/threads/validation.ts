@@ -12,8 +12,8 @@ import { senderFilterSchema } from "@/utils/split-inbox/sender-filter";
 import { createSearchParams } from "@/utils/url";
 
 /**
- * One branch of a "match any" split. Leaves are single conditions, so the
- * provider can OR them without having to interpret a nested expression.
+ * “匹配任一”分区的一个分支。叶子节点是单个条件，因此服务商可以直接对它们
+ * 做 OR，而无需解析嵌套表达式。
  */
 const threadsQueryLeaf = z
   .strictObject({
@@ -29,7 +29,7 @@ const threadsQueryLeaf = z
       Object.values(leaf).filter(
         (value) => value !== null && value !== undefined,
       ).length === 1,
-    { message: "Each match-any branch must contain one condition" },
+    { message: "每个“匹配任一”分支必须包含一个条件" },
   );
 export type ThreadsQueryLeaf = z.infer<typeof threadsQueryLeaf>;
 
@@ -48,7 +48,7 @@ export const threadsQuery = z
                     filter.kind !== "CATEGORY" ||
                     !["focused", "other"].includes(filter.value ?? ""),
                 ),
-              { message: "Other split exclusions require Gmail conditions" },
+              { message: "排除其他分区需要 Gmail 条件" },
             ),
           }),
         )
@@ -57,27 +57,27 @@ export const threadsQuery = z
     ),
     q: z.string().nullish(),
     fromEmail: z.string().nullish(),
-    /** Addressed to this address or @domain, in To or Cc. */
+    /** 收件人或抄送字段中指向此地址或 @domain 的邮件。 */
     toEmail: senderFilterSchema.nullish(),
     limit: z.coerce.number().max(100).nullish(),
     type: z.string().nullish(),
-    folderId: z.string().nullish(), // For Outlook
+    folderId: z.string().nullish(), // 用于 Outlook
     inboxSection: z.enum(["focused", "other"]).nullish(),
     category: z.string().trim().min(1).max(256).nullish(),
     splitId: z.string().trim().min(1).max(128).nullish(),
     nextPageToken: microsoftGraphPageTokenSchema,
-    labelId: z.string().nullish(), // For Google
-    labelIds: z.array(z.string()).nullish(), // For Google
-    // Threads matching any one of these labels, on top of `labelIds`, which all
-    // have to match. Served by fanning out one provider query per label.
+    labelId: z.string().nullish(), // 用于 Google
+    labelIds: z.array(z.string()).nullish(), // 用于 Google
+    // 匹配这些标签中任意一个的会话，叠加在必须全部匹配的 `labelIds` 之上。
+    // 通过为每个标签分别发起一次服务商查询来实现。
     anyLabelIds: z.array(z.string()).max(MAX_SPLIT_LABELS).nullish(),
-    excludeLabelNames: z.array(z.string()).nullish(), // For Google
+    excludeLabelNames: z.array(z.string()).nullish(), // 用于 Google
     after: z.coerce.date().nullish(),
     before: z.coerce.date().nullish(),
     isUnread: z.coerce.boolean().nullish(),
     /**
-     * Match any one of these, ANDed with the rest of the query. Travels over the
-     * wire as JSON, since a list of objects has no natural query-string form.
+     * 匹配其中任意一个，并与查询的其余条件做 AND。由于对象列表没有自然的
+     * 查询字符串形式，传输时使用 JSON。
      */
     anyOf: z.preprocess(
       (value) => (typeof value === "string" ? parseAnyOf(value) : value),
@@ -103,7 +103,7 @@ export const threadsQuery = z
         !query.splitId &&
         !query.anyOf?.length &&
         !query.anyLabelIds?.length),
-    { message: "Other split exclusions require a plain inbox query" },
+    { message: "排除其他分区需要使用纯收件箱查询" },
   )
   .refine(
     (query) =>
@@ -113,8 +113,7 @@ export const threadsQuery = z
         !query.folderId &&
         (!query.type || query.type === "inbox")),
     {
-      message:
-        "Match-any conditions require an inbox query without search or label unions",
+      message: "“匹配任一”条件需要不含搜索或标签并集的收件箱查询",
     },
   );
 export type ThreadsQuery = z.infer<typeof threadsQuery>;

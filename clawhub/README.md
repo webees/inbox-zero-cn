@@ -1,8 +1,8 @@
 # ClawHub / OpenClaw + Cursor
 
-This folder is the **canonical** packaged skill for the Inbox Zero API CLI (`@inbox-zero/api`, binary `inbox-zero-api`).
+此文件夹是 Inbox Zero API CLI（`@inbox-zero/api`，二进制文件 `inbox-zero-api`）的**规范**打包技能。
 
-- **OpenClaw**: publish or install from here; see `inbox-zero-api/SKILL.md` frontmatter `metadata.openclaw`.
-- **Cursor Directory**: the repo root includes `.cursor-plugin/plugin.json`. Skills are exposed via `skills/inbox-zero-api` → symlink to this directory so Open Plugins discovery finds `skills/*/SKILL.md` without duplicating files.
+- **OpenClaw**：从此处发布或安装；参见 `inbox-zero-api/SKILL.md` frontmatter 中的 `metadata.openclaw`。
+- **Cursor Directory**：仓库根目录包含 `.cursor-plugin/plugin.json`。技能通过 `skills/inbox-zero-api` → 指向此目录的符号链接暴露，这样 Open Plugins 发现机制能够找到 `skills/*/SKILL.md` 而无需重复文件。
 
-Edit content only under `inbox-zero-api/`; the Cursor plugin picks it up automatically.
+只在 `inbox-zero-api/` 下编辑内容；Cursor 插件会自动获取它。

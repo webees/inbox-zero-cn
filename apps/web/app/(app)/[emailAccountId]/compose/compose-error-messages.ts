@@ -33,14 +33,14 @@ export function getComposeErrorMessage(
   if (attachFailed) {
     const filename = attachFailed[1].replace(/\. Try again$/, "");
     return filename === attachFailed[1]
-      ? i18n._(msg`Could not attach ${filename}.`)
-      : i18n._(msg`Could not attach ${filename}. Try again.`);
+      ? i18n._(msg`无法附加 ${filename}`)
+      : i18n._(msg`无法附加 ${filename}，请重试`);
   }
 
   const unconfirmed = message.match(/^Could not confirm (.+) was attached\.$/);
   if (unconfirmed) {
     const filename = unconfirmed[1];
-    return i18n._(msg`Could not confirm ${filename} was attached.`);
+    return i18n._(msg`无法确认 ${filename} 已附加`);
   }
 
   return message;

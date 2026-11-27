@@ -71,7 +71,7 @@ describe("updateMemberRoleAction", () => {
       role: "member",
     });
 
-    expect(result?.serverError).toBe("You cannot change your own role.");
+    expect(result?.serverError).toBe("你不能更改自己的角色。");
     expect(prisma.member.update).not.toHaveBeenCalled();
   });
 
@@ -92,9 +92,7 @@ describe("updateMemberRoleAction", () => {
       role: "admin",
     });
 
-    expect(result?.serverError).toBe(
-      "Organization owners cannot be reassigned.",
-    );
+    expect(result?.serverError).toBe("组织所有者无法被重新分配。");
     expect(prisma.member.update).not.toHaveBeenCalled();
   });
 });
@@ -198,9 +196,7 @@ describe("removeMemberAction", () => {
       memberId: "member-1",
     });
 
-    expect(result?.serverError).toBe(
-      "You cannot remove yourself from the organization.",
-    );
+    expect(result?.serverError).toBe("你不能将自己从组织中移除。");
     expect(prisma.member.delete).not.toHaveBeenCalled();
   });
 
@@ -220,7 +216,7 @@ describe("removeMemberAction", () => {
       memberId: "member-2",
     });
 
-    expect(result?.serverError).toBe("Only owners can remove other owners.");
+    expect(result?.serverError).toBe("只有所有者可以移除其他所有者。");
     expect(prisma.member.delete).not.toHaveBeenCalled();
   });
 });
@@ -279,9 +275,7 @@ describe("transferOwnershipAction", () => {
       memberId: "member-2",
     });
 
-    expect(result?.serverError).toBe(
-      "Only organization owners can transfer ownership.",
-    );
+    expect(result?.serverError).toBe("只有组织所有者可以转移所有权。");
     expect(prisma.member.update).not.toHaveBeenCalled();
     expect(prisma.$transaction).not.toHaveBeenCalled();
   });
@@ -304,7 +298,7 @@ describe("transferOwnershipAction", () => {
       memberId: "member-1",
     });
 
-    expect(result?.serverError).toBe("You already own this organization.");
+    expect(result?.serverError).toBe("你已经拥有此组织。");
     expect(prisma.member.update).not.toHaveBeenCalled();
   });
 });

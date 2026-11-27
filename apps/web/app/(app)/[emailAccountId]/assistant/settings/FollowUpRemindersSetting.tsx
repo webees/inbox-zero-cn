@@ -104,11 +104,11 @@ function FollowUpRemindersSettingContent() {
 
   return (
     <SettingCard
-      title={t`Follow-up reminders`}
+      title={t`跟进提醒`}
       description={
         draftsFollowUps
-          ? t`Label emails where you haven't heard back or haven't replied, and draft a nudge when you haven't heard back.`
-          : t`Label emails where you haven't heard back or haven't replied. Does not draft emails.`
+          ? t`为还没收到回复或你尚未回复的邮件添加标签，并在你还没收到回复时起草提醒邮件。`
+          : t`为还没收到回复或你尚未回复的邮件添加标签。不会起草邮件。`
       }
       right={
         isLoading ? (
@@ -119,7 +119,7 @@ function FollowUpRemindersSettingContent() {
               <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
                   <Button variant="outline" size="sm">
-                    <Trans>Configure</Trans>
+                    <Trans>配置</Trans>
                   </Button>
                 </DialogTrigger>
                 <FollowUpSettingsDialogContent
@@ -268,20 +268,20 @@ function FollowUpSettingsDialog({
     <DialogContent>
       <DialogHeader>
         <DialogTitle>
-          <Trans>Follow-up reminders</Trans>
+          <Trans>跟进提醒</Trans>
         </DialogTitle>
         <DialogDescription>
-          <Trans>Get reminded about conversations that need attention.</Trans>
+          <Trans>需要关注的会话会提醒你。</Trans>
           <br />
           {isMicrosoftProvider(provider) ? (
             <Trans>
-              We'll add a <Badge color="blue">{FOLLOW_UP_LABEL}</Badge> category
-              so you can easily find them. Saturdays and Sundays do not count.
+              我们会添加一个 <Badge color="blue">{FOLLOW_UP_LABEL}</Badge>{" "}
+              类别，以便轻松找到它们。周六和周日不计入。
             </Trans>
           ) : (
             <Trans>
-              We'll add a <Badge color="blue">{FOLLOW_UP_LABEL}</Badge> label so
-              you can easily find them. Saturdays and Sundays do not count.
+              我们会添加一个 <Badge color="blue">{FOLLOW_UP_LABEL}</Badge>{" "}
+              标签，以便轻松找到它们。周六和周日不计入。
             </Trans>
           )}
         </DialogDescription>
@@ -291,25 +291,25 @@ function FollowUpSettingsDialog({
         <Input
           type="number"
           name="followUpAwaitingReplyDays"
-          label={t`Remind me when they haven't replied after`}
+          label={t`他们超过以下天数未回复时提醒我`}
           registerProps={register("followUpAwaitingReplyDays")}
           error={errors.followUpAwaitingReplyDays}
           min={0.001}
           max={90}
           step={0.001}
-          rightText={t`days`}
+          rightText={t`天`}
         />
 
         <Input
           type="number"
           name="followUpNeedsReplyDays"
-          label={t`Remind me when I haven't replied after`}
+          label={t`我超过以下天数未回复时提醒我`}
           registerProps={register("followUpNeedsReplyDays")}
           error={errors.followUpNeedsReplyDays}
           min={0.001}
           max={90}
           step={0.001}
-          rightText={t`days`}
+          rightText={t`天`}
         />
 
         {!autoDraftDisabled && (
@@ -319,21 +319,19 @@ function FollowUpSettingsDialog({
                 htmlFor="followUpAutoDraftEnabled"
                 className="block text-sm font-medium text-foreground"
               >
-                <Trans>Draft follow-up emails</Trans>
+                <Trans>起草跟进邮件</Trans>
               </label>
               <p className="text-muted-foreground text-sm">
                 {draftRepliesEnabled ? (
-                  <Trans>
-                    Write a nudge draft when you haven't heard back.
-                  </Trans>
+                  <Trans>当你还没收到回复时，起草一封提醒邮件。</Trans>
                 ) : (
-                  <Trans>Turn on Draft replies to use this.</Trans>
+                  <Trans>请先开启“起草回复”才能使用此功能。</Trans>
                 )}
               </p>
             </div>
             <Toggle
               name="followUpAutoDraftEnabled"
-              ariaLabel={t`Draft follow-up emails`}
+              ariaLabel={t`起草跟进邮件`}
               enabled={draftRepliesEnabled && autoDraftValue}
               disabled={!draftRepliesEnabled}
               onChange={(value) => setValue("followUpAutoDraftEnabled", value)}
@@ -343,7 +341,7 @@ function FollowUpSettingsDialog({
 
         <div className="flex items-center gap-2">
           <Button type="submit" size="sm" loading={isExecuting}>
-            <Trans>Save</Trans>
+            <Trans>保存</Trans>
           </Button>
           <Button
             type="button"
@@ -352,25 +350,25 @@ function FollowUpSettingsDialog({
             loading={isScanning}
             onClick={() => {
               startScanTiming();
-              toast.info(t`Scanning your emails...`, {
-                description: t`This may take a few minutes depending on how many emails need to be checked.`,
+              toast.info(t`正在扫描你的邮件...`, {
+                description: t`取决于需要检查的邮件数量，这可能需要几分钟。`,
               });
               executeScan({});
             }}
           >
-            <Trans>Find follow-ups</Trans>
+            <Trans>查找跟进事项</Trans>
           </Button>
         </div>
 
         {showChannelsHint && (
           <MutedText>
             <Trans>
-              Want pings in your chat app?{" "}
+              想在聊天应用中收到提醒吗？{" "}
               <Link
                 href={prefixPath(emailAccountId, "/channels")}
                 className="text-foreground underline"
               >
-                Configure on the Channels page
+                前往渠道页面进行配置
               </Link>
               .
             </Trans>
@@ -391,18 +389,16 @@ function showScanCompleteToast(
       emailAddress,
       `label:${FOLLOW_UP_LABEL}`,
     );
-    toast.success(i18n._(msg`Scan complete!`), {
-      description: i18n._(msg`View your follow-ups in Gmail.`),
+    toast.success(i18n._(msg`扫描完成！`), {
+      description: i18n._(msg`在 Gmail 中查看你的跟进事项。`),
       action: {
-        label: i18n._(msg`View`),
+        label: i18n._(msg`查看`),
         onClick: () => window.open(searchUrl, "_blank"),
       },
     });
   } else {
-    toast.success(i18n._(msg`Scan complete!`), {
-      description: i18n._(
-        msg`Look for the "${FOLLOW_UP_LABEL}" category in Outlook.`,
-      ),
+    toast.success(i18n._(msg`扫描完成！`), {
+      description: i18n._(msg`在 Outlook 中查找“${FOLLOW_UP_LABEL}”类别。`),
     });
   }
 }

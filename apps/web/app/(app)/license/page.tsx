@@ -77,12 +77,12 @@ function ActivateLicenseForm(props: { licenseKey?: string }) {
       <Input
         type="text"
         name="licenseKey"
-        label={t`License Key`}
+        label={t`许可证密钥`}
         registerProps={register("licenseKey", { required: true })}
         error={errors.licenseKey}
       />
       <Button type="submit" loading={isExecuting}>
-        <Trans>Activate</Trans>
+        <Trans>激活</Trans>
       </Button>
     </form>
   );

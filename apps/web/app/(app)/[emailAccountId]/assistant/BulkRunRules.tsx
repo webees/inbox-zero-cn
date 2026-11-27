@@ -191,16 +191,16 @@ export function BulkRunRules() {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           <Button type="button" variant="outline" size="sm">
-            <Trans>Process Past Emails</Trans>
+            <Trans>处理过去邮件</Trans>
           </Button>
         </DialogTrigger>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle>
-              <Trans>Bulk Process Emails</Trans>
+              <Trans>批量处理邮件</Trans>
             </DialogTitle>
             <DialogDescription>
-              <Trans>Run your rules on emails already in your inbox.</Trans>
+              <Trans>对收件箱中已有的邮件运行规则</Trans>
             </DialogDescription>
           </DialogHeader>
           {progressMessage && (
@@ -216,9 +216,9 @@ export function BulkRunRules() {
               className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100"
             >
               <Trans>
-                Your email provider is limiting requests, so processing is
-                paused. It will continue automatically around{" "}
-                {state.rateLimitResumeAt.toLocaleTimeString(i18n.locale)}.
+                你的邮件提供商正在限制请求，因此处理已暂停。将于{" "}
+                {state.rateLimitResumeAt.toLocaleTimeString(i18n.locale)}
+                左右自动继续
               </Trans>
             </div>
           )}
@@ -233,7 +233,7 @@ export function BulkRunRules() {
                     dispatch({ type: "RESET" });
                   }}
                   value={startDate}
-                  placeholder={t`Set start date`}
+                  placeholder={t`设置开始日期`}
                   disabled={isRunActive}
                 />
                 <SetDateDropdown
@@ -242,15 +242,15 @@ export function BulkRunRules() {
                     dispatch({ type: "RESET" });
                   }}
                   value={endDate}
-                  placeholder={t`Set end date (optional)`}
+                  placeholder={t`设置结束日期（可选）`}
                   disabled={isRunActive}
                 />
               </div>
 
               <ItemCard>
                 <ToggleRow
-                  title={t`Include read emails`}
-                  upgradeLabel={t`Upgrade to use include read emails`}
+                  title={t`包含已读邮件`}
+                  upgradeLabel={t`升级以使用包含已读邮件`}
                   checked={isIncludeReadEnabled}
                   onCheckedChange={setIncludeRead}
                   disabled={isRunActive}
@@ -258,8 +258,8 @@ export function BulkRunRules() {
                 />
                 <ItemSeparator />
                 <ToggleRow
-                  title={t`Rerun rules on already processed emails`}
-                  upgradeLabel={t`Upgrade to use rerun rules on already processed emails`}
+                  title={t`对已处理的邮件重新运行规则`}
+                  upgradeLabel={t`升级以使用对已处理的邮件重新运行规则`}
                   checked={isRerunEnabled}
                   onCheckedChange={setRerun}
                   disabled={isRunActive}
@@ -267,7 +267,7 @@ export function BulkRunRules() {
                 />
                 <ItemSeparator />
                 <ToggleRow
-                  title={t`Generate draft replies`}
+                  title={t`生成回复草稿`}
                   checked={generateDraftReplies}
                   onCheckedChange={setGenerateDraftReplies}
                   disabled={isBusy}
@@ -278,7 +278,7 @@ export function BulkRunRules() {
                 <div className="flex flex-col gap-3 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-800 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-200 sm:flex-row sm:items-center sm:justify-between">
                   <span>
                     {trialAiLimitMessage ??
-                      t`Trials can process up to ${TRIAL_BULK_PROCESS_EMAIL_LIMIT.toLocaleString()} past emails at a time.`}
+                      t`试用期一次最多可处理 ${TRIAL_BULK_PROCESS_EMAIL_LIMIT.toLocaleString()} 封过去的邮件`}
                   </span>
                   <EndTrialButton
                     size="sm"
@@ -314,7 +314,7 @@ export function BulkRunRules() {
                     }
                     onClick={handleStart}
                   >
-                    <Trans>Process Emails</Trans>
+                    <Trans>处理邮件</Trans>
                   </Button>
                 )}
               {isRunActive && (
@@ -323,18 +323,18 @@ export function BulkRunRules() {
                     {isPaused ? (
                       <>
                         <PlayIcon className="mr-1.5 h-3.5 w-3.5" />
-                        <Trans>Resume</Trans>
+                        <Trans>继续</Trans>
                       </>
                     ) : (
                       <>
                         <PauseIcon className="mr-1.5 h-3.5 w-3.5" />
-                        <Trans>Pause</Trans>
+                        <Trans>暂停</Trans>
                       </>
                     )}
                   </Button>
                   <Button variant="outline" size="sm" onClick={handleStop}>
                     <SquareIcon className="mr-1.5 h-3.5 w-3.5" />
-                    <Trans>Stop</Trans>
+                    <Trans>停止</Trans>
                   </Button>
                 </div>
               )}
@@ -377,7 +377,7 @@ function ToggleRow({
         <ItemTitle>{title}</ItemTitle>
         {onUpgrade && (
           <ItemDescription>
-            <Trans>Available on the Professional plan.</Trans>
+            <Trans>专业版套餐可用</Trans>
           </ItemDescription>
         )}
       </ItemContent>
@@ -390,7 +390,7 @@ function ToggleRow({
             aria-label={upgradeLabel}
             onClick={onUpgrade}
           >
-            <Trans>Upgrade</Trans>
+            <Trans>升级</Trans>
           </Button>
         ) : (
           <Switch
@@ -413,28 +413,13 @@ function NoTargetedEmailsMessage({
   rerun: boolean;
 }) {
   if (includeRead && rerun) {
-    return (
-      <Trans>No emails found in your inbox in the selected date range.</Trans>
-    );
+    return <Trans>在所选日期范围内，收件箱中没有找到邮件</Trans>;
   }
   if (includeRead) {
-    return (
-      <Trans>
-        No unprocessed emails found in your inbox in the selected date range.
-      </Trans>
-    );
+    return <Trans>在所选日期范围内，收件箱中没有找到未处理的邮件</Trans>;
   }
   if (rerun) {
-    return (
-      <Trans>
-        No unread emails found in your inbox in the selected date range.
-      </Trans>
-    );
+    return <Trans>在所选日期范围内，收件箱中没有找到未读邮件</Trans>;
   }
-  return (
-    <Trans>
-      No unread, unprocessed emails found in your inbox in the selected date
-      range.
-    </Trans>
-  );
+  return <Trans>在所选日期范围内，收件箱中没有找到未读的未处理邮件</Trans>;
 }

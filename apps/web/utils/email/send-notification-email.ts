@@ -22,13 +22,10 @@ export async function sendNotificationEmail({
   if (env.RESEND_API_KEY) {
     try {
       await sendViaResend();
-      logger.info("Sent notification email via Resend");
+      logger.info("已通过 Resend 发送通知邮件");
       return;
     } catch (error) {
-      logger.error(
-        "Failed to send notification email via Resend, falling back to self-send",
-        { error },
-      );
+      logger.error("通过 Resend 发送通知邮件失败，回退为自发自收", { error });
     }
   }
 
@@ -44,5 +41,5 @@ export async function sendNotificationEmail({
     messageHtml: await renderHtml(),
   });
 
-  logger.info("Sent notification email via the user's own mailbox");
+  logger.info("已通过用户自己的邮箱发送通知邮件");
 }

@@ -25,20 +25,18 @@ export async function callTelegramBotApi<T>({
   );
 
   if (!response.ok) {
-    throw new Error(
-      `Telegram ${apiMethod} request failed (${response.status})`,
-    );
+    throw new Error(`Telegram ${apiMethod} 请求失败（${response.status}）`);
   }
 
   const payload = (await response.json()) as TelegramBotApiResponse<T>;
   if (!payload.ok) {
     throw new Error(
-      payload.description || `Telegram ${apiMethod} returned a failed response`,
+      payload.description || `Telegram ${apiMethod} 返回了失败响应`,
     );
   }
 
   if (!("result" in payload)) {
-    throw new Error(`Telegram ${apiMethod} returned no result payload`);
+    throw new Error(`Telegram ${apiMethod} 未返回结果数据`);
   }
 
   return payload.result as T;

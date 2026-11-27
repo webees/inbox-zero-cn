@@ -38,9 +38,9 @@ describe("AppErrorBoundary", () => {
       error,
       expect.anything(),
     );
-    fireEvent.click(screen.getByRole("button", { name: "Try again" }));
+    fireEvent.click(screen.getByRole("button", { name: "重试" }));
     expect(reset).toHaveBeenCalledOnce();
-    fireEvent.click(screen.getByRole("button", { name: "Back to inbox" }));
+    fireEvent.click(screen.getByRole("button", { name: "返回收件箱" }));
     expect(onBack).toHaveBeenCalledOnce();
   });
   it("hides the previous reference while capturing a replacement error", () => {

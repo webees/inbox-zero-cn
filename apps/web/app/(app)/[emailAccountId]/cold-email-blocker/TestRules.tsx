@@ -1,5 +1,5 @@
-// this is a copy/paste of the assistant/TestRules.tsx file
-// can probably extract some common components from it
+// 这是 assistant/TestRules.tsx 文件的副本
+// 可能可以从中提取一些通用组件
 
 "use client";
 
@@ -87,8 +87,7 @@ const TestRulesForm = () => {
     formState: { errors, isSubmitting },
   } = useForm<TestRulesInputs>({
     defaultValues: {
-      message:
-        "Hey, I run a development agency. I was wondering if you need extra hands on your team?",
+      message: "你好，我经营一家开发机构。想问问你的团队是否需要额外的人手？",
     },
   });
 
@@ -116,14 +115,14 @@ const TestRulesForm = () => {
           autosizeTextarea
           rows={3}
           name="message"
-          label={t`Email to test against`}
-          placeholder={t`Hey, I run a marketing agency, and would love to chat.`}
+          label={t`用于测试的邮件`}
+          placeholder={t`你好，我经营一家营销机构，很想和你聊聊。`}
           registerProps={register("message", { required: true })}
           error={errors.message}
         />
         <Button type="submit" loading={isSubmitting}>
           <SparklesIcon className="mr-2 h-4 w-4" />
-          <Trans>Test</Trans>
+          <Trans>测试</Trans>
         </Button>
       </form>
       {response && (
@@ -181,7 +180,7 @@ function TestRulesContentRow({
               }}
             >
               <SparklesIcon className="mr-2 h-4 w-4" />
-              <Trans>Test</Trans>
+              <Trans>测试</Trans>
             </Button>
           </div>
         </div>
@@ -203,17 +202,17 @@ function Result(props: { coldEmailResponse: ColdEmailBlockerResponse | null }) {
     return (
       <AlertBasic
         variant="destructive"
-        title={t`Email is a cold email!`}
+        title={t`这是一封冷邮件！`}
         description={coldEmailResponse.aiReason}
       />
     );
   }
 
-  let title = t`Our AI determined this is not a cold email!`;
+  let title = t`我们的 AI 判定这不是冷邮件！`;
   if (coldEmailResponse.reason === "hasPreviousEmail") {
-    title = t`This person has previously emailed you. This is not a cold email!`;
+    title = t`此人之前给你发过邮件。这不是冷邮件！`;
   } else if (coldEmailResponse.reason === "applicationSender") {
-    title = t`This is an application notification, not a cold email!`;
+    title = t`这是申请通知，不是冷邮件！`;
   }
 
   return (
@@ -239,7 +238,7 @@ function useColdEmailTest() {
       const result = await testColdEmailAction(emailAccountId, data);
       if (result?.serverError) {
         toastError({
-          title: t`Error checking whether it's a cold email.`,
+          title: t`检查是否为冷邮件时出错。`,
           description: result.serverError,
         });
       } else if (result?.data) {

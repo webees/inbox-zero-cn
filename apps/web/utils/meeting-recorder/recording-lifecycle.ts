@@ -1,7 +1,6 @@
 import { MeetingRecordingStatus } from "@/generated/prisma/enums";
 
-// A recording that has not reached a terminal state yet and could still be
-// scheduled, rescheduled or cancelled.
+// 尚未达到终态的录制，仍可被调度、重新调度或取消。
 export const LIVE_STATUSES: MeetingRecordingStatus[] = [
   MeetingRecordingStatus.PENDING,
   MeetingRecordingStatus.SCHEDULED,
@@ -17,53 +16,53 @@ export const CANCELLABLE_STATUSES: MeetingRecordingStatus[] =
     (status) => status !== MeetingRecordingStatus.CALL_ENDED,
   );
 
-// Once the bot is on its way to the call there is nothing useful left to change.
+// 一旦机器人已在前往通话的途中，就没有任何有用的东西可更改了。
 export const CHANGEABLE_STATUSES: MeetingRecordingStatus[] = [
   MeetingRecordingStatus.PENDING,
   MeetingRecordingStatus.SCHEDULED,
 ];
 
-// The bot engaged with the call (tried to join, or failed trying) but delivered
-// no media. A recording still in one of these states after the meeting ended
-// produced nothing.
+// 机器人尝试接入通话（试图加入或加入失败）但没有交付
+// 任何媒体。会议结束后仍处于这些状态之一的录制
+// 没有产生任何内容。
 export const NO_RECORDING_STATUSES: MeetingRecordingStatus[] = [
   MeetingRecordingStatus.JOINING,
   MeetingRecordingStatus.IN_WAITING_ROOM,
   MeetingRecordingStatus.FAILED,
 ];
 
-// The bot is still in the call, even if the calendar event's scheduled end has
-// passed. These meetings stay in the upcoming section until the provider
-// reports that the call ended.
+// 机器人仍在通话中，即使日历事件的预定结束时间已过。
+// 在服务商报告通话结束之前，这些会议会一直留在即将开始
+// 的部分。
 export const ACTIVE_CALL_STATUSES: MeetingRecordingStatus[] = [
   MeetingRecordingStatus.IN_CALL,
   MeetingRecordingStatus.RECORDING,
 ];
 
-// These outcomes have useful details to show even when the calendar event's
-// scheduled end is still in the future.
+// 即使日历事件的预定结束时间仍在未来，这些结果也有
+// 有用的细节可供展示。
 export const MEETING_DETAIL_STATUSES: MeetingRecordingStatus[] = [
   MeetingRecordingStatus.CALL_ENDED,
   MeetingRecordingStatus.DONE,
 ];
 
-// The bot made it into the call, so media exists or is still being captured.
-// Meetings in these states must never be presented as "not recorded".
+// 机器人成功进入了通话，因此媒体已存在或仍在采集。
+// 处于这些状态的会议绝不能呈现为“未录制”。
 export const CAPTURED_MEETING_STATUSES: MeetingRecordingStatus[] = [
   ...ACTIVE_CALL_STATUSES,
   ...MEETING_DETAIL_STATUSES,
 ];
 
-// A booked bot is not a recorded meeting. Once the scheduled event has ended,
-// show failed attempts and calls whose capture has actually concluded; active
-// calls stay in the upcoming section.
+// 已预约的机器人不等于已录制的会议。一旦预定事件结束，
+// 显示失败的尝试和采集已实际结束的通话；
+// 进行中的通话会留在即将开始的部分。
 export const RECORDED_SECTION_STATUSES: MeetingRecordingStatus[] = [
   ...NO_RECORDING_STATUSES,
   ...MEETING_DETAIL_STATUSES,
 ];
 
-// Rank orders the lifecycle so replayed or out-of-order webhooks can only ever
-// move a recording forwards.
+// Rank 对生命周期排序，以便重放或乱序的 webhook 只能让
+// 录制向前移动。
 const STATUS_RANK: Record<MeetingRecordingStatus, number> = {
   [MeetingRecordingStatus.PENDING]: 0,
   [MeetingRecordingStatus.SCHEDULED]: 1,
@@ -73,8 +72,8 @@ const STATUS_RANK: Record<MeetingRecordingStatus, number> = {
   [MeetingRecordingStatus.RECORDING]: 5,
   [MeetingRecordingStatus.CALL_ENDED]: 6,
   [MeetingRecordingStatus.CANCELLING]: 7,
-  // Terminal outcomes: nothing may move a recording out of them. A late failure
-  // event must not wipe a recording we already have a transcript for.
+  // 终态结果：没有任何东西可以把录制移出它们。迟到的失败
+  // 事件绝不能抹掉我们已有转录的录制。
   [MeetingRecordingStatus.DONE]: 8,
   [MeetingRecordingStatus.FAILED]: 8,
   [MeetingRecordingStatus.CANCELLED]: 8,
@@ -92,10 +91,10 @@ const LOCKED_STATUSES: MeetingRecordingStatus[] = [
 ];
 
 /**
- * The fields a status change must write. Reaching a terminal state clears
- * `activeKey`, releasing the dedup slot the row was holding so the same meeting
- * can be booked again after it was cancelled or failed. Every status write goes
- * through here rather than setting `status` on its own.
+ * 状态变更必须写入的字段。到达终态会清除
+ * `activeKey`，释放该行持有的去重槽位，以便同一场会议
+ * 在被取消或失败后可以再次预约。每次状态写入都经过
+ * 这里，而不是自行设置 `status`。
  */
 export function recordingStatusData(status: MeetingRecordingStatus) {
   return TERMINAL_STATUSES.includes(status)
@@ -104,8 +103,8 @@ export function recordingStatusData(status: MeetingRecordingStatus) {
 }
 
 /**
- * Statuses a recording may currently be in for a move to `next` to be a step
- * forwards. Used as the `where` clause of a monotonic `updateMany`.
+ * 录制当前可以处于、且移动到 `next` 算作向前一步的状态。
+ * 用作单调 `updateMany` 的 `where` 子句。
  */
 export function getStatusesBelow(
   next: MeetingRecordingStatus,

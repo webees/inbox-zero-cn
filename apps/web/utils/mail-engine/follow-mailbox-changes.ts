@@ -1,11 +1,11 @@
 const CLOSED_STREAM_RETRY_MS = 30_000;
-// EventSource.CLOSED, without depending on the global in non-browser runtimes.
+// EventSource.CLOSED，而不在非浏览器运行时依赖该全局变量。
 const EVENT_SOURCE_CLOSED = 2;
 
 /**
- * Requests a sync when the server reports a provider change, so new mail
- * shows up without waiting for the engine's idle catch-up. Hidden tabs drop
- * the connection and catch up once they are visible again.
+ * 当服务器报告服务商发生变更时请求同步，使新邮件
+ * 无需等待引擎的空闲补偿就能出现。隐藏的标签页会断开
+ * 连接，并在再次可见时补偿。
  */
 export function followMailboxChanges({
   accountId,
@@ -26,11 +26,11 @@ export function followMailboxChanges({
     source = opened;
     opened.addEventListener("mailbox-change", onChange);
     // Every (re)connect sends `ready`; changes while disconnected are not
-    // replayed, so catch up then.
+    // 被重放，因此此时进行补偿。
     opened.addEventListener("ready", onChange);
     opened.addEventListener("error", () => {
-      // EventSource retries dropped connections itself but gives up on an
-      // error response, which would otherwise leave this tab without updates.
+      // EventSource 会自行重试断开的连接，但遇到错误响应
+      // 就会放弃，否则该标签页将无法获得更新。
       if (opened.readyState !== EVENT_SOURCE_CLOSED || source !== opened)
         return;
       source = null;

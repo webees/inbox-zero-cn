@@ -178,7 +178,7 @@ describe("OutlookSubscriptionManager", () => {
       expect(addUserErrorMessage).toHaveBeenCalledWith(
         "user-id",
         mailboxFullErrorKey(emailAccountId),
-        "The mailbox for user@example.com is full or can't accept changes, so Inbox Zero can't process new emails. Free up space or fix the mailbox in Microsoft 365. This message clears once it's working again.",
+        "user@example.com 的邮箱已满或无法接受更改，因此 Inbox Zero 无法处理新邮件。请释放空间或在 Microsoft 365 中修复该邮箱。此消息会在邮箱恢复正常后自动清除。",
         expect.anything(),
       );
     });

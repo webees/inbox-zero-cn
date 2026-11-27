@@ -88,8 +88,7 @@ import {
 } from "./store-read-utils";
 
 const MAX_QUEUE = 5000;
-// A send that failed or was undone goes back to being a draft, so only these
-// still show as an outgoing message.
+// 发送失败或被撤销的发送会重新变为草稿，因此只有这些状态仍会显示为待发送邮件。
 const OUTGOING_SEND_STATUSES = EXECUTABLE_OPERATION_STATUSES;
 const PENDING_STATUSES = [
   "preparing",
@@ -106,7 +105,7 @@ const HYDRATION_JOB_KEY_LIMIT = 20;
 export type SqliteMailStoreOptions = {
   maxPendingOperations?: number;
   runtime?: Pick<HostRuntime, "randomId" | "sha256" | "nowMs">;
-  /** Defaults to the Compression Streams API; Node hosts pass zlib. */
+  /** 默认使用 Compression Streams API；Node 宿主会传入 zlib。 */
   bodyCodec?: MessageBodyCodec;
 };
 
@@ -131,9 +130,8 @@ export async function createSqliteMailStore(
   if (!capabilities.jsonEach) {
     throw new Error("SQLite json_each is required for mailbox queries");
   }
-  // A build with FTS5 can still lack the index if creating it failed (for
-  // example, SQLite older than contentless_delete); search then falls back
-  // to substring matching instead of failing.
+  // 即使构建包含 FTS5，如果创建索引失败，索引仍可能缺失（例如 SQLite
+  // 版本低于 contentless_delete）；此时搜索会回退到子字符串匹配，而不是失败。
   const fts5 =
     capabilities.fts5 &&
     (
@@ -141,12 +139,10 @@ export async function createSqliteMailStore(
         tx.query("SELECT 1 FROM sqlite_master WHERE name = 'message_fts'"),
       )
     ).length > 0;
-  // Whenever the index is marked incomplete (a rebuild, eviction, or a failed
-  // write), a pass walks the bodies, then the messages still missing a search
-  // row, in engine-paced batches, and ends by checking every message has one.
+  // 每当索引被标记为不完整（重建、淘汰或写入失败），都会有一轮处理遍历正文，
+  // 然后按引擎节奏分批处理仍缺少搜索行的邮件，最后检查每封邮件是否都有搜索行。
   let searchBacklog: SearchBacklog | null = null;
-  // Until the index is complete, text search also checks the messages without
-  // a search row by substring.
+  // 在索引完整之前，文本搜索还会对没有搜索行的邮件进行子字符串匹配。
   const searchSupport = async (tx: SqlTransaction) => ({
     fts5,
     complete: fts5 && (await readSearchIndexComplete(tx)),
@@ -200,7 +196,7 @@ export async function createSqliteMailStore(
             ? indexSearchBacklog(tx, bodyCodec, after)
             : indexMetadataBacklog(tx, after),
         );
-        // A failed batch leaves the index incomplete; a later call retries.
+        // 失败的批次会让索引保持不完整；后续调用会重试。
         if (!batch.indexed) {
           searchBacklog = null;
           return { remaining: false };
@@ -214,8 +210,7 @@ export async function createSqliteMailStore(
           continue;
         }
         const complete = await driver.write(completeSearchIndexIfFull);
-        // Rows dropped behind the cursor during the pass get another one,
-        // unless this pass could not index anything.
+        // 本轮处理期间被游标跳过的行会再获得一轮处理，除非本轮什么都无法索引。
         searchBacklog =
           complete || !progressed
             ? null
@@ -431,8 +426,8 @@ export async function createSqliteMailStore(
     },
     async claimWork(input) {
       return driver.write(async (tx) => {
-        // A body someone is waiting to read goes before everything else;
-        // commands already show their result locally.
+        // 有人正在等待阅读的正文优先于其他所有任务；
+        // 命令已经在本地显示其结果。
         const interactive = await claimHydration(tx, input, {
           interactiveOnly: true,
           attemptId: runtime.randomId(),
@@ -1002,7 +997,7 @@ export async function createSqliteMailStore(
         if (current.status === "succeeded" || current.status === "superseded") {
           return { status: "too_late" };
         }
-        // A rejection that raced the server's cancellation still ends here.
+        // 与服务端取消竞争而落败的拒绝也会在这里结束。
         await tx.execute(
           `UPDATE operations
            SET status = 'cancelled', claimed_by = NULL, claimed_until_ms = NULL, attempt_id = NULL
@@ -1083,8 +1078,8 @@ export async function createSqliteMailStore(
             replyToConversationId;
         }
         const nowMs = Date.now();
-        // Undo windows are held by the server so they outlast this device;
-        // connectivity holds stay here until the device is back online.
+        // 撤销窗口由服务端持有，因此能比本设备存续更久；
+        // 连接相关的暂缓则保留在本地，直到设备重新上线。
         const sendAtMs =
           input.notBeforeMs !== undefined &&
           input.notBeforeMs - nowMs < DEFERRED_DISPATCH_MIN_HOLD_MS
@@ -1285,8 +1280,7 @@ export async function createSqliteMailStore(
                 )?.operationId,
               };
             }),
-            // Pending sends are newer than anything synced, so they close the
-            // conversation's last page.
+            // 待发送邮件比任何已同步内容都新，因此它们会结束该会话的最后一页。
             outgoing:
               rows.length > page.pageSize
                 ? []
@@ -1460,7 +1454,7 @@ export async function createSqliteMailStore(
         );
         const result = [];
         for (const account of accounts) {
-          // One seek on effective_inbox_order per account.
+          // 每个账号在 effective_inbox_order 上只进行一次查找。
           const newest = await tx.query(
             `SELECT MAX(received_at_ms) AS newest FROM effective_messages
              WHERE account_id = ? AND in_inbox = 1`,
@@ -1873,8 +1867,8 @@ export async function createSqliteMailStore(
           "SELECT connection FROM accounts WHERE account_id = ?",
           [input.accountId],
         );
-        // Every sync request reports its connection; only a change should
-        // republish the views.
+        // 每次同步请求都会报告其连接状态；只有状态发生变化时才需要
+        // 重新发布视图。
         const updated = await tx.execute(
           "UPDATE accounts SET connection = ? WHERE account_id = ? AND IFNULL(connection, 'ready') != ?",
           [input.connection, input.accountId, input.connection],
@@ -1884,10 +1878,9 @@ export async function createSqliteMailStore(
           input.connection === "ready" &&
           previous[0]?.connection === "blocked_auth"
         ) {
-          // claimWork never picks up blocked_auth, so a command that hit an
-          // expired token would stay pending forever. Sync recovering from its
-          // own auth failure is the signal that the credentials work again;
-          // recovering from offline, or reporting ready again, is not.
+          // claimWork 永远不会领取 blocked_auth 状态的任务，因此遇到过期令牌的
+          // 命令会永远处于待处理状态。同步自身从认证失败中恢复，才表示凭据
+          // 已再次可用；从离线状态恢复或再次上报就绪则不是。
           await tx.execute(
             `UPDATE operations
              SET status = 'queued', next_attempt_at_ms = NULL, claimed_by = NULL, claimed_until_ms = NULL
@@ -2211,8 +2204,8 @@ async function admitConversations(
       ],
     );
   }
-  // Membership resolution needs the network, so apply the change to the
-  // messages already stored; preparation adds any the provider reports later.
+  // 成员关系解析需要联网，因此先把更改应用到已存储的邮件上；
+  // 准备阶段会补充服务商之后上报的邮件。
   for (const target of knownTargets) {
     await tx.execute(
       `INSERT INTO operation_targets(account_id, command_id, message_id, conversation_id)
@@ -2476,11 +2469,10 @@ async function applyPageFacts(
 }
 
 /**
- * Claims the next hydration job, together with other waiting jobs for the
- * same account and purpose up to one request's worth of keys, so a
- * conversation's missing bodies arrive in one round trip instead of one each.
- * Interactive jobs are found through their id prefix, so neither pass sorts
- * or scans the queue.
+ * 领取下一个正文补全任务，并连同同一账号、同一用途的其他等待任务一起领取，
+ * 最多达到一次请求可承载的键数量，这样会话中缺失的正文可以在一次往返中
+ * 全部获取，而不是逐个获取。交互式任务通过其 ID 前缀查找，因此两种方式
+ * 都不需要对队列排序或扫描。
  */
 async function claimHydration(
   tx: SqlTransaction,
@@ -2507,7 +2499,7 @@ async function claimHydration(
   const jobs = [{ jobId: String(first.job_id), keys: firstPayload.keys }];
   const seen = new Set(firstPayload.keys.map(messageKeyIdentity));
   if (seen.size < HYDRATION_JOB_KEY_LIMIT) {
-    // Bodies someone is waiting for join the batch before background ones.
+    // 有人正在等待的正文会先于后台任务加入本批。
     const interactiveRange = `j.job_id >= '${INTERACTIVE_HYDRATION_PREFIX}' AND j.job_id < '${INTERACTIVE_HYDRATION_PREFIX_END}'`;
     const companionsWhere = (range: string) =>
       tx.query(
@@ -2570,8 +2562,8 @@ async function claimHydration(
   };
 }
 
-// A body someone is waiting to read. The prefix lets claims find these jobs
-// with a primary-key range instead of reading every payload.
+// 有人正在等待阅读的正文。此前缀让领取操作可以通过主键范围找到这些任务，
+// 而无需读取每个 payload。
 const INTERACTIVE_HYDRATION_PREFIX = "hydrate-now:";
 const INTERACTIVE_HYDRATION_PREFIX_END = "hydrate-now;";
 
@@ -2909,9 +2901,8 @@ async function recomputeTargets(tx: SqlTransaction, targets: MessageKey[]) {
        ORDER BY o.rowid ASC`,
       [target.accountId, target.messageId],
     );
-    // Effects are applied in this order, so it has to be admission order (the
-    // rowid order execution dependencies use): command ids are random, and an
-    // undo must land after what it undoes.
+    // 效果按此顺序应用，因此必须采用准入顺序（也是执行依赖使用的 rowid
+    // 顺序）：命令 ID 是随机的，而撤销操作必须在其撤销的目标之后生效。
     const pending = pendingRows
       .filter((row) => {
         const outcome = row.outcome == null ? null : String(row.outcome);
@@ -2929,7 +2920,7 @@ async function recomputeTargets(tx: SqlTransaction, targets: MessageKey[]) {
         return {
           operationId: String(row.command_id),
           change: payload.change,
-          // Preparing payloads name conversations; the join scopes the row.
+          // 准备中的 payload 会列出会话；连接查询负责限定该行所属范围。
           targets: payload.targets ?? [target],
         };
       });
@@ -3291,8 +3282,8 @@ async function insertMessageContent(
       body.isMeetingInvitation ? 1 : 0,
     ],
   );
-  // Indexed from what is stored, so a later rebuild from the stored body
-  // produces the same search row.
+  // 基于已存储的内容建立索引，因此之后从已存储正文重建时会
+  // 产生相同的搜索行。
   await indexMessageContent(tx, body.key, stored);
 }
 
@@ -3449,8 +3440,7 @@ async function readConversationSends(tx: SqlTransaction, key: ConversationKey) {
      ORDER BY o.created_at_ms ASC, o.rowid ASC`,
     [...OUTGOING_SEND_STATUSES, key.accountId, key.conversationId],
   );
-  // Reached through the sent message so the lookup stays indexed however many
-  // commands the account has settled.
+  // 通过已发送邮件访问，因此无论账号已处理多少命令，查询都能保持走索引。
   const confirmed = await tx.query(
     `SELECT o.command_id, o.status, o.payload_json, o.sent_message_id, d.content_json
      FROM messages m

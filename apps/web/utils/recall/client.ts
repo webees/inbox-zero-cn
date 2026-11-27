@@ -16,14 +16,14 @@ import {
   recallTranscriptSchema,
 } from "@/utils/recall/types";
 
-// The `botProvider` value Recall-backed recordings are stored under. Fixed
-// forever: historical rows keep this value even if the default provider moves.
+// Recall 支持的记录所存储的 `botProvider` 值。永远
+// 固定：即使默认服务商变更，历史行也保留此值。
 export const RECALL_BOT_PROVIDER = "recall";
 
 /**
- * Whether Recall can be used end to end. The API key alone is not enough:
- * without the webhook secret we would book bots whose lifecycle events we can
- * never verify, so the two are only ever configured as a pair.
+ * Recall 是否可以端到端使用。仅有 API 密钥还不够：
+ * 没有 webhook 密钥，我们会预约一些其生命周期事件永远无法验证的
+ * 机器人，因此这两者始终成对配置。
  */
 export function isRecallConfigured(): boolean {
   return Boolean(env.RECALL_API_KEY && env.RECALL_WEBHOOK_SECRET);
@@ -32,8 +32,8 @@ export function isRecallConfigured(): boolean {
 const DEFAULT_RECALL_REGION = "us-west-2";
 const ENDED_BOT_STATUS_CODES = new Set(["call_ended", "done", "fatal"]);
 
-// Use participant presence to end successful recordings; a calendar duration
-// is not the call's actual lifetime.
+// 使用参与者在线情况来结束成功的录制；日历时长
+// 并不是通话的实际时长。
 const EVERYONE_LEFT_TIMEOUT_SECONDS = 2;
 const MEETING_BOT_NAME_MATCHES = [
   "notetaker",
@@ -48,7 +48,7 @@ const MEETING_BOT_NAME_MATCHES = [
   "fireflies.ai",
 ];
 
-// Overridden only to point at the local emulator, same as GOOGLE_BASE_URL.
+// 仅用于指向本地模拟器，与 GOOGLE_BASE_URL 相同。
 function getRecallApiBase(): string {
   if (env.RECALL_BASE_URL) {
     return env.RECALL_BASE_URL.replace(/\/+$/, "");
@@ -62,7 +62,7 @@ class RecallApiError extends MeetingBotProviderError {
   readonly body: string;
 
   constructor(status: number, body: string, path: string) {
-    super(`Recall API ${status} for ${path}: ${body}`, isPermanent(status));
+    super(`Recall API ${status}（${path}）：${body}`, isPermanent(status));
     this.name = "RecallApiError";
     this.status = status;
     this.body = body;
@@ -86,28 +86,27 @@ export class RecallBotProvider implements MeetingBotProvider {
     joinAt: Date;
   }): Promise<{ externalBotId: string }> {
     const cameraImage = await getMeetingBotCameraImage().catch((error) => {
-      this.logger.warn(
-        "Meeting bot camera image is unavailable; scheduling without video",
-        { error },
-      );
+      this.logger.warn("会议机器人摄像头图像不可用；将在无视频的情况下安排", {
+        error,
+      });
       return null;
     });
 
-    // No transcript config here on purpose: `recallai_async` is not a
-    // bot-creation provider. Async transcription is requested per recording,
-    // after `recording.done`, via createTranscript below.
+    // 这里刻意不配置转录：`recallai_async` 不是
+    // 机器人创建服务商。异步转录按每条记录单独请求，
+    // 在 `recording.done` 之后，通过下面的 createTranscript。
     // https://docs.recall.ai/docs/bot-async-transcription
     const response = await this.request("/bot/", {
       method: "POST",
       body: {
         meeting_url: meetingUrl,
         bot_name: botName,
-        // Recall rejects a past `join_at`. Omitting it creates an ad-hoc bot
-        // that joins an ongoing meeting immediately.
+        // Recall 会拒绝过去的 `join_at`。省略它会创建一个临时机器人，
+        // 立即加入正在进行的会议。
         ...(joinAt.getTime() > Date.now() && { join_at: joinAt.toISOString() }),
         automatic_leave: {
           everyone_left_timeout: { timeout: EVERYONE_LEFT_TIMEOUT_SECONDS },
-          // Timings are in seconds.
+          // 时间单位为秒。
           bot_detection: {
             using_participant_names: {
               matches: MEETING_BOT_NAME_MATCHES,
@@ -115,8 +114,8 @@ export class RecallBotProvider implements MeetingBotProvider {
               timeout: 10,
             },
             using_participant_events: {
-              // Give real attendees time to speak or share before using
-              // inactivity as a fallback signal for unfamiliar bots.
+              // 给真实与会者发言或共享的时间，然后再将
+              // 不活跃作为陌生机器人的回退信号。
               activate_after: 120,
               timeout: 10,
             },
@@ -176,7 +175,7 @@ export class RecallBotProvider implements MeetingBotProvider {
       await this.request(`/bot/${externalBotId}/`, { method: "DELETE" });
     } catch (error) {
       if (isMissing(error)) {
-        this.logger.info("Recall bot was already gone", {
+        this.logger.info("Recall 机器人已不存在", {
           externalBotId,
         });
         return;
@@ -195,15 +194,15 @@ export class RecallBotProvider implements MeetingBotProvider {
         ) {
           throw leaveError;
         }
-        this.logger.info("Recall bot had already left the call", {
+        this.logger.info("Recall 机器人已离开通话", {
           externalBotId,
         });
       }
     }
   }
 
-  // A bot that ended without ever joining can be neither deleted nor told to
-  // leave, but one that is still waiting to join must keep being retried.
+  // 一个从未加入就结束的机器人既无法删除也无法让它离开，
+  // 但仍处于等待加入状态的机器人必须持续重试。
   private async hasBotEnded(externalBotId: string): Promise<boolean> {
     const bot = recallBotStatusSchema.parse(
       await this.request(`/bot/${externalBotId}/`, { method: "GET" }),
@@ -213,8 +212,8 @@ export class RecallBotProvider implements MeetingBotProvider {
   }
 
   async createTranscript(externalRecordingId: string): Promise<void> {
-    // Diarization sits at the top level here, not inside the provider object,
-    // which is where it goes for the real-time provider at bot creation.
+    // 说话人分离在这里位于顶层，而非 provider 对象内部，
+    // 而在实时服务商创建机器人时它是放在那里。
     await this.request(`/recording/${externalRecordingId}/create_transcript/`, {
       method: "POST",
       body: {
@@ -227,8 +226,8 @@ export class RecallBotProvider implements MeetingBotProvider {
   async fetchTranscript(
     externalTranscriptId: string,
   ): Promise<NormalizedTranscript> {
-    // The download URL in the webhook is short-lived, so always ask Recall for
-    // a fresh presigned URL rather than storing the one we were handed.
+    // webhook 中的下载 URL 是短时效的，因此始终向 Recall 索取
+    // 一个新的预签名 URL，而不是存储收到的那个。
     const transcript = recallTranscriptSchema.parse(
       await this.request(`/transcript/${externalTranscriptId}/`, {
         method: "GET",
@@ -237,9 +236,7 @@ export class RecallBotProvider implements MeetingBotProvider {
 
     const downloadUrl = transcript.data?.download_url;
     if (!downloadUrl) {
-      throw new Error(
-        `Recall transcript ${externalTranscriptId} has no download URL`,
-      );
+      throw new Error(`Recall 转录 ${externalTranscriptId} 没有下载 URL`);
     }
 
     const download = await fetch(downloadUrl);
@@ -263,7 +260,7 @@ export class RecallBotProvider implements MeetingBotProvider {
       });
     } catch (error) {
       if (error instanceof RecallApiError && error.status === 404) {
-        this.logger.info("Recall media already deleted", { externalBotId });
+        this.logger.info("Recall 媒体已删除", { externalBotId });
         return;
       }
       throw error;
@@ -275,7 +272,7 @@ export class RecallBotProvider implements MeetingBotProvider {
     { method, body }: { method: string; body?: unknown },
   ): Promise<unknown> {
     if (!env.RECALL_API_KEY) {
-      throw new Error("RECALL_API_KEY is not configured");
+      throw new Error("未配置 RECALL_API_KEY");
     }
 
     const response = await fetch(`${getRecallApiBase()}${path}`, {
@@ -344,10 +341,10 @@ function getRecallErrorCode(error: RecallApiError): string | null {
 }
 
 /**
- * Whether replaying the same request could ever succeed. Most 4xx responses
- * mean the request itself is wrong (bad meeting URL, unsupported platform), but
- * throttling and timeouts are 4xx and clear on their own, and treating those as
- * permanent would drop the claim and skip the meeting.
+ * 重放同一请求是否可能成功。大多数 4xx 响应
+ * 意味着请求本身有误（会议 URL 错误、平台不受支持），但
+ * 限流和超时也是 4xx，但会自行恢复，若把它们当作
+ * 永久性错误，就会放弃占用并跳过会议。
  */
 function isPermanent(status: number): boolean {
   if (status === 408 || status === 425 || status === 429) return false;
@@ -399,7 +396,7 @@ async function readMeetingBotCameraImage(): Promise<string> {
     if (!isMissingFile(error)) throw error;
   }
 
-  throw new Error("Recall meeting bot camera image is missing");
+  throw new Error("缺少 Recall 会议机器人摄像头图像");
 }
 
 function isMissingFile(error: unknown): boolean {

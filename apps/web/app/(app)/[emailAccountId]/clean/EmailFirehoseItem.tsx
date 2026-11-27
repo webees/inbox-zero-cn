@@ -68,7 +68,7 @@ export function EmailItem({
         </div>
         <div className="truncate text-xs text-muted-foreground">
           <Trans>
-            From: {email.from} • {formatShortDate(email.date)}
+            发件人：{email.from} • {formatShortDate(email.date)}
           </Trans>
         </div>
       </div>
@@ -121,7 +121,7 @@ function StatusBadge({
   if (status === "processing") {
     return (
       <Badge color="purple">
-        <Trans>Processing...</Trans>
+        <Trans>处理中...</Trans>
       </Badge>
     );
   }
@@ -129,7 +129,7 @@ function StatusBadge({
   if (undoState === "undoing") {
     return (
       <Badge color="purple">
-        <Trans>Undoing...</Trans>
+        <Trans>正在撤销...</Trans>
       </Badge>
     );
   }
@@ -137,16 +137,16 @@ function StatusBadge({
   if (undoState === "undone") {
     return (
       <Badge color="purple">
-        <Trans>Undone</Trans>
+        <Trans>已撤销</Trans>
       </Badge>
     );
   }
 
-  // If the email has the undone flag, show it as undone regardless of other status
+  // 如果邮件带有已撤销标记，无论其他状态如何都显示为已撤销
   if (email.undone) {
     return (
       <Badge color="purple">
-        <Trans>Undone</Trans>
+        <Trans>已撤销</Trans>
       </Badge>
     );
   }
@@ -182,7 +182,7 @@ function StatusBadge({
             }}
           >
             <Undo2Icon className="size-3" />
-            <Trans>Undo</Trans>
+            <Trans>撤销</Trans>
           </Button>
         </div>
       </div>
@@ -194,7 +194,7 @@ function StatusBadge({
       <div className="group">
         <span className="group-hover:hidden">
           <Badge color="blue">
-            <Trans>Keep</Trans>
+            <Trans>保留</Trans>
           </Badge>
         </span>
         <div className="hidden group-hover:inline-flex">
@@ -221,12 +221,12 @@ function StatusBadge({
             {action === CleanAction.ARCHIVE ? (
               <>
                 <ArchiveIcon className="mr-1 size-3" />
-                <Trans>Archive</Trans>
+                <Trans>归档</Trans>
               </>
             ) : (
               <>
                 <CheckIcon className="mr-1 size-3" />
-                <Trans>Mark Read</Trans>
+                <Trans>标记为已读</Trans>
               </>
             )}
           </Button>
@@ -249,15 +249,15 @@ function DoneBadgeText({
 }) {
   if (status === "markingDone") {
     return action === CleanAction.MARK_READ ? (
-      <Trans>Marking read...</Trans>
+      <Trans>正在标记为已读...</Trans>
     ) : (
-      <Trans>Archiving...</Trans>
+      <Trans>正在归档...</Trans>
     );
   }
   return action === CleanAction.MARK_READ ? (
-    <Trans>Marked read</Trans>
+    <Trans>已标记为已读</Trans>
   ) : (
-    <Trans>Archived</Trans>
+    <Trans>已归档</Trans>
   );
 }
 

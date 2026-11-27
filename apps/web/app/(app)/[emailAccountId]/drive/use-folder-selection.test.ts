@@ -79,8 +79,8 @@ describe("useFolderSelection", () => {
 
     expect(result.current.optimisticFolderIds).toEqual(new Set());
     expect(mockToastError).toHaveBeenCalledWith({
-      title: "Error adding folder",
-      description: "Please try again.",
+      title: "添加文件夹时出错",
+      description: "请重试。",
     });
     expect(mutateFolders).toHaveBeenCalledOnce();
   });

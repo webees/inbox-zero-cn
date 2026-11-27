@@ -1,21 +1,21 @@
-# Inbox Zero API CLI Reference
+# Inbox Zero API CLI 参考
 
-## Install
+## 安装
 
-Use one of:
+使用以下方式之一：
 
 - `npm install -g @inbox-zero/api`
 - `npx @inbox-zero/api --help`
 
-The executable name is `inbox-zero-api`.
+可执行文件名为 `inbox-zero-api`。
 
-## Authentication and config
+## 认证与配置
 
-- `INBOX_ZERO_API_KEY` is required for authenticated commands such as `rules` and `stats`.
-- `INBOX_ZERO_BASE_URL` is optional for self-hosted or custom deployments.
-- Config precedence is: flags, environment variables, `~/.inbox-zero-api/config.json`.
+- 对于需要认证的命令（如 `rules` 和 `stats`），必须设置 `INBOX_ZERO_API_KEY`。
+- 对于自托管或自定义部署，`INBOX_ZERO_BASE_URL` 是可选的。
+- 配置优先级为：命令行标志、环境变量、`~/.inbox-zero-api/config.json`。
 
-Examples:
+示例：
 
 ```bash
 inbox-zero-api config list
@@ -23,7 +23,7 @@ inbox-zero-api config get base-url
 inbox-zero-api config set base-url https://your-domain.com
 ```
 
-## Read operations
+## 读取操作
 
 ```bash
 inbox-zero-api openapi --json
@@ -33,49 +33,49 @@ inbox-zero-api stats by-period --period month --json
 inbox-zero-api stats response-time --json
 ```
 
-## Safe rule mutation flow
+## 安全的规则修改流程
 
-1. Inspect the live schema:
+1. 检查在线 schema：
 
 ```bash
 inbox-zero-api openapi --json
 ```
 
-2. Read the current rule when editing an existing one:
+2. 编辑现有规则时，先读取当前规则：
 
 ```bash
 inbox-zero-api rules get rule_123 --json > rule.json
 ```
 
-3. Edit `rule.json` in the workspace.
+3. 在工作区中编辑 `rule.json`。
 
-4. Apply the full replacement:
+4. 应用完整替换：
 
 ```bash
 inbox-zero-api rules update rule_123 --file rule.json --json
 ```
 
-Create from a file:
+从文件创建：
 
 ```bash
 inbox-zero-api rules create --file rule.json --json
 ```
 
-Create or update from stdin:
+从标准输入创建或更新：
 
 ```bash
 cat rule.json | inbox-zero-api rules create --file - --json
 cat rule.json | inbox-zero-api rules update rule_123 --file - --json
 ```
 
-Delete a rule:
+删除规则：
 
 ```bash
 inbox-zero-api rules delete rule_123
 ```
 
-## Notes
+## 说明
 
-- `rules update` replaces the rule body rather than patching individual fields.
-- Prefer temporary workspace files over inline JSON for larger payloads.
-- Stats commands are always scoped to the inbox account attached to the API key.
+- `rules update` 会替换整个规则正文，而不是对单个字段打补丁。
+- 对于较大的载荷，优先使用临时工作区文件而不是内联 JSON。
+- 统计命令始终限定在 API 密钥所关联的收件箱账号范围内。

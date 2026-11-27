@@ -53,8 +53,6 @@ vi.mock("@/utils/actions/all-accounts", () => ({
   reorderEmailAccountsAction: mockReorderEmailAccounts,
 }));
 
-vi.mock("@/utils/user", () => ({ logOut: vi.fn() }));
-
 vi.mock("./AllAccountsSelectionDialog", () => ({
   AllAccountsSelectionDialog: () => null,
 }));

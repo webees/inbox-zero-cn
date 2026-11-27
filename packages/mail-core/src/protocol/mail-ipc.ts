@@ -69,12 +69,6 @@ export const mailIpcRequestSchema = z.discriminatedUnion("method", [
   z.object({
     protocolVersion: z.literal(MAIL_IPC_PROTOCOL_VERSION),
     requestId: z.string().min(1).max(128),
-    method: z.literal("listDrafts"),
-    payload: z.object({ accountId: accountIdSchema }),
-  }),
-  z.object({
-    protocolVersion: z.literal(MAIL_IPC_PROTOCOL_VERSION),
-    requestId: z.string().min(1).max(128),
     method: z.literal("submitSend"),
     payload: submitSendSchema,
   }),

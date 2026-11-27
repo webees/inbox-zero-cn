@@ -110,7 +110,7 @@ const VideoCard = React.forwardRef<
             <button
               type="button"
               onClick={onClose}
-              aria-label="Close"
+              aria-label="关闭"
               className="absolute top-3 right-3 z-10 p-1.5 rounded-full hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors duration-200"
             >
               <X className="w-4 h-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" />
@@ -133,7 +133,7 @@ const VideoCard = React.forwardRef<
                   onClick={() => openVideo("button")}
                   Icon={PlayIcon}
                 >
-                  Watch Video
+                  观看视频
                 </Button>
               </div>
             </div>
@@ -143,7 +143,7 @@ const VideoCard = React.forwardRef<
                 <DialogTrigger asChild>
                   <button
                     type="button"
-                    aria-label="Play video"
+                    aria-label="播放视频"
                     onClick={() => openVideo("thumbnail")}
                     className="group relative cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 rounded-lg overflow-hidden"
                   >

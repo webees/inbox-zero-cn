@@ -58,8 +58,7 @@ export async function getCategoryOverview({
   };
 }
 
-// Senders whose mail is all archived are already cleaned up, so they are left
-// out of both the counts and the samples.
+// 邮件已全部归档的发件人已完成清理，因此不计入统计和示例中。
 function getInboxSendersByCategory({
   emailAccountId,
 }: {

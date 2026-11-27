@@ -68,41 +68,41 @@ export default async function AdminConfigPage() {
 
   return (
     <PageWrapper className="max-w-2xl mx-auto">
-      <PageHeader title={t(i18n)`App Configuration`} />
+      <PageHeader title={t(i18n)`应用配置`} />
 
       <div className="space-y-4 mt-4">
-        <Section title={t(i18n)`Application`}>
-          <Row label={t(i18n)`Version`} value={info.version} />
-          <Row label={t(i18n)`Environment`} value={info.environment} />
-          <Row label={t(i18n)`Base URL`} value={info.baseUrl} />
+        <Section title={t(i18n)`应用`}>
+          <Row label={t(i18n)`版本`} value={info.version} />
+          <Row label={t(i18n)`环境`} value={info.environment} />
+          <Row label={t(i18n)`基础 URL`} value={info.baseUrl} />
         </Section>
 
-        <Section title={t(i18n)`Features`}>
+        <Section title={t(i18n)`功能`}>
           <Row
-            label={t(i18n)`Email Send`}
+            label={t(i18n)`电子邮件发送`}
             value={info.features.emailSendEnabled ? enabled : disabled}
           />
           <Row
-            label={t(i18n)`Contacts`}
+            label={t(i18n)`联系人`}
             value={info.features.contactsEnabled ? enabled : disabled}
           />
           <Row
-            label={t(i18n)`Gmail Other Contacts`}
+            label={t(i18n)`Gmail 其他联系人`}
             value={info.features.gmailOtherContactsEnabled ? enabled : disabled}
           />
           <Row
-            label={t(i18n)`AI Model Settings`}
+            label={t(i18n)`AI 模型设置`}
             value={info.features.aiModelSettingsDisabled ? disabled : enabled}
           />
           <Row
-            label={t(i18n)`Bypass Premium`}
+            label={t(i18n)`绕过高级版限制`}
             value={
-              info.features.bypassPremiumChecks ? t(i18n)`Yes` : t(i18n)`No`
+              info.features.bypassPremiumChecks ? t(i18n)`是` : t(i18n)`否`
             }
           />
         </Section>
 
-        <Section title={t(i18n)`Auth Providers`}>
+        <Section title={t(i18n)`身份验证提供商`}>
           <Row
             label="Google"
             value={info.providers.google ? configured : notConfiguredLabel}
@@ -112,37 +112,34 @@ export default async function AdminConfigPage() {
             value={info.providers.microsoft ? configured : notConfiguredLabel}
           />
           <Row
-            label={t(i18n)`Microsoft Tenant`}
+            label={t(i18n)`Microsoft 租户`}
             value={
               info.providers.microsoftTenantConfigured
-                ? t(i18n)`Single tenant`
-                : t(i18n)`Multitenant (common)`
+                ? t(i18n)`单租户`
+                : t(i18n)`多租户（通用）`
             }
           />
         </Section>
 
         {isUserAdmin && (
           <>
-            <Section title={t(i18n)`LLM Configuration`}>
+            <Section title={t(i18n)`LLM 配置`}>
               <Row
-                label={t(i18n)`Default Provider`}
+                label={t(i18n)`默认提供商`}
                 value={info.llm.defaultProvider}
               />
+              <Row label={t(i18n)`默认模型`} value={info.llm.defaultModel} />
               <Row
-                label={t(i18n)`Default Model`}
-                value={info.llm.defaultModel}
-              />
-              <Row
-                label={t(i18n)`Economy Provider`}
+                label={t(i18n)`经济模式提供商`}
                 value={info.llm.economyProvider}
               />
               <Row
-                label={t(i18n)`Economy Model`}
+                label={t(i18n)`经济模式模型`}
                 value={info.llm.economyModel}
               />
             </Section>
 
-            <Section title={t(i18n)`Integrations`}>
+            <Section title={t(i18n)`集成`}>
               <Row
                 label="Redis"
                 value={
@@ -216,9 +213,9 @@ function Row({ label, value }: { label: string; value: string | boolean }) {
   const displayValue =
     typeof value === "boolean" ? (
       value ? (
-        <Trans>Yes</Trans>
+        <Trans>是</Trans>
       ) : (
-        <Trans>No</Trans>
+        <Trans>否</Trans>
       )
     ) : (
       value

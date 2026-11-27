@@ -5,7 +5,6 @@ import prisma from "@/utils/prisma";
 interface FolderPathResult {
   allFolders: { folder: DriveFolder; path: string }[];
   folder: DriveFolder;
-  path: string;
 }
 
 /**
@@ -86,11 +85,7 @@ export async function createFolderPath(
     throw new Error("Failed to create folder path");
   }
 
-  return {
-    folder: currentFolder,
-    allFolders,
-    path: resolvedPathParts.join("/"),
-  };
+  return { folder: currentFolder, allFolders };
 }
 
 export async function createAndSaveFilingFolder({
@@ -107,8 +102,8 @@ export async function createAndSaveFilingFolder({
   emailAccountId: string;
   driveConnectionId: string;
   logger: Logger;
-}): Promise<DriveFolder & { path: string }> {
-  const { folder, allFolders, path } = await createFolderPath(
+}): Promise<DriveFolder> {
+  const { folder, allFolders } = await createFolderPath(
     driveProvider,
     folderPath,
     logger,
@@ -140,7 +135,7 @@ export async function createAndSaveFilingFolder({
     count: allFolders.length,
   });
 
-  return { ...folder, path };
+  return folder;
 }
 
 /**

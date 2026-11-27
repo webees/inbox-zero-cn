@@ -239,14 +239,14 @@ export function ComposeHeaderFields({
             className="flex min-w-0 items-center gap-1.5 rounded-sm text-left text-sm font-medium leading-5 text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="text-emerald-600 dark:text-emerald-400">
-              <Trans>Draft</Trans>
+              <Trans>草稿</Trans>
             </span>
             <span className="min-w-0 truncate">
-              <Trans>to {summaryRecipients}</Trans>
+              <Trans>收件人：{summaryRecipients}</Trans>
             </span>
             {selectedSendAs && !selectedSendAs.isDefault && (
               <span className="min-w-0 truncate font-normal text-muted-foreground">
-                <Trans>from {selectedSendAs.email}</Trans>
+                <Trans>发件人：{selectedSendAs.email}</Trans>
               </span>
             )}
             <ChevronDownIcon className="size-3 shrink-0 text-muted-foreground" />

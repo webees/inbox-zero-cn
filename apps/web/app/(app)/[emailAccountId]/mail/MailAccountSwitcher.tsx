@@ -150,7 +150,7 @@ export const MailAccountSwitcher = memo(function MailAccountSwitcher({
                 >
                   <AllAccountsIcon className="size-10" />
                   <span className="flex-1 font-medium">
-                    <Trans>All accounts</Trans>
+                    <Trans>全部账号</Trans>
                   </span>
                   {isAllAccounts && <CurrentAccountCheck />}
                   {isDesktopApp && (
@@ -162,7 +162,7 @@ export const MailAccountSwitcher = memo(function MailAccountSwitcher({
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <DropdownMenuItem
-                      aria-label={t`Choose accounts`}
+                      aria-label={t`选择账号`}
                       className="w-10 justify-center rounded-xl p-0 text-muted-foreground"
                       onSelect={() => setIsSelectionOpen(true)}
                     >
@@ -170,7 +170,7 @@ export const MailAccountSwitcher = memo(function MailAccountSwitcher({
                     </DropdownMenuItem>
                   </TooltipTrigger>
                   <TooltipContent side="right">
-                    <Trans>Choose accounts</Trans>
+                    <Trans>选择账号</Trans>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -191,7 +191,7 @@ export const MailAccountSwitcher = memo(function MailAccountSwitcher({
                 <PlusIcon />
               </MenuItemIcon>
               <span className="font-medium text-muted-foreground">
-                <Trans>Add or manage accounts</Trans>
+                <Trans>添加或管理账号</Trans>
               </span>
             </Link>
           </DropdownMenuItem>
@@ -203,7 +203,7 @@ export const MailAccountSwitcher = memo(function MailAccountSwitcher({
               <LogOutIcon />
             </MenuItemIcon>
             <span className="font-medium text-muted-foreground">
-              <Trans>Sign out</Trans>
+              <Trans>退出登录</Trans>
             </span>
           </DropdownMenuItem>
         </DropdownMenuContent>

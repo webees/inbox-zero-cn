@@ -94,7 +94,7 @@ export const ThreadRow = memo(function ThreadRow({
       getThreadParticipantNames(
         [...(thread.participantMessages ?? []), ...thread.messages],
         accountEmail,
-        t`me`,
+        t`我`,
       ).join(", "),
     [thread.messages, thread.participantMessages, accountEmail, t],
   );
@@ -126,7 +126,7 @@ export const ThreadRow = memo(function ThreadRow({
                 className="size-3.5 shrink-0 text-muted-foreground"
               />
               <span className="sr-only">
-                <Trans>Has attachment</Trans>
+                <Trans>有附件</Trans>
               </span>
             </>
           ) : null}
@@ -162,7 +162,7 @@ export const ThreadRow = memo(function ThreadRow({
       onToggleSelect={onToggleSelect}
       participantSummary={participantSummary}
       renderSelectionControl={({ ariaLabel, checked, onClick, visible }) => (
-        // Opening above would cover the select-all checkbox for the first row.
+        // 向上展开会遮住第一行的全选复选框。
         <Tooltip shortcuts={["select"]} side="right">
           <Checkbox
             aria-label={ariaLabel}
@@ -176,10 +176,9 @@ export const ThreadRow = memo(function ThreadRow({
       selectionEnabled={selectionEnabled}
       snippet={snippet}
       strings={{
-        draft: t`Draft`,
-        starredConversation: t`Starred conversation`,
-        selectConversation: (participants) =>
-          t`Select conversation with ${participants}`,
+        draft: t`草稿`,
+        starredConversation: t`已加星标的会话`,
+        selectConversation: (participants) => t`选择与 ${participants} 的会话`,
       }}
       subject={getConversationSubject(thread.messages)}
     />
@@ -190,18 +189,18 @@ function OtpCodeButton({ code }: { code: string }) {
   const { t } = useLingui();
   return (
     <button
-      aria-label={t`Copy code ${code}`}
+      aria-label={t`复制验证码 ${code}`}
       className="inline-flex shrink-0 items-center gap-1 rounded-md border border-border bg-background px-1.5 py-px font-medium text-foreground text-xs tabular-nums leading-4 hover:bg-muted"
       onClick={async (event) => {
         event.stopPropagation();
         try {
           await navigator.clipboard.writeText(code);
-          toastSuccess({ description: t`Code copied` });
+          toastSuccess({ description: t`验证码已复制` });
         } catch {
-          toastError({ description: t`Failed to copy code` });
+          toastError({ description: t`复制验证码失败` });
         }
       }}
-      // Enter would otherwise bubble to the row and open the thread.
+      // 否则按 Enter 会冒泡到行上并打开会话。
       onKeyDown={(event) => event.stopPropagation()}
       type="button"
     >
@@ -222,7 +221,7 @@ function AccountAvatar({
 
   return (
     <Avatar
-      aria-label={t`Inbox: ${label}`}
+      aria-label={t`收件箱：${label}`}
       className="size-5"
       title={account.email}
     >

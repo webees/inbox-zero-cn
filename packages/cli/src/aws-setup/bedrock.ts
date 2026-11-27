@@ -5,30 +5,30 @@ export async function getBedrockCredentials(nonInteractive: boolean) {
   let secretKey = process.env.BEDROCK_SECRET_KEY;
   if (nonInteractive && (!accessKey || !secretKey)) {
     throw new Error(
-      "Set BEDROCK_ACCESS_KEY and BEDROCK_SECRET_KEY for the deployed application's Bedrock access before running unattended AWS setup.",
+      "在运行无人值守的 AWS 部署前，请为已部署应用的 Bedrock 访问设置 BEDROCK_ACCESS_KEY 和 BEDROCK_SECRET_KEY。",
     );
   }
   if (!accessKey || !secretKey) {
     p.log.info(
-      "The deployed app requires its own Bedrock credentials. The local AWS deployment profile is not passed to ECS.",
+      "已部署的应用需要自己的 Bedrock 凭证。本地 AWS 部署配置文件不会传递给 ECS。",
     );
     const credentials = await p.group(
       {
         accessKey: () =>
           p.text({
-            message: "Bedrock access key ID",
+            message: "Bedrock 访问密钥 ID",
             initialValue: accessKey,
-            validate: (value) => (value ? undefined : "Access key is required"),
+            validate: (value) => (value ? undefined : "访问密钥为必填项"),
           }),
         secretKey: () =>
           p.password({
-            message: "Bedrock secret access key",
-            validate: (value) => (value ? undefined : "Secret key is required"),
+            message: "Bedrock 私有访问密钥",
+            validate: (value) => (value ? undefined : "私有密钥为必填项"),
           }),
       },
       {
         onCancel: () => {
-          p.cancel("Setup cancelled.");
+          p.cancel("安装已取消。");
           process.exit(0);
         },
       },
@@ -37,6 +37,6 @@ export async function getBedrockCredentials(nonInteractive: boolean) {
     secretKey = credentials.secretKey;
   }
   if (!accessKey || !secretKey)
-    throw new Error("BEDROCK_ACCESS_KEY and BEDROCK_SECRET_KEY are required");
+    throw new Error("BEDROCK_ACCESS_KEY 和 BEDROCK_SECRET_KEY 为必填项");
   return { BEDROCK_ACCESS_KEY: accessKey, BEDROCK_SECRET_KEY: secretKey };
 }

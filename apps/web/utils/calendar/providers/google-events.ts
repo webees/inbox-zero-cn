@@ -139,8 +139,7 @@ export class GoogleCalendarEventProvider implements CalendarEventProvider {
       pageToken = data.nextPageToken ?? undefined;
     } while (pageToken);
     if (!event) return null;
-    if (event.status === "cancelled")
-      throw new SafeError("This event has been cancelled.");
+    if (event.status === "cancelled") throw new SafeError("该事件已被取消。");
     if (
       !event.id ||
       event.organizer?.self ||
@@ -153,9 +152,7 @@ export class GoogleCalendarEventProvider implements CalendarEventProvider {
     );
     if (!attendee) return null;
     if ((event.sequence ?? 0) !== invitation.sequence)
-      throw new SafeError(
-        "This invitation has changed. Please respond to the latest invitation in your calendar.",
-      );
+      throw new SafeError("此邀请已变更。请在你日历中的最新邀请上进行回应。");
     return { id: event.id, response: attendee.responseStatus ?? null };
   }
 
@@ -258,8 +255,6 @@ export class GoogleCalendarEventProvider implements CalendarEventProvider {
   }
 
   private parseEvent(event: calendar_v3.Schema$Event) {
-    // Google sends all-day events with a start date and no start time.
-    const isAllDay = !!event.start?.date && !event.start?.dateTime;
     const startTime = new Date(
       event.start?.dateTime || event.start?.date || Date.now(),
     );
@@ -288,7 +283,6 @@ export class GoogleCalendarEventProvider implements CalendarEventProvider {
       videoConferenceLink,
       startTime,
       endTime,
-      ...(isAllDay ? { isAllDay: true } : {}),
       organizerEmail: event.organizer?.email ?? undefined,
       isOrganizer: event.organizer?.self ?? undefined,
       userDeclined: getSelfDeclined(event.attendees),

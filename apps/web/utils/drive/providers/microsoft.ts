@@ -128,24 +128,24 @@ export class OneDriveProvider implements DriveProvider {
       const item: DriveItem = await this.client.api(endpoint).post({
         name: normalizedName,
         folder: {},
-        "@microsoft.graph.conflictBehavior": "rename", // Rename if exists
+        "@microsoft.graph.conflictBehavior": "rename", // 若已存在则重命名
       });
 
       return this.convertToFolder(item);
     } catch (error) {
-      this.logger.error("Error creating folder", { error, name, parentId });
+      this.logger.error("创建文件夹时出错", { error, name, parentId });
       throw error;
     }
   }
 
   // -------------------------------------------------------------------------
-  // File Operations
+  // 文件操作
   // -------------------------------------------------------------------------
 
   async uploadFile(params: UploadFileParams): Promise<DriveFile> {
     const { filename, mimeType, content, folderId } = params;
 
-    this.logger.info("Uploading file", {
+    this.logger.info("正在上传文件", {
       filename,
       mimeType,
       folderId,
@@ -156,13 +156,13 @@ export class OneDriveProvider implements DriveProvider {
       if (content.length > MAX_SIMPLE_UPLOAD_SIZE_BYTES) {
         if (content.length > MAX_ONEDRIVE_UPLOAD_SIZE_BYTES) {
           throw new Error(
-            `File size ${content.length} exceeds the maximum supported upload size of ${MAX_ONEDRIVE_UPLOAD_SIZE_BYTES} bytes.`,
+            `文件大小 ${content.length} 超过支持的最大上传大小 ${MAX_ONEDRIVE_UPLOAD_SIZE_BYTES} 字节。`,
           );
         }
         return await this.uploadFileViaUploadSession(params);
       }
 
-      // Use the PUT endpoint for simple upload
+      // 使用 PUT 端点进行简单上传
       // Path: /me/drive/items/{parent-id}:/{filename}:/content
       const normalizedFilename = normalizeOneDriveItemName(filename);
       const item: DriveItem = await this.client
@@ -175,7 +175,7 @@ export class OneDriveProvider implements DriveProvider {
 
       return this.convertToFile(item);
     } catch (error) {
-      this.logger.error("Error uploading file", { error, filename, folderId });
+      this.logger.error("上传文件时出错", { error, filename, folderId });
       throw error;
     }
   }

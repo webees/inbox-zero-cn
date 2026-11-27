@@ -58,7 +58,7 @@ describe("MCP mail client tools", () => {
         { ...editor, to: "valid@example.com, invalid" },
         logger,
       ),
-    ).rejects.toThrow("valid recipient");
+    ).rejects.toThrow("请输入有效的收件人邮箱地址。");
     expect(createEmailProvider).not.toHaveBeenCalled();
   });
   it("keeps provider pagination and list results body-free", async () => {
@@ -187,7 +187,7 @@ describe("MCP mail client tools", () => {
         { emailAccountId: account.id, folder: "unknown-folder" },
         logger,
       ),
-    ).rejects.toThrow("Folder is no longer available");
+    ).rejects.toThrow("文件夹已不再可用。请刷新邮箱导航。");
     expect(getThreadsWithQuery).toHaveBeenCalledTimes(1);
   });
   it("shares fresh navigation across concurrent page loads but rechecks ownership", async () => {

@@ -13,7 +13,7 @@ export function showSettingActionError({
   error,
   mutate,
   prefix,
-  defaultMessage = "There was an error",
+  defaultMessage = "出错了",
 }: SettingActionErrorOptions & { error: SafeActionError }) {
   mutate?.();
   toastError({

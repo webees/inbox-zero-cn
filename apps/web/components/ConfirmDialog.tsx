@@ -42,9 +42,9 @@ export function ConfirmDialog({
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>{cancelText ?? t`Cancel`}</AlertDialogCancel>
+          <AlertDialogCancel>{cancelText ?? t`取消`}</AlertDialogCancel>
           <AlertDialogAction onClick={onConfirm}>
-            {confirmText ?? t`Delete`}
+            {confirmText ?? t`删除`}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

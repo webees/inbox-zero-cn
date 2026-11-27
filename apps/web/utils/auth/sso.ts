@@ -18,7 +18,7 @@ const managementPaths = new Set([
 ]);
 
 export function adminSso(options: Parameters<typeof sso>[0]) {
-  // The SSO declaration omits its runtime hooks; retain them through the plugin contract.
+  // SSO 声明省略了其运行时钩子；通过插件契约保留它们。
   const plugin: ReturnType<typeof sso> & Pick<BetterAuthPlugin, "hooks"> =
     sso(options);
   return {
@@ -29,7 +29,7 @@ export function adminSso(options: Parameters<typeof sso>[0]) {
         {
           matcher: (context: { path?: string }) =>
             managementPaths.has(context.path ?? ""),
-          // Plugin hooks protect both HTTP and server API calls, unlike route middleware.
+          // 与路由中间件不同，插件钩子会同时保护 HTTP 和服务器 API 调用。
           handler: createAuthMiddleware(async (context) => {
             const session = await getSessionFromCtx(context);
             if (!session?.user) throw new APIError("UNAUTHORIZED");

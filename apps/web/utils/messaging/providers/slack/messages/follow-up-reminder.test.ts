@@ -30,18 +30,18 @@ function blocksJson(params: Parameters<typeof buildFollowUpReminderBlocks>[0]) {
 describe("buildFollowUpReminderBlocks", () => {
   it("AWAITING: makes clear the user sent the email and is waiting for a reply", () => {
     const json = blocksJson(baseAwaitingParams);
-    expect(json).toContain("Follow-up: waiting for their reply");
-    expect(json).toContain("You sent this email to");
-    expect(json).toContain("Your sent email:");
-    expect(json).not.toContain("Follow-up: reply needed from you");
+    expect(json).toContain("跟进：等待对方回复");
+    expect(json).toContain("你将这封邮件发送给了");
+    expect(json).toContain("你发送的邮件：");
+    expect(json).not.toContain("跟进：需要你回复");
   });
 
   it("NEEDS_REPLY: makes clear the user received the email and has not replied", () => {
     const json = blocksJson(baseNeedsReplyParams);
-    expect(json).toContain("Follow-up: reply needed from you");
-    expect(json).toContain("You received this email from");
-    expect(json).toContain("Email awaiting your reply:");
-    expect(json).not.toContain("Follow-up: waiting for their reply");
+    expect(json).toContain("跟进：需要你回复");
+    expect(json).toContain("你收到了来自以下发件人的邮件：");
+    expect(json).toContain("等待你回复的邮件：");
+    expect(json).not.toContain("跟进：等待对方回复");
   });
 
   it("does not add a redundant app signature footer", () => {
@@ -65,24 +65,26 @@ describe("buildFollowUpReminderBlocks", () => {
 
   it("AWAITING: identifies the counterparty as the recipient", () => {
     const json = blocksJson(baseAwaitingParams);
-    expect(json).toContain("You sent this email to *Test Counterparty*");
-    expect(json).not.toContain("You received this email from");
+    expect(json).toContain("你将这封邮件发送给了 *Test Counterparty*");
+    expect(json).not.toContain("你收到了来自以下发件人的邮件：");
   });
 
   it("NEEDS_REPLY: identifies the counterparty as the sender", () => {
     const json = blocksJson(baseNeedsReplyParams);
-    expect(json).toContain("You received this email from *Test Counterparty*");
-    expect(json).not.toContain("You sent this email to");
+    expect(json).toContain(
+      "你收到了来自以下发件人的邮件： *Test Counterparty*",
+    );
+    expect(json).not.toContain("你将这封邮件发送给了");
   });
 
   it("renders elapsed time for AWAITING", () => {
     const json = blocksJson(baseAwaitingParams);
-    expect(json).toContain("4 days ago");
+    expect(json).toContain("4 天前");
   });
 
   it("renders singular elapsed time for NEEDS_REPLY", () => {
     const json = blocksJson(baseNeedsReplyParams);
-    expect(json).toContain("1 day ago");
+    expect(json).toContain("1 天前");
   });
 
   it("includes the message snippet so the user knows what the thread is about", () => {
@@ -108,13 +110,13 @@ describe("buildFollowUpReminderBlocks", () => {
         block.type === "section" &&
         "text" in block &&
         block.text?.type === "mrkdwn" &&
-        block.text.text.includes("Your sent email:"),
+        block.text.text.includes("你发送的邮件："),
     );
 
     expect(snippetBlock).toBeDefined();
     expect((snippetBlock as any).text.text).toBe(
       [
-        "*Your sent email:*",
+        "*你发送的邮件：*",
         "> Hi Barbara,",
         ">",
         "> I hope you're doing well.",
@@ -136,7 +138,7 @@ describe("buildFollowUpReminderBlocks", () => {
         block.type === "section" &&
         "text" in block &&
         block.text?.type === "mrkdwn" &&
-        block.text.text.includes("Your sent email:"),
+        block.text.text.includes("你发送的邮件："),
     );
 
     expect(snippetBlock).toBeDefined();
@@ -176,7 +178,7 @@ describe("buildFollowUpReminderBlocks", () => {
         el?.action_id === FOLLOW_UP_MARK_DONE_ACTION_ID,
     );
     expect(markDone).toBeDefined();
-    expect(markDone.text.text).toBe("Mark done");
+    expect(markDone.text.text).toBe("标记完成");
     expect(markDone.value).toBe("tracker-abc123");
   });
 
@@ -187,7 +189,7 @@ describe("buildFollowUpReminderBlocks", () => {
     });
     const json = JSON.stringify(blocks);
     expect(json).toContain(FOLLOW_UP_MARK_DONE_ACTION_ID);
-    expect(json).toContain("Mark done");
+    expect(json).toContain("标记完成");
   });
 
   it("escapes Slack-sensitive characters in subject, name, and snippet", () => {
